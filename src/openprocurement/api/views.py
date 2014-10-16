@@ -6,12 +6,9 @@ from cornice.resource import resource, view
 
 from uuid import uuid4
 
-from couchdb import Server
-
 from .models import TenderDocument
 
 
-server = Server()
 spore = Service('spore', path='/spore', renderer='json')
 
 
@@ -42,13 +39,14 @@ def get_spore(request):
 class TenderResource(object):
     def __init__(self, request):
         self.request = request
-        self.db = get_db()
+        self.db = request.registry.db
 
     def collection_get(self):
-        map_fun = """function(doc) { if (doc.doc_type == "TenderDocument") { emit(doc._id, doc);}}"""
-        results = TenderDocument.query(self.db, map_fun, None)
+        # limit, skip, descending
+        results = TenderDocument.view(self.db, 'tenders/all')
         return {'tenders': [i.serialize("view") for i in results]}
 
+    @view(content_type="application/json")
     def collection_post(self):
         """Tender Create"""
         try:
@@ -58,9 +56,12 @@ class TenderResource(object):
                 tender.tenderID = "UA-" + tender.id
             tender.store(self.db)
         except Exception as e:
-            return wrap_error(e)
+            print e.message
+            for i in e.message:
+                self.request.errors.add('body', i, e.message[i])
+            return
         self.request.response.status = 201
-        return tender.serialize("view")
+        return wrap_data(tender.serialize("view"))
 
     @view(renderer='json')
     def get(self):
@@ -101,7 +102,7 @@ class TenderResource(object):
 class TenderDocumentResource(object):
     def __init__(self, request):
         self.request = request
-        self.db = get_db()
+        self.db = request.registry.db
 
     def collection_get(self):
         """Tender Documents List"""
