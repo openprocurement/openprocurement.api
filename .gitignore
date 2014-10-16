@@ -57,3 +57,6 @@ docs/make.bat
 
 # PyBuilder
 target/
+
+# Buildout
+bin/
