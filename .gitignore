@@ -49,6 +49,11 @@ coverage.xml
 
 # Sphinx documentation
 docs/_build/
+docs/html/
+docs/doctrees/
+#since we use collective.recipe.sphinxbuilder on buildout Makefiles are regenerated
+docs/Makefile
+docs/make.bat
 
 # PyBuilder
 target/
