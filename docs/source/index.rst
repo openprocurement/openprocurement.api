@@ -11,6 +11,7 @@ Contents:
 .. toctree::
    :maxdepth: 2
 
+   tutorial
    reference
 
 Please report any problems or suggestions for improvement either via the
