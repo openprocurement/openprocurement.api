@@ -6,17 +6,19 @@
 Welcome to openprocurement.api's documentation!
 ===============================================
 
-
-.. services::
-   :modules: openprocurement.api.views
-
-
 Contents:
 
 .. toctree::
    :maxdepth: 2
 
+   overview
+   tutorial
+   reference
 
+Please report any problems or suggestions for improvement either via the
+`mailing list <http://groups.google.com/group/open-procurement-general>`_ or
+the `issue tracker
+<https://github.com/openprocurement/openprocurement.api/issues>`_.
 
 Indices and tables
 ==================

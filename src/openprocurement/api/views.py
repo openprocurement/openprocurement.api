@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 """ Cornice services.
 """
 from cornice.ext.spore import generate_spore_description
@@ -48,7 +49,72 @@ class TenderResource(object):
 
     @view(content_type="application/json")
     def collection_post(self):
-        """Tender Create"""
+        """This API request is targeted to creating new Tenders by procuring organizations.
+        
+        Creating new Tender
+        -------------------
+        
+        Example request to create tender::
+
+         POST /tenders
+
+         {
+             "data":{
+                 "procuringEntity":{
+                     "id":{
+                         "name":"Державне управління справами",
+                         "scheme":"https://ns.openprocurement.org/ua/edrpou",
+                         "uid":"00037256",
+                         "uri":"http://www.dus.gov.ua/"
+                     },
+                     "address":{
+                         "country-name":"Україна",
+                         "postal-code":"01220",
+                         "region":"м. Київ",
+                         "locality":"м. Київ",
+                         "street-address":" вул. Банкова, 11, корпус 1"
+                     },
+                 },
+                "totalValue":{
+                    "amount":500,
+                    "currency":"UAH"
+                },
+                "itemsToBeProcured":[
+                    {
+                        "description":"футляри до державних нагород",
+                        "classificationScheme":"Other",
+                        "otherClassificationScheme":"ДКПП",
+                        "classificationID":"17.21.1",
+                        "classificationDescription":"папір і картон гофровані, паперова й картонна тара",
+                        "unitOfMeasure":"item",
+                        "quantity":5
+                    }
+                ],
+                "clarificationPeriod":{
+                    "endDate":"2014-10-31"
+                },
+                "tenderPeriod":{
+                    "endDate":"2014-11-06T10:00"
+                },
+                "awardPeriod":{
+                    "endDate":"2014-11-13"
+                }
+            }
+         }
+
+        This is what one should expect in response::
+
+         HTTP/1.1 201 Created
+
+         {
+             "data": {
+                 "id": "4879d3f8-ee24-4316-9b5f-bbc9f89fa607",
+                 "tenderID": "UA-2014-DUS-156",
+                 "modifiedAt": "2014-10-27T08:06:58.158Z",
+                 ...
+             }
+         }
+        """
         try:
             tender = TenderDocument(self.request.json_body)
             tender.id = uuid4().hex
@@ -85,7 +151,38 @@ class TenderResource(object):
         return wrap_data(tender.serialize("view"))
 
     def patch(self):
-        """Tender Edit (partial)"""
+        """Tender Edit (partial)
+        
+        For example here is how procuring entity can change number of items to be procured and total Value of a tender::
+
+         PATCH /tenders/4879d3f8-ee24-4316-9b5f-bbc9f89fa607
+         
+         {
+             "data": {
+                 "totalValue":{
+                     "amount":600,
+                 },
+                 "itemsToBeProcured":[
+                     {
+                         "quantity":6
+                     }
+                 ]
+             }
+         }
+         
+        And here is the response to be expected::
+
+         HTTP/1.0 200 OK
+
+         {
+             "data": {
+                 "id": "4879d3f8-ee24-4316-9b5f-bbc9f89fa607",
+                 "tenderID": "UA-2014-DUS-156",
+                 "modifiedAt": "2014-10-27T08:12:34.956Z",
+                 ...
+             }
+         }
+        """
         try:
             tender = TenderDocument.load(self.db, self.request.matchdict['id'])
             tender.import_data(self.request.json_body)
