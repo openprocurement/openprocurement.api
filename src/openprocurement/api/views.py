@@ -5,11 +5,8 @@ from cornice.ext.spore import generate_spore_description
 from cornice.service import Service, get_services
 from cornice.resource import resource, view
 from schematics.exceptions import ModelValidationError, ModelConversionError
-
 from uuid import uuid4
-
-
-from .models import TenderDocument
+from openprocurement.api.models import TenderDocument
 
 
 spore = Service('spore', path='/spore', renderer='json')
@@ -31,10 +28,6 @@ def validate_data(request):
         request.errors.status = 422
         return
     if not isinstance(json, dict) or 'data' not in json:
-        request.errors.add('body', 'data', "Data not available")
-        request.errors.status = 422
-        return
-    if 'data' not in json:
         request.errors.add('body', 'data', "Data not available")
         request.errors.status = 422
         return
@@ -115,13 +108,13 @@ class TenderResource(object):
                     }
                 ],
                 "clarificationPeriod":{
-                    "endDate":"2014-10-31"
+                    "endDate":"2014-10-31T00:00:00"
                 },
                 "tenderPeriod":{
-                    "endDate":"2014-11-06T10:00"
+                    "endDate":"2014-11-06T10:00:00"
                 },
                 "awardPeriod":{
-                    "endDate":"2014-11-13"
+                    "endDate":"2014-11-13T00:00:00"
                 }
             }
          }

@@ -38,7 +38,7 @@ class Period(Model):
 class Item(Model):
     """A good, service, or work to be contracted."""
     description = StringType()  # A description of the goods, services to be provided.
-    classificationSchemeenum = StringType(choices=['CPV', 'GSIN', 'UNSPSC', 'Other'])  # The classification scheme for the goods
+    classificationScheme = StringType(choices=['CPV', 'GSIN', 'UNSPSC', 'Other'])  # The classification scheme for the goods
     otherClassificationScheme = StringType()  # If the classification schema was not in list, please specify
     classificationID = StringType()  # The classification ID from the Scheme used
     classificationDescription = StringType()  # A description of the goods, services to be provided.
@@ -61,13 +61,13 @@ class identifier(Model):
 
 
 class address(Model):
-    postOfficeBox = StringType(serialized_name="post-office-box")
-    extendedAddress = StringType(serialized_name="extended-address")
-    streetAddress = StringType(serialized_name="street-address")
+    postOfficeBox = StringType(serialized_name="post-office-box", deserialize_from="post-office-box")
+    extendedAddress = StringType(serialized_name="extended-address", deserialize_from="extended-address")
+    streetAddress = StringType(serialized_name="street-address", deserialize_from="street-address")
     locality = StringType(required=True)
     region = StringType(required=True)
-    postalCode = StringType(serialized_name="postal-code")
-    countryName = StringType(required=True)
+    postalCode = StringType(serialized_name="postal-code", deserialize_from="postal-code")
+    countryName = StringType(required=True, serialized_name="country-name", deserialize_from="country-name")
 
 
 class Organization(Model):

@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 import unittest
 import webtest
 import os
@@ -131,6 +132,62 @@ class TenderResourceTest(BaseWebTest):
         self.assertEqual(response.json['errors'], [
             {u'description': [u'Please use a mapping for this field or Value instance instead of unicode.'], u'location': u'body', u'name': u'totalValue'}
         ])
+
+    def test_create_tender(self):
+        response = self.app.get('/tenders')
+        self.assertEqual(response.status, '200 OK')
+        self.assertEqual(len(response.json['tenders']), 0)
+
+        response = self.app.post_json('/tenders', {
+             "data":{
+                 "procuringEntity":{
+                     "id":{
+                         "name":"Державне управління справами",
+                         "scheme":"https://ns.openprocurement.org/ua/edrpou",
+                         "uid":"00037256",
+                         "uri":"http://www.dus.gov.ua/"
+                     },
+                     "address":{
+                         "country-name":"Україна",
+                         "postal-code":"01220",
+                         "region":"м. Київ",
+                         "locality":"м. Київ",
+                         "street-address":" вул. Банкова, 11, корпус 1"
+                     },
+                 },
+                "totalValue":{
+                    "amount":500,
+                    "currency":"UAH"
+                },
+                "itemsToBeProcured":[
+                    {
+                        "description":"футляри до державних нагород",
+                        "classificationScheme":"Other",
+                        "otherClassificationScheme":"ДКПП",
+                        "classificationID":"17.21.1",
+                        "classificationDescription":"папір і картон гофровані, паперова й картонна тара",
+                        "unitOfMeasure":"item",
+                        "quantity":5
+                    }
+                ],
+                "clarificationPeriod":{
+                    "endDate":"2014-10-31T00:00:00"
+                },
+                "tenderPeriod":{
+                    "endDate":"2014-11-06T10:00:00"
+                },
+                "awardPeriod":{
+                    "endDate":"2014-11-13T00:00:00"
+                }
+            }
+        })
+        self.assertEqual(response.status, '201 Created')
+        tender = response.json['data']
+
+        response = self.app.get('/tenders/{}'.format(tender['id']))
+        self.assertEqual(response.status, '200 OK')
+        self.assertEqual(response.content_type, 'application/json')
+        self.assertEqual(response.json['data'], tender)
 
     def test_get_tender(self):
         response = self.app.get('/tenders')
