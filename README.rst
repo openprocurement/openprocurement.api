@@ -4,6 +4,9 @@
 .. image:: https://coveralls.io/repos/openprocurement/openprocurement.api/badge.png
   :target: https://coveralls.io/r/openprocurement/openprocurement.api
 
+.. image:: https://readthedocs.org/projects/openprocurementapi/badge/?version=latest
+    :target: https://api-docs.openprocurement.org/
+
 Documentation
 =============
 
@@ -14,7 +17,7 @@ powering tenders database and reverse auction.
 exposing the tenders database to brokers and public.
 
 Documentation about this API is accessible at
-http://docs.openprocurement.org/
+http://api-docs.openprocurement.org/
 
 Building documentation
 ----------------------
