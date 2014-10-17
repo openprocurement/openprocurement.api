@@ -10,6 +10,7 @@ requires = [
     'setuptools',
     'cornice',
     'waitress',
+    'CouchDB',
     'couchdb-schematics',
 ]
 test_requires = requires + []
