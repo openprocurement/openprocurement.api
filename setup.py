@@ -10,10 +10,12 @@ requires = [
     'setuptools',
     'cornice',
     'waitress',
-    'CouchDB',
     'couchdb-schematics',
 ]
-test_requires = requires + []
+test_requires = requires + [
+    'webtest',
+    'python-coveralls',
+]
 
 entry_points = """\
 [paste.app_factory]
