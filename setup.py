@@ -11,6 +11,7 @@ requires = [
     'cornice',
     'waitress',
     'couchdb-schematics',
+    'sphinxcontrib-httpdomain',
 ]
 test_requires = requires + [
     'webtest',

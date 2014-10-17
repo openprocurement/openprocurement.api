@@ -71,9 +71,11 @@ class TenderResource(object):
         Creating new Tender
         -------------------
 
-        Example request to create tender::
+        Example request to create tender:
 
-         POST /tenders
+        .. sourcecode:: http
+
+         POST /tenders HTTP/1.1
 
          {
              "data":{
@@ -119,7 +121,9 @@ class TenderResource(object):
             }
          }
 
-        This is what one should expect in response::
+        This is what one should expect in response:
+
+        .. sourcecode:: http
 
          HTTP/1.1 201 Created
 
@@ -131,6 +135,7 @@ class TenderResource(object):
                  ...
              }
          }
+
         """
         try:
             tender = TenderDocument(self.request.json_body['data'])
