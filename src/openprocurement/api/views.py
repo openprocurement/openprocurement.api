@@ -4,19 +4,15 @@
 from cornice.ext.spore import generate_spore_description
 from cornice.service import Service, get_services
 from cornice.resource import resource, view
+from schematics.exceptions import ModelValidationError, ModelConversionError
 
 from uuid import uuid4
+
 
 from .models import TenderDocument
 
 
 spore = Service('spore', path='/spore', renderer='json')
-
-
-def get_db(name='test'):
-    if name not in server:
-        server.create(name)
-    return server[name]
 
 
 def wrap_error(e):
@@ -25,6 +21,34 @@ def wrap_error(e):
 
 def wrap_data(data):
     return {"data": data}
+
+
+def validate_data(request):
+    try:
+        json = request.json_body
+    except ValueError, e:
+        request.errors.add('body', 'data', e.message)
+        request.errors.status = 422
+        return
+    if not isinstance(json, dict) or 'data' not in json:
+        request.errors.add('body', 'data', "Data not available")
+        request.errors.status = 422
+        return
+    if 'data' not in json:
+        request.errors.add('body', 'data', "Data not available")
+        request.errors.status = 422
+        return
+    data = json['data']
+    try:
+        TenderDocument(data).validate()
+    except (ModelValidationError, ModelConversionError), e:
+        for i in e.message:
+            request.errors.add('body', i, e.message[i])
+        request.errors.status = 422
+
+
+def generate_tender_id(tid):
+    return "UA-2014-DUS-" + tid
 
 
 @spore.get()
@@ -47,13 +71,13 @@ class TenderResource(object):
         results = TenderDocument.view(self.db, 'tenders/all')
         return {'tenders': [i.serialize("view") for i in results]}
 
-    @view(content_type="application/json")
+    @view(content_type="application/json", validators=(validate_data,))
     def collection_post(self):
         """This API request is targeted to creating new Tenders by procuring organizations.
-        
+
         Creating new Tender
         -------------------
-        
+
         Example request to create tender::
 
          POST /tenders
@@ -116,16 +140,12 @@ class TenderResource(object):
          }
         """
         try:
-            tender = TenderDocument(self.request.json_body)
+            tender = TenderDocument(self.request.json_body['data'])
             tender.id = uuid4().hex
-            if not tender.tenderID:
-                tender.tenderID = "UA-" + tender.id
+            tender.tenderID = generate_tender_id(tender.id)
             tender.store(self.db)
-        except Exception as e:
-            print e.message
-            for i in e.message:
-                self.request.errors.add('body', i, e.message[i])
-            return
+        except Exception, e:
+            return wrap_error(e)
         self.request.response.status = 201
         return wrap_data(tender.serialize("view"))
 
@@ -134,29 +154,33 @@ class TenderResource(object):
         """Tender Read"""
         try:
             tender = TenderDocument.load(self.db, self.request.matchdict['id'])
-        except Exception as e:
+        except Exception, e:
             return wrap_error(e)
         if not tender:
-            return wrap_error('Not Found')
+            self.request.errors.add('url', 'id', 'Not Found')
+            self.request.errors.status = 404
+            return
         return wrap_data(tender.serialize("view"))
 
+    @view(content_type="application/json", validators=(validate_data,))
     def put(self):
         """Tender Edit (full)"""
         try:
             tender = TenderDocument.load(self.db, self.request.matchdict['id'])
-            tender.import_data(self.request.json_body)
+            tender.import_data(self.request.json_body['data'])
             tender.store(self.db)
-        except Exception as e:
+        except Exception, e:
             return wrap_error(e)
         return wrap_data(tender.serialize("view"))
 
+    @view(content_type="application/json", validators=(validate_data,))
     def patch(self):
         """Tender Edit (partial)
-        
+
         For example here is how procuring entity can change number of items to be procured and total Value of a tender::
 
          PATCH /tenders/4879d3f8-ee24-4316-9b5f-bbc9f89fa607
-         
+
          {
              "data": {
                  "totalValue":{
@@ -169,7 +193,7 @@ class TenderResource(object):
                  ]
              }
          }
-         
+
         And here is the response to be expected::
 
          HTTP/1.0 200 OK
@@ -185,9 +209,9 @@ class TenderResource(object):
         """
         try:
             tender = TenderDocument.load(self.db, self.request.matchdict['id'])
-            tender.import_data(self.request.json_body)
+            tender.import_data(self.request.json_body['data'])
             tender.store(self.db)
-        except Exception as e:
+        except Exception, e:
             return wrap_error(e)
         return wrap_data(tender.serialize("view"))
 
@@ -205,36 +229,41 @@ class TenderDocumentResource(object):
         """Tender Documents List"""
         try:
             tender = TenderDocument.load(self.db, self.request.matchdict['tender_id'])
-        except Exception as e:
+        except Exception, e:
             return wrap_error(e)
-        return {'documents': getattr(tender, '_attachments', {})}
+        return {'documents': tender['_attachments']}
 
     def collection_post(self):
         """Tender Document Upload"""
         try:
             tender = TenderDocument.load(self.db, self.request.matchdict['tender_id'])
-        except Exception as e:
+        except Exception, e:
             return wrap_error(e)
         try:
             for data in self.request.POST.values():
-                self.db.put_attachment(tender, data.file, data.filename)
-        except Exception as e:
+                self.db.put_attachment(tender._data, data.file, data.filename)
+        except Exception, e:
             return wrap_error(e)
-        return {'documents': getattr(tender, '_attachments', {})}
+        tender = tender.reload(self.db)
+        self.request.response.status = 201
+        return {'documents': tender['_attachments']}
 
     def get(self):
         """Tender Document Read"""
-        return self.db.fetch_attachment(self.request.matchdict['tender_id'], self.request.matchdict['id'])
+        data = self.db.get_attachment(self.request.matchdict['tender_id'], self.request.matchdict['id'])
+        self.request.response.body_file = data
+        return self.request.response
 
     def put(self):
         """Tender Document Update"""
         try:
             tender = TenderDocument.load(self.db, self.request.matchdict['tender_id'])
-        except Exception as e:
+        except Exception, e:
             return wrap_error(e)
         try:
             for data in self.request.POST.values():
                 self.db.put_attachment(tender, data.file, data.filename)
-        except Exception as e:
+        except Exception, e:
             return wrap_error(e)
-        return getattr(tender, '_attachments', {}).get(self.request.matchdict['id'], {})
+        tender = tender.reload(self.db)
+        return tender['_attachments'].get(self.request.matchdict['id'], {})

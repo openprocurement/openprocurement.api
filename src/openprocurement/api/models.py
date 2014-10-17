@@ -1,4 +1,5 @@
 import datetime
+import random
 from couchdb_schematics.document import SchematicsDocument
 from schematics.models import Model
 from schematics.transforms import blacklist
@@ -60,13 +61,13 @@ class identifier(Model):
 
 
 class address(Model):
-    post_office_box = StringType(serialized_name="post-office-box")
-    extended_address = StringType(serialized_name="extended-address")
-    street_address = StringType(serialized_name="street-address")
+    postOfficeBox = StringType(serialized_name="post-office-box")
+    extendedAddress = StringType(serialized_name="extended-address")
+    streetAddress = StringType(serialized_name="street-address")
     locality = StringType(required=True)
     region = StringType(required=True)
-    postal_code = StringType(serialized_name="postal-code")
-    country_name = StringType(required=True)
+    postalCode = StringType(serialized_name="postal-code")
+    countryName = StringType(required=True)
 
 
 class Organization(Model):
@@ -77,7 +78,7 @@ class Organization(Model):
 
 class Tender(Model):
     """Data regarding tender process - publicly inviting prospective contractors to submit bids for evaluation and selecting a winner or winners."""
-    tenderID = StringType(required=True)  # TenderID should always be the same as the OCID. It is included to make the flattened data structure more convenient.
+    tenderID = StringType(required=True, default=lambda: "UA-2014-DUS-{:03}".format(random.randint(0, 10 ** 3)))  # TenderID should always be the same as the OCID. It is included to make the flattened data structure more convenient.
     notice = ModelType(Notice)
     itemsToBeProcured = ListType(ModelType(Item))  # The goods and services to be purchased, broken into line items wherever possible. Items should not be duplicated, but a quantity of 2 specified instead.
     totalValue = ModelType(Value)  # The total estimated value of the procurement.
@@ -104,7 +105,7 @@ class TenderDocument(SchematicsDocument, Tender):
             "view": (blacklist("_attachments") + SchematicsDocument.Options.roles['embedded']),
         }
 
-    _attachments = DictType(DictType(StringType))
+    _attachments = DictType(DictType(StringType), default=dict())
     modifiedAt = DateTimeType(default=datetime.datetime.now)
 
     @serializable(serialized_name="id")
