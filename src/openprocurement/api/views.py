@@ -175,9 +175,11 @@ class TenderResource(object):
     def patch(self):
         """Tender Edit (partial)
 
-        For example here is how procuring entity can change number of items to be procured and total Value of a tender::
+        For example here is how procuring entity can change number of items to be procured and total Value of a tender:
 
-         PATCH /tenders/4879d3f8-ee24-4316-9b5f-bbc9f89fa607
+        .. sourcecode:: http
+
+         PATCH /tenders/4879d3f8-ee24-4316-9b5f-bbc9f89fa607 HTTP/1.1
 
          {
              "data": {
@@ -192,8 +194,10 @@ class TenderResource(object):
              }
          }
 
-        And here is the response to be expected::
+        And here is the response to be expected:
 
+        .. sourcecode:: http
+        
          HTTP/1.0 200 OK
 
          {
