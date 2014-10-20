@@ -3,6 +3,11 @@
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
+.. title:: OpenProcurement API
+
+.. meta::
+    :google-site-verification: kmqHGqhpzgef4t5OVKoQCPa5v-CK14HOLmVrZV2QgmQ
+
 Welcome to openprocurement.api's documentation!
 ===============================================
 
