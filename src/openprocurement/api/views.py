@@ -12,10 +12,6 @@ from openprocurement.api.models import TenderDocument
 spore = Service('spore', path='/spore', renderer='json')
 
 
-def wrap_error(e):
-    return {"errors": [str(e)]}
-
-
 def wrap_data(data):
     return {"data": data}
 
@@ -131,29 +127,28 @@ class TenderResource(object):
              "data": {
                  "id": "4879d3f8-ee24-4316-9b5f-bbc9f89fa607",
                  "tenderID": "UA-2014-DUS-156",
-                 "modifiedAt": "2014-10-27T08:06:58.158Z",
+                 "modified": "2014-10-27T08:06:58.158Z",
                  ...
              }
          }
 
         """
+        tender_data = self.request.json_body['data']
+        tender_id = uuid4().hex
+        tender_data['doc_id'] = tender_id
+        tender_data['tenderID'] = generate_tender_id(tender_id)
+        tender = TenderDocument(tender_data)
         try:
-            tender = TenderDocument(self.request.json_body['data'])
-            tender.id = uuid4().hex
-            tender.tenderID = generate_tender_id(tender.id)
             tender.store(self.db)
         except Exception, e:
-            return wrap_error(e)
+            return self.request.errors.add('body', 'data', str(e))
         self.request.response.status = 201
         return wrap_data(tender.serialize("view"))
 
     @view(renderer='json')
     def get(self):
         """Tender Read"""
-        try:
-            tender = TenderDocument.load(self.db, self.request.matchdict['id'])
-        except Exception, e:
-            return wrap_error(e)
+        tender = TenderDocument.load(self.db, self.request.matchdict['id'])
         if not tender:
             self.request.errors.add('url', 'id', 'Not Found')
             self.request.errors.status = 404
@@ -163,12 +158,16 @@ class TenderResource(object):
     @view(content_type="application/json", validators=(validate_data,))
     def put(self):
         """Tender Edit (full)"""
+        tender = TenderDocument.load(self.db, self.request.matchdict['id'])
+        if not tender:
+            self.request.errors.add('url', 'id', 'Not Found')
+            self.request.errors.status = 404
+            return
         try:
-            tender = TenderDocument.load(self.db, self.request.matchdict['id'])
             tender.import_data(self.request.json_body['data'])
             tender.store(self.db)
         except Exception, e:
-            return wrap_error(e)
+            return self.request.errors.add('body', 'data', str(e))
         return wrap_data(tender.serialize("view"))
 
     @view(content_type="application/json", validators=(validate_data,))
@@ -204,17 +203,21 @@ class TenderResource(object):
              "data": {
                  "id": "4879d3f8-ee24-4316-9b5f-bbc9f89fa607",
                  "tenderID": "UA-2014-DUS-156",
-                 "modifiedAt": "2014-10-27T08:12:34.956Z",
+                 "modified": "2014-10-27T08:12:34.956Z",
                  ...
              }
          }
         """
+        tender = TenderDocument.load(self.db, self.request.matchdict['id'])
+        if not tender:
+            self.request.errors.add('url', 'id', 'Not Found')
+            self.request.errors.status = 404
+            return
         try:
-            tender = TenderDocument.load(self.db, self.request.matchdict['id'])
             tender.import_data(self.request.json_body['data'])
             tender.store(self.db)
         except Exception, e:
-            return wrap_error(e)
+            return self.request.errors.add('body', 'data', str(e))
         return wrap_data(tender.serialize("view"))
 
 
@@ -229,23 +232,25 @@ class TenderDocumentResource(object):
 
     def collection_get(self):
         """Tender Documents List"""
-        try:
-            tender = TenderDocument.load(self.db, self.request.matchdict['tender_id'])
-        except Exception, e:
-            return wrap_error(e)
+        tender = TenderDocument.load(self.db, self.request.matchdict['tender_id'])
+        if not tender:
+            self.request.errors.add('url', 'tender_id', 'Not Found')
+            self.request.errors.status = 404
+            return
         return {'documents': tender['_attachments']}
 
     def collection_post(self):
         """Tender Document Upload"""
-        try:
-            tender = TenderDocument.load(self.db, self.request.matchdict['tender_id'])
-        except Exception, e:
-            return wrap_error(e)
+        tender = TenderDocument.load(self.db, self.request.matchdict['tender_id'])
+        if not tender:
+            self.request.errors.add('url', 'tender_id', 'Not Found')
+            self.request.errors.status = 404
+            return
         try:
             for data in self.request.POST.values():
                 self.db.put_attachment(tender._data, data.file, data.filename)
         except Exception, e:
-            return wrap_error(e)
+            return self.request.errors.add('body', 'data', str(e))
         tender = tender.reload(self.db)
         self.request.response.status = 201
         return {'documents': tender['_attachments']}
@@ -253,19 +258,28 @@ class TenderDocumentResource(object):
     def get(self):
         """Tender Document Read"""
         data = self.db.get_attachment(self.request.matchdict['tender_id'], self.request.matchdict['id'])
+        if not data:
+            self.request.errors.add('url', 'id', 'Not Found')
+            self.request.errors.status = 404
+            return
         self.request.response.body_file = data
         return self.request.response
 
     def put(self):
         """Tender Document Update"""
-        try:
-            tender = TenderDocument.load(self.db, self.request.matchdict['tender_id'])
-        except Exception, e:
-            return wrap_error(e)
-        try:
-            for data in self.request.POST.values():
+        tender = TenderDocument.load(self.db, self.request.matchdict['tender_id'])
+        if not tender:
+            self.request.errors.add('url', 'tender_id', 'Not Found')
+            self.request.errors.status = 404
+            return
+        for data in self.request.POST.values():
+            if data.filename not in tender['_attachments']:
+                self.request.errors.add('url', 'id', 'Not Found')
+                self.request.errors.status = 404
+                return
+            try:
                 self.db.put_attachment(tender, data.file, data.filename)
-        except Exception, e:
-            return wrap_error(e)
+            except Exception, e:
+                return self.request.errors.add('body', 'data', str(e))
         tender = tender.reload(self.db)
         return tender['_attachments'].get(self.request.matchdict['id'], {})

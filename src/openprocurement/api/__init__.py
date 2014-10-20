@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 """Main entry point
 """
 import os
@@ -5,14 +6,14 @@ import pkg_resources
 from pyramid.config import Configurator
 from couchdb import Server
 from openprocurement.api.design import tenders_all_view
+from openprocurement.api.migration import migrate_data
+
 
 VERSION = pkg_resources.get_distribution(__package__).version
 
 
 def main(global_config, **settings):
     config = Configurator(settings=settings)
-#    config.route_prefix = '/api/0.1'
-#    config.include("cornice", route_prefix='/api/0.1')
     config.include("cornice")
     config.route_prefix = '/api/{}'.format(VERSION)
     config.scan("openprocurement.api.views")
@@ -28,4 +29,6 @@ def main(global_config, **settings):
     # sync couchdb views
     tenders_all_view.sync(config.registry.db)
 
+    # migrate data
+    migrate_data(config.registry.db)
     return config.make_wsgi_app()

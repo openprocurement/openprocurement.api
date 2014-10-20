@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 from couchdb.design import ViewDefinition
 
 tenders_all_view = ViewDefinition('tenders', 'all', '''function(doc) {

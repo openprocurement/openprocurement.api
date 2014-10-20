@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 import datetime
 import random
 from couchdb_schematics.document import SchematicsDocument
@@ -106,7 +107,7 @@ class TenderDocument(SchematicsDocument, Tender):
         }
 
     _attachments = DictType(DictType(StringType), default=dict())
-    modifiedAt = DateTimeType(default=datetime.datetime.now)
+    modified = DateTimeType(default=datetime.datetime.now)
 
     @serializable(serialized_name="id")
     def doc_id(self):
