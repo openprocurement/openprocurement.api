@@ -5,7 +5,7 @@
   :target: https://coveralls.io/r/openprocurement/openprocurement.api
 
 .. image:: https://readthedocs.org/projects/openprocurementapi/badge/?version=latest
-    :target: https://api-docs.openprocurement.org/
+    :target: http://api-docs.openprocurement.org/
 
 Documentation
 =============
