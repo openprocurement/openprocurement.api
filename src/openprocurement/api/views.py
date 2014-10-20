@@ -196,7 +196,7 @@ class TenderResource(object):
         And here is the response to be expected:
 
         .. sourcecode:: http
-        
+
          HTTP/1.0 200 OK
 
          {
@@ -246,11 +246,11 @@ class TenderDocumentResource(object):
             self.request.errors.add('url', 'tender_id', 'Not Found')
             self.request.errors.status = 404
             return
-        try:
-            for data in self.request.POST.values():
+        for data in self.request.POST.values():
+            try:
                 self.db.put_attachment(tender._data, data.file, data.filename)
-        except Exception, e:
-            return self.request.errors.add('body', 'data', str(e))
+            except Exception, e:
+                return self.request.errors.add('body', 'data', str(e))
         tender = tender.reload(self.db)
         self.request.response.status = 201
         return {'documents': tender['_attachments']}

@@ -248,11 +248,16 @@ class TenderResourceTest(BaseWebTest):
         response = self.app.post_json('/tenders', {'data': {}})
         self.assertEqual(response.status, '201 Created')
         tender = response.json['data']
+        tender['method'] = 'Open'
+        modified = tender.pop('modified')
 
-        response = self.app.put_json('/tenders/{}'.format(tender['id']), {'data': {'method': 'Open'}})
+        response = self.app.put_json('/tenders/{}'.format(tender['id']), {'data': tender})
         self.assertEqual(response.status, '200 OK')
         self.assertEqual(response.content_type, 'application/json')
-        self.assertNotEqual(response.json['data'], tender)
+        new_tender = response.json['data']
+        new_modified = new_tender.pop('modified')
+        self.assertEqual(tender, new_tender)
+        self.assertNotEqual(modified, new_modified)
 
     def test_patch_tender(self):
         response = self.app.get('/tenders')
