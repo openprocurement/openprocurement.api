@@ -267,11 +267,16 @@ class TenderResourceTest(BaseWebTest):
         response = self.app.post_json('/tenders', {'data': {}})
         self.assertEqual(response.status, '201 Created')
         tender = response.json['data']
+        modified = tender.pop('modified')
 
         response = self.app.patch_json('/tenders/{}'.format(tender['id']), {'data': {'method': 'Open'}})
         self.assertEqual(response.status, '200 OK')
         self.assertEqual(response.content_type, 'application/json')
-        self.assertNotEqual(response.json['data'], tender)
+        new_tender = response.json['data']
+        new_modified = new_tender.pop('modified')
+        tender['method'] = 'Open'
+        self.assertEqual(tender, new_tender)
+        self.assertNotEqual(modified, new_modified)
 
     def test_modified_tender(self):
         response = self.app.get('/tenders')
@@ -292,11 +297,13 @@ class TenderResourceTest(BaseWebTest):
         self.assertEqual(response.status, '200 OK')
         self.assertEqual(response.content_type, 'application/json')
         self.assertNotEqual(response.json['data']['modified'], modified)
-        modified = response.json['data']['modified']
+        tender = response.json['data']
+        modified = tender['modified']
 
         response = self.app.get('/tenders/{}'.format(tender['id']))
         self.assertEqual(response.status, '200 OK')
         self.assertEqual(response.content_type, 'application/json')
+        self.assertEqual(response.json['data'], tender)
         self.assertEqual(response.json['data']['modified'], modified)
 
     def test_tender_not_found(self):

@@ -40,6 +40,14 @@ def generate_tender_id(tid):
     return "UA-2014-DUS-" + tid
 
 
+def filter_data(data, fields=['id', 'doc_id', 'modified']):
+    result = data.copy()
+    for i in fields:
+        if i in result:
+            del result[i]
+    return result
+
+
 @spore.get()
 def get_spore(request):
     services = get_services()
@@ -133,7 +141,7 @@ class TenderResource(object):
          }
 
         """
-        tender_data = self.request.json_body['data']
+        tender_data = filter_data(self.request.json_body['data'])
         tender_id = uuid4().hex
         tender_data['doc_id'] = tender_id
         tender_data['tenderID'] = generate_tender_id(tender_id)
@@ -163,8 +171,9 @@ class TenderResource(object):
             self.request.errors.add('url', 'id', 'Not Found')
             self.request.errors.status = 404
             return
+        tender_data = filter_data(self.request.json_body['data'])
         try:
-            tender.import_data(self.request.json_body['data'])
+            tender.import_data(tender_data)
             tender.store(self.db)
         except Exception, e:
             return self.request.errors.add('body', 'data', str(e))
@@ -213,8 +222,11 @@ class TenderResource(object):
             self.request.errors.add('url', 'id', 'Not Found')
             self.request.errors.status = 404
             return
+        tender_data = filter_data(self.request.json_body['data'])
+        if 'tenderID' not in tender_data:
+            tender_data['tenderID'] = tender.tenderID
         try:
-            tender.import_data(self.request.json_body['data'])
+            tender.import_data(tender_data)
             tender.store(self.db)
         except Exception, e:
             return self.request.errors.add('body', 'data', str(e))
