@@ -11,8 +11,6 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-
-
 #: ../../source/index.rst:12
 msgid "Welcome to openprocurement.api's documentation!"
 msgstr "Вітання на сайті документації по openprocurement.api!"
@@ -21,7 +19,7 @@ msgstr "Вітання на сайті документації по openprocure
 msgid "Contents:"
 msgstr "Зміст:"
 
-#: ../../source/index.rst:23
+#: ../../source/index.rst:24
 msgid ""
 "Please report any problems or suggestions for improvement either via the "
 "`mailing list <http://groups.google.com/group/open-procurement-general>`_ or"
@@ -29,22 +27,22 @@ msgid ""
 "<https://github.com/openprocurement/openprocurement.api/issues>`_."
 msgstr ""
 "Будь ласка повідомляйте про всі проблеми та поради покращень чи через "
-"`розсилку <http://groups.google.com/group/open-procurement-general>`_ чи"
-" через `issue tracker "
+"`розсилку <http://groups.google.com/group/open-procurement-general>`_ чи "
+"через `issue tracker "
 "<https://github.com/openprocurement/openprocurement.api/issues>`_."
 
-#: ../../source/index.rst:29
+#: ../../source/index.rst:30
 msgid "Indices and tables"
 msgstr "Індекси та таблиці"
 
-#: ../../source/index.rst:31
+#: ../../source/index.rst:32
 msgid ":ref:`genindex`"
 msgstr ""
 
-#: ../../source/index.rst:32
+#: ../../source/index.rst:33
 msgid ":ref:`modindex`"
 msgstr ""
 
-#: ../../source/index.rst:33
+#: ../../source/index.rst:34
 msgid ":ref:`search`"
 msgstr ""

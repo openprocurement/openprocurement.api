@@ -1,0 +1,163 @@
+# 
+msgid ""
+msgstr ""
+"Project-Id-Version: openprocurement.api 0.1\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2014-10-22 03:26+0300\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: ../../source/errors.rst:4
+msgid "Responses"
+msgstr ""
+
+#: ../../source/errors.rst:6
+msgid ""
+"After processing API is always providing response, reporting either success "
+"or failure."
+msgstr ""
+
+#: ../../source/errors.rst:10
+msgid "Codes"
+msgstr ""
+
+#: ../../source/errors.rst:11
+msgid ""
+"In all cases, the API should return an `HTTP Status Code "
+"<http://en.wikipedia.org/wiki/List_of_HTTP_status_codes>`_ that indicates "
+"the nature of the failure (below), with a response body in JSON format "
+"containing additional information."
+msgstr ""
+
+#: ../../source/errors.rst:18
+msgid "200"
+msgstr ""
+
+#: ../../source/errors.rst:17
+msgid ""
+"Success. If data was requested, it will be available in the `data` field at "
+"the top level of the response body."
+msgstr ""
+
+#: ../../source/errors.rst:24
+msgid "201"
+msgstr ""
+
+#: ../../source/errors.rst:21
+msgid ""
+"Success (for object creation). Its information is available in the `data` "
+"field at the top level of the response body.  The API URL where the object "
+"can be retrieved is also returned in the `Location` header of the response."
+msgstr ""
+
+#: ../../source/errors.rst:29
+msgid "400"
+msgstr ""
+
+#: ../../source/errors.rst:27
+msgid ""
+"Invalid request. This usually occurs because of a missing or malformed "
+"parameter.  Check the documentation and the syntax of your request and try "
+"again."
+msgstr ""
+
+#: ../../source/errors.rst:33
+msgid "401"
+msgstr ""
+
+#: ../../source/errors.rst:32
+msgid ""
+"No authorization. A valid API key was not provided with the request, so the "
+"API could not associate a user with the request."
+msgstr ""
+
+#: ../../source/errors.rst:38
+msgid "403"
+msgstr ""
+
+#: ../../source/errors.rst:36
+msgid ""
+"Forbidden. The API key and request syntax was valid but the server is "
+"refusing to complete the request.  This can happen if you try to read or "
+"write to objects or properties that the party does not have access to."
+msgstr ""
+
+#: ../../source/errors.rst:43
+msgid "404"
+msgstr ""
+
+#: ../../source/errors.rst:41
+msgid ""
+"Not found. Either the request method and path supplied do not specify a "
+"known action in the API, or the object specified by the request does not "
+"exist."
+msgstr ""
+
+#: ../../source/errors.rst:46
+msgid "429"
+msgstr ""
+
+#: ../../source/errors.rst:46
+msgid "Rate Limit Enforced."
+msgstr ""
+
+#: ../../source/errors.rst:49
+msgid "500"
+msgstr ""
+
+#: ../../source/errors.rst:49
+msgid "Server error. There was a problem on OpenProcurement's end."
+msgstr ""
+
+#: ../../source/errors.rst:52
+msgid "Contents"
+msgstr ""
+
+#: ../../source/errors.rst:53
+msgid ""
+"In the event of an error, the response body will contain an `errors` field "
+"at the top level.  This contains an array of at least one error object, "
+"described below:"
+msgstr ""
+
+#: ../../source/errors.rst:59
+msgid "message"
+msgstr ""
+
+#: ../../source/errors.rst:58
+msgid ""
+"*totalValue.amount: Missing input* - Message providing more detail about the"
+" error that occurred, if available."
+msgstr ""
+
+#: ../../source/errors.rst:63
+msgid "messageUID"
+msgstr ""
+
+#: ../../source/errors.rst:62
+msgid ""
+"Unique message id. Will stay the same even if content of the message can "
+"change, depending on other parameters."
+msgstr ""
+
+#: ../../source/errors.rst:67
+msgid "*id*"
+msgstr ""
+
+#: ../../source/errors.rst:66
+msgid ""
+"Unique correlation identifier of the error response for audit and issue "
+"reporting purposes."
+msgstr ""
+
+#: ../../source/errors.rst:70
+msgid "Example Response"
+msgstr ""
+
+#: ../../source/errors.rst:71
+msgid "Sample below indicate incomplete request."
+msgstr ""

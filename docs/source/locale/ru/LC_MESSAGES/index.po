@@ -19,7 +19,7 @@ msgstr ""
 msgid "Contents:"
 msgstr ""
 
-#: ../../source/index.rst:23
+#: ../../source/index.rst:24
 msgid ""
 "Please report any problems or suggestions for improvement either via the "
 "`mailing list <http://groups.google.com/group/open-procurement-general>`_ or"
@@ -27,18 +27,18 @@ msgid ""
 "<https://github.com/openprocurement/openprocurement.api/issues>`_."
 msgstr ""
 
-#: ../../source/index.rst:29
+#: ../../source/index.rst:30
 msgid "Indices and tables"
 msgstr ""
 
-#: ../../source/index.rst:31
+#: ../../source/index.rst:32
 msgid ":ref:`genindex`"
 msgstr ""
 
-#: ../../source/index.rst:32
+#: ../../source/index.rst:33
 msgid ":ref:`modindex`"
 msgstr ""
 
-#: ../../source/index.rst:33
+#: ../../source/index.rst:34
 msgid ":ref:`search`"
 msgstr ""

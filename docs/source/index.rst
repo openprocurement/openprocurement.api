@@ -17,6 +17,7 @@ Contents:
    :maxdepth: 2
 
    overview
+   errors
    tutorial
    reference
 
