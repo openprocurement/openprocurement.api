@@ -86,16 +86,16 @@ msgid ""
 msgstr ""
 
 #: ../../source/overview.rst:67
-msgid "Звіт про зміни"
-msgstr ""
+msgid "Change log"
+msgstr "Звіт про зміни"
 
 #: ../../source/overview.rst:69
 msgid "0.1"
 msgstr ""
 
 #: ../../source/overview.rst:71
-msgid "Випущено: Ще ні."
-msgstr ""
+msgid "Released: Not yet."
+msgstr "Випущено: Ще ні"
 
 #: ../../source/overview.rst:73
 msgid "Set up general build, testing, deployment, and ci framework."
@@ -139,3 +139,4 @@ msgid ""
 "containing a list of problems.  We look at the first one and print out its "
 "message."
 msgstr ""
+
