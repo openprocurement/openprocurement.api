@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 import datetime
 import random
+from uuid import uuid4
 from couchdb_schematics.document import SchematicsDocument
 from schematics.models import Model
 from schematics.transforms import blacklist
@@ -55,6 +56,9 @@ class Attachment(Model):
 
 
 class identifier(Model):
+    class Options:
+        serialize_when_none = False
+
     name = StringType(required=True)
     scheme = URLType()  # The scheme that holds the unique identifiers used to identify the item being identified.
     uid = StringType()  # The unique ID for this entity under the given ID scheme.
@@ -62,6 +66,9 @@ class identifier(Model):
 
 
 class address(Model):
+    class Options:
+        serialize_when_none = False
+
     postOfficeBox = StringType(serialized_name="post-office-box", deserialize_from="post-office-box")
     extendedAddress = StringType(serialized_name="extended-address", deserialize_from="extended-address")
     streetAddress = StringType(serialized_name="street-address", deserialize_from="street-address")
@@ -73,7 +80,15 @@ class address(Model):
 
 class Organization(Model):
     """An organization."""
-    id = ModelType(identifier)
+    class Options:
+        serialize_when_none = False
+        roles = {
+            "embedded": (blacklist("_id") + SchematicsDocument.Options.roles['embedded']),
+            "view": SchematicsDocument.Options.roles['default'],
+        }
+
+    _id = StringType(required=True, default=lambda: uuid4().hex)
+    id = ModelType(identifier, required=True)
     address = ModelType(address)
 
 
@@ -95,9 +110,13 @@ class Tender(Model):
     awardPeriod = ModelType(Period)  # The date or period on which an award is anticipated to be made.
     numberOfBidders = IntType()  # The number of unique bidders who participated in the tender
     numberOfBids = IntType()  # The number of bids or submissions to the tender. In the case of an auction, the number of bids may differ from the numberOfBidders.
-    bidders = ListType(ModelType(Organization))  # A list of all the companies who entered submissions for the tender.
+    bidders = ListType(ModelType(Organization), default=list())  # A list of all the companies who entered submissions for the tender.
     procuringEntity = ModelType(Organization)  # The entity managing the procurement, which may be different from the buyer who is paying / using the items being procured.
     attachments = ListType(ModelType(Attachment))  # All documents and attachments related to the tender.
+
+
+class OrganizationDocument(SchematicsDocument, Organization):
+    pass
 
 
 class TenderDocument(SchematicsDocument, Tender):
