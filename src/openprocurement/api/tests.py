@@ -134,7 +134,7 @@ class MigrateTest(BaseWebTest):
                 'modifiedAt': '2014-10-15T00:00:00.000000'}
         _id, _rev = self.db.save(data)
         item = self.db.get(_id)
-        migrate_data(self.db)
+        migrate_data(self.db, 1)
         migrated_item = self.db.get(_id)
         self.assertFalse('modified' in item)
         self.assertTrue('modifiedAt' in item)
@@ -173,6 +173,28 @@ class MigrateTest(BaseWebTest):
         self.assertTrue('countryName' in migrated_item["procuringEntity"]["address"])
         self.assertFalse('country-name' in migrated_item["bidders"][0]["address"])
         self.assertTrue('countryName' in migrated_item["bidders"][0]["address"])
+
+    def test_migrate_from2to3(self):
+        set_db_schema_version(self.db, 2)
+        data = {
+            'doc_type': 'TenderDocument',
+            'bidders': [{
+                "_id": "UUID",
+                "id": {
+                    "name": "Державне управління справами"
+                },
+            }]
+        }
+        _id, _rev = self.db.save(data)
+        item = self.db.get(_id)
+        migrate_data(self.db, 3)
+        migrated_item = self.db.get(_id)
+        self.assertTrue('bidders' in item)
+        self.assertFalse('bids' in item)
+        self.assertFalse('bidders' in migrated_item)
+        self.assertTrue('bids' in migrated_item)
+        self.assertEqual(item["bidders"][0]["_id"], migrated_item["bids"][0]["id"])
+        self.assertEqual(item["bidders"][0]["id"]["name"], migrated_item["bids"][0]["bidders"][0]["id"]["name"])
 
 
 class TenderResourceTest(BaseWebTest):
@@ -557,48 +579,45 @@ class TenderBidderResourceTest(BaseTenderWebTest):
                 u'body', u'name': u'invalid_field'}
         ])
 
-        response = self.app.post_json(request_path, {'data': {}}, status=422)
+        #response = self.app.post_json(request_path, {'data': {}}, status=422)
+        #self.assertEqual(response.status, '422 Unprocessable Entity')
+        #self.assertEqual(response.content_type, 'application/json')
+        #self.assertEqual(response.json['status'], 'error')
+        #self.assertEqual(response.json['errors'], [
+            #{u'description': [
+                #u'This field is required.'], u'location': u'body', u'name': u'id'}
+        #])
+
+        response = self.app.post_json(request_path, {
+                                      'data': {'bidders': [{'id': 'invalid_value'}]}}, status=422)
         self.assertEqual(response.status, '422 Unprocessable Entity')
         self.assertEqual(response.content_type, 'application/json')
         self.assertEqual(response.json['status'], 'error')
         self.assertEqual(response.json['errors'], [
-            {u'description': [
-                u'This field is required.'], u'location': u'body', u'name': u'id'}
+            {u'description': {u'id': [u'Please use a mapping for this field or identifier instance instead of unicode.']}, u'location': u'body', u'name': u'bidders'}
         ])
 
         response = self.app.post_json(request_path, {
-                                      'data': {'id': 'invalid_value'}}, status=422)
+                                      'data': {'bidders': [{'id': {}}]}}, status=422)
         self.assertEqual(response.status, '422 Unprocessable Entity')
         self.assertEqual(response.content_type, 'application/json')
         self.assertEqual(response.json['status'], 'error')
         self.assertEqual(response.json['errors'], [
-            {u'description': [
-                u'Please use a mapping for this field or identifier instance instead of unicode.'], u'location': u'body', u'name': u'id'}
+            {u'description': [{u'id': {u'name': [u'This field is required.']}}], u'location': u'body', u'name': u'bidders'}
         ])
 
-        response = self.app.post_json(request_path, {
-                                      'data': {'id': {}}}, status=422)
+        response = self.app.post_json(request_path, {'data': {'bidders': [{
+                                      'id': {'name': 'name', 'uri': 'invalid_value'}}]}}, status=422)
         self.assertEqual(response.status, '422 Unprocessable Entity')
         self.assertEqual(response.content_type, 'application/json')
         self.assertEqual(response.json['status'], 'error')
         self.assertEqual(response.json['errors'], [
-            {u'description': {u'name': [
-                u'This field is required.']}, u'location': u'body', u'name': u'id'}
-        ])
-
-        response = self.app.post_json(request_path, {'data': {
-                                      'id': {'name': 'name', 'uri': 'invalid_value'}}}, status=422)
-        self.assertEqual(response.status, '422 Unprocessable Entity')
-        self.assertEqual(response.content_type, 'application/json')
-        self.assertEqual(response.json['status'], 'error')
-        self.assertEqual(response.json['errors'], [
-            {u'description': {u'uri': [
-                u'Not a well formed URL.']}, u'location': u'body', u'name': u'id'}
+            {u'description': [{u'id': {u'uri': [u'Not a well formed URL.']}}], u'location': u'body', u'name': u'bidders'}
         ])
 
     def test_post_tender_not_found(self):
         response = self.app.post_json('/tenders/some_id/bidders', {
-                                      'data': {'id': {'name': 'Name'}}}, status=404)
+                                      'data': {'bidders': [{'id': {'name': 'Name'}}]}}, status=404)
         self.assertEqual(response.status, '404 Not Found')
         self.assertEqual(response.content_type, 'application/json')
         self.assertEqual(response.json['status'], 'error')
@@ -609,12 +628,12 @@ class TenderBidderResourceTest(BaseTenderWebTest):
 
     def test_create_tender_bidder(self):
         response = self.app.post_json('/tenders/{}/bidders'.format(
-            self.tender_id), {'data': {'id': {'name': 'Name'}}})
+            self.tender_id), {'data': {'bidders': [{'id': {'name': 'Name'}}]}})
         self.assertEqual(response.status, '201 Created')
         self.assertEqual(response.content_type, 'application/json')
         bidder = response.json['data']
-        self.assertEqual(bidder['id']['name'], 'Name')
-        self.assertTrue('_id' in bidder)
+        self.assertEqual(bidder['bidders'][0]['id']['name'], 'Name')
+        self.assertTrue('id' in bidder)
         # self.assertTrue(bidder['id'] in response.headers['Location'])
 
 

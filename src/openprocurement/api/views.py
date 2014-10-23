@@ -6,7 +6,7 @@ from cornice.service import Service, get_services
 from cornice.resource import resource, view
 from schematics.exceptions import ModelValidationError, ModelConversionError
 from uuid import uuid4
-from openprocurement.api.models import TenderDocument, Organization
+from openprocurement.api.models import TenderDocument, Bid
 
 
 spore = Service('spore', path='/spore', renderer='json')
@@ -36,7 +36,7 @@ def validate_data(request):
         request.errors.status = 422
 
 
-def validate_bidder_data(request):
+def validate_bid_data(request):
     try:
         json = request.json_body
     except ValueError, e:
@@ -49,7 +49,7 @@ def validate_bidder_data(request):
         return
     data = json['data']
     try:
-        Organization(data).validate()
+        Bid(data).validate()
     except (ModelValidationError, ModelConversionError), e:
         for i in e.message:
             request.errors.add('body', i, e.message[i])
@@ -84,6 +84,7 @@ class TenderResource(object):
         self.db = request.registry.db
 
     def collection_get(self):
+        """Tenders List"""
         # limit, skip, descending
         results = TenderDocument.view(self.db, 'tenders/all')
         return {'tenders': [i.serialize("view") for i in results]}
@@ -324,7 +325,7 @@ class TenderDocumentResource(object):
         return tender['_attachments'].get(self.request.matchdict['id'], {})
 
 
-@resource(name='Tender Bidders',
+@resource(name='Tender Bids',
           collection_path='/tenders/{tender_id}/bidders',
           path='/tenders/{tender_id}/bidders/{id}',
           description="Tender bidders")
@@ -334,7 +335,7 @@ class TenderBidderResource(object):
         self.db = request.registry.db
         self.tender_id = request.matchdict['tender_id']
 
-    @view(content_type="application/json", validators=(validate_bidder_data,))
+    @view(content_type="application/json", validators=(validate_bid_data,))
     def collection_post(self):
         """Registration of new bidder
 
@@ -382,7 +383,7 @@ class TenderBidderResource(object):
 
             {
                 "data": {
-                    "_id":"4879d3f8ee2443169b5fbbc9f89fa607",
+                    "id":"4879d3f8ee2443169b5fbbc9f89fa607",
                     "status":"registration",
                     "date":"2014-10-28T11:44:17.947Z"
                     ...
@@ -397,13 +398,13 @@ class TenderBidderResource(object):
             self.request.errors.add('url', 'tender_id', 'Not Found')
             self.request.errors.status = 404
             return
-        bidder_data = filter_data(self.request.json_body['data'], fields=['_id'])
-        bidder = Organization(bidder_data)
-        tender.bidders.append(bidder)
+        bid_data = filter_data(self.request.json_body['data'], fields=['id', 'data'])
+        bid = Bid(bid_data)
+        tender.bids.append(bid)
         try:
             tender.store(self.db)
         except Exception, e:
             return self.request.errors.add('body', 'data', str(e))
         self.request.response.status = 201
-        #self.request.response.headers['Location'] = self.request.route_url('Tender Bidders', tender_id=self.tender_id, id=bidder['_id'])
-        return wrap_data(bidder.serialize("view", bidder))
+        #self.request.response.headers['Location'] = self.request.route_url('Tender Bids', tender_id=self.tender_id, id=bid['id'])
+        return wrap_data(bid.serialize("view"))

@@ -3,7 +3,7 @@ import logging
 
 
 LOGGER = logging.getLogger(__name__)
-SCHEMA_VERSION = 2
+SCHEMA_VERSION = 3
 SCHEMA_DOC = 'openprocurement_schema'
 
 
@@ -62,4 +62,18 @@ def from1to2(db):
                             address['streetAddress'] = address.pop('street-address')
                         if 'postal-code' in address:
                             address['postalCode'] = address.pop('postal-code')
+            db.save(doc)
+
+
+def from2to3(db):
+    results = db.view('tenders/all', include_docs=True)
+    for i in results:
+        doc = i.doc
+        if 'bidders' in doc:
+            bids = []
+            for bidder in doc['bidders']:
+                uuid = bidder.pop('_id')
+                bids.append({'id': uuid, 'bidders': [bidder]})
+            del doc['bidders']
+            doc['bids'] = bids
             db.save(doc)

@@ -85,9 +85,23 @@ class Organization(Model):
             "view": SchematicsDocument.Options.roles['default'],
         }
 
-    _id = StringType(required=True, default=lambda: uuid4().hex)
     id = ModelType(identifier, required=True)
     address = ModelType(address)
+
+
+class Bid(Model):
+    class Options:
+        serialize_when_none = False
+        roles = {
+            "embedded": (blacklist("_id") + SchematicsDocument.Options.roles['embedded']),
+            "view": SchematicsDocument.Options.roles['default'],
+        }
+
+    bidders = ListType(ModelType(Organization), default=list())
+    date = DateTimeType(default=datetime.datetime.now)
+    id = StringType(required=True, default=lambda: uuid4().hex)
+    status = StringType(choices=['registration', 'validBid', 'invalidBid'])
+    totalValue = ModelType(Value)
 
 
 class Tender(Model):
@@ -98,7 +112,7 @@ class Tender(Model):
     totalValue = ModelType(Value)  # The total estimated value of the procurement.
     method = StringType(choices=['Open', 'Selective', 'Limited'])  # Specify tendering method as per GPA definitions of Open, Selective, Limited (http://www.wto.org/english/docs_e/legal_e/rev-gpr-94_01_e.htm)
     methodJustification = StringType()  # Justification of procurement method, especially in the case of Limited tendering.
-    selectionCriteria = StringType(choices=['Lowest Cost', 'Best Proposal', 'Best Value to Government Single bid only'])  # Specify the selection criteria, by lowest cost,
+    selectionCriteria = StringType(choices=['Lowest Cost', 'Best Proposal', 'Best Value to Government', 'Single bid only'])  # Specify the selection criteria, by lowest cost,
     selectionDetails = StringType()  # Any detailed or further information on the selection criteria.
     submissionMethod = StringType(choices=['Electronic Auction', 'Electronic Submission', 'Written', 'In Person'])  # Specify the method by which bids must be submitted, in person, written, or electronic auction
     submissionDetails = StringType()  # Any detailed or further information on the submission method.
@@ -108,7 +122,7 @@ class Tender(Model):
     awardPeriod = ModelType(Period)  # The date or period on which an award is anticipated to be made.
     numberOfBidders = IntType()  # The number of unique bidders who participated in the tender
     numberOfBids = IntType()  # The number of bids or submissions to the tender. In the case of an auction, the number of bids may differ from the numberOfBidders.
-    bidders = ListType(ModelType(Organization), default=list())  # A list of all the companies who entered submissions for the tender.
+    bids = ListType(ModelType(Bid), default=list())  # A list of all the companies who entered submissions for the tender.
     procuringEntity = ModelType(Organization)  # The entity managing the procurement, which may be different from the buyer who is paying / using the items being procured.
     attachments = ListType(ModelType(Attachment))  # All documents and attachments related to the tender.
 
