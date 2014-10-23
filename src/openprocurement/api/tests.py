@@ -603,7 +603,7 @@ class TenderBidderResourceTest(BaseTenderWebTest):
         self.assertEqual(response.content_type, 'application/json')
         self.assertEqual(response.json['status'], 'error')
         self.assertEqual(response.json['errors'], [
-            {u'description': [{u'id': {u'name': [u'This field is required.']}}], u'location': u'body', u'name': u'bidders'}
+            {u'description': [u'id'], u'location': u'body', u'name': u'bidders'}
         ])
 
         response = self.app.post_json(request_path, {'data': {'bidders': [{
@@ -612,7 +612,7 @@ class TenderBidderResourceTest(BaseTenderWebTest):
         self.assertEqual(response.content_type, 'application/json')
         self.assertEqual(response.json['status'], 'error')
         self.assertEqual(response.json['errors'], [
-            {u'description': [{u'id': {u'uri': [u'Not a well formed URL.']}}], u'location': u'body', u'name': u'bidders'}
+            {u'description': [u'id'], u'location': u'body', u'name': u'bidders'}
         ])
 
     def test_post_tender_not_found(self):
