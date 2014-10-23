@@ -6,7 +6,7 @@ from cornice.service import Service, get_services
 from cornice.resource import resource, view
 from schematics.exceptions import ModelValidationError, ModelConversionError
 from uuid import uuid4
-from openprocurement.api.models import TenderDocument, Bid
+from openprocurement.api.models import TenderDocument, Bid, Award
 
 
 spore = Service('spore', path='/spore', renderer='json')
@@ -50,6 +50,26 @@ def validate_bid_data(request):
     data = json['data']
     try:
         Bid(data).validate()
+    except (ModelValidationError, ModelConversionError), e:
+        for i in e.message:
+            request.errors.add('body', i, e.message[i])
+        request.errors.status = 422
+
+
+def validate_award_data(request):
+    try:
+        json = request.json_body
+    except ValueError, e:
+        request.errors.add('body', 'data', e.message)
+        request.errors.status = 422
+        return
+    if not isinstance(json, dict) or 'data' not in json:
+        request.errors.add('body', 'data', "Data not available")
+        request.errors.status = 422
+        return
+    data = json['data']
+    try:
+        Award(data).validate()
     except (ModelValidationError, ModelConversionError), e:
         for i in e.message:
             request.errors.add('body', i, e.message[i])
@@ -522,3 +542,110 @@ class TenderBidderDocumentResource(object):
         self.request.response.status = 201
         # self.request.response.headers['Location'] = self.request.route_url('Tender Bid Documents', tender_id=self.tender_id, bid_id=self.bid_id, id=data.filename)
         return {'documents': tender['_attachments']}
+
+
+@resource(name='Tender Awards',
+          collection_path='/tenders/{tender_id}/awards',
+          path='/tenders/{tender_id}/awards/{id}',
+          description="Tender awards")
+class TenderAwardResource(object):
+
+    def __init__(self, request):
+        self.request = request
+        self.db = request.registry.db
+        self.tender_id = request.matchdict['tender_id']
+
+    @view(content_type="application/json", validators=(validate_award_data,))
+    def collection_post(self):
+        """Accept or reject bidder application
+
+        Creating new Award
+        ------------------
+
+        Example request to create award:
+
+        .. sourcecode:: http
+
+            POST /tenders/4879d3f8ee2443169b5fbbc9f89fa607/bidders HTTP/1.1
+            Host: example.com
+            Accept: application/json
+
+            {
+                "data": {
+                    "awardStatus": "active",
+                    "suppliers": [
+                        {
+                            "id": {
+                                "name": "Державне управління справами",
+                                "scheme": "https://ns.openprocurement.org/ua/edrpou",
+                                "uid": "00037256",
+                                "uri": "http://www.dus.gov.ua/"
+                            },
+                            "address": {
+                                "countryName": "Україна",
+                                "postalCode": "01220",
+                                "region": "м. Київ",
+                                "locality": "м. Київ",
+                                "streetAddress": "вул. Банкова, 11, корпус 1"
+                            }
+                        }
+                    ],
+                    "awardValue": {
+                        "amount": 489,
+                        "currency": "UAH"
+                    }
+                }
+            }
+
+        This is what one should expect in response:
+
+        .. sourcecode:: http
+
+            HTTP/1.1 201 Created
+            Content-Type: application/json
+
+            {
+                "data": {
+                    "awardID": "4879d3f8ee2443169b5fbbc9f89fa607",
+                    "awardDate": "2014-10-28T11:44:17.947Z",
+                    "awardStatus": "active",
+                    "suppliers": [
+                        {
+                            "id": {
+                                "name": "Державне управління справами",
+                                "scheme": "https://ns.openprocurement.org/ua/edrpou",
+                                "uid": "00037256",
+                                "uri": "http://www.dus.gov.ua/"
+                            },
+                            "address": {
+                                "countryName": "Україна",
+                                "postalCode": "01220",
+                                "region": "м. Київ",
+                                "locality": "м. Київ",
+                                "streetAddress": "вул. Банкова, 11, корпус 1"
+                            }
+                        }
+                    ],
+                    "awardValue": {
+                        "amount": 489,
+                        "currency": "UAH"
+                    }
+                }
+            }
+
+        """
+        tender = TenderDocument.load(self.db, self.tender_id)
+        if not tender:
+            self.request.errors.add('url', 'tender_id', 'Not Found')
+            self.request.errors.status = 404
+            return
+        award_data = self.request.json_body['data']
+        award = Award(award_data)
+        tender.awards.append(award)
+        try:
+            tender.store(self.db)
+        except Exception, e:
+            return self.request.errors.add('body', 'data', str(e))
+        self.request.response.status = 201
+        # self.request.response.headers['Location'] = self.request.route_url('Tender Bids', tender_id=self.tender_id, id=award['awardID'])
+        return wrap_data(award.serialize("view"))

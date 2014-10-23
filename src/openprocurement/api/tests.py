@@ -227,7 +227,8 @@ class TenderResourceTest(BaseWebTest):
         self.assertEqual(len(response.json['tenders']), 3)
 
     def test_create_tender_invalid(self):
-        response = self.app.post('/tenders', 'data', status=415)
+        request_path = '/tenders'
+        response = self.app.post(request_path, 'data', status=415)
         self.assertEqual(response.status, '415 Unsupported Media Type')
         self.assertEqual(response.content_type, 'application/json')
         self.assertEqual(response.json['status'], 'error')
@@ -237,7 +238,7 @@ class TenderResourceTest(BaseWebTest):
         ])
 
         response = self.app.post(
-            '/tenders', 'data', content_type='application/json', status=422)
+            request_path, 'data', content_type='application/json', status=422)
         self.assertEqual(response.status, '422 Unprocessable Entity')
         self.assertEqual(response.content_type, 'application/json')
         self.assertEqual(response.json['status'], 'error')
@@ -246,7 +247,7 @@ class TenderResourceTest(BaseWebTest):
                 u'location': u'body', u'name': u'data'}
         ])
 
-        response = self.app.post_json('/tenders', 'data', status=422)
+        response = self.app.post_json(request_path, 'data', status=422)
         self.assertEqual(response.status, '422 Unprocessable Entity')
         self.assertEqual(response.content_type, 'application/json')
         self.assertEqual(response.json['status'], 'error')
@@ -255,7 +256,7 @@ class TenderResourceTest(BaseWebTest):
                 u'location': u'body', u'name': u'data'}
         ])
 
-        response = self.app.post_json('/tenders', {'not_data': {}}, status=422)
+        response = self.app.post_json(request_path, {'not_data': {}}, status=422)
         self.assertEqual(response.status, '422 Unprocessable Entity')
         self.assertEqual(response.content_type, 'application/json')
         self.assertEqual(response.json['status'], 'error')
@@ -264,7 +265,7 @@ class TenderResourceTest(BaseWebTest):
                 u'location': u'body', u'name': u'data'}
         ])
 
-        response = self.app.post_json('/tenders', {'data': {
+        response = self.app.post_json(request_path, {'data': {
                                       'invalid_field': 'invalid_value'}}, status=422)
         self.assertEqual(response.status, '422 Unprocessable Entity')
         self.assertEqual(response.content_type, 'application/json')
@@ -274,7 +275,7 @@ class TenderResourceTest(BaseWebTest):
                 u'body', u'name': u'invalid_field'}
         ])
 
-        response = self.app.post_json('/tenders', {'data': {
+        response = self.app.post_json(request_path, {'data': {
                                       'totalValue': 'invalid_value'}}, status=422)
         self.assertEqual(response.status, '422 Unprocessable Entity')
         self.assertEqual(response.content_type, 'application/json')
@@ -284,7 +285,7 @@ class TenderResourceTest(BaseWebTest):
                 u'Please use a mapping for this field or Value instance instead of unicode.'], u'location': u'body', u'name': u'totalValue'}
         ])
 
-        response = self.app.post_json('/tenders', {
+        response = self.app.post_json(request_path, {
                                       'data': {'method': 'invalid_value'}}, status=422)
         self.assertEqual(response.status, '422 Unprocessable Entity')
         self.assertEqual(response.content_type, 'application/json')
@@ -687,14 +688,129 @@ class TenderBidderDocumentResourceTest(BaseTenderWebTest):
         self.assertTrue('name.doc' in response.json["documents"])
 
 
+class TenderAwardResourceTest(BaseTenderWebTest):
+
+    def test_create_tender_award_invalid(self):
+        request_path = '/tenders/{}/awards'.format(self.tender_id)
+        response = self.app.post(request_path, 'data', status=415)
+        self.assertEqual(response.status, '415 Unsupported Media Type')
+        self.assertEqual(response.content_type, 'application/json')
+        self.assertEqual(response.json['status'], 'error')
+        self.assertEqual(response.json['errors'], [
+            {u'description':
+                u"Content-Type header should be one of ['application/json']", u'location': u'header', u'name': u'Content-Type'}
+        ])
+
+        response = self.app.post(
+            request_path, 'data', content_type='application/json', status=422)
+        self.assertEqual(response.status, '422 Unprocessable Entity')
+        self.assertEqual(response.content_type, 'application/json')
+        self.assertEqual(response.json['status'], 'error')
+        self.assertEqual(response.json['errors'], [
+            {u'description': u'No JSON object could be decoded',
+                u'location': u'body', u'name': u'data'}
+        ])
+
+        response = self.app.post_json(request_path, 'data', status=422)
+        self.assertEqual(response.status, '422 Unprocessable Entity')
+        self.assertEqual(response.content_type, 'application/json')
+        self.assertEqual(response.json['status'], 'error')
+        self.assertEqual(response.json['errors'], [
+            {u'description': u'Data not available',
+                u'location': u'body', u'name': u'data'}
+        ])
+
+        response = self.app.post_json(
+            request_path, {'not_data': {}}, status=422)
+        self.assertEqual(response.status, '422 Unprocessable Entity')
+        self.assertEqual(response.content_type, 'application/json')
+        self.assertEqual(response.json['status'], 'error')
+        self.assertEqual(response.json['errors'], [
+            {u'description': u'Data not available',
+                u'location': u'body', u'name': u'data'}
+        ])
+
+        response = self.app.post_json(request_path, {'data': {
+                                      'invalid_field': 'invalid_value'}}, status=422)
+        self.assertEqual(response.status, '422 Unprocessable Entity')
+        self.assertEqual(response.content_type, 'application/json')
+        self.assertEqual(response.json['status'], 'error')
+        self.assertEqual(response.json['errors'], [
+            {u'description': u'Rogue field', u'location':
+                u'body', u'name': u'invalid_field'}
+        ])
+
+        #response = self.app.post_json(request_path, {'data': {}}, status=422)
+        #self.assertEqual(response.status, '422 Unprocessable Entity')
+        #self.assertEqual(response.content_type, 'application/json')
+        #self.assertEqual(response.json['status'], 'error')
+        # self.assertEqual(response.json['errors'], [
+        #{u'description': [
+        # u'This field is required.'], u'location': u'body', u'name': u'id'}
+        #])
+
+        response = self.app.post_json(request_path, {
+                                      'data': {'suppliers': [{'id': 'invalid_value'}]}}, status=422)
+        self.assertEqual(response.status, '422 Unprocessable Entity')
+        self.assertEqual(response.content_type, 'application/json')
+        self.assertEqual(response.json['status'], 'error')
+        self.assertEqual(response.json['errors'], [
+            {u'description': {u'id': [
+                u'Please use a mapping for this field or identifier instance instead of unicode.']}, u'location': u'body', u'name': u'suppliers'}
+        ])
+
+        response = self.app.post_json(request_path, {
+                                      'data': {'suppliers': [{'id': {}}]}}, status=422)
+        self.assertEqual(response.status, '422 Unprocessable Entity')
+        self.assertEqual(response.content_type, 'application/json')
+        self.assertEqual(response.json['status'], 'error')
+        self.assertEqual(response.json['errors'], [
+            {u'description': [u'id'],
+                u'location': u'body', u'name': u'suppliers'}
+        ])
+
+        response = self.app.post_json(request_path, {'data': {'suppliers': [{
+                                      'id': {'name': 'name', 'uri': 'invalid_value'}}]}}, status=422)
+        self.assertEqual(response.status, '422 Unprocessable Entity')
+        self.assertEqual(response.content_type, 'application/json')
+        self.assertEqual(response.json['status'], 'error')
+        self.assertEqual(response.json['errors'], [
+            {u'description': [u'id'],
+                u'location': u'body', u'name': u'suppliers'}
+        ])
+
+    def test_post_tender_not_found(self):
+        response = self.app.post_json('/tenders/some_id/awards', {
+                                      'data': {'suppliers': [{'id': {'name': 'Name'}}]}}, status=404)
+        self.assertEqual(response.status, '404 Not Found')
+        self.assertEqual(response.content_type, 'application/json')
+        self.assertEqual(response.json['status'], 'error')
+        self.assertEqual(response.json['errors'], [
+            {u'description': u'Not Found', u'location':
+                u'url', u'name': u'tender_id'}
+        ])
+
+    def test_create_tender_award(self):
+        response = self.app.post_json('/tenders/{}/awards'.format(
+            self.tender_id), {'data': {'suppliers': [{'id': {'name': 'Name'}}]}})
+        self.assertEqual(response.status, '201 Created')
+        self.assertEqual(response.content_type, 'application/json')
+        award = response.json['data']
+        self.assertEqual(award['suppliers'][0]['id']['name'], 'Name')
+        self.assertTrue('awardID' in award)
+        # self.assertTrue(award['id'] in response.headers['Location'])
+
+
 def suite():
     suite = unittest.TestSuite()
     suite.addTest(unittest.makeSuite(MigrateTest))
     suite.addTest(unittest.makeSuite(SporeTest))
+    suite.addTest(unittest.makeSuite(TenderAwardResourceTest))
+    suite.addTest(unittest.makeSuite(TenderBidderDocumentResourceTest))
+    suite.addTest(unittest.makeSuite(TenderBidderResourceTest))
     suite.addTest(unittest.makeSuite(TenderDocumentResourceTest))
     suite.addTest(unittest.makeSuite(TenderDocumentTest))
     suite.addTest(unittest.makeSuite(TenderResourceTest))
-    suite.addTest(unittest.makeSuite(TenderBidderResourceTest))
     return suite
 
 

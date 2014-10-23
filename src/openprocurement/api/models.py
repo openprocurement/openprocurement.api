@@ -104,6 +104,27 @@ class Bid(Model):
     totalValue = ModelType(Value)
 
 
+class Award(Model):
+    """ An award for the given procurement. There may be more than one award
+        per contracting process e.g. because the contract is split amongst
+        different providers, or because it is a standing offer.
+    """
+    class Options:
+        serialize_when_none = False
+        roles = {
+            "embedded": SchematicsDocument.Options.roles['embedded'],
+            "view": SchematicsDocument.Options.roles['default'],
+        }
+
+    awardID = StringType(required=True, default=lambda: uuid4().hex)
+    notice = ModelType(Notice)
+    awardDate = DateTimeType(default=datetime.datetime.now)
+    awardValue = ModelType(Value)
+    awardStatus = StringType(choices=['pending', 'active', 'cancelled', 'unsuccessful'])
+    suppliers = ListType(ModelType(Organization), default=list())
+    itemsAwarded = ListType(ModelType(Item))
+
+
 class Tender(Model):
     """Data regarding tender process - publicly inviting prospective contractors to submit bids for evaluation and selecting a winner or winners."""
     tenderID = StringType(required=True, default=lambda: "UA-2014-DUS-{:03}".format(random.randint(0, 10 ** 3)))  # TenderID should always be the same as the OCID. It is included to make the flattened data structure more convenient.
@@ -125,6 +146,7 @@ class Tender(Model):
     bids = ListType(ModelType(Bid), default=list())  # A list of all the companies who entered submissions for the tender.
     procuringEntity = ModelType(Organization)  # The entity managing the procurement, which may be different from the buyer who is paying / using the items being procured.
     attachments = ListType(ModelType(Attachment))  # All documents and attachments related to the tender.
+    awards = ListType(ModelType(Award), default=list())
 
 
 class OrganizationDocument(SchematicsDocument, Organization):
