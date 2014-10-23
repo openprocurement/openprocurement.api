@@ -79,6 +79,7 @@ def get_spore(request):
           path='/tenders/{id}',
           description="Open Contracting compatible data exchange format. See http://ocds.open-contracting.org/standard/r/master/#tender for more info")
 class TenderResource(object):
+
     def __init__(self, request):
         self.request = request
         self.db = request.registry.db
@@ -101,47 +102,49 @@ class TenderResource(object):
         .. sourcecode:: http
 
             POST /tenders HTTP/1.1
+            Host: example.com
+            Accept: application/json
 
             {
-                "data":{
-                    "procuringEntity":{
-                        "id":{
-                            "name":"Державне управління справами",
-                            "scheme":"https://ns.openprocurement.org/ua/edrpou",
-                            "uid":"00037256",
-                            "uri":"http://www.dus.gov.ua/"
+                "data": {
+                    "procuringEntity": {
+                        "id": {
+                            "name": "Державне управління справами",
+                            "scheme": "https://ns.openprocurement.org/ua/edrpou",
+                            "uid": "00037256",
+                            "uri": "http://www.dus.gov.ua/"
                         },
-                        "address":{
-                            "countryName":"Україна",
-                            "postalCode":"01220",
-                            "region":"м. Київ",
-                            "locality":"м. Київ",
-                            "streetAddress":"вул. Банкова, 11, корпус 1"
+                        "address": {
+                            "countryName": "Україна",
+                            "postalCode": "01220",
+                            "region": "м. Київ",
+                            "locality": "м. Київ",
+                            "streetAddress": "вул. Банкова, 11, корпус 1"
                         }
                     },
-                    "totalValue":{
-                        "amount":500,
-                        "currency":"UAH"
+                    "totalValue": {
+                        "amount": 500,
+                        "currency": "UAH"
                     },
-                    "itemsToBeProcured":[
+                    "itemsToBeProcured": [
                         {
-                            "description":"футляри до державних нагород",
-                            "classificationScheme":"Other",
-                            "otherClassificationScheme":"ДКПП",
-                            "classificationID":"17.21.1",
-                            "classificationDescription":"папір і картон гофровані, паперова й картонна тара",
-                            "unitOfMeasure":"item",
-                            "quantity":5
+                            "description": "футляри до державних нагород",
+                            "classificationScheme": "Other",
+                            "otherClassificationScheme": "ДКПП",
+                            "classificationID": "17.21.1",
+                            "classificationDescription": "папір і картон гофровані, паперова й картонна тара",
+                            "unitOfMeasure": "item",
+                            "quantity": 5
                         }
                     ],
-                    "clarificationPeriod":{
-                        "endDate":"2014-10-31T00:00:00"
+                    "clarificationPeriod": {
+                        "endDate": "2014-10-31T00:00:00"
                     },
-                    "tenderPeriod":{
-                        "endDate":"2014-11-06T10:00:00"
+                    "tenderPeriod": {
+                        "endDate": "2014-11-06T10:00:00"
                     },
-                    "awardPeriod":{
-                        "endDate":"2014-11-13T00:00:00"
+                    "awardPeriod": {
+                        "endDate": "2014-11-13T00:00:00"
                     }
                 }
             }
@@ -159,7 +162,45 @@ class TenderResource(object):
                     "id": "64e93250be76435397e8c992ed4214d1",
                     "tenderID": "UA-2014-DUS-156",
                     "modified": "2014-10-27T08:06:58.158Z",
-                    ...
+                    "procuringEntity": {
+                        "id": {
+                            "name": "Державне управління справами",
+                            "scheme": "https://ns.openprocurement.org/ua/edrpou",
+                            "uid": "00037256",
+                            "uri": "http://www.dus.gov.ua/"
+                        },
+                        "address": {
+                            "countryName": "Україна",
+                            "postalCode": "01220",
+                            "region": "м. Київ",
+                            "locality": "м. Київ",
+                            "streetAddress": "вул. Банкова, 11, корпус 1"
+                        }
+                    },
+                    "totalValue": {
+                        "amount": 500,
+                        "currency": "UAH"
+                    },
+                    "itemsToBeProcured": [
+                        {
+                            "description": "футляри до державних нагород",
+                            "classificationScheme": "Other",
+                            "otherClassificationScheme": "ДКПП",
+                            "classificationID": "17.21.1",
+                            "classificationDescription": "папір і картон гофровані, паперова й картонна тара",
+                            "unitOfMeasure": "item",
+                            "quantity": 5
+                        }
+                    ],
+                    "clarificationPeriod": {
+                        "endDate": "2014-10-31T00:00:00"
+                    },
+                    "tenderPeriod": {
+                        "endDate": "2014-11-06T10:00:00"
+                    },
+                    "awardPeriod": {
+                        "endDate": "2014-11-13T00:00:00"
+                    }
                 }
             }
 
@@ -174,7 +215,8 @@ class TenderResource(object):
         except Exception, e:
             return self.request.errors.add('body', 'data', str(e))
         self.request.response.status = 201
-        self.request.response.headers['Location'] = self.request.route_url('Tender', id=tender_id)
+        self.request.response.headers[
+            'Location'] = self.request.route_url('Tender', id=tender_id)
         return wrap_data(tender.serialize("view"))
 
     @view(renderer='json')
@@ -212,15 +254,17 @@ class TenderResource(object):
         .. sourcecode:: http
 
             PATCH /tenders/4879d3f8ee2443169b5fbbc9f89fa607 HTTP/1.1
+            Host: example.com
+            Accept: application/json
 
             {
-                "data":{
-                    "totalValue":{
-                        "amount":600
+                "data": {
+                    "totalValue": {
+                        "amount": 600
                     },
-                    "itemsToBeProcured":[
+                    "itemsToBeProcured": [
                         {
-                            "quantity":6
+                            "quantity": 6
                         }
                     ]
                 }
@@ -238,7 +282,14 @@ class TenderResource(object):
                     "id": "4879d3f8ee2443169b5fbbc9f89fa607",
                     "tenderID": "UA-2014-DUS-156",
                     "modified": "2014-10-27T08:12:34.956Z",
-                    ...
+                    "totalValue": {
+                        "amount": 600
+                    },
+                    "itemsToBeProcured": [
+                        {
+                            "quantity": 6
+                        }
+                    ]
                 }
             }
 
@@ -264,6 +315,7 @@ class TenderResource(object):
           path='/tenders/{tender_id}/documents/{id}',
           description="Tender related binary files (PDFs, etc.)")
 class TenderDocumentResource(object):
+
     def __init__(self, request):
         self.request = request
         self.db = request.registry.db
@@ -292,12 +344,14 @@ class TenderDocumentResource(object):
                 return self.request.errors.add('body', 'data', str(e))
         tender = tender.reload(self.db)
         self.request.response.status = 201
-        self.request.response.headers['Location'] = self.request.route_url('Tender Documents', tender_id=self.tender_id, id=data.filename)
+        self.request.response.headers['Location'] = self.request.route_url(
+            'Tender Documents', tender_id=self.tender_id, id=data.filename)
         return {'documents': tender['_attachments']}
 
     def get(self):
         """Tender Document Read"""
-        data = self.db.get_attachment(self.tender_id, self.request.matchdict['id'])
+        data = self.db.get_attachment(
+            self.tender_id, self.request.matchdict['id'])
         if not data:
             self.request.errors.add('url', 'id', 'Not Found')
             self.request.errors.status = 404
@@ -330,6 +384,7 @@ class TenderDocumentResource(object):
           path='/tenders/{tender_id}/bidders/{id}',
           description="Tender bidders")
 class TenderBidderResource(object):
+
     def __init__(self, request):
         self.request = request
         self.db = request.registry.db
@@ -347,29 +402,31 @@ class TenderBidderResource(object):
         .. sourcecode:: http
 
             POST /tenders/4879d3f8ee2443169b5fbbc9f89fa607/bidders HTTP/1.1
+            Host: example.com
+            Accept: application/json
 
             {
-                "data":{
-                    "bidders":[
+                "data": {
+                    "bidders": [
                         {
-                            "id":{
-                                "name":"Державне управління справами",
-                                "scheme":"https://ns.openprocurement.org/ua/edrpou",
-                                "uid":"00037256",
-                                "uri":"http://www.dus.gov.ua/"
+                            "id": {
+                                "name": "Державне управління справами",
+                                "scheme": "https://ns.openprocurement.org/ua/edrpou",
+                                "uid": "00037256",
+                                "uri": "http://www.dus.gov.ua/"
                             },
-                            "address":{
-                                "countryName":"Україна",
-                                "postalCode":"01220",
-                                "region":"м. Київ",
-                                "locality":"м. Київ",
-                                "streetAddress":"вул. Банкова, 11, корпус 1"
+                            "address": {
+                                "countryName": "Україна",
+                                "postalCode": "01220",
+                                "region": "м. Київ",
+                                "locality": "м. Київ",
+                                "streetAddress": "вул. Банкова, 11, корпус 1"
                             }
                         }
                     ],
-                    "totalValue":{
-                        "amount":489,
-                        "currency":"UAH"
+                    "totalValue": {
+                        "amount": 489,
+                        "currency": "UAH"
                     }
                 }
             }
@@ -383,10 +440,30 @@ class TenderBidderResource(object):
 
             {
                 "data": {
-                    "id":"4879d3f8ee2443169b5fbbc9f89fa607",
-                    "status":"registration",
-                    "date":"2014-10-28T11:44:17.947Z"
-                    ...
+                    "id": "4879d3f8ee2443169b5fbbc9f89fa607",
+                    "status": "registration",
+                    "date": "2014-10-28T11:44:17.947Z",
+                    "bidders": [
+                        {
+                            "id": {
+                                "name": "Державне управління справами",
+                                "scheme": "https://ns.openprocurement.org/ua/edrpou",
+                                "uid": "00037256",
+                                "uri": "http://www.dus.gov.ua/"
+                            },
+                            "address": {
+                                "countryName": "Україна",
+                                "postalCode": "01220",
+                                "region": "м. Київ",
+                                "locality": "м. Київ",
+                                "streetAddress": "вул. Банкова, 11, корпус 1"
+                            }
+                        }
+                    ],
+                    "totalValue": {
+                        "amount": 489,
+                        "currency": "UAH"
+                    }
                 }
             }
 
@@ -398,7 +475,8 @@ class TenderBidderResource(object):
             self.request.errors.add('url', 'tender_id', 'Not Found')
             self.request.errors.status = 404
             return
-        bid_data = filter_data(self.request.json_body['data'], fields=['id', 'data'])
+        bid_data = filter_data(
+            self.request.json_body['data'], fields=['id', 'date'])
         bid = Bid(bid_data)
         tender.bids.append(bid)
         try:
@@ -406,5 +484,41 @@ class TenderBidderResource(object):
         except Exception, e:
             return self.request.errors.add('body', 'data', str(e))
         self.request.response.status = 201
-        #self.request.response.headers['Location'] = self.request.route_url('Tender Bids', tender_id=self.tender_id, id=bid['id'])
+        # self.request.response.headers['Location'] = self.request.route_url('Tender Bids', tender_id=self.tender_id, id=bid['id'])
         return wrap_data(bid.serialize("view"))
+
+
+@resource(name='Tender Bid Documents',
+          collection_path='/tenders/{tender_id}/bidders/{bid_id}/documents',
+          path='/tenders/{tender_id}/bidders/{bid_id}/documents/{id}',
+          description="Tender bidder documents")
+class TenderBidderDocumentResource(object):
+
+    def __init__(self, request):
+        self.request = request
+        self.db = request.registry.db
+        self.tender_id = request.matchdict['tender_id']
+        self.bid_id = request.matchdict['bid_id']
+
+    def collection_post(self):
+        """Tender Bid Document Upload
+        """
+        tender = TenderDocument.load(self.db, self.tender_id)
+        if not tender:
+            self.request.errors.add('url', 'tender_id', 'Not Found')
+            self.request.errors.status = 404
+            return
+        bids = [i for i in tender.bids if i.id == self.bid_id]
+        if not bids:
+            self.request.errors.add('url', 'bid_id', 'Not Found')
+            self.request.errors.status = 404
+            return
+        for data in self.request.POST.values():
+            try:
+                self.db.put_attachment(tender._data, data.file, data.filename)
+            except Exception, e:
+                return self.request.errors.add('body', 'data', str(e))
+        tender = tender.reload(self.db)
+        self.request.response.status = 201
+        # self.request.response.headers['Location'] = self.request.route_url('Tender Bid Documents', tender_id=self.tender_id, bid_id=self.bid_id, id=data.filename)
+        return {'documents': tender['_attachments']}

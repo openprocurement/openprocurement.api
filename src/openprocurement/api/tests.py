@@ -60,6 +60,7 @@ class PrefixedRequestClass(webtest.app.TestRequest):
 
 
 class BaseWebTest(unittest.TestCase):
+
     """Base Web Test to test openprocurement.api.
 
     It setups the database before each test and delete it after.
@@ -87,7 +88,7 @@ class BaseTenderWebTest(BaseWebTest):
 
     def taerDown(self):
         del self.db[self.tender_id]
-        del self.couchdb_server[self.db.name]
+        super(BaseTenderWebTest, self).taerDown()
 
 
 class TenderDocumentTest(BaseWebTest):
@@ -169,10 +170,14 @@ class MigrateTest(BaseWebTest):
         self.assertFalse('countryName' in item["procuringEntity"]["address"])
         self.assertTrue('country-name' in item["bidders"][0]["address"])
         self.assertFalse('countryName' in item["bidders"][0]["address"])
-        self.assertFalse('country-name' in migrated_item["procuringEntity"]["address"])
-        self.assertTrue('countryName' in migrated_item["procuringEntity"]["address"])
-        self.assertFalse('country-name' in migrated_item["bidders"][0]["address"])
-        self.assertTrue('countryName' in migrated_item["bidders"][0]["address"])
+        self.assertFalse(
+            'country-name' in migrated_item["procuringEntity"]["address"])
+        self.assertTrue(
+            'countryName' in migrated_item["procuringEntity"]["address"])
+        self.assertFalse(
+            'country-name' in migrated_item["bidders"][0]["address"])
+        self.assertTrue(
+            'countryName' in migrated_item["bidders"][0]["address"])
 
     def test_migrate_from2to3(self):
         set_db_schema_version(self.db, 2)
@@ -193,8 +198,10 @@ class MigrateTest(BaseWebTest):
         self.assertFalse('bids' in item)
         self.assertFalse('bidders' in migrated_item)
         self.assertTrue('bids' in migrated_item)
-        self.assertEqual(item["bidders"][0]["_id"], migrated_item["bids"][0]["id"])
-        self.assertEqual(item["bidders"][0]["id"]["name"], migrated_item["bids"][0]["bidders"][0]["id"]["name"])
+        self.assertEqual(
+            item["bidders"][0]["_id"], migrated_item["bids"][0]["id"])
+        self.assertEqual(item["bidders"][0]["id"]["name"], migrated_item[
+                         "bids"][0]["bidders"][0]["id"]["name"])
 
 
 class TenderResourceTest(BaseWebTest):
@@ -583,9 +590,9 @@ class TenderBidderResourceTest(BaseTenderWebTest):
         #self.assertEqual(response.status, '422 Unprocessable Entity')
         #self.assertEqual(response.content_type, 'application/json')
         #self.assertEqual(response.json['status'], 'error')
-        #self.assertEqual(response.json['errors'], [
-            #{u'description': [
-                #u'This field is required.'], u'location': u'body', u'name': u'id'}
+        # self.assertEqual(response.json['errors'], [
+        #{u'description': [
+        # u'This field is required.'], u'location': u'body', u'name': u'id'}
         #])
 
         response = self.app.post_json(request_path, {
@@ -594,7 +601,8 @@ class TenderBidderResourceTest(BaseTenderWebTest):
         self.assertEqual(response.content_type, 'application/json')
         self.assertEqual(response.json['status'], 'error')
         self.assertEqual(response.json['errors'], [
-            {u'description': {u'id': [u'Please use a mapping for this field or identifier instance instead of unicode.']}, u'location': u'body', u'name': u'bidders'}
+            {u'description': {u'id': [
+                u'Please use a mapping for this field or identifier instance instead of unicode.']}, u'location': u'body', u'name': u'bidders'}
         ])
 
         response = self.app.post_json(request_path, {
@@ -603,7 +611,8 @@ class TenderBidderResourceTest(BaseTenderWebTest):
         self.assertEqual(response.content_type, 'application/json')
         self.assertEqual(response.json['status'], 'error')
         self.assertEqual(response.json['errors'], [
-            {u'description': [u'id'], u'location': u'body', u'name': u'bidders'}
+            {u'description': [u'id'],
+                u'location': u'body', u'name': u'bidders'}
         ])
 
         response = self.app.post_json(request_path, {'data': {'bidders': [{
@@ -612,7 +621,8 @@ class TenderBidderResourceTest(BaseTenderWebTest):
         self.assertEqual(response.content_type, 'application/json')
         self.assertEqual(response.json['status'], 'error')
         self.assertEqual(response.json['errors'], [
-            {u'description': [u'id'], u'location': u'body', u'name': u'bidders'}
+            {u'description': [u'id'],
+                u'location': u'body', u'name': u'bidders'}
         ])
 
     def test_post_tender_not_found(self):
@@ -635,6 +645,46 @@ class TenderBidderResourceTest(BaseTenderWebTest):
         self.assertEqual(bidder['bidders'][0]['id']['name'], 'Name')
         self.assertTrue('id' in bidder)
         # self.assertTrue(bidder['id'] in response.headers['Location'])
+
+
+class TenderBidderDocumentResourceTest(BaseTenderWebTest):
+
+    def setUp(self):
+        super(TenderBidderDocumentResourceTest, self).setUp()
+        # Create bid
+        response = self.app.post_json('/tenders/{}/bidders'.format(
+            self.tender_id), {'data': {'bidders': [{'id': {'name': 'Name'}}]}})
+        bid = response.json['data']
+        self.bid_id = bid['id']
+
+    def test_post_tender_not_found(self):
+        response = self.app.post('/tenders/some_id/bidders/some_id/documents', status=404, upload_files=[
+                                 ('upload', 'name.doc', 'content')])
+        self.assertEqual(response.status, '404 Not Found')
+        self.assertEqual(response.content_type, 'application/json')
+        self.assertEqual(response.json['status'], 'error')
+        self.assertEqual(response.json['errors'], [
+            {u'description': u'Not Found', u'location':
+                u'url', u'name': u'tender_id'}
+        ])
+
+    def test_post_tender_bid_not_found(self):
+        response = self.app.post('/tenders/{}/bidders/some_id/documents'.format(self.tender_id), status=404, upload_files=[('upload', 'name.doc', 'content')])
+        self.assertEqual(response.status, '404 Not Found')
+        self.assertEqual(response.content_type, 'application/json')
+        self.assertEqual(response.json['status'], 'error')
+        self.assertEqual(response.json['errors'], [
+            {u'description': u'Not Found', u'location':
+                u'url', u'name': u'bid_id'}
+        ])
+
+    def test_create_tender_bidder_document(self):
+        response = self.app.post('/tenders/{}/bidders/{}/documents'.format(
+            self.tender_id, self.bid_id), upload_files=[('upload', 'name.doc', 'content')])
+        self.assertEqual(response.status, '201 Created')
+        self.assertEqual(response.content_type, 'application/json')
+        #self.assertTrue('name.doc' in response.headers['Location'])
+        self.assertTrue('name.doc' in response.json["documents"])
 
 
 def suite():
