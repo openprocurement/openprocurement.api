@@ -1,94 +1,10 @@
 # -*- coding: utf-8 -*-
 import unittest
-import webtest
-import os
 
 from openprocurement.api import VERSION
 from openprocurement.api.models import TenderDocument
 from openprocurement.api.migration import migrate_data, get_db_schema_version, set_db_schema_version, SCHEMA_VERSION
-
-
-test_tender_data = {
-    "procuringEntity": {
-        "id": {
-            "name": "Державне управління справами",
-            "scheme": "https://ns.openprocurement.org/ua/edrpou",
-            "uid": "00037256",
-            "uri": "http://www.dus.gov.ua/"
-        },
-        "address": {
-            "countryName": "Україна",
-            "postalCode": "01220",
-            "region": "м. Київ",
-            "locality": "м. Київ",
-            "streetAddress": "вул. Банкова, 11, корпус 1"
-        },
-    },
-    "totalValue": {
-        "amount": 500,
-        "currency": "UAH"
-    },
-    "itemsToBeProcured": [
-        {
-            "description": "футляри до державних нагород",
-            "classificationScheme": "Other",
-            "otherClassificationScheme": "ДКПП",
-            "classificationID": "17.21.1",
-            "classificationDescription": "папір і картон гофровані, паперова й картонна тара",
-            "unitOfMeasure": "item",
-            "quantity": 5
-        }
-    ],
-    "clarificationPeriod": {
-        "endDate": "2014-10-31T00:00:00"
-    },
-    "tenderPeriod": {
-        "endDate": "2014-11-06T10:00:00"
-    },
-    "awardPeriod": {
-        "endDate": "2014-11-13T00:00:00"
-    }
-}
-
-
-class PrefixedRequestClass(webtest.app.TestRequest):
-
-    @classmethod
-    def blank(cls, path, *args, **kwargs):
-        path = '/api/%s%s' % (VERSION, path)
-        return webtest.app.TestRequest.blank(path, *args, **kwargs)
-
-
-class BaseWebTest(unittest.TestCase):
-
-    """Base Web Test to test openprocurement.api.
-
-    It setups the database before each test and delete it after.
-    """
-
-    def setUp(self):
-        self.app = webtest.TestApp(
-            "config:tests.ini", relative_to=os.path.dirname(__file__))
-        self.app.RequestClass = PrefixedRequestClass
-        self.couchdb_server = self.app.app.registry.couchdb_server
-        self.db = self.app.app.registry.db
-
-    def tearDown(self):
-        del self.couchdb_server[self.db.name]
-
-
-class BaseTenderWebTest(BaseWebTest):
-
-    def setUp(self):
-        super(BaseTenderWebTest, self).setUp()
-        # Create tender
-        response = self.app.post_json('/tenders', {'data': {}})
-        tender = response.json['data']
-        self.tender_id = tender['id']
-
-    def taerDown(self):
-        del self.db[self.tender_id]
-        super(BaseTenderWebTest, self).taerDown()
+from openprocurement.api.tests.base import test_tender_data, BaseWebTest, BaseTenderWebTest
 
 
 class TenderDocumentTest(BaseWebTest):
@@ -587,15 +503,6 @@ class TenderBidderResourceTest(BaseTenderWebTest):
                 u'body', u'name': u'invalid_field'}
         ])
 
-        #response = self.app.post_json(request_path, {'data': {}}, status=422)
-        #self.assertEqual(response.status, '422 Unprocessable Entity')
-        #self.assertEqual(response.content_type, 'application/json')
-        #self.assertEqual(response.json['status'], 'error')
-        # self.assertEqual(response.json['errors'], [
-        #{u'description': [
-        # u'This field is required.'], u'location': u'body', u'name': u'id'}
-        #])
-
         response = self.app.post_json(request_path, {
                                       'data': {'bidders': [{'id': 'invalid_value'}]}}, status=422)
         self.assertEqual(response.status, '422 Unprocessable Entity')
@@ -684,7 +591,7 @@ class TenderBidderDocumentResourceTest(BaseTenderWebTest):
             self.tender_id, self.bid_id), upload_files=[('upload', 'name.doc', 'content')])
         self.assertEqual(response.status, '201 Created')
         self.assertEqual(response.content_type, 'application/json')
-        #self.assertTrue('name.doc' in response.headers['Location'])
+        # self.assertTrue('name.doc' in response.headers['Location'])
         self.assertTrue('name.doc' in response.json["documents"])
 
 
@@ -739,15 +646,6 @@ class TenderAwardResourceTest(BaseTenderWebTest):
             {u'description': u'Rogue field', u'location':
                 u'body', u'name': u'invalid_field'}
         ])
-
-        #response = self.app.post_json(request_path, {'data': {}}, status=422)
-        #self.assertEqual(response.status, '422 Unprocessable Entity')
-        #self.assertEqual(response.content_type, 'application/json')
-        #self.assertEqual(response.json['status'], 'error')
-        # self.assertEqual(response.json['errors'], [
-        #{u'description': [
-        # u'This field is required.'], u'location': u'body', u'name': u'id'}
-        #])
 
         response = self.app.post_json(request_path, {
                                       'data': {'suppliers': [{'id': 'invalid_value'}]}}, status=422)
