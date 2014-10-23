@@ -8,6 +8,6 @@ install:
 before_script:
   - pip install -r test_requirements.txt --use-mirrors
 script:
-  - nosetests --with-coverage --cover-package=openprocurement.api
+  - nosetests
 after_success:
   - coveralls
