@@ -69,13 +69,11 @@ class address(Model):
     class Options:
         serialize_when_none = False
 
-    postOfficeBox = StringType(serialized_name="post-office-box", deserialize_from="post-office-box")
-    extendedAddress = StringType(serialized_name="extended-address", deserialize_from="extended-address")
-    streetAddress = StringType(serialized_name="street-address", deserialize_from="street-address")
-    locality = StringType(required=True)
-    region = StringType(required=True)
-    postalCode = StringType(serialized_name="postal-code", deserialize_from="postal-code")
-    countryName = StringType(required=True, serialized_name="country-name", deserialize_from="country-name")
+    streetAddress = StringType()
+    locality = StringType()
+    region = StringType()
+    postalCode = StringType()
+    countryName = StringType()
 
 
 class Organization(Model):

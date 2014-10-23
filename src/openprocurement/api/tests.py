@@ -8,6 +8,49 @@ from openprocurement.api.models import TenderDocument
 from openprocurement.api.migration import migrate_data, get_db_schema_version, set_db_schema_version, SCHEMA_VERSION
 
 
+test_tender_data = {
+    "procuringEntity": {
+        "id": {
+            "name": "Державне управління справами",
+            "scheme": "https://ns.openprocurement.org/ua/edrpou",
+            "uid": "00037256",
+            "uri": "http://www.dus.gov.ua/"
+        },
+        "address": {
+            "countryName": "Україна",
+            "postalCode": "01220",
+            "region": "м. Київ",
+            "locality": "м. Київ",
+            "streetAddress": "вул. Банкова, 11, корпус 1"
+        },
+    },
+    "totalValue": {
+        "amount": 500,
+        "currency": "UAH"
+    },
+    "itemsToBeProcured": [
+        {
+            "description": "футляри до державних нагород",
+            "classificationScheme": "Other",
+            "otherClassificationScheme": "ДКПП",
+            "classificationID": "17.21.1",
+            "classificationDescription": "папір і картон гофровані, паперова й картонна тара",
+            "unitOfMeasure": "item",
+            "quantity": 5
+        }
+    ],
+    "clarificationPeriod": {
+        "endDate": "2014-10-31T00:00:00"
+    },
+    "tenderPeriod": {
+        "endDate": "2014-11-06T10:00:00"
+    },
+    "awardPeriod": {
+        "endDate": "2014-11-13T00:00:00"
+    }
+}
+
+
 class PrefixedRequestClass(webtest.app.TestRequest):
 
     @classmethod
@@ -82,7 +125,7 @@ class MigrateTest(BaseWebTest):
 
     def test_migrate(self):
         self.assertEqual(get_db_schema_version(self.db), SCHEMA_VERSION)
-        migrate_data(self.db)
+        migrate_data(self.db, 1)
         self.assertEqual(get_db_schema_version(self.db), SCHEMA_VERSION)
 
     def test_migrate_from0to1(self):
@@ -98,6 +141,38 @@ class MigrateTest(BaseWebTest):
         self.assertTrue('modified' in migrated_item)
         self.assertFalse('modifiedAt' in migrated_item)
         self.assertEqual(item['modifiedAt'], migrated_item['modified'])
+
+    def test_migrate_from1to2(self):
+        set_db_schema_version(self.db, 1)
+        data = {
+            "procuringEntity": {
+                "address": {
+                    "country-name": "Україна",
+                    "postal-code": "01220",
+                    "street-address": "вул. Банкова, 11, корпус 1"
+                },
+            },
+            'doc_type': 'TenderDocument',
+            'bidders': [{
+                "address": {
+                    "country-name": "Україна",
+                    "postal-code": "01220",
+                    "street-address": "вул. Банкова, 11, корпус 1"
+                },
+            }]
+        }
+        _id, _rev = self.db.save(data)
+        item = self.db.get(_id)
+        migrate_data(self.db, 2)
+        migrated_item = self.db.get(_id)
+        self.assertTrue('country-name' in item["procuringEntity"]["address"])
+        self.assertFalse('countryName' in item["procuringEntity"]["address"])
+        self.assertTrue('country-name' in item["bidders"][0]["address"])
+        self.assertFalse('countryName' in item["bidders"][0]["address"])
+        self.assertFalse('country-name' in migrated_item["procuringEntity"]["address"])
+        self.assertTrue('countryName' in migrated_item["procuringEntity"]["address"])
+        self.assertFalse('country-name' in migrated_item["bidders"][0]["address"])
+        self.assertTrue('countryName' in migrated_item["bidders"][0]["address"])
 
 
 class TenderResourceTest(BaseWebTest):
@@ -206,53 +281,11 @@ class TenderResourceTest(BaseWebTest):
         self.assertEqual(response.status, '200 OK')
         self.assertEqual(len(response.json['tenders']), 0)
 
-        data = {
-            "procuringEntity": {
-                "id": {
-                    "name": "Державне управління справами",
-                    "scheme": "https://ns.openprocurement.org/ua/edrpou",
-                    "uid": "00037256",
-                    "uri": "http://www.dus.gov.ua/"
-                },
-                "address": {
-                    "country-name": "Україна",
-                    "postal-code": "01220",
-                    "region": "м. Київ",
-                    "locality": "м. Київ",
-                    "street-address": " вул. Банкова, 11, корпус 1"
-                },
-            },
-            "totalValue": {
-                "amount": 500,
-                "currency": "UAH"
-            },
-            "itemsToBeProcured": [
-                {
-                    "description": "футляри до державних нагород",
-                    "classificationScheme": "Other",
-                    "otherClassificationScheme": "ДКПП",
-                    "classificationID": "17.21.1",
-                    "classificationDescription": "папір і картон гофровані, паперова й картонна тара",
-                    "unitOfMeasure": "item",
-                    "quantity": 5
-                }
-            ],
-            "clarificationPeriod": {
-                "endDate": "2014-10-31T00:00:00"
-            },
-            "tenderPeriod": {
-                "endDate": "2014-11-06T10:00:00"
-            },
-            "awardPeriod": {
-                "endDate": "2014-11-13T00:00:00"
-            }
-        }
-
-        response = self.app.post_json('/tenders', {"data": data})
+        response = self.app.post_json('/tenders', {"data": test_tender_data})
         self.assertEqual(response.status, '201 Created')
         self.assertEqual(response.content_type, 'application/json')
         tender = response.json['data']
-        self.assertEqual(set(tender) - set(data), set(
+        self.assertEqual(set(tender) - set(test_tender_data), set(
             [u'id', u'modified', u'tenderID']))
         self.assertTrue(tender['id'] in response.headers['Location'])
 

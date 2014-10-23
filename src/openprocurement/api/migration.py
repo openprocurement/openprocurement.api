@@ -3,7 +3,7 @@ import logging
 
 
 LOGGER = logging.getLogger(__name__)
-SCHEMA_VERSION = 1
+SCHEMA_VERSION = 2
 SCHEMA_DOC = 'openprocurement_schema'
 
 
@@ -18,11 +18,11 @@ def set_db_schema_version(db, version):
     db.save(schema_doc)
 
 
-def migrate_data(db):
+def migrate_data(db, destination=None):
     cur_version = get_db_schema_version(db)
     if cur_version == SCHEMA_VERSION:
         return
-    for step in xrange(cur_version, SCHEMA_VERSION):
+    for step in xrange(cur_version, destination or SCHEMA_VERSION):
         LOGGER.info("Migrate openprocurement schema from {} to {}".format(step, step + 1))
         migration_func = globals().get('from{}to{}'.format(step, step + 1))
         if migration_func:
@@ -36,4 +36,30 @@ def from0to1(db):
         doc = i.doc
         if 'modifiedAt' in doc and 'modified' not in doc:
             doc['modified'] = doc.pop('modifiedAt')
+            db.save(doc)
+
+
+def from1to2(db):
+    results = db.view('tenders/all', include_docs=True)
+    for i in results:
+        doc = i.doc
+        if 'bidders' in doc or 'procuringEntity' in doc:
+            if 'procuringEntity' in doc and 'address' in doc['procuringEntity']:
+                address = doc['procuringEntity']['address']
+                if 'country-name' in address:
+                    address['countryName'] = address.pop('country-name')
+                if 'street-address' in address:
+                    address['streetAddress'] = address.pop('street-address')
+                if 'postal-code' in address:
+                    address['postalCode'] = address.pop('postal-code')
+            if 'bidders' in doc:
+                for bidder in doc['bidders']:
+                    if 'address' in bidder:
+                        address = bidder['address']
+                        if 'country-name' in address:
+                            address['countryName'] = address.pop('country-name')
+                        if 'street-address' in address:
+                            address['streetAddress'] = address.pop('street-address')
+                        if 'postal-code' in address:
+                            address['postalCode'] = address.pop('postal-code')
             db.save(doc)

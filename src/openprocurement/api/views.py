@@ -111,12 +111,12 @@ class TenderResource(object):
                             "uri":"http://www.dus.gov.ua/"
                         },
                         "address":{
-                            "country-name":"Україна",
-                            "postal-code":"01220",
+                            "countryName":"Україна",
+                            "postalCode":"01220",
                             "region":"м. Київ",
                             "locality":"м. Київ",
-                            "street-address":" вул. Банкова, 11, корпус 1"
-                        },
+                            "streetAddress":"вул. Банкова, 11, корпус 1"
+                        }
                     },
                     "totalValue":{
                         "amount":500,
@@ -213,9 +213,9 @@ class TenderResource(object):
             PATCH /tenders/4879d3f8ee2443169b5fbbc9f89fa607 HTTP/1.1
 
             {
-                "data": {
+                "data":{
                     "totalValue":{
-                        "amount":600,
+                        "amount":600
                     },
                     "itemsToBeProcured":[
                         {
@@ -349,19 +349,27 @@ class TenderBidderResource(object):
 
             {
                 "data":{
-                    "id":{
-                        "name":"Державне управління справами",
-                        "scheme":"https://ns.openprocurement.org/ua/edrpou",
-                        "uid":"00037256",
-                        "uri":"http://www.dus.gov.ua/"
-                    },
-                    "address":{
-                        "country-name":"Україна",
-                        "postal-code":"01220",
-                        "region":"м. Київ",
-                        "locality":"м. Київ",
-                        "street-address":" вул. Банкова, 11, корпус 1"
-                    },
+                    "bidders":[
+                        {
+                            "id":{
+                                "name":"Державне управління справами",
+                                "scheme":"https://ns.openprocurement.org/ua/edrpou",
+                                "uid":"00037256",
+                                "uri":"http://www.dus.gov.ua/"
+                            },
+                            "address":{
+                                "countryName":"Україна",
+                                "postalCode":"01220",
+                                "region":"м. Київ",
+                                "locality":"м. Київ",
+                                "streetAddress":"вул. Банкова, 11, корпус 1"
+                            }
+                        }
+                    ],
+                    "totalValue":{
+                        "amount":489,
+                        "currency":"UAH"
+                    }
                 }
             }
 
@@ -374,12 +382,16 @@ class TenderBidderResource(object):
 
             {
                 "data": {
-                    "_id": "4879d3f8ee2443169b5fbbc9f89fa607",
+                    "_id":"4879d3f8ee2443169b5fbbc9f89fa607",
+                    "status":"registration",
+                    "date":"2014-10-28T11:44:17.947Z"
                     ...
                 }
             }
 
         """
+        # See https://github.com/open-contracting/standard/issues/78#issuecomment-59830415
+        # for more info upon schema
         tender = TenderDocument.load(self.db, self.tender_id)
         if not tender:
             self.request.errors.add('url', 'tender_id', 'Not Found')
