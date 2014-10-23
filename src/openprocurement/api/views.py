@@ -16,7 +16,7 @@ def wrap_data(data):
     return {"data": data}
 
 
-def validate_data(request):
+def validate_tender_data(request):
     try:
         json = request.json_body
     except ValueError, e:
@@ -105,12 +105,81 @@ class TenderResource(object):
         self.db = request.registry.db
 
     def collection_get(self):
-        """Tenders List"""
+        """Tenders List
+
+        Get Tenders List
+        ----------------
+
+        Example request to get tenders list:
+
+        .. sourcecode:: http
+
+            GET /tenders HTTP/1.1
+            Host: example.com
+            Accept: application/json
+
+        This is what one should expect in response:
+
+        .. sourcecode:: http
+
+            HTTP/1.1 200 OK
+            Content-Type: application/json
+
+            {
+                "tenders": [
+                    {
+                        "id": "64e93250be76435397e8c992ed4214d1",
+                        "tenderID": "UA-2014-DUS-156",
+                        "modified": "2014-10-27T08:06:58.158Z",
+                        "procuringEntity": {
+                            "id": {
+                                "name": "Державне управління справами",
+                                "scheme": "https://ns.openprocurement.org/ua/edrpou",
+                                "uid": "00037256",
+                                "uri": "http://www.dus.gov.ua/"
+                            },
+                            "address": {
+                                "countryName": "Україна",
+                                "postalCode": "01220",
+                                "region": "м. Київ",
+                                "locality": "м. Київ",
+                                "streetAddress": "вул. Банкова, 11, корпус 1"
+                            }
+                        },
+                        "totalValue": {
+                            "amount": 500,
+                            "currency": "UAH"
+                        },
+                        "itemsToBeProcured": [
+                            {
+                                "description": "футляри до державних нагород",
+                                "classificationScheme": "Other",
+                                "otherClassificationScheme": "ДКПП",
+                                "classificationID": "17.21.1",
+                                "classificationDescription": "папір і картон гофровані, паперова й картонна тара",
+                                "unitOfMeasure": "item",
+                                "quantity": 5
+                            }
+                        ],
+                        "clarificationPeriod": {
+                            "endDate": "2014-10-31T00:00:00"
+                        },
+                        "tenderPeriod": {
+                            "endDate": "2014-11-06T10:00:00"
+                        },
+                        "awardPeriod": {
+                            "endDate": "2014-11-13T00:00:00"
+                        }
+                    }
+                ]
+            }
+
+        """
         # limit, skip, descending
         results = TenderDocument.view(self.db, 'tenders/all')
         return {'tenders': [i.serialize("view") for i in results]}
 
-    @view(content_type="application/json", validators=(validate_data,))
+    @view(content_type="application/json", validators=(validate_tender_data,))
     def collection_post(self):
         """This API request is targeted to creating new Tenders by procuring organizations.
 
@@ -241,7 +310,74 @@ class TenderResource(object):
 
     @view(renderer='json')
     def get(self):
-        """Tender Read"""
+        """Tender Read
+
+        Get Tender
+        ----------
+
+        Example request to get tender:
+
+        .. sourcecode:: http
+
+            GET /tenders/64e93250be76435397e8c992ed4214d1 HTTP/1.1
+            Host: example.com
+            Accept: application/json
+
+        This is what one should expect in response:
+
+        .. sourcecode:: http
+
+            HTTP/1.1 200 OK
+            Content-Type: application/json
+
+            {
+                "data": {
+                    "id": "64e93250be76435397e8c992ed4214d1",
+                    "tenderID": "UA-2014-DUS-156",
+                    "modified": "2014-10-27T08:06:58.158Z",
+                    "procuringEntity": {
+                        "id": {
+                            "name": "Державне управління справами",
+                            "scheme": "https://ns.openprocurement.org/ua/edrpou",
+                            "uid": "00037256",
+                            "uri": "http://www.dus.gov.ua/"
+                        },
+                        "address": {
+                            "countryName": "Україна",
+                            "postalCode": "01220",
+                            "region": "м. Київ",
+                            "locality": "м. Київ",
+                            "streetAddress": "вул. Банкова, 11, корпус 1"
+                        }
+                    },
+                    "totalValue": {
+                        "amount": 500,
+                        "currency": "UAH"
+                    },
+                    "itemsToBeProcured": [
+                        {
+                            "description": "футляри до державних нагород",
+                            "classificationScheme": "Other",
+                            "otherClassificationScheme": "ДКПП",
+                            "classificationID": "17.21.1",
+                            "classificationDescription": "папір і картон гофровані, паперова й картонна тара",
+                            "unitOfMeasure": "item",
+                            "quantity": 5
+                        }
+                    ],
+                    "clarificationPeriod": {
+                        "endDate": "2014-10-31T00:00:00"
+                    },
+                    "tenderPeriod": {
+                        "endDate": "2014-11-06T10:00:00"
+                    },
+                    "awardPeriod": {
+                        "endDate": "2014-11-13T00:00:00"
+                    }
+                }
+            }
+
+        """
         tender = TenderDocument.load(self.db, self.request.matchdict['id'])
         if not tender:
             self.request.errors.add('url', 'id', 'Not Found')
@@ -249,7 +385,7 @@ class TenderResource(object):
             return
         return wrap_data(tender.serialize("view"))
 
-    @view(content_type="application/json", validators=(validate_data,))
+    @view(content_type="application/json", validators=(validate_tender_data,))
     def put(self):
         """Tender Edit (full)"""
         tender = TenderDocument.load(self.db, self.request.matchdict['id'])
@@ -265,7 +401,7 @@ class TenderResource(object):
             return self.request.errors.add('body', 'data', str(e))
         return wrap_data(tender.serialize("view"))
 
-    @view(content_type="application/json", validators=(validate_data,))
+    @view(content_type="application/json", validators=(validate_tender_data,))
     def patch(self):
         """Tender Edit (partial)
 
