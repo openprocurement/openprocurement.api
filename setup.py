@@ -45,5 +45,5 @@ setup(name='openprocurement.api',
       install_requires=requires,
       tests_require=test_requires,
       extras_require={'test': test_requires},
-      test_suite="opeprocurement.api.tests",
+      test_suite="opeprocurement.api.tests.main",
       entry_points = entry_points)
