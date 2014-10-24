@@ -2,11 +2,12 @@
 """ Cornice services.
 """
 from cornice.ext.spore import generate_spore_description
-from cornice.service import Service, get_services
 from cornice.resource import resource, view
+from cornice.service import Service, get_services
+from openprocurement.api import VERSION
+from openprocurement.api.models import TenderDocument, Bid, Award
 from schematics.exceptions import ModelValidationError, ModelConversionError
 from uuid import uuid4
-from openprocurement.api.models import TenderDocument, Bid, Award
 
 
 spore = Service('spore', path='/spore', renderer='json')
@@ -91,7 +92,7 @@ def filter_data(data, fields=['id', 'doc_id', 'modified']):
 @spore.get()
 def get_spore(request):
     services = get_services()
-    return generate_spore_description(services, 'Service name', request.application_url, '0.1')
+    return generate_spore_description(services, 'Service name', request.application_url, VERSION)
 
 
 @resource(name='Tender',

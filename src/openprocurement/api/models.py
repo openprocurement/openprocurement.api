@@ -29,7 +29,7 @@ class Notice(Model):
 class Value(Model):
     amount = FloatType()  # Amount as a number.
     currency = StringType(max_length=3, min_length=3)  # The currency in 3-letter ISO 4217 format.
-    valueAddedTaxIncluded = BooleanType()
+    valueAddedTaxIncluded = BooleanType(default=True)
 
 
 class Period(Model):
@@ -38,13 +38,18 @@ class Period(Model):
     endDate = DateTimeType()  # The end date for the period.
 
 
+class classification(Model):
+    scheme = StringType(required=True)  # The classification scheme for the goods
+    id = StringType(required=True)  # The classification ID from the Scheme used
+    description = StringType(required=True)  # A description of the goods, services to be provided.
+    uri = URLType()
+
+
 class Item(Model):
     """A good, service, or work to be contracted."""
     description = StringType()  # A description of the goods, services to be provided.
-    classificationScheme = StringType(choices=['CPV', 'GSIN', 'UNSPSC', 'Other'])  # The classification scheme for the goods
-    otherClassificationScheme = StringType()  # If the classification schema was not in list, please specify
-    classificationID = StringType()  # The classification ID from the Scheme used
-    classificationDescription = StringType()  # A description of the goods, services to be provided.
+    primaryClassification = ModelType(classification)
+    additionalClassification = ListType(ModelType(classification), default=list())
     unitOfMeasure = StringType()  # Description of the unit which the good comes in e.g. hours, kilograms
     quantity = IntType()  # The number of units required
     valuePerUnit = ModelType(Value)  # The value per unit of the item specified.
