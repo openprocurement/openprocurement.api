@@ -220,7 +220,8 @@ class TenderResource(object):
                     },
                     "totalValue": {
                         "amount": 500,
-                        "currency": "UAH"
+                        "currency": "UAH",
+                        "valueAddedTaxIncluded":true
                     },
                     "itemsToBeProcured": [
                         {
@@ -281,7 +282,8 @@ class TenderResource(object):
                     },
                     "totalValue": {
                         "amount": 500,
-                        "currency": "UAH"
+                        "currency": "UAH",
+                        "valueAddedTaxIncluded":true
                     },
                     "itemsToBeProcured": [
                         {
@@ -371,7 +373,8 @@ class TenderResource(object):
                     },
                     "totalValue": {
                         "amount": 500,
-                        "currency": "UAH"
+                        "currency": "UAH",
+                        "valueAddedTaxIncluded":true
                     },
                     "itemsToBeProcured": [
                         {
@@ -607,7 +610,8 @@ class TenderBidderResource(object):
                     ],
                     "totalValue": {
                         "amount": 489,
-                        "currency": "UAH"
+                        "currency": "UAH",
+                        "valueAddedTaxIncluded":true
                     }
                 }
             }
@@ -643,7 +647,8 @@ class TenderBidderResource(object):
                     ],
                     "totalValue": {
                         "amount": 489,
-                        "currency": "UAH"
+                        "currency": "UAH",
+                        "valueAddedTaxIncluded":true
                     }
                 }
             }
@@ -753,7 +758,8 @@ class TenderAwardResource(object):
                     ],
                     "awardValue": {
                         "amount": 489,
-                        "currency": "UAH"
+                        "currency": "UAH",
+                        "valueAddedTaxIncluded":true
                     }
                 }
             }
@@ -789,7 +795,8 @@ class TenderAwardResource(object):
                     ],
                     "awardValue": {
                         "amount": 489,
-                        "currency": "UAH"
+                        "currency": "UAH",
+                        "valueAddedTaxIncluded":true
                     }
                 }
             }
