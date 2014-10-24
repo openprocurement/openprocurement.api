@@ -149,21 +149,23 @@ class TenderResource(object):
                         "totalValue": {
                             "amount": 500,
                             "currency": "UAH",
-                            "valueAddedTaxIncluded":true
+                            "valueAddedTaxIncluded": true
                         },
                         "itemsToBeProcured": [
                             {
                                 "description": "футляри до державних нагород",
-                                "primaryClassification":{
-                                    "scheme":"CPV",
-                                    "id":"44617100-9",
-                                    "description","Cartons"
+                                "primaryClassification": {
+                                    "scheme": "CPV",
+                                    "id": "44617100-9",
+                                    "description": "Cartons"
                                 },
-                                "additionalClassification":[{
-                                    "scheme":"ДКПП",
-                                    "id":"17.21.1",
-                                    "description":"папір і картон гофровані, паперова й картонна тара"
-                                }],
+                                "additionalClassification": [
+                                    {
+                                        "scheme": "ДКПП",
+                                        "id": "17.21.1",
+                                        "description": "папір і картон гофровані, паперова й картонна тара"
+                                    }
+                                ],
                                 "unitOfMeasure": "item",
                                 "quantity": 5
                             }
@@ -221,21 +223,23 @@ class TenderResource(object):
                     "totalValue": {
                         "amount": 500,
                         "currency": "UAH",
-                        "valueAddedTaxIncluded":true
+                        "valueAddedTaxIncluded": true
                     },
                     "itemsToBeProcured": [
                         {
                             "description": "футляри до державних нагород",
-                            "primaryClassification":{
-                                "scheme":"CPV",
-                                "id":"44617100-9",
-                                "description","Cartons"
+                            "primaryClassification": {
+                                "scheme": "CPV",
+                                "id": "44617100-9",
+                                "description": "Cartons"
                             },
-                            "additionalClassification":[{
-                                "scheme":"ДКПП",
-                                "id":"17.21.1",
-                                "description":"папір і картон гофровані, паперова й картонна тара"
-                            }],
+                            "additionalClassification": [
+                                {
+                                    "scheme": "ДКПП",
+                                    "id": "17.21.1",
+                                    "description": "папір і картон гофровані, паперова й картонна тара"
+                                }
+                            ],
                             "unitOfMeasure": "item",
                             "quantity": 5
                         }
@@ -283,21 +287,23 @@ class TenderResource(object):
                     "totalValue": {
                         "amount": 500,
                         "currency": "UAH",
-                        "valueAddedTaxIncluded":true
+                        "valueAddedTaxIncluded": true
                     },
                     "itemsToBeProcured": [
                         {
                             "description": "футляри до державних нагород",
-                            "primaryClassification":{
-                                "scheme":"CPV",
-                                "id":"44617100-9",
-                                "description","Cartons"
+                            "primaryClassification": {
+                                "scheme": "CPV",
+                                "id": "44617100-9",
+                                "description": "Cartons"
                             },
-                            "additionalClassification":[{
-                                "scheme":"ДКПП",
-                                "id":"17.21.1",
-                                "description":"папір і картон гофровані, паперова й картонна тара"
-                            }],
+                            "additionalClassification": [
+                                {
+                                    "scheme": "ДКПП",
+                                    "id": "17.21.1",
+                                    "description": "папір і картон гофровані, паперова й картонна тара"
+                                }
+                            ],
                             "unitOfMeasure": "item",
                             "quantity": 5
                         }
@@ -374,21 +380,23 @@ class TenderResource(object):
                     "totalValue": {
                         "amount": 500,
                         "currency": "UAH",
-                        "valueAddedTaxIncluded":true
+                        "valueAddedTaxIncluded": true
                     },
                     "itemsToBeProcured": [
                         {
                             "description": "футляри до державних нагород",
-                            "primaryClassification":{
-                                "scheme":"CPV",
-                                "id":"44617100-9",
-                                "description","Cartons"
+                            "primaryClassification": {
+                                "scheme": "CPV",
+                                "id": "44617100-9",
+                                "description": "Cartons"
                             },
-                            "additionalClassification":[{
-                                "scheme":"ДКПП",
-                                "id":"17.21.1",
-                                "description":"папір і картон гофровані, паперова й картонна тара"
-                            }],
+                            "additionalClassification": [
+                                {
+                                    "scheme": "ДКПП",
+                                    "id": "17.21.1",
+                                    "description": "папір і картон гофровані, паперова й картонна тара"
+                                }
+                            ],
                             "unitOfMeasure": "item",
                             "quantity": 5
                         }
@@ -611,7 +619,7 @@ class TenderBidderResource(object):
                     "totalValue": {
                         "amount": 489,
                         "currency": "UAH",
-                        "valueAddedTaxIncluded":true
+                        "valueAddedTaxIncluded": true
                     }
                 }
             }
@@ -648,7 +656,7 @@ class TenderBidderResource(object):
                     "totalValue": {
                         "amount": 489,
                         "currency": "UAH",
-                        "valueAddedTaxIncluded":true
+                        "valueAddedTaxIncluded": true
                     }
                 }
             }
@@ -759,7 +767,7 @@ class TenderAwardResource(object):
                     "awardValue": {
                         "amount": 489,
                         "currency": "UAH",
-                        "valueAddedTaxIncluded":true
+                        "valueAddedTaxIncluded": true
                     }
                 }
             }
@@ -796,7 +804,7 @@ class TenderAwardResource(object):
                     "awardValue": {
                         "amount": 489,
                         "currency": "UAH",
-                        "valueAddedTaxIncluded":true
+                        "valueAddedTaxIncluded": true
                     }
                 }
             }
