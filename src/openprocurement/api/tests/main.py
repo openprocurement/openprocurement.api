@@ -2,11 +2,12 @@
 
 import unittest
 
-from openprocurement.api.tests import award, bidder, document, migration, spore, tender
+from openprocurement.api.tests import auction, award, bidder, document, migration, spore, tender
 
 
 def suite():
     suite = unittest.TestSuite()
+    suite.addTest(auction.suite())
     suite.addTest(award.suite())
     suite.addTest(bidder.suite())
     suite.addTest(document.suite())

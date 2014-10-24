@@ -4,7 +4,7 @@ import random
 from uuid import uuid4
 from couchdb_schematics.document import SchematicsDocument
 from schematics.models import Model
-from schematics.transforms import blacklist
+from schematics.transforms import whitelist, blacklist
 from schematics.types import StringType, FloatType, IntType, URLType, DateTimeType, BooleanType
 from schematics.types.compound import ModelType, ListType, DictType
 from schematics.types.serializable import serializable
@@ -101,6 +101,7 @@ class Bid(Model):
         roles = {
             "embedded": (blacklist("_id") + SchematicsDocument.Options.roles['embedded']),
             "view": SchematicsDocument.Options.roles['default'],
+            "auction": whitelist("totalValue"),
         }
 
     bidders = ListType(ModelType(Organization), default=list())
@@ -163,6 +164,7 @@ class TenderDocument(SchematicsDocument, Tender):
     class Options:
         roles = {
             "view": (blacklist("_attachments") + SchematicsDocument.Options.roles['embedded']),
+            "auction": whitelist("modified", "bids", "tenderPeriod"),
         }
 
     _attachments = DictType(DictType(StringType), default=dict())

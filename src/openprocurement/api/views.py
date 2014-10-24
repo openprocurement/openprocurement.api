@@ -10,7 +10,8 @@ from schematics.exceptions import ModelValidationError, ModelConversionError
 from uuid import uuid4
 
 
-spore = Service('spore', path='/spore', renderer='json')
+spore = Service(name='spore', path='/spore', renderer='json')
+auction = Service(name='Tender Auction', path='/tenders/{tender_id}/auction', renderer='json')
 
 
 def wrap_data(data):
@@ -826,3 +827,142 @@ class TenderAwardResource(object):
         self.request.response.status = 201
         # self.request.response.headers['Location'] = self.request.route_url('Tender Bids', tender_id=self.tender_id, id=award['awardID'])
         return wrap_data(award.serialize("view"))
+
+
+@auction.get()
+def get_auction(request):
+    """Get auction info.
+
+    Get tender auction info
+    -----------------------
+
+    Example request to get tender auction information:
+
+    .. sourcecode:: http
+
+        GET /tenders/4879d3f8ee2443169b5fbbc9f89fa607/auction HTTP/1.1
+        Host: example.com
+        Accept: application/json
+
+    This is what one should expect in response:
+
+    .. sourcecode:: http
+
+        HTTP/1.1 200 OK
+        Content-Type: application/json
+
+        {
+            "data": {
+                "modified": "2014-10-27T08:06:58.158Z",
+                "bids": [
+                    {
+                        "amount": 500,
+                        "currency": "UAH"
+                    },
+                    {
+                        "amount": 485,
+                        "currency": "UAH"
+                    }
+                ],
+                "minimalStep":{
+                    "amount": 35,
+                    "currency": "UAH"
+                },
+                "period":{
+                    "startDate": "2014-11-06T12:00:00"
+                }
+            }
+        }
+
+    """
+    db = request.registry.db
+    tender_id = request.matchdict['tender_id']
+    tender = TenderDocument.load(db, tender_id)
+    if not tender:
+        request.errors.add('url', 'tender_id', 'Not Found')
+        request.errors.status = 404
+        return
+    auction_info = tender.serialize("auction")
+    auction_info["minimalStep"] = {
+        "amount": 35,
+        "currency": "UAH"
+    }
+    return wrap_data(auction_info)
+
+
+@auction.patch(content_type="application/json", validators=(validate_tender_data,))
+def patch_auction(request):
+    """Report auction results.
+
+    Report auction results
+    ----------------------
+
+    Example request to report auction results:
+
+    .. sourcecode:: http
+
+        PATCH /tenders/4879d3f8ee2443169b5fbbc9f89fa607/auction HTTP/1.1
+        Host: example.com
+        Accept: application/json
+
+        {
+            "data": {
+                "modified": "2014-10-27T08:06:58.158Z",
+                "bids": [
+                    {
+                        "amount": 400,
+                        "currency": "UAH"
+                    },
+                    {
+                        "amount": 385,
+                        "currency": "UAH"
+                    }
+                ]
+            }
+        }
+
+    This is what one should expect in response:
+
+    .. sourcecode:: http
+
+        HTTP/1.1 200 OK
+        Content-Type: application/json
+
+        {
+            "data": {
+                "modified": "2014-10-27T08:06:58.158Z",
+                "bids": [
+                    {
+                        "amount": 400,
+                        "currency": "UAH"
+                    },
+                    {
+                        "amount": 385,
+                        "currency": "UAH"
+                    }
+                ],
+                "minimalStep":{
+                    "amount": 35,
+                    "currency": "UAH"
+                },
+                "period":{
+                    "startDate": "2014-11-06T12:00:00"
+                }
+            }
+        }
+
+    """
+    db = request.registry.db
+    tender_id = request.matchdict['tender_id']
+    tender = TenderDocument.load(db, tender_id)
+    if not tender:
+        request.errors.add('url', 'tender_id', 'Not Found')
+        request.errors.status = 404
+        return
+    auction_data = filter_data(request.json_body['data'])
+    try:
+        tender.import_data(auction_data)
+        tender.store(db)
+    except Exception, e:
+        return request.errors.add('body', 'data', str(e))
+    return wrap_data(tender.serialize("auction"))

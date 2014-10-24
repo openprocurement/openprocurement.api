@@ -78,6 +78,7 @@ def from2to3(db):
             doc['bids'] = bids
             db.save(doc)
 
+
 def from3to4(db):
     results = db.view('tenders/all', include_docs=True)
     for i in results:

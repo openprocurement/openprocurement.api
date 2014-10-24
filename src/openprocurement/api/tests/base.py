@@ -92,6 +92,6 @@ class BaseTenderWebTest(BaseWebTest):
         tender = response.json['data']
         self.tender_id = tender['id']
 
-    def taerDown(self):
+    def tearDown(self):
         del self.db[self.tender_id]
-        super(BaseTenderWebTest, self).taerDown()
+        super(BaseTenderWebTest, self).tearDown()
