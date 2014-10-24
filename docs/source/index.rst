@@ -18,6 +18,7 @@ Contents:
 
    overview
    errors
+   dates
    tutorial
    reference
 
