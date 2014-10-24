@@ -148,7 +148,8 @@ class TenderResource(object):
                         },
                         "totalValue": {
                             "amount": 500,
-                            "currency": "UAH"
+                            "currency": "UAH",
+                            "valueAddedTaxIncluded":true
                         },
                         "itemsToBeProcured": [
                             {
