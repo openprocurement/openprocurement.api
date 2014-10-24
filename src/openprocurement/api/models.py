@@ -29,6 +29,7 @@ class Notice(Model):
 class Value(Model):
     amount = FloatType()  # Amount as a number.
     currency = StringType(max_length=3, min_length=3)  # The currency in 3-letter ISO 4217 format.
+    valueAddedTaxIncluded = BooleanType()
 
 
 class Period(Model):
