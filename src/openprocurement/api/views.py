@@ -153,10 +153,16 @@ class TenderResource(object):
                         "itemsToBeProcured": [
                             {
                                 "description": "футляри до державних нагород",
-                                "classificationScheme": "Other",
-                                "otherClassificationScheme": "ДКПП",
-                                "classificationID": "17.21.1",
-                                "classificationDescription": "папір і картон гофровані, паперова й картонна тара",
+                                "primaryClassification":{
+                                    "scheme":"CPV",
+                                    "id":"44617100-9",
+                                    "description","Cartons"
+                                },
+                                "additionalClassification":[{
+                                    "scheme":"ДКПП",
+                                    "id":"17.21.1",
+                                    "description":"папір і картон гофровані, паперова й картонна тара"
+                                }],
                                 "unitOfMeasure": "item",
                                 "quantity": 5
                             }
