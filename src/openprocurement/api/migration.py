@@ -3,7 +3,7 @@ import logging
 
 
 LOGGER = logging.getLogger(__name__)
-SCHEMA_VERSION = 3
+SCHEMA_VERSION = 4
 SCHEMA_DOC = 'openprocurement_schema'
 
 
@@ -76,4 +76,23 @@ def from2to3(db):
                 bids.append({'id': uuid, 'bidders': [bidder]})
             del doc['bidders']
             doc['bids'] = bids
+            db.save(doc)
+
+
+def from3to4(db):
+    results = db.view('tenders/all', include_docs=True)
+    for i in results:
+        doc = i.doc
+        if 'itemsToBeProcured' in doc:
+            items = []
+            for item in doc['itemsToBeProcured']:
+                classificationScheme = item.pop('classificationScheme')
+                otherClassificationScheme = item.pop('otherClassificationScheme')
+                item['primaryClassification'] = {
+                    "scheme": otherClassificationScheme if classificationScheme == 'Other' else classificationScheme,
+                    "id": item.pop('classificationID'),
+                    "description": item.pop('classificationDescription')
+                }
+                items.append(item)
+            doc['itemsToBeProcured'] = items
             db.save(doc)

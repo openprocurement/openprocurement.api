@@ -29,10 +29,18 @@ test_tender_data = {
     "itemsToBeProcured": [
         {
             "description": "футляри до державних нагород",
-            "classificationScheme": "Other",
-            "otherClassificationScheme": "ДКПП",
-            "classificationID": "17.21.1",
-            "classificationDescription": "папір і картон гофровані, паперова й картонна тара",
+            "primaryClassification": {
+                "scheme": "CPV",
+                "id": "44617100-9",
+                "description": "Cartons"
+            },
+            "additionalClassification": [
+                {
+                    "scheme": "ДКПП",
+                    "id": "17.21.1",
+                    "description": "папір і картон гофровані, паперова й картонна тара"
+                }
+            ],
             "unitOfMeasure": "item",
             "quantity": 5
         }
@@ -84,6 +92,6 @@ class BaseTenderWebTest(BaseWebTest):
         tender = response.json['data']
         self.tender_id = tender['id']
 
-    def taerDown(self):
+    def tearDown(self):
         del self.db[self.tender_id]
-        super(BaseTenderWebTest, self).taerDown()
+        super(BaseTenderWebTest, self).tearDown()

@@ -4,7 +4,7 @@ import random
 from uuid import uuid4
 from couchdb_schematics.document import SchematicsDocument
 from schematics.models import Model
-from schematics.transforms import blacklist
+from schematics.transforms import whitelist, blacklist
 from schematics.types import StringType, FloatType, IntType, URLType, DateTimeType, BooleanType
 from schematics.types.compound import ModelType, ListType, DictType
 from schematics.types.serializable import serializable
@@ -29,6 +29,7 @@ class Notice(Model):
 class Value(Model):
     amount = FloatType()  # Amount as a number.
     currency = StringType(max_length=3, min_length=3)  # The currency in 3-letter ISO 4217 format.
+    valueAddedTaxIncluded = BooleanType(default=True)
 
 
 class Period(Model):
@@ -37,13 +38,18 @@ class Period(Model):
     endDate = DateTimeType()  # The end date for the period.
 
 
+class classification(Model):
+    scheme = StringType(required=True)  # The classification scheme for the goods
+    id = StringType(required=True)  # The classification ID from the Scheme used
+    description = StringType(required=True)  # A description of the goods, services to be provided.
+    uri = URLType()
+
+
 class Item(Model):
     """A good, service, or work to be contracted."""
     description = StringType()  # A description of the goods, services to be provided.
-    classificationScheme = StringType(choices=['CPV', 'GSIN', 'UNSPSC', 'Other'])  # The classification scheme for the goods
-    otherClassificationScheme = StringType()  # If the classification schema was not in list, please specify
-    classificationID = StringType()  # The classification ID from the Scheme used
-    classificationDescription = StringType()  # A description of the goods, services to be provided.
+    primaryClassification = ModelType(classification)
+    additionalClassification = ListType(ModelType(classification), default=list())
     unitOfMeasure = StringType()  # Description of the unit which the good comes in e.g. hours, kilograms
     quantity = IntType()  # The number of units required
     valuePerUnit = ModelType(Value)  # The value per unit of the item specified.
@@ -95,6 +101,7 @@ class Bid(Model):
         roles = {
             "embedded": (blacklist("_id") + SchematicsDocument.Options.roles['embedded']),
             "view": SchematicsDocument.Options.roles['default'],
+            "auction": whitelist("totalValue"),
         }
 
     bidders = ListType(ModelType(Organization), default=list())
@@ -157,6 +164,7 @@ class TenderDocument(SchematicsDocument, Tender):
     class Options:
         roles = {
             "view": (blacklist("_attachments") + SchematicsDocument.Options.roles['embedded']),
+            "auction": whitelist("modified", "bids", "tenderPeriod"),
         }
 
     _attachments = DictType(DictType(StringType), default=dict())

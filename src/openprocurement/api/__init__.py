@@ -9,7 +9,7 @@ from openprocurement.api.design import tenders_all_view
 from openprocurement.api.migration import migrate_data
 
 
-VERSION = pkg_resources.get_distribution(__package__).version
+VERSION = int(pkg_resources.get_distribution(__package__).parsed_version[0])
 
 
 def main(global_config, **settings):
