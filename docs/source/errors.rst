@@ -6,8 +6,8 @@ Responses
 After processing API is always providing response, reporting either success
 or failure.
 
-Codes
------
+Status Codes
+------------
 In all cases, the API should return an `HTTP Status Code
 <http://en.wikipedia.org/wiki/List_of_HTTP_status_codes>`_ that indicates
 the nature of the failure (below), with a response body in JSON format
@@ -48,8 +48,85 @@ containing additional information.
 500
   Server error. There was a problem on OpenProcurement's end.
 
-Contents
---------
+Success Response
+----------------
+Every successful get, create, update, replace request results in response
+that contains `data` attribute.  That `data` attribute contains full JSON
+object representation after the operation.  If some data were generated in
+the results of processing (like new object IDs, of `modified` date) they are
+present in the respose.
+
+The listing requests result in similar responses, but instead of single
+object in `data` attribute, the JSON response contains collection of
+objects.
+
+Example Succes Response
+~~~~~~~~~~~~~~~~~~~~~~~
+Here is response describing tender
+
+.. sourcecode:: http
+
+  HTTP/1.1 200 OK
+
+  {
+      "data":{
+          "id": "64e93250be76435397e8c992ed4214d1",
+          "tenderID": "UA-2014-DUS-156",
+          "modified": "2014-10-27T08:06:58.158Z",
+          "procuringEntity": {
+              "id": {
+                  "name": "Державне управління справами",
+                  "scheme": "https://ns.openprocurement.org/ua/edrpou",
+                  "uid": "00037256",
+                  "uri": "http://www.dus.gov.ua/"
+              },
+              "address": {
+                  "countryName": "Україна",
+                  "postalCode": "01220",
+                  "region": "м. Київ",
+                  "locality": "м. Київ",
+                  "streetAddress": "вул. Банкова, 11, корпус 1"
+              }
+          },
+          "totalValue": {
+              "amount": 500,
+              "currency": "UAH",
+              "valueAddedTaxIncluded": true
+          },
+          "itemsToBeProcured": [
+              {
+                  "description": "футляри до державних нагород",
+                  "primaryClassification": {
+                      "scheme": "CPV",
+                      "id": "44617100-9",
+                      "description": "Cartons"
+                  },
+                  "additionalClassification": [
+                      {
+                          "scheme": "ДКПП",
+                          "id": "17.21.1",
+                          "description": "папір і картон гофровані, паперова й картонна тара"
+                      }
+                  ],
+                  "unitOfMeasure": "item",
+                  "quantity": 5
+              }
+          ],
+          "clarificationPeriod": {
+              "endDate": "2014-10-31T00:00:00"
+          },
+          "tenderPeriod": {
+              "endDate": "2014-11-06T10:00:00"
+          },
+          "awardPeriod": {
+              "endDate": "2014-11-13T00:00:00"
+          }
+      }
+  }
+
+
+Error Response
+--------------
 In the event of an error, the response body will contain an `errors` field
 at the top level.  This contains an array of at least one error object,
 described below:
@@ -66,8 +143,8 @@ messageUID
   Unique correlation identifier of the error response for audit and issue
   reporting purposes.
 
-Example Response
-~~~~~~~~~~~~~~~~
+Example Error Response
+~~~~~~~~~~~~~~~~~~~~~~
 Sample below indicate incomplete request.
 
 .. sourcecode:: http
