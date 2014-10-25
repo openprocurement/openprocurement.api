@@ -20,6 +20,10 @@ Contents:
    errors
    dates
    tutorial
+   tenders
+   procuring
+   bidding
+   qualification
    reference
 
 Please report any problems or suggestions for improvement either via the
