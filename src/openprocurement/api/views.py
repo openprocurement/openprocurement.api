@@ -490,13 +490,14 @@ class TenderResource(object):
             self.request.errors.status = 404
             return
         tender_data = filter_data(self.request.json_body['data'])
-        if 'tenderID' not in tender_data:
-            tender_data['tenderID'] = tender.tenderID
-        try:
-            tender.import_data(tender_data)
-            tender.store(self.db)
-        except Exception, e:
-            return self.request.errors.add('body', 'data', str(e))
+        if tender_data:
+            if 'tenderID' not in tender_data:
+                tender_data['tenderID'] = tender.tenderID
+            try:
+                tender.import_data(tender_data)
+                tender.store(self.db)
+            except Exception, e:
+                return self.request.errors.add('body', 'data', str(e))
         return {'data': tender.serialize("view")}
 
 

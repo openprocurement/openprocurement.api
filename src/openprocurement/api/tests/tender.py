@@ -201,6 +201,15 @@ class TenderResourceTest(BaseWebTest):
         self.assertEqual(tender, new_tender)
         self.assertNotEqual(modified, new_modified)
 
+        response = self.app.patch_json('/tenders/{}'.format(
+            tender['id']), {'data': {'modified': new_modified}})
+        self.assertEqual(response.status, '200 OK')
+        self.assertEqual(response.content_type, 'application/json')
+        new_tender2 = response.json['data']
+        new_modified2 = new_tender2.pop('modified')
+        self.assertEqual(new_tender, new_tender2)
+        self.assertEqual(new_modified, new_modified2)
+
     def test_modified_tender(self):
         response = self.app.get('/tenders')
         self.assertEqual(response.status, '200 OK')
