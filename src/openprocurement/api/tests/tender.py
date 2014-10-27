@@ -33,12 +33,12 @@ class TenderResourceTest(BaseWebTest):
         response = self.app.get('/tenders')
         self.assertEqual(response.status, '200 OK')
         self.assertEqual(response.content_type, 'application/json')
-        self.assertEqual(response.body, '{"tenders": []}')
+        self.assertEqual(response.body, '{"data": []}')
 
     def test_listing(self):
         response = self.app.get('/tenders')
         self.assertEqual(response.status, '200 OK')
-        self.assertEqual(len(response.json['tenders']), 0)
+        self.assertEqual(len(response.json['data']), 0)
 
         for i in range(3):
             response = self.app.post_json('/tenders', {'data': {}})
@@ -47,7 +47,7 @@ class TenderResourceTest(BaseWebTest):
 
         response = self.app.get('/tenders')
         self.assertEqual(response.status, '200 OK')
-        self.assertEqual(len(response.json['tenders']), 3)
+        self.assertEqual(len(response.json['data']), 3)
 
     def test_create_tender_invalid(self):
         request_path = '/tenders'
@@ -132,7 +132,7 @@ class TenderResourceTest(BaseWebTest):
     def test_create_tender(self):
         response = self.app.get('/tenders')
         self.assertEqual(response.status, '200 OK')
-        self.assertEqual(len(response.json['tenders']), 0)
+        self.assertEqual(len(response.json['data']), 0)
 
         response = self.app.post_json('/tenders', {"data": test_tender_data})
         self.assertEqual(response.status, '201 Created')
@@ -150,7 +150,7 @@ class TenderResourceTest(BaseWebTest):
     def test_get_tender(self):
         response = self.app.get('/tenders')
         self.assertEqual(response.status, '200 OK')
-        self.assertEqual(len(response.json['tenders']), 0)
+        self.assertEqual(len(response.json['data']), 0)
 
         response = self.app.post_json('/tenders', {'data': {}})
         self.assertEqual(response.status, '201 Created')
@@ -164,7 +164,7 @@ class TenderResourceTest(BaseWebTest):
     def test_put_tender(self):
         response = self.app.get('/tenders')
         self.assertEqual(response.status, '200 OK')
-        self.assertEqual(len(response.json['tenders']), 0)
+        self.assertEqual(len(response.json['data']), 0)
 
         response = self.app.post_json('/tenders', {'data': {}})
         self.assertEqual(response.status, '201 Created')
@@ -184,7 +184,7 @@ class TenderResourceTest(BaseWebTest):
     def test_patch_tender(self):
         response = self.app.get('/tenders')
         self.assertEqual(response.status, '200 OK')
-        self.assertEqual(len(response.json['tenders']), 0)
+        self.assertEqual(len(response.json['data']), 0)
 
         response = self.app.post_json('/tenders', {'data': {}})
         self.assertEqual(response.status, '201 Created')
@@ -204,7 +204,7 @@ class TenderResourceTest(BaseWebTest):
     def test_modified_tender(self):
         response = self.app.get('/tenders')
         self.assertEqual(response.status, '200 OK')
-        self.assertEqual(len(response.json['tenders']), 0)
+        self.assertEqual(len(response.json['data']), 0)
 
         response = self.app.post_json('/tenders', {'data': {}})
         self.assertEqual(response.status, '201 Created')
@@ -233,7 +233,7 @@ class TenderResourceTest(BaseWebTest):
     def test_tender_not_found(self):
         response = self.app.get('/tenders')
         self.assertEqual(response.status, '200 OK')
-        self.assertEqual(len(response.json['tenders']), 0)
+        self.assertEqual(len(response.json['data']), 0)
 
         response = self.app.get('/tenders/some_id', status=404)
         self.assertEqual(response.status, '404 Not Found')

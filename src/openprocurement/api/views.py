@@ -14,10 +14,6 @@ spore = Service(name='spore', path='/spore', renderer='json')
 auction = Service(name='Tender Auction', path='/tenders/{tender_id}/auction', renderer='json')
 
 
-def wrap_data(data):
-    return {"data": data}
-
-
 def validate_tender_data(request):
     try:
         json = request.json_body
@@ -128,7 +124,7 @@ class TenderResource(object):
             Content-Type: application/json
 
             {
-                "tenders": [
+                "data": [
                     {
                         "id": "64e93250be76435397e8c992ed4214d1",
                         "tenderID": "UA-2014-DUS-156",
@@ -188,7 +184,7 @@ class TenderResource(object):
         """
         # limit, skip, descending
         results = TenderDocument.view(self.db, 'tenders/all')
-        return {'tenders': [i.serialize("view") for i in results]}
+        return {'data': [i.serialize("view") for i in results]}
 
     @view(content_type="application/json", validators=(validate_tender_data,))
     def collection_post(self):
@@ -335,7 +331,7 @@ class TenderResource(object):
         self.request.response.status = 201
         self.request.response.headers[
             'Location'] = self.request.route_url('Tender', id=tender_id)
-        return wrap_data(tender.serialize("view"))
+        return {'data': tender.serialize("view")}
 
     @view(renderer='json')
     def get(self):
@@ -421,7 +417,7 @@ class TenderResource(object):
             self.request.errors.add('url', 'id', 'Not Found')
             self.request.errors.status = 404
             return
-        return wrap_data(tender.serialize("view"))
+        return {'data': tender.serialize("view")}
 
     @view(content_type="application/json", validators=(validate_tender_data,))
     def put(self):
@@ -437,7 +433,7 @@ class TenderResource(object):
             tender.store(self.db)
         except Exception, e:
             return self.request.errors.add('body', 'data', str(e))
-        return wrap_data(tender.serialize("view"))
+        return {'data': tender.serialize("view")}
 
     @view(content_type="application/json", validators=(validate_tender_data,))
     def patch(self):
@@ -501,7 +497,7 @@ class TenderResource(object):
             tender.store(self.db)
         except Exception, e:
             return self.request.errors.add('body', 'data', str(e))
-        return wrap_data(tender.serialize("view"))
+        return {'data': tender.serialize("view")}
 
 
 @resource(name='Tender Documents',
@@ -681,7 +677,7 @@ class TenderBidderResource(object):
             return self.request.errors.add('body', 'data', str(e))
         self.request.response.status = 201
         # self.request.response.headers['Location'] = self.request.route_url('Tender Bids', tender_id=self.tender_id, id=bid['id'])
-        return wrap_data(bid.serialize("view"))
+        return {'data': bid.serialize("view")}
 
 
 @resource(name='Tender Bid Documents',
@@ -826,7 +822,7 @@ class TenderAwardResource(object):
             return self.request.errors.add('body', 'data', str(e))
         self.request.response.status = 201
         # self.request.response.headers['Location'] = self.request.route_url('Tender Bids', tender_id=self.tender_id, id=award['awardID'])
-        return wrap_data(award.serialize("view"))
+        return {'data': award.serialize("view")}
 
 
 @auction.get()
@@ -887,7 +883,7 @@ def get_auction(request):
         "amount": 35,
         "currency": "UAH"
     }
-    return wrap_data(auction_info)
+    return {'data': auction_info}
 
 
 @auction.patch(content_type="application/json", validators=(validate_tender_data,))
@@ -965,4 +961,4 @@ def patch_auction(request):
         tender.store(db)
     except Exception, e:
         return request.errors.add('body', 'data', str(e))
-    return wrap_data(tender.serialize("auction"))
+    return {'data': tender.serialize("auction")}
