@@ -586,12 +586,12 @@ class TenderBidderResource(object):
 
     @view(content_type="application/json", validators=(validate_bid_data,))
     def collection_post(self):
-        """Registration of new bidder
+        """Registration of new bid proposal
 
-        Creating new Bidder
-        -------------------
+        Creating new Bid proposal
+        -------------------------
 
-        Example request to create bidder:
+        Example request to create bid proposal:
 
         .. sourcecode:: http
 
