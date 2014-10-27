@@ -164,6 +164,7 @@ class TenderDocument(SchematicsDocument, Tender):
     class Options:
         roles = {
             "view": (blacklist("_attachments") + SchematicsDocument.Options.roles['embedded']),
+            "listing": whitelist("modified", "doc_id"),
             "auction": whitelist("modified", "bids", "tenderPeriod"),
         }
 

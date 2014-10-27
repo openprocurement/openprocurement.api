@@ -127,56 +127,7 @@ class TenderResource(object):
                 "data": [
                     {
                         "id": "64e93250be76435397e8c992ed4214d1",
-                        "tenderID": "UA-2014-DUS-156",
-                        "modified": "2014-10-27T08:06:58.158Z",
-                        "procuringEntity": {
-                            "id": {
-                                "name": "Державне управління справами",
-                                "scheme": "https://ns.openprocurement.org/ua/edrpou",
-                                "uid": "00037256",
-                                "uri": "http://www.dus.gov.ua/"
-                            },
-                            "address": {
-                                "countryName": "Україна",
-                                "postalCode": "01220",
-                                "region": "м. Київ",
-                                "locality": "м. Київ",
-                                "streetAddress": "вул. Банкова, 11, корпус 1"
-                            }
-                        },
-                        "totalValue": {
-                            "amount": 500,
-                            "currency": "UAH",
-                            "valueAddedTaxIncluded": true
-                        },
-                        "itemsToBeProcured": [
-                            {
-                                "description": "футляри до державних нагород",
-                                "primaryClassification": {
-                                    "scheme": "CPV",
-                                    "id": "44617100-9",
-                                    "description": "Cartons"
-                                },
-                                "additionalClassification": [
-                                    {
-                                        "scheme": "ДКПП",
-                                        "id": "17.21.1",
-                                        "description": "папір і картон гофровані, паперова й картонна тара"
-                                    }
-                                ],
-                                "unitOfMeasure": "item",
-                                "quantity": 5
-                            }
-                        ],
-                        "clarificationPeriod": {
-                            "endDate": "2014-10-31T00:00:00"
-                        },
-                        "tenderPeriod": {
-                            "endDate": "2014-11-06T10:00:00"
-                        },
-                        "awardPeriod": {
-                            "endDate": "2014-11-13T00:00:00"
-                        }
+                        "modified": "2014-10-27T08:06:58.158Z"
                     }
                 ]
             }
@@ -184,7 +135,7 @@ class TenderResource(object):
         """
         # limit, skip, descending
         results = TenderDocument.view(self.db, 'tenders/all')
-        return {'data': [i.serialize("view") for i in results]}
+        return {'data': [i.serialize("listing") for i in results]}
 
     @view(content_type="application/json", validators=(validate_tender_data,))
     def collection_post(self):

@@ -40,14 +40,20 @@ class TenderResourceTest(BaseWebTest):
         self.assertEqual(response.status, '200 OK')
         self.assertEqual(len(response.json['data']), 0)
 
+        tenders = []
+
         for i in range(3):
             response = self.app.post_json('/tenders', {'data': {}})
             self.assertEqual(response.status, '201 Created')
             self.assertEqual(response.content_type, 'application/json')
+            tenders.append(response.json['data'])
 
         response = self.app.get('/tenders')
         self.assertEqual(response.status, '200 OK')
         self.assertEqual(len(response.json['data']), 3)
+        self.assertEqual(set(response.json['data'][0]), set([u'id', u'modified']))
+        self.assertEqual(set([i['id'] for i in response.json['data']]), set([i['id'] for i in tenders]))
+        self.assertEqual(set([i['modified'] for i in response.json['data']]), set([i['modified'] for i in tenders]))
 
     def test_create_tender_invalid(self):
         request_path = '/tenders'
