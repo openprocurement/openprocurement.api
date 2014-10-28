@@ -5,9 +5,10 @@ from cornice.ext.spore import generate_spore_description
 from cornice.resource import resource, view
 from cornice.service import Service, get_services
 from openprocurement.api import VERSION
-from openprocurement.api.models import TenderDocument, Bid, Award
+from openprocurement.api.models import TenderDocument, Bid, Award, revision
 from schematics.exceptions import ModelValidationError, ModelConversionError
 from uuid import uuid4
+from jsonpatch import make_patch
 
 
 spore = Service(name='spore', path='/spore', renderer='json')
@@ -379,12 +380,16 @@ class TenderResource(object):
             self.request.errors.add('url', 'id', 'Not Found')
             self.request.errors.status = 404
             return
+        src = tender.serialize("plain")
         tender_data = filter_data(self.request.json_body['data'])
-        try:
-            tender.import_data(tender_data)
-            tender.store(self.db)
-        except Exception, e:
-            return self.request.errors.add('body', 'data', str(e))
+        tender.import_data(tender_data)
+        patch = make_patch(src, tender.serialize("plain")).patch
+        if patch:
+            tender.revisions.append(revision({'changes': patch}))
+            try:
+                tender.store(self.db)
+            except Exception, e:
+                return self.request.errors.add('body', 'data', str(e))
         return {'data': tender.serialize("view")}
 
     @view(content_type="application/json", validators=(validate_tender_data,), renderer='json')
@@ -441,15 +446,19 @@ class TenderResource(object):
             self.request.errors.add('url', 'id', 'Not Found')
             self.request.errors.status = 404
             return
+        src = tender.serialize("plain")
         tender_data = filter_data(self.request.json_body['data'])
         if tender_data:
             if 'tenderID' not in tender_data:
                 tender_data['tenderID'] = tender.tenderID
-            try:
-                tender.import_data(tender_data)
-                tender.store(self.db)
-            except Exception, e:
-                return self.request.errors.add('body', 'data', str(e))
+            tender.import_data(tender_data)
+            patch = make_patch(src, tender.serialize("plain")).patch
+            if patch:
+                tender.revisions.append(revision({'changes': patch}))
+                try:
+                    tender.store(self.db)
+                except Exception, e:
+                    return self.request.errors.add('body', 'data', str(e))
         return {'data': tender.serialize("view")}
 
 
@@ -482,12 +491,20 @@ class TenderDocumentResource(object):
             self.request.errors.add('url', 'tender_id', 'Not Found')
             self.request.errors.status = 404
             return
+        src = tender.serialize("plain")
         for data in self.request.POST.values():
             try:
                 self.db.put_attachment(tender._data, data.file, data.filename)
             except Exception, e:
                 return self.request.errors.add('body', 'data', str(e))
         tender = tender.reload(self.db)
+        patch = make_patch(src, tender.serialize("plain")).patch
+        if patch:
+            tender.revisions.append(revision({'changes': patch}))
+            try:
+                tender.store(self.db)
+            except Exception, e:
+                return self.request.errors.add('body', 'data', str(e))
         self.request.response.status = 201
         self.request.response.headers['Location'] = self.request.route_url(
             'Tender Documents', tender_id=self.tender_id, id=data.filename)
@@ -512,6 +529,7 @@ class TenderDocumentResource(object):
             self.request.errors.add('url', 'tender_id', 'Not Found')
             self.request.errors.status = 404
             return
+        src = tender.serialize("plain")
         for data in self.request.POST.values():
             if data.filename not in tender['_attachments']:
                 self.request.errors.add('url', 'id', 'Not Found')
@@ -522,6 +540,13 @@ class TenderDocumentResource(object):
             except Exception, e:
                 return self.request.errors.add('body', 'data', str(e))
         tender = tender.reload(self.db)
+        patch = make_patch(src, tender.serialize("plain")).patch
+        if patch:
+            tender.revisions.append(revision({'changes': patch}))
+            try:
+                tender.store(self.db)
+            except Exception, e:
+                return self.request.errors.add('body', 'data', str(e))
         return tender['_attachments'].get(self.request.matchdict['id'], {})
 
 
@@ -623,10 +648,13 @@ class TenderBidderResource(object):
             self.request.errors.add('url', 'tender_id', 'Not Found')
             self.request.errors.status = 404
             return
+        src = tender.serialize("plain")
         bid_data = filter_data(
             self.request.json_body['data'], fields=['id', 'date'])
         bid = Bid(bid_data)
         tender.bids.append(bid)
+        patch = make_patch(src, tender.serialize("plain")).patch
+        tender.revisions.append(revision({'changes': patch}))
         try:
             tender.store(self.db)
         except Exception, e:
@@ -657,6 +685,7 @@ class TenderBidderDocumentResource(object):
             self.request.errors.add('url', 'tender_id', 'Not Found')
             self.request.errors.status = 404
             return
+        src = tender.serialize("plain")
         bids = [i for i in tender.bids if i.id == self.bid_id]
         if not bids:
             self.request.errors.add('url', 'bid_id', 'Not Found')
@@ -668,6 +697,13 @@ class TenderBidderDocumentResource(object):
             except Exception, e:
                 return self.request.errors.add('body', 'data', str(e))
         tender = tender.reload(self.db)
+        patch = make_patch(src, tender.serialize("plain")).patch
+        if patch:
+            tender.revisions.append(revision({'changes': patch}))
+            try:
+                tender.store(self.db)
+            except Exception, e:
+                return self.request.errors.add('body', 'data', str(e))
         self.request.response.status = 201
         # self.request.response.headers['Location'] = self.request.route_url('Tender Bid Documents', tender_id=self.tender_id, bid_id=self.bid_id, id=data.filename)
         return {'documents': tender['_attachments']}
@@ -770,9 +806,12 @@ class TenderAwardResource(object):
             self.request.errors.add('url', 'tender_id', 'Not Found')
             self.request.errors.status = 404
             return
+        src = tender.serialize("plain")
         award_data = self.request.json_body['data']
         award = Award(award_data)
         tender.awards.append(award)
+        patch = make_patch(src, tender.serialize("plain")).patch
+        tender.revisions.append(revision({'changes': patch}))
         try:
             tender.store(self.db)
         except Exception, e:
@@ -912,10 +951,16 @@ def patch_auction(request):
         request.errors.add('url', 'tender_id', 'Not Found')
         request.errors.status = 404
         return
+    src = tender.serialize("plain")
     auction_data = filter_data(request.json_body['data'])
-    try:
+    if auction_data:
+        auction_data['tenderID'] = tender.tenderID
         tender.import_data(auction_data)
-        tender.store(db)
-    except Exception, e:
-        return request.errors.add('body', 'data', str(e))
+        patch = make_patch(src, tender.serialize("plain")).patch
+        if patch:
+            tender.revisions.append(revision({'changes': patch}))
+            try:
+                tender.store(db)
+            except Exception, e:
+                return request.errors.add('body', 'data', str(e))
     return {'data': tender.serialize("auction")}

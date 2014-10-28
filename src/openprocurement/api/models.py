@@ -5,7 +5,7 @@ from uuid import uuid4
 from couchdb_schematics.document import SchematicsDocument
 from schematics.models import Model
 from schematics.transforms import whitelist, blacklist
-from schematics.types import StringType, FloatType, IntType, URLType, DateTimeType, BooleanType
+from schematics.types import StringType, FloatType, IntType, URLType, DateTimeType, BooleanType, BaseType
 from schematics.types.compound import ModelType, ListType, DictType
 from schematics.types.serializable import serializable
 
@@ -132,6 +132,11 @@ class Award(Model):
     itemsAwarded = ListType(ModelType(Item))
 
 
+class revision(Model):
+    date = DateTimeType(default=datetime.datetime.now)
+    changes = ListType(DictType(BaseType), default=list())
+
+
 class Tender(Model):
     """Data regarding tender process - publicly inviting prospective contractors to submit bids for evaluation and selecting a winner or winners."""
     tenderID = StringType(required=True, default=lambda: "UA-2014-DUS-{:03}".format(random.randint(0, 10 ** 3)))  # TenderID should always be the same as the OCID. It is included to make the flattened data structure more convenient.
@@ -154,6 +159,7 @@ class Tender(Model):
     procuringEntity = ModelType(Organization)  # The entity managing the procurement, which may be different from the buyer who is paying / using the items being procured.
     attachments = ListType(ModelType(Attachment))  # All documents and attachments related to the tender.
     awards = ListType(ModelType(Award), default=list())
+    revisions = ListType(ModelType(revision), default=list())
 
 
 class OrganizationDocument(SchematicsDocument, Organization):
@@ -163,7 +169,8 @@ class OrganizationDocument(SchematicsDocument, Organization):
 class TenderDocument(SchematicsDocument, Tender):
     class Options:
         roles = {
-            "view": (blacklist("_attachments") + SchematicsDocument.Options.roles['embedded']),
+            "plain": (blacklist("_attachments", "revisions", "modified") + SchematicsDocument.Options.roles['embedded']),
+            "view": (blacklist("_attachments", "revisions") + SchematicsDocument.Options.roles['embedded']),
             "listing": whitelist("modified", "doc_id"),
             "auction": whitelist("modified", "bids", "tenderPeriod"),
         }

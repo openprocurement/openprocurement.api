@@ -12,6 +12,7 @@ requires = [
     'waitress',
     'couchdb-schematics',
     'sphinxcontrib-httpdomain',
+    'jsonpatch',
 ]
 test_requires = requires + [
     'webtest',
@@ -24,7 +25,7 @@ main = openprocurement.api:main
 """
 
 setup(name='openprocurement.api',
-      version=0.1,
+      version='0.2',
       description='openprocurement.api',
       long_description=README,
       classifiers=[

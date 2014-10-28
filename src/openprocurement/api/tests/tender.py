@@ -257,6 +257,9 @@ class TenderResourceTest(BaseWebTest):
         self.assertEqual(new_tender, new_tender2)
         self.assertEqual(new_modified, new_modified2)
 
+        revisions = self.db.get(tender['id']).get('revisions')
+        self.assertEqual(revisions[0][u'changes'][0], {u'op': u'add', u'path': u'/method', u'value': u'Open'})
+
     def test_modified_tender(self):
         response = self.app.get('/tenders')
         self.assertEqual(response.status, '200 OK')
