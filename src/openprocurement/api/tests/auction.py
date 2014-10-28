@@ -78,6 +78,17 @@ class TenderAuctionResourceTest(BaseWebTest):
         self.assertEqual(auction["bids"][1]['totalValue']['amount'], self.tender_data["bids"][1]['totalValue']['amount'])
         self.assertTrue(self.tender_data["tenderPeriod"]['endDate'] in auction["tenderPeriod"]['endDate'])
 
+        response = self.app.get('/tenders/{}/auction?opt_jsonp=callback'.format(self.tender_id))
+        self.assertEqual(response.status, '200 OK')
+        self.assertEqual(response.content_type, 'application/javascript')
+        self.assertTrue('callback({"data": {"' in response.body)
+
+        response = self.app.get('/tenders/{}/auction?opt_pretty=1'.format(self.tender_id))
+        self.assertEqual(response.status, '200 OK')
+        self.assertEqual(response.content_type, 'application/json')
+        self.assertTrue('{\n    "data": {\n        "' in response.body)
+
+
     def test_patch_tender(self):
         patch_data = {
             'bids': [

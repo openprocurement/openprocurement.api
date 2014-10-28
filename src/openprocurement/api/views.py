@@ -102,6 +102,7 @@ class TenderResource(object):
         self.request = request
         self.db = request.registry.db
 
+    @view(renderer='json')
     def collection_get(self):
         """Tenders List
 
@@ -137,7 +138,7 @@ class TenderResource(object):
         results = TenderDocument.view(self.db, 'tenders/all')
         return {'data': [i.serialize("listing") for i in results]}
 
-    @view(content_type="application/json", validators=(validate_tender_data,))
+    @view(content_type="application/json", validators=(validate_tender_data,), renderer='json')
     def collection_post(self):
         """This API request is targeted to creating new Tenders by procuring organizations.
 
@@ -370,7 +371,7 @@ class TenderResource(object):
             return
         return {'data': tender.serialize("view")}
 
-    @view(content_type="application/json", validators=(validate_tender_data,))
+    @view(content_type="application/json", validators=(validate_tender_data,), renderer='json')
     def put(self):
         """Tender Edit (full)"""
         tender = TenderDocument.load(self.db, self.request.matchdict['id'])
@@ -386,7 +387,7 @@ class TenderResource(object):
             return self.request.errors.add('body', 'data', str(e))
         return {'data': tender.serialize("view")}
 
-    @view(content_type="application/json", validators=(validate_tender_data,))
+    @view(content_type="application/json", validators=(validate_tender_data,), renderer='json')
     def patch(self):
         """Tender Edit (partial)
 
@@ -463,6 +464,7 @@ class TenderDocumentResource(object):
         self.db = request.registry.db
         self.tender_id = request.matchdict['tender_id']
 
+    @view(renderer='json')
     def collection_get(self):
         """Tender Documents List"""
         tender = TenderDocument.load(self.db, self.tender_id)
@@ -472,6 +474,7 @@ class TenderDocumentResource(object):
             return
         return {'documents': tender['_attachments']}
 
+    @view(renderer='json')
     def collection_post(self):
         """Tender Document Upload"""
         tender = TenderDocument.load(self.db, self.tender_id)
@@ -501,6 +504,7 @@ class TenderDocumentResource(object):
         self.request.response.body_file = data
         return self.request.response
 
+    @view(renderer='json')
     def put(self):
         """Tender Document Update"""
         tender = TenderDocument.load(self.db, self.tender_id)
@@ -532,7 +536,7 @@ class TenderBidderResource(object):
         self.db = request.registry.db
         self.tender_id = request.matchdict['tender_id']
 
-    @view(content_type="application/json", validators=(validate_bid_data,))
+    @view(content_type="application/json", validators=(validate_bid_data,), renderer='json')
     def collection_post(self):
         """Registration of new bid proposal
 
@@ -644,6 +648,7 @@ class TenderBidderDocumentResource(object):
         self.tender_id = request.matchdict['tender_id']
         self.bid_id = request.matchdict['bid_id']
 
+    @view(renderer='json')
     def collection_post(self):
         """Tender Bid Document Upload
         """
@@ -679,7 +684,7 @@ class TenderAwardResource(object):
         self.db = request.registry.db
         self.tender_id = request.matchdict['tender_id']
 
-    @view(content_type="application/json", validators=(validate_award_data,))
+    @view(content_type="application/json", validators=(validate_award_data,), renderer='json')
     def collection_post(self):
         """Accept or reject bidder application
 
@@ -777,7 +782,7 @@ class TenderAwardResource(object):
         return {'data': award.serialize("view")}
 
 
-@auction.get()
+@auction.get(renderer='json')
 def get_auction(request):
     """Get auction info.
 
@@ -838,7 +843,7 @@ def get_auction(request):
     return {'data': auction_info}
 
 
-@auction.patch(content_type="application/json", validators=(validate_tender_data,))
+@auction.patch(content_type="application/json", validators=(validate_tender_data,), renderer='json')
 def patch_auction(request):
     """Report auction results.
 

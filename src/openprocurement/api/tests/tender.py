@@ -35,6 +35,22 @@ class TenderResourceTest(BaseWebTest):
         self.assertEqual(response.content_type, 'application/json')
         self.assertEqual(response.body, '{"data": []}')
 
+        response = self.app.get('/tenders?opt_jsonp=callback')
+        self.assertEqual(response.status, '200 OK')
+        self.assertEqual(response.content_type, 'application/javascript')
+        self.assertEqual(response.body, 'callback({"data": []});')
+
+        response = self.app.get('/tenders?opt_pretty=1')
+        self.assertEqual(response.status, '200 OK')
+        self.assertEqual(response.content_type, 'application/json')
+        self.assertEqual(response.body, '{\n    "data": []\n}')
+
+        response = self.app.get('/tenders?opt_jsonp=callback&opt_pretty=1')
+        self.assertEqual(response.status, '200 OK')
+        self.assertEqual(response.content_type, 'application/javascript')
+        self.assertEqual(response.body, 'callback({\n    "data": []\n});')
+
+
     def test_listing(self):
         response = self.app.get('/tenders')
         self.assertEqual(response.status, '200 OK')
@@ -153,6 +169,21 @@ class TenderResourceTest(BaseWebTest):
         self.assertEqual(response.content_type, 'application/json')
         self.assertEqual(response.json['data'], tender)
 
+        response = self.app.post_json('/tenders?opt_jsonp=callback', {"data": test_tender_data})
+        self.assertEqual(response.status, '201 Created')
+        self.assertEqual(response.content_type, 'application/javascript')
+        self.assertTrue('callback({"data": {"' in response.body)
+
+        response = self.app.post_json('/tenders?opt_pretty=1', {"data": test_tender_data})
+        self.assertEqual(response.status, '201 Created')
+        self.assertEqual(response.content_type, 'application/json')
+        self.assertTrue('{\n    "data": {\n        "' in response.body)
+
+        response = self.app.post_json('/tenders', {"data": test_tender_data, "options": {"pretty": True}})
+        self.assertEqual(response.status, '201 Created')
+        self.assertEqual(response.content_type, 'application/json')
+        self.assertTrue('{\n    "data": {\n        "' in response.body)
+
     def test_get_tender(self):
         response = self.app.get('/tenders')
         self.assertEqual(response.status, '200 OK')
@@ -166,6 +197,16 @@ class TenderResourceTest(BaseWebTest):
         self.assertEqual(response.status, '200 OK')
         self.assertEqual(response.content_type, 'application/json')
         self.assertEqual(response.json['data'], tender)
+
+        response = self.app.get('/tenders/{}?opt_jsonp=callback'.format(tender['id']))
+        self.assertEqual(response.status, '200 OK')
+        self.assertEqual(response.content_type, 'application/javascript')
+        self.assertTrue('callback({"data": {"' in response.body)
+
+        response = self.app.get('/tenders/{}?opt_pretty=1'.format(tender['id']))
+        self.assertEqual(response.status, '200 OK')
+        self.assertEqual(response.content_type, 'application/json')
+        self.assertTrue('{\n    "data": {\n        "' in response.body)
 
     def test_put_tender(self):
         response = self.app.get('/tenders')
