@@ -56,9 +56,17 @@ class Item(Model):
 
 
 class Attachment(Model):
+    class Options:
+        serialize_when_none = False
+        roles = {
+            "embedded": SchematicsDocument.Options.roles['embedded'],
+            "view": SchematicsDocument.Options.roles['default'],
+        }
+
+    id = StringType(required=True)
     description = StringType()  # A description of the document.
     uri = URLType()  # Link to the document or attachment.
-    lastModified = DateTimeType()  # Date that the document was last modified
+    lastModified = DateTimeType(default=datetime.datetime.now)  # Date that the document was last modified
 
 
 class identifier(Model):
@@ -87,7 +95,7 @@ class Organization(Model):
     class Options:
         serialize_when_none = False
         roles = {
-            "embedded": (blacklist("_id") + SchematicsDocument.Options.roles['embedded']),
+            "embedded": SchematicsDocument.Options.roles['embedded'],
             "view": SchematicsDocument.Options.roles['default'],
         }
 
@@ -99,7 +107,7 @@ class Bid(Model):
     class Options:
         serialize_when_none = False
         roles = {
-            "embedded": (blacklist("_id") + SchematicsDocument.Options.roles['embedded']),
+            "embedded": SchematicsDocument.Options.roles['embedded'],
             "view": SchematicsDocument.Options.roles['default'],
             "auction": whitelist("totalValue"),
         }
@@ -157,7 +165,7 @@ class Tender(Model):
     numberOfBids = IntType()  # The number of bids or submissions to the tender. In the case of an auction, the number of bids may differ from the numberOfBidders.
     bids = ListType(ModelType(Bid), default=list())  # A list of all the companies who entered submissions for the tender.
     procuringEntity = ModelType(Organization)  # The entity managing the procurement, which may be different from the buyer who is paying / using the items being procured.
-    attachments = ListType(ModelType(Attachment))  # All documents and attachments related to the tender.
+    attachments = ListType(ModelType(Attachment), default=list())  # All documents and attachments related to the tender.
     awards = ListType(ModelType(Award), default=list())
     revisions = ListType(ModelType(revision), default=list())
 

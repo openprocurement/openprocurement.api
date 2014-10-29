@@ -10,7 +10,7 @@ class TenderDocumentResourceTest(BaseTenderWebTest):
         response = self.app.get('/tenders/{}/documents'.format(self.tender_id))
         self.assertEqual(response.status, '200 OK')
         self.assertEqual(response.content_type, 'application/json')
-        self.assertEqual(response.json, {"documents": {}})
+        self.assertEqual(response.json, {"data": []})
 
     def test_get_tender_not_found(self):
         response = self.app.get('/tenders/some_id/documents', status=404)
@@ -24,7 +24,7 @@ class TenderDocumentResourceTest(BaseTenderWebTest):
 
     def test_post_tender_not_found(self):
         response = self.app.post('/tenders/some_id/documents', status=404, upload_files=[
-                                 ('upload', 'name.doc', 'content')])
+                                 ('file', 'name.doc', 'content')])
         self.assertEqual(response.status, '404 Not Found')
         self.assertEqual(response.content_type, 'application/json')
         self.assertEqual(response.json['status'], 'error')
@@ -35,7 +35,7 @@ class TenderDocumentResourceTest(BaseTenderWebTest):
 
     def test_put_tender_not_found(self):
         response = self.app.put('/tenders/some_id/documents/some_id', status=404, upload_files=[
-                                ('upload', 'name.doc', 'content2')])
+                                ('file', 'name.doc', 'content2')])
         self.assertEqual(response.status, '404 Not Found')
         self.assertEqual(response.content_type, 'application/json')
         self.assertEqual(response.json['status'], 'error')
@@ -46,7 +46,7 @@ class TenderDocumentResourceTest(BaseTenderWebTest):
 
     def test_put_tender_document_not_found(self):
         response = self.app.put('/tenders/{}/documents/some_id'.format(
-            self.tender_id), status=404, upload_files=[('upload', 'name.doc', 'content2')])
+            self.tender_id), status=404, upload_files=[('file', 'name.doc', 'content2')])
         self.assertEqual(response.status, '404 Not Found')
         self.assertEqual(response.content_type, 'application/json')
         self.assertEqual(response.json['status'], 'error')
@@ -66,38 +66,46 @@ class TenderDocumentResourceTest(BaseTenderWebTest):
 
     def test_create_tender_document(self):
         response = self.app.post('/tenders/{}/documents'.format(
-            self.tender_id), upload_files=[('upload', 'name.doc', 'content')])
+            self.tender_id), upload_files=[('file', 'name.doc', 'content')])
         self.assertEqual(response.status, '201 Created')
         self.assertEqual(response.content_type, 'application/json')
-        self.assertTrue('name.doc' in response.headers['Location'])
-        self.assertTrue('name.doc' in response.json["documents"])
+        doc_id = response.json["data"]['id']
+        self.assertTrue(doc_id in response.headers['Location'])
+        self.assertEqual('name.doc', response.json["data"]["description"])
 
-        response = self.app.get('/tenders/{}/documents'.format(
-            self.tender_id, 'name.doc'))
+        response = self.app.get('/tenders/{}/documents'.format(self.tender_id))
         self.assertEqual(response.status, '200 OK')
         self.assertEqual(response.content_type, 'application/json')
-        self.assertTrue('name.doc' in response.json["documents"])
+        self.assertEqual(doc_id, response.json["data"][0]["id"])
+        self.assertEqual('name.doc', response.json["data"][0]["description"])
 
         response = self.app.get('/tenders/{}/documents/{}'.format(
-            self.tender_id, 'name.doc'))
+            self.tender_id, doc_id))
         self.assertEqual(response.status, '200 OK')
-        self.assertEqual(response.content_type, 'text/html')
+        self.assertEqual(response.content_type, 'application/msword')
         self.assertEqual(response.content_length, 7)
         self.assertEqual(response.body, 'content')
 
     def test_put_tender_document(self):
         response = self.app.post('/tenders/{}/documents'.format(
-            self.tender_id), upload_files=[('upload', 'name.doc', 'content')])
+            self.tender_id), upload_files=[('file', 'name.doc', 'content')])
         self.assertEqual(response.status, '201 Created')
         self.assertEqual(response.content_type, 'application/json')
-        self.assertTrue('name.doc' in response.json["documents"])
+        doc_id = response.json["data"]['id']
+        self.assertTrue(doc_id in response.headers['Location'])
 
         response = self.app.put('/tenders/{}/documents/{}'.format(
-            self.tender_id, 'name.doc'), upload_files=[('upload', 'name.doc', 'content2')])
+            self.tender_id, doc_id), upload_files=[('file', 'name.doc', 'content2')])
         self.assertEqual(response.status, '200 OK')
         self.assertEqual(response.content_type, 'application/json')
-        self.assertEqual(response.json["content_type"], 'application/msword')
-        self.assertEqual(response.json["length"], '8')
+        self.assertEqual(doc_id, response.json["data"]["id"])
+
+        response = self.app.get('/tenders/{}/documents/{}'.format(
+            self.tender_id, doc_id))
+        self.assertEqual(response.status, '200 OK')
+        self.assertEqual(response.content_type, 'application/msword')
+        self.assertEqual(response.content_length, 8)
+        self.assertEqual(response.body, 'content2')
 
 
 def suite():
