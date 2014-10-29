@@ -227,6 +227,7 @@ class TenderBidderResourceTest(BaseTenderWebTest):
                 u'url', u'name': u'tender_id'}
         ])
 
+
 class TenderBidderDocumentResourceTest(BaseTenderWebTest):
 
     def setUp(self):

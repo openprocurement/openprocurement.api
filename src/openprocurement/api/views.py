@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 """ Cornice services.
 """
+import datetime
 from cornice.ext.spore import generate_spore_description
 from cornice.resource import resource, view
 from cornice.service import Service, get_services
@@ -135,9 +136,35 @@ class TenderResource(object):
             }
 
         """
-        # limit, skip, descending
-        results = TenderDocument.view(self.db, 'tenders/all')
-        return {'data': [i.serialize("listing") for i in results]}
+        # http://wiki.apache.org/couchdb/HTTP_view_API#Querying_Options
+        params = {}
+        limit = self.request.params.get('limit', '')
+        if limit:
+            params['limit'] = limit
+        limit = int(limit) if limit.isdigit() else 100
+        offset = self.request.params.get('offset', '')
+        if offset:
+            params['offset'] = offset
+        descending = self.request.params.get('descending')
+        if descending:
+            params['descending'] = descending
+        results = TenderDocument.view(self.db, 'tenders/by_modified', limit=limit + 1, startkey=offset, descending=bool(descending))
+        results_len = len(results)
+        results = [i.serialize("listing") for k, i in enumerate(results) if k != limit]
+        if results_len > limit:
+            params['offset'] = i.modified.isoformat()
+        else:
+            params['offset'] = datetime.datetime.now().isoformat()
+        next_url = self.request.route_url('collection_Tender', _query=params)
+        next_path = self.request.route_path('collection_Tender', _query=params)
+        return {
+            'data': results,
+            'next_page': {
+                "offset": params['offset'],
+                "path": next_path,
+                "uri": next_url
+            }
+        }
 
     @view(content_type="application/json", validators=(validate_tender_data,), renderer='json')
     def collection_post(self):
@@ -742,7 +769,6 @@ class TenderBidderResource(object):
             self.request.errors.add('url', 'tender_id', 'Not Found')
             self.request.errors.status = 404
             return
-        src = tender.serialize("plain")
         bid_id = self.request.matchdict['id']
         bids = [i for i in tender.bids if i.id == bid_id]
         if not bids:

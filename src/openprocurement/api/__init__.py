@@ -7,7 +7,7 @@ from pyramid.config import Configurator
 from pyramid.renderers import JSON, JSONP
 from pyramid.events import NewRequest
 from couchdb import Server
-from openprocurement.api.design import tenders_all_view
+from openprocurement.api.design import sync_design
 from openprocurement.api.migration import migrate_data
 
 
@@ -52,7 +52,7 @@ def main(global_config, **settings):
     config.registry.db = server[db_name]
 
     # sync couchdb views
-    tenders_all_view.sync(config.registry.db)
+    sync_design(config.registry.db)
 
     # migrate data
     migrate_data(config.registry.db)
