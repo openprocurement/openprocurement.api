@@ -58,7 +58,7 @@ maillist.
 
 API stability
 -------------
-API is highly unstable, and while API endpoint are expecetd to remain
+API is highly unstable, and while API endpoint are expected to remain
 relatively stable the data exchange formats are expected to be changed a
 lot.  The changes in the API are communicated via `Open Procurement API
 <https://groups.google.com/group/open-procurement-api>`_ maillist.
