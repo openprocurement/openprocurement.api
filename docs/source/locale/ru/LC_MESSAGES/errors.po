@@ -21,10 +21,6 @@ msgid ""
 "or failure."
 msgstr ""
 
-#: ../../source/errors.rst:10
-msgid "Codes"
-msgstr ""
-
 #: ../../source/errors.rst:11
 msgid ""
 "In all cases, the API should return an `HTTP Status Code "
@@ -113,51 +109,92 @@ msgstr ""
 msgid "Server error. There was a problem on OpenProcurement's end."
 msgstr ""
 
-#: ../../source/errors.rst:52
-msgid "Contents"
-msgstr ""
-
-#: ../../source/errors.rst:53
+#: ../../source/errors.rst:130
 msgid ""
 "In the event of an error, the response body will contain an `errors` field "
 "at the top level.  This contains an array of at least one error object, "
 "described below:"
 msgstr ""
 
-#: ../../source/errors.rst:59
+#: ../../source/errors.rst:136
 msgid "message"
 msgstr ""
 
-#: ../../source/errors.rst:58
+#: ../../source/errors.rst:135
 msgid ""
 "*totalValue.amount: Missing input* - Message providing more detail about the"
 " error that occurred, if available."
 msgstr ""
 
-#: ../../source/errors.rst:63
+#: ../../source/errors.rst:140
 msgid "messageUID"
 msgstr ""
 
-#: ../../source/errors.rst:62
+#: ../../source/errors.rst:139
 msgid ""
 "Unique message id. Will stay the same even if content of the message can "
 "change, depending on other parameters."
 msgstr ""
 
-#: ../../source/errors.rst:67
+#: ../../source/errors.rst:144
 msgid "*id*"
 msgstr ""
 
-#: ../../source/errors.rst:66
+#: ../../source/errors.rst:143
 msgid ""
 "Unique correlation identifier of the error response for audit and issue "
 "reporting purposes."
 msgstr ""
 
-#: ../../source/errors.rst:70
-msgid "Example Response"
-msgstr ""
-
-#: ../../source/errors.rst:71
+#: ../../source/errors.rst:148
 msgid "Sample below indicate incomplete request."
 msgstr ""
+
+#: ../../source/errors.rst:10
+msgid "Status Codes"
+msgstr ""
+
+#: ../../source/errors.rst:52
+msgid "Success Response"
+msgstr ""
+
+#: ../../source/errors.rst:53
+msgid ""
+"Every successful get, create, update, replace request results in response "
+"that contains `data` attribute.  That `data` attribute contains full JSON "
+"object representation after the operation.  If some data were generated in "
+"the results of processing (like new object IDs, of `modified` date) they are"
+" present in the respose."
+msgstr ""
+
+#: ../../source/errors.rst:59
+msgid ""
+"The listing requests result in similar responses, but instead of single "
+"object in `data` attribute, the JSON response contains collection of "
+"objects."
+msgstr ""
+
+#: ../../source/errors.rst:64
+msgid "Example Succes Response"
+msgstr ""
+
+#: ../../source/errors.rst:65
+msgid "Here is response describing tender"
+msgstr ""
+
+#: ../../source/errors.rst:129
+msgid "Error Response"
+msgstr ""
+
+#: ../../source/errors.rst:147
+msgid "Example Error Response"
+msgstr ""
+
+#~ msgid "Codes"
+#~ msgstr ""
+
+#~ msgid "Contents"
+#~ msgstr ""
+
+#~ msgid "Example Response"
+#~ msgstr ""

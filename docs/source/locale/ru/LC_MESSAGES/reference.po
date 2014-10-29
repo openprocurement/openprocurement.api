@@ -11,7 +11,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: ../../source/reference.rst:9
+#: ../../source/reference.rst:6
 msgid "API Reference"
 msgstr ""
 
@@ -35,7 +35,7 @@ msgstr ""
 msgid "Example request to create tender:"
 msgstr ""
 
-#: ../<>:56
+#: ../<>:14 ../<>:30 ../<>:14 ../<>:67 ../<>:14 ../<>:41 ../<>:42
 msgid "This is what one should expect in response:"
 msgstr ""
 
@@ -57,7 +57,7 @@ msgid ""
 "procured and total Value of a tender:"
 msgstr ""
 
-#: ../<>:22
+#: ../<>:24
 msgid "And here is the response to be expected:"
 msgstr ""
 
@@ -79,4 +79,88 @@ msgstr ""
 
 #: ../<>:1
 msgid "Tender Document Update"
+msgstr ""
+
+#: ../<>:1
+msgid "Get auction info."
+msgstr ""
+
+#: ../<>:4
+msgid "Get tender auction info"
+msgstr ""
+
+#: ../<>:6
+msgid "Example request to get tender auction information:"
+msgstr ""
+
+#: ../<>:1
+msgid "Report auction results."
+msgstr ""
+
+#: ../<>:4
+msgid "Report auction results"
+msgstr ""
+
+#: ../<>:6
+msgid "Example request to report auction results:"
+msgstr ""
+
+#: ../<>:1
+msgid "Tenders List"
+msgstr ""
+
+#: ../<>:4
+msgid "Get Tenders List"
+msgstr ""
+
+#: ../<>:6
+msgid "Example request to get tenders list:"
+msgstr ""
+
+#: ../<>:4
+msgid "Get Tender"
+msgstr ""
+
+#: ../<>:6
+msgid "Example request to get tender:"
+msgstr ""
+
+#: ../<>:1 ../<>:1
+msgid "Tender bidders"
+msgstr ""
+
+#: ../<>:1
+msgid "Registration of new bid proposal"
+msgstr ""
+
+#: ../<>:4
+msgid "Creating new Bid proposal"
+msgstr ""
+
+#: ../<>:6
+msgid "Example request to create bid proposal:"
+msgstr ""
+
+#: ../<>:1 ../<>:1
+msgid "Tender bidder documents"
+msgstr ""
+
+#: ../<>:1
+msgid "Tender Bid Document Upload"
+msgstr ""
+
+#: ../<>:1 ../<>:1
+msgid "Tender awards"
+msgstr ""
+
+#: ../<>:1
+msgid "Accept or reject bidder application"
+msgstr ""
+
+#: ../<>:4
+msgid "Creating new Award"
+msgstr ""
+
+#: ../<>:6
+msgid "Example request to create award:"
 msgstr ""
