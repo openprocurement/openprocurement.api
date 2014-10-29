@@ -660,8 +660,220 @@ class TenderBidderResource(object):
         except Exception, e:
             return self.request.errors.add('body', 'data', str(e))
         self.request.response.status = 201
-        # self.request.response.headers['Location'] = self.request.route_url('Tender Bids', tender_id=self.tender_id, id=bid['id'])
+        self.request.response.headers['Location'] = self.request.route_url('Tender Bids', tender_id=self.tender_id, id=bid['id'])
         return {'data': bid.serialize("view")}
+
+    @view(renderer='json')
+    def collection_get(self):
+        """Bids Listing
+
+        Get Bids List
+        -------------
+
+        Example request to get bids list:
+
+        .. sourcecode:: http
+
+            GET /tenders/4879d3f8ee2443169b5fbbc9f89fa607/bidders HTTP/1.1
+            Host: example.com
+            Accept: application/json
+
+        This is what one should expect in response:
+
+        .. sourcecode:: http
+
+            HTTP/1.1 200 OK
+            Content-Type: application/json
+
+            {
+                "data": [
+                    {
+                        "totalValue": {
+                            "amount": 489,
+                            "currency": "UAH",
+                            "valueAddedTaxIncluded": true
+                        }
+                    }
+                ]
+            }
+
+        """
+        tender = TenderDocument.load(self.db, self.tender_id)
+        if not tender:
+            self.request.errors.add('url', 'tender_id', 'Not Found')
+            self.request.errors.status = 404
+            return
+        return {'data': [i.serialize("view") for i in tender.bids]}
+
+    @view(renderer='json')
+    def get(self):
+        """Retrieving the proposal
+
+        Example request for retrieving the proposal:
+
+        .. sourcecode:: http
+
+            GET /tenders/4879d3f8ee2443169b5fbbc9f89fa607/bidders/71b6c23ed8944d688e92a31ec8c3f61a HTTP/1.1
+            Host: example.com
+            Accept: application/json
+
+        And here is the response to be expected:
+
+        .. sourcecode:: http
+
+            HTTP/1.0 200 OK
+            Content-Type: application/json
+
+            {
+                "data": {
+                    {
+                        "totalValue": {
+                            "amount": 600,
+                            "currency": "UAH",
+                            "valueAddedTaxIncluded": true
+                        }
+                    }
+                }
+            }
+
+        """
+        tender = TenderDocument.load(self.db, self.tender_id)
+        if not tender:
+            self.request.errors.add('url', 'tender_id', 'Not Found')
+            self.request.errors.status = 404
+            return
+        src = tender.serialize("plain")
+        bid_id = self.request.matchdict['id']
+        bids = [i for i in tender.bids if i.id == bid_id]
+        if not bids:
+            self.request.errors.add('url', 'id', 'Not Found')
+            self.request.errors.status = 404
+            return
+        bid = bids[0]
+        return {'data': bid.serialize("view")}
+
+    @view(content_type="application/json", validators=(validate_bid_data,), renderer='json')
+    def patch(self):
+        """Update of proposal
+
+        Example request to change bid proposal:
+
+        .. sourcecode:: http
+
+            PATCH /tenders/4879d3f8ee2443169b5fbbc9f89fa607/bidders/71b6c23ed8944d688e92a31ec8c3f61a HTTP/1.1
+            Host: example.com
+            Accept: application/json
+
+            {
+                "data": {
+                    "totalValue": {
+                        "amount": 600
+                    }
+                }
+            }
+
+        And here is the response to be expected:
+
+        .. sourcecode:: http
+
+            HTTP/1.0 200 OK
+            Content-Type: application/json
+
+            {
+                "data": {
+                    {
+                        "totalValue": {
+                            "amount": 600,
+                            "currency": "UAH",
+                            "valueAddedTaxIncluded": true
+                        }
+                    }
+                }
+            }
+
+        """
+        tender = TenderDocument.load(self.db, self.tender_id)
+        if not tender:
+            self.request.errors.add('url', 'tender_id', 'Not Found')
+            self.request.errors.status = 404
+            return
+        src = tender.serialize("plain")
+        bid_id = self.request.matchdict['id']
+        bids = [i for i in tender.bids if i.id == bid_id]
+        if not bids:
+            self.request.errors.add('url', 'id', 'Not Found')
+            self.request.errors.status = 404
+            return
+        bid = bids[0]
+        bid_data = filter_data(self.request.json_body['data'])
+        if bid_data:
+            if 'id' not in bid_data:
+                bid_data['id'] = bid.id
+            bid.import_data(bid_data)
+            patch = make_patch(src, tender.serialize("plain")).patch
+            if patch:
+                tender.revisions.append(revision({'changes': patch}))
+                try:
+                    tender.store(self.db)
+                except Exception, e:
+                    return self.request.errors.add('body', 'data', str(e))
+        return {'data': bid.serialize("view")}
+
+    @view(renderer='json')
+    def delete(self):
+        """Cancelling the proposal
+
+        Example request for cancelling the proposal:
+
+        .. sourcecode:: http
+
+            DELETE /tenders/4879d3f8ee2443169b5fbbc9f89fa607/bidders/71b6c23ed8944d688e92a31ec8c3f61a HTTP/1.1
+            Host: example.com
+            Accept: application/json
+
+        And here is the response to be expected:
+
+        .. sourcecode:: http
+
+            HTTP/1.0 200 OK
+            Content-Type: application/json
+
+            {
+                "data": {
+                    {
+                        "totalValue": {
+                            "amount": 489,
+                            "currency": "UAH",
+                            "valueAddedTaxIncluded": true
+                        }
+                    }
+                }
+            }
+
+        """
+        tender = TenderDocument.load(self.db, self.tender_id)
+        if not tender:
+            self.request.errors.add('url', 'tender_id', 'Not Found')
+            self.request.errors.status = 404
+            return
+        src = tender.serialize("plain")
+        bid_id = self.request.matchdict['id']
+        bids = [i for i in tender.bids if i.id == bid_id]
+        if not bids:
+            self.request.errors.add('url', 'id', 'Not Found')
+            self.request.errors.status = 404
+            return
+        bid = bids[0]
+        res = bid.serialize("view")
+        tender.bids.remove(bid)
+        patch = make_patch(src, tender.serialize("plain")).patch
+        if patch:
+            tender.revisions.append(revision({'changes': patch}))
+            try:
+                tender.store(self.db)
+            except Exception, e:
+                return self.request.errors.add('body', 'data', str(e))
+        return {'data': res}
 
 
 @resource(name='Tender Bid Documents',
@@ -848,19 +1060,25 @@ def get_auction(request):
                 "modified": "2014-10-27T08:06:58.158Z",
                 "bids": [
                     {
-                        "amount": 500,
-                        "currency": "UAH"
+                        "totalValue": {
+                            "amount": 500,
+                            "currency": "UAH",
+                            "valueAddedTaxIncluded": true
+                        }
                     },
                     {
-                        "amount": 485,
-                        "currency": "UAH"
+                        "totalValue": {
+                            "amount": 485,
+                            "currency": "UAH",
+                            "valueAddedTaxIncluded": true
+                        }
                     }
                 ],
                 "minimalStep":{
                     "amount": 35,
                     "currency": "UAH"
                 },
-                "period":{
+                "tenderPeriod":{
                     "startDate": "2014-11-06T12:00:00"
                 }
             }
@@ -902,12 +1120,16 @@ def patch_auction(request):
                 "modified": "2014-10-27T08:06:58.158Z",
                 "bids": [
                     {
-                        "amount": 400,
-                        "currency": "UAH"
+                        "totalValue": {
+                            "amount": 400,
+                            "currency": "UAH"
+                        }
                     },
                     {
-                        "amount": 385,
-                        "currency": "UAH"
+                        "totalValue": {
+                            "amount": 385,
+                            "currency": "UAH"
+                        }
                     }
                 ]
             }
@@ -925,19 +1147,25 @@ def patch_auction(request):
                 "modified": "2014-10-27T08:06:58.158Z",
                 "bids": [
                     {
-                        "amount": 400,
-                        "currency": "UAH"
+                        "totalValue": {
+                            "amount": 400,
+                            "currency": "UAH",
+                            "valueAddedTaxIncluded": true
+                        }
                     },
                     {
-                        "amount": 385,
-                        "currency": "UAH"
+                        "totalValue": {
+                            "amount": 385,
+                            "currency": "UAH",
+                            "valueAddedTaxIncluded": true
+                        }
                     }
                 ],
                 "minimalStep":{
                     "amount": 35,
                     "currency": "UAH"
                 },
-                "period":{
+                "tenderPeriod":{
                     "startDate": "2014-11-06T12:00:00"
                 }
             }

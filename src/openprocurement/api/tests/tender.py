@@ -50,7 +50,6 @@ class TenderResourceTest(BaseWebTest):
         self.assertEqual(response.content_type, 'application/javascript')
         self.assertEqual(response.body, 'callback({\n    "data": []\n});')
 
-
     def test_listing(self):
         response = self.app.get('/tenders')
         self.assertEqual(response.status, '200 OK')
