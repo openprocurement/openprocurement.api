@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 import unittest
+import datetime
 
 from openprocurement.api.models import TenderDocument
 from openprocurement.api.tests.base import test_tender_data, BaseWebTest
@@ -30,25 +31,40 @@ class TenderDocumentTest(BaseWebTest):
 class TenderResourceTest(BaseWebTest):
 
     def test_empty_listing(self):
+        before = datetime.datetime.now().isoformat()
         response = self.app.get('/tenders')
+        after = datetime.datetime.now().isoformat()
         self.assertEqual(response.status, '200 OK')
         self.assertEqual(response.content_type, 'application/json')
-        self.assertEqual(response.body, '{"data": []}')
+        self.assertEqual(response.json['data'], [])
+        self.assertFalse('{\n    "' in response.body)
+        self.assertFalse('callback({' in response.body)
+        self.assertTrue(before < response.json['next_page']['offset'] < after)
 
         response = self.app.get('/tenders?opt_jsonp=callback')
         self.assertEqual(response.status, '200 OK')
         self.assertEqual(response.content_type, 'application/javascript')
-        self.assertEqual(response.body, 'callback({"data": []});')
+        self.assertFalse('{\n    "' in response.body)
+        self.assertTrue('callback({' in response.body)
 
         response = self.app.get('/tenders?opt_pretty=1')
         self.assertEqual(response.status, '200 OK')
         self.assertEqual(response.content_type, 'application/json')
-        self.assertEqual(response.body, '{\n    "data": []\n}')
+        self.assertTrue('{\n    "' in response.body)
+        self.assertFalse('callback({' in response.body)
 
         response = self.app.get('/tenders?opt_jsonp=callback&opt_pretty=1')
         self.assertEqual(response.status, '200 OK')
         self.assertEqual(response.content_type, 'application/javascript')
-        self.assertEqual(response.body, 'callback({\n    "data": []\n});')
+        self.assertTrue('{\n    "' in response.body)
+        self.assertTrue('callback({' in response.body)
+
+        response = self.app.get('/tenders?offset={}&descending=1&limit=10'.format(before))
+        self.assertEqual(response.status, '200 OK')
+        self.assertEqual(response.content_type, 'application/json')
+        self.assertEqual(response.json['data'], [])
+        self.assertTrue('descending=1' in response.json['next_page']['uri'])
+        self.assertTrue('limit=10' in response.json['next_page']['uri'])
 
     def test_listing(self):
         response = self.app.get('/tenders')
@@ -69,6 +85,12 @@ class TenderResourceTest(BaseWebTest):
         self.assertEqual(set(response.json['data'][0]), set([u'id', u'modified']))
         self.assertEqual(set([i['id'] for i in response.json['data']]), set([i['id'] for i in tenders]))
         self.assertEqual(set([i['modified'] for i in response.json['data']]), set([i['modified'] for i in tenders]))
+
+        before = datetime.datetime.now().isoformat()
+        response = self.app.get('/tenders?limit=2')
+        self.assertEqual(response.status, '200 OK')
+        self.assertEqual(len(response.json['data']), 2)
+        self.assertFalse(before < response.json['next_page']['offset'])
 
     def test_create_tender_invalid(self):
         request_path = '/tenders'

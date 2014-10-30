@@ -143,18 +143,17 @@ class TenderResource(object):
             params['limit'] = limit
         limit = int(limit) if limit.isdigit() else 100
         offset = self.request.params.get('offset', '')
-        if offset:
-            params['offset'] = offset
         descending = self.request.params.get('descending')
         if descending:
             params['descending'] = descending
+        next_offset = datetime.datetime.now().isoformat()
         results = TenderDocument.view(self.db, 'tenders/by_modified', limit=limit + 1, startkey=offset, descending=bool(descending))
         results_len = len(results)
         results = [i.serialize("listing") for k, i in enumerate(results) if k != limit]
         if results_len > limit:
             params['offset'] = i.modified.isoformat()
         else:
-            params['offset'] = datetime.datetime.now().isoformat()
+            params['offset'] = next_offset
         next_url = self.request.route_url('collection_Tender', _query=params)
         next_path = self.request.route_path('collection_Tender', _query=params)
         return {
