@@ -35,12 +35,6 @@ msgid ""
 "details (except binary documents) in payload of request."
 msgstr ""
 
-#: ../../source/procuring.rst:18
-msgid ""
-"The response produced will have URL of the tender created in Location header"
-" of resoponse, and in ``data.id`` of body."
-msgstr ""
-
 #: ../../source/procuring.rst:26
 msgid "Uploading documentation"
 msgstr ""
@@ -49,12 +43,6 @@ msgstr ""
 msgid ""
 "All tender documentation should be uploaded following requests one request "
 "per document."
-msgstr ""
-
-#: ../../source/procuring.rst:33
-msgid ""
-"The response produced will have URL of the tender document uploaded in "
-"Location header of resoponse, and in ``data.id`` of body."
 msgstr ""
 
 #: ../../source/procuring.rst:41
@@ -92,3 +80,25 @@ msgstr ""
 #: ../../source/procuring.rst:72
 msgid "The same as Uploading documentation"
 msgstr ""
+
+#: ../../source/procuring.rst:18
+msgid ""
+"The response produced will have URL of the tender created in Location header"
+" of response, and in ``data.id`` of body."
+msgstr ""
+
+#: ../../source/procuring.rst:33
+msgid ""
+"The response produced will have URL of the tender document uploaded in "
+"Location header of response, and in ``data.id`` of body."
+msgstr ""
+
+#~ msgid ""
+#~ "The response produced will have URL of the tender created in Location header"
+#~ " of resoponse, and in ``data.id`` of body."
+#~ msgstr ""
+
+#~ msgid ""
+#~ "The response produced will have URL of the tender document uploaded in "
+#~ "Location header of resoponse, and in ``data.id`` of body."
+#~ msgstr ""

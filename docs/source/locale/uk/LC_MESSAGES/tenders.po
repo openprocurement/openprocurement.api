@@ -1,24 +1,25 @@
-# 
+#
 msgid ""
 msgstr ""
 "Project-Id-Version: openprocurement.api 0.1\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2014-10-29 12:11+0200\n"
-"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"PO-Revision-Date: 2014-10-29 14:29+0300\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"X-Generator: Poedit 1.5.4\n"
 
 #: ../../source/tenders.rst:4
 msgid "Retrieving Tender Information"
-msgstr ""
+msgstr "Отримання інформації про закупівлі"
 
 #: ../../source/tenders.rst:7
 msgid "Getting list of all tenders"
-msgstr ""
+msgstr "Як отримати список всіх закупівель"
 
 #: ../../source/tenders.rst:17
 msgid "Reading the individual tender information"
-msgstr ""
+msgstr "Як прочитати інформацію про окремі закупівлі"

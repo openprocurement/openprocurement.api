@@ -1,47 +1,56 @@
-# 
+#
 msgid ""
 msgstr ""
 "Project-Id-Version: openprocurement.api 0.1\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2014-10-22 03:26+0300\n"
-"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"PO-Revision-Date: 2014-10-30 12:50+0300\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"X-Generator: Poedit 1.5.4\n"
 
 #: ../../source/errors.rst:4
 msgid "Responses"
-msgstr ""
+msgstr "Відповіді"
 
 #: ../../source/errors.rst:6
 msgid ""
 "After processing API is always providing response, reporting either success "
 "or failure."
 msgstr ""
+"Після обробки API завжди надає відповідь, звітуючи або про успіх, або про "
+"помилку."
 
 #: ../../source/errors.rst:11
 msgid ""
-"In all cases, the API should return an `HTTP Status Code "
-"<http://en.wikipedia.org/wiki/List_of_HTTP_status_codes>`_ that indicates "
-"the nature of the failure (below), with a response body in JSON format "
-"containing additional information."
+"In all cases, the API should return an `HTTP Status Code <http://en."
+"wikipedia.org/wiki/List_of_HTTP_status_codes>`_ that indicates the nature of "
+"the failure (below), with a response body in JSON format containing "
+"additional information."
 msgstr ""
+"У будь-якому випадку API повинен повернути `Код стану HTTP <http://en."
+"wikipedia.org/wiki/List_of_HTTP_status_codes>`_, що вказуватиме природу "
+"помилки (внизу), з тілом відповіді у форматі JSON, що міститиме додаткову "
+"інформацію."
 
 #: ../../source/errors.rst:18
 msgid "200"
-msgstr ""
+msgstr "200"
 
 #: ../../source/errors.rst:17
 msgid ""
 "Success. If data was requested, it will be available in the `data` field at "
 "the top level of the response body."
 msgstr ""
+"Успіх. Якщо це був запит про інформацію, то вона буде доступна у `data` полі "
+"на верхньому рівні тіла відповіді."
 
 #: ../../source/errors.rst:24
 msgid "201"
-msgstr ""
+msgstr "201"
 
 #: ../../source/errors.rst:21
 msgid ""
@@ -49,10 +58,13 @@ msgid ""
 "field at the top level of the response body.  The API URL where the object "
 "can be retrieved is also returned in the `Location` header of the response."
 msgstr ""
+"Успіх (для створення об’єкта). Його інформація доступна у `data` полі на "
+"верхньому рівні тіла відповіді. API URL, де об’єкт можна прочитати, "
+"міститься у `Location` заголовку відповіді."
 
 #: ../../source/errors.rst:29
 msgid "400"
-msgstr ""
+msgstr "400"
 
 #: ../../source/errors.rst:27
 msgid ""
@@ -60,20 +72,25 @@ msgid ""
 "parameter.  Check the documentation and the syntax of your request and try "
 "again."
 msgstr ""
+"Невірний запит. Зазвичай це відбувається через відсутній або неправильний "
+"параметр. Перевірте документацію та синтаксис вашого запиту і спробуйте ще "
+"раз."
 
 #: ../../source/errors.rst:33
 msgid "401"
-msgstr ""
+msgstr "401"
 
 #: ../../source/errors.rst:32
 msgid ""
 "No authorization. A valid API key was not provided with the request, so the "
 "API could not associate a user with the request."
 msgstr ""
+"Відсутність прав. Не було надано дійсного API ключа разом із запитом, тому "
+"API не може зв'язати користувача із запитом."
 
 #: ../../source/errors.rst:38
 msgid "403"
-msgstr ""
+msgstr "403"
 
 #: ../../source/errors.rst:36
 msgid ""
@@ -81,10 +98,13 @@ msgid ""
 "refusing to complete the request.  This can happen if you try to read or "
 "write to objects or properties that the party does not have access to."
 msgstr ""
+"Заборонено. API ключ та синтаксис запиту були дійсними, але сервер "
+"відмовляється виконати запит. Це може статися, якщо ви пробуєте прочитати "
+"або записати об'єкти чи властивості, до яких не маєте доступу."
 
 #: ../../source/errors.rst:43
 msgid "404"
-msgstr ""
+msgstr "404"
 
 #: ../../source/errors.rst:41
 msgid ""
@@ -92,22 +112,24 @@ msgid ""
 "known action in the API, or the object specified by the request does not "
 "exist."
 msgstr ""
+"Не знайдено. Або даний метод та шлях запиту не вказують відому дію для API, "
+"або об’єкт, вказаний у запиті, не існує."
 
 #: ../../source/errors.rst:46
 msgid "429"
-msgstr ""
+msgstr "429"
 
 #: ../../source/errors.rst:46
 msgid "Rate Limit Enforced."
-msgstr ""
+msgstr "Перевищено допустиму частоту запитів."
 
 #: ../../source/errors.rst:49
 msgid "500"
-msgstr ""
+msgstr "500"
 
 #: ../../source/errors.rst:49
 msgid "Server error. There was a problem on OpenProcurement's end."
-msgstr ""
+msgstr "Помилка сервера. Була проблема зі сторони OpenProcurement."
 
 #: ../../source/errors.rst:130
 msgid ""
@@ -115,86 +137,91 @@ msgid ""
 "at the top level.  This contains an array of at least one error object, "
 "described below:"
 msgstr ""
+"У випадку помилки, тіло відповіді міститиме `errors` поле на вищому рівні. "
+"Воно містить масив як мінімум одного помилкового об’єкта описаного нижче:"
 
 #: ../../source/errors.rst:136
 msgid "message"
-msgstr ""
+msgstr "message"
 
 #: ../../source/errors.rst:135
 msgid ""
-"*totalValue.amount: Missing input* - Message providing more detail about the"
-" error that occurred, if available."
+"*totalValue.amount: Missing input* - Message providing more detail about the "
+"error that occurred, if available."
 msgstr ""
+"*totalValue.amount: Відсутні вхідні дані* - Повідомлення надає більш "
+"детальну інформацію про помилку, якщо вона наявна."
 
 #: ../../source/errors.rst:140
 msgid "messageUID"
-msgstr ""
+msgstr "messageUID"
 
 #: ../../source/errors.rst:139
 msgid ""
 "Unique message id. Will stay the same even if content of the message can "
 "change, depending on other parameters."
 msgstr ""
+"Унікальний id повідомлення залишатиметься однаковим, навіть якщо вміст "
+"повідомлення може мінятись залежно від інших параметрів."
 
 #: ../../source/errors.rst:144
 msgid "*id*"
-msgstr ""
+msgstr "*id*"
 
 #: ../../source/errors.rst:143
 msgid ""
 "Unique correlation identifier of the error response for audit and issue "
 "reporting purposes."
 msgstr ""
+"Унікальний ідентифікатор кореляції відповіді з повідомленням про помилку для "
+"звітності та відстежування проблем."
 
 #: ../../source/errors.rst:148
 msgid "Sample below indicate incomplete request."
-msgstr ""
+msgstr "Зразок нижче вказує на неповний запит."
 
 #: ../../source/errors.rst:10
 msgid "Status Codes"
-msgstr ""
+msgstr "Коди стану"
 
 #: ../../source/errors.rst:52
 msgid "Success Response"
-msgstr ""
+msgstr "Відповідь з повідомленням про успіх"
 
 #: ../../source/errors.rst:53
 msgid ""
 "Every successful get, create, update, replace request results in response "
 "that contains `data` attribute.  That `data` attribute contains full JSON "
 "object representation after the operation.  If some data were generated in "
-"the results of processing (like new object IDs, of `modified` date) they are"
-" present in the respose."
+"the results of processing (like new object IDs, of `modified` date) they are "
+"present in the respose."
 msgstr ""
+"Кожен успішний запит вичитки, створення, оновлення, чи заміни отримує "
+"відповідь, що містить `data` атрибут. Цей  `data` атрибут містить повне "
+"представлення JSON об’єкта після операції. Якщо деякі дані були згенеровані "
+"у результаті обробки (наприклад, нові ID об’єкта, або `modified` дата), то "
+"вони присутні у відповіді."
 
 #: ../../source/errors.rst:59
 msgid ""
 "The listing requests result in similar responses, but instead of single "
-"object in `data` attribute, the JSON response contains collection of "
-"objects."
+"object in `data` attribute, the JSON response contains collection of objects."
 msgstr ""
+"Запити списку отримують схожі відповіді, але замість одного об'єкта в `data` "
+"атрибуті, JSON відповідь містить колекцію об'єктів."
 
 #: ../../source/errors.rst:64
 msgid "Example Succes Response"
-msgstr ""
+msgstr "Приклад відповіді з повідомленням про успіх"
 
 #: ../../source/errors.rst:65
 msgid "Here is response describing tender"
-msgstr ""
+msgstr "Це відповідь, що описує закупівлю."
 
 #: ../../source/errors.rst:129
 msgid "Error Response"
-msgstr ""
+msgstr "Відповідь з повідомленням про помилку"
 
 #: ../../source/errors.rst:147
 msgid "Example Error Response"
-msgstr ""
-
-#~ msgid "Codes"
-#~ msgstr ""
-
-#~ msgid "Contents"
-#~ msgstr ""
-
-#~ msgid "Example Response"
-#~ msgstr ""
+msgstr "Приклад відповіді з повідомленням про помилку"

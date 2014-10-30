@@ -1,94 +1,123 @@
-# 
+#
 msgid ""
 msgstr ""
 "Project-Id-Version: openprocurement.api 0.1\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2014-10-29 12:11+0200\n"
-"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"PO-Revision-Date: 2014-10-30 10:12+0300\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"X-Generator: Poedit 1.5.4\n"
 
 #: ../../source/procuring.rst:4
 msgid "Procuring Entity Operations"
-msgstr ""
+msgstr "Операції для організації-замовника закупівлі "
 
 #: ../../source/procuring.rst:7
 msgid "Registration of the Tender"
-msgstr ""
+msgstr "Реєстрація Закупівлі"
 
 #: ../../source/procuring.rst:8
 msgid ""
 "Tender registration consist of primary record creation and documentation "
 "uploading."
 msgstr ""
+"Реєстрація Закупівлі складається зі створення початкового запису та "
+"завантаження документації."
 
 #: ../../source/procuring.rst:11
 msgid "Creating primary Tender record"
-msgstr ""
+msgstr "Cтворення початкового запису Закупівлі"
 
 #: ../../source/procuring.rst:12
 msgid ""
 "When registering tender in the database, one has provide all primary tender "
 "details (except binary documents) in payload of request."
 msgstr ""
-
-#: ../../source/procuring.rst:18
-msgid ""
-"The response produced will have URL of the tender created in Location header"
-" of resoponse, and in ``data.id`` of body."
-msgstr ""
+"При реєстрації закупівлі у базі даних потрібно надати всі основні деталі "
+"закупівлі (окрім двійкових документів) в тілі запиту. "
 
 #: ../../source/procuring.rst:26
 msgid "Uploading documentation"
-msgstr ""
+msgstr "Завантаження документації"
 
 #: ../../source/procuring.rst:27
 msgid ""
 "All tender documentation should be uploaded following requests one request "
 "per document."
 msgstr ""
-
-#: ../../source/procuring.rst:33
-msgid ""
-"The response produced will have URL of the tender document uploaded in "
-"Location header of resoponse, and in ``data.id`` of body."
-msgstr ""
+"Вся документація закупівлі повинна бути завантажена такими запитами, по "
+"одному запиту на документ."
 
 #: ../../source/procuring.rst:41
 msgid "Changing the Tender"
-msgstr ""
+msgstr "Зміна Закупівлі"
 
 #: ../../source/procuring.rst:42
 msgid ""
 "Procuring Entity can change both the primary record and associated "
 "documentation."
 msgstr ""
+"Замовник закупівлі може змінити і початковий запис, і відповідну "
+"документацію."
 
 #: ../../source/procuring.rst:47
 msgid "Changing primary Tender Record"
-msgstr ""
+msgstr "Зміна початкового запису Закупівлі"
 
 #: ../../source/procuring.rst:48
 msgid ""
 "Procuring Entity can change the Tender properties with following request. "
 "Data to change should be in payload of the message."
 msgstr ""
+"Замовник може змінити властивості Закупівлі за таким запитом. Інформація для "
+"зміни повинна міститися у вмісті повідомлення."
 
 #: ../../source/procuring.rst:59
 msgid "Changing existing documents"
-msgstr ""
+msgstr "Зміна існуючих документів"
 
 #: ../../source/procuring.rst:60
 msgid "Procuring Entity can upload new versions of the tender documentation."
-msgstr ""
+msgstr "Замовник може завантажити нові версії документів закупівлі."
 
 #: ../../source/procuring.rst:71
 msgid "Uploading additional documents"
-msgstr ""
+msgstr "Завантаження додаткових документів"
 
 #: ../../source/procuring.rst:72
 msgid "The same as Uploading documentation"
+msgstr "Так само як Завантаження документації."
+
+#: ../../source/procuring.rst:18
+msgid ""
+"The response produced will have URL of the tender created in Location header "
+"of response, and in ``data.id`` of body."
 msgstr ""
+"Отримана відповідь міститиме URL створеної закупівлі у заголовку відповіді "
+"`Location` та у data.id тіла."
+
+#: ../../source/procuring.rst:33
+msgid ""
+"The response produced will have URL of the tender document uploaded in "
+"Location header of response, and in ``data.id`` of body."
+msgstr ""
+"Отримана відповідь міститиме URL завантаженого документа закупівлі у "
+"заголовку відповіді `Location` та у data.id тіла."
+
+#~ msgid ""
+#~ "The response produced will have URL of the tender created in Location "
+#~ "header of resoponse, and in ``data.id`` of body."
+#~ msgstr ""
+#~ "Отримана відповідь міститиме URL створеної закупівлі у заголовку "
+#~ "відповіді `Location` та у data.id тіла."
+
+#~ msgid ""
+#~ "The response produced will have URL of the tender document uploaded in "
+#~ "Location header of resoponse, and in ``data.id`` of body."
+#~ msgstr ""
+#~ "Отримана відповідь міститиме URL завантаженого документа закупівлі у "
+#~ "заголовку відповіді `Location` та у data.id тіла."

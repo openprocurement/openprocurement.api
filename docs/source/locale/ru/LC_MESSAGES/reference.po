@@ -35,7 +35,7 @@ msgstr ""
 msgid "Example request to create tender:"
 msgstr ""
 
-#: ../<>:14 ../<>:30 ../<>:14 ../<>:67 ../<>:14 ../<>:41 ../<>:42
+#: ../<>:14 ../<>:34 ../<>:14 ../<>:67 ../<>:14 ../<>:14 ../<>:41 ../<>:42
 msgid "This is what one should expect in response:"
 msgstr ""
 
@@ -57,7 +57,7 @@ msgid ""
 "procured and total Value of a tender:"
 msgstr ""
 
-#: ../<>:24
+#: ../<>:24 ../<>:11 ../<>:11 ../<>:19
 msgid "And here is the response to be expected:"
 msgstr ""
 
@@ -163,4 +163,40 @@ msgstr ""
 
 #: ../<>:6
 msgid "Example request to create award:"
+msgstr ""
+
+#: ../<>:1
+msgid "Bids Listing"
+msgstr ""
+
+#: ../<>:4
+msgid "Get Bids List"
+msgstr ""
+
+#: ../<>:6
+msgid "Example request to get bids list:"
+msgstr ""
+
+#: ../<>:1
+msgid "Retrieving the proposal"
+msgstr ""
+
+#: ../<>:3
+msgid "Example request for retrieving the proposal:"
+msgstr ""
+
+#: ../<>:1
+msgid "Cancelling the proposal"
+msgstr ""
+
+#: ../<>:3
+msgid "Example request for cancelling the proposal:"
+msgstr ""
+
+#: ../<>:1
+msgid "Update of proposal"
+msgstr ""
+
+#: ../<>:3
+msgid "Example request to change bid proposal:"
 msgstr ""
