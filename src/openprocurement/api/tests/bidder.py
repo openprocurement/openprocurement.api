@@ -105,8 +105,127 @@ class TenderBidderResourceTest(BaseTenderWebTest):
         bidder = response.json['data']
         self.assertEqual(bidder['bidders'][0]['id']['name'], 'Name')
         self.assertTrue('id' in bidder)
-        # self.assertTrue(bidder['id'] in response.headers['Location'])
+        self.assertTrue(bidder['id'] in response.headers['Location'])
 
+    def test_patch_tender_bidder(self):
+        response = self.app.post_json('/tenders/{}/bidders'.format(
+            self.tender_id), {'data': {'bidders': [{'id': {'name': 'Name'}}]}})
+        self.assertEqual(response.status, '201 Created')
+        self.assertEqual(response.content_type, 'application/json')
+        bidder = response.json['data']
+
+        response = self.app.patch_json('/tenders/{}/bidders/{}'.format(self.tender_id, bidder['id']), {"data": {"totalValue": {"amount": 600}}})
+        self.assertEqual(response.status, '200 OK')
+        self.assertEqual(response.content_type, 'application/json')
+        self.assertEqual(response.json['data']["totalValue"]["amount"], 600)
+
+        response = self.app.get('/tenders/{}/bidders/{}'.format(self.tender_id, bidder['id']))
+        self.assertEqual(response.status, '200 OK')
+        self.assertEqual(response.content_type, 'application/json')
+        self.assertEqual(response.json['data']["totalValue"]["amount"], 600)
+
+        response = self.app.patch_json('/tenders/{}/bidders/some_id'.format(self.tender_id), {"data": {"totalValue": {"amount": 600}}}, status=404)
+        self.assertEqual(response.status, '404 Not Found')
+        self.assertEqual(response.content_type, 'application/json')
+        self.assertEqual(response.json['status'], 'error')
+        self.assertEqual(response.json['errors'], [
+            {u'description': u'Not Found', u'location':
+                u'url', u'name': u'id'}
+        ])
+
+        response = self.app.patch_json('/tenders/some_id/bidders/some_id', {"data": {"totalValue": {"amount": 600}}}, status=404)
+        self.assertEqual(response.status, '404 Not Found')
+        self.assertEqual(response.content_type, 'application/json')
+        self.assertEqual(response.json['status'], 'error')
+        self.assertEqual(response.json['errors'], [
+            {u'description': u'Not Found', u'location':
+                u'url', u'name': u'tender_id'}
+        ])
+
+    def test_get_tender_bidder(self):
+        response = self.app.post_json('/tenders/{}/bidders'.format(
+            self.tender_id), {'data': {'bidders': [{'id': {'name': 'Name'}}]}})
+        self.assertEqual(response.status, '201 Created')
+        self.assertEqual(response.content_type, 'application/json')
+        bidder = response.json['data']
+
+        response = self.app.get('/tenders/{}/bidders/{}'.format(self.tender_id, bidder['id']))
+        self.assertEqual(response.status, '200 OK')
+        self.assertEqual(response.content_type, 'application/json')
+        self.assertEqual(response.json['data'], bidder)
+
+        response = self.app.get('/tenders/{}/bidders/some_id'.format(self.tender_id), status=404)
+        self.assertEqual(response.status, '404 Not Found')
+        self.assertEqual(response.content_type, 'application/json')
+        self.assertEqual(response.json['status'], 'error')
+        self.assertEqual(response.json['errors'], [
+            {u'description': u'Not Found', u'location':
+                u'url', u'name': u'id'}
+        ])
+
+        response = self.app.get('/tenders/some_id/bidders/some_id', status=404)
+        self.assertEqual(response.status, '404 Not Found')
+        self.assertEqual(response.content_type, 'application/json')
+        self.assertEqual(response.json['status'], 'error')
+        self.assertEqual(response.json['errors'], [
+            {u'description': u'Not Found', u'location':
+                u'url', u'name': u'tender_id'}
+        ])
+
+    def test_delete_tender_bidder(self):
+        response = self.app.post_json('/tenders/{}/bidders'.format(
+            self.tender_id), {'data': {'bidders': [{'id': {'name': 'Name'}}]}})
+        self.assertEqual(response.status, '201 Created')
+        self.assertEqual(response.content_type, 'application/json')
+        bidder = response.json['data']
+
+        response = self.app.delete('/tenders/{}/bidders/{}'.format(self.tender_id, bidder['id']))
+        self.assertEqual(response.status, '200 OK')
+        self.assertEqual(response.content_type, 'application/json')
+        self.assertEqual(response.json['data'], bidder)
+
+        revisions = self.db.get(self.tender_id).get('revisions')
+        self.assertEqual(revisions[0][u'changes'][0]['op'], u'add')
+        self.assertEqual(revisions[-1][u'changes'][0], {u'path': u'/bids', u'op': u'remove'})
+
+        response = self.app.delete('/tenders/{}/bidders/some_id'.format(self.tender_id), status=404)
+        self.assertEqual(response.status, '404 Not Found')
+        self.assertEqual(response.content_type, 'application/json')
+        self.assertEqual(response.json['status'], 'error')
+        self.assertEqual(response.json['errors'], [
+            {u'description': u'Not Found', u'location':
+                u'url', u'name': u'id'}
+        ])
+
+        response = self.app.delete('/tenders/some_id/bidders/some_id', status=404)
+        self.assertEqual(response.status, '404 Not Found')
+        self.assertEqual(response.content_type, 'application/json')
+        self.assertEqual(response.json['status'], 'error')
+        self.assertEqual(response.json['errors'], [
+            {u'description': u'Not Found', u'location':
+                u'url', u'name': u'tender_id'}
+        ])
+
+    def test_get_tender_bidders(self):
+        response = self.app.post_json('/tenders/{}/bidders'.format(
+            self.tender_id), {'data': {'bidders': [{'id': {'name': 'Name'}}]}})
+        self.assertEqual(response.status, '201 Created')
+        self.assertEqual(response.content_type, 'application/json')
+        bidder = response.json['data']
+
+        response = self.app.get('/tenders/{}/bidders'.format(self.tender_id))
+        self.assertEqual(response.status, '200 OK')
+        self.assertEqual(response.content_type, 'application/json')
+        self.assertEqual(response.json['data'][0], bidder)
+
+        response = self.app.get('/tenders/some_id/bidders', status=404)
+        self.assertEqual(response.status, '404 Not Found')
+        self.assertEqual(response.content_type, 'application/json')
+        self.assertEqual(response.json['status'], 'error')
+        self.assertEqual(response.json['errors'], [
+            {u'description': u'Not Found', u'location':
+                u'url', u'name': u'tender_id'}
+        ])
 
 class TenderBidderDocumentResourceTest(BaseTenderWebTest):
 

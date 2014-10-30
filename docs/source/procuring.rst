@@ -15,7 +15,7 @@ When registering tender in the database, one has provide all primary tender deta
 
   POST /tenders HTTP/1.1
 
-The response produced will have URL of the tender created in Location header of resoponse, and in ``data.id`` of body.
+The response produced will have URL of the tender created in Location header of response, and in ``data.id`` of body.
   
 .. sourcecode:: http
 
@@ -30,7 +30,7 @@ All tender documentation should be uploaded following requests one request per d
 
   POST /tenders/64e93250be76435397e8c992ed4214d1/documents HTTP/1.1
 
-The response produced will have URL of the tender document uploaded in Location header of resoponse, and in ``data.id`` of body.
+The response produced will have URL of the tender document uploaded in Location header of response, and in ``data.id`` of body.
 
 .. sourcecode:: http
 

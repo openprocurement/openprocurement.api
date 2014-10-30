@@ -88,7 +88,6 @@ class TenderAuctionResourceTest(BaseWebTest):
         self.assertEqual(response.content_type, 'application/json')
         self.assertTrue('{\n    "data": {\n        "' in response.body)
 
-
     def test_patch_tender(self):
         patch_data = {
             'bids': [

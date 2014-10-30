@@ -5,7 +5,7 @@ import os
 import pkg_resources
 from pyramid.config import Configurator
 from pyramid.renderers import JSON, JSONP
-from pyramid.events import subscriber, NewRequest
+from pyramid.events import NewRequest
 from couchdb import Server
 from openprocurement.api.design import tenders_all_view
 from openprocurement.api.migration import migrate_data
@@ -18,7 +18,7 @@ def set_renderer(event):
     request = event.request
     try:
         json = request.json_body
-    except ValueError, e:
+    except ValueError:
         json = {}
     pretty = isinstance(json, dict) and json.get('options', {}).get('pretty') or request.params.get('opt_pretty')
     jsonp = request.params.get('opt_jsonp')
