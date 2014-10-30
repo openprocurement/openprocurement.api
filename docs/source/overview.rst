@@ -68,9 +68,12 @@ Change log
 0.1
 ~~~
 
-Released: Not yet.
+Released: 2014-10-24
 
  - Set up general build, testing, deployment, and ci framework.
+ - Creating/modifying tender
+ - Adding/modifying/cancelling tender proposal
+ - Awarding/disqualification of tender proposals
 
 Next steps
 ----------
