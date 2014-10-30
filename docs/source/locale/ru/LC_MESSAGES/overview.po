@@ -77,14 +77,6 @@ msgstr ""
 msgid "API stability"
 msgstr ""
 
-#: ../../source/overview.rst:61
-msgid ""
-"API is highly unstable, and while API endpoint are expecetd to remain "
-"relatively stable the data exchange formats are expected to be changed a "
-"lot.  The changes in the API are communicated via `Open Procurement API "
-"<https://groups.google.com/group/open-procurement-api>`_ maillist."
-msgstr ""
-
 #: ../../source/overview.rst:67
 msgid "Change log"
 msgstr ""
@@ -139,3 +131,18 @@ msgid ""
 "containing a list of problems.  We look at the first one and print out its "
 "message."
 msgstr ""
+
+#: ../../source/overview.rst:61
+msgid ""
+"API is highly unstable, and while API endpoint are expected to remain "
+"relatively stable the data exchange formats are expected to be changed a "
+"lot.  The changes in the API are communicated via `Open Procurement API "
+"<https://groups.google.com/group/open-procurement-api>`_ maillist."
+msgstr ""
+
+#~ msgid ""
+#~ "API is highly unstable, and while API endpoint are expecetd to remain "
+#~ "relatively stable the data exchange formats are expected to be changed a "
+#~ "lot.  The changes in the API are communicated via `Open Procurement API "
+#~ "<https://groups.google.com/group/open-procurement-api>`_ maillist."
+#~ msgstr ""

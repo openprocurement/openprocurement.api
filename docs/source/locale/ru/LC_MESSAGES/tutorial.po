@@ -14,3 +14,97 @@ msgstr ""
 #: ../../source/tutorial.rst:4
 msgid "Tutorial"
 msgstr ""
+
+#: ../../source/tutorial.rst:6
+msgid "Let's try exploring the `/tenders` endpoint::"
+msgstr ""
+
+#: ../../source/tutorial.rst:19
+msgid "Just invoking it reveals empty set."
+msgstr ""
+
+#: ../../source/tutorial.rst:21
+msgid "Now let's attempt creating some tender::"
+msgstr ""
+
+#: ../../source/tutorial.rst:41
+msgid "Error states that only accepted Content-Type is `application/json`."
+msgstr ""
+
+#: ../../source/tutorial.rst:43
+msgid "Let's satisfy the Content-type requirement::"
+msgstr ""
+
+#: ../../source/tutorial.rst:64
+msgid "Error states that no `data` found in JSON body."
+msgstr ""
+
+#: ../../source/tutorial.rst:66
+msgid "Let's provide the data attribute in the body submitted::"
+msgstr ""
+
+#: ../../source/tutorial.rst:89
+msgid ""
+"Success! Now we can see that new object was created. Response code is `201` "
+"and `Location` response header reports the location of object created. The "
+"body of response reveals the information about tender created, its internal "
+"`id` (that matches the `Location` segment), its official `tenderID` and "
+"`modified` datestamp stating the moment in time when tender was last "
+"modified."
+msgstr ""
+
+#: ../../source/tutorial.rst:91
+msgid ""
+"Let's access the URL of object created (the `Location` header of the "
+"response)::"
+msgstr ""
+
+#: ../../source/tutorial.rst:108
+msgid "We can see the same response we got after creating tender."
+msgstr ""
+
+#: ../../source/tutorial.rst:110
+msgid "Let's see what listing of tenders reveals us::"
+msgstr ""
+
+#: ../../source/tutorial.rst:128
+msgid ""
+"We do see the internal `id` of a tender (that can be used to construct full "
+"URL by prepending `http://api-sandbox.openprocurement.org/api/0/tenders/`) "
+"and its `modified` datestamp."
+msgstr ""
+
+#: ../../source/tutorial.rst:130
+msgid ""
+"Let's try creating tender with more data, passing the `procuringEntity` of a"
+" tender::"
+msgstr ""
+
+#: ../../source/tutorial.rst:184
+msgid ""
+"And again we have `201 Created` response code, `Location` header and body "
+"wth extra `id`, `tenderID`, and `modified` properties."
+msgstr ""
+
+#: ../../source/tutorial.rst:186
+msgid "Let's check what tender registry contains::"
+msgstr ""
+
+#: ../../source/tutorial.rst:208
+msgid "And indeed we have 2 tenders now."
+msgstr ""
+
+#: ../../source/tutorial.rst:210
+msgid ""
+"Let's update tender by providing it with all other essential properties::"
+msgstr ""
+
+#: ../../source/tutorial.rst:320
+msgid ""
+"We see the added properies merged with existing data of tender. Additionally"
+" the `modified` property updated to reflect the last modification datestamp."
+msgstr ""
+
+#: ../../source/tutorial.rst:322
+msgid "Checking the listing again reflets the new modification date::"
+msgstr ""

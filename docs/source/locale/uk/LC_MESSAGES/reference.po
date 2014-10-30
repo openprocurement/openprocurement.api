@@ -1,82 +1,207 @@
-# 
+#
 msgid ""
 msgstr ""
 "Project-Id-Version: openprocurement.api 0.1\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2014-10-21 10:42+0300\n"
-"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"PO-Revision-Date: 2014-10-30 10:57+0300\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"X-Generator: Poedit 1.5.4\n"
 
-#: ../../source/reference.rst:9
+#: ../../source/reference.rst:6
 msgid "API Reference"
-msgstr ""
+msgstr "API Довідник"
 
-#: ../<>:1 ../<>:1
+#: ../<>:1
 msgid ""
 "Open Contracting compatible data exchange format. See http://ocds.open-"
 "contracting.org/standard/r/master/#tender for more info"
 msgstr ""
+"Open Contracting сумісний формат обміну даними. Більше на http://ocds.open-"
+"contracting.org/standard/r/master/#tender"
 
 #: ../<>:1
 msgid ""
 "This API request is targeted to creating new Tenders by procuring "
 "organizations."
-msgstr ""
+msgstr "Цей API запит орієнтований на створення нових Закупівель замовниками."
 
 #: ../<>:4
 msgid "Creating new Tender"
-msgstr ""
+msgstr "Створення нової Закупівлі"
 
 #: ../<>:6
 msgid "Example request to create tender:"
-msgstr ""
+msgstr "Приклад запиту для створення закупівлі:"
 
-#: ../<>:56
+#: ../<>:14 ../<>:34 ../<>:67 ../<>:41 ../<>:42
 msgid "This is what one should expect in response:"
-msgstr ""
+msgstr "Так повинна виглядати відповідь:"
 
 #: ../<>:1
 msgid "Tender Read"
-msgstr ""
+msgstr "Читати Закупівлю"
 
 #: ../<>:1
 msgid "Tender Edit (full)"
-msgstr ""
+msgstr "Редагувати Закупівлю (повністю)"
 
 #: ../<>:1
 msgid "Tender Edit (partial)"
-msgstr ""
+msgstr "Редагувати Закупівлю (частково)"
 
 #: ../<>:3
 msgid ""
 "For example here is how procuring entity can change number of items to be "
 "procured and total Value of a tender:"
 msgstr ""
+"Наприклад, ось так замовник закупівлі може змінити об’єм та загальну "
+"Вартість закупівлі:"
 
-#: ../<>:22
+#: ../<>:24 ../<>:11 ../<>:19
 msgid "And here is the response to be expected:"
-msgstr ""
+msgstr "Відповідь буде такою:"
 
-#: ../<>:1 ../<>:1
+#: ../<>:1
 msgid "Tender related binary files (PDFs, etc.)"
-msgstr ""
+msgstr "Двійкові файли пов’язані із закупівлею (.PDF документи і т.п.)"
 
 #: ../<>:1
 msgid "Tender Documents List"
-msgstr ""
+msgstr "Список документів Закупівлі"
 
 #: ../<>:1
 msgid "Tender Document Upload"
-msgstr ""
+msgstr "Завантажити документ Закупівлі"
 
 #: ../<>:1
 msgid "Tender Document Read"
-msgstr ""
+msgstr "Читати документ Закупівлі"
 
 #: ../<>:1
 msgid "Tender Document Update"
-msgstr ""
+msgstr "Оновити документ Закупівлі"
+
+#: ../<>:1
+msgid "Get auction info."
+msgstr "Отримати інформацію про аукціон."
+
+#: ../<>:4
+msgid "Get tender auction info"
+msgstr "Отримати інформацію про аукціон."
+
+#: ../<>:6
+msgid "Example request to get tender auction information:"
+msgstr "Приклад запиту для отримання інформації про аукціон:"
+
+#: ../<>:1
+msgid "Report auction results."
+msgstr "Звітувати про результати аукціону."
+
+#: ../<>:4
+msgid "Report auction results"
+msgstr "Звітувати про результати аукціону"
+
+#: ../<>:6
+msgid "Example request to report auction results:"
+msgstr "Приклад запиту звіту про результати аукціону:"
+
+#: ../<>:1
+msgid "Tenders List"
+msgstr "Список закупівель"
+
+#: ../<>:4
+msgid "Get Tenders List"
+msgstr "Прочитати список закупівель"
+
+#: ../<>:6
+msgid "Example request to get tenders list:"
+msgstr "Приклад запиту для вичитки списку закупівель:"
+
+#: ../<>:4
+msgid "Get Tender"
+msgstr "Прочитати Закупівлю"
+
+#: ../<>:6
+msgid "Example request to get tender:"
+msgstr "Приклад запиту для вичитки Закупівлі"
+
+#: ../<>:1
+msgid "Tender bidders"
+msgstr "Учасники закупівлі"
+
+#: ../<>:1
+msgid "Registration of new bid proposal"
+msgstr "Реєстрація нової пропозиції"
+
+#: ../<>:4
+msgid "Creating new Bid proposal"
+msgstr "Створення нової пропозиції"
+
+#: ../<>:6
+msgid "Example request to create bid proposal:"
+msgstr "Приклад запиту для створення нової пропозиції:"
+
+#: ../<>:1
+msgid "Tender bidder documents"
+msgstr "Документи учасника закупівлі"
+
+#: ../<>:1
+msgid "Tender Bid Document Upload"
+msgstr "Завантажити документи учасника закупівлі"
+
+#: ../<>:1
+msgid "Tender awards"
+msgstr "Переможці Закупівлі"
+
+#: ../<>:1
+msgid "Accept or reject bidder application"
+msgstr "Прийняти або відхилити заявку учасника"
+
+#: ../<>:4
+msgid "Creating new Award"
+msgstr "Створення нового Переможця"
+
+#: ../<>:6
+msgid "Example request to create award:"
+msgstr "Приклад запиту для створення переможця"
+
+#: ../<>:1
+msgid "Bids Listing"
+msgstr "Список пропозицій"
+
+#: ../<>:4
+msgid "Get Bids List"
+msgstr "Прочитати список пропозицій"
+
+#: ../<>:6
+msgid "Example request to get bids list:"
+msgstr "Приклад запиту для вичитки списку пропозицій"
+
+#: ../<>:1
+msgid "Retrieving the proposal"
+msgstr "Вичитка пропозиції"
+
+#: ../<>:3
+msgid "Example request for retrieving the proposal:"
+msgstr "Приклад запиту для вичитки пропозиції"
+
+#: ../<>:1
+msgid "Cancelling the proposal"
+msgstr "Відміна пропозиції"
+
+#: ../<>:3
+msgid "Example request for cancelling the proposal:"
+msgstr "Приклад запиту для відміни пропозиції"
+
+#: ../<>:1
+msgid "Update of proposal"
+msgstr "Оновлення пропозиції"
+
+#: ../<>:3
+msgid "Example request to change bid proposal:"
+msgstr "Приклад запиту для оновлення цінової пропозиції"

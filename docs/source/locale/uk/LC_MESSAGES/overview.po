@@ -1,15 +1,16 @@
-# 
+#
 msgid ""
 msgstr ""
 "Project-Id-Version: openprocurement.api 0.1\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2014-10-21 10:42+0300\n"
-"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"PO-Revision-Date: 2014-10-30 10:43+0300\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"X-Generator: Poedit 1.5.4\n"
 
 #: ../../source/overview.rst:2
 msgid "Overview"
@@ -21,16 +22,24 @@ msgid ""
 "that is core unit of `Open Procurement <http://openprocurement.org/>`_ "
 "infrastructure."
 msgstr ""
+"Open Procurement API це єдиний інтерфейс для бази даних Open Procurement, що "
+"є основним елементом інфраструктури `Open Procurement <http://"
+"openprocurement.org/>`_."
 
 #: ../../source/overview.rst:8
 msgid ""
-"The Open Procurement API is `REST "
-"<http://en.wikipedia.org/wiki/Representational_State_Transfer>`_-ful "
-"interface, providing programmatic access to Tender database of Open "
-"Procurement system.  It provides predictable URLs for accessing resources, "
-"and uses built-in HTTP features to receive commands and return responses. "
-"This makes it easy to communicate with."
+"The Open Procurement API is `REST <http://en.wikipedia.org/wiki/"
+"Representational_State_Transfer>`_-ful interface, providing programmatic "
+"access to Tender database of Open Procurement system.  It provides "
+"predictable URLs for accessing resources, and uses built-in HTTP features to "
+"receive commands and return responses. This makes it easy to communicate "
+"with."
 msgstr ""
+"Open Procurement API це `REST <http://en.wikipedia.org/wiki/"
+"Representational_State_Transfer>`_-ful інтерфейс, що надає програмний доступ "
+"до бази даних Tender системи Open Procurement. Він надає URL-адреси для "
+"доступу до ресурсів і використовує вбудовані HTTP особливості, щоб "
+"отримувати команди та повертати відповіді. Це полегшує спілкування."
 
 #: ../../source/overview.rst:15
 msgid ""
@@ -39,6 +48,9 @@ msgid ""
 "errors.  Only the UTF-8 character encoding is supported for both requests "
 "and responses."
 msgstr ""
+"API приймає `JSON <http://json.org/>`_ або form-encoded вміст у запитах. Він "
+"повертає JSON вміст у всіх свої відповідях, включно з помилками. "
+"Підтримується лише UTF-8 кодування і для запитів, і для відповідей."
 
 #: ../../source/overview.rst:39
 msgid "Main responsibilities"
@@ -62,28 +74,24 @@ msgstr "Репозиторій джерельних текстів цього п
 
 #: ../../source/overview.rst:51
 msgid "https://github.com/openprocurement/openprocurement.api"
-msgstr ""
+msgstr "https://github.com/openprocurement/openprocurement.api"
 
 #: ../../source/overview.rst:53
 msgid ""
-"You can leave feedback by raising a new issue on the `issue tracker "
-"<https://github.com/openprocurement/openprocurement.api/issues>`_ (GitHub "
+"You can leave feedback by raising a new issue on the `issue tracker <https://"
+"github.com/openprocurement/openprocurement.api/issues>`_ (GitHub "
 "registration necessary).  For general discussion use `Open Procurement "
 "General <https://groups.google.com/group/open-procurement-general>`_ "
 "maillist."
 msgstr ""
+"Повідомляйте про всі проблеми та поради через `issue tracker <https://github."
+"com/openprocurement/openprocurement.api/issues>`_. Загальне обговорення "
+"відбувається через `Open Procurement General <https://groups.google.com/"
+"group/open-procurement-general>`_ розсилку."
 
 #: ../../source/overview.rst:60
 msgid "API stability"
 msgstr "Стабільність API"
-
-#: ../../source/overview.rst:61
-msgid ""
-"API is highly unstable, and while API endpoint are expecetd to remain "
-"relatively stable the data exchange formats are expected to be changed a "
-"lot.  The changes in the API are communicated via `Open Procurement API "
-"<https://groups.google.com/group/open-procurement-api>`_ maillist."
-msgstr ""
 
 #: ../../source/overview.rst:67
 msgid "Change log"
@@ -91,7 +99,7 @@ msgstr "Звіт про зміни"
 
 #: ../../source/overview.rst:69
 msgid "0.1"
-msgstr ""
+msgstr "0.1"
 
 #: ../../source/overview.rst:71
 msgid "Released: Not yet."
@@ -99,7 +107,7 @@ msgstr "Випущено: Ще ні"
 
 #: ../../source/overview.rst:73
 msgid "Set up general build, testing, deployment, and ci framework."
-msgstr ""
+msgstr "Налаштувати загальну збірку, тестування, розгортання та ci фреймворк."
 
 #: ../../source/overview.rst:76
 msgid "Next steps"
@@ -107,9 +115,10 @@ msgstr "Наступні кроки"
 
 #: ../../source/overview.rst:77
 msgid ""
-"You might find it helpful to look at the :ref:`tutorial`, or the "
-":ref:`reference`."
+"You might find it helpful to look at the :ref:`tutorial`, or the :ref:"
+"`reference`."
 msgstr ""
+"Можливо вам буде цікаво прочитати :ref:`tutorial`, або :ref:`reference`."
 
 #: ../../source/overview.rst:21
 msgid "Conventions"
@@ -123,6 +132,11 @@ msgid ""
 "the request.  In the case of creating a new tender, these are the fields we "
 "want to set on the tender itself."
 msgstr ""
+"Всі API POST та PUT запити очікують об'єкт верхнього рівня з єдиним "
+"елементом з назвою `data`. Відповіді з повідомленням про успіх будуть "
+"віддзеркалювати цей формат. Елемент data повинен сам бути об’єктом, що "
+"містить параметри запиту. Якщо створюється нова закупівля, то це ті поля, "
+"які ми хочемо встановити на самій закупівлі."
 
 #: ../../source/overview.rst:28
 msgid ""
@@ -131,6 +145,9 @@ msgid ""
 "its top level, which will contain complete information on the new tender, "
 "including its ID."
 msgstr ""
+"Якщо запит був успішним, ми отримаємо код відповіді `201`, який вказує, що "
+"об’єкт був створений. Ця відповідь буде мати data поле на верхньому рівні, "
+"яке вміщуватиме повну інформацію про нову закупівлю, включно з ID."
 
 #: ../../source/overview.rst:33
 msgid ""
@@ -139,4 +156,29 @@ msgid ""
 "containing a list of problems.  We look at the first one and print out its "
 "message."
 msgstr ""
+"Якщо під час запиту виникли труднощі, ми отримаємо інший код стану та JSON, "
+"який при поверненні міститиме `errors` поле на верхньому рівні зі списком "
+"проблем. Ми дивимось на першу з них і видруковуємо її повідомлення."
 
+#: ../../source/overview.rst:61
+msgid ""
+"API is highly unstable, and while API endpoint are expected to remain "
+"relatively stable the data exchange formats are expected to be changed a "
+"lot.  The changes in the API are communicated via `Open Procurement API "
+"<https://groups.google.com/group/open-procurement-api>`_ maillist."
+msgstr ""
+"API є дуже нестабільним. Хоча точки входу API будуть відносно стабільними, "
+"формати обміну даними будуть часно змінюватись. Зміни в API обговорюються "
+"через `Open Procurement API <https://groups.google.com/group/open-"
+"procurement-api>`_ розсилку."
+
+#~ msgid ""
+#~ "API is highly unstable, and while API endpoint are expecetd to remain "
+#~ "relatively stable the data exchange formats are expected to be changed a "
+#~ "lot.  The changes in the API are communicated via `Open Procurement API "
+#~ "<https://groups.google.com/group/open-procurement-api>`_ maillist."
+#~ msgstr ""
+#~ "API є дуже нестабільним. Хоча точки входу API будуть відносно "
+#~ "стабільними, формати обміну даними будуть часно змінюватись. Зміни в API "
+#~ "обговорюються через `Open Procurement API <https://groups.google.com/"
+#~ "group/open-procurement-api>`_ розсилку."

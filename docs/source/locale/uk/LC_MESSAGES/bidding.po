@@ -1,0 +1,45 @@
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: openprocurement.api 0.1\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2014-10-29 12:11+0200\n"
+"PO-Revision-Date: 2014-10-30 10:20+0300\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: Poedit 1.5.4\n"
+
+#: ../../source/bidding.rst:4
+msgid "Bidder Operations"
+msgstr "Операції для учасників закупівлі"
+
+#: ../../source/bidding.rst:7
+msgid "Registration of Bid proposal"
+msgstr "Реєстрація цінової пропозиції "
+
+#: ../../source/bidding.rst:19
+msgid "Uploading Bid documents"
+msgstr "Завантаження документів пропозиції"
+
+#: ../../source/bidding.rst:32
+msgid "Update of proposal"
+msgstr "Оновлення пропозиції"
+
+#: ../../source/bidding.rst:43
+msgid "Updating Bid documents"
+msgstr "Оновлення документів пропозиції"
+
+#: ../../source/bidding.rst:55
+msgid "Cancelling the proposal"
+msgstr "Відміна пропозиції"
+
+#: ../../source/bidding.rst:66
+msgid "Bids Listing"
+msgstr "Список пропозицій"
+
+#: ../../source/bidding.rst:77
+msgid "Retrieving the proposal"
+msgstr "Вичитка пропозиції"
