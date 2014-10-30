@@ -44,7 +44,7 @@ def main(global_config, **settings):
     config.scan("openprocurement.api.views")
 
     # CouchDB connection
-    server = Server()
+    server = Server(settings.get('couchdb.url'))
     config.registry.couchdb_server = server
     db_name = os.environ.get('DB_NAME', settings['couchdb.db_name'])
     if db_name not in server:
