@@ -1243,10 +1243,6 @@ def get_auction(request):
         request.errors.status = 404
         return
     auction_info = tender.serialize("auction")
-    auction_info["minimalStep"] = {
-        "amount": 35,
-        "currency": "UAH"
-    }
     return {'data': auction_info}
 
 

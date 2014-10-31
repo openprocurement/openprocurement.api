@@ -183,6 +183,7 @@ class Tender(Model):
     awards = ListType(ModelType(Award), default=list())
     revisions = ListType(ModelType(revision), default=list())
     deliveryDate = ModelType(Period)
+    minimalStep = ModelType(Value)
 
 
 class OrganizationDocument(SchematicsDocument, Organization):
@@ -195,7 +196,7 @@ class TenderDocument(SchematicsDocument, Tender):
             "plain": (blacklist("_attachments", "revisions", "modified") + SchematicsDocument.Options.roles['embedded']),
             "view": (blacklist("_attachments", "revisions") + SchematicsDocument.Options.roles['embedded']),
             "listing": whitelist("modified", "doc_id"),
-            "auction": whitelist("modified", "bids", "tenderPeriod"),
+            "auction": whitelist("modified", "bids", "tenderPeriod", "minimalStep"),
         }
 
     _attachments = DictType(DictType(BaseType), default=dict())
