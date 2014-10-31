@@ -79,7 +79,7 @@ def validate_award_data(request):
 
 
 def generate_tender_id(tid):
-    return "UA-2014-DUS-" + tid
+    return "UA-" + tid
 
 
 def filter_data(data, fields=['id', 'doc_id', 'modified']):
@@ -246,7 +246,7 @@ class TenderResource(object):
             {
                 "data": {
                     "id": "64e93250be76435397e8c992ed4214d1",
-                    "tenderID": "UA-2014-DUS-156",
+                    "tenderID": "UA-64e93250be76435397e8c992ed4214d1",
                     "modified": "2014-10-27T08:06:58.158Z",
                     "procuringEntity": {
                         "id": {
@@ -339,7 +339,7 @@ class TenderResource(object):
             {
                 "data": {
                     "id": "64e93250be76435397e8c992ed4214d1",
-                    "tenderID": "UA-2014-DUS-156",
+                    "tenderID": "UA-64e93250be76435397e8c992ed4214d1",
                     "modified": "2014-10-27T08:06:58.158Z",
                     "procuringEntity": {
                         "id": {
@@ -455,7 +455,7 @@ class TenderResource(object):
             {
                 "data": {
                     "id": "4879d3f8ee2443169b5fbbc9f89fa607",
-                    "tenderID": "UA-2014-DUS-156",
+                    "tenderID": "UA-64e93250be76435397e8c992ed4214d1",
                     "modified": "2014-10-27T08:12:34.956Z",
                     "totalValue": {
                         "amount": 600

@@ -161,7 +161,7 @@ class revision(Model):
 
 class Tender(Model):
     """Data regarding tender process - publicly inviting prospective contractors to submit bids for evaluation and selecting a winner or winners."""
-    tenderID = StringType(required=True, default=lambda: "UA-2014-DUS-{:03}".format(random.randint(0, 10 ** 3)))  # TenderID should always be the same as the OCID. It is included to make the flattened data structure more convenient.
+    tenderID = StringType(required=True, default=lambda: "UA-{}".format(uuid4().hex))  # TenderID should always be the same as the OCID. It is included to make the flattened data structure more convenient.
     notice = ModelType(Notice)
     itemsToBeProcured = ListType(ModelType(Item))  # The goods and services to be purchased, broken into line items wherever possible. Items should not be duplicated, but a quantity of 2 specified instead.
     totalValue = ModelType(Value)  # The total estimated value of the procurement.
