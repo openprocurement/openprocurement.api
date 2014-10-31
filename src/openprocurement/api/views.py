@@ -5,11 +5,13 @@ import datetime
 from cornice.ext.spore import generate_spore_description
 from cornice.resource import resource, view
 from cornice.service import Service, get_services
-from openprocurement.api import VERSION
-from openprocurement.api.models import TenderDocument, Bid, Award, revision
-from schematics.exceptions import ModelValidationError, ModelConversionError
-from uuid import uuid4
 from jsonpatch import make_patch
+from openprocurement.api import VERSION
+from openprocurement.api.models import TenderDocument, Bid, Award, Attachment, AttachmentRevision, revision
+from schematics.exceptions import ModelValidationError, ModelConversionError
+from urllib import quote
+from uuid import uuid4
+from base64 import b64encode
 
 
 spore = Service(name='spore', path='/spore', renderer='json')
@@ -507,73 +509,100 @@ class TenderDocumentResource(object):
             self.request.errors.add('url', 'tender_id', 'Not Found')
             self.request.errors.status = 404
             return
-        return {'documents': tender['_attachments']}
+        return {'data': [i.serialize("view") for i in tender['attachments']]}
 
     @view(renderer='json')
     def collection_post(self):
         """Tender Document Upload"""
+        if 'file' not in self.request.POST:
+            self.request.errors.add('body', 'file', 'Not Found')
+            self.request.errors.status = 404
+            return
         tender = TenderDocument.load(self.db, self.tender_id)
         if not tender:
             self.request.errors.add('url', 'tender_id', 'Not Found')
             self.request.errors.status = 404
             return
         src = tender.serialize("plain")
-        for data in self.request.POST.values():
-            try:
-                self.db.put_attachment(tender._data, data.file, data.filename)
-            except Exception, e:
-                return self.request.errors.add('body', 'data', str(e))
-        tender = tender.reload(self.db)
-        patch = make_patch(src, tender.serialize("plain")).patch
-        if patch:
-            tender.revisions.append(revision({'changes': patch}))
-            try:
-                tender.store(self.db)
-            except Exception, e:
-                return self.request.errors.add('body', 'data', str(e))
+        data = self.request.POST['file']
+        attachment = Attachment()
+        attachment.id = uuid4().hex
+        attachment.description = data.filename
+        uri = self.request.route_url('Tender Documents', tender_id=self.tender_id, id=attachment.id)
+        attachment.uri = uri
+        tender.attachments.append(attachment)
+        filename = "{}_{}_{}".format(attachment.id, len(attachment.revisions), attachment.description)
+        tender['_attachments'][filename] = {
+            "content_type": data.type,
+            "data": b64encode(data.file.read())
+        }
+        patch = make_patch(tender.serialize("plain"), src).patch
+        tender.revisions.append(revision({'changes': patch}))
+        try:
+            tender.store(self.db)
+        except Exception, e:
+            return self.request.errors.add('body', 'data', str(e))
         self.request.response.status = 201
-        self.request.response.headers['Location'] = self.request.route_url(
-            'Tender Documents', tender_id=self.tender_id, id=data.filename)
-        return {'documents': tender['_attachments']}
+        self.request.response.headers['Location'] = uri
+        return {'data': attachment.serialize("view")}
 
     def get(self):
         """Tender Document Read"""
-        data = self.db.get_attachment(
-            self.tender_id, self.request.matchdict['id'])
+        tender = TenderDocument.load(self.db, self.tender_id)
+        if not tender:
+            self.request.errors.add('url', 'tender_id', 'Not Found')
+            self.request.errors.status = 404
+            return
+        attachments = [i for i in tender.attachments if i.id == self.request.matchdict['id']]
+        if not attachments:
+            self.request.errors.add('url', 'id', 'Not Found')
+            self.request.errors.status = 404
+            return
+        attachment = attachments[0]
+        filename = "{}_{}_{}".format(attachment.id, len(attachment.revisions), attachment.description)
+        data = self.db.get_attachment(self.tender_id, filename)
         if not data:
             self.request.errors.add('url', 'id', 'Not Found')
             self.request.errors.status = 404
             return
+        self.request.response.content_type = tender['_attachments'][filename]["content_type"]
+        self.request.response.content_disposition = 'attachment; filename={}'.format(quote(attachment.description.encode('utf-8')))
         self.request.response.body_file = data
         return self.request.response
 
     @view(renderer='json')
     def put(self):
         """Tender Document Update"""
+        if 'file' not in self.request.POST:
+            self.request.errors.add('body', 'file', 'Not Found')
+            self.request.errors.status = 404
+            return
         tender = TenderDocument.load(self.db, self.tender_id)
         if not tender:
             self.request.errors.add('url', 'tender_id', 'Not Found')
             self.request.errors.status = 404
             return
+        data = self.request.POST['file']
+        attachments = [i for i in tender.attachments if i.id == self.request.matchdict['id']]
+        if not attachments:
+            self.request.errors.add('url', 'id', 'Not Found')
+            self.request.errors.status = 404
+            return
         src = tender.serialize("plain")
-        for data in self.request.POST.values():
-            if data.filename not in tender['_attachments']:
-                self.request.errors.add('url', 'id', 'Not Found')
-                self.request.errors.status = 404
-                return
-            try:
-                self.db.put_attachment(tender, data.file, data.filename)
-            except Exception, e:
-                return self.request.errors.add('body', 'data', str(e))
-        tender = tender.reload(self.db)
+        attachment = attachments[0]
+        attachment.revisions.append(AttachmentRevision({"uri": attachment.uri, "lastModified": attachment.lastModified}))
+        filename = "{}_{}_{}".format(attachment.id, len(attachment.revisions), attachment.description)
+        tender['_attachments'][filename] = {
+            "content_type": data.type,
+            "data": b64encode(data.file.read())
+        }
         patch = make_patch(src, tender.serialize("plain")).patch
-        if patch:
-            tender.revisions.append(revision({'changes': patch}))
-            try:
-                tender.store(self.db)
-            except Exception, e:
-                return self.request.errors.add('body', 'data', str(e))
-        return tender['_attachments'].get(self.request.matchdict['id'], {})
+        tender.revisions.append(revision({'changes': patch}))
+        try:
+            tender.store(self.db)
+        except Exception, e:
+            return self.request.errors.add('body', 'data', str(e))
+        return {'data': attachment.serialize("view")}
 
 
 @resource(name='Tender Bids',
@@ -914,9 +943,29 @@ class TenderBidderDocumentResource(object):
         self.bid_id = request.matchdict['bid_id']
 
     @view(renderer='json')
+    def collection_get(self):
+        """Tender Bid Documents List"""
+        tender = TenderDocument.load(self.db, self.tender_id)
+        if not tender:
+            self.request.errors.add('url', 'tender_id', 'Not Found')
+            self.request.errors.status = 404
+            return
+        bids = [i for i in tender.bids if i.id == self.bid_id]
+        if not bids:
+            self.request.errors.add('url', 'bid_id', 'Not Found')
+            self.request.errors.status = 404
+            return
+        bid = bids[0]
+        return {'data': [i.serialize("view") for i in bid['attachments']]}
+
+    @view(renderer='json')
     def collection_post(self):
         """Tender Bid Document Upload
         """
+        if 'file' not in self.request.POST:
+            self.request.errors.add('body', 'file', 'Not Found')
+            self.request.errors.status = 404
+            return
         tender = TenderDocument.load(self.db, self.tender_id)
         if not tender:
             self.request.errors.add('url', 'tender_id', 'Not Found')
@@ -928,22 +977,98 @@ class TenderBidderDocumentResource(object):
             self.request.errors.add('url', 'bid_id', 'Not Found')
             self.request.errors.status = 404
             return
-        for data in self.request.POST.values():
-            try:
-                self.db.put_attachment(tender._data, data.file, data.filename)
-            except Exception, e:
-                return self.request.errors.add('body', 'data', str(e))
-        tender = tender.reload(self.db)
+        bid = bids[0]
+        data = self.request.POST['file']
+        attachment = Attachment()
+        attachment.id = uuid4().hex
+        attachment.description = data.filename
+        uri = self.request.route_url('Tender Bid Documents', tender_id=self.tender_id, bid_id=self.bid_id, id=attachment.id)
+        attachment.uri = uri
+        bid.attachments.append(attachment)
+        filename = "{}_{}_{}".format(attachment.id, len(attachment.revisions), attachment.description)
+        tender['_attachments'][filename] = {
+            "content_type": data.type,
+            "data": b64encode(data.file.read())
+        }
         patch = make_patch(src, tender.serialize("plain")).patch
-        if patch:
-            tender.revisions.append(revision({'changes': patch}))
-            try:
-                tender.store(self.db)
-            except Exception, e:
-                return self.request.errors.add('body', 'data', str(e))
+        tender.revisions.append(revision({'changes': patch}))
+        try:
+            tender.store(self.db)
+        except Exception, e:
+            return self.request.errors.add('body', 'data', str(e))
         self.request.response.status = 201
-        # self.request.response.headers['Location'] = self.request.route_url('Tender Bid Documents', tender_id=self.tender_id, bid_id=self.bid_id, id=data.filename)
-        return {'documents': tender['_attachments']}
+        self.request.response.headers['Location'] = uri
+        return {'data': attachment.serialize("view")}
+
+    def get(self):
+        """Tender Bid Document Read"""
+        tender = TenderDocument.load(self.db, self.tender_id)
+        if not tender:
+            self.request.errors.add('url', 'tender_id', 'Not Found')
+            self.request.errors.status = 404
+            return
+        bids = [i for i in tender.bids if i.id == self.bid_id]
+        if not bids:
+            self.request.errors.add('url', 'bid_id', 'Not Found')
+            self.request.errors.status = 404
+            return
+        bid = bids[0]
+        attachments = [i for i in bid.attachments if i.id == self.request.matchdict['id']]
+        if not attachments:
+            self.request.errors.add('url', 'id', 'Not Found')
+            self.request.errors.status = 404
+            return
+        attachment = attachments[0]
+        filename = "{}_{}_{}".format(attachment.id, len(attachment.revisions), attachment.description)
+        data = self.db.get_attachment(self.tender_id, filename)
+        if not data:
+            self.request.errors.add('url', 'id', 'Not Found')
+            self.request.errors.status = 404
+            return
+        self.request.response.content_type = tender['_attachments'][filename]["content_type"]
+        self.request.response.content_disposition = 'attachment; filename={}'.format(quote(attachment.description.encode('utf-8')))
+        self.request.response.body_file = data
+        return self.request.response
+
+    @view(renderer='json')
+    def put(self):
+        """Tender Bid Document Update"""
+        if 'file' not in self.request.POST:
+            self.request.errors.add('body', 'file', 'Not Found')
+            self.request.errors.status = 404
+            return
+        tender = TenderDocument.load(self.db, self.tender_id)
+        if not tender:
+            self.request.errors.add('url', 'tender_id', 'Not Found')
+            self.request.errors.status = 404
+            return
+        data = self.request.POST['file']
+        bids = [i for i in tender.bids if i.id == self.bid_id]
+        if not bids:
+            self.request.errors.add('url', 'bid_id', 'Not Found')
+            self.request.errors.status = 404
+            return
+        bid = bids[0]
+        attachments = [i for i in bid.attachments if i.id == self.request.matchdict['id']]
+        if not attachments:
+            self.request.errors.add('url', 'id', 'Not Found')
+            self.request.errors.status = 404
+            return
+        src = tender.serialize("plain")
+        attachment = attachments[0]
+        attachment.revisions.append(AttachmentRevision({"uri": attachment.uri, "lastModified": attachment.lastModified}))
+        filename = "{}_{}_{}".format(attachment.id, len(attachment.revisions), attachment.description)
+        tender['_attachments'][filename] = {
+            "content_type": data.type,
+            "data": b64encode(data.file.read())
+        }
+        patch = make_patch(src, tender.serialize("plain")).patch
+        tender.revisions.append(revision({'changes': patch}))
+        try:
+            tender.store(self.db)
+        except Exception, e:
+            return self.request.errors.add('body', 'data', str(e))
+        return {'data': attachment.serialize("view")}
 
 
 @resource(name='Tender Awards',

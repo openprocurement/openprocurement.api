@@ -238,9 +238,19 @@ class TenderBidderDocumentResourceTest(BaseTenderWebTest):
         bid = response.json['data']
         self.bid_id = bid['id']
 
-    def test_post_tender_not_found(self):
+    def test_not_found(self):
         response = self.app.post('/tenders/some_id/bidders/some_id/documents', status=404, upload_files=[
-                                 ('upload', 'name.doc', 'content')])
+                                 ('invalid_value', 'name.doc', 'content')])
+        self.assertEqual(response.status, '404 Not Found')
+        self.assertEqual(response.content_type, 'application/json')
+        self.assertEqual(response.json['status'], 'error')
+        self.assertEqual(response.json['errors'], [
+            {u'description': u'Not Found', u'location':
+                u'body', u'name': u'file'}
+        ])
+
+        response = self.app.post('/tenders/some_id/bidders/some_id/documents', status=404, upload_files=[
+                                 ('file', 'name.doc', 'content')])
         self.assertEqual(response.status, '404 Not Found')
         self.assertEqual(response.content_type, 'application/json')
         self.assertEqual(response.json['status'], 'error')
@@ -249,8 +259,7 @@ class TenderBidderDocumentResourceTest(BaseTenderWebTest):
                 u'url', u'name': u'tender_id'}
         ])
 
-    def test_post_tender_bid_not_found(self):
-        response = self.app.post('/tenders/{}/bidders/some_id/documents'.format(self.tender_id), status=404, upload_files=[('upload', 'name.doc', 'content')])
+        response = self.app.post('/tenders/{}/bidders/some_id/documents'.format(self.tender_id), status=404, upload_files=[('file', 'name.doc', 'content')])
         self.assertEqual(response.status, '404 Not Found')
         self.assertEqual(response.content_type, 'application/json')
         self.assertEqual(response.json['status'], 'error')
@@ -259,13 +268,132 @@ class TenderBidderDocumentResourceTest(BaseTenderWebTest):
                 u'url', u'name': u'bid_id'}
         ])
 
+        response = self.app.get('/tenders/some_id/bidders/some_id/documents', status=404)
+        self.assertEqual(response.status, '404 Not Found')
+        self.assertEqual(response.content_type, 'application/json')
+        self.assertEqual(response.json['status'], 'error')
+        self.assertEqual(response.json['errors'], [
+            {u'description': u'Not Found', u'location':
+                u'url', u'name': u'tender_id'}
+        ])
+
+        response = self.app.get('/tenders/{}/bidders/some_id/documents'.format(self.tender_id), status=404)
+        self.assertEqual(response.status, '404 Not Found')
+        self.assertEqual(response.content_type, 'application/json')
+        self.assertEqual(response.json['status'], 'error')
+        self.assertEqual(response.json['errors'], [
+            {u'description': u'Not Found', u'location':
+                u'url', u'name': u'bid_id'}
+        ])
+
+        response = self.app.get('/tenders/some_id/bidders/some_id/documents/some_id', status=404)
+        self.assertEqual(response.status, '404 Not Found')
+        self.assertEqual(response.content_type, 'application/json')
+        self.assertEqual(response.json['status'], 'error')
+        self.assertEqual(response.json['errors'], [
+            {u'description': u'Not Found', u'location':
+                u'url', u'name': u'tender_id'}
+        ])
+
+        response = self.app.get('/tenders/{}/bidders/some_id/documents/some_id'.format(self.tender_id), status=404)
+        self.assertEqual(response.status, '404 Not Found')
+        self.assertEqual(response.content_type, 'application/json')
+        self.assertEqual(response.json['status'], 'error')
+        self.assertEqual(response.json['errors'], [
+            {u'description': u'Not Found', u'location':
+                u'url', u'name': u'bid_id'}
+        ])
+
+        response = self.app.get('/tenders/{}/bidders/{}/documents/some_id'.format(self.tender_id, self.bid_id), status=404)
+        self.assertEqual(response.status, '404 Not Found')
+        self.assertEqual(response.content_type, 'application/json')
+        self.assertEqual(response.json['status'], 'error')
+        self.assertEqual(response.json['errors'], [
+            {u'description': u'Not Found', u'location':
+                u'url', u'name': u'id'}
+        ])
+
+        response = self.app.put('/tenders/some_id/bidders/some_id/documents/some_id', status=404,
+                                upload_files=[('invalid_name', 'name.doc', 'content')])
+        self.assertEqual(response.status, '404 Not Found')
+        self.assertEqual(response.content_type, 'application/json')
+        self.assertEqual(response.json['status'], 'error')
+        self.assertEqual(response.json['errors'], [
+            {u'description': u'Not Found', u'location':
+                u'body', u'name': u'file'}
+        ])
+
+        response = self.app.put('/tenders/some_id/bidders/some_id/documents/some_id', status=404,
+                                upload_files=[('file', 'name.doc', 'content2')])
+        self.assertEqual(response.status, '404 Not Found')
+        self.assertEqual(response.content_type, 'application/json')
+        self.assertEqual(response.json['status'], 'error')
+        self.assertEqual(response.json['errors'], [
+            {u'description': u'Not Found', u'location':
+                u'url', u'name': u'tender_id'}
+        ])
+
+        response = self.app.put('/tenders/{}/bidders/some_id/documents/some_id'.format(self.tender_id), status=404, upload_files=[
+                                ('file', 'name.doc', 'content2')])
+        self.assertEqual(response.status, '404 Not Found')
+        self.assertEqual(response.content_type, 'application/json')
+        self.assertEqual(response.json['status'], 'error')
+        self.assertEqual(response.json['errors'], [
+            {u'description': u'Not Found', u'location':
+                u'url', u'name': u'bid_id'}
+        ])
+
+        response = self.app.put('/tenders/{}/bidders/{}/documents/some_id'.format(
+            self.tender_id, self.bid_id), status=404, upload_files=[('file', 'name.doc', 'content2')])
+        self.assertEqual(response.status, '404 Not Found')
+        self.assertEqual(response.content_type, 'application/json')
+        self.assertEqual(response.json['status'], 'error')
+        self.assertEqual(response.json['errors'], [
+            {u'description': u'Not Found', u'location': u'url', u'name': u'id'}
+        ])
+
     def test_create_tender_bidder_document(self):
         response = self.app.post('/tenders/{}/bidders/{}/documents'.format(
-            self.tender_id, self.bid_id), upload_files=[('upload', 'name.doc', 'content')])
+            self.tender_id, self.bid_id), upload_files=[('file', 'name.doc', 'content')])
         self.assertEqual(response.status, '201 Created')
         self.assertEqual(response.content_type, 'application/json')
-        # self.assertTrue('name.doc' in response.headers['Location'])
-        self.assertTrue('name.doc' in response.json["documents"])
+        doc_id = response.json["data"]['id']
+        self.assertTrue(doc_id in response.headers['Location'])
+        self.assertEqual('name.doc', response.json["data"]["description"])
+
+        response = self.app.get('/tenders/{}/bidders/{}/documents'.format(self.tender_id, self.bid_id))
+        self.assertEqual(response.status, '200 OK')
+        self.assertEqual(response.content_type, 'application/json')
+        self.assertEqual(doc_id, response.json["data"][0]["id"])
+        self.assertEqual('name.doc', response.json["data"][0]["description"])
+
+        response = self.app.get('/tenders/{}/bidders/{}/documents/{}'.format(
+            self.tender_id, self.bid_id, doc_id))
+        self.assertEqual(response.status, '200 OK')
+        self.assertEqual(response.content_type, 'application/msword')
+        self.assertEqual(response.content_length, 7)
+        self.assertEqual(response.body, 'content')
+
+    def test_put_tender_bidder_document(self):
+        response = self.app.post('/tenders/{}/bidders/{}/documents'.format(
+            self.tender_id, self.bid_id), upload_files=[('file', 'name.doc', 'content')])
+        self.assertEqual(response.status, '201 Created')
+        self.assertEqual(response.content_type, 'application/json')
+        doc_id = response.json["data"]['id']
+        self.assertTrue(doc_id in response.headers['Location'])
+
+        response = self.app.put('/tenders/{}/bidders/{}/documents/{}'.format(
+            self.tender_id, self.bid_id, doc_id), upload_files=[('file', 'name.doc', 'content2')])
+        self.assertEqual(response.status, '200 OK')
+        self.assertEqual(response.content_type, 'application/json')
+        self.assertEqual(doc_id, response.json["data"]["id"])
+
+        response = self.app.get('/tenders/{}/bidders/{}/documents/{}'.format(
+            self.tender_id, self.bid_id, doc_id))
+        self.assertEqual(response.status, '200 OK')
+        self.assertEqual(response.content_type, 'application/msword')
+        self.assertEqual(response.content_length, 8)
+        self.assertEqual(response.body, 'content2')
 
 
 def suite():

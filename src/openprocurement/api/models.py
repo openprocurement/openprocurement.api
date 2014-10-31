@@ -55,10 +55,31 @@ class Item(Model):
     valuePerUnit = ModelType(Value)  # The value per unit of the item specified.
 
 
-class Attachment(Model):
-    description = StringType()  # A description of the document.
+class AttachmentRevision(Model):
+    class Options:
+        serialize_when_none = False
+        roles = {
+            "embedded": SchematicsDocument.Options.roles['embedded'],
+            "view": SchematicsDocument.Options.roles['default'],
+        }
+
     uri = URLType()  # Link to the document or attachment.
     lastModified = DateTimeType()  # Date that the document was last modified
+
+
+class Attachment(Model):
+    class Options:
+        serialize_when_none = False
+        roles = {
+            "embedded": SchematicsDocument.Options.roles['embedded'],
+            "view": (blacklist("revisions") + SchematicsDocument.Options.roles['default']),
+        }
+
+    id = StringType(required=True)
+    description = StringType()  # A description of the document.
+    uri = URLType()  # Link to the document or attachment.
+    lastModified = DateTimeType(default=datetime.datetime.now)  # Date that the document was last modified
+    revisions = ListType(ModelType(AttachmentRevision), default=list())
 
 
 class identifier(Model):
@@ -87,7 +108,7 @@ class Organization(Model):
     class Options:
         serialize_when_none = False
         roles = {
-            "embedded": (blacklist("_id") + SchematicsDocument.Options.roles['embedded']),
+            "embedded": SchematicsDocument.Options.roles['embedded'],
             "view": SchematicsDocument.Options.roles['default'],
         }
 
@@ -99,7 +120,7 @@ class Bid(Model):
     class Options:
         serialize_when_none = False
         roles = {
-            "embedded": (blacklist("_id") + SchematicsDocument.Options.roles['embedded']),
+            "embedded": SchematicsDocument.Options.roles['embedded'],
             "view": SchematicsDocument.Options.roles['default'],
             "auction": whitelist("totalValue"),
         }
@@ -109,6 +130,7 @@ class Bid(Model):
     id = StringType(required=True, default=lambda: uuid4().hex)
     status = StringType(choices=['registration', 'validBid', 'invalidBid'])
     totalValue = ModelType(Value)
+    attachments = ListType(ModelType(Attachment), default=list())
 
 
 class Award(Model):
@@ -157,7 +179,7 @@ class Tender(Model):
     numberOfBids = IntType()  # The number of bids or submissions to the tender. In the case of an auction, the number of bids may differ from the numberOfBidders.
     bids = ListType(ModelType(Bid), default=list())  # A list of all the companies who entered submissions for the tender.
     procuringEntity = ModelType(Organization)  # The entity managing the procurement, which may be different from the buyer who is paying / using the items being procured.
-    attachments = ListType(ModelType(Attachment))  # All documents and attachments related to the tender.
+    attachments = ListType(ModelType(Attachment), default=list())  # All documents and attachments related to the tender.
     awards = ListType(ModelType(Award), default=list())
     revisions = ListType(ModelType(revision), default=list())
 
@@ -175,7 +197,7 @@ class TenderDocument(SchematicsDocument, Tender):
             "auction": whitelist("modified", "bids", "tenderPeriod"),
         }
 
-    _attachments = DictType(DictType(StringType), default=dict())
+    _attachments = DictType(DictType(BaseType), default=dict())
     modified = DateTimeType(default=datetime.datetime.now)
 
     @serializable(serialized_name="id")

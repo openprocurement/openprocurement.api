@@ -86,7 +86,6 @@ class TenderAwardResourceTest(BaseTenderWebTest):
                 u'location': u'body', u'name': u'suppliers'}
         ])
 
-    def test_post_tender_not_found(self):
         response = self.app.post_json('/tenders/some_id/awards', {
                                       'data': {'suppliers': [{'id': {'name': 'Name'}}]}}, status=404)
         self.assertEqual(response.status, '404 Not Found')
