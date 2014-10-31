@@ -182,6 +182,7 @@ class Tender(Model):
     attachments = ListType(ModelType(Attachment), default=list())  # All documents and attachments related to the tender.
     awards = ListType(ModelType(Award), default=list())
     revisions = ListType(ModelType(revision), default=list())
+    deliveryDate = ModelType(Period)
 
 
 class OrganizationDocument(SchematicsDocument, Organization):
