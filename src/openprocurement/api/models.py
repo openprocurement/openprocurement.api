@@ -184,6 +184,7 @@ class Tender(Model):
     revisions = ListType(ModelType(revision), default=list())
     deliveryDate = ModelType(Period)
     minimalStep = ModelType(Value)
+    status = StringType(choices=['clarifications', 'tendering', 'auction', 'qualification', 'awarded', 'contract-signed', 'paused'], default='clarifications')
 
 
 class OrganizationDocument(SchematicsDocument, Organization):

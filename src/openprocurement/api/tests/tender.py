@@ -167,7 +167,7 @@ class TenderResourceTest(BaseWebTest):
         self.assertEqual(response.status, '201 Created')
         self.assertEqual(response.content_type, 'application/json')
         tender = response.json['data']
-        self.assertEqual(set(tender), set([u'id', u'modified', u'tenderID']))
+        self.assertEqual(set(tender), set([u'id', u'modified', u'tenderID', u'status']))
         self.assertNotEqual(data['id'], tender['id'])
         self.assertNotEqual(data['doc_id'], tender['id'])
         self.assertNotEqual(data['tenderID'], tender['tenderID'])
@@ -182,7 +182,7 @@ class TenderResourceTest(BaseWebTest):
         self.assertEqual(response.content_type, 'application/json')
         tender = response.json['data']
         self.assertEqual(set(tender) - set(test_tender_data), set(
-            [u'id', u'modified', u'tenderID']))
+            [u'id', u'modified', u'tenderID', u'status']))
         self.assertTrue(tender['id'] in response.headers['Location'])
 
         response = self.app.get('/tenders/{}'.format(tender['id']))
