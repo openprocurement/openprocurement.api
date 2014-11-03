@@ -1,0 +1,14 @@
+curl -v http://api-sandbox.openprocurement.org/api/0/tenders/be40e257812044f3913534cc537d1f99
+> GET /api/0/tenders/be40e257812044f3913534cc537d1f99 HTTP/1.1
+> Host: api-sandbox.openprocurement.org
+> 
+< HTTP/1.1 200 OK
+< Content-Type: application/json; charset=UTF-8
+< 
+{
+  "data": {
+    "id": "be40e257812044f3913534cc537d1f99",
+    "tenderID": "UA-be40e257812044f3913534cc537d1f99",
+    "modified": "2014-10-25T00:24:12.772078"
+  }
+}

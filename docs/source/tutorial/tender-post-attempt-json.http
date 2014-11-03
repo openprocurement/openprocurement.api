@@ -1,0 +1,18 @@
+curl -v -H "Content-Type: application/json" -X POST http://api-sandbox.openprocurement.org/api/0/tenders
+> POST /api/0/tenders HTTP/1.1
+> Host: api-sandbox.openprocurement.org
+> Content-Type: application/json
+> 
+< HTTP/1.1 422 Unprocessable Entity
+< Content-Type: application/json; charset=UTF-8
+< 
+{
+  "status": "error",
+  "errors": [
+    {
+      "location": "body",
+      "name": "data",
+      "description": "No JSON object could be decoded"
+    }
+  ]
+}

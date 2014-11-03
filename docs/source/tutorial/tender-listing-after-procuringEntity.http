@@ -1,0 +1,19 @@
+curl -v http://api-sandbox.openprocurement.org/api/0/tenders/
+> GET /api/0/tenders/ HTTP/1.1
+> Host: api-sandbox.openprocurement.org
+> 
+< HTTP/1.1 200 OK
+< Content-Type: application/json; charset=UTF-8
+<
+{
+  "data": [
+    {
+      "id": "be40e257812044f3913534cc537d1f99",
+      "modified": "2014-10-25T00:24:12.772078"
+    },
+    {
+      "id": "8c2ba371505348ed8f5f0e5119a80451",
+      "modified": "2014-10-25T00:37:13.847358"
+    }
+  ]
+}
