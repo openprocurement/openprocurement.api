@@ -8,7 +8,8 @@ specify options to control how your request is interpreted and how the
 response is generated.  For GET requests, options are specified as URL
 parameters prefixed with `opt_`.  For POST or PUT requests, options are
 specified in the body, inside the top-level options object (a sibling of the
-data object).
+data object).  The option specified in the body overrides the `opt_` one
+from URL parameter.
 
 These options can be used in combination in a single request, though some of
 them may conflict in their impact on the response.
