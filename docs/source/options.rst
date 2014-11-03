@@ -22,3 +22,11 @@ them may conflict in their impact on the response.
   doing proper line breaking and indentation to make it readable.  This will
   take extra time and increase the response size so it is advisable only to
   use this during debugging.
+:jsonp:
+  `?opt_jsonp=myCallback`
+
+  Returns the output in JSON-P format instead of plain JSON, to allow
+  requests to come from within browsers and work around the "same origin
+  policy." The function named as the value of the `opt_jsonp` parameter will
+  be called with a single argument, a JavaScript object representing the
+  response.
