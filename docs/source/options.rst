@@ -12,3 +12,13 @@ data object).
 
 These options can be used in combination in a single request, though some of
 them may conflict in their impact on the response.
+
+:pretty:
+  `?opt_pretty`
+
+  `options: { pretty: true }` 
+
+  Provides the response in "pretty" output.  In the case of JSON this means
+  doing proper line breaking and indentation to make it readable.  This will
+  take extra time and increase the response size so it is advisable only to
+  use this during debugging.
