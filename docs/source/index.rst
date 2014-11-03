@@ -18,6 +18,7 @@ Contents:
 
    overview
    errors
+   options
    dates
    tutorial
    tenders
