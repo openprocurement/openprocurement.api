@@ -565,7 +565,7 @@ class TenderDocumentResource(object):
             self.request.errors.add('url', 'id', 'Not Found')
             self.request.errors.status = 404
             return
-        self.request.response.content_type = tender['_attachments'][filename]["content_type"]
+        self.request.response.content_type = tender['_attachments'][filename]["content_type"].encode('utf-8')
         self.request.response.content_disposition = 'attachment; filename={}'.format(quote(attachment.description.encode('utf-8')))
         self.request.response.body_file = data
         return self.request.response
@@ -1025,7 +1025,7 @@ class TenderBidderDocumentResource(object):
             self.request.errors.add('url', 'id', 'Not Found')
             self.request.errors.status = 404
             return
-        self.request.response.content_type = tender['_attachments'][filename]["content_type"]
+        self.request.response.content_type = tender['_attachments'][filename]["content_type"].encode('utf-8')
         self.request.response.content_disposition = 'attachment; filename={}'.format(quote(attachment.description.encode('utf-8')))
         self.request.response.body_file = data
         return self.request.response
