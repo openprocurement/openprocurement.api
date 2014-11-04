@@ -25,7 +25,7 @@ def validate_tender_data(request):
         request.errors.add('body', 'data', e.message)
         request.errors.status = 422
         return
-    if not isinstance(json, dict) or 'data' not in json:
+    if not isinstance(json, dict) or 'data' not in json or not isinstance(json.get('data'), dict):
         request.errors.add('body', 'data', "Data not available")
         request.errors.status = 422
         return
@@ -45,7 +45,7 @@ def validate_bid_data(request):
         request.errors.add('body', 'data', e.message)
         request.errors.status = 422
         return
-    if not isinstance(json, dict) or 'data' not in json:
+    if not isinstance(json, dict) or 'data' not in json or not isinstance(json.get('data'), dict):
         request.errors.add('body', 'data', "Data not available")
         request.errors.status = 422
         return
@@ -65,7 +65,7 @@ def validate_award_data(request):
         request.errors.add('body', 'data', e.message)
         request.errors.status = 422
         return
-    if not isinstance(json, dict) or 'data' not in json:
+    if not isinstance(json, dict) or 'data' not in json or not isinstance(json.get('data'), dict):
         request.errors.add('body', 'data', "Data not available")
         request.errors.status = 422
         return
