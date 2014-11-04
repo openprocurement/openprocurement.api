@@ -232,6 +232,10 @@ class TenderResource(object):
                     },
                     "awardPeriod": {
                         "endDate": "2014-11-13T00:00:00"
+                    },
+                    "minimalStep": {
+                        "amount": 35,
+                        "currency", "UAH"
                     }
                 }
             }
@@ -297,6 +301,10 @@ class TenderResource(object):
                     },
                     "awardPeriod": {
                         "endDate": "2014-11-13T00:00:00"
+                    },
+                    "minimalStep": {
+                        "amount": 35,
+                        "currency", "UAH"
                     }
                 }
             }
@@ -391,6 +399,10 @@ class TenderResource(object):
                     },
                     "awardPeriod": {
                         "endDate": "2014-11-13T00:00:00"
+                    },
+                    "minimalStep": {
+                        "amount": 35,
+                        "currency", "UAH"
                     }
                 }
             }
