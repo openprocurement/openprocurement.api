@@ -150,10 +150,10 @@ class TenderResource(object):
             params['descending'] = descending
         next_offset = datetime.datetime.now().isoformat()
         results = TenderDocument.view(self.db, 'tenders/by_modified', limit=limit + 1, startkey=offset, descending=bool(descending))
-        results_len = len(results)
-        results = [i.serialize("listing") for k, i in enumerate(results) if k != limit]
-        if results_len > limit:
-            params['offset'] = i.modified.isoformat()
+        results = [i.serialize("listing") for i in results]
+        if len(results) > limit:
+            results, last = results[:-1], results[-1]
+            params['offset'] = last['modified']
         else:
             params['offset'] = next_offset
         next_url = self.request.route_url('collection_Tender', _query=params)
