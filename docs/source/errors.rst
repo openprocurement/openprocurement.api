@@ -116,6 +116,7 @@ Here is response describing tender
               "endDate": "2014-10-31T00:00:00"
           },
           "tenderPeriod": {
+              "startDate": "2014-11-03T00:00:00",
               "endDate": "2014-11-06T10:00:00"
           },
           "awardPeriod": {

@@ -227,6 +227,7 @@ class TenderResource(object):
                         "endDate": "2014-10-31T00:00:00"
                     },
                     "tenderPeriod": {
+                        "startDate": "2014-11-03T00:00:00",
                         "endDate": "2014-11-06T10:00:00"
                     },
                     "awardPeriod": {
@@ -291,6 +292,7 @@ class TenderResource(object):
                         "endDate": "2014-10-31T00:00:00"
                     },
                     "tenderPeriod": {
+                        "startDate": "2014-11-03T00:00:00",
                         "endDate": "2014-11-06T10:00:00"
                     },
                     "awardPeriod": {
@@ -384,6 +386,7 @@ class TenderResource(object):
                         "endDate": "2014-10-31T00:00:00"
                     },
                     "tenderPeriod": {
+                        "startDate": "2014-11-03T00:00:00",
                         "endDate": "2014-11-06T10:00:00"
                     },
                     "awardPeriod": {
@@ -1229,7 +1232,7 @@ def get_auction(request):
                     "currency": "UAH"
                 },
                 "tenderPeriod":{
-                    "startDate": "2014-11-06T12:00:00"
+                    "startDate": "2014-11-04T08:00:00"
                 }
             }
         }
@@ -1312,7 +1315,7 @@ def patch_auction(request):
                     "currency": "UAH"
                 },
                 "tenderPeriod":{
-                    "startDate": "2014-11-06T12:00:00"
+                    "startDate": "2014-11-04T08:00:00"
                 }
             }
         }
