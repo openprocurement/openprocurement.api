@@ -70,7 +70,7 @@ Let's update tender by providing it with all other essential properties:
 
 We see the added properies merged with existing data of tender. Additionally the `modified` property updated to reflect the last modification datestamp.
 
-Checking the listing again reflets the new modification date:
+Checking the listing again reflects the new modification date:
 
 .. include:: tutorial/tender-listing-after-patch.http
    :code:

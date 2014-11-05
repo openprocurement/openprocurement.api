@@ -4,7 +4,7 @@ msgstr ""
 "Project-Id-Version: openprocurement.api 0.1\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2014-10-21 10:42+0300\n"
-"PO-Revision-Date: 2014-10-30 11:23+0300\n"
+"PO-Revision-Date: 2014-11-04 11:18+0300\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
@@ -16,35 +16,19 @@ msgstr ""
 msgid "Tutorial"
 msgstr "Туторіал"
 
-#: ../../source/tutorial.rst:6
-msgid "Let's try exploring the `/tenders` endpoint::"
-msgstr "Подивимось як працює точка входу `/tenders`::"
-
-#: ../../source/tutorial.rst:19
+#: ../../source/tutorial.rst:11
 msgid "Just invoking it reveals empty set."
 msgstr "При виклику видає пустий набір."
 
-#: ../../source/tutorial.rst:21
-msgid "Now let's attempt creating some tender::"
-msgstr "Спробуймо створити нову закупівлю::"
-
-#: ../../source/tutorial.rst:41
+#: ../../source/tutorial.rst:18
 msgid "Error states that only accepted Content-Type is `application/json`."
 msgstr "Помилка вказує, що єдиний прийнятний тип вмісту це `application/json`."
 
-#: ../../source/tutorial.rst:43
-msgid "Let's satisfy the Content-type requirement::"
-msgstr "Задовільнимо вимогу типу вмісту::"
-
-#: ../../source/tutorial.rst:64
+#: ../../source/tutorial.rst:25
 msgid "Error states that no `data` found in JSON body."
 msgstr "Помилка вказує, що `data` не знайдено у тілі JSON."
 
-#: ../../source/tutorial.rst:66
-msgid "Let's provide the data attribute in the body submitted::"
-msgstr "Введемо data атрибут у поданому тілі::"
-
-#: ../../source/tutorial.rst:89
+#: ../../source/tutorial.rst:32
 msgid ""
 "Success! Now we can see that new object was created. Response code is `201` "
 "and `Location` response header reports the location of object created. The "
@@ -59,22 +43,11 @@ msgstr ""
 "офіційне `tenderID` та `modified` дату, що показує час, коли Закупівля "
 "востаннє модифікувалась."
 
-#: ../../source/tutorial.rst:91
-msgid ""
-"Let's access the URL of object created (the `Location` header of the "
-"response)::"
-msgstr ""
-"Використаємо URL створеного об’єкта (загорловок відповіді `Location`)::"
-
-#: ../../source/tutorial.rst:108
+#: ../../source/tutorial.rst:41
 msgid "We can see the same response we got after creating tender."
 msgstr "Ми бачимо, що ту ж відповідь, що і після створення закупівлі."
 
-#: ../../source/tutorial.rst:110
-msgid "Let's see what listing of tenders reveals us::"
-msgstr "Подивимось, що показує список закупівель::"
-
-#: ../../source/tutorial.rst:128
+#: ../../source/tutorial.rst:48
 msgid ""
 "We do see the internal `id` of a tender (that can be used to construct full "
 "URL by prepending `http://api-sandbox.openprocurement.org/api/0/tenders/`) "
@@ -84,15 +57,7 @@ msgstr ""
 "повної URL-адреси, якщо додати `http://api-sandbox.openprocurement.org/api/0/"
 "tenders/`) та її `modified` дату."
 
-#: ../../source/tutorial.rst:130
-msgid ""
-"Let's try creating tender with more data, passing the `procuringEntity` of a "
-"tender::"
-msgstr ""
-"Спробуймо створити закупівлю з більшою кількістю даних використовуючи "
-"`procuringEntity` закупівлі::"
-
-#: ../../source/tutorial.rst:184
+#: ../../source/tutorial.rst:55
 msgid ""
 "And again we have `201 Created` response code, `Location` header and body "
 "wth extra `id`, `tenderID`, and `modified` properties."
@@ -100,21 +65,11 @@ msgstr ""
 "І знову код відповіді `201 Created`,  заголовок `Location` і тіло з "
 "додатковим `id`, `tenderID`, та властивість `modified`."
 
-#: ../../source/tutorial.rst:186
-msgid "Let's check what tender registry contains::"
-msgstr "Перевіримо, що містить регістр закупівлі::"
-
-#: ../../source/tutorial.rst:208
+#: ../../source/tutorial.rst:62
 msgid "And indeed we have 2 tenders now."
 msgstr "Дійсно, в нас зараз є дві закупівлі."
 
-#: ../../source/tutorial.rst:210
-msgid ""
-"Let's update tender by providing it with all other essential properties::"
-msgstr ""
-"Оновимо закупівлю шляхом надання їй усіх інших важливих властивостей:: "
-
-#: ../../source/tutorial.rst:320
+#: ../../source/tutorial.rst:71
 msgid ""
 "We see the added properies merged with existing data of tender. Additionally "
 "the `modified` property updated to reflect the last modification datestamp."
@@ -123,6 +78,91 @@ msgstr ""
 "Додатково оновлена властивість `modified`, щоб відображати останню дату "
 "модифікації."
 
-#: ../../source/tutorial.rst:322
-msgid "Checking the listing again reflets the new modification date::"
-msgstr "Ще одна перевірка списку відображає нову дату модифікації::"
+#: ../../source/tutorial.rst:6
+msgid "Let's try exploring the `/tenders` endpoint:"
+msgstr "Подивимось як працює точка входу `/tenders`:"
+
+#: ../../source/tutorial.rst:13
+msgid "Now let's attempt creating some tender:"
+msgstr "Спробуймо створити нову закупівлю:"
+
+#: ../../source/tutorial.rst:20
+msgid "Let's satisfy the Content-type requirement:"
+msgstr "Задовольнимо вимогу типу вмісту (Content-type):"
+
+#: ../../source/tutorial.rst:27
+msgid "Let's provide the data attribute in the body submitted:"
+msgstr "Введемо data атрибут у поданому тілі:"
+
+#: ../../source/tutorial.rst:34
+msgid ""
+"Let's access the URL of object created (the `Location` header of the "
+"response):"
+msgstr "Використаємо URL створеного об’єкта (заголовок відповіді `Location`):"
+
+#: ../../source/tutorial.rst:43
+msgid "Let's see what listing of tenders reveals us:"
+msgstr "Подивимось, що показує список закупівель:"
+
+#: ../../source/tutorial.rst:50
+msgid ""
+"Let's try creating tender with more data, passing the `procuringEntity` of a "
+"tender:"
+msgstr ""
+"Спробуймо створити закупівлю з більшою кількістю даних використовуючи "
+"`procuringEntity` закупівлі:"
+
+#: ../../source/tutorial.rst:57
+msgid "Let's check what tender registry contains:"
+msgstr "Перевіримо, що містить реєстр закупівель:"
+
+#: ../../source/tutorial.rst:64
+msgid ""
+"Let's update tender by providing it with all other essential properties:"
+msgstr "Оновимо закупівлю шляхом надання їй усіх інших важливих властивостей:"
+
+#: ../../source/tutorial.rst:73
+msgid "Checking the listing again reflects the new modification date:"
+msgstr "Ще одна перевірка списку відображає нову дату модифікації:"
+
+#~ msgid "Checking the listing again reflets the new modification date:"
+#~ msgstr "Ще одна перевірка списку відображає нову дату модифікації:"
+
+#~ msgid "Let's try exploring the `/tenders` endpoint::"
+#~ msgstr "Подивимось як працює точка входу `/tenders`::"
+
+#~ msgid "Now let's attempt creating some tender::"
+#~ msgstr "Спробуймо створити нову закупівлю::"
+
+#~ msgid "Let's satisfy the Content-type requirement::"
+#~ msgstr "Задовільнимо вимогу типу вмісту::"
+
+#~ msgid "Let's provide the data attribute in the body submitted::"
+#~ msgstr "Введемо data атрибут у поданому тілі::"
+
+#~ msgid ""
+#~ "Let's access the URL of object created (the `Location` header of the "
+#~ "response)::"
+#~ msgstr ""
+#~ "Використаємо URL створеного об’єкта (загорловок відповіді `Location`)::"
+
+#~ msgid "Let's see what listing of tenders reveals us::"
+#~ msgstr "Подивимось, що показує список закупівель::"
+
+#~ msgid ""
+#~ "Let's try creating tender with more data, passing the `procuringEntity` "
+#~ "of a tender::"
+#~ msgstr ""
+#~ "Спробуймо створити закупівлю з більшою кількістю даних використовуючи "
+#~ "`procuringEntity` закупівлі::"
+
+#~ msgid "Let's check what tender registry contains::"
+#~ msgstr "Перевіримо, що містить регістр закупівлі::"
+
+#~ msgid ""
+#~ "Let's update tender by providing it with all other essential properties::"
+#~ msgstr ""
+#~ "Оновимо закупівлю шляхом надання їй усіх інших важливих властивостей:: "
+
+#~ msgid "Checking the listing again reflets the new modification date::"
+#~ msgstr "Ще одна перевірка списку відображає нову дату модифікації::"

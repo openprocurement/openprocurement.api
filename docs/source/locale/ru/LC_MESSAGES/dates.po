@@ -11,11 +11,11 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: ../../source/dates.rst:4
+#: ../../source/dates.rst:5
 msgid "Date Format"
 msgstr ""
 
-#: ../../source/dates.rst:6
+#: ../../source/dates.rst:7
 msgid ""
 "The date format is `ISO 8601 <http://en.wikipedia.org/wiki/ISO_8601>`_."
 msgstr ""
