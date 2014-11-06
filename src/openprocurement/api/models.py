@@ -148,7 +148,7 @@ class Award(Model):
     notice = ModelType(Notice)
     awardDate = DateTimeType(default=datetime.datetime.now)
     awardValue = ModelType(Value)
-    awardStatus = StringType(choices=['pending', 'active', 'cancelled', 'unsuccessful'])
+    awardStatus = StringType(required=True, choices=['pending', 'unsuccessful'])  # 'pending', 'active', 'cancelled', 'unsuccessful'
     suppliers = ListType(ModelType(Organization), default=list())
     itemsAwarded = ListType(ModelType(Item))
 

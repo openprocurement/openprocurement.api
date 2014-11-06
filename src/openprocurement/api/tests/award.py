@@ -72,12 +72,14 @@ class TenderAwardResourceTest(BaseTenderWebTest):
         self.assertEqual(response.content_type, 'application/json')
         self.assertEqual(response.json['status'], 'error')
         self.assertEqual(response.json['errors'], [
-            {u'description': [u'id'],
-                u'location': u'body', u'name': u'suppliers'}
+            {u'description': [u'This field is required.'],
+                u'location': u'body', u'name': u'awardStatus'},
+            {u'description': [u'id'], u'location': u'body',
+                u'name': u'suppliers'}
         ])
 
-        response = self.app.post_json(request_path, {'data': {'suppliers': [{
-                                      'id': {'name': 'name', 'uri': 'invalid_value'}}]}}, status=422)
+        response = self.app.post_json(request_path, {'data': {'awardStatus': 'pending', 'suppliers': [
+                                      {'id': {'name': 'name', 'uri': 'invalid_value'}}]}}, status=422)
         self.assertEqual(response.status, '422 Unprocessable Entity')
         self.assertEqual(response.content_type, 'application/json')
         self.assertEqual(response.json['status'], 'error')
@@ -86,8 +88,8 @@ class TenderAwardResourceTest(BaseTenderWebTest):
                 u'location': u'body', u'name': u'suppliers'}
         ])
 
-        response = self.app.post_json('/tenders/some_id/awards', {
-                                      'data': {'suppliers': [{'id': {'name': 'Name'}}]}}, status=404)
+        response = self.app.post_json('/tenders/some_id/awards', {'data': {
+                                      'awardStatus': 'pending', 'suppliers': [{'id': {'name': 'Name'}}]}}, status=404)
         self.assertEqual(response.status, '404 Not Found')
         self.assertEqual(response.content_type, 'application/json')
         self.assertEqual(response.json['status'], 'error')
@@ -98,7 +100,7 @@ class TenderAwardResourceTest(BaseTenderWebTest):
 
     def test_create_tender_award(self):
         response = self.app.post_json('/tenders/{}/awards'.format(
-            self.tender_id), {'data': {'suppliers': [{'id': {'name': 'Name'}}]}})
+            self.tender_id), {'data': {'suppliers': [{'id': {'name': 'Name'}}], 'awardStatus': 'pending'}})
         self.assertEqual(response.status, '201 Created')
         self.assertEqual(response.content_type, 'application/json')
         award = response.json['data']

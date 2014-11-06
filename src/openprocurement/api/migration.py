@@ -3,7 +3,7 @@ import logging
 
 
 LOGGER = logging.getLogger(__name__)
-SCHEMA_VERSION = 4
+SCHEMA_VERSION = 5
 SCHEMA_DOC = 'openprocurement_schema'
 
 
@@ -95,4 +95,19 @@ def from3to4(db):
                 }
                 items.append(item)
             doc['itemsToBeProcured'] = items
+            db.save(doc)
+
+
+def from4to5(db):
+    results = db.view('tenders/all', include_docs=True)
+    for i in results:
+        doc = i.doc
+        changed = False
+        if 'clarificationPeriod' in doc:
+            doc['enquiryPeriod'] = doc.pop('clarificationPeriod')
+            changed = True
+        if 'clarifications' in doc:
+            doc['hasEnquiries'] = doc.pop('clarifications')
+            changed = True
+        if changed:
             db.save(doc)

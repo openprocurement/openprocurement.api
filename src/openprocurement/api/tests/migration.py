@@ -108,6 +108,26 @@ class MigrateTest(BaseWebTest):
         self.assertEqual(item["itemsToBeProcured"][0]["classificationID"], migrated_item["itemsToBeProcured"][0]["primaryClassification"]["id"])
         self.assertEqual(item["itemsToBeProcured"][0]["classificationDescription"], migrated_item["itemsToBeProcured"][0]["primaryClassification"]["description"])
 
+    def test_migrate_from4to5(self):
+        set_db_schema_version(self.db, 4)
+        data = {
+            'doc_type': 'TenderDocument',
+            "clarificationPeriod": {
+                "endDate": "2014-10-31T00:00:00"
+            },
+            "clarifications": True
+        }
+        _id, _rev = self.db.save(data)
+        item = self.db.get(_id)
+        migrate_data(self.db, 5)
+        migrated_item = self.db.get(_id)
+        self.assertFalse('clarificationPeriod' in migrated_item)
+        self.assertTrue('enquiryPeriod' in migrated_item)
+        self.assertFalse('clarifications' in migrated_item)
+        self.assertTrue('hasEnquiries' in migrated_item)
+        self.assertEqual(item["clarificationPeriod"], migrated_item["enquiryPeriod"])
+        self.assertEqual(item["clarifications"], migrated_item["hasEnquiries"])
+
 
 def suite():
     suite = unittest.TestSuite()
