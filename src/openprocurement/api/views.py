@@ -591,6 +591,7 @@ class TenderDocumentResource(object):
         src = tender.serialize("plain")
         attachment = attachments[0]
         attachment.revisions.append(AttachmentRevision({"uri": attachment.uri, "lastModified": attachment.lastModified}))
+        attachment.lastModified = datetime.datetime.now()
         filename = "{}_{}_{}".format(attachment.id, len(attachment.revisions), attachment.description)
         tender['_attachments'][filename] = {
             "content_type": data.type,
@@ -1057,6 +1058,7 @@ class TenderBidderDocumentResource(object):
         src = tender.serialize("plain")
         attachment = attachments[0]
         attachment.revisions.append(AttachmentRevision({"uri": attachment.uri, "lastModified": attachment.lastModified}))
+        attachment.lastModified = datetime.datetime.now()
         filename = "{}_{}_{}".format(attachment.id, len(attachment.revisions), attachment.description)
         tender['_attachments'][filename] = {
             "content_type": data.type,
