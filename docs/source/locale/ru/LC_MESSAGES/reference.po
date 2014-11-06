@@ -200,3 +200,15 @@ msgstr ""
 #: ../<>:3
 msgid "Example request to change bid proposal:"
 msgstr ""
+
+#: ../<>:1
+msgid "Tender Bid Documents List"
+msgstr ""
+
+#: ../<>:1
+msgid "Tender Bid Document Read"
+msgstr ""
+
+#: ../<>:1
+msgid "Tender Bid Document Update"
+msgstr ""

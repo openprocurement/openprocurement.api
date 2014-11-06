@@ -85,19 +85,15 @@ msgstr ""
 msgid "0.1"
 msgstr ""
 
-#: ../../source/overview.rst:71
-msgid "Released: Not yet."
-msgstr ""
-
 #: ../../source/overview.rst:73
 msgid "Set up general build, testing, deployment, and ci framework."
 msgstr ""
 
-#: ../../source/overview.rst:76
+#: ../../source/overview.rst:79
 msgid "Next steps"
 msgstr ""
 
-#: ../../source/overview.rst:77
+#: ../../source/overview.rst:80
 msgid ""
 "You might find it helpful to look at the :ref:`tutorial`, or the "
 ":ref:`reference`."
@@ -134,11 +130,37 @@ msgstr ""
 
 #: ../../source/overview.rst:61
 msgid ""
-"API is highly unstable, and while API endpoint are expected to remain "
+"API is highly unstable, and while API endpoints are expected to remain "
 "relatively stable the data exchange formats are expected to be changed a "
 "lot.  The changes in the API are communicated via `Open Procurement API "
 "<https://groups.google.com/group/open-procurement-api>`_ maillist."
 msgstr ""
+
+#: ../../source/overview.rst:71
+msgid "Released: 2014-10-24"
+msgstr ""
+
+#: ../../source/overview.rst:74
+msgid "Creating/modifying tender"
+msgstr ""
+
+#: ../../source/overview.rst:75
+msgid "Adding/modifying/cancelling tender proposal"
+msgstr ""
+
+#: ../../source/overview.rst:76
+msgid "Awarding/disqualification of tender proposals"
+msgstr ""
+
+#~ msgid "Released: Not yet."
+#~ msgstr ""
+
+#~ msgid ""
+#~ "API is highly unstable, and while API endpoint are expected to remain "
+#~ "relatively stable the data exchange formats are expected to be changed a "
+#~ "lot.  The changes in the API are communicated via `Open Procurement API "
+#~ "<https://groups.google.com/group/open-procurement-api>`_ maillist."
+#~ msgstr ""
 
 #~ msgid ""
 #~ "API is highly unstable, and while API endpoint are expecetd to remain "

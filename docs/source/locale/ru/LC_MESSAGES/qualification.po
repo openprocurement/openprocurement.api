@@ -11,14 +11,14 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: ../../source/qualification.rst:4
+#: ../../source/qualification.rst:5
 msgid "Qualification Operations"
 msgstr ""
 
-#: ../../source/qualification.rst:7
+#: ../../source/qualification.rst:8
 msgid "Contract Awarding"
 msgstr ""
 
-#: ../../source/qualification.rst:25
+#: ../../source/qualification.rst:26
 msgid "Disqualification"
 msgstr ""

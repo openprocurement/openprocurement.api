@@ -11,34 +11,34 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: ../../source/bidding.rst:4
+#: ../../source/bidding.rst:5
 msgid "Bidder Operations"
 msgstr ""
 
-#: ../../source/bidding.rst:7
+#: ../../source/bidding.rst:8
 msgid "Registration of Bid proposal"
 msgstr ""
 
-#: ../../source/bidding.rst:19
+#: ../../source/bidding.rst:20
 msgid "Uploading Bid documents"
 msgstr ""
 
-#: ../../source/bidding.rst:32
+#: ../../source/bidding.rst:33
 msgid "Update of proposal"
 msgstr ""
 
-#: ../../source/bidding.rst:43
+#: ../../source/bidding.rst:44
 msgid "Updating Bid documents"
 msgstr ""
 
-#: ../../source/bidding.rst:55
+#: ../../source/bidding.rst:56
 msgid "Cancelling the proposal"
 msgstr ""
 
-#: ../../source/bidding.rst:66
+#: ../../source/bidding.rst:67
 msgid "Bids Listing"
 msgstr ""
 
-#: ../../source/bidding.rst:77
+#: ../../source/bidding.rst:78
 msgid "Retrieving the proposal"
 msgstr ""

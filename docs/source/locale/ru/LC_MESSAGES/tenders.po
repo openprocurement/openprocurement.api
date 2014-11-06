@@ -11,14 +11,14 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: ../../source/tenders.rst:4
+#: ../../source/tenders.rst:5
 msgid "Retrieving Tender Information"
 msgstr ""
 
-#: ../../source/tenders.rst:7
+#: ../../source/tenders.rst:8
 msgid "Getting list of all tenders"
 msgstr ""
 
-#: ../../source/tenders.rst:17
+#: ../../source/tenders.rst:18
 msgid "Reading the individual tender information"
 msgstr ""

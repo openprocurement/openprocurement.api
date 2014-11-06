@@ -25,7 +25,7 @@ def validate_tender_data(request):
         request.errors.add('body', 'data', e.message)
         request.errors.status = 422
         return
-    if not isinstance(json, dict) or 'data' not in json:
+    if not isinstance(json, dict) or 'data' not in json or not isinstance(json.get('data'), dict):
         request.errors.add('body', 'data', "Data not available")
         request.errors.status = 422
         return
@@ -45,7 +45,7 @@ def validate_bid_data(request):
         request.errors.add('body', 'data', e.message)
         request.errors.status = 422
         return
-    if not isinstance(json, dict) or 'data' not in json:
+    if not isinstance(json, dict) or 'data' not in json or not isinstance(json.get('data'), dict):
         request.errors.add('body', 'data', "Data not available")
         request.errors.status = 422
         return
@@ -65,7 +65,7 @@ def validate_award_data(request):
         request.errors.add('body', 'data', e.message)
         request.errors.status = 422
         return
-    if not isinstance(json, dict) or 'data' not in json:
+    if not isinstance(json, dict) or 'data' not in json or not isinstance(json.get('data'), dict):
         request.errors.add('body', 'data', "Data not available")
         request.errors.status = 422
         return
@@ -150,10 +150,10 @@ class TenderResource(object):
             params['descending'] = descending
         next_offset = datetime.datetime.now().isoformat()
         results = TenderDocument.view(self.db, 'tenders/by_modified', limit=limit + 1, startkey=offset, descending=bool(descending))
-        results_len = len(results)
-        results = [i.serialize("listing") for k, i in enumerate(results) if k != limit]
-        if results_len > limit:
-            params['offset'] = i.modified.isoformat()
+        results = [i.serialize("listing") for i in results]
+        if len(results) > limit:
+            results, last = results[:-1], results[-1]
+            params['offset'] = last['modified']
         else:
             params['offset'] = next_offset
         next_url = self.request.route_url('collection_Tender', _query=params)
@@ -435,7 +435,7 @@ class TenderResource(object):
         src = tender.serialize("plain")
         tender_data = filter_data(self.request.json_body['data'])
         tender.import_data(tender_data)
-        patch = make_patch(src, tender.serialize("plain")).patch
+        patch = make_patch(tender.serialize("plain"), src).patch
         if patch:
             tender.revisions.append(revision({'changes': patch}))
             try:
@@ -504,7 +504,7 @@ class TenderResource(object):
             if 'tenderID' not in tender_data:
                 tender_data['tenderID'] = tender.tenderID
             tender.import_data(tender_data)
-            patch = make_patch(src, tender.serialize("plain")).patch
+            patch = make_patch(tender.serialize("plain"), src).patch
             if patch:
                 tender.revisions.append(revision({'changes': patch}))
                 try:
@@ -589,7 +589,7 @@ class TenderDocumentResource(object):
             self.request.errors.add('url', 'id', 'Not Found')
             self.request.errors.status = 404
             return
-        self.request.response.content_type = tender['_attachments'][filename]["content_type"]
+        self.request.response.content_type = tender['_attachments'][filename]["content_type"].encode('utf-8')
         self.request.response.content_disposition = 'attachment; filename={}'.format(quote(attachment.description.encode('utf-8')))
         self.request.response.body_file = data
         return self.request.response
@@ -620,7 +620,7 @@ class TenderDocumentResource(object):
             "content_type": data.type,
             "data": b64encode(data.file.read())
         }
-        patch = make_patch(src, tender.serialize("plain")).patch
+        patch = make_patch(tender.serialize("plain"), src).patch
         tender.revisions.append(revision({'changes': patch}))
         try:
             tender.store(self.db)
@@ -732,7 +732,7 @@ class TenderBidderResource(object):
             self.request.json_body['data'], fields=['id', 'date'])
         bid = Bid(bid_data)
         tender.bids.append(bid)
-        patch = make_patch(src, tender.serialize("plain")).patch
+        patch = make_patch(tender.serialize("plain"), src).patch
         tender.revisions.append(revision({'changes': patch}))
         try:
             tender.store(self.db)
@@ -888,7 +888,7 @@ class TenderBidderResource(object):
             if 'id' not in bid_data:
                 bid_data['id'] = bid.id
             bid.import_data(bid_data)
-            patch = make_patch(src, tender.serialize("plain")).patch
+            patch = make_patch(tender.serialize("plain"), src).patch
             if patch:
                 tender.revisions.append(revision({'changes': patch}))
                 try:
@@ -944,7 +944,7 @@ class TenderBidderResource(object):
         bid = bids[0]
         res = bid.serialize("view")
         tender.bids.remove(bid)
-        patch = make_patch(src, tender.serialize("plain")).patch
+        patch = make_patch(tender.serialize("plain"), src).patch
         if patch:
             tender.revisions.append(revision({'changes': patch}))
             try:
@@ -1014,7 +1014,7 @@ class TenderBidderDocumentResource(object):
             "content_type": data.type,
             "data": b64encode(data.file.read())
         }
-        patch = make_patch(src, tender.serialize("plain")).patch
+        patch = make_patch(tender.serialize("plain"), src).patch
         tender.revisions.append(revision({'changes': patch}))
         try:
             tender.store(self.db)
@@ -1049,7 +1049,7 @@ class TenderBidderDocumentResource(object):
             self.request.errors.add('url', 'id', 'Not Found')
             self.request.errors.status = 404
             return
-        self.request.response.content_type = tender['_attachments'][filename]["content_type"]
+        self.request.response.content_type = tender['_attachments'][filename]["content_type"].encode('utf-8')
         self.request.response.content_disposition = 'attachment; filename={}'.format(quote(attachment.description.encode('utf-8')))
         self.request.response.body_file = data
         return self.request.response
@@ -1086,7 +1086,7 @@ class TenderBidderDocumentResource(object):
             "content_type": data.type,
             "data": b64encode(data.file.read())
         }
-        patch = make_patch(src, tender.serialize("plain")).patch
+        patch = make_patch(tender.serialize("plain"), src).patch
         tender.revisions.append(revision({'changes': patch}))
         try:
             tender.store(self.db)
@@ -1196,7 +1196,7 @@ class TenderAwardResource(object):
         award_data = self.request.json_body['data']
         award = Award(award_data)
         tender.awards.append(award)
-        patch = make_patch(src, tender.serialize("plain")).patch
+        patch = make_patch(tender.serialize("plain"), src).patch
         tender.revisions.append(revision({'changes': patch}))
         try:
             tender.store(self.db)
@@ -1354,7 +1354,7 @@ def patch_auction(request):
     if auction_data:
         auction_data['tenderID'] = tender.tenderID
         tender.import_data(auction_data)
-        patch = make_patch(src, tender.serialize("plain")).patch
+        patch = make_patch(tender.serialize("plain"), src).patch
         if patch:
             tender.revisions.append(revision({'changes': patch}))
             try:

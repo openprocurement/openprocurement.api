@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
 import datetime
-import random
 from uuid import uuid4
 from couchdb_schematics.document import SchematicsDocument
 from schematics.models import Model
@@ -207,3 +206,18 @@ class TenderDocument(SchematicsDocument, Tender):
     def doc_id(self):
         """A property that is serialized by schematics exports."""
         return self._id
+
+    def import_data(self, raw_data, **kw):
+        """
+        Converts and imports the raw data into the instance of the model
+        according to the fields in the model.
+        :param raw_data:
+            The data to be imported.
+        """
+        data = self.convert(raw_data, **kw)
+        del_keys = [k for k in data.keys() if not data[k]]
+        for k in del_keys:
+            del data[k]
+
+        self._data.update(data)
+        return self

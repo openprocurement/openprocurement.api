@@ -1,10 +1,10 @@
-#
+# 
 msgid ""
 msgstr ""
 "Project-Id-Version: openprocurement.api 0.1\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2014-10-21 10:42+0300\n"
-"PO-Revision-Date: 2014-10-30 10:57+0300\n"
+"PO-Revision-Date: 2014-10-31 17:09+0300\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
@@ -16,7 +16,7 @@ msgstr ""
 msgid "API Reference"
 msgstr "API Довідник"
 
-#: ../<>:1
+#: ../<>:1 ../<>:1
 msgid ""
 "Open Contracting compatible data exchange format. See http://ocds.open-"
 "contracting.org/standard/r/master/#tender for more info"
@@ -38,7 +38,7 @@ msgstr "Створення нової Закупівлі"
 msgid "Example request to create tender:"
 msgstr "Приклад запиту для створення закупівлі:"
 
-#: ../<>:14 ../<>:34 ../<>:67 ../<>:41 ../<>:42
+#: ../<>:14 ../<>:34 ../<>:14 ../<>:67 ../<>:14 ../<>:14 ../<>:41 ../<>:42
 msgid "This is what one should expect in response:"
 msgstr "Так повинна виглядати відповідь:"
 
@@ -62,11 +62,11 @@ msgstr ""
 "Наприклад, ось так замовник закупівлі може змінити об’єм та загальну "
 "Вартість закупівлі:"
 
-#: ../<>:24 ../<>:11 ../<>:19
+#: ../<>:24 ../<>:11 ../<>:11 ../<>:19
 msgid "And here is the response to be expected:"
 msgstr "Відповідь буде такою:"
 
-#: ../<>:1
+#: ../<>:1 ../<>:1
 msgid "Tender related binary files (PDFs, etc.)"
 msgstr "Двійкові файли пов’язані із закупівлею (.PDF документи і т.п.)"
 
@@ -130,7 +130,7 @@ msgstr "Прочитати Закупівлю"
 msgid "Example request to get tender:"
 msgstr "Приклад запиту для вичитки Закупівлі"
 
-#: ../<>:1
+#: ../<>:1 ../<>:1
 msgid "Tender bidders"
 msgstr "Учасники закупівлі"
 
@@ -146,7 +146,7 @@ msgstr "Створення нової пропозиції"
 msgid "Example request to create bid proposal:"
 msgstr "Приклад запиту для створення нової пропозиції:"
 
-#: ../<>:1
+#: ../<>:1 ../<>:1
 msgid "Tender bidder documents"
 msgstr "Документи учасника закупівлі"
 
@@ -154,7 +154,7 @@ msgstr "Документи учасника закупівлі"
 msgid "Tender Bid Document Upload"
 msgstr "Завантажити документи учасника закупівлі"
 
-#: ../<>:1
+#: ../<>:1 ../<>:1
 msgid "Tender awards"
 msgstr "Переможці Закупівлі"
 
@@ -205,3 +205,15 @@ msgstr "Оновлення пропозиції"
 #: ../<>:3
 msgid "Example request to change bid proposal:"
 msgstr "Приклад запиту для оновлення цінової пропозиції"
+
+#: ../<>:1
+msgid "Tender Bid Documents List"
+msgstr "Список документів пропозиції"
+
+#: ../<>:1
+msgid "Tender Bid Document Read"
+msgstr "Читати документи пропозиції"
+
+#: ../<>:1
+msgid "Tender Bid Document Update"
+msgstr "Оновити документи пропозиції"

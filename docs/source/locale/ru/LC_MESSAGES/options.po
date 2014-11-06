@@ -1,0 +1,61 @@
+# 
+msgid ""
+msgstr ""
+"Project-Id-Version: openprocurement.api 0.1\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2014-11-04 09:37+0200\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: ../../source/options.rst:4
+msgid "Options"
+msgstr ""
+
+#: ../../source/options.rst:6
+msgid ""
+"In addition to providing fields and their values in a request, you may also "
+"specify options to control how your request is interpreted and how the "
+"response is generated.  For GET requests, options are specified as URL "
+"parameters prefixed with `opt_`.  For POST or PUT requests, options are "
+"specified in the body, inside the top-level options object (a sibling of the"
+" data object).  The option specified in the body overrides the `opt_` one "
+"from URL parameter."
+msgstr ""
+
+#: ../../source/options.rst:14
+msgid ""
+"These options can be used in combination in a single request, though some of"
+" them may conflict in their impact on the response."
+msgstr ""
+
+#: ../../source/options.rst:18
+msgid "`?opt_pretty`"
+msgstr ""
+
+#: ../../source/options.rst:20
+msgid "`options: { pretty: true }`"
+msgstr ""
+
+#: ../../source/options.rst:22
+msgid ""
+"Provides the response in \"pretty\" output.  In the case of JSON this means "
+"doing proper line breaking and indentation to make it readable.  This will "
+"take extra time and increase the response size so it is advisable only to "
+"use this during debugging."
+msgstr ""
+
+#: ../../source/options.rst:27
+msgid "`?opt_jsonp=myCallback`"
+msgstr ""
+
+#: ../../source/options.rst:29
+msgid ""
+"Returns the output in JSON-P format instead of plain JSON, to allow requests"
+" to come from within browsers and work around the \"same origin policy.\" "
+"The function named as the value of the `opt_jsonp` parameter will be called "
+"with a single argument, a JavaScript object representing the response."
+msgstr ""
