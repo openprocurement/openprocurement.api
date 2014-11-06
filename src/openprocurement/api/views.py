@@ -223,7 +223,7 @@ class TenderResource(object):
                             "quantity": 5
                         }
                     ],
-                    "clarificationPeriod": {
+                    "enquiryPeriod": {
                         "endDate": "2014-10-31T00:00:00"
                     },
                     "tenderPeriod": {
@@ -287,7 +287,7 @@ class TenderResource(object):
                             "quantity": 5
                         }
                     ],
-                    "clarificationPeriod": {
+                    "enquiryPeriod": {
                         "endDate": "2014-10-31T00:00:00"
                     },
                     "tenderPeriod": {
@@ -380,7 +380,7 @@ class TenderResource(object):
                             "quantity": 5
                         }
                     ],
-                    "clarificationPeriod": {
+                    "enquiryPeriod": {
                         "endDate": "2014-10-31T00:00:00"
                     },
                     "tenderPeriod": {

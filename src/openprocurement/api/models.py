@@ -171,8 +171,8 @@ class Tender(Model):
     submissionMethod = StringType(choices=['Electronic Auction', 'Electronic Submission', 'Written', 'In Person'])  # Specify the method by which bids must be submitted, in person, written, or electronic auction
     submissionDetails = StringType()  # Any detailed or further information on the submission method.
     tenderPeriod = ModelType(Period)  # The period when the tender is open for submissions. The end date is the closing date for tender submissions.
-    clarificationPeriod = ModelType(Period)  # The period during which clarification requests may be made and will be answered.
-    clarifications = BooleanType()  # A Yes/No field as to whether clarifications were issued. Would expect clarifications to appear as amendments.
+    enquiryPeriod = ModelType(Period)  # The period during which enquiries may be made and will be answered.
+    hasEnquiries = BooleanType()  # A Yes/No field as to whether enquiries were part of tender process.
     awardPeriod = ModelType(Period)  # The date or period on which an award is anticipated to be made.
     numberOfBidders = IntType()  # The number of unique bidders who participated in the tender
     numberOfBids = IntType()  # The number of bids or submissions to the tender. In the case of an auction, the number of bids may differ from the numberOfBidders.
@@ -183,7 +183,7 @@ class Tender(Model):
     revisions = ListType(ModelType(revision), default=list())
     deliveryDate = ModelType(Period)
     minimalStep = ModelType(Value)
-    status = StringType(choices=['clarifications', 'tendering', 'auction', 'qualification', 'awarded', 'contract-signed', 'paused'], default='clarifications')
+    status = StringType(choices=['enquiries', 'tendering', 'auction', 'qualification', 'awarded', 'contract-signed', 'paused'], default='enquiries')
 
 
 class OrganizationDocument(SchematicsDocument, Organization):
