@@ -15,35 +15,19 @@ msgstr ""
 msgid "Tutorial"
 msgstr ""
 
-#: ../../source/tutorial.rst:6
-msgid "Let's try exploring the `/tenders` endpoint::"
-msgstr ""
-
-#: ../../source/tutorial.rst:19
+#: ../../source/tutorial.rst:11
 msgid "Just invoking it reveals empty set."
 msgstr ""
 
-#: ../../source/tutorial.rst:21
-msgid "Now let's attempt creating some tender::"
-msgstr ""
-
-#: ../../source/tutorial.rst:41
+#: ../../source/tutorial.rst:18
 msgid "Error states that only accepted Content-Type is `application/json`."
 msgstr ""
 
-#: ../../source/tutorial.rst:43
-msgid "Let's satisfy the Content-type requirement::"
-msgstr ""
-
-#: ../../source/tutorial.rst:64
+#: ../../source/tutorial.rst:25
 msgid "Error states that no `data` found in JSON body."
 msgstr ""
 
-#: ../../source/tutorial.rst:66
-msgid "Let's provide the data attribute in the body submitted::"
-msgstr ""
-
-#: ../../source/tutorial.rst:89
+#: ../../source/tutorial.rst:32
 msgid ""
 "Success! Now we can see that new object was created. Response code is `201` "
 "and `Location` response header reports the location of object created. The "
@@ -53,58 +37,112 @@ msgid ""
 "modified."
 msgstr ""
 
-#: ../../source/tutorial.rst:91
-msgid ""
-"Let's access the URL of object created (the `Location` header of the "
-"response)::"
-msgstr ""
-
-#: ../../source/tutorial.rst:108
+#: ../../source/tutorial.rst:41
 msgid "We can see the same response we got after creating tender."
 msgstr ""
 
-#: ../../source/tutorial.rst:110
-msgid "Let's see what listing of tenders reveals us::"
-msgstr ""
-
-#: ../../source/tutorial.rst:128
+#: ../../source/tutorial.rst:48
 msgid ""
 "We do see the internal `id` of a tender (that can be used to construct full "
 "URL by prepending `http://api-sandbox.openprocurement.org/api/0/tenders/`) "
 "and its `modified` datestamp."
 msgstr ""
 
-#: ../../source/tutorial.rst:130
-msgid ""
-"Let's try creating tender with more data, passing the `procuringEntity` of a"
-" tender::"
-msgstr ""
-
-#: ../../source/tutorial.rst:184
+#: ../../source/tutorial.rst:55
 msgid ""
 "And again we have `201 Created` response code, `Location` header and body "
 "wth extra `id`, `tenderID`, and `modified` properties."
 msgstr ""
 
-#: ../../source/tutorial.rst:186
-msgid "Let's check what tender registry contains::"
-msgstr ""
-
-#: ../../source/tutorial.rst:208
+#: ../../source/tutorial.rst:62
 msgid "And indeed we have 2 tenders now."
 msgstr ""
 
-#: ../../source/tutorial.rst:210
-msgid ""
-"Let's update tender by providing it with all other essential properties::"
-msgstr ""
-
-#: ../../source/tutorial.rst:320
+#: ../../source/tutorial.rst:71
 msgid ""
 "We see the added properies merged with existing data of tender. Additionally"
 " the `modified` property updated to reflect the last modification datestamp."
 msgstr ""
 
-#: ../../source/tutorial.rst:322
-msgid "Checking the listing again reflets the new modification date::"
+#: ../../source/tutorial.rst:6
+msgid "Let's try exploring the `/tenders` endpoint:"
 msgstr ""
+
+#: ../../source/tutorial.rst:13
+msgid "Now let's attempt creating some tender:"
+msgstr ""
+
+#: ../../source/tutorial.rst:20
+msgid "Let's satisfy the Content-type requirement:"
+msgstr ""
+
+#: ../../source/tutorial.rst:27
+msgid "Let's provide the data attribute in the body submitted:"
+msgstr ""
+
+#: ../../source/tutorial.rst:34
+msgid ""
+"Let's access the URL of object created (the `Location` header of the "
+"response):"
+msgstr ""
+
+#: ../../source/tutorial.rst:43
+msgid "Let's see what listing of tenders reveals us:"
+msgstr ""
+
+#: ../../source/tutorial.rst:50
+msgid ""
+"Let's try creating tender with more data, passing the `procuringEntity` of a"
+" tender:"
+msgstr ""
+
+#: ../../source/tutorial.rst:57
+msgid "Let's check what tender registry contains:"
+msgstr ""
+
+#: ../../source/tutorial.rst:64
+msgid ""
+"Let's update tender by providing it with all other essential properties:"
+msgstr ""
+
+#: ../../source/tutorial.rst:73
+msgid "Checking the listing again reflects the new modification date:"
+msgstr ""
+
+#~ msgid "Checking the listing again reflets the new modification date:"
+#~ msgstr ""
+
+#~ msgid "Let's try exploring the `/tenders` endpoint::"
+#~ msgstr ""
+
+#~ msgid "Now let's attempt creating some tender::"
+#~ msgstr ""
+
+#~ msgid "Let's satisfy the Content-type requirement::"
+#~ msgstr ""
+
+#~ msgid "Let's provide the data attribute in the body submitted::"
+#~ msgstr ""
+
+#~ msgid ""
+#~ "Let's access the URL of object created (the `Location` header of the "
+#~ "response)::"
+#~ msgstr ""
+
+#~ msgid "Let's see what listing of tenders reveals us::"
+#~ msgstr ""
+
+#~ msgid ""
+#~ "Let's try creating tender with more data, passing the `procuringEntity` of a"
+#~ " tender::"
+#~ msgstr ""
+
+#~ msgid "Let's check what tender registry contains::"
+#~ msgstr ""
+
+#~ msgid ""
+#~ "Let's update tender by providing it with all other essential properties::"
+#~ msgstr ""
+
+#~ msgid "Checking the listing again reflets the new modification date::"
+#~ msgstr ""
