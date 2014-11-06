@@ -23,3 +23,20 @@ Reading the individual tender information
 .. sourcecode:: http
 
   HTTP/1.1 200 OK
+
+Reading the tender documents list
+---------------------------------
+.. sourcecode:: http
+
+  GET /tenders/64e93250be76435397e8c992ed4214d1/documents HTTP/1.1
+
+.. sourcecode:: http
+
+  HTTP/1.1 200 OK
+
+Reading the tender document
+---------------------------
+
+The document can be retrieved by requesting the url returned in structures
+from document list request in `data[*].url`.  It is safe to provide the
+download URL to end user for download.
