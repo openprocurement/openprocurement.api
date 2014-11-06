@@ -18,7 +18,7 @@ spore = Service(name='spore', path='/spore', renderer='json')
 auction = Service(name='Tender Auction', path='/tenders/{tender_id}/auction', renderer='json')
 
 
-def validate_tender_data(request):
+def validate_data(request, model):
     try:
         json = request.json_body
     except ValueError, e:
@@ -31,51 +31,23 @@ def validate_tender_data(request):
         return
     data = json['data']
     try:
-        TenderDocument(data).validate()
+        model(data).validate()
     except (ModelValidationError, ModelConversionError), e:
         for i in e.message:
             request.errors.add('body', i, e.message[i])
         request.errors.status = 422
+
+
+def validate_tender_data(request):
+    return validate_data(request, TenderDocument)
 
 
 def validate_bid_data(request):
-    try:
-        json = request.json_body
-    except ValueError, e:
-        request.errors.add('body', 'data', e.message)
-        request.errors.status = 422
-        return
-    if not isinstance(json, dict) or 'data' not in json or not isinstance(json.get('data'), dict):
-        request.errors.add('body', 'data', "Data not available")
-        request.errors.status = 422
-        return
-    data = json['data']
-    try:
-        Bid(data).validate()
-    except (ModelValidationError, ModelConversionError), e:
-        for i in e.message:
-            request.errors.add('body', i, e.message[i])
-        request.errors.status = 422
+    return validate_data(request, Bid)
 
 
 def validate_award_data(request):
-    try:
-        json = request.json_body
-    except ValueError, e:
-        request.errors.add('body', 'data', e.message)
-        request.errors.status = 422
-        return
-    if not isinstance(json, dict) or 'data' not in json or not isinstance(json.get('data'), dict):
-        request.errors.add('body', 'data', "Data not available")
-        request.errors.status = 422
-        return
-    data = json['data']
-    try:
-        Award(data).validate()
-    except (ModelValidationError, ModelConversionError), e:
-        for i in e.message:
-            request.errors.add('body', i, e.message[i])
-        request.errors.status = 422
+    return validate_data(request, Award)
 
 
 def generate_tender_id(tid):
