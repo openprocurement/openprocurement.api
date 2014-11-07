@@ -4,7 +4,7 @@ from uuid import uuid4
 from couchdb_schematics.document import SchematicsDocument
 from schematics.models import Model
 from schematics.transforms import whitelist, blacklist
-from schematics.types import StringType, FloatType, IntType, URLType, DateTimeType, BooleanType, BaseType
+from schematics.types import StringType, FloatType, IntType, URLType, DateTimeType, BooleanType, BaseType, EmailType
 from schematics.types.compound import ModelType, ListType, DictType
 from schematics.types.serializable import serializable
 
@@ -102,6 +102,14 @@ class address(Model):
     countryName = StringType()
 
 
+class ContactPoint(Model):
+    name = StringType(required=True)
+    email = EmailType(required=True)
+    telephone = StringType()
+    faxNumber = StringType()
+    url = URLType()
+
+
 class Organization(Model):
     """An organization."""
     class Options:
@@ -113,6 +121,7 @@ class Organization(Model):
 
     id = ModelType(identifier, required=True)
     address = ModelType(address)
+    contactPoint = ModelType(ContactPoint)
 
 
 class Bid(Model):
