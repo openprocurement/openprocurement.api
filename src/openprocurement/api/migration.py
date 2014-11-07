@@ -3,13 +3,13 @@ import logging
 
 
 LOGGER = logging.getLogger(__name__)
-SCHEMA_VERSION = 5
+SCHEMA_VERSION = 6
 SCHEMA_DOC = 'openprocurement_schema'
 
 
 def get_db_schema_version(db):
     schema_doc = db.get(SCHEMA_DOC, {"_id": SCHEMA_DOC})
-    return schema_doc.get("version", 0)
+    return schema_doc.get("version", SCHEMA_VERSION)
 
 
 def set_db_schema_version(db, version):
@@ -109,5 +109,40 @@ def from4to5(db):
         if 'clarifications' in doc:
             doc['hasEnquiries'] = doc.pop('clarifications')
             changed = True
+        if changed:
+            db.save(doc)
+
+
+def from5to6(db):
+    results = db.view('tenders/all', include_docs=True)
+    for i in results:
+        doc = i.doc
+        changed = False
+        if 'attachments' in doc:
+            items = []
+            for i in doc.pop('attachments'):
+                items.append({
+                    'id': i['id'],
+                    'title': i['description'],
+                    'modified': i['lastModified'],
+                    'datePublished': i['lastModified'],
+                    'url': '{}?download={}_{}'.format(i['uri'], len(i.get('revisions', [])), i['description']),
+                })
+            doc['documents'] = items
+            changed = True
+        if 'bids' in doc:
+            for bid in doc['bids']:
+                if 'attachments' in bid:
+                    items = []
+                    for i in bid.pop('attachments'):
+                        items.append({
+                            'id': i['id'],
+                            'title': i['description'],
+                            'modified': i['lastModified'],
+                            'datePublished': i['lastModified'],
+                            'url': '{}?download={}_{}'.format(i['uri'], len(i.get('revisions', [])), i['description']),
+                        })
+                    bid['documents'] = items
+                    changed = True
         if changed:
             db.save(doc)

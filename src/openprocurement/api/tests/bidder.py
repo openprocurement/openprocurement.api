@@ -361,20 +361,28 @@ class TenderBidderDocumentResourceTest(BaseTenderWebTest):
         self.assertEqual(response.content_type, 'application/json')
         doc_id = response.json["data"]['id']
         self.assertTrue(doc_id in response.headers['Location'])
-        self.assertEqual('name.doc', response.json["data"]["description"])
+        self.assertEqual('name.doc', response.json["data"]["title"])
+        key = response.json["data"]["url"].split('?')[-1]
 
         response = self.app.get('/tenders/{}/bidders/{}/documents'.format(self.tender_id, self.bid_id))
         self.assertEqual(response.status, '200 OK')
         self.assertEqual(response.content_type, 'application/json')
         self.assertEqual(doc_id, response.json["data"][0]["id"])
-        self.assertEqual('name.doc', response.json["data"][0]["description"])
+        self.assertEqual('name.doc', response.json["data"][0]["title"])
 
-        response = self.app.get('/tenders/{}/bidders/{}/documents/{}'.format(
-            self.tender_id, self.bid_id, doc_id))
+        response = self.app.get('/tenders/{}/bidders/{}/documents/{}?{}'.format(
+            self.tender_id, self.bid_id, doc_id, key))
         self.assertEqual(response.status, '200 OK')
         self.assertEqual(response.content_type, 'application/msword')
         self.assertEqual(response.content_length, 7)
         self.assertEqual(response.body, 'content')
+
+        response = self.app.get('/tenders/{}/bidders/{}/documents/{}'.format(
+            self.tender_id, self.bid_id, doc_id))
+        self.assertEqual(response.status, '200 OK')
+        self.assertEqual(response.content_type, 'application/json')
+        self.assertEqual(doc_id, response.json["data"]["id"])
+        self.assertEqual('name.doc', response.json["data"]["title"])
 
     def test_put_tender_bidder_document(self):
         response = self.app.post('/tenders/{}/bidders/{}/documents'.format(
@@ -389,13 +397,21 @@ class TenderBidderDocumentResourceTest(BaseTenderWebTest):
         self.assertEqual(response.status, '200 OK')
         self.assertEqual(response.content_type, 'application/json')
         self.assertEqual(doc_id, response.json["data"]["id"])
+        key = response.json["data"]["url"].split('?')[-1]
 
-        response = self.app.get('/tenders/{}/bidders/{}/documents/{}'.format(
-            self.tender_id, self.bid_id, doc_id))
+        response = self.app.get('/tenders/{}/bidders/{}/documents/{}?{}'.format(
+            self.tender_id, self.bid_id, doc_id, key))
         self.assertEqual(response.status, '200 OK')
         self.assertEqual(response.content_type, 'application/msword')
         self.assertEqual(response.content_length, 8)
         self.assertEqual(response.body, 'content2')
+
+        response = self.app.get('/tenders/{}/bidders/{}/documents/{}'.format(
+            self.tender_id, self.bid_id, doc_id))
+        self.assertEqual(response.status, '200 OK')
+        self.assertEqual(response.content_type, 'application/json')
+        self.assertEqual(doc_id, response.json["data"]["id"])
+        self.assertEqual('name.doc', response.json["data"]["title"])
 
 
 def suite():
