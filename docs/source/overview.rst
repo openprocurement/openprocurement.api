@@ -65,6 +65,16 @@ lot.  The changes in the API are communicated via `Open Procurement API
 
 Change log
 ----------
+0.2
+~~~
+Released: Unreleased
+
+ - Tender Listing Batching (optimized for sync operations)
+ - Documents retrieval
+ - Change tracking
+ - Options: Pretty-print, JSONP
+ - Introduction of state machine and time-based state switching
+
 0.1
 ~~~
 
