@@ -23,6 +23,8 @@ The response produced will have URL of the tender created in Location header of 
   HTTP/1.1 201 Created
   Location: /tenders/64e93250be76435397e8c992ed4214d1
 
+.. _procuring-uploading-docs:
+
 Uploading documentation
 ~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -77,4 +79,4 @@ Procuring Entity can upload new versions of the tender documentation.
 
 Uploading additional documents
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-The same as Uploading documentation
+The same as :ref:`procuring-uploading-docs`.
