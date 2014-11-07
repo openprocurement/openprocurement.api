@@ -139,15 +139,25 @@ In the event of an error, the response body will contain an `errors` field
 at the top level.  This contains an array of at least one error object,
 described below:
 
-message
+:location:
+   Part of the request causing the error. Possible values are `header` and `body`.
+
+:name:
+    * Specific header name that caused the problem (in case of `header` location)
+    * The field name causing the error (in case of `body` location)
+
+:description:
+    Verbose (human readable) description of error.
+
+.. message
   *totalValue.amount: Missing input* - Message providing more detail about the
   error that occurred, if available.
 
-messageUID
+.. messageUID
   Unique message id. Will stay the same even if content of the message can
   change, depending on other parameters.
 
-*id*
+.. *id*
   Unique correlation identifier of the error response for audit and issue
   reporting purposes.
 
@@ -160,7 +170,12 @@ Sample below indicate incomplete request.
   HTTP/1.1 400 Missing input
 
   {
-    "message":"totalValue.amount: Missing input",
-    "messageUID":"e6cfac20-4497-4b36-bae8-7048133d9d07",
-    "id":"4468eee5-9820-4d51-adee-a245a2fb6ee5"
+    "status": "error",
+    "errors": [
+      {
+        "location": "body",
+        "name": "data",
+        "description": "No JSON object could be decoded"
+      }
+    ]
   }
