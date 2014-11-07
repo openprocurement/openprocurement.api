@@ -70,6 +70,7 @@ Reading the individual tender information
 
 Reading the tender documents list
 ---------------------------------
+
 .. sourcecode:: http
 
   GET /tenders/64e93250be76435397e8c992ed4214d1/documents HTTP/1.1
@@ -77,6 +78,11 @@ Reading the tender documents list
 .. sourcecode:: http
 
   HTTP/1.1 200 OK
+
+Example request:
+
+.. include:: tutorial/tender-documents-2.http
+   :code:
 
 Reading the tender document
 ---------------------------

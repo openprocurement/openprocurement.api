@@ -1,0 +1,28 @@
+$ http http://api-sandbox.openprocurement.org/api/0/tenders/cf66e4dbd600481f85d79b4e13e7a01c/documents
+GET /api/0/tenders/cf66e4dbd600481f85d79b4e13e7a01c/documents HTTP/1.1
+
+
+
+HTTP/1.1 200 OK
+Content-Type: application/json; charset=UTF-8
+
+{
+    "data": [
+        {
+            "datePublished": "2014-11-07T23:29:27.999887", 
+            "format": "text/plain", 
+            "id": "dc2c35ca85bc4e0faaf6257843215133", 
+            "modified": "2014-11-07T23:29:27.999921", 
+            "title": "AwardCriteria.pdf", 
+            "url": "http://api-sandbox.openprocurement.org/api/0/tenders/cf66e4dbd600481f85d79b4e13e7a01c/documents/dc2c35ca85bc4e0faaf6257843215133?download=634f84c3266244c09225c3e53a2dca96"
+        }, 
+        {
+            "datePublished": "2014-11-07T23:29:29.446686", 
+            "format": "text/plain", 
+            "id": "a973fbad44d84d92b837df0004ac1631", 
+            "modified": "2014-11-07T23:29:29.446718", 
+            "title": "Notice.pdf", 
+            "url": "http://api-sandbox.openprocurement.org/api/0/tenders/cf66e4dbd600481f85d79b4e13e7a01c/documents/a973fbad44d84d92b837df0004ac1631?download=bb37c7a33a094dd08b8242d61f357f01"
+        }
+    ]
+}
