@@ -5,10 +5,10 @@ Documents Uploading
 
 All of the document uploading API endpoints follows the same set of rules.
 
-Content-Type: multipart/formdata
---------------------------------
+Content-Type: multipart/form-data
+---------------------------------
 
-This is normal approach of file uploading defined by `RFC 1867
+This is standard approach of HTML form file uploading defined by `RFC 1867
 <http://www.faqs.org/rfcs/rfc1867.html>`_.  The requirements are:
 
 * Form element should have name `file`
