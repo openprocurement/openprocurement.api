@@ -3,6 +3,9 @@
 Tutorial
 ========
 
+Exploring basic rules
+---------------------
+
 Let's try exploring the `/tenders` endpoint:
 
 .. include:: tutorial/initial-tender-listing.http
@@ -23,6 +26,9 @@ Let's satisfy the Content-type requirement:
    :code:
 
 Error states that no `data` found in JSON body.
+
+Creating tender
+---------------
 
 Let's provide the data attribute in the body submitted:
 
@@ -65,6 +71,9 @@ Let's check what tender registry contains:
    :code:
 
 And indeed we have 2 tenders now.
+
+Modifying tender
+----------------
 
 Let's update tender by providing it with all other essential properties:
 
