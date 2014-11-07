@@ -67,7 +67,9 @@ Procuring Entity can change the Tender properties with following request. Data t
 
 Changing existing documents
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~
-Procuring Entity can upload new versions of the tender documentation. 
+
+Procuring Entity can upload new versions of the tender documentation. You
+can see supported request types in Documents Uploading section.
 
 .. sourcecode:: http
 
@@ -76,6 +78,11 @@ Procuring Entity can upload new versions of the tender documentation.
 .. sourcecode:: http
 
   HTTP/1.1 200 OK
+
+Example request:
+
+.. include:: tutorial/update-award-criteria.http
+   :code:
 
 Uploading additional documents
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
