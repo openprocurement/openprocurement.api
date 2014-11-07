@@ -4,8 +4,8 @@ msgstr ""
 "Project-Id-Version: openprocurement.api 0.1\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2014-10-22 03:26+0300\n"
-"PO-Revision-Date: 2014-10-30 12:50+0300\n"
-"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"PO-Revision-Date: 2014-11-07 16:04+0300\n"
+"Last-Translator: \n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -131,7 +131,7 @@ msgstr "500"
 msgid "Server error. There was a problem on OpenProcurement's end."
 msgstr "Помилка сервера. Була проблема зі сторони OpenProcurement."
 
-#: ../../source/errors.rst:130
+#: ../../source/errors.rst:138
 msgid ""
 "In the event of an error, the response body will contain an `errors` field "
 "at the top level.  This contains an array of at least one error object, "
@@ -140,43 +140,7 @@ msgstr ""
 "У випадку помилки, тіло відповіді міститиме `errors` поле на вищому рівні. "
 "Воно містить масив як мінімум одного помилкового об’єкта описаного нижче:"
 
-#: ../../source/errors.rst:136
-msgid "message"
-msgstr "message"
-
-#: ../../source/errors.rst:135
-msgid ""
-"*totalValue.amount: Missing input* - Message providing more detail about the "
-"error that occurred, if available."
-msgstr ""
-"*totalValue.amount: Відсутні вхідні дані* - Повідомлення надає більш "
-"детальну інформацію про помилку, якщо вона наявна."
-
-#: ../../source/errors.rst:140
-msgid "messageUID"
-msgstr "messageUID"
-
-#: ../../source/errors.rst:139
-msgid ""
-"Unique message id. Will stay the same even if content of the message can "
-"change, depending on other parameters."
-msgstr ""
-"Унікальний id повідомлення залишатиметься однаковим, навіть якщо вміст "
-"повідомлення може мінятись залежно від інших параметрів."
-
-#: ../../source/errors.rst:144
-msgid "*id*"
-msgstr "*id*"
-
-#: ../../source/errors.rst:143
-msgid ""
-"Unique correlation identifier of the error response for audit and issue "
-"reporting purposes."
-msgstr ""
-"Унікальний ідентифікатор кореляції відповіді з повідомленням про помилку для "
-"звітності та відстежування проблем."
-
-#: ../../source/errors.rst:148
+#: ../../source/errors.rst:166
 msgid "Sample below indicate incomplete request."
 msgstr "Зразок нижче вказує на неповний запит."
 
@@ -218,10 +182,64 @@ msgstr "Приклад відповіді з повідомленням про �
 msgid "Here is response describing tender"
 msgstr "Це відповідь, що описує закупівлю."
 
-#: ../../source/errors.rst:129
+#: ../../source/errors.rst:137
 msgid "Error Response"
 msgstr "Відповідь з повідомленням про помилку"
 
-#: ../../source/errors.rst:147
+#: ../../source/errors.rst:165
 msgid "Example Error Response"
 msgstr "Приклад відповіді з повідомленням про помилку"
+
+#: ../../source/errors.rst:143
+msgid ""
+"Part of the request causing the error. Possible values are `header` and "
+"`body`."
+msgstr ""
+"Частина запиту спричинює помилку. Мижливі значення це `заголовок` або `тіло`"
+
+#: ../../source/errors.rst:146
+msgid ""
+"Specific header name that caused the problem (in case of `header` location)"
+msgstr ""
+"Конкретна назва заголовку, що спричиняє проблему (у випадку "
+"місцярозташування `заголовок`)"
+
+#: ../../source/errors.rst:147
+msgid "The field name causing the error (in case of `body` location)"
+msgstr ""
+"Конкретна назва поля, що спричиняє проблему (у випадку місцярозташування "
+"`тіло`)"
+
+#: ../../source/errors.rst:150
+msgid "Verbose (human readable) description of error."
+msgstr "Докладний (придатний для читання людиною) опис помилки."
+
+#~ msgid "message"
+#~ msgstr "message"
+
+#~ msgid ""
+#~ "*totalValue.amount: Missing input* - Message providing more detail about "
+#~ "the error that occurred, if available."
+#~ msgstr ""
+#~ "*totalValue.amount: Відсутні вхідні дані* - Повідомлення надає більш "
+#~ "детальну інформацію про помилку, якщо вона наявна."
+
+#~ msgid "messageUID"
+#~ msgstr "messageUID"
+
+#~ msgid ""
+#~ "Unique message id. Will stay the same even if content of the message can "
+#~ "change, depending on other parameters."
+#~ msgstr ""
+#~ "Унікальний id повідомлення залишатиметься однаковим, навіть якщо вміст "
+#~ "повідомлення може мінятись залежно від інших параметрів."
+
+#~ msgid "*id*"
+#~ msgstr "*id*"
+
+#~ msgid ""
+#~ "Unique correlation identifier of the error response for audit and issue "
+#~ "reporting purposes."
+#~ msgstr ""
+#~ "Унікальний ідентифікатор кореляції відповіді з повідомленням про помилку "
+#~ "для звітності та відстежування проблем."

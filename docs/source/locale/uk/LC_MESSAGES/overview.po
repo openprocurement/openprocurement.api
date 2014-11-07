@@ -4,8 +4,8 @@ msgstr ""
 "Project-Id-Version: openprocurement.api 0.1\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2014-10-21 10:42+0300\n"
-"PO-Revision-Date: 2014-11-03 15:16+0300\n"
-"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"PO-Revision-Date: 2014-11-07 17:05+0300\n"
+"Last-Translator: \n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -97,20 +97,20 @@ msgstr "Стабільність API"
 msgid "Change log"
 msgstr "Звіт про зміни"
 
-#: ../../source/overview.rst:69
+#: ../../source/overview.rst:79
 msgid "0.1"
 msgstr "0.1"
 
-#: ../../source/overview.rst:73
+#: ../../source/overview.rst:83
 msgid "Set up general build, testing, deployment, and ci framework."
 msgstr ""
 "Налаштування загальної збірки, тестування, розгортання та ci фреймворка."
 
-#: ../../source/overview.rst:79
+#: ../../source/overview.rst:89
 msgid "Next steps"
 msgstr "Наступні кроки"
 
-#: ../../source/overview.rst:80
+#: ../../source/overview.rst:90
 msgid ""
 "You might find it helpful to look at the :ref:`tutorial`, or the :ref:"
 "`reference`."
@@ -169,21 +169,49 @@ msgstr ""
 "через `Open Procurement API <https://groups.google.com/group/open-"
 "procurement-api>`_ розсилку."
 
-#: ../../source/overview.rst:71
+#: ../../source/overview.rst:81
 msgid "Released: 2014-10-24"
 msgstr "Випущено: 2014-10-24"
 
-#: ../../source/overview.rst:74
+#: ../../source/overview.rst:84
 msgid "Creating/modifying tender"
 msgstr "Створення/модифікація закупівлі"
 
-#: ../../source/overview.rst:75
+#: ../../source/overview.rst:85
 msgid "Adding/modifying/cancelling tender proposal"
 msgstr "Додавання/модифікація/відміна цінової пропозиції"
 
-#: ../../source/overview.rst:76
+#: ../../source/overview.rst:86
 msgid "Awarding/disqualification of tender proposals"
 msgstr "Визначення переможця/дискваліфікація цінових пропозицій"
+
+#: ../../source/overview.rst:69
+msgid "0.2"
+msgstr "0.2"
+
+#: ../../source/overview.rst:70
+msgid "Released: Unreleased"
+msgstr "Випущено: Не випущено"
+
+#: ../../source/overview.rst:72
+msgid "Tender Listing Batching (optimized for sync operations)"
+msgstr "Сортування списку закупівель (оптимізоване для синхронних операцій)"
+
+#: ../../source/overview.rst:73
+msgid "Documents retrieval"
+msgstr "Вичитка документів"
+
+#: ../../source/overview.rst:74
+msgid "Change tracking"
+msgstr "Відстеження змін"
+
+#: ../../source/overview.rst:75
+msgid "Options: Pretty-print, JSONP"
+msgstr "Опції: Pretty-print, JSONP"
+
+#: ../../source/overview.rst:76
+msgid "Introduction of state machine and time-based state switching"
+msgstr "Впровадження станів та перемикання станів з урахуванням часу"
 
 #~ msgid "Released: Not yet."
 #~ msgstr "Випущено: Ще ні"

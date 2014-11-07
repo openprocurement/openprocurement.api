@@ -128,6 +128,47 @@ class MigrateTest(BaseWebTest):
         self.assertEqual(item["clarificationPeriod"], migrated_item["enquiryPeriod"])
         self.assertEqual(item["clarifications"], migrated_item["hasEnquiries"])
 
+    def test_migrate_from5to6(self):
+        set_db_schema_version(self.db, 5)
+        data = {
+            'doc_type': 'TenderDocument',
+            "attachments": [
+                {
+                    'id': 'id',
+                    'description': 'description',
+                    'lastModified': "2014-10-31T00:00:00",
+                    'uri': 'uri',
+                    'revisions': [1, 1]
+                }
+            ],
+            "bids": [
+                {
+                    "attachments": [
+                        {
+                            'id': 'id',
+                            'description': 'description',
+                            'lastModified': "2014-10-31T00:00:00",
+                            'uri': 'uri'
+                        }
+                    ]
+                }
+            ]
+        }
+        _id, _rev = self.db.save(data)
+        item = self.db.get(_id)
+        migrate_data(self.db, 6)
+        migrated_item = self.db.get(_id)
+        self.assertFalse('attachments' in migrated_item)
+        self.assertTrue('documents' in migrated_item)
+        self.assertEqual(item["attachments"][0]["id"], migrated_item["documents"][0]["id"])
+        self.assertEqual(item["attachments"][0]["description"], migrated_item["documents"][0]["title"])
+        self.assertEqual(item["attachments"][0]["lastModified"], migrated_item["documents"][0]["modified"])
+        self.assertEqual(item["attachments"][0]["uri"] + "?download=2_description", migrated_item["documents"][0]["url"])
+        self.assertEqual(item["bids"][0]["attachments"][0]["id"], migrated_item["bids"][0]["documents"][0]["id"])
+        self.assertEqual(item["bids"][0]["attachments"][0]["description"], migrated_item["bids"][0]["documents"][0]["title"])
+        self.assertEqual(item["bids"][0]["attachments"][0]["lastModified"], migrated_item["bids"][0]["documents"][0]["modified"])
+        self.assertEqual(item["bids"][0]["attachments"][0]["uri"] + "?download=0_description", migrated_item["bids"][0]["documents"][0]["url"])
+
 
 def suite():
     suite = unittest.TestSuite()

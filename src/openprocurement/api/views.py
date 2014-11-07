@@ -7,7 +7,7 @@ from cornice.resource import resource, view
 from cornice.service import Service, get_services
 from jsonpatch import make_patch
 from openprocurement.api import VERSION
-from openprocurement.api.models import TenderDocument, Bid, Award, Attachment, AttachmentRevision, revision
+from openprocurement.api.models import TenderDocument, Bid, Award, Document, revision
 from schematics.exceptions import ModelValidationError, ModelConversionError
 from urllib import quote
 from uuid import uuid4
@@ -505,7 +505,7 @@ class TenderDocumentResource(object):
             self.request.errors.add('url', 'tender_id', 'Not Found')
             self.request.errors.status = 404
             return
-        return {'data': [i.serialize("view") for i in tender['attachments']]}
+        return {'data': [i.serialize("view") for i in tender['documents']]}
 
     @view(renderer='json')
     def collection_post(self):
@@ -521,13 +521,14 @@ class TenderDocumentResource(object):
             return
         src = tender.serialize("plain")
         data = self.request.POST['file']
-        attachment = Attachment()
-        attachment.id = uuid4().hex
-        attachment.description = data.filename
-        uri = self.request.route_url('Tender Documents', tender_id=self.tender_id, id=attachment.id)
-        attachment.uri = uri
-        tender.attachments.append(attachment)
-        filename = "{}_{}_{}".format(attachment.id, len(attachment.revisions), attachment.description)
+        document = Document()
+        document.id = uuid4().hex
+        document.title = data.filename
+        document.format = data.type
+        key = uuid4().hex
+        document.url = self.request.route_url('Tender Documents', tender_id=self.tender_id, id=document.id, _query={'download': key})
+        tender.documents.append(document)
+        filename = "{}_{}".format(document.id, key)
         tender['_attachments'][filename] = {
             "content_type": data.type,
             "data": b64encode(data.file.read())
@@ -539,8 +540,8 @@ class TenderDocumentResource(object):
         except Exception, e:
             return self.request.errors.add('body', 'data', str(e))
         self.request.response.status = 201
-        self.request.response.headers['Location'] = uri
-        return {'data': attachment.serialize("view")}
+        self.request.response.headers['Location'] = self.request.route_url('Tender Documents', tender_id=self.tender_id, id=document.id)
+        return {'data': document.serialize("view")}
 
     def get(self):
         """Tender Document Read"""
@@ -549,22 +550,31 @@ class TenderDocumentResource(object):
             self.request.errors.add('url', 'tender_id', 'Not Found')
             self.request.errors.status = 404
             return
-        attachments = [i for i in tender.attachments if i.id == self.request.matchdict['id']]
-        if not attachments:
+        documents = [i for i in tender.documents if i.id == self.request.matchdict['id']]
+        if not documents:
             self.request.errors.add('url', 'id', 'Not Found')
             self.request.errors.status = 404
             return
-        attachment = attachments[0]
-        filename = "{}_{}_{}".format(attachment.id, len(attachment.revisions), attachment.description)
-        data = self.db.get_attachment(self.tender_id, filename)
-        if not data:
-            self.request.errors.add('url', 'id', 'Not Found')
-            self.request.errors.status = 404
-            return
-        self.request.response.content_type = tender['_attachments'][filename]["content_type"].encode('utf-8')
-        self.request.response.content_disposition = 'attachment; filename={}'.format(quote(attachment.description.encode('utf-8')))
-        self.request.response.body_file = data
-        return self.request.response
+        document = documents[-1]
+        key = self.request.params.get('download')
+        if key:
+            filename = "{}_{}".format(document.id, key)
+            data = self.db.get_attachment(self.tender_id, filename)
+            if not data:
+                self.request.errors.add('url', 'id', 'Not Found')
+                self.request.errors.status = 404
+                return
+            self.request.response.content_type = tender['_attachments'][filename]["content_type"].encode('utf-8')
+            self.request.response.content_disposition = 'attachment; filename={}'.format(quote(document.title.encode('utf-8')))
+            self.request.response.body_file = data
+            return self.request.response
+        document_data = document.serialize("view")
+        document_data['revisions'] = [
+            i.serialize("revisions")
+            for i in documents
+            if i.url != document.url
+        ]
+        return {'data': document_data}
 
     @view(renderer='json')
     def put(self):
@@ -579,16 +589,21 @@ class TenderDocumentResource(object):
             self.request.errors.status = 404
             return
         data = self.request.POST['file']
-        attachments = [i for i in tender.attachments if i.id == self.request.matchdict['id']]
-        if not attachments:
+        documents = [i for i in tender.documents if i.id == self.request.matchdict['id']]
+        if not documents:
             self.request.errors.add('url', 'id', 'Not Found')
             self.request.errors.status = 404
             return
         src = tender.serialize("plain")
-        attachment = attachments[0]
-        attachment.revisions.append(AttachmentRevision({"uri": attachment.uri, "lastModified": attachment.lastModified}))
-        attachment.lastModified = datetime.datetime.now()
-        filename = "{}_{}_{}".format(attachment.id, len(attachment.revisions), attachment.description)
+        document = Document()
+        document.id = self.request.matchdict['id']
+        document.title = data.filename
+        document.format = data.type
+        document.datePublished = documents[0].datePublished
+        key = uuid4().hex
+        document.url = self.request.route_url('Tender Documents', tender_id=self.tender_id, id=document.id, _query={'download': key})
+        tender.documents.append(document)
+        filename = "{}_{}".format(document.id, key)
         tender['_attachments'][filename] = {
             "content_type": data.type,
             "data": b64encode(data.file.read())
@@ -599,7 +614,7 @@ class TenderDocumentResource(object):
             tender.store(self.db)
         except Exception, e:
             return self.request.errors.add('body', 'data', str(e))
-        return {'data': attachment.serialize("view")}
+        return {'data': document.serialize("view")}
 
 
 @resource(name='Tender Bids',
@@ -953,7 +968,7 @@ class TenderBidderDocumentResource(object):
             self.request.errors.status = 404
             return
         bid = bids[0]
-        return {'data': [i.serialize("view") for i in bid['attachments']]}
+        return {'data': [i.serialize("view") for i in bid['documents']]}
 
     @view(renderer='json')
     def collection_post(self):
@@ -976,13 +991,14 @@ class TenderBidderDocumentResource(object):
             return
         bid = bids[0]
         data = self.request.POST['file']
-        attachment = Attachment()
-        attachment.id = uuid4().hex
-        attachment.description = data.filename
-        uri = self.request.route_url('Tender Bid Documents', tender_id=self.tender_id, bid_id=self.bid_id, id=attachment.id)
-        attachment.uri = uri
-        bid.attachments.append(attachment)
-        filename = "{}_{}_{}".format(attachment.id, len(attachment.revisions), attachment.description)
+        document = Document()
+        document.id = uuid4().hex
+        document.title = data.filename
+        document.format = data.type
+        key = uuid4().hex
+        document.url = self.request.route_url('Tender Bid Documents', tender_id=self.tender_id, bid_id=self.bid_id, id=document.id, _query={'download': key})
+        bid.documents.append(document)
+        filename = "{}_{}".format(document.id, key)
         tender['_attachments'][filename] = {
             "content_type": data.type,
             "data": b64encode(data.file.read())
@@ -994,8 +1010,8 @@ class TenderBidderDocumentResource(object):
         except Exception, e:
             return self.request.errors.add('body', 'data', str(e))
         self.request.response.status = 201
-        self.request.response.headers['Location'] = uri
-        return {'data': attachment.serialize("view")}
+        self.request.response.headers['Location'] = self.request.route_url('Tender Bid Documents', tender_id=self.tender_id, bid_id=self.bid_id, id=document.id)
+        return {'data': document.serialize("view")}
 
     def get(self):
         """Tender Bid Document Read"""
@@ -1010,22 +1026,31 @@ class TenderBidderDocumentResource(object):
             self.request.errors.status = 404
             return
         bid = bids[0]
-        attachments = [i for i in bid.attachments if i.id == self.request.matchdict['id']]
-        if not attachments:
+        documents = [i for i in bid.documents if i.id == self.request.matchdict['id']]
+        if not documents:
             self.request.errors.add('url', 'id', 'Not Found')
             self.request.errors.status = 404
             return
-        attachment = attachments[0]
-        filename = "{}_{}_{}".format(attachment.id, len(attachment.revisions), attachment.description)
-        data = self.db.get_attachment(self.tender_id, filename)
-        if not data:
-            self.request.errors.add('url', 'id', 'Not Found')
-            self.request.errors.status = 404
-            return
-        self.request.response.content_type = tender['_attachments'][filename]["content_type"].encode('utf-8')
-        self.request.response.content_disposition = 'attachment; filename={}'.format(quote(attachment.description.encode('utf-8')))
-        self.request.response.body_file = data
-        return self.request.response
+        document = documents[-1]
+        key = self.request.params.get('download')
+        if key:
+            filename = "{}_{}".format(document.id, key)
+            data = self.db.get_attachment(self.tender_id, filename)
+            if not data:
+                self.request.errors.add('url', 'id', 'Not Found')
+                self.request.errors.status = 404
+                return
+            self.request.response.content_type = tender['_attachments'][filename]["content_type"].encode('utf-8')
+            self.request.response.content_disposition = 'attachment; filename={}'.format(quote(document.title.encode('utf-8')))
+            self.request.response.body_file = data
+            return self.request.response
+        document_data = document.serialize("view")
+        document_data['revisions'] = [
+            i.serialize("revisions")
+            for i in documents
+            if i.url != document.url
+        ]
+        return {'data': document_data}
 
     @view(renderer='json')
     def put(self):
@@ -1046,16 +1071,21 @@ class TenderBidderDocumentResource(object):
             self.request.errors.status = 404
             return
         bid = bids[0]
-        attachments = [i for i in bid.attachments if i.id == self.request.matchdict['id']]
-        if not attachments:
+        documents = [i for i in bid.documents if i.id == self.request.matchdict['id']]
+        if not documents:
             self.request.errors.add('url', 'id', 'Not Found')
             self.request.errors.status = 404
             return
         src = tender.serialize("plain")
-        attachment = attachments[0]
-        attachment.revisions.append(AttachmentRevision({"uri": attachment.uri, "lastModified": attachment.lastModified}))
-        attachment.lastModified = datetime.datetime.now()
-        filename = "{}_{}_{}".format(attachment.id, len(attachment.revisions), attachment.description)
+        document = Document()
+        document.id = self.request.matchdict['id']
+        document.title = data.filename
+        document.format = data.type
+        document.datePublished = documents[0].datePublished
+        key = uuid4().hex
+        document.url = self.request.route_url('Tender Bid Documents', tender_id=self.tender_id, bid_id=self.bid_id, id=document.id, _query={'download': key})
+        bid.documents.append(document)
+        filename = "{}_{}".format(document.id, key)
         tender['_attachments'][filename] = {
             "content_type": data.type,
             "data": b64encode(data.file.read())
@@ -1066,7 +1096,7 @@ class TenderBidderDocumentResource(object):
             tender.store(self.db)
         except Exception, e:
             return self.request.errors.add('body', 'data', str(e))
-        return {'data': attachment.serialize("view")}
+        return {'data': document.serialize("view")}
 
 
 @resource(name='Tender Awards',
