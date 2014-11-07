@@ -29,7 +29,12 @@ Let's provide the data attribute in the body submitted:
 .. include:: tutorial/tender-post-attempt-json-data.http
    :code:
 
-Success! Now we can see that new object was created. Response code is `201` and `Location` response header reports the location of object created. The body of response reveals the information about tender created, its internal `id` (that matches the `Location` segment), its official `tenderID` and `modified` datestamp stating the moment in time when tender was last modified.
+Success! Now we can see that new object was created. Response code is `201`
+and `Location` response header reports the location of object created.  The
+body of response reveals the information about tender created, its internal
+`id` (that matches the `Location` segment), its official `tenderID` and
+`modified` datestamp stating the moment in time when tender was last
+modified.  Note that tender is created with `enquiries` status.
 
 Let's access the URL of object created (the `Location` header of the response):
 
