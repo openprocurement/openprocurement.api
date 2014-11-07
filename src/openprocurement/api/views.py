@@ -1056,6 +1056,66 @@ class TenderAwardResource(object):
         self.db = request.registry.db
         self.tender_id = request.matchdict['tender_id']
 
+    @view(renderer='json')
+    def collection_get(self):
+        """Tender Awards List
+
+        Get Awards List
+        ---------------
+
+        Example request to get awards list:
+
+        .. sourcecode:: http
+
+            GET /tenders/4879d3f8ee2443169b5fbbc9f89fa607/awards HTTP/1.1
+            Host: example.com
+            Accept: application/json
+
+        This is what one should expect in response:
+
+        .. sourcecode:: http
+
+            HTTP/1.1 200 OK
+            Content-Type: application/json
+
+            {
+                "data": [
+                    {
+                        "awardStatus": "active",
+                        "suppliers": [
+                            {
+                                "id": {
+                                    "name": "Державне управління справами",
+                                    "scheme": "https://ns.openprocurement.org/ua/edrpou",
+                                    "uid": "00037256",
+                                    "uri": "http://www.dus.gov.ua/"
+                                },
+                                "address": {
+                                    "countryName": "Україна",
+                                    "postalCode": "01220",
+                                    "region": "м. Київ",
+                                    "locality": "м. Київ",
+                                    "streetAddress": "вул. Банкова, 11, корпус 1"
+                                }
+                            }
+                        ],
+                        "awardValue": {
+                            "amount": 489,
+                            "currency": "UAH",
+                            "valueAddedTaxIncluded": true
+                        }
+                    }
+                ]
+            }
+
+        """
+        tender = TenderDocument.load(self.db, self.tender_id)
+        if not tender:
+            self.request.errors.add('url', 'tender_id', 'Not Found')
+            self.request.errors.status = 404
+            return
+        return {'data': [i.serialize("view") for i in tender.awards]}
+
     @view(content_type="application/json", validators=(validate_award_data,), renderer='json')
     def collection_post(self):
         """Accept or reject bidder application

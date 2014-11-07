@@ -98,6 +98,15 @@ class TenderAwardResourceTest(BaseTenderWebTest):
                 u'url', u'name': u'tender_id'}
         ])
 
+        response = self.app.get('/tenders/some_id/awards', status=404)
+        self.assertEqual(response.status, '404 Not Found')
+        self.assertEqual(response.content_type, 'application/json')
+        self.assertEqual(response.json['status'], 'error')
+        self.assertEqual(response.json['errors'], [
+            {u'description': u'Not Found', u'location':
+                u'url', u'name': u'tender_id'}
+        ])
+
     def test_create_tender_award(self):
         response = self.app.post_json('/tenders/{}/awards'.format(
             self.tender_id), {'data': {'suppliers': [{'id': {'name': 'Name'}}], 'awardStatus': 'pending'}})
@@ -107,6 +116,11 @@ class TenderAwardResourceTest(BaseTenderWebTest):
         self.assertEqual(award['suppliers'][0]['id']['name'], 'Name')
         self.assertTrue('awardID' in award)
         # self.assertTrue(award['id'] in response.headers['Location'])
+
+        response = self.app.get('/tenders/{}/awards'.format(self.tender_id))
+        self.assertEqual(response.status, '200 OK')
+        self.assertEqual(response.content_type, 'application/json')
+        self.assertEqual(response.json['data'][0], award)
 
 
 def suite():
