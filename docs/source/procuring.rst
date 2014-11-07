@@ -25,7 +25,9 @@ The response produced will have URL of the tender created in Location header of 
 
 Uploading documentation
 ~~~~~~~~~~~~~~~~~~~~~~~
-All tender documentation should be uploaded following requests one request per document.
+
+All tender documentation should be uploaded following requests one request
+per document. You can see supported request types in Documents Uploading section.
 
 .. sourcecode:: http
 
@@ -37,6 +39,11 @@ The response produced will have URL of the tender document uploaded in Location 
 
   HTTP/1.1 201 Created
   Location: /tenders/64e93250be76435397e8c992ed4214d1/documents/6a7d13bd8ec449e08882aeb92180d938
+
+Example request:
+
+.. include:: tutorial/upload-award-notice.http
+   :code:
 
 Changing the Tender
 -------------------

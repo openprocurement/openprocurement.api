@@ -1,0 +1,24 @@
+$ http --form POST http://api-sandbox.openprocurement.org/api/0/tenders/f6882fa63d5141bcabec54a4766eec61/documents file@./Notice.pdf
+POST /api/0/tenders/f6882fa63d5141bcabec54a4766eec61/documents HTTP/1.1
+Content-Type: multipart/form-data; boundary=1edaccf0784c44b0b2dec98f0be84283
+
+
+
++-----------------------------------------+
+| NOTE: binary data not shown in terminal |
++-----------------------------------------+
+
+HTTP/1.1 201 Created
+Content-Type: application/json; charset=UTF-8
+Location: http://api-sandbox.openprocurement.org/api/0/tenders/f6882fa63d5141bcabec54a4766eec61/documents/00fda3ddcb9b49a4b347f26e056af166
+
+{
+    "data": {
+        "datePublished": "2014-11-07T18:10:29.034593", 
+        "format": "text/plain", 
+        "id": "00fda3ddcb9b49a4b347f26e056af166", 
+        "modified": "2014-11-07T18:10:29.034628", 
+        "title": "Notice.pdf", 
+        "url": "http://api-sandbox.openprocurement.org/api/0/tenders/f6882fa63d5141bcabec54a4766eec61/documents/00fda3ddcb9b49a4b347f26e056af166?download=923b373788e34eb797f7fd156879a874"
+    }
+}
