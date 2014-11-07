@@ -20,6 +20,7 @@ Contents:
    errors
    options
    dates
+   upload
    tutorial
    tenders
    procuring

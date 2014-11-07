@@ -29,7 +29,7 @@ Uploading documentation
 ~~~~~~~~~~~~~~~~~~~~~~~
 
 All tender documentation should be uploaded following requests one request
-per document. You can see supported request types in Documents Uploading section.
+per document. You can see supported request types in :ref:`upload` section.
 
 .. sourcecode:: http
 
@@ -69,7 +69,7 @@ Changing existing documents
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Procuring Entity can upload new versions of the tender documentation. You
-can see supported request types in Documents Uploading section.
+can see supported request types in :ref:`upload` section.
 
 .. sourcecode:: http
 
