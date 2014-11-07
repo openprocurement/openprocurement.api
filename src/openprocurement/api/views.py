@@ -210,7 +210,7 @@ class TenderResource(object):
                     },
                     "minimalStep": {
                         "amount": 35,
-                        "currency", "UAH"
+                        "currency": "UAH"
                     }
                 }
             }
@@ -282,7 +282,7 @@ class TenderResource(object):
                     },
                     "minimalStep": {
                         "amount": 35,
-                        "currency", "UAH"
+                        "currency": "UAH"
                     }
                 }
             }
@@ -383,7 +383,7 @@ class TenderResource(object):
                     },
                     "minimalStep": {
                         "amount": 35,
-                        "currency", "UAH"
+                        "currency": "UAH"
                     }
                 }
             }
@@ -793,12 +793,10 @@ class TenderBidderResource(object):
 
             {
                 "data": {
-                    {
-                        "totalValue": {
-                            "amount": 600,
-                            "currency": "UAH",
-                            "valueAddedTaxIncluded": true
-                        }
+                    "totalValue": {
+                        "amount": 600,
+                        "currency": "UAH",
+                        "valueAddedTaxIncluded": true
                     }
                 }
             }
@@ -847,12 +845,10 @@ class TenderBidderResource(object):
 
             {
                 "data": {
-                    {
-                        "totalValue": {
-                            "amount": 600,
-                            "currency": "UAH",
-                            "valueAddedTaxIncluded": true
-                        }
+                    "totalValue": {
+                        "amount": 600,
+                        "currency": "UAH",
+                        "valueAddedTaxIncluded": true
                     }
                 }
             }
@@ -906,12 +902,10 @@ class TenderBidderResource(object):
 
             {
                 "data": {
-                    {
-                        "totalValue": {
-                            "amount": 489,
-                            "currency": "UAH",
-                            "valueAddedTaxIncluded": true
-                        }
+                    "totalValue": {
+                        "amount": 489,
+                        "currency": "UAH",
+                        "valueAddedTaxIncluded": true
                     }
                 }
             }
