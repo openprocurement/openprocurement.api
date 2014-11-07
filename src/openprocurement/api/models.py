@@ -4,7 +4,7 @@ from uuid import uuid4
 from couchdb_schematics.document import SchematicsDocument
 from schematics.models import Model
 from schematics.transforms import whitelist, blacklist
-from schematics.types import StringType, FloatType, IntType, URLType, DateTimeType, BooleanType, BaseType
+from schematics.types import StringType, FloatType, IntType, URLType, DateTimeType, BooleanType, BaseType, EmailType
 from schematics.types.compound import ModelType, ListType, DictType
 from schematics.types.serializable import serializable
 
@@ -102,6 +102,14 @@ class address(Model):
     countryName = StringType()
 
 
+class ContactPoint(Model):
+    name = StringType(required=True)
+    email = EmailType(required=True)
+    telephone = StringType()
+    faxNumber = StringType()
+    url = URLType()
+
+
 class Organization(Model):
     """An organization."""
     class Options:
@@ -113,6 +121,7 @@ class Organization(Model):
 
     id = ModelType(identifier, required=True)
     address = ModelType(address)
+    contactPoint = ModelType(ContactPoint)
 
 
 class Bid(Model):
@@ -148,7 +157,7 @@ class Award(Model):
     notice = ModelType(Notice)
     awardDate = DateTimeType(default=datetime.datetime.now)
     awardValue = ModelType(Value)
-    awardStatus = StringType(choices=['pending', 'active', 'cancelled', 'unsuccessful'])
+    awardStatus = StringType(required=True, choices=['pending', 'unsuccessful'])  # 'pending', 'active', 'cancelled', 'unsuccessful'
     suppliers = ListType(ModelType(Organization), default=list())
     itemsAwarded = ListType(ModelType(Item))
 
@@ -171,8 +180,8 @@ class Tender(Model):
     submissionMethod = StringType(choices=['Electronic Auction', 'Electronic Submission', 'Written', 'In Person'])  # Specify the method by which bids must be submitted, in person, written, or electronic auction
     submissionDetails = StringType()  # Any detailed or further information on the submission method.
     tenderPeriod = ModelType(Period)  # The period when the tender is open for submissions. The end date is the closing date for tender submissions.
-    clarificationPeriod = ModelType(Period)  # The period during which clarification requests may be made and will be answered.
-    clarifications = BooleanType()  # A Yes/No field as to whether clarifications were issued. Would expect clarifications to appear as amendments.
+    enquiryPeriod = ModelType(Period)  # The period during which enquiries may be made and will be answered.
+    hasEnquiries = BooleanType()  # A Yes/No field as to whether enquiries were part of tender process.
     awardPeriod = ModelType(Period)  # The date or period on which an award is anticipated to be made.
     numberOfBidders = IntType()  # The number of unique bidders who participated in the tender
     numberOfBids = IntType()  # The number of bids or submissions to the tender. In the case of an auction, the number of bids may differ from the numberOfBidders.
@@ -183,7 +192,7 @@ class Tender(Model):
     revisions = ListType(ModelType(revision), default=list())
     deliveryDate = ModelType(Period)
     minimalStep = ModelType(Value)
-    status = StringType(choices=['clarifications', 'tendering', 'auction', 'qualification', 'awarded', 'contract-signed', 'paused'], default='clarifications')
+    status = StringType(choices=['enquiries', 'tendering', 'auction', 'qualification', 'awarded', 'contract-signed', 'paused'], default='enquiries')
 
 
 class OrganizationDocument(SchematicsDocument, Organization):

@@ -49,7 +49,7 @@ test_tender_data = {
             "quantity": 5
         }
     ],
-    "clarificationPeriod": {
+    "enquiryPeriod": {
         "endDate": "2014-10-31T00:00:00"
     },
     "tenderPeriod": {

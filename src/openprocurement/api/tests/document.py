@@ -116,6 +116,7 @@ class TenderDocumentResourceTest(BaseTenderWebTest):
         self.assertEqual(response.status, '201 Created')
         self.assertEqual(response.content_type, 'application/json')
         doc_id = response.json["data"]['id']
+        modified = response.json["data"]['lastModified']
         self.assertTrue(doc_id in response.headers['Location'])
 
         response = self.app.put('/tenders/{}/documents/{}'.format(
@@ -130,6 +131,11 @@ class TenderDocumentResourceTest(BaseTenderWebTest):
         self.assertEqual(response.content_type, 'application/msword')
         self.assertEqual(response.content_length, 8)
         self.assertEqual(response.body, 'content2')
+
+        response = self.app.get('/tenders/{}/documents'.format(self.tender_id))
+        self.assertEqual(response.status, '200 OK')
+        self.assertEqual(response.content_type, 'application/json')
+        self.assertTrue(modified < response.json["data"][0]['lastModified'])
 
 
 def suite():

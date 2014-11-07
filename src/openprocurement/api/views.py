@@ -18,7 +18,7 @@ spore = Service(name='spore', path='/spore', renderer='json')
 auction = Service(name='Tender Auction', path='/tenders/{tender_id}/auction', renderer='json')
 
 
-def validate_tender_data(request):
+def validate_data(request, model):
     try:
         json = request.json_body
     except ValueError, e:
@@ -31,51 +31,23 @@ def validate_tender_data(request):
         return
     data = json['data']
     try:
-        TenderDocument(data).validate()
+        model(data).validate()
     except (ModelValidationError, ModelConversionError), e:
         for i in e.message:
             request.errors.add('body', i, e.message[i])
         request.errors.status = 422
+
+
+def validate_tender_data(request):
+    return validate_data(request, TenderDocument)
 
 
 def validate_bid_data(request):
-    try:
-        json = request.json_body
-    except ValueError, e:
-        request.errors.add('body', 'data', e.message)
-        request.errors.status = 422
-        return
-    if not isinstance(json, dict) or 'data' not in json or not isinstance(json.get('data'), dict):
-        request.errors.add('body', 'data', "Data not available")
-        request.errors.status = 422
-        return
-    data = json['data']
-    try:
-        Bid(data).validate()
-    except (ModelValidationError, ModelConversionError), e:
-        for i in e.message:
-            request.errors.add('body', i, e.message[i])
-        request.errors.status = 422
+    return validate_data(request, Bid)
 
 
 def validate_award_data(request):
-    try:
-        json = request.json_body
-    except ValueError, e:
-        request.errors.add('body', 'data', e.message)
-        request.errors.status = 422
-        return
-    if not isinstance(json, dict) or 'data' not in json or not isinstance(json.get('data'), dict):
-        request.errors.add('body', 'data', "Data not available")
-        request.errors.status = 422
-        return
-    data = json['data']
-    try:
-        Award(data).validate()
-    except (ModelValidationError, ModelConversionError), e:
-        for i in e.message:
-            request.errors.add('body', i, e.message[i])
-        request.errors.status = 422
+    return validate_data(request, Award)
 
 
 def generate_tender_id(tid):
@@ -223,7 +195,7 @@ class TenderResource(object):
                             "quantity": 5
                         }
                     ],
-                    "clarificationPeriod": {
+                    "enquiryPeriod": {
                         "endDate": "2014-10-31T00:00:00"
                     },
                     "tenderPeriod": {
@@ -295,7 +267,7 @@ class TenderResource(object):
                             "quantity": 5
                         }
                     ],
-                    "clarificationPeriod": {
+                    "enquiryPeriod": {
                         "endDate": "2014-10-31T00:00:00"
                     },
                     "tenderPeriod": {
@@ -396,7 +368,7 @@ class TenderResource(object):
                             "quantity": 5
                         }
                     ],
-                    "clarificationPeriod": {
+                    "enquiryPeriod": {
                         "endDate": "2014-10-31T00:00:00"
                     },
                     "tenderPeriod": {
@@ -615,6 +587,7 @@ class TenderDocumentResource(object):
         src = tender.serialize("plain")
         attachment = attachments[0]
         attachment.revisions.append(AttachmentRevision({"uri": attachment.uri, "lastModified": attachment.lastModified}))
+        attachment.lastModified = datetime.datetime.now()
         filename = "{}_{}_{}".format(attachment.id, len(attachment.revisions), attachment.description)
         tender['_attachments'][filename] = {
             "content_type": data.type,
@@ -1081,6 +1054,7 @@ class TenderBidderDocumentResource(object):
         src = tender.serialize("plain")
         attachment = attachments[0]
         attachment.revisions.append(AttachmentRevision({"uri": attachment.uri, "lastModified": attachment.lastModified}))
+        attachment.lastModified = datetime.datetime.now()
         filename = "{}_{}_{}".format(attachment.id, len(attachment.revisions), attachment.description)
         tender['_attachments'][filename] = {
             "content_type": data.type,
@@ -1105,6 +1079,66 @@ class TenderAwardResource(object):
         self.request = request
         self.db = request.registry.db
         self.tender_id = request.matchdict['tender_id']
+
+    @view(renderer='json')
+    def collection_get(self):
+        """Tender Awards List
+
+        Get Awards List
+        ---------------
+
+        Example request to get awards list:
+
+        .. sourcecode:: http
+
+            GET /tenders/4879d3f8ee2443169b5fbbc9f89fa607/awards HTTP/1.1
+            Host: example.com
+            Accept: application/json
+
+        This is what one should expect in response:
+
+        .. sourcecode:: http
+
+            HTTP/1.1 200 OK
+            Content-Type: application/json
+
+            {
+                "data": [
+                    {
+                        "awardStatus": "active",
+                        "suppliers": [
+                            {
+                                "id": {
+                                    "name": "Державне управління справами",
+                                    "scheme": "https://ns.openprocurement.org/ua/edrpou",
+                                    "uid": "00037256",
+                                    "uri": "http://www.dus.gov.ua/"
+                                },
+                                "address": {
+                                    "countryName": "Україна",
+                                    "postalCode": "01220",
+                                    "region": "м. Київ",
+                                    "locality": "м. Київ",
+                                    "streetAddress": "вул. Банкова, 11, корпус 1"
+                                }
+                            }
+                        ],
+                        "awardValue": {
+                            "amount": 489,
+                            "currency": "UAH",
+                            "valueAddedTaxIncluded": true
+                        }
+                    }
+                ]
+            }
+
+        """
+        tender = TenderDocument.load(self.db, self.tender_id)
+        if not tender:
+            self.request.errors.add('url', 'tender_id', 'Not Found')
+            self.request.errors.status = 404
+            return
+        return {'data': [i.serialize("view") for i in tender.awards]}
 
     @view(content_type="application/json", validators=(validate_award_data,), renderer='json')
     def collection_post(self):
