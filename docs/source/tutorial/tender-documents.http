@@ -15,14 +15,6 @@ Content-Type: application/json; charset=UTF-8
             "modified": "2014-11-08T00:09:32.514648", 
             "title": "Notice.pdf", 
             "url": "http://api-sandbox.openprocurement.org/api/0/tenders/b65397298b2e4d9b987adf576d13b9f5/documents/bab5d3c784314800aee9aa7c0b01730c?download=e0061dc88a16413c805aa14f84554dfc"
-        }, 
-        {
-            "datePublished": "2014-11-08T00:09:33.912790", 
-            "format": "text/plain", 
-            "id": "9f0828ca0769401bb6965fdf8f363a12", 
-            "modified": "2014-11-08T00:09:33.912822", 
-            "title": "AwardCriteria.pdf", 
-            "url": "http://api-sandbox.openprocurement.org/api/0/tenders/b65397298b2e4d9b987adf576d13b9f5/documents/9f0828ca0769401bb6965fdf8f363a12?download=ded38f8ffd7e4fd0bfbbe33dcaff0e1c"
         }
     ]
 }

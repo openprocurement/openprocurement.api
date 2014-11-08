@@ -1,17 +1,18 @@
-curl -v -X POST http://api-sandbox.openprocurement.org/api/0/tenders
-> POST /api/0/tenders HTTP/1.1
-> Host: api-sandbox.openprocurement.org
-> 
-< HTTP/1.1 415 Unsupported Media Type
-< Content-Type: application/json; charset=UTF-8
-< 
+$ http POST http://api-sandbox.openprocurement.org/api/0/tenders
+POST /api/0/tenders HTTP/1.1
+
+
+
+HTTP/1.1 415 Unsupported Media Type
+Content-Type: application/json; charset=UTF-8
+
 {
-  "status": "error",
-  "errors": [
-    {
-      "location": "header",
-      "name": "Content-Type",
-      "description": "Content-Type header should be one of ['application\/json']"
-    }
-  ]
+    "errors": [
+        {
+            "description": "Content-Type header should be one of ['application/json']", 
+            "location": "header", 
+            "name": "Content-Type"
+        }
+    ], 
+    "status": "error"
 }

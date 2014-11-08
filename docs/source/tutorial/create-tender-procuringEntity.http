@@ -1,51 +1,51 @@
-curl -v -H "Content-Type: application/json" --data @tender.json -X POST http://api-sandbox.openprocurement.org/api/0/tenders
-> POST /api/0/tenders HTTP/1.1
-> Host: api-sandbox.openprocurement.org
-> Content-Type: application/json
-> 
-> {
->     "data":{
->         "procuringEntity": {
->             "id": {
->                 "name": "Заклад \"Загальноосвітня школа І-ІІІ ступенів № 10 Вінницької міської ради\"",
->                 "scheme": "https://ns.openprocurement.org/ua/edrpou",     
->                 "uid": "21725150",
->                 "uri": "http://sch10.edu.vn.ua/"
->             },
->             "address": {
->                 "countryName": "Україна",
->                 "postalCode": "21027",
->                 "region": "м. Вінниця",
->                 "locality": "м. Вінниця",
->                 "streetAddress": "вул. Стахурського. 22"
->             }
->         }
->     }
-> }
+$ http -j POST http://api-sandbox.openprocurement.org/api/0/tenders data:=@./school-tender.json
+POST /api/0/tenders HTTP/1.1
+Content-Type: application/json; charset=utf-8
 
-< HTTP/1.1 201 Created
-< Content-Type: application/json; charset=UTF-8
-< Location: http://api-sandbox.openprocurement.org/api/0/tenders/8c2ba371505348ed8f5f0e5119a80451
-< 
 {
-  "data": {
-    "id": "8c2ba371505348ed8f5f0e5119a80451",
-    "tenderID": "UA-8c2ba371505348ed8f5f0e5119a80451",
-    "modified": "2014-10-25T00:37:13.847358",
-    "procuringEntity": {
-      "id": {
-        "scheme": "https:\/\/ns.openprocurement.org\/ua\/edrpou",
-        "name": "\u0417\u0430\u043a\u043b\u0430\u0434 \"\u0417\u0430\u0433\u0430\u043b\u044c\u043d\u043e\u043e\u0441\u0432\u0456\u0442\u043d\u044f \u0448\u043a\u043e\u043b\u0430 \u0406-\u0406\u0406\u0406 \u0441\u0442\u0443\u043f\u0435\u043d\u0456\u0432 \u2116 10 \u0412\u0456\u043d\u043d\u0438\u0446\u044c\u043a\u043e\u0457 \u043c\u0456\u0441\u044c\u043a\u043e\u0457 \u0440\u0430\u0434\u0438\"",
-        "uri": "http:\/\/sch10.edu.vn.ua\/",
-        "uid": "21725150"
-      },
-      "address": {
-        "postalCode": "21027",
-        "countryName": "\u0423\u043a\u0440\u0430\u0457\u043d\u0430",
-        "streetAddress": "\u0432\u0443\u043b. \u0421\u0442\u0430\u0445\u0443\u0440\u0441\u044c\u043a\u043e\u0433\u043e. 22",
-        "region": "\u043c. \u0412\u0456\u043d\u043d\u0438\u0446\u044f",
-        "locality": "\u043c. \u0412\u0456\u043d\u043d\u0438\u0446\u044f"
-      }
+    "data": {
+        "procuringEntity": {
+            "address": {
+                "countryName": "Україна", 
+                "locality": "м. Вінниця", 
+                "postalCode": "21027", 
+                "region": "м. Вінниця", 
+                "streetAddress": "вул. Стахурського. 22"
+            }, 
+            "id": {
+                "name": "Заклад \"Загальноосвітня школа І-ІІІ ступенів № 10 Вінницької міської ради\"", 
+                "scheme": "https://ns.openprocurement.org/ua/edrpou", 
+                "uid": "21725150", 
+                "uri": "http://sch10.edu.vn.ua/"
+            }
+        }
     }
-  }
+}
+
+HTTP/1.1 201 Created
+Content-Type: application/json; charset=UTF-8
+Location: http://api-sandbox.openprocurement.org/api/0/tenders/b65397298b2e4d9b987adf576d13b9f5
+
+{
+    "data": {
+        "id": "b65397298b2e4d9b987adf576d13b9f5", 
+        "modified": "2014-11-08T00:09:30.047639", 
+        "procuringEntity": {
+            "address": {
+                "countryName": "Україна", 
+                "locality": "м. Вінниця", 
+                "postalCode": "21027", 
+                "region": "м. Вінниця", 
+                "streetAddress": "вул. Стахурського. 22"
+            }, 
+            "id": {
+                "name": "Заклад \"Загальноосвітня школа І-ІІІ ступенів № 10 Вінницької міської ради\"", 
+                "scheme": "https://ns.openprocurement.org/ua/edrpou", 
+                "uid": "21725150", 
+                "uri": "http://sch10.edu.vn.ua/"
+            }
+        }, 
+        "status": "enquiries", 
+        "tenderID": "UA-b65397298b2e4d9b987adf576d13b9f5"
+    }
 }

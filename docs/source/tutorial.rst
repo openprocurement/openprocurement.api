@@ -88,3 +88,68 @@ Checking the listing again reflects the new modification date:
 
 .. include:: tutorial/tender-listing-after-patch.http
    :code:
+
+Uploading documentation
+-----------------------
+
+Procuring entity can upload PDF files into tender created. Uploading should
+follow the :ref:`upload` rules.
+
+.. include:: tutorial/upload-tender-notice.http
+   :code:
+
+`201 Created` response code and `Location` header confirm document creation. 
+We can additionally query the `documents` collection API endpoint to confirm the
+action:
+
+.. include:: tutorial/tender-documents.http
+   :code:
+
+The single array element describes the document uploaded. We can upload more documents:
+
+.. include:: tutorial/upload-award-criteria.http
+   :code:
+
+And again we can confirm that there are two documents uploaded.
+
+.. include:: tutorial/tender-documents-2.http
+   :code:
+
+In case we made an error, we can reupload the document over the older version:
+
+.. include:: tutorial/update-award-criteria.http
+   :code:
+
+And we can see that it is overriding the original version:
+
+.. include:: tutorial/tender-documents-3.http
+   :code:
+
+
+Registering bid
+---------------
+
+Bidder can register a bid:
+
+.. include:: tutorial/register-bidder.http
+   :code:
+
+And upload proposal document:
+
+.. include:: tutorial/upload-bid-proposal.http
+   :code:
+
+It is possible to check documents uploaded:
+
+.. include:: tutorial/bidder-documents.http
+   :code:
+
+
+Confirming qualification
+------------------------
+
+Qualification comission registers its decision via following call:
+
+.. include:: tutorial/confirm-qualification.http
+   :code:
+

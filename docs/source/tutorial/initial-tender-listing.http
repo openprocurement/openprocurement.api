@@ -1,10 +1,16 @@
-curl -v http://api-sandbox.openprocurement.org/api/0/tenders
-> GET /api/0/tenders HTTP/1.1
-> Host: api-sandbox.openprocurement.org
->
-< HTTP/1.1 200 OK
-< Content-Type: application/json; charset=UTF-8
-< 
+$ http http://api-sandbox.openprocurement.org/api/0/tenders
+GET /api/0/tenders HTTP/1.1
+
+
+
+HTTP/1.1 200 OK
+Content-Type: application/json; charset=UTF-8
+
 {
-  "data": []
+    "data": [], 
+    "next_page": {
+        "offset": "2014-11-08T00:09:27.097664", 
+        "path": "/api/0/tenders?offset=2014-11-08T00%3A09%3A27.097664", 
+        "uri": "http://api-sandbox.openprocurement.org/api/0/tenders?offset=2014-11-08T00%3A09%3A27.097664"
+    }
 }
