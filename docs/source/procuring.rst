@@ -44,7 +44,7 @@ The response produced will have URL of the tender document uploaded in Location 
 
 Example request:
 
-.. include:: tutorial/upload-award-notice.http
+.. include:: tutorial/upload-tender-notice.http
    :code:
 
 Changing the Tender
