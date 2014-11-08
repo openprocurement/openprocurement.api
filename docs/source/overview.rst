@@ -67,7 +67,7 @@ Change log
 ----------
 0.2
 ~~~
-Released: Unreleased
+Released: 2014-11-07
 
  - Tender Listing Batching (optimized for sync operations)
  - Documents retrieval
