@@ -505,7 +505,15 @@ class TenderDocumentResource(object):
             self.request.errors.add('url', 'tender_id', 'Not Found')
             self.request.errors.status = 404
             return
-        return {'data': [i.serialize("view") for i in tender['documents']]}
+        view_all = self.request.params.get('all', '')
+        if self.request.params.get('all', ''):
+            collection_data = [i.serialize("view") for i in tender['documents']]
+        else:
+            collection_data = sorted(dict([
+                (i.id, i.serialize("view"))
+                for i in tender['documents']
+            ]).values(), key=lambda i: i['modified'])
+        return {'data': collection_data}
 
     @view(renderer='json')
     def collection_post(self):
@@ -561,7 +569,7 @@ class TenderDocumentResource(object):
             filename = "{}_{}".format(document.id, key)
             data = self.db.get_attachment(self.tender_id, filename)
             if not data:
-                self.request.errors.add('url', 'id', 'Not Found')
+                self.request.errors.add('url', 'download', 'Not Found')
                 self.request.errors.status = 404
                 return
             self.request.response.content_type = tender['_attachments'][filename]["content_type"].encode('utf-8')
@@ -569,8 +577,8 @@ class TenderDocumentResource(object):
             self.request.response.body_file = data
             return self.request.response
         document_data = document.serialize("view")
-        document_data['revisions'] = [
-            i.serialize("revisions")
+        document_data['previousVersions'] = [
+            i.serialize("view")
             for i in documents
             if i.url != document.url
         ]
@@ -962,7 +970,14 @@ class TenderBidderDocumentResource(object):
             self.request.errors.status = 404
             return
         bid = bids[0]
-        return {'data': [i.serialize("view") for i in bid['documents']]}
+        if self.request.params.get('all', ''):
+            collection_data = [i.serialize("view") for i in bid['documents']]
+        else:
+            collection_data = sorted(dict([
+                (i.id, i.serialize("view"))
+                for i in bid['documents']
+            ]).values(), key=lambda i: i['modified'])
+        return {'data': collection_data}
 
     @view(renderer='json')
     def collection_post(self):
@@ -1031,7 +1046,7 @@ class TenderBidderDocumentResource(object):
             filename = "{}_{}".format(document.id, key)
             data = self.db.get_attachment(self.tender_id, filename)
             if not data:
-                self.request.errors.add('url', 'id', 'Not Found')
+                self.request.errors.add('url', 'download', 'Not Found')
                 self.request.errors.status = 404
                 return
             self.request.response.content_type = tender['_attachments'][filename]["content_type"].encode('utf-8')
@@ -1039,8 +1054,8 @@ class TenderBidderDocumentResource(object):
             self.request.response.body_file = data
             return self.request.response
         document_data = document.serialize("view")
-        document_data['revisions'] = [
-            i.serialize("revisions")
+        document_data['previousVersions'] = [
+            i.serialize("view")
             for i in documents
             if i.url != document.url
         ]

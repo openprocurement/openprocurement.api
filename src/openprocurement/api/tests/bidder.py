@@ -370,6 +370,21 @@ class TenderBidderDocumentResourceTest(BaseTenderWebTest):
         self.assertEqual(doc_id, response.json["data"][0]["id"])
         self.assertEqual('name.doc', response.json["data"][0]["title"])
 
+        response = self.app.get('/tenders/{}/bidders/{}/documents?all=true'.format(self.tender_id, self.bid_id))
+        self.assertEqual(response.status, '200 OK')
+        self.assertEqual(response.content_type, 'application/json')
+        self.assertEqual(doc_id, response.json["data"][0]["id"])
+        self.assertEqual('name.doc', response.json["data"][0]["title"])
+
+        response = self.app.get('/tenders/{}/bidders/{}/documents/{}?download=some_id'.format(
+            self.tender_id, self.bid_id, doc_id), status=404)
+        self.assertEqual(response.status, '404 Not Found')
+        self.assertEqual(response.content_type, 'application/json')
+        self.assertEqual(response.json['status'], 'error')
+        self.assertEqual(response.json['errors'], [
+            {u'description': u'Not Found', u'location': u'url', u'name': u'download'}
+        ])
+
         response = self.app.get('/tenders/{}/bidders/{}/documents/{}?{}'.format(
             self.tender_id, self.bid_id, doc_id, key))
         self.assertEqual(response.status, '200 OK')
