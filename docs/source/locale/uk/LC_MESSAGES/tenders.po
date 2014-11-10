@@ -4,7 +4,7 @@ msgstr ""
 "Project-Id-Version: openprocurement.api 0.1\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2014-10-29 12:11+0200\n"
-"PO-Revision-Date: 2014-11-07 15:47+0300\n"
+"PO-Revision-Date: 2014-11-10 12:18+0300\n"
 "Last-Translator: \n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
@@ -20,19 +20,19 @@ msgstr "Отримання інформації про закупівлі"
 msgid "Getting list of all tenders"
 msgstr "Отримати список всіх закупівель"
 
-#: ../../source/tenders.rst:18
+#: ../../source/tenders.rst:62
 msgid "Reading the individual tender information"
 msgstr "Прочитати інформацію про окремі закупівлі"
 
-#: ../../source/tenders.rst:28
+#: ../../source/tenders.rst:72
 msgid "Reading the tender documents list"
 msgstr "Прочитати список документів закупівлі"
 
-#: ../../source/tenders.rst:38
+#: ../../source/tenders.rst:88
 msgid "Reading the tender document"
 msgstr "Прочитати документ закупівлі"
 
-#: ../../source/tenders.rst:40
+#: ../../source/tenders.rst:90
 msgid ""
 "The document can be retrieved by requesting the url returned in structures "
 "from document list request in `data[*].url`.  It is safe to provide the "
@@ -41,3 +41,115 @@ msgstr ""
 "Документ можна отримати за допомогою запиту url-адреси з відповіді на запит "
 "списку документів у `data[*].url`. URL для скачування безпечно надавати "
 "кінцевому користувачу."
+
+#: ../../source/tenders.rst:18
+msgid "Sorting"
+msgstr "Сортування"
+
+#: ../../source/tenders.rst:19
+msgid "Tenders retuned are sorted by modification time."
+msgstr "Повернені закупівлі просортовані за датою модифікації. "
+
+#: ../../source/tenders.rst:22
+msgid "Limiting number of Tenders returned"
+msgstr "Обмежити кількість Закупівель, що повертаються"
+
+#: ../../source/tenders.rst:29
+msgid "Batching"
+msgstr "Пакети"
+
+#: ../../source/tenders.rst:31
+msgid "The response contains `next_page` element with following properties:"
+msgstr "Відповідь містить елемент `next_page` з такими властивостями:"
+
+#: ../../source/tenders.rst:34
+msgid ""
+"This is the parameter you have to add to the original request you made to "
+"get next page."
+msgstr ""
+"Це параметр, який ви повинні додати до вихідного запиту, щоб отримати "
+"наступну сторінку. "
+
+#: ../../source/tenders.rst:42
+msgid "The full version of URL for next page."
+msgstr "Повна версія URL-адреси для наступної сторінки. "
+
+#: ../../source/tenders.rst:44
+msgid ""
+"If next page request returns no data (i.e. empty array) then there is little "
+"sense in fetching further pages."
+msgstr ""
+"Якщо запит наступної сторінки повертається без даних (наприклад, пустий "
+"масив), тоді немає сенсу викликати сторінки далі."
+
+#: ../../source/tenders.rst:48
+msgid "Synchronizing"
+msgstr "Синхронізація"
+
+#: ../../source/tenders.rst:59
+msgid "The safe frequency of synchronization requests is once per 5 minutes."
+msgstr "Безпечна частота запитів на синхронізацію це раз в 5 хвилин."
+
+#: ../../source/tenders.rst:82
+msgid "Example request:"
+msgstr "Приклад запиту:"
+
+#: ../../source/tenders.rst:24
+msgid ""
+"You can control the number of `data` entries in the tenders feed (batch "
+"size) with `limit` parameter. If not specified, data is being returned in "
+"batches of 100 elements."
+msgstr ""
+"Ви можете контролювати кількість `data` записів потоку даних закупівлі "
+"(розмір пакета) за допомогою параметра `limit`. Якщо він не вказаний, то "
+"дані будуть повернені пакетами по 100 елементів. "
+
+#: ../../source/tenders.rst:38
+msgid ""
+"This is path section of URL with original parameters and `offset` parameter "
+"added/replaced above."
+msgstr ""
+"Це частина шляху URL-адреси з вихідними параметрами та доданим/заміненим "
+"`offset` параметром вище."
+
+#: ../../source/tenders.rst:50
+msgid ""
+"It is often necessary to be able to syncronize central database changes to "
+"other database (we'll call it \"local\").  The default sorting \"by "
+"modification date\" altogether by Batching mechanism allows one to implement "
+"synchronization effectively.  The synchronization process can go page by "
+"page until there is no new data returned.  Then the synchronizer have to "
+"pause for a while to let central database register some changes and attempt "
+"fetching subsequent page.  The `next_page` guarantees to have all changes "
+"from the last request to be included in new batch."
+msgstr ""
+"Часто необхідно мати можливість синхронізувати зміни центральної бази даних "
+"з іншою базою даних (ми будемо називати її \"локальною\"). Стандартне "
+"сортування \"за датою модифікації\" разом із механізмом пакетування дозволяє "
+"ефективно здійснювати синхронізацію. Процес синхронізації може виконуватись "
+"посторінково, поки не буде жодних нових даних, що повертаються. Тоді "
+"синхронізатор призупиниться на деякий час, щоб дозволити центральній базі "
+"даних зареєструвати деякі зміни і спробувати завантажити наступну сторінку. "
+"`next_page` гарантує, що усі зміни з останнього запиту будуть включені у "
+"новий пакет."
+
+#~ msgid ""
+#~ "It is often necessary to be able to syncronize central database changes "
+#~ "to other database (we'll call it \"local\").  The default sorting \"by "
+#~ "modification date\" altogether by Batching mehanism allows one to "
+#~ "implement synchronization effectively.  The synchronization process can "
+#~ "go page by page until there is no new data returned.  Then the "
+#~ "synchronizer have to pause for a while to let central database register "
+#~ "some changes and attempt fetching subsequent page.  The `next_page` "
+#~ "guarantees to have all changes from the last request to be included in "
+#~ "new batch."
+#~ msgstr ""
+#~ "Часто буває необхідно мати можливість синхронізувати зміни центральної "
+#~ "бази даних з іншою базою даних (ми будемо називати її \"локальною\"). "
+#~ "Сортування \"по даті модифікації\" зовсім по дозувальне mehanism "
+#~ "замовчуванням дозволяє одним ефективно здійснювати синхронізацію. Процес "
+#~ "синхронізації може йти посторінково, поки немає ніяких нових даних, що "
+#~ "повертаються. Тоді синхронизатор повинен призупинити на час, щоб "
+#~ "центральна база даних зареєструйтесь деякі зміни, і спробуйте вибірки "
+#~ "наступної сторінки. В `next_page` гарантії, щоб усі зміни в порівнянні з "
+#~ "минулою проханням бути включені в новий пакет."

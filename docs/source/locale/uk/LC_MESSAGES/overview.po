@@ -4,7 +4,7 @@ msgstr ""
 "Project-Id-Version: openprocurement.api 0.1\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2014-10-21 10:42+0300\n"
-"PO-Revision-Date: 2014-11-07 17:05+0300\n"
+"PO-Revision-Date: 2014-11-10 10:57+0300\n"
 "Last-Translator: \n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
@@ -189,10 +189,6 @@ msgstr "Визначення переможця/дискваліфікація �
 msgid "0.2"
 msgstr "0.2"
 
-#: ../../source/overview.rst:70
-msgid "Released: Unreleased"
-msgstr "Випущено: Не випущено"
-
 #: ../../source/overview.rst:72
 msgid "Tender Listing Batching (optimized for sync operations)"
 msgstr "Сортування списку закупівель (оптимізоване для синхронних операцій)"
@@ -212,6 +208,13 @@ msgstr "Опції: Pretty-print, JSONP"
 #: ../../source/overview.rst:76
 msgid "Introduction of state machine and time-based state switching"
 msgstr "Впровадження станів та перемикання станів з урахуванням часу"
+
+#: ../../source/overview.rst:70
+msgid "Released: 2014-11-07"
+msgstr "Випущено: 2014-11-07"
+
+#~ msgid "Released: Unreleased"
+#~ msgstr "Випущено: Не випущено"
 
 #~ msgid "Released: Not yet."
 #~ msgstr "Випущено: Ще ні"

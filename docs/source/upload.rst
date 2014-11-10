@@ -3,7 +3,7 @@
 Documents Uploading
 ===================
 
-All of the document uploading API endpoints follows the same set of rules.
+All of the document uploading API endpoints follow the same set of rules.
 
 Content-Type: multipart/form-data
 ---------------------------------

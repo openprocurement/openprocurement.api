@@ -22,7 +22,7 @@ Limiting number of Tenders returned
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 You can control the number of `data` entries in the tenders feed (batch
-size) with `limit` parameter.  if not specified data is being returned in
+size) with `limit` parameter. If not specified, data is being returned in
 batches of 100 elements.
 
 Batching
@@ -35,10 +35,10 @@ The response contains `next_page` element with following properties:
     to get next page.
 
 :path:
-    This is path section iof URL with original parameters and `offset`
+    This is path section of URL with original parameters and `offset`
     parameter added/replaced above.
 
-:uri:
+:url:
     The full version of URL for next page.
 
 If next page request returns no data (i.e. empty array) then there is little
@@ -49,7 +49,7 @@ Synchronizing
 
 It is often necessary to be able to syncronize central database changes to
 other database (we'll call it "local").  The default sorting "by
-modification date" altogether by Batching mehanism allows one to implement
+modification date" altogether by Batching mechanism allows one to implement
 synchronization effectively.  The synchronization process can go page by
 page until there is no new data returned.  Then the synchronizer have to
 pause for a while to let central database register some changes and attempt

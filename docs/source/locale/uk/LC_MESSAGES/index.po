@@ -1,4 +1,4 @@
-#
+# 
 msgid ""
 msgstr ""
 "Project-Id-Version: openprocurement.api 0.1\n"
@@ -20,30 +20,30 @@ msgstr "Вітаємо на сайті документації по openprocure
 msgid "Contents:"
 msgstr "Зміст:"
 
-#: ../../source/index.rst:30
+#: ../../source/index.rst:31
 msgid ""
 "Please report any problems or suggestions for improvement either via the "
-"`mailing list <http://groups.google.com/group/open-procurement-general>`_ or "
-"the `issue tracker <https://github.com/openprocurement/openprocurement.api/"
-"issues>`_."
+"`mailing list <http://groups.google.com/group/open-procurement-general>`_ or"
+" the `issue tracker "
+"<https://github.com/openprocurement/openprocurement.api/issues>`_."
 msgstr ""
 "Будь ласка повідомляйте про всі проблеми та поради покращень чи через "
 "`розсилку <http://groups.google.com/group/open-procurement-general>`_ чи "
-"через `issue tracker <https://github.com/openprocurement/openprocurement.api/"
-"issues>`_."
+"через `issue tracker "
+"<https://github.com/openprocurement/openprocurement.api/issues>`_."
 
-#: ../../source/index.rst:36
+#: ../../source/index.rst:37
 msgid "Indices and tables"
 msgstr "Індекси та таблиці"
 
-#: ../../source/index.rst:38
+#: ../../source/index.rst:39
 msgid ":ref:`genindex`"
 msgstr ":ref:`genindex`"
 
-#: ../../source/index.rst:39
+#: ../../source/index.rst:40
 msgid ":ref:`modindex`"
 msgstr ":ref:`modindex`"
 
-#: ../../source/index.rst:40
+#: ../../source/index.rst:41
 msgid ":ref:`search`"
 msgstr ":ref:`search`"
