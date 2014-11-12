@@ -18,7 +18,7 @@ spore = Service(name='spore', path='/spore', renderer='json')
 auction = Service(name='Tender Auction', path='/tenders/{tender_id}/auction', renderer='json')
 
 
-def validate_data(request, model):
+def validate_data(request, model, partial=False):
     try:
         json = request.json_body
     except ValueError, e:
@@ -31,7 +31,7 @@ def validate_data(request, model):
         return
     data = json['data']
     try:
-        model(data).validate()
+        model(data).validate(partial=partial)
     except (ModelValidationError, ModelConversionError), e:
         for i in e.message:
             request.errors.add('body', i, e.message[i])
@@ -48,6 +48,10 @@ def validate_bid_data(request):
 
 def validate_award_data(request):
     return validate_data(request, Award)
+
+
+def validate_document_data(request):
+    return validate_data(request, Document, True)
 
 
 def validate_tender_exists(request, key='id'):
@@ -102,11 +106,16 @@ def validate_file_upload(request):
         request.errors.status = 404
 
 
+def validate_file_update(request):
+    if request.content_type == 'multipart/form-data':
+        validate_file_upload(request)
+
+
 def generate_tender_id(tid):
     return "UA-" + tid
 
 
-def filter_data(data, fields=['id', 'doc_id', 'modified']):
+def filter_data(data, fields=['id', 'doc_id', 'modified', 'url']):
     result = data.copy()
     for i in fields:
         if i in result:
@@ -606,27 +615,35 @@ class TenderDocumentResource(object):
         ]
         return {'data': document_data}
 
-    @view(renderer='json', validators=(validate_file_upload, validate_tender_document_exists,))
+    @view(renderer='json', validators=(validate_file_update, validate_tender_document_exists,))
     def put(self):
         """Tender Document Update"""
         if self.tender.status != 'enquiries':
             self.request.errors.add('body', 'data', 'Can\'t update document in current tender status')
             self.request.errors.status = 403
             return
-        data = self.request.POST['file']
         src = self.tender.serialize("plain")
+        if self.request.content_type == 'multipart/form-data':
+            data = self.request.POST['file']
+            filename = data.filename
+            content_type = data.type
+            in_file = data.file
+        else:
+            filename = self.documents[0].title
+            content_type = self.request.content_type
+            in_file = self.request.body_file
         document = Document()
-        document.id = self.request.matchdict['id']
-        document.title = data.filename
-        document.format = data.type
+        document.id = self.document_id
+        document.title = filename
+        document.format = content_type
         document.datePublished = self.documents[0].datePublished
         key = uuid4().hex
         document.url = self.request.route_url('Tender Documents', tender_id=self.tender_id, id=document.id, _query={'download': key})
         self.tender.documents.append(document)
         filename = "{}_{}".format(document.id, key)
         self.tender['_attachments'][filename] = {
-            "content_type": data.type,
-            "data": b64encode(data.file.read())
+            "content_type": content_type,
+            "data": b64encode(in_file.read())
         }
         patch = make_patch(self.tender.serialize("plain"), src).patch
         self.tender.revisions.append(revision({'changes': patch}))
@@ -635,6 +652,28 @@ class TenderDocumentResource(object):
         except Exception, e:
             return self.request.errors.add('body', 'data', str(e))
         return {'data': document.serialize("view")}
+
+    @view(renderer='json', validators=(validate_document_data, validate_tender_document_exists,))
+    def patch(self):
+        """Tender Document Update"""
+        if self.tender.status != 'enquiries':
+            self.request.errors.add('body', 'data', 'Can\'t update document in current tender status')
+            self.request.errors.status = 403
+            return
+        src = self.tender.serialize("plain")
+        document_data = filter_data(self.request.json_body['data'])
+        if document_data:
+            if 'id' not in document_data:
+                document_data['id'] = self.document_id
+            self.document.import_data(document_data)
+            patch = make_patch(self.tender.serialize("plain"), src).patch
+            if patch:
+                self.tender.revisions.append(revision({'changes': patch}))
+                try:
+                    self.tender.store(self.db)
+                except Exception, e:
+                    return self.request.errors.add('body', 'data', str(e))
+        return {'data': self.document.serialize("view")}
 
 
 @resource(name='Tender Bids',
@@ -1018,27 +1057,35 @@ class TenderBidderDocumentResource(object):
         ]
         return {'data': document_data}
 
-    @view(renderer='json', validators=(validate_file_upload, validate_tender_bid_document_exists,))
+    @view(renderer='json', validators=(validate_file_update, validate_tender_bid_document_exists,))
     def put(self):
         """Tender Bid Document Update"""
         if self.tender.status not in ['tendering', 'auction', 'qualification']:
             self.request.errors.add('body', 'data', 'Can\'t update document in current tender status')
             self.request.errors.status = 403
             return
-        data = self.request.POST['file']
         src = self.tender.serialize("plain")
+        if self.request.content_type == 'multipart/form-data':
+            data = self.request.POST['file']
+            filename = data.filename
+            content_type = data.type
+            in_file = data.file
+        else:
+            filename = self.documents[0].title
+            content_type = self.request.content_type
+            in_file = self.request.body_file
         document = Document()
         document.id = self.request.matchdict['id']
-        document.title = data.filename
-        document.format = data.type
-        document.datePublished = self.document.datePublished
+        document.title = filename
+        document.format = content_type
+        document.datePublished = self.documents[0].datePublished
         key = uuid4().hex
         document.url = self.request.route_url('Tender Bid Documents', tender_id=self.tender_id, bid_id=self.bid_id, id=document.id, _query={'download': key})
         self.bid.documents.append(document)
         filename = "{}_{}".format(document.id, key)
         self.tender['_attachments'][filename] = {
-            "content_type": data.type,
-            "data": b64encode(data.file.read())
+            "content_type": content_type,
+            "data": b64encode(in_file.read())
         }
         patch = make_patch(self.tender.serialize("plain"), src).patch
         self.tender.revisions.append(revision({'changes': patch}))
@@ -1047,6 +1094,28 @@ class TenderBidderDocumentResource(object):
         except Exception, e:
             return self.request.errors.add('body', 'data', str(e))
         return {'data': document.serialize("view")}
+
+    @view(renderer='json', validators=(validate_document_data, validate_tender_bid_document_exists,))
+    def patch(self):
+        """Tender Bid Document Update"""
+        if self.tender.status not in ['tendering', 'auction', 'qualification']:
+            self.request.errors.add('body', 'data', 'Can\'t update document in current tender status')
+            self.request.errors.status = 403
+            return
+        src = self.tender.serialize("plain")
+        document_data = filter_data(self.request.json_body['data'])
+        if document_data:
+            if 'id' not in document_data:
+                document_data['id'] = self.document_id
+            self.document.import_data(document_data)
+            patch = make_patch(self.tender.serialize("plain"), src).patch
+            if patch:
+                self.tender.revisions.append(revision({'changes': patch}))
+                try:
+                    self.tender.store(self.db)
+                except Exception, e:
+                    return self.request.errors.add('body', 'data', str(e))
+        return {'data': self.document.serialize("view")}
 
 
 @resource(name='Tender Awards',

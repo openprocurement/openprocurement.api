@@ -473,10 +473,52 @@ class TenderBidderDocumentResourceTest(BaseTenderWebTest):
         self.assertEqual(doc_id, response.json["data"]["id"])
         self.assertEqual('name.doc', response.json["data"]["title"])
 
+        response = self.app.put('/tenders/{}/bidders/{}/documents/{}'.format(
+            self.tender_id, self.bid_id, doc_id), 'content3', content_type='application/msword')
+        self.assertEqual(response.status, '200 OK')
+        self.assertEqual(response.content_type, 'application/json')
+        self.assertEqual(doc_id, response.json["data"]["id"])
+        key = response.json["data"]["url"].split('?')[-1]
+
+        response = self.app.get('/tenders/{}/bidders/{}/documents/{}?{}'.format(
+            self.tender_id, self.bid_id, doc_id, key))
+        self.assertEqual(response.status, '200 OK')
+        self.assertEqual(response.content_type, 'application/msword')
+        self.assertEqual(response.content_length, 8)
+        self.assertEqual(response.body, 'content3')
+
         self.set_status('awarded')
 
         response = self.app.put('/tenders/{}/bidders/{}/documents/{}'.format(
             self.tender_id, self.bid_id, doc_id), upload_files=[('file', 'name.doc', 'content3')], status=403)
+        self.assertEqual(response.status, '403 Forbidden')
+        self.assertEqual(response.content_type, 'application/json')
+        self.assertEqual(response.json['errors'][0]["description"], "Can't update document in current tender status")
+
+
+    def test_patch_tender_bidder_document(self):
+        response = self.app.post('/tenders/{}/bidders/{}/documents'.format(
+            self.tender_id, self.bid_id), upload_files=[('file', 'name.doc', 'content')])
+        self.assertEqual(response.status, '201 Created')
+        self.assertEqual(response.content_type, 'application/json')
+        doc_id = response.json["data"]['id']
+        self.assertTrue(doc_id in response.headers['Location'])
+
+        response = self.app.patch_json('/tenders/{}/bidders/{}/documents/{}'.format(self.tender_id, self.bid_id, doc_id), {"data": {"description": "document description"}})
+        self.assertEqual(response.status, '200 OK')
+        self.assertEqual(response.content_type, 'application/json')
+        self.assertEqual(doc_id, response.json["data"]["id"])
+
+        response = self.app.get('/tenders/{}/bidders/{}/documents/{}'.format(
+            self.tender_id, self.bid_id, doc_id))
+        self.assertEqual(response.status, '200 OK')
+        self.assertEqual(response.content_type, 'application/json')
+        self.assertEqual(doc_id, response.json["data"]["id"])
+        self.assertEqual('document description', response.json["data"]["description"])
+
+        self.set_status('awarded')
+
+        response = self.app.patch_json('/tenders/{}/bidders/{}/documents/{}'.format(self.tender_id, self.bid_id, doc_id), {"data": {"description": "document description"}}, status=403)
         self.assertEqual(response.status, '403 Forbidden')
         self.assertEqual(response.content_type, 'application/json')
         self.assertEqual(response.json['errors'][0]["description"], "Can't update document in current tender status")
