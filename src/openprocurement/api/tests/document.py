@@ -17,16 +17,6 @@ class TenderDocumentResourceTest(BaseTenderWebTest):
         ])
 
         response = self.app.post('/tenders/some_id/documents', status=404, upload_files=[
-                                 ('invalid_name', 'name.doc', 'content')])
-        self.assertEqual(response.status, '404 Not Found')
-        self.assertEqual(response.content_type, 'application/json')
-        self.assertEqual(response.json['status'], 'error')
-        self.assertEqual(response.json['errors'], [
-            {u'description': u'Not Found', u'location':
-                u'body', u'name': u'file'}
-        ])
-
-        response = self.app.post('/tenders/some_id/documents', status=404, upload_files=[
                                  ('file', 'name.doc', 'content')])
         self.assertEqual(response.status, '404 Not Found')
         self.assertEqual(response.content_type, 'application/json')
@@ -36,8 +26,8 @@ class TenderDocumentResourceTest(BaseTenderWebTest):
                 u'url', u'name': u'tender_id'}
         ])
 
-        response = self.app.put('/tenders/some_id/documents/some_id', status=404, upload_files=[
-                                ('invalid_name', 'name.doc', 'content')])
+        response = self.app.post('/tenders/{}/documents'.format(self.tender_id), status=404, upload_files=[
+                                 ('invalid_name', 'name.doc', 'content')])
         self.assertEqual(response.status, '404 Not Found')
         self.assertEqual(response.content_type, 'application/json')
         self.assertEqual(response.json['status'], 'error')
@@ -187,6 +177,16 @@ class TenderDocumentResourceTest(BaseTenderWebTest):
         self.assertEqual(response.content_type, 'application/json')
         self.assertEqual(modified2, response.json["data"][0]['modified'])
         self.assertEqual(modified, response.json["data"][1]['modified'])
+
+        response = self.app.put('/tenders/{}/documents/{}'.format(self.tender_id, doc_id), status=404, upload_files=[
+                                ('invalid_name', 'name.doc', 'content')])
+        self.assertEqual(response.status, '404 Not Found')
+        self.assertEqual(response.content_type, 'application/json')
+        self.assertEqual(response.json['status'], 'error')
+        self.assertEqual(response.json['errors'], [
+            {u'description': u'Not Found', u'location':
+                u'body', u'name': u'file'}
+        ])
 
         self.set_status('tendering')
 

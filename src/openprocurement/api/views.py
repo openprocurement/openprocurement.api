@@ -50,6 +50,58 @@ def validate_award_data(request):
     return validate_data(request, Award)
 
 
+def validate_tender_exists(request, key='id'):
+    tender = request.matchdict.get(key) and TenderDocument.load(request.registry.db, request.matchdict[key])
+    if tender:
+        return tender
+    else:
+        request.errors.add('url', key, 'Not Found')
+        request.errors.status = 404
+
+
+def validate_tender_exists_by_tender_id(request):
+    return validate_tender_exists(request, 'tender_id')
+
+
+def validate_tender_document_exists(request):
+    tender = validate_tender_exists(request, 'tender_id')
+    if tender:
+        documents = [i for i in tender.documents if i.id == request.matchdict['id']]
+        if not documents:
+            request.errors.add('url', 'id', 'Not Found')
+            request.errors.status = 404
+
+
+def validate_tender_bid_exists(request, key='id'):
+    tender = validate_tender_exists(request, 'tender_id')
+    if tender:
+        bids = [i for i in tender.bids if i.id == request.matchdict[key]]
+        if bids:
+            return bids[0]
+        else:
+            request.errors.add('url', key, 'Not Found')
+            request.errors.status = 404
+
+
+def validate_tender_bid_exists_by_bid_id(request):
+    return validate_tender_bid_exists(request, 'bid_id')
+
+
+def validate_tender_bid_document_exists(request):
+    bid = validate_tender_bid_exists(request, 'bid_id')
+    if bid:
+        documents = [i for i in bid.documents if i.id == request.matchdict['id']]
+        if not documents:
+            request.errors.add('url', 'id', 'Not Found')
+            request.errors.status = 404
+
+
+def validate_file_upload(request):
+    if 'file' not in request.POST:
+        request.errors.add('body', 'file', 'Not Found')
+        request.errors.status = 404
+
+
 def generate_tender_id(tid):
     return "UA-" + tid
 
@@ -77,6 +129,7 @@ class TenderResource(object):
     def __init__(self, request):
         self.request = request
         self.db = request.registry.db
+        self.tender = self.request.matchdict.get('id') and TenderDocument.load(self.db, self.request.matchdict['id'])
 
     @view(renderer='json')
     def collection_get(self):
@@ -302,7 +355,7 @@ class TenderResource(object):
             'Location'] = self.request.route_url('Tender', id=tender_id)
         return {'data': tender.serialize(tender.status)}
 
-    @view(renderer='json')
+    @view(renderer='json', validators=(validate_tender_exists,))
     def get(self):
         """Tender Read
 
@@ -389,34 +442,24 @@ class TenderResource(object):
             }
 
         """
-        tender = TenderDocument.load(self.db, self.request.matchdict['id'])
-        if not tender:
-            self.request.errors.add('url', 'id', 'Not Found')
-            self.request.errors.status = 404
-            return
-        return {'data': tender.serialize(tender.status)}
+        return {'data': self.tender.serialize(self.tender.status)}
 
-    @view(content_type="application/json", validators=(validate_tender_data,), renderer='json')
+    @view(content_type="application/json", validators=(validate_tender_data, validate_tender_exists), renderer='json')
     def put(self):
         """Tender Edit (full)"""
-        tender = TenderDocument.load(self.db, self.request.matchdict['id'])
-        if not tender:
-            self.request.errors.add('url', 'id', 'Not Found')
-            self.request.errors.status = 404
-            return
-        src = tender.serialize("plain")
+        src = self.tender.serialize("plain")
         tender_data = filter_data(self.request.json_body['data'])
-        tender.import_data(tender_data)
-        patch = make_patch(tender.serialize("plain"), src).patch
+        self.tender.import_data(tender_data)
+        patch = make_patch(self.tender.serialize("plain"), src).patch
         if patch:
-            tender.revisions.append(revision({'changes': patch}))
+            self.tender.revisions.append(revision({'changes': patch}))
             try:
-                tender.store(self.db)
+                self.tender.store(self.db)
             except Exception, e:
                 return self.request.errors.add('body', 'data', str(e))
-        return {'data': tender.serialize(tender.status)}
+        return {'data': self.tender.serialize(self.tender.status)}
 
-    @view(content_type="application/json", validators=(validate_tender_data,), renderer='json')
+    @view(content_type="application/json", validators=(validate_tender_data, validate_tender_exists), renderer='json')
     def patch(self):
         """Tender Edit (partial)
 
@@ -465,25 +508,20 @@ class TenderResource(object):
             }
 
         """
-        tender = TenderDocument.load(self.db, self.request.matchdict['id'])
-        if not tender:
-            self.request.errors.add('url', 'id', 'Not Found')
-            self.request.errors.status = 404
-            return
-        src = tender.serialize("plain")
+        src = self.tender.serialize("plain")
         tender_data = filter_data(self.request.json_body['data'])
         if tender_data:
             if 'tenderID' not in tender_data:
-                tender_data['tenderID'] = tender.tenderID
-            tender.import_data(tender_data)
-            patch = make_patch(tender.serialize("plain"), src).patch
+                tender_data['tenderID'] = self.tender.tenderID
+            self.tender.import_data(tender_data)
+            patch = make_patch(self.tender.serialize("plain"), src).patch
             if patch:
-                tender.revisions.append(revision({'changes': patch}))
+                self.tender.revisions.append(revision({'changes': patch}))
                 try:
-                    tender.store(self.db)
+                    self.tender.store(self.db)
                 except Exception, e:
                     return self.request.errors.add('body', 'data', str(e))
-        return {'data': tender.serialize(tender.status)}
+        return {'data': self.tender.serialize(self.tender.status)}
 
 
 @resource(name='Tender Documents',
@@ -496,42 +534,32 @@ class TenderDocumentResource(object):
         self.request = request
         self.db = request.registry.db
         self.tender_id = request.matchdict['tender_id']
+        self.document_id = self.request.matchdict.get('id')
+        self.tender = TenderDocument.load(self.db, self.tender_id)
+        if self.tender and self.document_id:
+            self.documents = [i for i in self.tender.documents if i.id == self.document_id]
+            self.document = self.documents and self.documents[-1]
 
-    @view(renderer='json')
+    @view(renderer='json', validators=(validate_tender_exists_by_tender_id,))
     def collection_get(self):
         """Tender Documents List"""
-        tender = TenderDocument.load(self.db, self.tender_id)
-        if not tender:
-            self.request.errors.add('url', 'tender_id', 'Not Found')
-            self.request.errors.status = 404
-            return
-        view_all = self.request.params.get('all', '')
         if self.request.params.get('all', ''):
-            collection_data = [i.serialize("view") for i in tender['documents']]
+            collection_data = [i.serialize("view") for i in self.tender['documents']]
         else:
             collection_data = sorted(dict([
                 (i.id, i.serialize("view"))
-                for i in tender['documents']
+                for i in self.tender['documents']
             ]).values(), key=lambda i: i['modified'])
         return {'data': collection_data}
 
-    @view(renderer='json')
+    @view(renderer='json', validators=(validate_file_upload, validate_tender_exists_by_tender_id,))
     def collection_post(self):
         """Tender Document Upload"""
-        if 'file' not in self.request.POST:
-            self.request.errors.add('body', 'file', 'Not Found')
-            self.request.errors.status = 404
-            return
-        tender = TenderDocument.load(self.db, self.tender_id)
-        if not tender:
-            self.request.errors.add('url', 'tender_id', 'Not Found')
-            self.request.errors.status = 404
-            return
-        if tender.status != 'enquiries':
+        if self.tender.status != 'enquiries':
             self.request.errors.add('body', 'data', 'Can\'t add document in current tender status')
             self.request.errors.status = 403
             return
-        src = tender.serialize("plain")
+        src = self.tender.serialize("plain")
         data = self.request.POST['file']
         document = Document()
         document.id = uuid4().hex
@@ -539,95 +567,71 @@ class TenderDocumentResource(object):
         document.format = data.type
         key = uuid4().hex
         document.url = self.request.route_url('Tender Documents', tender_id=self.tender_id, id=document.id, _query={'download': key})
-        tender.documents.append(document)
+        self.tender.documents.append(document)
         filename = "{}_{}".format(document.id, key)
-        tender['_attachments'][filename] = {
+        self.tender['_attachments'][filename] = {
             "content_type": data.type,
             "data": b64encode(data.file.read())
         }
-        patch = make_patch(tender.serialize("plain"), src).patch
-        tender.revisions.append(revision({'changes': patch}))
+        patch = make_patch(self.tender.serialize("plain"), src).patch
+        self.tender.revisions.append(revision({'changes': patch}))
         try:
-            tender.store(self.db)
+            self.tender.store(self.db)
         except Exception, e:
             return self.request.errors.add('body', 'data', str(e))
         self.request.response.status = 201
         self.request.response.headers['Location'] = self.request.route_url('Tender Documents', tender_id=self.tender_id, id=document.id)
         return {'data': document.serialize("view")}
 
+    @view(validators=(validate_tender_document_exists,))
     def get(self):
         """Tender Document Read"""
-        tender = TenderDocument.load(self.db, self.tender_id)
-        if not tender:
-            self.request.errors.add('url', 'tender_id', 'Not Found')
-            self.request.errors.status = 404
-            return
-        documents = [i for i in tender.documents if i.id == self.request.matchdict['id']]
-        if not documents:
-            self.request.errors.add('url', 'id', 'Not Found')
-            self.request.errors.status = 404
-            return
-        document = documents[-1]
         key = self.request.params.get('download')
         if key:
-            filename = "{}_{}".format(document.id, key)
+            filename = "{}_{}".format(self.document.id, key)
             data = self.db.get_attachment(self.tender_id, filename)
             if not data:
                 self.request.errors.add('url', 'download', 'Not Found')
                 self.request.errors.status = 404
                 return
-            self.request.response.content_type = tender['_attachments'][filename]["content_type"].encode('utf-8')
-            self.request.response.content_disposition = 'attachment; filename={}'.format(quote(document.title.encode('utf-8')))
+            self.request.response.content_type = self.tender['_attachments'][filename]["content_type"].encode('utf-8')
+            self.request.response.content_disposition = 'attachment; filename={}'.format(quote(self.document.title.encode('utf-8')))
             self.request.response.body_file = data
             return self.request.response
-        document_data = document.serialize("view")
+        document_data = self.document.serialize("view")
         document_data['previousVersions'] = [
             i.serialize("view")
-            for i in documents
-            if i.url != document.url
+            for i in self.documents
+            if i.url != self.document.url
         ]
         return {'data': document_data}
 
-    @view(renderer='json')
+    @view(renderer='json', validators=(validate_file_upload, validate_tender_document_exists,))
     def put(self):
         """Tender Document Update"""
-        if 'file' not in self.request.POST:
-            self.request.errors.add('body', 'file', 'Not Found')
-            self.request.errors.status = 404
-            return
-        tender = TenderDocument.load(self.db, self.tender_id)
-        if not tender:
-            self.request.errors.add('url', 'tender_id', 'Not Found')
-            self.request.errors.status = 404
-            return
-        if tender.status != 'enquiries':
+        if self.tender.status != 'enquiries':
             self.request.errors.add('body', 'data', 'Can\'t update document in current tender status')
             self.request.errors.status = 403
             return
         data = self.request.POST['file']
-        documents = [i for i in tender.documents if i.id == self.request.matchdict['id']]
-        if not documents:
-            self.request.errors.add('url', 'id', 'Not Found')
-            self.request.errors.status = 404
-            return
-        src = tender.serialize("plain")
+        src = self.tender.serialize("plain")
         document = Document()
         document.id = self.request.matchdict['id']
         document.title = data.filename
         document.format = data.type
-        document.datePublished = documents[0].datePublished
+        document.datePublished = self.documents[0].datePublished
         key = uuid4().hex
         document.url = self.request.route_url('Tender Documents', tender_id=self.tender_id, id=document.id, _query={'download': key})
-        tender.documents.append(document)
+        self.tender.documents.append(document)
         filename = "{}_{}".format(document.id, key)
-        tender['_attachments'][filename] = {
+        self.tender['_attachments'][filename] = {
             "content_type": data.type,
             "data": b64encode(data.file.read())
         }
-        patch = make_patch(tender.serialize("plain"), src).patch
-        tender.revisions.append(revision({'changes': patch}))
+        patch = make_patch(self.tender.serialize("plain"), src).patch
+        self.tender.revisions.append(revision({'changes': patch}))
         try:
-            tender.store(self.db)
+            self.tender.store(self.db)
         except Exception, e:
             return self.request.errors.add('body', 'data', str(e))
         return {'data': document.serialize("view")}
@@ -643,8 +647,13 @@ class TenderBidderResource(object):
         self.request = request
         self.db = request.registry.db
         self.tender_id = request.matchdict['tender_id']
+        self.tender = TenderDocument.load(self.db, self.tender_id)
+        self.bid_id = request.matchdict.get('id')
+        if self.tender and self.bid_id:
+            bids = [i for i in self.tender.bids if i.id == self.bid_id]
+            self.bid = bids and bids[0]
 
-    @view(content_type="application/json", validators=(validate_bid_data,), renderer='json')
+    @view(content_type="application/json", validators=(validate_bid_data, validate_tender_exists_by_tender_id), renderer='json')
     def collection_post(self):
         """Registration of new bid proposal
 
@@ -726,31 +735,26 @@ class TenderBidderResource(object):
         """
         # See https://github.com/open-contracting/standard/issues/78#issuecomment-59830415
         # for more info upon schema
-        tender = TenderDocument.load(self.db, self.tender_id)
-        if not tender:
-            self.request.errors.add('url', 'tender_id', 'Not Found')
-            self.request.errors.status = 404
-            return
-        if tender.status != 'tendering':
+        if self.tender.status != 'tendering':
             self.request.errors.add('body', 'data', 'Can\'t add bid in current tender status')
             self.request.errors.status = 403
             return
-        src = tender.serialize("plain")
+        src = self.tender.serialize("plain")
         bid_data = filter_data(
             self.request.json_body['data'], fields=['id', 'date'])
         bid = Bid(bid_data)
-        tender.bids.append(bid)
-        patch = make_patch(tender.serialize("plain"), src).patch
-        tender.revisions.append(revision({'changes': patch}))
+        self.tender.bids.append(bid)
+        patch = make_patch(self.tender.serialize("plain"), src).patch
+        self.tender.revisions.append(revision({'changes': patch}))
         try:
-            tender.store(self.db)
+            self.tender.store(self.db)
         except Exception, e:
             return self.request.errors.add('body', 'data', str(e))
         self.request.response.status = 201
         self.request.response.headers['Location'] = self.request.route_url('Tender Bids', tender_id=self.tender_id, id=bid['id'])
         return {'data': bid.serialize("view")}
 
-    @view(renderer='json')
+    @view(renderer='json', validators=(validate_tender_exists_by_tender_id,))
     def collection_get(self):
         """Bids Listing
 
@@ -785,16 +789,11 @@ class TenderBidderResource(object):
             }
 
         """
-        tender = TenderDocument.load(self.db, self.tender_id)
-        if not tender:
-            self.request.errors.add('url', 'tender_id', 'Not Found')
-            self.request.errors.status = 404
-            return
-        if tender.status in ['enquiries', 'tendering']:
+        if self.tender.status in ['enquiries', 'tendering']:
             return {'data': []}
-        return {'data': [i.serialize(tender.status) for i in tender.bids]}
+        return {'data': [i.serialize(self.tender.status) for i in self.tender.bids]}
 
-    @view(renderer='json')
+    @view(renderer='json', validators=(validate_tender_bid_exists,))
     def get(self):
         """Retrieving the proposal
 
@@ -824,23 +823,11 @@ class TenderBidderResource(object):
             }
 
         """
-        tender = TenderDocument.load(self.db, self.tender_id)
-        if not tender:
-            self.request.errors.add('url', 'tender_id', 'Not Found')
-            self.request.errors.status = 404
-            return
-        bid_id = self.request.matchdict['id']
-        bids = [i for i in tender.bids if i.id == bid_id]
-        if not bids:
-            self.request.errors.add('url', 'id', 'Not Found')
-            self.request.errors.status = 404
-            return
-        bid = bids[0]
-        if tender.status in ['enquiries', 'tendering']:
+        if self.tender.status in ['enquiries', 'tendering']:
             return {'data': {}}
-        return {'data': bid.serialize(tender.status)}
+        return {'data': self.bid.serialize(self.tender.status)}
 
-    @view(content_type="application/json", validators=(validate_bid_data,), renderer='json')
+    @view(content_type="application/json", validators=(validate_bid_data, validate_tender_bid_exists), renderer='json')
     def patch(self):
         """Update of proposal
 
@@ -878,38 +865,26 @@ class TenderBidderResource(object):
             }
 
         """
-        tender = TenderDocument.load(self.db, self.tender_id)
-        if not tender:
-            self.request.errors.add('url', 'tender_id', 'Not Found')
-            self.request.errors.status = 404
-            return
-        src = tender.serialize("plain")
-        bid_id = self.request.matchdict['id']
-        bids = [i for i in tender.bids if i.id == bid_id]
-        if not bids:
-            self.request.errors.add('url', 'id', 'Not Found')
-            self.request.errors.status = 404
-            return
-        if tender.status != 'tendering':
+        if self.tender.status != 'tendering':
             self.request.errors.add('body', 'data', 'Can\'t change bid in current tender status')
             self.request.errors.status = 403
             return
-        bid = bids[0]
+        src = self.tender.serialize("plain")
         bid_data = filter_data(self.request.json_body['data'])
         if bid_data:
             if 'id' not in bid_data:
-                bid_data['id'] = bid.id
-            bid.import_data(bid_data)
-            patch = make_patch(tender.serialize("plain"), src).patch
+                bid_data['id'] = self.bid.id
+            self.bid.import_data(bid_data)
+            patch = make_patch(self.tender.serialize("plain"), src).patch
             if patch:
-                tender.revisions.append(revision({'changes': patch}))
+                self.tender.revisions.append(revision({'changes': patch}))
                 try:
-                    tender.store(self.db)
+                    self.tender.store(self.db)
                 except Exception, e:
                     return self.request.errors.add('body', 'data', str(e))
-        return {'data': bid.serialize("view")}
+        return {'data': self.bid.serialize("view")}
 
-    @view(renderer='json')
+    @view(renderer='json', validators=(validate_tender_bid_exists,))
     def delete(self):
         """Cancelling the proposal
 
@@ -939,30 +914,18 @@ class TenderBidderResource(object):
             }
 
         """
-        tender = TenderDocument.load(self.db, self.tender_id)
-        if not tender:
-            self.request.errors.add('url', 'tender_id', 'Not Found')
-            self.request.errors.status = 404
-            return
-        src = tender.serialize("plain")
-        bid_id = self.request.matchdict['id']
-        bids = [i for i in tender.bids if i.id == bid_id]
-        if not bids:
-            self.request.errors.add('url', 'id', 'Not Found')
-            self.request.errors.status = 404
-            return
-        if tender.status != 'tendering':
+        if self.tender.status != 'tendering':
             self.request.errors.add('body', 'data', 'Can\'t delete bid in current tender status')
             self.request.errors.status = 403
             return
-        bid = bids[0]
-        res = bid.serialize("view")
-        tender.bids.remove(bid)
-        patch = make_patch(tender.serialize("plain"), src).patch
+        src = self.tender.serialize("plain")
+        res = self.bid.serialize("view")
+        self.tender.bids.remove(self.bid)
+        patch = make_patch(self.tender.serialize("plain"), src).patch
         if patch:
-            tender.revisions.append(revision({'changes': patch}))
+            self.tender.revisions.append(revision({'changes': patch}))
             try:
-                tender.store(self.db)
+                self.tender.store(self.db)
             except Exception, e:
                 return self.request.errors.add('body', 'data', str(e))
         return {'data': res}
@@ -979,54 +942,36 @@ class TenderBidderDocumentResource(object):
         self.db = request.registry.db
         self.tender_id = request.matchdict['tender_id']
         self.bid_id = request.matchdict['bid_id']
+        self.document_id = self.request.matchdict.get('id')
+        self.tender = TenderDocument.load(self.db, self.tender_id)
+        if self.tender:
+            bids = [i for i in self.tender.bids if i.id == self.bid_id]
+            self.bid = bids and bids[0]
+            if self.bid and self.document_id:
+                self.documents = [i for i in self.bid.documents if i.id == self.document_id]
+                self.document = self.documents and self.documents[-1]
 
-    @view(renderer='json')
+    @view(renderer='json', validators=(validate_tender_bid_exists_by_bid_id,))
     def collection_get(self):
         """Tender Bid Documents List"""
-        tender = TenderDocument.load(self.db, self.tender_id)
-        if not tender:
-            self.request.errors.add('url', 'tender_id', 'Not Found')
-            self.request.errors.status = 404
-            return
-        bids = [i for i in tender.bids if i.id == self.bid_id]
-        if not bids:
-            self.request.errors.add('url', 'bid_id', 'Not Found')
-            self.request.errors.status = 404
-            return
-        bid = bids[0]
         if self.request.params.get('all', ''):
-            collection_data = [i.serialize("view") for i in bid['documents']]
+            collection_data = [i.serialize("view") for i in self.bid['documents']]
         else:
             collection_data = sorted(dict([
                 (i.id, i.serialize("view"))
-                for i in bid['documents']
+                for i in self.bid['documents']
             ]).values(), key=lambda i: i['modified'])
         return {'data': collection_data}
 
-    @view(renderer='json')
+    @view(renderer='json', validators=(validate_file_upload, validate_tender_bid_exists_by_bid_id,))
     def collection_post(self):
         """Tender Bid Document Upload
         """
-        if 'file' not in self.request.POST:
-            self.request.errors.add('body', 'file', 'Not Found')
-            self.request.errors.status = 404
-            return
-        tender = TenderDocument.load(self.db, self.tender_id)
-        if not tender:
-            self.request.errors.add('url', 'tender_id', 'Not Found')
-            self.request.errors.status = 404
-            return
-        if tender.status not in ['tendering', 'auction', 'qualification']:
+        if self.tender.status not in ['tendering', 'auction', 'qualification']:
             self.request.errors.add('body', 'data', 'Can\'t add document in current tender status')
             self.request.errors.status = 403
             return
-        src = tender.serialize("plain")
-        bids = [i for i in tender.bids if i.id == self.bid_id]
-        if not bids:
-            self.request.errors.add('url', 'bid_id', 'Not Found')
-            self.request.errors.status = 404
-            return
-        bid = bids[0]
+        src = self.tender.serialize("plain")
         data = self.request.POST['file']
         document = Document()
         document.id = uuid4().hex
@@ -1034,107 +979,71 @@ class TenderBidderDocumentResource(object):
         document.format = data.type
         key = uuid4().hex
         document.url = self.request.route_url('Tender Bid Documents', tender_id=self.tender_id, bid_id=self.bid_id, id=document.id, _query={'download': key})
-        bid.documents.append(document)
+        self.bid.documents.append(document)
         filename = "{}_{}".format(document.id, key)
-        tender['_attachments'][filename] = {
+        self.tender['_attachments'][filename] = {
             "content_type": data.type,
             "data": b64encode(data.file.read())
         }
-        patch = make_patch(tender.serialize("plain"), src).patch
-        tender.revisions.append(revision({'changes': patch}))
+        patch = make_patch(self.tender.serialize("plain"), src).patch
+        self.tender.revisions.append(revision({'changes': patch}))
         try:
-            tender.store(self.db)
+            self.tender.store(self.db)
         except Exception, e:
             return self.request.errors.add('body', 'data', str(e))
         self.request.response.status = 201
         self.request.response.headers['Location'] = self.request.route_url('Tender Bid Documents', tender_id=self.tender_id, bid_id=self.bid_id, id=document.id)
         return {'data': document.serialize("view")}
 
+    @view(renderer='json', validators=(validate_tender_bid_document_exists,))
     def get(self):
         """Tender Bid Document Read"""
-        tender = TenderDocument.load(self.db, self.tender_id)
-        if not tender:
-            self.request.errors.add('url', 'tender_id', 'Not Found')
-            self.request.errors.status = 404
-            return
-        bids = [i for i in tender.bids if i.id == self.bid_id]
-        if not bids:
-            self.request.errors.add('url', 'bid_id', 'Not Found')
-            self.request.errors.status = 404
-            return
-        bid = bids[0]
-        documents = [i for i in bid.documents if i.id == self.request.matchdict['id']]
-        if not documents:
-            self.request.errors.add('url', 'id', 'Not Found')
-            self.request.errors.status = 404
-            return
-        document = documents[-1]
         key = self.request.params.get('download')
         if key:
-            filename = "{}_{}".format(document.id, key)
+            filename = "{}_{}".format(self.document.id, key)
             data = self.db.get_attachment(self.tender_id, filename)
             if not data:
                 self.request.errors.add('url', 'download', 'Not Found')
                 self.request.errors.status = 404
                 return
-            self.request.response.content_type = tender['_attachments'][filename]["content_type"].encode('utf-8')
-            self.request.response.content_disposition = 'attachment; filename={}'.format(quote(document.title.encode('utf-8')))
+            self.request.response.content_type = self.tender['_attachments'][filename]["content_type"].encode('utf-8')
+            self.request.response.content_disposition = 'attachment; filename={}'.format(quote(self.document.title.encode('utf-8')))
             self.request.response.body_file = data
             return self.request.response
-        document_data = document.serialize("view")
+        document_data = self.document.serialize("view")
         document_data['previousVersions'] = [
             i.serialize("view")
-            for i in documents
-            if i.url != document.url
+            for i in self.documents
+            if i.url != self.document.url
         ]
         return {'data': document_data}
 
-    @view(renderer='json')
+    @view(renderer='json', validators=(validate_file_upload, validate_tender_bid_document_exists,))
     def put(self):
         """Tender Bid Document Update"""
-        if 'file' not in self.request.POST:
-            self.request.errors.add('body', 'file', 'Not Found')
-            self.request.errors.status = 404
-            return
-        tender = TenderDocument.load(self.db, self.tender_id)
-        if not tender:
-            self.request.errors.add('url', 'tender_id', 'Not Found')
-            self.request.errors.status = 404
-            return
-        if tender.status not in ['tendering', 'auction', 'qualification']:
+        if self.tender.status not in ['tendering', 'auction', 'qualification']:
             self.request.errors.add('body', 'data', 'Can\'t update document in current tender status')
             self.request.errors.status = 403
             return
         data = self.request.POST['file']
-        bids = [i for i in tender.bids if i.id == self.bid_id]
-        if not bids:
-            self.request.errors.add('url', 'bid_id', 'Not Found')
-            self.request.errors.status = 404
-            return
-        bid = bids[0]
-        documents = [i for i in bid.documents if i.id == self.request.matchdict['id']]
-        if not documents:
-            self.request.errors.add('url', 'id', 'Not Found')
-            self.request.errors.status = 404
-            return
-        src = tender.serialize("plain")
+        src = self.tender.serialize("plain")
         document = Document()
         document.id = self.request.matchdict['id']
         document.title = data.filename
         document.format = data.type
-        document.datePublished = documents[0].datePublished
+        document.datePublished = self.document.datePublished
         key = uuid4().hex
         document.url = self.request.route_url('Tender Bid Documents', tender_id=self.tender_id, bid_id=self.bid_id, id=document.id, _query={'download': key})
-        bid.documents.append(document)
+        self.bid.documents.append(document)
         filename = "{}_{}".format(document.id, key)
-        tender['_attachments'][filename] = {
+        self.tender['_attachments'][filename] = {
             "content_type": data.type,
             "data": b64encode(data.file.read())
         }
-        patch = make_patch(tender.serialize("plain"), src).patch
-        tender.revisions.append(revision({'changes': patch}))
+        patch = make_patch(self.tender.serialize("plain"), src).patch
+        self.tender.revisions.append(revision({'changes': patch}))
         try:
-            tender.store(self.db)
+            self.tender.store(self.db)
         except Exception, e:
             return self.request.errors.add('body', 'data', str(e))
         return {'data': document.serialize("view")}
@@ -1150,8 +1059,9 @@ class TenderAwardResource(object):
         self.request = request
         self.db = request.registry.db
         self.tender_id = request.matchdict['tender_id']
+        self.tender = TenderDocument.load(self.db, self.tender_id)
 
-    @view(renderer='json')
+    @view(renderer='json', validators=(validate_tender_exists_by_tender_id,))
     def collection_get(self):
         """Tender Awards List
 
@@ -1204,14 +1114,9 @@ class TenderAwardResource(object):
             }
 
         """
-        tender = TenderDocument.load(self.db, self.tender_id)
-        if not tender:
-            self.request.errors.add('url', 'tender_id', 'Not Found')
-            self.request.errors.status = 404
-            return
-        return {'data': [i.serialize("view") for i in tender.awards]}
+        return {'data': [i.serialize("view") for i in self.tender.awards]}
 
-    @view(content_type="application/json", validators=(validate_award_data,), renderer='json')
+    @view(content_type="application/json", validators=(validate_award_data, validate_tender_exists_by_tender_id), renderer='json')
     def collection_post(self):
         """Accept or reject bidder application
 
@@ -1292,23 +1197,18 @@ class TenderAwardResource(object):
             }
 
         """
-        tender = TenderDocument.load(self.db, self.tender_id)
-        if not tender:
-            self.request.errors.add('url', 'tender_id', 'Not Found')
-            self.request.errors.status = 404
-            return
-        if tender.status != 'qualification':
+        if self.tender.status != 'qualification':
             self.request.errors.add('body', 'data', 'Can\'t create award in current tender status')
             self.request.errors.status = 403
             return
-        src = tender.serialize("plain")
+        src = self.tender.serialize("plain")
         award_data = self.request.json_body['data']
         award = Award(award_data)
-        tender.awards.append(award)
-        patch = make_patch(tender.serialize("plain"), src).patch
-        tender.revisions.append(revision({'changes': patch}))
+        self.tender.awards.append(award)
+        patch = make_patch(self.tender.serialize("plain"), src).patch
+        self.tender.revisions.append(revision({'changes': patch}))
         try:
-            tender.store(self.db)
+            self.tender.store(self.db)
         except Exception, e:
             return self.request.errors.add('body', 'data', str(e))
         self.request.response.status = 201
@@ -1316,7 +1216,7 @@ class TenderAwardResource(object):
         return {'data': award.serialize("view")}
 
 
-@auction.get(renderer='json')
+@auction.get(renderer='json', validators=(validate_tender_exists_by_tender_id,))
 def get_auction(request):
     """Get auction info.
 
@@ -1369,17 +1269,12 @@ def get_auction(request):
 
     """
     db = request.registry.db
-    tender_id = request.matchdict['tender_id']
-    tender = TenderDocument.load(db, tender_id)
-    if not tender:
-        request.errors.add('url', 'tender_id', 'Not Found')
-        request.errors.status = 404
-        return
+    tender = TenderDocument.load(db, request.matchdict['tender_id'])
     auction_info = tender.serialize("auction_view")
     return {'data': auction_info}
 
 
-@auction.patch(content_type="application/json", validators=(validate_tender_data,), renderer='json')
+@auction.patch(content_type="application/json", validators=(validate_tender_data, validate_tender_exists_by_tender_id), renderer='json')
 def patch_auction(request):
     """Report auction results.
 
@@ -1452,12 +1347,7 @@ def patch_auction(request):
 
     """
     db = request.registry.db
-    tender_id = request.matchdict['tender_id']
-    tender = TenderDocument.load(db, tender_id)
-    if not tender:
-        request.errors.add('url', 'tender_id', 'Not Found')
-        request.errors.status = 404
-        return
+    tender = TenderDocument.load(db, request.matchdict['tender_id'])
     src = tender.serialize("plain")
     auction_data = filter_data(request.json_body['data'])
     if auction_data:

@@ -128,13 +128,6 @@ class TenderBidderResourceTest(BaseTenderWebTest):
         self.assertEqual(response.content_type, 'application/json')
         self.assertEqual(response.json['data']["totalValue"]["amount"], 600)
 
-        self.set_status('contract-signed')
-
-        response = self.app.get('/tenders/{}/bidders/{}'.format(self.tender_id, bidder['id']))
-        self.assertEqual(response.status, '200 OK')
-        self.assertEqual(response.content_type, 'application/json')
-        self.assertEqual(response.json['data']["totalValue"]["amount"], 600)
-
         response = self.app.patch_json('/tenders/{}/bidders/some_id'.format(self.tender_id), {"data": {"totalValue": {"amount": 600}}}, status=404)
         self.assertEqual(response.status, '404 Not Found')
         self.assertEqual(response.content_type, 'application/json')
@@ -152,6 +145,13 @@ class TenderBidderResourceTest(BaseTenderWebTest):
             {u'description': u'Not Found', u'location':
                 u'url', u'name': u'tender_id'}
         ])
+
+        self.set_status('contract-signed')
+
+        response = self.app.get('/tenders/{}/bidders/{}'.format(self.tender_id, bidder['id']))
+        self.assertEqual(response.status, '200 OK')
+        self.assertEqual(response.content_type, 'application/json')
+        self.assertEqual(response.json['data']["totalValue"]["amount"], 600)
 
         response = self.app.patch_json('/tenders/{}/bidders/{}'.format(self.tender_id, bidder['id']), {"data": {"totalValue": {"amount": 600}}}, status=403)
         self.assertEqual(response.status, '403 Forbidden')
@@ -278,16 +278,6 @@ class TenderBidderDocumentResourceTest(BaseTenderWebTest):
 
     def test_not_found(self):
         response = self.app.post('/tenders/some_id/bidders/some_id/documents', status=404, upload_files=[
-                                 ('invalid_value', 'name.doc', 'content')])
-        self.assertEqual(response.status, '404 Not Found')
-        self.assertEqual(response.content_type, 'application/json')
-        self.assertEqual(response.json['status'], 'error')
-        self.assertEqual(response.json['errors'], [
-            {u'description': u'Not Found', u'location':
-                u'body', u'name': u'file'}
-        ])
-
-        response = self.app.post('/tenders/some_id/bidders/some_id/documents', status=404, upload_files=[
                                  ('file', 'name.doc', 'content')])
         self.assertEqual(response.status, '404 Not Found')
         self.assertEqual(response.content_type, 'application/json')
@@ -304,6 +294,16 @@ class TenderBidderDocumentResourceTest(BaseTenderWebTest):
         self.assertEqual(response.json['errors'], [
             {u'description': u'Not Found', u'location':
                 u'url', u'name': u'bid_id'}
+        ])
+
+        response = self.app.post('/tenders/{}/bidders/{}/documents'.format(self.tender_id, self.bid_id), status=404, upload_files=[
+                                 ('invalid_value', 'name.doc', 'content')])
+        self.assertEqual(response.status, '404 Not Found')
+        self.assertEqual(response.content_type, 'application/json')
+        self.assertEqual(response.json['status'], 'error')
+        self.assertEqual(response.json['errors'], [
+            {u'description': u'Not Found', u'location':
+                u'body', u'name': u'file'}
         ])
 
         response = self.app.get('/tenders/some_id/bidders/some_id/documents', status=404)
@@ -349,16 +349,6 @@ class TenderBidderDocumentResourceTest(BaseTenderWebTest):
         self.assertEqual(response.json['errors'], [
             {u'description': u'Not Found', u'location':
                 u'url', u'name': u'id'}
-        ])
-
-        response = self.app.put('/tenders/some_id/bidders/some_id/documents/some_id', status=404,
-                                upload_files=[('invalid_name', 'name.doc', 'content')])
-        self.assertEqual(response.status, '404 Not Found')
-        self.assertEqual(response.content_type, 'application/json')
-        self.assertEqual(response.json['status'], 'error')
-        self.assertEqual(response.json['errors'], [
-            {u'description': u'Not Found', u'location':
-                u'body', u'name': u'file'}
         ])
 
         response = self.app.put('/tenders/some_id/bidders/some_id/documents/some_id', status=404,
@@ -450,6 +440,17 @@ class TenderBidderDocumentResourceTest(BaseTenderWebTest):
         self.assertEqual(response.content_type, 'application/json')
         doc_id = response.json["data"]['id']
         self.assertTrue(doc_id in response.headers['Location'])
+
+        response = self.app.put('/tenders/{}/bidders/{}/documents/{}'.format(self.tender_id, self.bid_id, doc_id),
+                                status=404,
+                                upload_files=[('invalid_name', 'name.doc', 'content')])
+        self.assertEqual(response.status, '404 Not Found')
+        self.assertEqual(response.content_type, 'application/json')
+        self.assertEqual(response.json['status'], 'error')
+        self.assertEqual(response.json['errors'], [
+            {u'description': u'Not Found', u'location':
+                u'body', u'name': u'file'}
+        ])
 
         response = self.app.put('/tenders/{}/bidders/{}/documents/{}'.format(
             self.tender_id, self.bid_id, doc_id), upload_files=[('file', 'name.doc', 'content2')])
