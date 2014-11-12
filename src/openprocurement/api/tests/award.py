@@ -5,6 +5,7 @@ from openprocurement.api.tests.base import BaseTenderWebTest
 
 
 class TenderAwardResourceTest(BaseTenderWebTest):
+    initial_data = {'status': 'qualification'}
 
     def test_create_tender_award_invalid(self):
         request_path = '/tenders/{}/awards'.format(self.tender_id)
@@ -106,6 +107,14 @@ class TenderAwardResourceTest(BaseTenderWebTest):
             {u'description': u'Not Found', u'location':
                 u'url', u'name': u'tender_id'}
         ])
+
+        self.set_status('contract-signed')
+
+        response = self.app.post_json('/tenders/{}/awards'.format(
+            self.tender_id), {'data': {'suppliers': [{'id': {'name': 'Name'}}], 'awardStatus': 'pending'}}, status=403)
+        self.assertEqual(response.status, '403 Forbidden')
+        self.assertEqual(response.content_type, 'application/json')
+        self.assertEqual(response.json['errors'][0]["description"], "Can\'t create award in current tender status")
 
     def test_create_tender_award(self):
         response = self.app.post_json('/tenders/{}/awards'.format(

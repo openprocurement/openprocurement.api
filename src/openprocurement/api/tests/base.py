@@ -88,11 +88,17 @@ class BaseWebTest(unittest.TestCase):
 
 
 class BaseTenderWebTest(BaseWebTest):
+    initial_data = {}
+
+    def set_status(self, status):
+        response = self.app.patch_json('/tenders/{}'.format(self.tender_id), {'data': {'status': status}})
+        self.assertEqual(response.status, '200 OK')
+        self.assertEqual(response.content_type, 'application/json')
 
     def setUp(self):
         super(BaseTenderWebTest, self).setUp()
         # Create tender
-        response = self.app.post_json('/tenders', {'data': {}})
+        response = self.app.post_json('/tenders', {'data': self.initial_data})
         tender = response.json['data']
         self.tender_id = tender['id']
 

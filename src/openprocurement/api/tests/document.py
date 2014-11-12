@@ -127,6 +127,14 @@ class TenderDocumentResourceTest(BaseTenderWebTest):
         self.assertEqual(doc_id, response.json["data"]["id"])
         self.assertEqual('name.doc', response.json["data"]["title"])
 
+        self.set_status('tendering')
+
+        response = self.app.post('/tenders/{}/documents'.format(
+            self.tender_id), upload_files=[('file', 'name.doc', 'content')], status=403)
+        self.assertEqual(response.status, '403 Forbidden')
+        self.assertEqual(response.content_type, 'application/json')
+        self.assertEqual(response.json['errors'][0]["description"], "Can't add document in current tender status")
+
     def test_put_tender_document(self):
         response = self.app.post('/tenders/{}/documents'.format(
             self.tender_id), upload_files=[('file', 'name.doc', 'content')])
@@ -179,6 +187,14 @@ class TenderDocumentResourceTest(BaseTenderWebTest):
         self.assertEqual(response.content_type, 'application/json')
         self.assertEqual(modified2, response.json["data"][0]['modified'])
         self.assertEqual(modified, response.json["data"][1]['modified'])
+
+        self.set_status('tendering')
+
+        response = self.app.put('/tenders/{}/documents/{}'.format(
+            self.tender_id, doc_id), upload_files=[('file', 'name.doc', 'content3')], status=403)
+        self.assertEqual(response.status, '403 Forbidden')
+        self.assertEqual(response.content_type, 'application/json')
+        self.assertEqual(response.json['errors'][0]["description"], "Can't update document in current tender status")
 
 
 def suite():

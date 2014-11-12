@@ -5,6 +5,7 @@ from openprocurement.api.tests.base import BaseTenderWebTest
 
 
 class TenderBidderResourceTest(BaseTenderWebTest):
+    initial_data = {'status': 'tendering'}
 
     def test_create_tender_bidder_invalid(self):
         request_path = '/tenders/{}/bidders'.format(self.tender_id)
@@ -107,6 +108,14 @@ class TenderBidderResourceTest(BaseTenderWebTest):
         self.assertTrue('id' in bidder)
         self.assertTrue(bidder['id'] in response.headers['Location'])
 
+        self.set_status('contract-signed')
+
+        response = self.app.post_json('/tenders/{}/bidders'.format(
+            self.tender_id), {'data': {'bidders': [{'id': {'name': 'Name'}}]}}, status=403)
+        self.assertEqual(response.status, '403 Forbidden')
+        self.assertEqual(response.content_type, 'application/json')
+        self.assertEqual(response.json['errors'][0]["description"], "Can't add bid in current tender status")
+
     def test_patch_tender_bidder(self):
         response = self.app.post_json('/tenders/{}/bidders'.format(
             self.tender_id), {'data': {'bidders': [{'id': {'name': 'Name'}}]}})
@@ -118,6 +127,8 @@ class TenderBidderResourceTest(BaseTenderWebTest):
         self.assertEqual(response.status, '200 OK')
         self.assertEqual(response.content_type, 'application/json')
         self.assertEqual(response.json['data']["totalValue"]["amount"], 600)
+
+        self.set_status('contract-signed')
 
         response = self.app.get('/tenders/{}/bidders/{}'.format(self.tender_id, bidder['id']))
         self.assertEqual(response.status, '200 OK')
@@ -142,12 +153,24 @@ class TenderBidderResourceTest(BaseTenderWebTest):
                 u'url', u'name': u'tender_id'}
         ])
 
+        response = self.app.patch_json('/tenders/{}/bidders/{}'.format(self.tender_id, bidder['id']), {"data": {"totalValue": {"amount": 600}}}, status=403)
+        self.assertEqual(response.status, '403 Forbidden')
+        self.assertEqual(response.content_type, 'application/json')
+        self.assertEqual(response.json['errors'][0]["description"], "Can't change bid in current tender status")
+
     def test_get_tender_bidder(self):
         response = self.app.post_json('/tenders/{}/bidders'.format(
             self.tender_id), {'data': {'bidders': [{'id': {'name': 'Name'}}]}})
         self.assertEqual(response.status, '201 Created')
         self.assertEqual(response.content_type, 'application/json')
         bidder = response.json['data']
+
+        response = self.app.get('/tenders/{}/bidders/{}'.format(self.tender_id, bidder['id']))
+        self.assertEqual(response.status, '200 OK')
+        self.assertEqual(response.content_type, 'application/json')
+        self.assertEqual(response.json['data'], {})
+
+        self.set_status('contract-signed')
 
         response = self.app.get('/tenders/{}/bidders/{}'.format(self.tender_id, bidder['id']))
         self.assertEqual(response.status, '200 OK')
@@ -171,6 +194,11 @@ class TenderBidderResourceTest(BaseTenderWebTest):
             {u'description': u'Not Found', u'location':
                 u'url', u'name': u'tender_id'}
         ])
+
+        response = self.app.delete('/tenders/{}/bidders/{}'.format(self.tender_id, bidder['id']), status=403)
+        self.assertEqual(response.status, '403 Forbidden')
+        self.assertEqual(response.content_type, 'application/json')
+        self.assertEqual(response.json['errors'][0]["description"], "Can't delete bid in current tender status")
 
     def test_delete_tender_bidder(self):
         response = self.app.post_json('/tenders/{}/bidders'.format(
@@ -218,6 +246,13 @@ class TenderBidderResourceTest(BaseTenderWebTest):
         response = self.app.get('/tenders/{}/bidders'.format(self.tender_id))
         self.assertEqual(response.status, '200 OK')
         self.assertEqual(response.content_type, 'application/json')
+        self.assertEqual(response.json['data'], [])
+
+        self.set_status('contract-signed')
+
+        response = self.app.get('/tenders/{}/bidders'.format(self.tender_id))
+        self.assertEqual(response.status, '200 OK')
+        self.assertEqual(response.content_type, 'application/json')
         self.assertEqual(response.json['data'][0], bidder)
 
         response = self.app.get('/tenders/some_id/bidders', status=404)
@@ -231,6 +266,7 @@ class TenderBidderResourceTest(BaseTenderWebTest):
 
 
 class TenderBidderDocumentResourceTest(BaseTenderWebTest):
+    initial_data = {'status': 'tendering'}
 
     def setUp(self):
         super(TenderBidderDocumentResourceTest, self).setUp()
@@ -399,6 +435,14 @@ class TenderBidderDocumentResourceTest(BaseTenderWebTest):
         self.assertEqual(doc_id, response.json["data"]["id"])
         self.assertEqual('name.doc', response.json["data"]["title"])
 
+        self.set_status('awarded')
+
+        response = self.app.post('/tenders/{}/bidders/{}/documents'.format(
+            self.tender_id, self.bid_id), upload_files=[('file', 'name.doc', 'content')], status=403)
+        self.assertEqual(response.status, '403 Forbidden')
+        self.assertEqual(response.content_type, 'application/json')
+        self.assertEqual(response.json['errors'][0]["description"], "Can't add document in current tender status")
+
     def test_put_tender_bidder_document(self):
         response = self.app.post('/tenders/{}/bidders/{}/documents'.format(
             self.tender_id, self.bid_id), upload_files=[('file', 'name.doc', 'content')])
@@ -427,6 +471,14 @@ class TenderBidderDocumentResourceTest(BaseTenderWebTest):
         self.assertEqual(response.content_type, 'application/json')
         self.assertEqual(doc_id, response.json["data"]["id"])
         self.assertEqual('name.doc', response.json["data"]["title"])
+
+        self.set_status('awarded')
+
+        response = self.app.put('/tenders/{}/bidders/{}/documents/{}'.format(
+            self.tender_id, self.bid_id, doc_id), upload_files=[('file', 'name.doc', 'content3')], status=403)
+        self.assertEqual(response.status, '403 Forbidden')
+        self.assertEqual(response.content_type, 'application/json')
+        self.assertEqual(response.json['errors'][0]["description"], "Can't update document in current tender status")
 
 
 def suite():

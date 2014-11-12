@@ -9,6 +9,10 @@ from schematics.types.compound import ModelType, ListType, DictType
 from schematics.types.serializable import serializable
 
 
+schematics_embedded_role = SchematicsDocument.Options.roles['embedded']
+schematics_default_role = SchematicsDocument.Options.roles['default']
+
+
 class AmendmentInformation(Model):
     """Amendment information"""
     amendmentDate = DateTimeType()
@@ -58,8 +62,8 @@ class Document(Model):
     class Options:
         serialize_when_none = False
         roles = {
-            "embedded": SchematicsDocument.Options.roles['embedded'],
-            "view": (blacklist("revisions") + SchematicsDocument.Options.roles['default']),
+            "embedded": schematics_embedded_role,
+            "view": (blacklist("revisions") + schematics_default_role),
             "revisions": whitelist("uri", "modified"),
         }
 
@@ -108,8 +112,8 @@ class Organization(Model):
     class Options:
         serialize_when_none = False
         roles = {
-            "embedded": SchematicsDocument.Options.roles['embedded'],
-            "view": SchematicsDocument.Options.roles['default'],
+            "embedded": schematics_embedded_role,
+            "view": schematics_default_role,
         }
 
     id = ModelType(identifier, required=True)
@@ -121,9 +125,16 @@ class Bid(Model):
     class Options:
         serialize_when_none = False
         roles = {
-            "embedded": SchematicsDocument.Options.roles['embedded'],
-            "view": SchematicsDocument.Options.roles['default'],
+            "embedded": schematics_embedded_role,
+            "view": schematics_default_role,
+            "auction_view": whitelist("totalValue"),
+            "enquiries": whitelist(),
+            "tendering": whitelist(),
             "auction": whitelist("totalValue"),
+            "qualification": whitelist("totalValue"),
+            "awarded": whitelist("totalValue"),
+            "contract-signed": schematics_default_role,
+            "paused": whitelist(),
         }
 
     bidders = ListType(ModelType(Organization), default=list())
@@ -142,8 +153,8 @@ class Award(Model):
     class Options:
         serialize_when_none = False
         roles = {
-            "embedded": SchematicsDocument.Options.roles['embedded'],
-            "view": SchematicsDocument.Options.roles['default'],
+            "embedded": schematics_embedded_role,
+            "view": schematics_default_role,
         }
 
     awardID = StringType(required=True, default=lambda: uuid4().hex)
@@ -192,13 +203,27 @@ class OrganizationDocument(SchematicsDocument, Organization):
     pass
 
 
+plain_role = (blacklist("_attachments", "revisions", "modified") + schematics_embedded_role)
+view_role = (blacklist("_attachments", "revisions") + schematics_embedded_role)
+listing_role = whitelist("modified", "doc_id")
+auction_view_role = whitelist("modified", "bids", "tenderPeriod", "minimalStep")
+enquiries_role = (blacklist("_attachments", "revisions", "bids") + schematics_embedded_role)
+
+
 class TenderDocument(SchematicsDocument, Tender):
     class Options:
         roles = {
-            "plain": (blacklist("_attachments", "revisions", "modified") + SchematicsDocument.Options.roles['embedded']),
-            "view": (blacklist("_attachments", "revisions") + SchematicsDocument.Options.roles['embedded']),
-            "listing": whitelist("modified", "doc_id"),
-            "auction": whitelist("modified", "bids", "tenderPeriod", "minimalStep"),
+            "plain": plain_role,
+            "view": view_role,
+            "listing": listing_role,
+            "auction_view": auction_view_role,
+            "enquiries": enquiries_role,
+            "tendering": enquiries_role,
+            "auction": view_role,
+            "qualification": view_role,
+            "awarded": view_role,
+            "contract-signed": view_role,
+            "paused": view_role,
         }
 
     _attachments = DictType(DictType(BaseType), default=dict())

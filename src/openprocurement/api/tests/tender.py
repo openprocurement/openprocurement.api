@@ -197,6 +197,7 @@ class TenderResourceTest(BaseWebTest):
         response = self.app.get('/tenders/{}'.format(tender['id']))
         self.assertEqual(response.status, '200 OK')
         self.assertEqual(response.content_type, 'application/json')
+        self.assertEqual(set(response.json['data']), set(tender))
         self.assertEqual(response.json['data'], tender)
 
         response = self.app.post_json('/tenders?opt_jsonp=callback', {"data": test_tender_data})
