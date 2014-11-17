@@ -2,7 +2,7 @@
 import unittest
 import datetime
 
-from openprocurement.api.models import TenderDocument
+from openprocurement.api.models import TenderDocument, get_now
 from openprocurement.api.tests.base import test_tender_data, BaseWebTest
 
 
@@ -31,9 +31,9 @@ class TenderDocumentTest(BaseWebTest):
 class TenderResourceTest(BaseWebTest):
 
     def test_empty_listing(self):
-        before = datetime.datetime.now().isoformat()
+        before = get_now().isoformat()
         response = self.app.get('/tenders')
-        after = datetime.datetime.now().isoformat()
+        after = get_now().isoformat()
         self.assertEqual(response.status, '200 OK')
         self.assertEqual(response.content_type, 'application/json')
         self.assertEqual(response.json['data'], [])
@@ -86,7 +86,7 @@ class TenderResourceTest(BaseWebTest):
         self.assertEqual(set([i['id'] for i in response.json['data']]), set([i['id'] for i in tenders]))
         self.assertEqual(set([i['dateModified'] for i in response.json['data']]), set([i['dateModified'] for i in tenders]))
 
-        before = datetime.datetime.now().isoformat()
+        before = get_now().isoformat()
         response = self.app.get('/tenders?limit=2')
         self.assertEqual(response.status, '200 OK')
         self.assertEqual(len(response.json['data']), 2)
