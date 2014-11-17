@@ -195,6 +195,7 @@ class Tender(Model):
     awards = ListType(ModelType(Award), default=list())
     revisions = ListType(ModelType(revision), default=list())
     deliveryDate = ModelType(Period)
+    auctionPeriod = ModelType(Period)
     minimalStep = ModelType(Value)
     status = StringType(choices=['enquiries', 'tendering', 'auction', 'qualification', 'awarded', 'contract-signed', 'paused'], default='enquiries')
 
