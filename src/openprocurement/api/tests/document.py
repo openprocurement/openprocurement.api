@@ -229,6 +229,7 @@ class TenderDocumentResourceTest(BaseTenderWebTest):
         self.assertEqual(response.content_type, 'application/json')
         self.assertEqual(doc_id, response.json["data"]["id"])
         self.assertEqual('document description', response.json["data"]["description"])
+        self.assertTrue(modified < response.json["data"]["modified"])
 
         self.set_status('tendering')
 
@@ -236,7 +237,6 @@ class TenderDocumentResourceTest(BaseTenderWebTest):
         self.assertEqual(response.status, '403 Forbidden')
         self.assertEqual(response.content_type, 'application/json')
         self.assertEqual(response.json['errors'][0]["description"], "Can't update document in current tender status")
-
 
 
 def suite():

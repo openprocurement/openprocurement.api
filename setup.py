@@ -13,6 +13,7 @@ requires = [
     'couchdb-schematics',
     'sphinxcontrib-httpdomain',
     'jsonpatch',
+    'boto',
 ]
 test_requires = requires + [
     'webtest',
@@ -25,7 +26,7 @@ main = openprocurement.api:main
 """
 
 setup(name='openprocurement.api',
-      version='0.2',
+      version='0.3',
       description='openprocurement.api',
       long_description=README,
       classifiers=[

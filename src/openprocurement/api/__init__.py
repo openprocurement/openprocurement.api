@@ -9,6 +9,7 @@ from pyramid.events import NewRequest
 from couchdb import Server
 from openprocurement.api.design import sync_design
 from openprocurement.api.migration import migrate_data
+from boto.s3.connection import S3Connection, Location
 
 
 VERSION = int(pkg_resources.get_distribution(__package__).parsed_version[0])
@@ -56,4 +57,13 @@ def main(global_config, **settings):
 
     # migrate data
     migrate_data(config.registry.db)
+
+    # S3 connection
+    if 'aws.access_key' in settings and 'aws.secret_key' in settings and 'aws.bucket' in settings:
+        connection = S3Connection(settings['aws.access_key'], settings['aws.secret_key'])
+        config.registry.s3_connection = connection
+        bucket_name = settings['aws.bucket']
+        if bucket_name not in [b.name for b in connection.get_all_buckets()]:
+            connection.create_bucket(bucket_name, location=Location.EU)
+        config.registry.bucket_name = bucket_name
     return config.make_wsgi_app()

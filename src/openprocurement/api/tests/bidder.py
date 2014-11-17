@@ -495,7 +495,6 @@ class TenderBidderDocumentResourceTest(BaseTenderWebTest):
         self.assertEqual(response.content_type, 'application/json')
         self.assertEqual(response.json['errors'][0]["description"], "Can't update document in current tender status")
 
-
     def test_patch_tender_bidder_document(self):
         response = self.app.post('/tenders/{}/bidders/{}/documents'.format(
             self.tender_id, self.bid_id), upload_files=[('file', 'name.doc', 'content')])
