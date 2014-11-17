@@ -75,7 +75,6 @@ class Classification(Model):
     uri = URLType()
 
 
-
 class Unit(Model):
     """Description of the unit which the good comes in e.g. hours, kilograms. Made up of a unit name, and the value of a single unit."""
     name = StringType()

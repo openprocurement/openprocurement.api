@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
 import unittest
-import datetime
 
 from openprocurement.api.models import TenderDocument, get_now
 from openprocurement.api.tests.base import test_tender_data, BaseWebTest
