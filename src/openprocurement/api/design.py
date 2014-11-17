@@ -15,8 +15,8 @@ tenders_all_view = ViewDefinition('tenders', 'all', '''function(doc) {
 }''')
 
 
-tenders_by_modified_view = ViewDefinition('tenders', 'by_modified', '''function(doc) {
+tenders_by_dateModified_view = ViewDefinition('tenders', 'by_dateModified', '''function(doc) {
     if(doc.doc_type == 'TenderDocument') {
-        emit(doc.modified, doc);
+        emit(doc.dateModified, {'dateModified': doc.dateModified});
     }
 }''')

@@ -82,9 +82,9 @@ class TenderResourceTest(BaseWebTest):
         response = self.app.get('/tenders')
         self.assertEqual(response.status, '200 OK')
         self.assertEqual(len(response.json['data']), 3)
-        self.assertEqual(set(response.json['data'][0]), set([u'id', u'modified']))
+        self.assertEqual(set(response.json['data'][0]), set([u'id', u'dateModified']))
         self.assertEqual(set([i['id'] for i in response.json['data']]), set([i['id'] for i in tenders]))
-        self.assertEqual(set([i['modified'] for i in response.json['data']]), set([i['modified'] for i in tenders]))
+        self.assertEqual(set([i['dateModified'] for i in response.json['data']]), set([i['dateModified'] for i in tenders]))
 
         before = datetime.datetime.now().isoformat()
         response = self.app.get('/tenders?limit=2')
@@ -176,7 +176,7 @@ class TenderResourceTest(BaseWebTest):
         self.assertEqual(response.status, '201 Created')
         self.assertEqual(response.content_type, 'application/json')
         tender = response.json['data']
-        self.assertEqual(set(tender), set([u'id', u'modified', u'tenderID', u'status', u'enquiryPeriod']))
+        self.assertEqual(set(tender), set([u'id', u'dateModified', u'tenderID', u'status', u'enquiryPeriod']))
         self.assertNotEqual(data['id'], tender['id'])
         self.assertNotEqual(data['doc_id'], tender['id'])
         self.assertNotEqual(data['tenderID'], tender['tenderID'])
@@ -191,7 +191,7 @@ class TenderResourceTest(BaseWebTest):
         self.assertEqual(response.content_type, 'application/json')
         tender = response.json['data']
         self.assertEqual(set(tender) - set(test_tender_data), set(
-            [u'id', u'modified', u'tenderID', u'status']))
+            [u'id', u'dateModified', u'tenderID', u'status']))
         self.assertTrue(tender['id'] in response.headers['Location'])
 
         response = self.app.get('/tenders/{}'.format(tender['id']))
@@ -248,16 +248,16 @@ class TenderResourceTest(BaseWebTest):
         self.assertEqual(response.status, '201 Created')
         tender = response.json['data']
         tender['procurementMethod'] = 'Open'
-        modified = tender.pop('modified')
+        dateModified = tender.pop('dateModified')
 
         response = self.app.put_json('/tenders/{}'.format(
             tender['id']), {'data': tender})
         self.assertEqual(response.status, '200 OK')
         self.assertEqual(response.content_type, 'application/json')
         new_tender = response.json['data']
-        new_modified = new_tender.pop('modified')
+        new_dateModified = new_tender.pop('dateModified')
         self.assertEqual(tender, new_tender)
-        self.assertNotEqual(modified, new_modified)
+        self.assertNotEqual(dateModified, new_dateModified)
 
     def test_patch_tender(self):
         response = self.app.get('/tenders')
@@ -267,32 +267,32 @@ class TenderResourceTest(BaseWebTest):
         response = self.app.post_json('/tenders', {'data': {}})
         self.assertEqual(response.status, '201 Created')
         tender = response.json['data']
-        modified = tender.pop('modified')
+        dateModified = tender.pop('dateModified')
 
         response = self.app.patch_json('/tenders/{}'.format(
             tender['id']), {'data': {'procurementMethod': 'Open'}})
         self.assertEqual(response.status, '200 OK')
         self.assertEqual(response.content_type, 'application/json')
         new_tender = response.json['data']
-        new_modified = new_tender.pop('modified')
+        new_dateModified = new_tender.pop('dateModified')
         tender['procurementMethod'] = 'Open'
         self.assertEqual(tender, new_tender)
-        self.assertNotEqual(modified, new_modified)
+        self.assertNotEqual(dateModified, new_dateModified)
 
         response = self.app.patch_json('/tenders/{}'.format(
-            tender['id']), {'data': {'modified': new_modified}})
+            tender['id']), {'data': {'dateModified': new_dateModified}})
         self.assertEqual(response.status, '200 OK')
         self.assertEqual(response.content_type, 'application/json')
         new_tender2 = response.json['data']
-        new_modified2 = new_tender2.pop('modified')
+        new_dateModified2 = new_tender2.pop('dateModified')
         self.assertEqual(new_tender, new_tender2)
-        self.assertEqual(new_modified, new_modified2)
+        self.assertEqual(new_dateModified, new_dateModified2)
 
         revisions = self.db.get(tender['id']).get('revisions')
         self.assertEqual(revisions[0][u'changes'][0]['op'], u'remove')
         self.assertEqual(revisions[0][u'changes'][0]['path'], u'/procurementMethod')
 
-    def test_modified_tender(self):
+    def test_dateModified_tender(self):
         response = self.app.get('/tenders')
         self.assertEqual(response.status, '200 OK')
         self.assertEqual(len(response.json['data']), 0)
@@ -300,26 +300,26 @@ class TenderResourceTest(BaseWebTest):
         response = self.app.post_json('/tenders', {'data': {}})
         self.assertEqual(response.status, '201 Created')
         tender = response.json['data']
-        modified = tender['modified']
+        dateModified = tender['dateModified']
 
         response = self.app.get('/tenders/{}'.format(tender['id']))
         self.assertEqual(response.status, '200 OK')
         self.assertEqual(response.content_type, 'application/json')
-        self.assertEqual(response.json['data']['modified'], modified)
+        self.assertEqual(response.json['data']['dateModified'], dateModified)
 
         response = self.app.patch_json('/tenders/{}'.format(
             tender['id']), {'data': {'procurementMethod': 'Open'}})
         self.assertEqual(response.status, '200 OK')
         self.assertEqual(response.content_type, 'application/json')
-        self.assertNotEqual(response.json['data']['modified'], modified)
+        self.assertNotEqual(response.json['data']['dateModified'], dateModified)
         tender = response.json['data']
-        modified = tender['modified']
+        dateModified = tender['dateModified']
 
         response = self.app.get('/tenders/{}'.format(tender['id']))
         self.assertEqual(response.status, '200 OK')
         self.assertEqual(response.content_type, 'application/json')
         self.assertEqual(response.json['data'], tender)
-        self.assertEqual(response.json['data']['modified'], modified)
+        self.assertEqual(response.json['data']['dateModified'], dateModified)
 
     def test_tender_not_found(self):
         response = self.app.get('/tenders')

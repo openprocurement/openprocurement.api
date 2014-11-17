@@ -97,7 +97,7 @@ class Document(Model):
         roles = {
             "embedded": schematics_embedded_role,
             "view": (blacklist("revisions") + schematics_default_role),
-            "revisions": whitelist("uri", "modified"),
+            "revisions": whitelist("uri", "dateModified"),
         }
 
     id = StringType(required=True)
@@ -107,7 +107,7 @@ class Document(Model):
     format = StringType()
     url = URLType()  # Link to the document or attachment.
     datePublished = IsoDateTimeType(default=get_now)
-    modified = IsoDateTimeType(default=get_now)  # Date that the document was last modified
+    dateModified = IsoDateTimeType(default=get_now)  # Date that the document was last dateModified
     language = StringType()
 
 
@@ -240,10 +240,10 @@ class OrganizationDocument(SchematicsDocument, Organization):
     pass
 
 
-plain_role = (blacklist("_attachments", "revisions", "modified") + schematics_embedded_role)
+plain_role = (blacklist("_attachments", "revisions", "dateModified") + schematics_embedded_role)
 view_role = (blacklist("_attachments", "revisions") + schematics_embedded_role)
-listing_role = whitelist("modified", "doc_id")
-auction_view_role = whitelist("modified", "bids", "tenderPeriod", "minimalStep")
+listing_role = whitelist("dateModified", "doc_id")
+auction_view_role = whitelist("dateModified", "bids", "tenderPeriod", "minimalStep")
 enquiries_role = (blacklist("_attachments", "revisions", "bids") + schematics_embedded_role)
 
 
@@ -264,7 +264,7 @@ class TenderDocument(SchematicsDocument, Tender):
         }
 
     _attachments = DictType(DictType(BaseType), default=dict())
-    modified = IsoDateTimeType(default=get_now)
+    dateModified = IsoDateTimeType(default=get_now)
 
     @serializable(serialized_name="id")
     def doc_id(self):

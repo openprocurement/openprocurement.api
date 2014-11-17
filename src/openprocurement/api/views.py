@@ -114,7 +114,7 @@ def generate_tender_id(tid):
     return "UA-" + tid
 
 
-def filter_data(data, fields=['id', 'doc_id', 'modified', 'url']):
+def filter_data(data, fields=['id', 'doc_id', 'dateModified', 'url']):
     result = data.copy()
     for i in fields:
         if i in result:
@@ -205,7 +205,7 @@ class TenderResource(object):
                 "data": [
                     {
                         "id": "64e93250be76435397e8c992ed4214d1",
-                        "modified": "2014-10-27T08:06:58.158Z"
+                        "dateModified": "2014-10-27T08:06:58.158Z"
                     }
                 ]
             }
@@ -222,11 +222,11 @@ class TenderResource(object):
         if descending:
             params['descending'] = descending
         next_offset = get_now().isoformat()
-        results = TenderDocument.view(self.db, 'tenders/by_modified', limit=limit + 1, startkey=offset, descending=bool(descending))
+        results = TenderDocument.view(self.db, 'tenders/by_dateModified', limit=limit + 1, startkey=offset, descending=bool(descending))
         results = [i.serialize("listing") for i in results]
         if len(results) > limit:
             results, last = results[:-1], results[-1]
-            params['offset'] = last['modified']
+            params['offset'] = last['dateModified']
         else:
             params['offset'] = next_offset
         next_url = self.request.route_url('collection_Tender', _query=params)
@@ -328,7 +328,7 @@ class TenderResource(object):
                 "data": {
                     "id": "64e93250be76435397e8c992ed4214d1",
                     "tenderID": "UA-64e93250be76435397e8c992ed4214d1",
-                    "modified": "2014-10-27T08:06:58.158Z",
+                    "dateModified": "2014-10-27T08:06:58.158Z",
                     "procuringEntity": {
                         "id": {
                             "name": "Державне управління справами",
@@ -395,9 +395,9 @@ class TenderResource(object):
         tender_data['tenderID'] = generate_tender_id(tender_id)
         tender = TenderDocument(tender_data)
         if tender.enquiryPeriod:
-            tender.enquiryPeriod.startDate = tender.modified
+            tender.enquiryPeriod.startDate = tender.dateModified
         else:
-            tender.enquiryPeriod = {'startDate': tender.modified}
+            tender.enquiryPeriod = {'startDate': tender.dateModified}
         try:
             tender.store(self.db)
         except Exception, e:
@@ -433,7 +433,7 @@ class TenderResource(object):
                 "data": {
                     "id": "64e93250be76435397e8c992ed4214d1",
                     "tenderID": "UA-64e93250be76435397e8c992ed4214d1",
-                    "modified": "2014-10-27T08:06:58.158Z",
+                    "dateModified": "2014-10-27T08:06:58.158Z",
                     "procuringEntity": {
                         "id": {
                             "name": "Державне управління справами",
@@ -547,7 +547,7 @@ class TenderResource(object):
                 "data": {
                     "id": "4879d3f8ee2443169b5fbbc9f89fa607",
                     "tenderID": "UA-64e93250be76435397e8c992ed4214d1",
-                    "modified": "2014-10-27T08:12:34.956Z",
+                    "dateModified": "2014-10-27T08:12:34.956Z",
                     "value": {
                         "amount": 600
                     },
@@ -601,7 +601,7 @@ class TenderDocumentResource(object):
             collection_data = sorted(dict([
                 (i.id, i.serialize("view"))
                 for i in self.tender['documents']
-            ]).values(), key=lambda i: i['modified'])
+            ]).values(), key=lambda i: i['dateModified'])
         return {'data': collection_data}
 
     @view(renderer='json', validators=(validate_file_upload, validate_tender_exists_by_tender_id,))
@@ -1025,7 +1025,7 @@ class TenderBidderDocumentResource(object):
             collection_data = sorted(dict([
                 (i.id, i.serialize("view"))
                 for i in self.bid['documents']
-            ]).values(), key=lambda i: i['modified'])
+            ]).values(), key=lambda i: i['dateModified'])
         return {'data': collection_data}
 
     @view(renderer='json', validators=(validate_file_upload, validate_tender_bid_exists_by_bid_id,))
@@ -1318,7 +1318,7 @@ def get_auction(request):
 
         {
             "data": {
-                "modified": "2014-10-27T08:06:58.158Z",
+                "dateModified": "2014-10-27T08:06:58.158Z",
                 "bids": [
                     {
                         "value": {
@@ -1369,7 +1369,7 @@ def patch_auction(request):
 
         {
             "data": {
-                "modified": "2014-10-27T08:06:58.158Z",
+                "dateModified": "2014-10-27T08:06:58.158Z",
                 "bids": [
                     {
                         "value": {
@@ -1396,7 +1396,7 @@ def patch_auction(request):
 
         {
             "data": {
-                "modified": "2014-10-27T08:06:58.158Z",
+                "dateModified": "2014-10-27T08:06:58.158Z",
                 "bids": [
                     {
                         "value": {

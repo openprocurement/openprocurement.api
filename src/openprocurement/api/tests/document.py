@@ -131,7 +131,7 @@ class TenderDocumentResourceTest(BaseTenderWebTest):
         self.assertEqual(response.status, '201 Created')
         self.assertEqual(response.content_type, 'application/json')
         doc_id = response.json["data"]['id']
-        modified = response.json["data"]['modified']
+        dateModified = response.json["data"]['dateModified']
         self.assertTrue(doc_id in response.headers['Location'])
 
         response = self.app.put('/tenders/{}/documents/{}'.format(
@@ -154,29 +154,29 @@ class TenderDocumentResourceTest(BaseTenderWebTest):
         self.assertEqual(response.content_type, 'application/json')
         self.assertEqual(doc_id, response.json["data"]["id"])
         self.assertEqual('name.doc', response.json["data"]["title"])
-        modified2 = response.json["data"]['modified']
-        self.assertTrue(modified < modified2)
-        self.assertEqual(modified, response.json["data"]["previousVersions"][0]['modified'])
+        dateModified2 = response.json["data"]['dateModified']
+        self.assertTrue(dateModified < dateModified2)
+        self.assertEqual(dateModified, response.json["data"]["previousVersions"][0]['dateModified'])
 
         response = self.app.get('/tenders/{}/documents?all=true'.format(self.tender_id))
         self.assertEqual(response.status, '200 OK')
         self.assertEqual(response.content_type, 'application/json')
-        self.assertEqual(modified, response.json["data"][0]['modified'])
-        self.assertEqual(modified2, response.json["data"][1]['modified'])
+        self.assertEqual(dateModified, response.json["data"][0]['dateModified'])
+        self.assertEqual(dateModified2, response.json["data"][1]['dateModified'])
 
         response = self.app.post('/tenders/{}/documents'.format(
             self.tender_id), upload_files=[('file', 'name.doc', 'content')])
         self.assertEqual(response.status, '201 Created')
         self.assertEqual(response.content_type, 'application/json')
         doc_id = response.json["data"]['id']
-        modified = response.json["data"]['modified']
+        dateModified = response.json["data"]['dateModified']
         self.assertTrue(doc_id in response.headers['Location'])
 
         response = self.app.get('/tenders/{}/documents'.format(self.tender_id))
         self.assertEqual(response.status, '200 OK')
         self.assertEqual(response.content_type, 'application/json')
-        self.assertEqual(modified2, response.json["data"][0]['modified'])
-        self.assertEqual(modified, response.json["data"][1]['modified'])
+        self.assertEqual(dateModified2, response.json["data"][0]['dateModified'])
+        self.assertEqual(dateModified, response.json["data"][1]['dateModified'])
 
         response = self.app.put('/tenders/{}/documents/{}'.format(self.tender_id, doc_id), status=404, upload_files=[
                                 ('invalid_name', 'name.doc', 'content')])
@@ -216,7 +216,7 @@ class TenderDocumentResourceTest(BaseTenderWebTest):
         self.assertEqual(response.status, '201 Created')
         self.assertEqual(response.content_type, 'application/json')
         doc_id = response.json["data"]['id']
-        modified = response.json["data"]['modified']
+        dateModified = response.json["data"]['dateModified']
         self.assertTrue(doc_id in response.headers['Location'])
 
         response = self.app.patch_json('/tenders/{}/documents/{}'.format(self.tender_id, doc_id), {"data": {"description": "document description"}})
@@ -229,7 +229,7 @@ class TenderDocumentResourceTest(BaseTenderWebTest):
         self.assertEqual(response.content_type, 'application/json')
         self.assertEqual(doc_id, response.json["data"]["id"])
         self.assertEqual('document description', response.json["data"]["description"])
-        self.assertTrue(modified < response.json["data"]["modified"])
+        self.assertTrue(dateModified < response.json["data"]["dateModified"])
 
         self.set_status('tendering')
 

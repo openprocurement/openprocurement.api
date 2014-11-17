@@ -72,7 +72,7 @@ class TenderAuctionResourceTest(BaseWebTest):
         self.assertEqual(response.content_type, 'application/json')
         auction = response.json['data']
         self.assertNotEqual(auction, self.tender_data)
-        self.assertTrue('modified' in auction)
+        self.assertTrue('dateModified' in auction)
         self.assertTrue('minimalStep' in auction)
         self.assertFalse("procuringEntity" in auction)
         self.assertFalse("bidders" in auction["bids"][0])
