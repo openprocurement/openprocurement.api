@@ -1,13 +1,12 @@
 # -*- coding: utf-8 -*-
 """ Cornice services.
 """
-import datetime
 from cornice.ext.spore import generate_spore_description
 from cornice.resource import resource, view
 from cornice.service import Service, get_services
 from jsonpatch import make_patch
 from openprocurement.api import VERSION
-from openprocurement.api.models import TenderDocument, Bid, Award, Document, revision
+from openprocurement.api.models import TenderDocument, Bid, Award, Document, revision, get_now
 from schematics.exceptions import ModelValidationError, ModelConversionError
 from urllib import quote
 from uuid import uuid4
@@ -222,7 +221,7 @@ class TenderResource(object):
         descending = self.request.params.get('descending')
         if descending:
             params['descending'] = descending
-        next_offset = datetime.datetime.now().isoformat()
+        next_offset = get_now().isoformat()
         results = TenderDocument.view(self.db, 'tenders/by_modified', limit=limit + 1, startkey=offset, descending=bool(descending))
         results = [i.serialize("listing") for i in results]
         if len(results) > limit:

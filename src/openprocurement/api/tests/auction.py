@@ -2,6 +2,8 @@
 import unittest
 
 from openprocurement.api.tests.base import test_tender_data, BaseWebTest
+from iso8601 import parse_date
+from tzlocal import get_localzone
 
 
 class TenderAuctionResourceTest(BaseWebTest):
@@ -76,7 +78,7 @@ class TenderAuctionResourceTest(BaseWebTest):
         self.assertFalse("bidders" in auction["bids"][0])
         self.assertEqual(auction["bids"][0]['totalValue']['amount'], self.tender_data["bids"][0]['totalValue']['amount'])
         self.assertEqual(auction["bids"][1]['totalValue']['amount'], self.tender_data["bids"][1]['totalValue']['amount'])
-        self.assertTrue(self.tender_data["tenderPeriod"]['endDate'] in auction["tenderPeriod"]['endDate'])
+        self.assertEqual(parse_date(self.tender_data["tenderPeriod"]['endDate'], get_localzone()), parse_date(auction["tenderPeriod"]['endDate']))
 
         response = self.app.get('/tenders/{}/auction?opt_jsonp=callback'.format(self.tender_id))
         self.assertEqual(response.status, '200 OK')

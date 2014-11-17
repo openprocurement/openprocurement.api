@@ -1,21 +1,48 @@
 # -*- coding: utf-8 -*-
-import datetime
+from datetime import datetime
+from iso8601 import parse_date, ParseError
 from uuid import uuid4
 from couchdb_schematics.document import SchematicsDocument
 from schematics.models import Model
 from schematics.transforms import whitelist, blacklist
-from schematics.types import StringType, FloatType, IntType, URLType, DateTimeType, BooleanType, BaseType, EmailType
+from schematics.types import StringType, FloatType, IntType, URLType, BooleanType, BaseType, EmailType
 from schematics.types.compound import ModelType, ListType, DictType
 from schematics.types.serializable import serializable
+from schematics.exceptions import ConversionError
+from tzlocal import get_localzone
 
 
 schematics_embedded_role = SchematicsDocument.Options.roles['embedded']
 schematics_default_role = SchematicsDocument.Options.roles['default']
 
 
+TZ = get_localzone()
+
+
+def get_now():
+    return datetime.now(TZ)
+
+
+class IsoDateTimeType(BaseType):
+    MESSAGES = {
+        'parse': u'Could not parse {0}. Should be ISO8601.',
+    }
+
+    def to_native(self, value, context=None):
+        if isinstance(value, datetime):
+            return value
+        try:
+            return parse_date(value, TZ)
+        except ParseError, e:
+            raise ConversionError(e)
+
+    def to_primitive(self, value, context=None):
+        return value.isoformat(' ')
+
+
 class AmendmentInformation(Model):
     """Amendment information"""
-    amendmentDate = DateTimeType()
+    amendmentDate = IsoDateTimeType()
     amendedFields = StringType()  # Comma-seperated list of affected fields.
     justification = StringType()  # An explanation / justification for the amendment.
 
@@ -24,7 +51,7 @@ class Notice(Model):
     """The notice is a published document that notifies the public at various stages of the contracting process."""
     id = StringType()  # The identifier that identifies the notice to the publisher. This may be the same or different from the OCID.
     uri = URLType()  # A permanent uri that provides access to the notice.
-    publishedDate = DateTimeType()  # The date this version of the notice was published. In the case of notice amendments, it is the date that reflects to this version of the data.
+    publishedDate = IsoDateTimeType()  # The date this version of the notice was published. In the case of notice amendments, it is the date that reflects to this version of the data.
     isAmendment = BooleanType()  # If true, then amendment information should be provided.
     amendment = ModelType(AmendmentInformation)  # Amendment information
 
@@ -37,8 +64,8 @@ class Value(Model):
 
 class Period(Model):
     """The period when the tender is open for submissions. The end date is the closing date for tender submissions."""
-    startDate = DateTimeType()  # The state date for the period.
-    endDate = DateTimeType()  # The end date for the period.
+    startDate = IsoDateTimeType()  # The state date for the period.
+    endDate = IsoDateTimeType()  # The end date for the period.
 
 
 class classification(Model):
@@ -73,8 +100,8 @@ class Document(Model):
     description = StringType()  # A description of the document.
     format = StringType()
     url = URLType()  # Link to the document or attachment.
-    datePublished = DateTimeType(default=datetime.datetime.now)
-    modified = DateTimeType(default=datetime.datetime.now)  # Date that the document was last modified
+    datePublished = IsoDateTimeType(default=get_now)
+    modified = IsoDateTimeType(default=get_now)  # Date that the document was last modified
     language = StringType()
 
 
@@ -138,7 +165,7 @@ class Bid(Model):
         }
 
     bidders = ListType(ModelType(Organization), default=list())
-    date = DateTimeType(default=datetime.datetime.now)
+    date = IsoDateTimeType(default=get_now)
     id = StringType(required=True, default=lambda: uuid4().hex)
     status = StringType(choices=['registration', 'validBid', 'invalidBid'])
     totalValue = ModelType(Value)
@@ -159,7 +186,7 @@ class Award(Model):
 
     awardID = StringType(required=True, default=lambda: uuid4().hex)
     notice = ModelType(Notice)
-    awardDate = DateTimeType(default=datetime.datetime.now)
+    awardDate = IsoDateTimeType(default=get_now)
     awardValue = ModelType(Value)
     awardStatus = StringType(required=True, choices=['pending', 'unsuccessful'])  # 'pending', 'active', 'cancelled', 'unsuccessful'
     suppliers = ListType(ModelType(Organization), default=list())
@@ -167,7 +194,7 @@ class Award(Model):
 
 
 class revision(Model):
-    date = DateTimeType(default=datetime.datetime.now)
+    date = IsoDateTimeType(default=get_now)
     changes = ListType(DictType(BaseType), default=list())
 
 
@@ -228,7 +255,7 @@ class TenderDocument(SchematicsDocument, Tender):
         }
 
     _attachments = DictType(DictType(BaseType), default=dict())
-    modified = DateTimeType(default=datetime.datetime.now)
+    modified = IsoDateTimeType(default=get_now)
 
     @serializable(serialized_name="id")
     def doc_id(self):

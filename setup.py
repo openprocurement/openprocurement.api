@@ -14,6 +14,8 @@ requires = [
     'sphinxcontrib-httpdomain',
     'jsonpatch',
     'boto',
+    'iso8601',
+    'tzlocal',
 ]
 test_requires = requires + [
     'webtest',
