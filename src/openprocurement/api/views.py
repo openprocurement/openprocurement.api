@@ -272,7 +272,7 @@ class TenderResource(object):
                             "streetAddress": "вул. Банкова, 11, корпус 1"
                         }
                     },
-                    "totalValue": {
+                    "value": {
                         "amount": 500,
                         "currency": "UAH",
                         "valueAddedTaxIncluded": true
@@ -344,7 +344,7 @@ class TenderResource(object):
                             "streetAddress": "вул. Банкова, 11, корпус 1"
                         }
                     },
-                    "totalValue": {
+                    "value": {
                         "amount": 500,
                         "currency": "UAH",
                         "valueAddedTaxIncluded": true
@@ -394,6 +394,10 @@ class TenderResource(object):
         tender_data['doc_id'] = tender_id
         tender_data['tenderID'] = generate_tender_id(tender_id)
         tender = TenderDocument(tender_data)
+        if tender.enquiryPeriod:
+            tender.enquiryPeriod.startDate = tender.modified
+        else:
+            tender.enquiryPeriod = {'startDate': tender.modified}
         try:
             tender.store(self.db)
         except Exception, e:
@@ -445,7 +449,7 @@ class TenderResource(object):
                             "streetAddress": "вул. Банкова, 11, корпус 1"
                         }
                     },
-                    "totalValue": {
+                    "value": {
                         "amount": 500,
                         "currency": "UAH",
                         "valueAddedTaxIncluded": true
@@ -521,7 +525,7 @@ class TenderResource(object):
 
             {
                 "data": {
-                    "totalValue": {
+                    "value": {
                         "amount": 600
                     },
                     "itemsToBeProcured": [
@@ -544,7 +548,7 @@ class TenderResource(object):
                     "id": "4879d3f8ee2443169b5fbbc9f89fa607",
                     "tenderID": "UA-64e93250be76435397e8c992ed4214d1",
                     "modified": "2014-10-27T08:12:34.956Z",
-                    "totalValue": {
+                    "value": {
                         "amount": 600
                     },
                     "itemsToBeProcured": [
@@ -748,7 +752,7 @@ class TenderBidderResource(object):
                             }
                         }
                     ],
-                    "totalValue": {
+                    "value": {
                         "amount": 489,
                         "currency": "UAH",
                         "valueAddedTaxIncluded": true
@@ -785,7 +789,7 @@ class TenderBidderResource(object):
                             }
                         }
                     ],
-                    "totalValue": {
+                    "value": {
                         "amount": 489,
                         "currency": "UAH",
                         "valueAddedTaxIncluded": true
@@ -840,7 +844,7 @@ class TenderBidderResource(object):
             {
                 "data": [
                     {
-                        "totalValue": {
+                        "value": {
                             "amount": 489,
                             "currency": "UAH",
                             "valueAddedTaxIncluded": true
@@ -875,7 +879,7 @@ class TenderBidderResource(object):
 
             {
                 "data": {
-                    "totalValue": {
+                    "value": {
                         "amount": 600,
                         "currency": "UAH",
                         "valueAddedTaxIncluded": true
@@ -902,7 +906,7 @@ class TenderBidderResource(object):
 
             {
                 "data": {
-                    "totalValue": {
+                    "value": {
                         "amount": 600
                     }
                 }
@@ -917,7 +921,7 @@ class TenderBidderResource(object):
 
             {
                 "data": {
-                    "totalValue": {
+                    "value": {
                         "amount": 600,
                         "currency": "UAH",
                         "valueAddedTaxIncluded": true
@@ -966,7 +970,7 @@ class TenderBidderResource(object):
 
             {
                 "data": {
-                    "totalValue": {
+                    "value": {
                         "amount": 489,
                         "currency": "UAH",
                         "valueAddedTaxIncluded": true
@@ -1317,14 +1321,14 @@ def get_auction(request):
                 "modified": "2014-10-27T08:06:58.158Z",
                 "bids": [
                     {
-                        "totalValue": {
+                        "value": {
                             "amount": 500,
                             "currency": "UAH",
                             "valueAddedTaxIncluded": true
                         }
                     },
                     {
-                        "totalValue": {
+                        "value": {
                             "amount": 485,
                             "currency": "UAH",
                             "valueAddedTaxIncluded": true
@@ -1368,13 +1372,13 @@ def patch_auction(request):
                 "modified": "2014-10-27T08:06:58.158Z",
                 "bids": [
                     {
-                        "totalValue": {
+                        "value": {
                             "amount": 400,
                             "currency": "UAH"
                         }
                     },
                     {
-                        "totalValue": {
+                        "value": {
                             "amount": 385,
                             "currency": "UAH"
                         }
@@ -1395,14 +1399,14 @@ def patch_auction(request):
                 "modified": "2014-10-27T08:06:58.158Z",
                 "bids": [
                     {
-                        "totalValue": {
+                        "value": {
                             "amount": 400,
                             "currency": "UAH",
                             "valueAddedTaxIncluded": true
                         }
                     },
                     {
-                        "totalValue": {
+                        "value": {
                             "amount": 385,
                             "currency": "UAH",
                             "valueAddedTaxIncluded": true

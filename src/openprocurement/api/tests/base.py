@@ -8,10 +8,10 @@ from openprocurement.api import VERSION
 
 test_tender_data = {
     "procuringEntity": {
-        "id": {
-            "name": "Державне управління справами",
+        "name": "Державне управління справами",
+        "identifier": {
             "scheme": "https://ns.openprocurement.org/ua/edrpou",
-            "uid": "00037256",
+            "id": "00037256",
             "uri": "http://www.dus.gov.ua/"
         },
         "address": {
@@ -22,7 +22,7 @@ test_tender_data = {
             "streetAddress": "вул. Банкова, 11, корпус 1"
         },
     },
-    "totalValue": {
+    "value": {
         "amount": 500,
         "currency": "UAH"
     },
@@ -30,22 +30,24 @@ test_tender_data = {
         "amount": 35,
         "currency": "UAH"
     },
-    "itemsToBeProcured": [
+    "items": [
         {
             "description": "футляри до державних нагород",
-            "primaryClassification": {
+            "classification": {
                 "scheme": "CPV",
                 "id": "44617100-9",
                 "description": "Cartons"
             },
-            "additionalClassification": [
+            "additionalClassifications": [
                 {
                     "scheme": "ДКПП",
                     "id": "17.21.1",
                     "description": "папір і картон гофровані, паперова й картонна тара"
                 }
             ],
-            "unitOfMeasure": "item",
+            "unit": {
+                "name": "item"
+            },
             "quantity": 5
         }
     ],

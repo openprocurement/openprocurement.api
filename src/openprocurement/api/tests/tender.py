@@ -151,23 +151,23 @@ class TenderResourceTest(BaseWebTest):
         ])
 
         response = self.app.post_json(request_path, {'data': {
-                                      'totalValue': 'invalid_value'}}, status=422)
+                                      'value': 'invalid_value'}}, status=422)
         self.assertEqual(response.status, '422 Unprocessable Entity')
         self.assertEqual(response.content_type, 'application/json')
         self.assertEqual(response.json['status'], 'error')
         self.assertEqual(response.json['errors'], [
             {u'description': [
-                u'Please use a mapping for this field or Value instance instead of unicode.'], u'location': u'body', u'name': u'totalValue'}
+                u'Please use a mapping for this field or Value instance instead of unicode.'], u'location': u'body', u'name': u'value'}
         ])
 
         response = self.app.post_json(request_path, {
-                                      'data': {'method': 'invalid_value'}}, status=422)
+                                      'data': {'procurementMethod': 'invalid_value'}}, status=422)
         self.assertEqual(response.status, '422 Unprocessable Entity')
         self.assertEqual(response.content_type, 'application/json')
         self.assertEqual(response.json['status'], 'error')
         self.assertEqual(response.json['errors'], [
             {u'description': [
-                u"Value must be one of ['Open', 'Selective', 'Limited']."], u'location': u'body', u'name': u'method'}
+                u"Value must be one of ['Open', 'Selective', 'Limited']."], u'location': u'body', u'name': u'procurementMethod'}
         ])
 
     def test_create_tender_generated(self):
@@ -176,7 +176,7 @@ class TenderResourceTest(BaseWebTest):
         self.assertEqual(response.status, '201 Created')
         self.assertEqual(response.content_type, 'application/json')
         tender = response.json['data']
-        self.assertEqual(set(tender), set([u'id', u'modified', u'tenderID', u'status']))
+        self.assertEqual(set(tender), set([u'id', u'modified', u'tenderID', u'status', u'enquiryPeriod']))
         self.assertNotEqual(data['id'], tender['id'])
         self.assertNotEqual(data['doc_id'], tender['id'])
         self.assertNotEqual(data['tenderID'], tender['tenderID'])
@@ -247,7 +247,7 @@ class TenderResourceTest(BaseWebTest):
         response = self.app.post_json('/tenders', {'data': {}})
         self.assertEqual(response.status, '201 Created')
         tender = response.json['data']
-        tender['method'] = 'Open'
+        tender['procurementMethod'] = 'Open'
         modified = tender.pop('modified')
 
         response = self.app.put_json('/tenders/{}'.format(
@@ -270,12 +270,12 @@ class TenderResourceTest(BaseWebTest):
         modified = tender.pop('modified')
 
         response = self.app.patch_json('/tenders/{}'.format(
-            tender['id']), {'data': {'method': 'Open'}})
+            tender['id']), {'data': {'procurementMethod': 'Open'}})
         self.assertEqual(response.status, '200 OK')
         self.assertEqual(response.content_type, 'application/json')
         new_tender = response.json['data']
         new_modified = new_tender.pop('modified')
-        tender['method'] = 'Open'
+        tender['procurementMethod'] = 'Open'
         self.assertEqual(tender, new_tender)
         self.assertNotEqual(modified, new_modified)
 
@@ -290,7 +290,7 @@ class TenderResourceTest(BaseWebTest):
 
         revisions = self.db.get(tender['id']).get('revisions')
         self.assertEqual(revisions[0][u'changes'][0]['op'], u'remove')
-        self.assertEqual(revisions[0][u'changes'][0]['path'], u'/method')
+        self.assertEqual(revisions[0][u'changes'][0]['path'], u'/procurementMethod')
 
     def test_modified_tender(self):
         response = self.app.get('/tenders')
@@ -308,7 +308,7 @@ class TenderResourceTest(BaseWebTest):
         self.assertEqual(response.json['data']['modified'], modified)
 
         response = self.app.patch_json('/tenders/{}'.format(
-            tender['id']), {'data': {'method': 'Open'}})
+            tender['id']), {'data': {'procurementMethod': 'Open'}})
         self.assertEqual(response.status, '200 OK')
         self.assertEqual(response.content_type, 'application/json')
         self.assertNotEqual(response.json['data']['modified'], modified)

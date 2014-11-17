@@ -20,7 +20,7 @@ class TenderAuctionResourceTest(BaseWebTest):
                 "bidders": [
                     test_tender_data["procuringEntity"]
                 ],
-                "totalValue": {
+                "value": {
                     "amount": 469,
                     "currency": "UAH",
                     "valueAddedTaxIncluded": True
@@ -33,7 +33,7 @@ class TenderAuctionResourceTest(BaseWebTest):
                 "bidders": [
                     test_tender_data["procuringEntity"]
                 ],
-                "totalValue": {
+                "value": {
                     "amount": 479,
                     "currency": "UAH",
                     "valueAddedTaxIncluded": True
@@ -76,8 +76,8 @@ class TenderAuctionResourceTest(BaseWebTest):
         self.assertTrue('minimalStep' in auction)
         self.assertFalse("procuringEntity" in auction)
         self.assertFalse("bidders" in auction["bids"][0])
-        self.assertEqual(auction["bids"][0]['totalValue']['amount'], self.tender_data["bids"][0]['totalValue']['amount'])
-        self.assertEqual(auction["bids"][1]['totalValue']['amount'], self.tender_data["bids"][1]['totalValue']['amount'])
+        self.assertEqual(auction["bids"][0]['value']['amount'], self.tender_data["bids"][0]['value']['amount'])
+        self.assertEqual(auction["bids"][1]['value']['amount'], self.tender_data["bids"][1]['value']['amount'])
         self.assertEqual(parse_date(self.tender_data["tenderPeriod"]['endDate'], get_localzone()), parse_date(auction["tenderPeriod"]['endDate']))
 
         response = self.app.get('/tenders/{}/auction?opt_jsonp=callback'.format(self.tender_id))
@@ -94,14 +94,14 @@ class TenderAuctionResourceTest(BaseWebTest):
         patch_data = {
             'bids': [
                 {
-                    "totalValue": {
+                    "value": {
                         "amount": 409,
                         "currency": "UAH",
                         "valueAddedTaxIncluded": True
                     }
                 },
                 {
-                    "totalValue": {
+                    "value": {
                         "amount": 419,
                         "currency": "UAH",
                         "valueAddedTaxIncluded": True
@@ -113,10 +113,10 @@ class TenderAuctionResourceTest(BaseWebTest):
         self.assertEqual(response.status, '200 OK')
         self.assertEqual(response.content_type, 'application/json')
         auction = response.json['data']
-        self.assertNotEqual(auction["bids"][0]['totalValue']['amount'], self.tender_data["bids"][0]['totalValue']['amount'])
-        self.assertNotEqual(auction["bids"][1]['totalValue']['amount'], self.tender_data["bids"][1]['totalValue']['amount'])
-        self.assertEqual(auction["bids"][0]['totalValue']['amount'], patch_data["bids"][0]['totalValue']['amount'])
-        self.assertEqual(auction["bids"][1]['totalValue']['amount'], patch_data["bids"][1]['totalValue']['amount'])
+        self.assertNotEqual(auction["bids"][0]['value']['amount'], self.tender_data["bids"][0]['value']['amount'])
+        self.assertNotEqual(auction["bids"][1]['value']['amount'], self.tender_data["bids"][1]['value']['amount'])
+        self.assertEqual(auction["bids"][0]['value']['amount'], patch_data["bids"][0]['value']['amount'])
+        self.assertEqual(auction["bids"][1]['value']['amount'], patch_data["bids"][1]['value']['amount'])
 
 
 def suite():

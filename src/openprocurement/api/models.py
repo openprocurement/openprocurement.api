@@ -68,21 +68,27 @@ class Period(Model):
     endDate = IsoDateTimeType()  # The end date for the period.
 
 
-class classification(Model):
+class Classification(Model):
     scheme = StringType(required=True)  # The classification scheme for the goods
     id = StringType(required=True)  # The classification ID from the Scheme used
     description = StringType(required=True)  # A description of the goods, services to be provided.
     uri = URLType()
 
 
+
+class Unit(Model):
+    """Description of the unit which the good comes in e.g. hours, kilograms. Made up of a unit name, and the value of a single unit."""
+    name = StringType()
+    value = ModelType(Value)
+
+
 class Item(Model):
     """A good, service, or work to be contracted."""
     description = StringType()  # A description of the goods, services to be provided.
-    primaryClassification = ModelType(classification)
-    additionalClassification = ListType(ModelType(classification), default=list())
-    unitOfMeasure = StringType()  # Description of the unit which the good comes in e.g. hours, kilograms
+    classification = ModelType(Classification)
+    additionalClassifications = ListType(ModelType(Classification), default=list())
+    unit = ModelType(Unit)  # Description of the unit which the good comes in e.g. hours, kilograms
     quantity = IntType()  # The number of units required
-    valuePerUnit = ModelType(Value)  # The value per unit of the item specified.
 
 
 class Document(Model):
@@ -105,14 +111,14 @@ class Document(Model):
     language = StringType()
 
 
-class identifier(Model):
+class Identifier(Model):
     class Options:
         serialize_when_none = False
 
-    name = StringType(required=True)
     scheme = URLType()  # The scheme that holds the unique identifiers used to identify the item being identified.
-    uid = StringType()  # The unique ID for this entity under the given ID scheme.
-    uri = URLType()
+    id = BaseType()  # The identifier of the organization in the selected scheme.
+    legalName = StringType()  # The legally registered name of the organization.
+    uri = URLType()  # A URI to identify the organization.
 
 
 class address(Model):
@@ -127,8 +133,8 @@ class address(Model):
 
 
 class ContactPoint(Model):
-    name = StringType(required=True)
-    email = EmailType(required=True)
+    name = StringType()
+    email = EmailType()
     telephone = StringType()
     faxNumber = StringType()
     url = URLType()
@@ -143,7 +149,9 @@ class Organization(Model):
             "view": schematics_default_role,
         }
 
-    id = ModelType(identifier, required=True)
+    name = StringType(required=True)
+    identifier = ModelType(Identifier, required=True)
+    additionalIdentifiers = ListType(ModelType(Identifier))
     address = ModelType(address)
     contactPoint = ModelType(ContactPoint)
 
@@ -154,12 +162,12 @@ class Bid(Model):
         roles = {
             "embedded": schematics_embedded_role,
             "view": schematics_default_role,
-            "auction_view": whitelist("totalValue"),
+            "auction_view": whitelist("value"),
             "enquiries": whitelist(),
             "tendering": whitelist(),
-            "auction": whitelist("totalValue"),
-            "qualification": whitelist("totalValue"),
-            "awarded": whitelist("totalValue"),
+            "auction": whitelist("value"),
+            "qualification": whitelist("value"),
+            "awarded": whitelist("value"),
             "contract-signed": schematics_default_role,
             "paused": whitelist(),
         }
@@ -168,7 +176,7 @@ class Bid(Model):
     date = IsoDateTimeType(default=get_now)
     id = StringType(required=True, default=lambda: uuid4().hex)
     status = StringType(choices=['registration', 'validBid', 'invalidBid'])
-    totalValue = ModelType(Value)
+    value = ModelType(Value)
     documents = ListType(ModelType(Document), default=list())
 
 
@@ -200,14 +208,15 @@ class revision(Model):
 
 class Tender(Model):
     """Data regarding tender process - publicly inviting prospective contractors to submit bids for evaluation and selecting a winner or winners."""
+    title = StringType()
+    description = StringType()
     tenderID = StringType(required=True, default=lambda: "UA-{}".format(uuid4().hex))  # TenderID should always be the same as the OCID. It is included to make the flattened data structure more convenient.
-    notice = ModelType(Notice)
-    itemsToBeProcured = ListType(ModelType(Item))  # The goods and services to be purchased, broken into line items wherever possible. Items should not be duplicated, but a quantity of 2 specified instead.
-    totalValue = ModelType(Value)  # The total estimated value of the procurement.
-    method = StringType(choices=['Open', 'Selective', 'Limited'])  # Specify tendering method as per GPA definitions of Open, Selective, Limited (http://www.wto.org/english/docs_e/legal_e/rev-gpr-94_01_e.htm)
-    methodJustification = StringType()  # Justification of procurement method, especially in the case of Limited tendering.
-    selectionCriteria = StringType(choices=['Lowest Cost', 'Best Proposal', 'Best Value to Government', 'Single bid only'])  # Specify the selection criteria, by lowest cost,
-    selectionDetails = StringType()  # Any detailed or further information on the selection criteria.
+    items = ListType(ModelType(Item))  # The goods and services to be purchased, broken into line items wherever possible. Items should not be duplicated, but a quantity of 2 specified instead.
+    value = ModelType(Value)  # The total estimated value of the procurement.
+    procurementMethod = StringType(choices=['Open', 'Selective', 'Limited'])  # Specify tendering method as per GPA definitions of Open, Selective, Limited (http://www.wto.org/english/docs_e/legal_e/rev-gpr-94_01_e.htm)
+    procurementMethodRationale = StringType()  # Justification of procurement method, especially in the case of Limited tendering.
+    awardCriteria = StringType(choices=['Lowest Cost', 'Best Proposal', 'Best Value to Government', 'Single bid only'])  # Specify the selection criteria, by lowest cost,
+    awardCriteriaDetails = StringType()  # Any detailed or further information on the selection criteria.
     submissionMethod = StringType(choices=['Electronic Auction', 'Electronic Submission', 'Written', 'In Person'])  # Specify the method by which bids must be submitted, in person, written, or electronic auction
     submissionDetails = StringType()  # Any detailed or further information on the submission method.
     tenderPeriod = ModelType(Period)  # The period when the tender is open for submissions. The end date is the closing date for tender submissions.

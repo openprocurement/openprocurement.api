@@ -3,7 +3,7 @@ import logging
 
 
 LOGGER = logging.getLogger(__name__)
-SCHEMA_VERSION = 6
+SCHEMA_VERSION = 10
 SCHEMA_DOC = 'openprocurement_schema'
 
 
