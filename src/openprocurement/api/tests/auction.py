@@ -12,6 +12,7 @@ class TenderAuctionResourceTest(BaseWebTest):
         super(TenderAuctionResourceTest, self).setUp()
         # Create tender with bids
         self.tender_data = test_tender_data.copy()
+        self.tender_data['auctionPeriod'] = test_tender_data["tenderPeriod"]
         self.tender_data['bids'] = [
             {
                 "id": "4879d3f8ee2443169b5fbbc9f89fa606",
@@ -78,7 +79,7 @@ class TenderAuctionResourceTest(BaseWebTest):
         self.assertFalse("bidders" in auction["bids"][0])
         self.assertEqual(auction["bids"][0]['value']['amount'], self.tender_data["bids"][0]['value']['amount'])
         self.assertEqual(auction["bids"][1]['value']['amount'], self.tender_data["bids"][1]['value']['amount'])
-        self.assertEqual(parse_date(self.tender_data["tenderPeriod"]['endDate'], get_localzone()), parse_date(auction["tenderPeriod"]['endDate']))
+        self.assertEqual(parse_date(self.tender_data["auctionPeriod"]['endDate'], get_localzone()), parse_date(auction["auctionPeriod"]['endDate']))
 
         response = self.app.get('/tenders/{}/auction?opt_jsonp=callback'.format(self.tender_id))
         self.assertEqual(response.status, '200 OK')

@@ -161,7 +161,7 @@ class Bid(Model):
         roles = {
             "embedded": schematics_embedded_role,
             "view": schematics_default_role,
-            "auction_view": whitelist("value"),
+            "auction_view": whitelist("value", "id", "date"),
             "enquiries": whitelist(),
             "tendering": whitelist(),
             "auction": whitelist("value"),
@@ -242,7 +242,7 @@ class OrganizationDocument(SchematicsDocument, Organization):
 plain_role = (blacklist("_attachments", "revisions", "dateModified") + schematics_embedded_role)
 view_role = (blacklist("_attachments", "revisions") + schematics_embedded_role)
 listing_role = whitelist("dateModified", "doc_id")
-auction_view_role = whitelist("dateModified", "bids", "tenderPeriod", "minimalStep")
+auction_view_role = whitelist("tenderID", "dateModified", "bids", "auctionPeriod", "minimalStep")
 enquiries_role = (blacklist("_attachments", "revisions", "bids") + schematics_embedded_role)
 
 
