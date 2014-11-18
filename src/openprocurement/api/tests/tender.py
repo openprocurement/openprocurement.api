@@ -91,6 +91,12 @@ class TenderResourceTest(BaseWebTest):
         self.assertEqual(len(response.json['data']), 2)
         self.assertFalse(before < response.json['next_page']['offset'])
 
+        response = self.app.get('/tenders', params=[('opt_fields', 'status,enquiryPeriod')])
+        self.assertEqual(response.status, '200 OK')
+        self.assertEqual(len(response.json['data']), 3)
+        self.assertEqual(set(response.json['data'][0]), set([u'id', u'dateModified', u'status', u'enquiryPeriod']))
+        self.assertTrue('opt_fields=status%2CenquiryPeriod' in response.json['next_page']['uri'])
+
     def test_create_tender_invalid(self):
         request_path = '/tenders'
         response = self.app.post(request_path, 'data', status=415)

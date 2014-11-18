@@ -162,6 +162,13 @@ def get_file(tender, document, key, db, request):
         request.errors.status = 404
 
 
+def tender_serialize(tender, fields):
+    if fields:
+        fields = fields.split(',') + ["dateModified", "id"]
+        return dict([(i, j) for i, j in tender.serialize(tender.status).items() if i in fields])
+    return tender.serialize("listing")
+
+
 @spore.get()
 def get_spore(request):
     services = get_services()
@@ -213,6 +220,9 @@ class TenderResource(object):
         """
         # http://wiki.apache.org/couchdb/HTTP_view_API#Querying_Options
         params = {}
+        fields = self.request.params.get('opt_fields', '')
+        if fields:
+            params['opt_fields'] = fields
         limit = self.request.params.get('limit', '')
         if limit:
             params['limit'] = limit
@@ -223,7 +233,7 @@ class TenderResource(object):
             params['descending'] = descending
         next_offset = get_now().isoformat()
         results = TenderDocument.view(self.db, 'tenders/by_dateModified', limit=limit + 1, startkey=offset, descending=bool(descending))
-        results = [i.serialize("listing") for i in results]
+        results = [tender_serialize(i, fields) for i in results]
         if len(results) > limit:
             results, last = results[:-1], results[-1]
             params['offset'] = last['dateModified']
