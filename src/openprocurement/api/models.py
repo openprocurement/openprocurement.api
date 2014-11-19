@@ -120,7 +120,7 @@ class Document(Model):
             "revisions": whitelist("uri", "dateModified"),
         }
 
-    id = StringType(required=True)
+    id = StringType()
     classification = StringType(choices=['notice', 'biddingDocuments', 'technicalSpecifications', 'evaluationCriteria', 'clarifications', 'bidders'])
     title = StringType()  # A title of the document.
     description = StringType()  # A description of the document.
@@ -233,7 +233,7 @@ class Tender(Model):
     """Data regarding tender process - publicly inviting prospective contractors to submit bids for evaluation and selecting a winner or winners."""
     title = StringType()
     description = StringType()
-    tenderID = StringType(required=True, default=lambda: "UA-{}".format(uuid4().hex))  # TenderID should always be the same as the OCID. It is included to make the flattened data structure more convenient.
+    tenderID = StringType()  # TenderID should always be the same as the OCID. It is included to make the flattened data structure more convenient.
     items = ListType(ModelType(Item))  # The goods and services to be purchased, broken into line items wherever possible. Items should not be duplicated, but a quantity of 2 specified instead.
     value = ModelType(Value)  # The total estimated value of the procurement.
     procurementMethod = StringType(choices=['Open', 'Selective', 'Limited'])  # Specify tendering method as per GPA definitions of Open, Selective, Limited (http://www.wto.org/english/docs_e/legal_e/rev-gpr-94_01_e.htm)

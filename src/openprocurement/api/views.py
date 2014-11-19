@@ -4,7 +4,7 @@
 from cornice.ext.spore import generate_spore_description
 from cornice.resource import resource, view
 from cornice.service import Service, get_services
-from jsonpatch import make_patch
+from jsonpatch import make_patch, apply_patch
 from openprocurement.api import VERSION
 from openprocurement.api.models import TenderDocument, Bid, Award, Document, revision, get_now
 from schematics.exceptions import ModelValidationError, ModelConversionError
@@ -50,7 +50,7 @@ def validate_award_data(request):
 
 
 def validate_document_data(request):
-    return validate_data(request, Document, True)
+    return validate_data(request, Document)
 
 
 def validate_tender_exists(request, key='id'):
@@ -160,6 +160,20 @@ def get_file(tender, document, key, db, request):
             return request.response
         request.errors.add('url', 'download', 'Not Found')
         request.errors.status = 404
+
+
+def apply_data_patch(item, changes):
+    patch_changes = []
+    for i, j in changes.items():
+        if i in item:
+            for x in make_patch(item[i], j).patch:
+                if x['op'] == u'remove':
+                    continue
+                x['path'] = '/{}{}'.format(i, x['path'])
+                patch_changes.append(x)
+        else:
+            patch_changes.append({'op': 'add', 'path': '/{}'.format(i), 'value': j})
+    return apply_patch(item, patch_changes)
 
 
 def tender_serialize(tender, fields):
@@ -573,9 +587,7 @@ class TenderResource(object):
         src = self.tender.serialize("plain")
         tender_data = filter_data(self.request.json_body['data'])
         if tender_data:
-            if 'tenderID' not in tender_data:
-                tender_data['tenderID'] = self.tender.tenderID
-            self.tender.import_data(tender_data)
+            self.tender.import_data(apply_data_patch(src, tender_data))
             patch = make_patch(self.tender.serialize("plain"), src).patch
             if patch:
                 self.tender.revisions.append(revision({'changes': patch}))
@@ -699,8 +711,6 @@ class TenderDocumentResource(object):
         src = self.tender.serialize("plain")
         document_data = filter_data(self.request.json_body['data'])
         if document_data:
-            if 'id' not in document_data:
-                document_data['id'] = self.document_id
             self.document.import_data(document_data)
             patch = make_patch(self.tender.serialize("plain"), src).patch
             if patch:
@@ -947,9 +957,7 @@ class TenderBidderResource(object):
         src = self.tender.serialize("plain")
         bid_data = filter_data(self.request.json_body['data'])
         if bid_data:
-            if 'id' not in bid_data:
-                bid_data['id'] = self.bid.id
-            self.bid.import_data(bid_data)
+            self.bid.import_data(apply_data_patch(self.bid.serialize(), bid_data))
             patch = make_patch(self.tender.serialize("plain"), src).patch
             if patch:
                 self.tender.revisions.append(revision({'changes': patch}))
@@ -1124,8 +1132,6 @@ class TenderBidderDocumentResource(object):
         src = self.tender.serialize("plain")
         document_data = filter_data(self.request.json_body['data'])
         if document_data:
-            if 'id' not in document_data:
-                document_data['id'] = self.document_id
             self.document.import_data(document_data)
             patch = make_patch(self.tender.serialize("plain"), src).patch
             if patch:
@@ -1440,7 +1446,7 @@ def patch_auction(request):
     auction_data = filter_data(request.json_body['data'])
     if auction_data:
         auction_data['tenderID'] = tender.tenderID
-        tender.import_data(auction_data)
+        tender.import_data(apply_data_patch(src, auction_data))
         patch = make_patch(tender.serialize("plain"), src).patch
         if patch:
             tender.revisions.append(revision({'changes': patch}))
