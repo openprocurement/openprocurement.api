@@ -42,6 +42,9 @@ class IsoDateTimeType(BaseType):
 
 class AmendmentInformation(Model):
     """Amendment information"""
+    class Options:
+        serialize_when_none = False
+
     amendmentDate = IsoDateTimeType()
     amendedFields = StringType()  # Comma-seperated list of affected fields.
     justification = StringType()  # An explanation / justification for the amendment.
@@ -49,6 +52,9 @@ class AmendmentInformation(Model):
 
 class Notice(Model):
     """The notice is a published document that notifies the public at various stages of the contracting process."""
+    class Options:
+        serialize_when_none = False
+
     id = StringType()  # The identifier that identifies the notice to the publisher. This may be the same or different from the OCID.
     uri = URLType()  # A permanent uri that provides access to the notice.
     publishedDate = IsoDateTimeType()  # The date this version of the notice was published. In the case of notice amendments, it is the date that reflects to this version of the data.
@@ -57,6 +63,9 @@ class Notice(Model):
 
 
 class Value(Model):
+    class Options:
+        serialize_when_none = False
+
     amount = FloatType()  # Amount as a number.
     currency = StringType(max_length=3, min_length=3)  # The currency in 3-letter ISO 4217 format.
     valueAddedTaxIncluded = BooleanType(default=True)
@@ -64,11 +73,17 @@ class Value(Model):
 
 class Period(Model):
     """The period when the tender is open for submissions. The end date is the closing date for tender submissions."""
+    class Options:
+        serialize_when_none = False
+
     startDate = IsoDateTimeType()  # The state date for the period.
     endDate = IsoDateTimeType()  # The end date for the period.
 
 
 class Classification(Model):
+    class Options:
+        serialize_when_none = False
+
     scheme = StringType(required=True)  # The classification scheme for the goods
     id = StringType(required=True)  # The classification ID from the Scheme used
     description = StringType(required=True)  # A description of the goods, services to be provided.
@@ -77,12 +92,18 @@ class Classification(Model):
 
 class Unit(Model):
     """Description of the unit which the good comes in e.g. hours, kilograms. Made up of a unit name, and the value of a single unit."""
+    class Options:
+        serialize_when_none = False
+
     name = StringType()
     value = ModelType(Value)
 
 
 class Item(Model):
     """A good, service, or work to be contracted."""
+    class Options:
+        serialize_when_none = False
+
     description = StringType()  # A description of the goods, services to be provided.
     classification = ModelType(Classification)
     additionalClassifications = ListType(ModelType(Classification), default=list())
@@ -132,6 +153,9 @@ class address(Model):
 
 
 class ContactPoint(Model):
+    class Options:
+        serialize_when_none = False
+
     name = StringType()
     email = EmailType()
     telephone = StringType()
