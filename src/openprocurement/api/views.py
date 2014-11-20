@@ -35,10 +35,33 @@ def validate_data(request, model, partial=False):
         for i in e.message:
             request.errors.add('body', i, e.message[i])
         request.errors.status = 422
+    return data
 
 
 def validate_tender_data(request):
     return validate_data(request, TenderDocument)
+
+
+def validate_tender_auction_data(request):
+    data = validate_tender_data(request)
+    tender = validate_tender_exists_by_tender_id(request)
+    if data is None or not tender:
+        return
+    if tender.status != 'auction':
+        request.errors.add('body', 'data', 'Can\'t report auction results in current tender status')
+        request.errors.status = 403
+        return
+    bids = data.get('bids', [])
+    tender_bids_ids = [i.id for i in tender.bids]
+    if len(bids) != len(tender.bids):
+        request.errors.add('body', 'bids', "Number of auction results did not match the number of tender bids")
+        request.errors.status = 422
+    elif not all(['id' in i for i in bids]):
+        request.errors.add('body', 'bids', "Results of auction bids should contains id of bid")
+        request.errors.status = 422
+    elif set([i['id'] for i in bids]) != set(tender_bids_ids):
+        request.errors.add('body', 'bids', "Auction bids should be identical to the tender bids")
+        request.errors.status = 422
 
 
 def validate_bid_data(request):
@@ -114,7 +137,7 @@ def generate_tender_id(tid):
     return "UA-" + tid
 
 
-def filter_data(data, fields=['id', 'doc_id', 'dateModified', 'url']):
+def filter_data(data, fields=['id', 'doc_id', 'date', 'dateModified', 'url']):
     result = data.copy()
     for i in fields:
         if i in result:
@@ -825,8 +848,7 @@ class TenderBidderResource(object):
             self.request.errors.status = 403
             return
         src = self.tender.serialize("plain")
-        bid_data = filter_data(
-            self.request.json_body['data'], fields=['id', 'date'])
+        bid_data = filter_data(self.request.json_body['data'])
         bid = Bid(bid_data)
         self.tender.bids.append(bid)
         patch = make_patch(self.tender.serialize("plain"), src).patch
@@ -1364,11 +1386,15 @@ def get_auction(request):
     """
     db = request.registry.db
     tender = TenderDocument.load(db, request.matchdict['tender_id'])
+    if tender.status != 'auction':
+        request.errors.add('body', 'data', 'Can\'t get auction info in current tender status')
+        request.errors.status = 403
+        return
     auction_info = tender.serialize("auction_view")
     return {'data': auction_info}
 
 
-@auction.patch(content_type="application/json", validators=(validate_tender_data, validate_tender_exists_by_tender_id), renderer='json')
+@auction.patch(content_type="application/json", validators=(validate_tender_auction_data), renderer='json')
 def patch_auction(request):
     """Report auction results.
 
@@ -1446,6 +1472,9 @@ def patch_auction(request):
     auction_data = filter_data(request.json_body['data'])
     if auction_data:
         auction_data['tenderID'] = tender.tenderID
+        bids = auction_data.get('bids', [])
+        tender_bids_ids = [i.id for i in tender.bids]
+        auction_data['bids'] = [x for (y, x) in sorted(zip([tender_bids_ids.index(i['id']) for i in bids], bids))]
         tender.import_data(apply_data_patch(src, auction_data))
         patch = make_patch(tender.serialize("plain"), src).patch
         if patch:

@@ -67,7 +67,7 @@ class Value(Model):
         serialize_when_none = False
 
     amount = FloatType()  # Amount as a number.
-    currency = StringType(max_length=3, min_length=3)  # The currency in 3-letter ISO 4217 format.
+    currency = StringType(default=u'UAH', max_length=3, min_length=3)  # The currency in 3-letter ISO 4217 format.
     valueAddedTaxIncluded = BooleanType(default=True)
 
 
