@@ -824,9 +824,9 @@ class TenderDocumentResource(object):
 
 
 @resource(name='Tender Bids',
-          collection_path='/tenders/{tender_id}/bidders',
-          path='/tenders/{tender_id}/bidders/{id}',
-          description="Tender bidders")
+          collection_path='/tenders/{tender_id}/bids',
+          path='/tenders/{tender_id}/bids/{id}',
+          description="Tender bids")
 class TenderBidderResource(object):
 
     def __init__(self, request):
@@ -844,7 +844,7 @@ class TenderBidderResource(object):
 
         .. sourcecode:: http
 
-            POST /tenders/4879d3f8ee2443169b5fbbc9f89fa607/bidders HTTP/1.1
+            POST /tenders/4879d3f8ee2443169b5fbbc9f89fa607/bids HTTP/1.1
             Host: example.com
             Accept: application/json
 
@@ -945,7 +945,7 @@ class TenderBidderResource(object):
 
         .. sourcecode:: http
 
-            GET /tenders/4879d3f8ee2443169b5fbbc9f89fa607/bidders HTTP/1.1
+            GET /tenders/4879d3f8ee2443169b5fbbc9f89fa607/bids HTTP/1.1
             Host: example.com
             Accept: application/json
 
@@ -982,7 +982,7 @@ class TenderBidderResource(object):
 
         .. sourcecode:: http
 
-            GET /tenders/4879d3f8ee2443169b5fbbc9f89fa607/bidders/71b6c23ed8944d688e92a31ec8c3f61a HTTP/1.1
+            GET /tenders/4879d3f8ee2443169b5fbbc9f89fa607/bids/71b6c23ed8944d688e92a31ec8c3f61a HTTP/1.1
             Host: example.com
             Accept: application/json
 
@@ -1021,7 +1021,7 @@ class TenderBidderResource(object):
 
         .. sourcecode:: http
 
-            PATCH /tenders/4879d3f8ee2443169b5fbbc9f89fa607/bidders/71b6c23ed8944d688e92a31ec8c3f61a HTTP/1.1
+            PATCH /tenders/4879d3f8ee2443169b5fbbc9f89fa607/bids/71b6c23ed8944d688e92a31ec8c3f61a HTTP/1.1
             Host: example.com
             Accept: application/json
 
@@ -1078,7 +1078,7 @@ class TenderBidderResource(object):
 
         .. sourcecode:: http
 
-            DELETE /tenders/4879d3f8ee2443169b5fbbc9f89fa607/bidders/71b6c23ed8944d688e92a31ec8c3f61a HTTP/1.1
+            DELETE /tenders/4879d3f8ee2443169b5fbbc9f89fa607/bids/71b6c23ed8944d688e92a31ec8c3f61a HTTP/1.1
             Host: example.com
             Accept: application/json
 
@@ -1120,8 +1120,8 @@ class TenderBidderResource(object):
 
 
 @resource(name='Tender Bid Documents',
-          collection_path='/tenders/{tender_id}/bidders/{bid_id}/documents',
-          path='/tenders/{tender_id}/bidders/{bid_id}/documents/{id}',
+          collection_path='/tenders/{tender_id}/bids/{bid_id}/documents',
+          path='/tenders/{tender_id}/bids/{bid_id}/documents/{id}',
           description="Tender bidder documents")
 class TenderBidderDocumentResource(object):
 
@@ -1321,7 +1321,7 @@ class TenderAwardResource(object):
 
         .. sourcecode:: http
 
-            POST /tenders/4879d3f8ee2443169b5fbbc9f89fa607/bidders HTTP/1.1
+            POST /tenders/4879d3f8ee2443169b5fbbc9f89fa607/awards HTTP/1.1
             Host: example.com
             Accept: application/json
 
