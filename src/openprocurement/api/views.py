@@ -616,7 +616,11 @@ class TenderResource(object):
 
         """
         tender = self.request.validated['tender']
-        return {'data': tender.serialize(tender.status)}
+        tender_data = tender.serialize(tender.status)
+        if tender.status in ['auction', 'qualification', 'awarded', 'contract-signed']:
+            # auction url
+            tender_data['auctionUrl'] = 'http://auction-sandbox.openprocurement.org/tenders/{}'.format(tender.id)
+        return {'data': tender_data}
 
     @view(content_type="application/json", validators=(validate_tender_data, validate_tender_exists), renderer='json')
     def put(self):
@@ -1008,9 +1012,9 @@ class TenderBidderResource(object):
         if tender.status in ['enquiries', 'tendering']:
             return {'data': {}}
         bid_data = self.request.validated['bid'].serialize(tender.status)
-        if tender.status == 'auction':
-            # auction participant url
-            bid_data['participant_url'] = 'http://auction-sandbox.openprocurement.org/tenders/{}?bidder_id={}'.format(tender.id, self.request.validated['id'])
+        if tender.status in ['auction', 'qualification', 'awarded', 'contract-signed']:
+            # auction participation url
+            bid_data['participationUrl'] = 'http://auction-sandbox.openprocurement.org/tenders/{}?bidder_id={}'.format(tender.id, self.request.validated['id'])
         return {'data': bid_data}
 
     @view(content_type="application/json", validators=(validate_patch_bid_data, validate_tender_bid_exists), renderer='json')

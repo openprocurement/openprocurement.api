@@ -174,7 +174,9 @@ class TenderBidderResourceTest(BaseTenderWebTest):
         response = self.app.get('/tenders/{}/bids/{}'.format(self.tender_id, bidder['id']))
         self.assertEqual(response.status, '200 OK')
         self.assertEqual(response.content_type, 'application/json')
-        self.assertEqual(response.json['data'], bidder)
+        bidder_data = response.json['data']
+        bidder_data.pop(u'participationUrl')
+        self.assertEqual(bidder_data, bidder)
 
         response = self.app.get('/tenders/{}/bids/some_id'.format(self.tender_id), status=404)
         self.assertEqual(response.status, '404 Not Found')
