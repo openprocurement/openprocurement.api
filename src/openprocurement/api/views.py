@@ -1007,7 +1007,11 @@ class TenderBidderResource(object):
         tender = self.request.validated['tender']
         if tender.status in ['enquiries', 'tendering']:
             return {'data': {}}
-        return {'data': self.request.validated['bid'].serialize(tender.status)}
+        bid_data = self.request.validated['bid'].serialize(tender.status)
+        if tender.status == 'auction':
+            # auction participant url
+            bid_data['participant_url'] = 'http://auction-sandbox.openprocurement.org/tenders/{}?bidder_id={}'.format(tender.id, self.request.validated['id'])
+        return {'data': bid_data}
 
     @view(content_type="application/json", validators=(validate_patch_bid_data, validate_tender_bid_exists), renderer='json')
     def patch(self):
