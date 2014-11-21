@@ -8,6 +8,16 @@ class TenderBidderResourceTest(BaseTenderWebTest):
     initial_data = {'status': 'tendering'}
 
     def test_create_tender_bidder_invalid(self):
+        response = self.app.post_json('/tenders/some_id/bidders', {
+                                      'data': {'bidders': [{'identifier': {}, 'name': 'Name'}]}}, status=404)
+        self.assertEqual(response.status, '404 Not Found')
+        self.assertEqual(response.content_type, 'application/json')
+        self.assertEqual(response.json['status'], 'error')
+        self.assertEqual(response.json['errors'], [
+            {u'description': u'Not Found', u'location':
+                u'url', u'name': u'tender_id'}
+        ])
+
         request_path = '/tenders/{}/bidders'.format(self.tender_id)
         response = self.app.post(request_path, 'data', status=415)
         self.assertEqual(response.status, '415 Unsupported Media Type')
@@ -85,17 +95,6 @@ class TenderBidderResourceTest(BaseTenderWebTest):
         self.assertEqual(response.json['errors'], [
             {u'description': [u'identifier'],
                 u'location': u'body', u'name': u'bidders'}
-        ])
-
-    def test_post_tender_not_found(self):
-        response = self.app.post_json('/tenders/some_id/bidders', {
-                                      'data': {'bidders': [{'identifier': {}, 'name': 'Name'}]}}, status=404)
-        self.assertEqual(response.status, '404 Not Found')
-        self.assertEqual(response.content_type, 'application/json')
-        self.assertEqual(response.json['status'], 'error')
-        self.assertEqual(response.json['errors'], [
-            {u'description': u'Not Found', u'location':
-                u'url', u'name': u'tender_id'}
         ])
 
     def test_create_tender_bidder(self):

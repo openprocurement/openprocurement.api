@@ -155,8 +155,7 @@ class TenderResourceTest(BaseWebTest):
                 u'body', u'name': u'invalid_field'}
         ])
 
-        response = self.app.post_json(request_path, {'data': {
-                                      'value': 'invalid_value'}}, status=422)
+        response = self.app.post_json(request_path, {'data': {'value': 'invalid_value'}}, status=422)
         self.assertEqual(response.status, '422 Unprocessable Entity')
         self.assertEqual(response.content_type, 'application/json')
         self.assertEqual(response.json['status'], 'error')
@@ -165,14 +164,21 @@ class TenderResourceTest(BaseWebTest):
                 u'Please use a mapping for this field or Value instance instead of unicode.'], u'location': u'body', u'name': u'value'}
         ])
 
-        response = self.app.post_json(request_path, {
-                                      'data': {'procurementMethod': 'invalid_value'}}, status=422)
+        response = self.app.post_json(request_path, {'data': {'procurementMethod': 'invalid_value'}}, status=422)
         self.assertEqual(response.status, '422 Unprocessable Entity')
         self.assertEqual(response.content_type, 'application/json')
         self.assertEqual(response.json['status'], 'error')
         self.assertEqual(response.json['errors'], [
             {u'description': [
                 u"Value must be one of ['Open', 'Selective', 'Limited']."], u'location': u'body', u'name': u'procurementMethod'}
+        ])
+
+        response = self.app.post_json(request_path, {'data': {'enquiryPeriod': {'endDate': 'invalid_value'}}}, status=422)
+        self.assertEqual(response.status, '422 Unprocessable Entity')
+        self.assertEqual(response.content_type, 'application/json')
+        self.assertEqual(response.json['status'], 'error')
+        self.assertEqual(response.json['errors'], [
+            {u'description': {u'endDate': [u"Could not parse invalid_value. Should be ISO8601."]}, u'location': u'body', u'name': u'enquiryPeriod'}
         ])
 
     def test_create_tender_generated(self):

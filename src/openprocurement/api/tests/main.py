@@ -2,7 +2,7 @@
 
 import unittest
 
-from openprocurement.api.tests import auction, award, bidder, document, migration, spore, tender
+from openprocurement.api.tests import auction, award, bidder, document, migration, spore, tender, question
 
 
 def suite():
@@ -10,8 +10,10 @@ def suite():
     suite.addTest(auction.suite())
     suite.addTest(award.suite())
     suite.addTest(bidder.suite())
+    suite.addTest(complaint.suite())
     suite.addTest(document.suite())
     suite.addTest(migration.suite())
+    suite.addTest(question.suite())
     suite.addTest(spore.suite())
     suite.addTest(tender.suite())
     return suite

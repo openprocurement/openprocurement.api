@@ -6,7 +6,7 @@ from cornice.resource import resource, view
 from cornice.service import Service, get_services
 from jsonpatch import make_patch, apply_patch
 from openprocurement.api import VERSION
-from openprocurement.api.models import TenderDocument, Bid, Award, Document, revision, get_now
+from openprocurement.api.models import TenderDocument, Bid, Award, Document, Revision, Question, Complaint, get_now
 from schematics.exceptions import ModelValidationError, ModelConversionError
 from urllib import quote
 from uuid import uuid4
@@ -43,8 +43,12 @@ def validate_tender_data(request):
     return validate_data(request, TenderDocument)
 
 
+def validate_patch_tender_data(request):
+    return validate_data(request, TenderDocument, True)
+
+
 def validate_tender_auction_data(request):
-    data = validate_tender_data(request)
+    data = validate_patch_tender_data(request)
     tender = validate_tender_exists_by_tender_id(request)
     if data is None or not tender:
         return
@@ -69,12 +73,36 @@ def validate_bid_data(request):
     return validate_data(request, Bid)
 
 
+def validate_patch_bid_data(request):
+    return validate_data(request, Bid, True)
+
+
 def validate_award_data(request):
     return validate_data(request, Award)
 
 
 def validate_document_data(request):
     return validate_data(request, Document)
+
+
+def validate_patch_document_data(request):
+    return validate_data(request, Document, True)
+
+
+def validate_question_data(request):
+    return validate_data(request, Question)
+
+
+def validate_patch_question_data(request):
+    return validate_data(request, Question, True)
+
+
+def validate_complaint_data(request):
+    return validate_data(request, Complaint)
+
+
+def validate_patch_complaint_data(request):
+    return validate_data(request, Complaint, True)
 
 
 def validate_tender_exists(request, key='id'):
@@ -135,6 +163,36 @@ def validate_tender_bid_document_exists(request):
             request.validated['id'] = request.matchdict['id']
             request.validated['documents'] = documents
             request.validated['document'] = documents[-1]
+
+
+def validate_tender_question_exists(request, key='id'):
+    tender = validate_tender_exists(request, 'tender_id')
+    if tender:
+        questions = [i for i in tender.questions if i.id == request.matchdict[key]]
+        if questions:
+            request.validated[key] = request.matchdict[key]
+            request.validated['questions'] = questions
+            question = questions[0]
+            request.validated['question'] = question
+            return question
+        else:
+            request.errors.add('url', key, 'Not Found')
+            request.errors.status = 404
+
+
+def validate_tender_complaint_exists(request, key='id'):
+    tender = validate_tender_exists(request, 'tender_id')
+    if tender:
+        complaints = [i for i in tender.complaints if i.id == request.matchdict[key]]
+        if complaints:
+            request.validated[key] = request.matchdict[key]
+            request.validated['complaints'] = complaints
+            complaint = complaints[0]
+            request.validated['complaint'] = complaint
+            return complaint
+        else:
+            request.errors.add('url', key, 'Not Found')
+            request.errors.status = 404
 
 
 def validate_file_upload(request):
@@ -569,14 +627,14 @@ class TenderResource(object):
         tender.import_data(tender_data)
         patch = make_patch(tender.serialize("plain"), src).patch
         if patch:
-            tender.revisions.append(revision({'changes': patch}))
+            tender.revisions.append(Revision({'changes': patch}))
             try:
                 tender.store(self.db)
             except Exception, e:
                 return self.request.errors.add('body', 'data', str(e))
         return {'data': tender.serialize(tender.status)}
 
-    @view(content_type="application/json", validators=(validate_tender_data, validate_tender_exists), renderer='json')
+    @view(content_type="application/json", validators=(validate_patch_tender_data, validate_tender_exists), renderer='json')
     def patch(self):
         """Tender Edit (partial)
 
@@ -632,7 +690,7 @@ class TenderResource(object):
             tender.import_data(apply_data_patch(src, tender_data))
             patch = make_patch(tender.serialize("plain"), src).patch
             if patch:
-                tender.revisions.append(revision({'changes': patch}))
+                tender.revisions.append(Revision({'changes': patch}))
                 try:
                     tender.store(self.db)
                 except Exception, e:
@@ -682,7 +740,7 @@ class TenderDocumentResource(object):
         tender.documents.append(document)
         upload_file(tender, document, key, data.file, self.request)
         patch = make_patch(tender.serialize("plain"), src).patch
-        tender.revisions.append(revision({'changes': patch}))
+        tender.revisions.append(Revision({'changes': patch}))
         try:
             tender.store(self.db)
         except Exception, e:
@@ -735,14 +793,14 @@ class TenderDocumentResource(object):
         tender.documents.append(document)
         upload_file(tender, document, key, in_file, self.request)
         patch = make_patch(tender.serialize("plain"), src).patch
-        tender.revisions.append(revision({'changes': patch}))
+        tender.revisions.append(Revision({'changes': patch}))
         try:
             tender.store(self.db)
         except Exception, e:
             return self.request.errors.add('body', 'data', str(e))
         return {'data': document.serialize("view")}
 
-    @view(renderer='json', validators=(validate_document_data, validate_tender_document_exists,))
+    @view(renderer='json', validators=(validate_patch_document_data, validate_tender_document_exists,))
     def patch(self):
         """Tender Document Update"""
         tender = self.request.validated['tender']
@@ -757,7 +815,7 @@ class TenderDocumentResource(object):
             document.import_data(document_data)
             patch = make_patch(tender.serialize("plain"), src).patch
             if patch:
-                tender.revisions.append(revision({'changes': patch}))
+                tender.revisions.append(Revision({'changes': patch}))
                 try:
                     tender.store(self.db)
                 except Exception, e:
@@ -867,7 +925,7 @@ class TenderBidderResource(object):
         src = tender.serialize("plain")
         tender.bids.append(bid)
         patch = make_patch(tender.serialize("plain"), src).patch
-        tender.revisions.append(revision({'changes': patch}))
+        tender.revisions.append(Revision({'changes': patch}))
         try:
             tender.store(self.db)
         except Exception, e:
@@ -951,7 +1009,7 @@ class TenderBidderResource(object):
             return {'data': {}}
         return {'data': self.request.validated['bid'].serialize(tender.status)}
 
-    @view(content_type="application/json", validators=(validate_bid_data, validate_tender_bid_exists), renderer='json')
+    @view(content_type="application/json", validators=(validate_patch_bid_data, validate_tender_bid_exists), renderer='json')
     def patch(self):
         """Update of proposal
 
@@ -1001,7 +1059,7 @@ class TenderBidderResource(object):
             bid.import_data(apply_data_patch(bid.serialize(), bid_data))
             patch = make_patch(tender.serialize("plain"), src).patch
             if patch:
-                tender.revisions.append(revision({'changes': patch}))
+                tender.revisions.append(Revision({'changes': patch}))
                 try:
                     tender.store(self.db)
                 except Exception, e:
@@ -1049,7 +1107,7 @@ class TenderBidderResource(object):
         tender.bids.remove(bid)
         patch = make_patch(tender.serialize("plain"), src).patch
         if patch:
-            tender.revisions.append(revision({'changes': patch}))
+            tender.revisions.append(Revision({'changes': patch}))
             try:
                 tender.store(self.db)
             except Exception, e:
@@ -1100,7 +1158,7 @@ class TenderBidderDocumentResource(object):
         self.request.validated['bid'].documents.append(document)
         upload_file(tender, document, key, data.file, self.request)
         patch = make_patch(tender.serialize("plain"), src).patch
-        tender.revisions.append(revision({'changes': patch}))
+        tender.revisions.append(Revision({'changes': patch}))
         try:
             tender.store(self.db)
         except Exception, e:
@@ -1153,14 +1211,14 @@ class TenderBidderDocumentResource(object):
         self.request.validated['bid'].documents.append(document)
         upload_file(tender, document, key, in_file, self.request)
         patch = make_patch(tender.serialize("plain"), src).patch
-        tender.revisions.append(revision({'changes': patch}))
+        tender.revisions.append(Revision({'changes': patch}))
         try:
             tender.store(self.db)
         except Exception, e:
             return self.request.errors.add('body', 'data', str(e))
         return {'data': document.serialize("view")}
 
-    @view(renderer='json', validators=(validate_document_data, validate_tender_bid_document_exists,))
+    @view(renderer='json', validators=(validate_patch_document_data, validate_tender_bid_document_exists,))
     def patch(self):
         """Tender Bid Document Update"""
         tender = self.request.validated['tender']
@@ -1175,7 +1233,7 @@ class TenderBidderDocumentResource(object):
             document.import_data(document_data)
             patch = make_patch(tender.serialize("plain"), src).patch
             if patch:
-                tender.revisions.append(revision({'changes': patch}))
+                tender.revisions.append(Revision({'changes': patch}))
                 try:
                     tender.store(self.db)
                 except Exception, e:
@@ -1339,7 +1397,7 @@ class TenderAwardResource(object):
         award = Award(award_data)
         tender.awards.append(award)
         patch = make_patch(tender.serialize("plain"), src).patch
-        tender.revisions.append(revision({'changes': patch}))
+        tender.revisions.append(Revision({'changes': patch}))
         try:
             tender.store(self.db)
         except Exception, e:
@@ -1493,9 +1551,131 @@ def patch_auction(request):
         tender.import_data(apply_data_patch(src, auction_data))
         patch = make_patch(tender.serialize("plain"), src).patch
         if patch:
-            tender.revisions.append(revision({'changes': patch}))
+            tender.revisions.append(Revision({'changes': patch}))
             try:
                 tender.store(request.registry.db)
             except Exception, e:
                 return request.errors.add('body', 'data', str(e))
     return {'data': tender.serialize("auction_view")}
+
+
+@resource(name='Tender Questions',
+          collection_path='/tenders/{tender_id}/questions',
+          path='/tenders/{tender_id}/questions/{id}',
+          description="Tender questions")
+class TenderQuestionResource(object):
+
+    def __init__(self, request):
+        self.request = request
+        self.db = request.registry.db
+
+    @view(content_type="application/json", validators=(validate_question_data, validate_tender_exists_by_tender_id), renderer='json')
+    def collection_post(self):
+        """Post a question
+        """
+        tender = self.request.validated['tender']
+        question_data = filter_data(self.request.validated['data'])
+        question = Question(question_data)
+        src = tender.serialize("plain")
+        tender.questions.append(question)
+        patch = make_patch(tender.serialize("plain"), src).patch
+        tender.revisions.append(Revision({'changes': patch}))
+        try:
+            tender.store(self.db)
+        except Exception, e:
+            return self.request.errors.add('body', 'data', str(e))
+        self.request.response.status = 201
+        self.request.response.headers['Location'] = self.request.route_url('Tender Bids', tender_id=tender.id, id=question['id'])
+        return {'data': question.serialize("view")}
+
+    @view(renderer='json', validators=(validate_tender_exists_by_tender_id,))
+    def collection_get(self):
+        """List questions
+        """
+        return {'data': [i.serialize("view") for i in self.request.validated['tender'].questions]}
+
+    @view(renderer='json', validators=(validate_tender_question_exists,))
+    def get(self):
+        """Retrieving the question
+        """
+        return {'data': self.request.validated['question'].serialize("view")}
+
+    @view(content_type="application/json", validators=(validate_patch_question_data, validate_tender_question_exists), renderer='json')
+    def patch(self):
+        """Post an Answer
+        """
+        tender = self.request.validated['tender']
+        question = self.request.validated['question']
+        question_data = filter_data(self.request.validated['data'])
+        if question_data:
+            src = tender.serialize("plain")
+            question.import_data(apply_data_patch(question.serialize(), question_data))
+            patch = make_patch(tender.serialize("plain"), src).patch
+            if patch:
+                tender.revisions.append(Revision({'changes': patch}))
+                try:
+                    tender.store(self.db)
+                except Exception, e:
+                    return self.request.errors.add('body', 'data', str(e))
+        return {'data': question.serialize("view")}
+
+
+@resource(name='Tender Complaints',
+          collection_path='/tenders/{tender_id}/complaints',
+          path='/tenders/{tender_id}/complaints/{id}',
+          description="Tender complaints")
+class TenderComplaintResource(object):
+
+    def __init__(self, request):
+        self.request = request
+        self.db = request.registry.db
+
+    @view(content_type="application/json", validators=(validate_complaint_data, validate_tender_exists_by_tender_id), renderer='json')
+    def collection_post(self):
+        """Post a complaint
+        """
+        tender = self.request.validated['tender']
+        complaint_data = filter_data(self.request.validated['data'])
+        complaint = Complaint(complaint_data)
+        src = tender.serialize("plain")
+        tender.complaints.append(complaint)
+        patch = make_patch(tender.serialize("plain"), src).patch
+        tender.revisions.append(Revision({'changes': patch}))
+        try:
+            tender.store(self.db)
+        except Exception, e:
+            return self.request.errors.add('body', 'data', str(e))
+        self.request.response.status = 201
+        self.request.response.headers['Location'] = self.request.route_url('Tender Bids', tender_id=tender.id, id=complaint['id'])
+        return {'data': complaint.serialize("view")}
+
+    @view(renderer='json', validators=(validate_tender_exists_by_tender_id,))
+    def collection_get(self):
+        """List complaints
+        """
+        return {'data': [i.serialize("view") for i in self.request.validated['tender'].complaints]}
+
+    @view(renderer='json', validators=(validate_tender_complaint_exists,))
+    def get(self):
+        """Retrieving the complaint
+        """
+        return {'data': self.request.validated['complaint'].serialize("view")}
+
+    @view(content_type="application/json", validators=(validate_patch_complaint_data, validate_tender_complaint_exists), renderer='json')
+    def patch(self):
+        """Post a complaint resolution
+        """
+        tender = self.request.validated['tender']
+        complaint = self.request.validated['complaint']
+        complaint_data = filter_data(self.request.validated['data'])
+        if complaint_data:
+            src = tender.serialize("plain")
+            complaint.import_data(apply_data_patch(complaint.serialize(), complaint_data))
+            patch = make_patch(tender.serialize("plain"), src).patch
+            if patch:
+                tender.revisions.append(Revision({'changes': patch}))
+                try:
+                    tender.store(self.db)
+                except Exception, e:
+                    return self.request.errors.add('body', 'data', str(e))
+        return {'data': complaint.serialize("view")}
