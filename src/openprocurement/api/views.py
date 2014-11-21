@@ -850,7 +850,7 @@ class TenderBidderResource(object):
 
             {
                 "data": {
-                    "bidders": [
+                    "tenderers": [
                         {
                             "id": {
                                 "name": "Державне управління справами",
@@ -887,7 +887,7 @@ class TenderBidderResource(object):
                     "id": "4879d3f8ee2443169b5fbbc9f89fa607",
                     "status": "registration",
                     "date": "2014-10-28T11:44:17.947Z",
-                    "bidders": [
+                    "tenderers": [
                         {
                             "id": {
                                 "name": "Державне управління справами",

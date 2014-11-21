@@ -13,7 +13,7 @@ tender_data['bids'] = [
         "id": "4879d3f8ee2443169b5fbbc9f89fa606",
         "status": "registration",
         "date": "2014-10-28T11:44:17.946",
-        "bidders": [
+        "tenderers": [
             test_tender_data["procuringEntity"]
         ],
         "value": {
@@ -26,7 +26,7 @@ tender_data['bids'] = [
         "id": "4879d3f8ee2443169b5fbbc9f89fa607",
         "status": "registration",
         "date": "2014-10-28T11:44:17.947",
-        "bidders": [
+        "tenderers": [
             test_tender_data["procuringEntity"]
         ],
         "value": {
@@ -75,7 +75,7 @@ class TenderAuctionResourceTest(BaseTenderWebTest):
         self.assertTrue('dateModified' in auction)
         self.assertTrue('minimalStep' in auction)
         self.assertFalse("procuringEntity" in auction)
-        self.assertFalse("bidders" in auction["bids"][0])
+        self.assertFalse("tenderers" in auction["bids"][0])
         self.assertEqual(auction["bids"][0]['value']['amount'], self.initial_data["bids"][0]['value']['amount'])
         self.assertEqual(auction["bids"][1]['value']['amount'], self.initial_data["bids"][1]['value']['amount'])
         self.assertEqual(parse_date(self.initial_data["auctionPeriod"]['endDate'], get_localzone()), parse_date(auction["auctionPeriod"]['endDate']))

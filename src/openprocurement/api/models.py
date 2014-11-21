@@ -121,7 +121,7 @@ class Document(Model):
         }
 
     id = StringType()
-    classification = StringType(choices=['notice', 'biddingDocuments', 'technicalSpecifications', 'evaluationCriteria', 'clarifications', 'bidders'])
+    classification = StringType(choices=['notice', 'biddingDocuments', 'technicalSpecifications', 'evaluationCriteria', 'clarifications', 'tenderers'])
     title = StringType()  # A title of the document.
     description = StringType()  # A description of the document.
     format = StringType()
@@ -195,7 +195,7 @@ class Bid(Model):
             "paused": whitelist(),
         }
 
-    bidders = ListType(ModelType(Organization), default=list())
+    tenderers = ListType(ModelType(Organization), default=list())
     date = IsoDateTimeType(default=get_now)
     id = StringType(required=True, default=lambda: uuid4().hex)
     status = StringType(choices=['registration', 'validBid', 'invalidBid'])
@@ -280,7 +280,7 @@ class Tender(Model):
     enquiryPeriod = ModelType(Period)  # The period during which enquiries may be made and will be answered.
     hasEnquiries = BooleanType()  # A Yes/No field as to whether enquiries were part of tender process.
     awardPeriod = ModelType(Period)  # The date or period on which an award is anticipated to be made.
-    numberOfBidders = IntType()  # The number of unique bidders who participated in the tender
+    numberOfBidders = IntType()  # The number of unique tenderers who participated in the tender
     numberOfBids = IntType()  # The number of bids or submissions to the tender. In the case of an auction, the number of bids may differ from the numberOfBidders.
     bids = ListType(ModelType(Bid), default=list())  # A list of all the companies who entered submissions for the tender.
     procuringEntity = ModelType(Organization)  # The entity managing the procurement, which may be different from the buyer who is paying / using the items being procured.
