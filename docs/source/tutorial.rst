@@ -27,6 +27,9 @@ Let's satisfy the Content-type requirement:
 
 Error states that no `data` found in JSON body.
 
+
+.. index:: Tender
+
 Creating tender
 ---------------
 
@@ -72,6 +75,7 @@ Let's check what tender registry contains:
 
 And indeed we have 2 tenders now.
 
+
 Modifying tender
 ----------------
 
@@ -88,6 +92,9 @@ Checking the listing again reflects the new modification date:
 
 .. include:: tutorial/tender-listing-after-patch.http
    :code:
+
+
+.. index:: Document
 
 Uploading documentation
 -----------------------
@@ -126,8 +133,38 @@ And we can see that it is overriding the original version:
    :code:
 
 
+.. index:: Enquiries, Question, Answer
+
+Enquiries
+---------
+
+When tender is in `enquiry` status, interested parties can ask questions:
+
+.. include:: tutorial/ask-question.http
+   :code:
+
+Bidder is answering them:
+
+.. include:: tutorial/answer-question.http
+   :code:
+
+And one can retrieve the questions list:
+
+.. include:: tutorial/list-question.http
+   :code:
+
+And individual answer:
+
+.. include:: tutorial/get-answer.http
+   :code:
+
+
+.. index:: Bidding
+
 Registering bid
 ---------------
+
+When ``Tender.tenderingPeriod.startDate`` comes Tender switches to `tendering` status that allows registration of bids.
 
 Bidder can register a bid:
 
@@ -144,6 +181,13 @@ It is possible to check documents uploaded:
 .. include:: tutorial/bidder-documents.http
    :code:
 
+For best effect (biggest economy) Tender should have multiple bidders registered:
+
+.. include:: tutorial/register-2nd-bidder.http
+   :code:
+
+
+.. index:: Awarding, Qualification
 
 Confirming qualification
 ------------------------
