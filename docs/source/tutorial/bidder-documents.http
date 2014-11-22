@@ -1,5 +1,5 @@
-$ http http://api-sandbox.openprocurement.org/api/0/tenders/b65397298b2e4d9b987adf576d13b9f5/bidders/8b10e0c38c0747739515b420123d94a8/documents
-GET /api/0/tenders/b65397298b2e4d9b987adf576d13b9f5/bidders/8b10e0c38c0747739515b420123d94a8/documents HTTP/1.1
+$ http http://api-sandbox.openprocurement.org/api/0/tenders/e1c4e54be2314868bab3ecfcf6241cba/bids/991bfd3d936b43c4bd129b3a23c4fa85/documents
+GET /api/0/tenders/e1c4e54be2314868bab3ecfcf6241cba/bids/991bfd3d936b43c4bd129b3a23c4fa85/documents HTTP/1.1
 
 
 
@@ -9,12 +9,12 @@ Content-Type: application/json; charset=UTF-8
 {
     "data": [
         {
-            "datePublished": "2014-11-08T00:09:37.274444", 
+            "dateModified": "2014-11-22T04:28:01.016428+02:00", 
+            "datePublished": "2014-11-22T04:28:01.016385+02:00", 
             "format": "text/plain", 
-            "id": "16a9eab495de4f1ebb747a0804384422", 
-            "modified": "2014-11-08T00:09:37.274477", 
+            "id": "619d3552bb984221a06977b00caa6388", 
             "title": "Proposal.pdf", 
-            "url": "http://api-sandbox.openprocurement.org/api/0/tenders/b65397298b2e4d9b987adf576d13b9f5/bidders/8b10e0c38c0747739515b420123d94a8/documents/16a9eab495de4f1ebb747a0804384422?download=b18c49f26d7b4e5a988f8955552b12fd"
+            "url": "http://api-sandbox.openprocurement.org/api/0/tenders/e1c4e54be2314868bab3ecfcf6241cba/bids/991bfd3d936b43c4bd129b3a23c4fa85/documents/619d3552bb984221a06977b00caa6388?download=56d715375f374153be706e74c1b983b6"
         }
     ]
 }

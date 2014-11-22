@@ -9,8 +9,8 @@ Content-Type: application/json; charset=UTF-8
 {
     "data": [], 
     "next_page": {
-        "offset": "2014-11-08T00:09:27.097664", 
-        "path": "/api/0/tenders?offset=2014-11-08T00%3A09%3A27.097664", 
-        "uri": "http://api-sandbox.openprocurement.org/api/0/tenders?offset=2014-11-08T00%3A09%3A27.097664"
+        "offset": "2014-11-22T04:27:49.300971+02:00", 
+        "path": "/api/0/tenders?offset=2014-11-22T04%3A27%3A49.300971%2B02%3A00", 
+        "uri": "http://api-sandbox.openprocurement.org/api/0/tenders?offset=2014-11-22T04%3A27%3A49.300971%2B02%3A00"
     }
 }

@@ -9,17 +9,17 @@ Content-Type: application/json; charset=UTF-8
 {
     "data": [
         {
-            "id": "f66b5a7d00504245b26961bda8d90ba6", 
-            "modified": "2014-11-08T00:09:28.530198"
+            "dateModified": "2014-11-22T04:27:50.716220+02:00", 
+            "id": "ad41df97f2364911a27a7c744a8e3e62"
         }, 
         {
-            "id": "b65397298b2e4d9b987adf576d13b9f5", 
-            "modified": "2014-11-08T00:09:30.047639"
+            "dateModified": "2014-11-22T04:27:52.011949+02:00", 
+            "id": "e1c4e54be2314868bab3ecfcf6241cba"
         }
     ], 
     "next_page": {
-        "offset": "2014-11-08T00:09:30.560672", 
-        "path": "/api/0/tenders?offset=2014-11-08T00%3A09%3A30.560672", 
-        "uri": "http://api-sandbox.openprocurement.org/api/0/tenders?offset=2014-11-08T00%3A09%3A30.560672"
+        "offset": "2014-11-22T04:27:52.454826+02:00", 
+        "path": "/api/0/tenders?offset=2014-11-22T04%3A27%3A52.454826%2B02%3A00", 
+        "uri": "http://api-sandbox.openprocurement.org/api/0/tenders?offset=2014-11-22T04%3A27%3A52.454826%2B02%3A00"
     }
 }

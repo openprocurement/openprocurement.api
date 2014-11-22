@@ -1,6 +1,6 @@
-$ http --form POST http://api-sandbox.openprocurement.org/api/0/tenders/b65397298b2e4d9b987adf576d13b9f5/documents file@./AwardCriteria.pdf
-POST /api/0/tenders/b65397298b2e4d9b987adf576d13b9f5/documents HTTP/1.1
-Content-Type: multipart/form-data; boundary=8370df1c77e8428186db3c0f9985d650
+$ http --form POST http://api-sandbox.openprocurement.org/api/0/tenders/e1c4e54be2314868bab3ecfcf6241cba/documents file@./AwardCriteria.pdf
+POST /api/0/tenders/e1c4e54be2314868bab3ecfcf6241cba/documents HTTP/1.1
+Content-Type: multipart/form-data; boundary=f126b3e5dc904f978e5c5ee0e7c96b4f
 
 
 
@@ -10,15 +10,15 @@ Content-Type: multipart/form-data; boundary=8370df1c77e8428186db3c0f9985d650
 
 HTTP/1.1 201 Created
 Content-Type: application/json; charset=UTF-8
-Location: http://api-sandbox.openprocurement.org/api/0/tenders/b65397298b2e4d9b987adf576d13b9f5/documents/9f0828ca0769401bb6965fdf8f363a12
+Location: http://api-sandbox.openprocurement.org/api/0/tenders/e1c4e54be2314868bab3ecfcf6241cba/documents/31da6e5d23464cff9e5f016871865480
 
 {
     "data": {
-        "datePublished": "2014-11-08T00:09:33.912790", 
+        "dateModified": "2014-11-22T04:27:55.536314+02:00", 
+        "datePublished": "2014-11-22T04:27:55.536271+02:00", 
         "format": "text/plain", 
-        "id": "9f0828ca0769401bb6965fdf8f363a12", 
-        "modified": "2014-11-08T00:09:33.912822", 
+        "id": "31da6e5d23464cff9e5f016871865480", 
         "title": "AwardCriteria.pdf", 
-        "url": "http://api-sandbox.openprocurement.org/api/0/tenders/b65397298b2e4d9b987adf576d13b9f5/documents/9f0828ca0769401bb6965fdf8f363a12?download=ded38f8ffd7e4fd0bfbbe33dcaff0e1c"
+        "url": "http://api-sandbox.openprocurement.org/api/0/tenders/e1c4e54be2314868bab3ecfcf6241cba/documents/31da6e5d23464cff9e5f016871865480?download=dd718ccc5033495b82e36d9efcef5882"
     }
 }
