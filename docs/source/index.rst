@@ -22,6 +22,7 @@ Contents:
    dates
    upload
    tutorial
+   standard/index
    tenders
    procuring
    bidding
