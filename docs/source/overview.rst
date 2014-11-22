@@ -65,6 +65,28 @@ lot.  The changes in the API are communicated via `Open Procurement API
 
 Change log
 ----------
+
+0.3
+~~~
+Released: 2014-11-21
+
+ New Features:
+
+ - Asking Questions
+ - Filing Complaint on tender conditions
+ - Answer Question
+ - Publish Complaint resolution
+ - Retrieve Questions and Answers, Complaints and Resolutions
+ - Auction Scheduler
+ - Auction Runner
+
+ Modifications:
+
+ - :ref:`standard` harmonized with `Open Contracting 1.0RC
+   <http://ocds.open-contracting.org/standard/r/1__0__RC/>`_
+ - ``/bidders/`` endpoint renamed into ``/bids/``
+ - ``modified`` property renamed into ``modificationDate``
+
 0.2
 ~~~
 Released: 2014-11-07
