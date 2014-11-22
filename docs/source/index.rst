@@ -11,6 +11,11 @@
 Welcome to openprocurement.api's documentation!
 ===============================================
 
+Please report any problems or suggestions for improvement either via the
+`mailing list <http://groups.google.com/group/open-procurement-general>`_ or
+the `issue tracker
+<https://github.com/openprocurement/openprocurement.api/issues>`_.
+
 Contents:
 
 .. toctree::
@@ -29,15 +34,10 @@ Contents:
    qualification
    reference
 
-Please report any problems or suggestions for improvement either via the
-`mailing list <http://groups.google.com/group/open-procurement-general>`_ or
-the `issue tracker
-<https://github.com/openprocurement/openprocurement.api/issues>`_.
-
 Indices and tables
 ==================
 
 * :ref:`genindex`
-* :ref:`modindex`
 * :ref:`search`
 
+.. * :ref:`modindex`
