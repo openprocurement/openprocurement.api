@@ -12,24 +12,28 @@ Content-Type: application/json; charset=utf-8
                 "region": "м. Вінниця", 
                 "streetAddress": "вул. Стахурського. 22"
             }, 
-            "id": {
-                "name": "Заклад \"Загальноосвітня школа І-ІІІ ступенів № 10 Вінницької міської ради\"", 
+            "identifier": {
+                "id": "21725150", 
+                "legalName": "Заклад \"Загальноосвітня школа І-ІІІ ступенів № 10 Вінницької міської ради\"", 
                 "scheme": "https://ns.openprocurement.org/ua/edrpou", 
-                "uid": "21725150", 
                 "uri": "http://sch10.edu.vn.ua/"
-            }
+            }, 
+            "name": "ЗОСШ #10 м.Вінниці"
         }
     }
 }
 
 HTTP/1.1 201 Created
 Content-Type: application/json; charset=UTF-8
-Location: http://api-sandbox.openprocurement.org/api/0/tenders/b65397298b2e4d9b987adf576d13b9f5
+Location: http://api-sandbox.openprocurement.org/api/0/tenders/e1c4e54be2314868bab3ecfcf6241cba
 
 {
     "data": {
-        "id": "b65397298b2e4d9b987adf576d13b9f5", 
-        "modified": "2014-11-08T00:09:30.047639", 
+        "dateModified": "2014-11-22T04:27:52.011949+02:00", 
+        "enquiryPeriod": {
+            "startDate": "2014-11-22T04:27:52.011949+02:00"
+        }, 
+        "id": "e1c4e54be2314868bab3ecfcf6241cba", 
         "procuringEntity": {
             "address": {
                 "countryName": "Україна", 
@@ -38,14 +42,15 @@ Location: http://api-sandbox.openprocurement.org/api/0/tenders/b65397298b2e4d9b9
                 "region": "м. Вінниця", 
                 "streetAddress": "вул. Стахурського. 22"
             }, 
-            "id": {
-                "name": "Заклад \"Загальноосвітня школа І-ІІІ ступенів № 10 Вінницької міської ради\"", 
+            "identifier": {
+                "id": "21725150", 
+                "legalName": "Заклад \"Загальноосвітня школа І-ІІІ ступенів № 10 Вінницької міської ради\"", 
                 "scheme": "https://ns.openprocurement.org/ua/edrpou", 
-                "uid": "21725150", 
                 "uri": "http://sch10.edu.vn.ua/"
-            }
+            }, 
+            "name": "ЗОСШ #10 м.Вінниці"
         }, 
         "status": "enquiries", 
-        "tenderID": "UA-b65397298b2e4d9b987adf576d13b9f5"
+        "tenderID": "UA-e1c4e54be2314868bab3ecfcf6241cba"
     }
 }

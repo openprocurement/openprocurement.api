@@ -31,3 +31,8 @@ them may conflict in their impact on the response.
   policy." The function named as the value of the `opt_jsonp` parameter will
   be called with a single argument, a JavaScript object representing the
   response.
+
+:fields:
+  `?opt_fields=comma,separated,field,list`
+
+  List of extra fields to include in response.

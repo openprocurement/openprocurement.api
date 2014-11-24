@@ -1,0 +1,43 @@
+$ http -j PATCH http://api-sandbox.openprocurement.org/api/0/tenders/e1c4e54be2314868bab3ecfcf6241cba/questions/2356d267b21444368c0bd155f80b6b08 data:=@./answer.json
+PATCH /api/0/tenders/e1c4e54be2314868bab3ecfcf6241cba/questions/2356d267b21444368c0bd155f80b6b08 HTTP/1.1
+Content-Type: application/json; charset=utf-8
+
+{
+    "data": {
+        "answer": "Таблицю додано в файлі \"Kalorijnist.xslx\""
+    }
+}
+
+HTTP/1.1 200 OK
+Content-Type: application/json; charset=UTF-8
+
+{
+    "data": {
+        "answer": "Таблицю додано в файлі \"Kalorijnist.xslx\"", 
+        "author": {
+            "address": {
+                "countryName": "Україна", 
+                "locality": "м. Вінниця", 
+                "postalCode": "21100", 
+                "region": "м. Вінниця", 
+                "streetAddress": "вул. Островського, 33"
+            }, 
+            "contactPoint": {
+                "email": "soleksuk@gmail.com", 
+                "name": "Сергій Олексюк", 
+                "telephone": "+380 (432) 21-69-30"
+            }, 
+            "identifier": {
+                "id": "13313462", 
+                "legalName": "Державне комунальне підприємство громадського харчування «Школяр»", 
+                "scheme": "https://ns.openprocurement.org/ua/edrpou", 
+                "uri": "http://sch10.edu.vn.ua/"
+            }, 
+            "name": "ДКП «Школяр»"
+        }, 
+        "date": "2014-11-22T04:27:57.785461+02:00", 
+        "description": "Просимо додати таблицю потрібної калорійності харчування по місяцях", 
+        "id": "2356d267b21444368c0bd155f80b6b08", 
+        "title": "Калорійність по місяцях"
+    }
+}

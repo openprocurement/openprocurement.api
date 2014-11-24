@@ -1,18 +1,73 @@
-$ http -j POST http://api-sandbox.openprocurement.org/api/0/tenders/b65397298b2e4d9b987adf576d13b9f5/bidders data:={}
-POST /api/0/tenders/b65397298b2e4d9b987adf576d13b9f5/bidders HTTP/1.1
+$ http -j POST http://api-sandbox.openprocurement.org/api/0/tenders/e1c4e54be2314868bab3ecfcf6241cba/bids data:=@./catering-bid.json
+POST /api/0/tenders/e1c4e54be2314868bab3ecfcf6241cba/bids HTTP/1.1
 Content-Type: application/json; charset=utf-8
 
 {
-    "data": {}
+    "data": {
+        "tenderers": [
+            {
+                "address": {
+                    "countryName": "Україна", 
+                    "locality": "м. Вінниця", 
+                    "postalCode": "21100", 
+                    "region": "м. Вінниця", 
+                    "streetAddress": "вул. Островського, 33"
+                }, 
+                "contactPoint": {
+                    "email": "soleksuk@gmail.com", 
+                    "name": "Сергій Олексюк", 
+                    "telephone": "+380 (432) 21-69-30"
+                }, 
+                "identifier": {
+                    "id": "13313462", 
+                    "legalName": "Державне комунальне підприємство громадського харчування «Школяр»", 
+                    "scheme": "https://ns.openprocurement.org/ua/edrpou", 
+                    "uri": "http://sch10.edu.vn.ua/"
+                }, 
+                "name": "ДКП «Школяр»"
+            }
+        ], 
+        "value": {
+            "amount": 475000
+        }
+    }
 }
 
 HTTP/1.1 201 Created
 Content-Type: application/json; charset=UTF-8
-Location: http://api-sandbox.openprocurement.org/api/0/tenders/b65397298b2e4d9b987adf576d13b9f5/bidders/8b10e0c38c0747739515b420123d94a8
+Location: http://api-sandbox.openprocurement.org/api/0/tenders/e1c4e54be2314868bab3ecfcf6241cba/bids/991bfd3d936b43c4bd129b3a23c4fa85
 
 {
     "data": {
-        "date": "2014-11-08T00:09:36.418180", 
-        "id": "8b10e0c38c0747739515b420123d94a8"
+        "date": "2014-11-22T04:28:00.219641+02:00", 
+        "id": "991bfd3d936b43c4bd129b3a23c4fa85", 
+        "tenderers": [
+            {
+                "address": {
+                    "countryName": "Україна", 
+                    "locality": "м. Вінниця", 
+                    "postalCode": "21100", 
+                    "region": "м. Вінниця", 
+                    "streetAddress": "вул. Островського, 33"
+                }, 
+                "contactPoint": {
+                    "email": "soleksuk@gmail.com", 
+                    "name": "Сергій Олексюк", 
+                    "telephone": "+380 (432) 21-69-30"
+                }, 
+                "identifier": {
+                    "id": "13313462", 
+                    "legalName": "Державне комунальне підприємство громадського харчування «Школяр»", 
+                    "scheme": "https://ns.openprocurement.org/ua/edrpou", 
+                    "uri": "http://sch10.edu.vn.ua/"
+                }, 
+                "name": "ДКП «Школяр»"
+            }
+        ], 
+        "value": {
+            "amount": 475000.0, 
+            "currency": "UAH", 
+            "valueAddedTaxIncluded": true
+        }
     }
 }

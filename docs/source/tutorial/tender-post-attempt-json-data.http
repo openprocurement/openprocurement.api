@@ -8,13 +8,16 @@ Content-Type: application/json; charset=utf-8
 
 HTTP/1.1 201 Created
 Content-Type: application/json; charset=UTF-8
-Location: http://api-sandbox.openprocurement.org/api/0/tenders/f66b5a7d00504245b26961bda8d90ba6
+Location: http://api-sandbox.openprocurement.org/api/0/tenders/ad41df97f2364911a27a7c744a8e3e62
 
 {
     "data": {
-        "id": "f66b5a7d00504245b26961bda8d90ba6", 
-        "modified": "2014-11-08T00:09:28.530198", 
+        "dateModified": "2014-11-22T04:27:50.716220+02:00", 
+        "enquiryPeriod": {
+            "startDate": "2014-11-22T04:27:50.716220+02:00"
+        }, 
+        "id": "ad41df97f2364911a27a7c744a8e3e62", 
         "status": "enquiries", 
-        "tenderID": "UA-f66b5a7d00504245b26961bda8d90ba6"
+        "tenderID": "UA-ad41df97f2364911a27a7c744a8e3e62"
     }
 }

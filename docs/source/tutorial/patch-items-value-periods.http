@@ -1,5 +1,5 @@
-$ http -j PATCH http://api-sandbox.openprocurement.org/api/0/tenders/b65397298b2e4d9b987adf576d13b9f5 data:=@./school-tender-patch.json
-PATCH /api/0/tenders/b65397298b2e4d9b987adf576d13b9f5 HTTP/1.1
+$ http -j PATCH http://api-sandbox.openprocurement.org/api/0/tenders/e1c4e54be2314868bab3ecfcf6241cba data:=@./school-tender-patch.json
+PATCH /api/0/tenders/e1c4e54be2314868bab3ecfcf6241cba HTTP/1.1
 Content-Type: application/json; charset=utf-8
 
 {
@@ -7,31 +7,38 @@ Content-Type: application/json; charset=utf-8
         "enquiryPeriod": {
             "endDate": "2015-05-29T00:00:00"
         }, 
-        "itemsToBeProcured": [
+        "items": [
             {
-                "additionalClassification": [
+                "additionalClassifications": [
                     {
                         "description": "Послуги шкільних їдалень", 
                         "id": "55.51.10.300", 
                         "scheme": "ДКПП"
                     }
                 ], 
-                "description": "Послуги шкільних їдалень", 
-                "primaryClassification": {
+                "classification": {
                     "description": "Послуги з харчування у школах", 
                     "id": "55523100-3", 
                     "scheme": "CPV"
                 }, 
+                "description": "Послуги шкільних їдалень", 
                 "quantity": 5, 
-                "unitOfMeasure": "item"
+                "unit": {
+                    "name": "item"
+                }
             }
         ], 
+        "minimalStep": {
+            "amount": 35000, 
+            "currency": "UAH", 
+            "valueAddedTaxIncluded": true
+        }, 
         "tenderPeriod": {
             "endDate": "2015-06-07T10:00:00", 
             "startDate": "2014-11-03T00:00:00"
         }, 
-        "totalValue": {
-            "amount": 50000, 
+        "value": {
+            "amount": 500000, 
             "currency": "UAH", 
             "valueAddedTaxIncluded": true
         }
@@ -43,34 +50,38 @@ Content-Type: application/json; charset=UTF-8
 
 {
     "data": {
+        "dateModified": "2014-11-22T04:27:52.922493+02:00", 
         "enquiryPeriod": {
-            "endDate": "2015-05-29T00:00:00.000000", 
-            "startDate": null
+            "endDate": "2015-05-29T00:00:00+02:02", 
+            "startDate": "2014-11-22T04:27:52.011949+02:00"
         }, 
-        "id": "b65397298b2e4d9b987adf576d13b9f5", 
-        "itemsToBeProcured": [
+        "id": "e1c4e54be2314868bab3ecfcf6241cba", 
+        "items": [
             {
-                "additionalClassification": [
+                "additionalClassifications": [
                     {
                         "description": "Послуги шкільних їдалень", 
                         "id": "55.51.10.300", 
-                        "scheme": "ДКПП", 
-                        "uri": null
+                        "scheme": "ДКПП"
                     }
                 ], 
-                "description": "Послуги шкільних їдалень", 
-                "primaryClassification": {
+                "classification": {
                     "description": "Послуги з харчування у школах", 
                     "id": "55523100-3", 
-                    "scheme": "CPV", 
-                    "uri": null
+                    "scheme": "CPV"
                 }, 
+                "description": "Послуги шкільних їдалень", 
                 "quantity": 5, 
-                "unitOfMeasure": "item", 
-                "valuePerUnit": null
+                "unit": {
+                    "name": "item"
+                }
             }
         ], 
-        "modified": "2014-11-08T00:09:31.090792", 
+        "minimalStep": {
+            "amount": 35000.0, 
+            "currency": "UAH", 
+            "valueAddedTaxIncluded": true
+        }, 
         "procuringEntity": {
             "address": {
                 "countryName": "Україна", 
@@ -79,21 +90,22 @@ Content-Type: application/json; charset=UTF-8
                 "region": "м. Вінниця", 
                 "streetAddress": "вул. Стахурського. 22"
             }, 
-            "id": {
-                "name": "Заклад \"Загальноосвітня школа І-ІІІ ступенів № 10 Вінницької міської ради\"", 
+            "identifier": {
+                "id": "21725150", 
+                "legalName": "Заклад \"Загальноосвітня школа І-ІІІ ступенів № 10 Вінницької міської ради\"", 
                 "scheme": "https://ns.openprocurement.org/ua/edrpou", 
-                "uid": "21725150", 
                 "uri": "http://sch10.edu.vn.ua/"
-            }
+            }, 
+            "name": "ЗОСШ #10 м.Вінниці"
         }, 
         "status": "enquiries", 
-        "tenderID": "UA-b65397298b2e4d9b987adf576d13b9f5", 
+        "tenderID": "UA-e1c4e54be2314868bab3ecfcf6241cba", 
         "tenderPeriod": {
-            "endDate": "2015-06-07T10:00:00.000000", 
-            "startDate": "2014-11-03T00:00:00.000000"
+            "endDate": "2015-06-07T10:00:00+02:02", 
+            "startDate": "2014-11-03T00:00:00+02:02"
         }, 
-        "totalValue": {
-            "amount": 50000.0, 
+        "value": {
+            "amount": 500000.0, 
             "currency": "UAH", 
             "valueAddedTaxIncluded": true
         }
