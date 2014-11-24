@@ -310,6 +310,15 @@ class TenderResourceTest(BaseWebTest):
         new_tender = response.json['data']
         self.assertTrue('startDate' in new_tender['enquiryPeriod'])
 
+        response = self.app.patch_json('/tenders/{}'.format(
+            tender['id']), {'data': {'status': 'auction'}})
+        self.assertEqual(response.status, '200 OK')
+
+        response = self.app.get('/tenders/{}'.format(tender['id']))
+        self.assertEqual(response.status, '200 OK')
+        self.assertEqual(response.content_type, 'application/json')
+        self.assertTrue('auctionUrl' in response.json['data'])
+
     def test_dateModified_tender(self):
         response = self.app.get('/tenders')
         self.assertEqual(response.status, '200 OK')

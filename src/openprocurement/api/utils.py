@@ -1,0 +1,81 @@
+# -*- coding: utf-8 -*-
+from base64 import b64encode
+from jsonpatch import make_patch, apply_patch
+from urllib import quote
+
+
+def generate_tender_id(tid):
+    return "UA-" + tid
+
+
+def filter_data(data, fields=['id', 'doc_id', 'date', 'dateModified', 'url']):
+    result = data.copy()
+    for i in fields:
+        if i in result:
+            del result[i]
+    return result
+
+
+def upload_file(tender, document, key, in_file, request):
+    conn = getattr(request.registry, 's3_connection', None)
+    if conn:
+        bucket = conn.get_bucket(request.registry.bucket_name)
+        filename = "{}/{}/{}".format(tender.id, document.id, key)
+        key = bucket.new_key(filename)
+        key.set_metadata('Content-Type', document.format)
+        key.set_metadata("Content-Disposition", "attachment; filename*=UTF-8''%s" % quote(document.title))
+        key.set_contents_from_file(in_file)
+        key.set_acl('private')
+    else:
+        filename = "{}_{}".format(document.id, key)
+        tender['_attachments'][filename] = {
+            "content_type": document.format,
+            "data": b64encode(in_file.read())
+        }
+
+
+def get_file(tender, document, key, db, request):
+    conn = getattr(request.registry, 's3_connection', None)
+    if conn:
+        filename = "{}/{}/{}".format(tender.id, document.id, key)
+        url = conn.generate_url(method='GET', bucket=request.registry.bucket_name, key=filename, expires_in=300)
+        request.response.content_type = document.format.encode('utf-8')
+        request.response.content_disposition = 'attachment; filename={}'.format(quote(document.title.encode('utf-8')))
+        request.response.status = '302 Moved Temporarily'
+        request.response.location = url
+        return url
+    else:
+        filename = "{}_{}".format(document.id, key)
+        data = db.get_attachment(tender.id, filename)
+        if data:
+            request.response.content_type = document.format.encode('utf-8')
+            request.response.content_disposition = 'attachment; filename={}'.format(quote(document.title.encode('utf-8')))
+            request.response.body_file = data
+            return request.response
+        request.errors.add('url', 'download', 'Not Found')
+        request.errors.status = 404
+
+
+def apply_data_patch(item, changes):
+    patch_changes = []
+    for i, j in changes.items():
+        if i in item:
+            for x in make_patch(item[i], j).patch:
+                if x['op'] == u'remove':
+                    continue
+                x['path'] = '/{}{}'.format(i, x['path'])
+                patch_changes.append(x)
+        else:
+            patch_changes.append({'op': 'add', 'path': '/{}'.format(i), 'value': j})
+    return apply_patch(item, patch_changes)
+
+
+def tender_serialize(tender, fields):
+    if fields:
+        fields = fields.split(',') + ["dateModified", "id"]
+        return dict([(i, j) for i, j in tender.serialize(tender.status).items() if i in fields])
+    return tender.serialize("listing")
+
+
+def get_revision_changes(dst, src):
+    return make_patch(dst, src).patch
