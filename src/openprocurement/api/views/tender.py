@@ -1,12 +1,12 @@
 # -*- coding: utf-8 -*-
 from cornice.resource import resource, view
 from uuid import uuid4
-from openprocurement.api.models import TenderDocument, Revision, get_now
+from openprocurement.api.models import TenderDocument, get_now
 from openprocurement.api.utils import (
     apply_data_patch,
     filter_data,
     generate_tender_id,
-    get_revision_changes,
+    save_tender,
     tender_serialize,
 )
 from openprocurement.api.validation import (
@@ -248,10 +248,7 @@ class TenderResource(object):
             tender.enquiryPeriod.startDate = tender.dateModified
         else:
             tender.enquiryPeriod = {'startDate': tender.dateModified}
-        try:
-            tender.store(self.db)
-        except Exception, e:
-            return self.request.errors.add('body', 'data', str(e))
+        save_tender(tender, None, self.request)
         self.request.response.status = 201
         self.request.response.headers[
             'Location'] = self.request.route_url('Tender', id=tender_id)
@@ -358,13 +355,7 @@ class TenderResource(object):
         src = tender.serialize("plain")
         tender_data = filter_data(self.request.validated['data'])
         tender.import_data(tender_data)
-        patch = get_revision_changes(tender.serialize("plain"), src)
-        if patch:
-            tender.revisions.append(Revision({'changes': patch}))
-            try:
-                tender.store(self.db)
-            except Exception, e:
-                return self.request.errors.add('body', 'data', str(e))
+        save_tender(tender, src, self.request)
         return {'data': tender.serialize(tender.status)}
 
     @view(content_type="application/json", validators=(validate_patch_tender_data, validate_tender_exists), renderer='json')
@@ -421,11 +412,5 @@ class TenderResource(object):
         tender_data = filter_data(self.request.validated['data'])
         if tender_data:
             tender.import_data(apply_data_patch(src, tender_data))
-            patch = get_revision_changes(tender.serialize("plain"), src)
-            if patch:
-                tender.revisions.append(Revision({'changes': patch}))
-                try:
-                    tender.store(self.db)
-                except Exception, e:
-                    return self.request.errors.add('body', 'data', str(e))
+            save_tender(tender, src, self.request)
         return {'data': tender.serialize(tender.status)}

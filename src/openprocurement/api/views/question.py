@@ -1,10 +1,10 @@
 # -*- coding: utf-8 -*-
 from cornice.resource import resource, view
-from openprocurement.api.models import Question, Revision
+from openprocurement.api.models import Question
 from openprocurement.api.utils import (
     apply_data_patch,
     filter_data,
-    get_revision_changes,
+    save_tender,
 )
 from openprocurement.api.validation import (
     validate_question_data,
@@ -33,12 +33,7 @@ class TenderQuestionResource(object):
         question = Question(question_data)
         src = tender.serialize("plain")
         tender.questions.append(question)
-        patch = get_revision_changes(tender.serialize("plain"), src)
-        tender.revisions.append(Revision({'changes': patch}))
-        try:
-            tender.store(self.db)
-        except Exception, e:
-            return self.request.errors.add('body', 'data', str(e))
+        save_tender(tender, src, self.request)
         self.request.response.status = 201
         self.request.response.headers['Location'] = self.request.route_url('Tender Questions', tender_id=tender.id, id=question['id'])
         return {'data': question.serialize("view")}
@@ -65,11 +60,5 @@ class TenderQuestionResource(object):
         if question_data:
             src = tender.serialize("plain")
             question.import_data(apply_data_patch(question.serialize(), question_data))
-            patch = get_revision_changes(tender.serialize("plain"), src)
-            if patch:
-                tender.revisions.append(Revision({'changes': patch}))
-                try:
-                    tender.store(self.db)
-                except Exception, e:
-                    return self.request.errors.add('body', 'data', str(e))
+            save_tender(tender, src, self.request)
         return {'data': question.serialize("view")}

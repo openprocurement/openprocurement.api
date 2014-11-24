@@ -2,6 +2,7 @@
 from base64 import b64encode
 from jsonpatch import make_patch, apply_patch
 from urllib import quote
+from openprocurement.api.models import Revision
 
 
 def generate_tender_id(tid):
@@ -79,3 +80,17 @@ def tender_serialize(tender, fields):
 
 def get_revision_changes(dst, src):
     return make_patch(dst, src).patch
+
+
+def save_tender(tender, src, request):
+    if src:
+        patch = get_revision_changes(tender.serialize("plain"), src)
+        if patch:
+            tender.revisions.append(Revision({'changes': patch}))
+    else:
+        patch = True
+    if patch:
+        try:
+            tender.store(request.registry.db)
+        except Exception, e:
+            request.errors.add('body', 'data', str(e))

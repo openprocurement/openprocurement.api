@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from cornice.resource import resource, view
-from openprocurement.api.models import Award, Revision
-from openprocurement.api.utils import get_revision_changes
+from openprocurement.api.models import Award
+from openprocurement.api.utils import save_tender
 from openprocurement.api.validation import (
     validate_award_data,
     validate_tender_exists_by_tender_id,
@@ -163,12 +163,7 @@ class TenderAwardResource(object):
         award_data = self.request.validated['data']
         award = Award(award_data)
         tender.awards.append(award)
-        patch = get_revision_changes(tender.serialize("plain"), src)
-        tender.revisions.append(Revision({'changes': patch}))
-        try:
-            tender.store(self.db)
-        except Exception, e:
-            return self.request.errors.add('body', 'data', str(e))
+        save_tender(tender, src, self.request)
         self.request.response.status = 201
         # self.request.response.headers['Location'] = self.request.route_url('Tender Bids', tender_id=tender.id, id=award['awardID'])
         return {'data': award.serialize("view")}

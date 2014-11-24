@@ -1,10 +1,9 @@
 # -*- coding: utf-8 -*-
 from cornice.service import Service
-from openprocurement.api.models import Revision
 from openprocurement.api.utils import (
     apply_data_patch,
     filter_data,
-    get_revision_changes,
+    save_tender,
 )
 from openprocurement.api.validation import (
     validate_tender_auction_data,
@@ -157,11 +156,5 @@ def patch_auction(request):
         auction_data['bids'] = [x for (y, x) in sorted(zip([tender_bids_ids.index(i['id']) for i in bids], bids))]
         src = tender.serialize("plain")
         tender.import_data(apply_data_patch(src, auction_data))
-        patch = get_revision_changes(tender.serialize("plain"), src)
-        if patch:
-            tender.revisions.append(Revision({'changes': patch}))
-            try:
-                tender.store(request.registry.db)
-            except Exception, e:
-                return request.errors.add('body', 'data', str(e))
+        save_tender(tender, src, request)
     return {'data': tender.serialize("auction_view")}
