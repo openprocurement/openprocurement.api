@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from cornice.resource import resource, view
 from uuid import uuid4
-from openprocurement.api.models import TenderDocument, get_now
+from openprocurement.api.models import Tender, get_now
 from openprocurement.api.utils import (
     apply_data_patch,
     filter_data,
@@ -72,7 +72,7 @@ class TenderResource(object):
         if descending:
             params['descending'] = descending
         next_offset = get_now().isoformat()
-        results = TenderDocument.view(self.db, 'tenders/by_dateModified', limit=limit + 1, startkey=offset, descending=bool(descending))
+        results = Tender.view(self.db, 'tenders/by_dateModified', limit=limit + 1, startkey=offset, descending=bool(descending))
         results = [tender_serialize(i, fields) for i in results]
         if len(results) > limit:
             results, last = results[:-1], results[-1]
@@ -243,7 +243,7 @@ class TenderResource(object):
         tender_id = uuid4().hex
         tender_data['doc_id'] = tender_id
         tender_data['tenderID'] = generate_tender_id(tender_id)
-        tender = TenderDocument(tender_data)
+        tender = Tender(tender_data)
         if tender.enquiryPeriod:
             tender.enquiryPeriod.startDate = tender.dateModified
         else:

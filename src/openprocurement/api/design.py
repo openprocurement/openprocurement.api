@@ -9,14 +9,14 @@ def sync_design(db):
 
 
 tenders_all_view = ViewDefinition('tenders', 'all', '''function(doc) {
-    if(doc.doc_type == 'TenderDocument') {
+    if(doc.doc_type == 'Tender') {
         emit(doc.tenderID, doc);
     }
 }''')
 
 
 tenders_by_dateModified_view = ViewDefinition('tenders', 'by_dateModified', '''function(doc) {
-    if(doc.doc_type == 'TenderDocument') {
+    if(doc.doc_type == 'Tender') {
         emit(doc.dateModified, doc);
     }
 }''')

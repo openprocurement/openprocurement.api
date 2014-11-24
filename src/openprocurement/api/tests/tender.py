@@ -1,14 +1,14 @@
 # -*- coding: utf-8 -*-
 import unittest
 
-from openprocurement.api.models import TenderDocument, get_now
+from openprocurement.api.models import Tender, get_now
 from openprocurement.api.tests.base import test_tender_data, BaseWebTest
 
 
-class TenderDocumentTest(BaseWebTest):
+class TenderTest(BaseWebTest):
 
     def test_simple_add_tender(self):
-        u = TenderDocument()
+        u = Tender()
         u.tenderID = "UA-X"
 
         assert u.id is None
@@ -22,7 +22,7 @@ class TenderDocumentTest(BaseWebTest):
         fromdb = self.db.get(u.id)
 
         assert u.tenderID == fromdb['tenderID']
-        assert u.doc_type == "TenderDocument"
+        assert u.doc_type == "Tender"
 
         u.delete_instance(self.db)
 
@@ -382,7 +382,7 @@ class TenderResourceTest(BaseWebTest):
 
 def suite():
     suite = unittest.TestSuite()
-    suite.addTest(unittest.makeSuite(TenderDocumentTest))
+    suite.addTest(unittest.makeSuite(TenderTest))
     suite.addTest(unittest.makeSuite(TenderResourceTest))
     return suite
 

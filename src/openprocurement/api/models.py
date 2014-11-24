@@ -263,8 +263,30 @@ class Complaint(Model):
     documents = ListType(ModelType(Document), default=list())
 
 
-class Tender(Model):
+plain_role = (blacklist("_attachments", "revisions", "dateModified") + schematics_embedded_role)
+view_role = (blacklist("_attachments", "revisions") + schematics_embedded_role)
+listing_role = whitelist("dateModified", "doc_id")
+auction_view_role = whitelist("tenderID", "dateModified", "bids", "auctionPeriod", "minimalStep")
+enquiries_role = (blacklist("_attachments", "revisions", "bids") + schematics_embedded_role)
+
+
+class Tender(SchematicsDocument, Model):
     """Data regarding tender process - publicly inviting prospective contractors to submit bids for evaluation and selecting a winner or winners."""
+    class Options:
+        roles = {
+            "plain": plain_role,
+            "view": view_role,
+            "listing": listing_role,
+            "auction_view": auction_view_role,
+            "enquiries": enquiries_role,
+            "tendering": enquiries_role,
+            "auction": view_role,
+            "qualification": view_role,
+            "awarded": view_role,
+            "contract-signed": view_role,
+            "paused": view_role,
+        }
+
     title = StringType()
     description = StringType()
     tenderID = StringType()  # TenderID should always be the same as the OCID. It is included to make the flattened data structure more convenient.
@@ -294,35 +316,7 @@ class Tender(Model):
     questions = ListType(ModelType(Question), default=list())
     complaints = ListType(ModelType(Complaint), default=list())
 
-
-class OrganizationDocument(SchematicsDocument, Organization):
-    pass
-
-
-plain_role = (blacklist("_attachments", "revisions", "dateModified") + schematics_embedded_role)
-view_role = (blacklist("_attachments", "revisions") + schematics_embedded_role)
-listing_role = whitelist("dateModified", "doc_id")
-auction_view_role = whitelist("tenderID", "dateModified", "bids", "auctionPeriod", "minimalStep")
-enquiries_role = (blacklist("_attachments", "revisions", "bids") + schematics_embedded_role)
-
-
-class TenderDocument(SchematicsDocument, Tender):
-    class Options:
-        roles = {
-            "plain": plain_role,
-            "view": view_role,
-            "listing": listing_role,
-            "auction_view": auction_view_role,
-            "enquiries": enquiries_role,
-            "tendering": enquiries_role,
-            "auction": view_role,
-            "qualification": view_role,
-            "awarded": view_role,
-            "contract-signed": view_role,
-            "paused": view_role,
-        }
-
-    _attachments = DictType(DictType(BaseType), default=dict())
+    _attachments = DictType(DictType(BaseType), default=dict())  # couchdb attachments
     dateModified = IsoDateTimeType(default=get_now)
 
     @serializable(serialized_name="id")

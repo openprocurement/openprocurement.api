@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from openprocurement.api.models import TenderDocument, Bid, Award, Document, Question, Complaint
+from openprocurement.api.models import Tender, Bid, Award, Document, Question, Complaint
 from schematics.exceptions import ModelValidationError, ModelConversionError
 
 
@@ -26,11 +26,11 @@ def validate_data(request, model, partial=False):
 
 
 def validate_tender_data(request):
-    return validate_data(request, TenderDocument)
+    return validate_data(request, Tender)
 
 
 def validate_patch_tender_data(request):
-    return validate_data(request, TenderDocument, True)
+    return validate_data(request, Tender, True)
 
 
 def validate_tender_auction_data(request):
@@ -88,7 +88,7 @@ def validate_patch_complaint_data(request):
 
 
 def validate_tender_exists(request, key='id'):
-    tender = request.matchdict.get(key) and TenderDocument.load(request.registry.db, request.matchdict[key])
+    tender = request.matchdict.get(key) and Tender.load(request.registry.db, request.matchdict[key])
     if tender:
         request.validated[key] = request.matchdict[key]
         request.validated['tender'] = tender

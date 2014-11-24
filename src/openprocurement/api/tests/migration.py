@@ -14,7 +14,7 @@ class MigrateTest(BaseWebTest):
 
     def test_migrate_from0to1(self):
         set_db_schema_version(self.db, 0)
-        data = {'doc_type': 'TenderDocument',
+        data = {'doc_type': 'Tender',
                 'modifiedAt': '2014-10-15T00:00:00.000000'}
         _id, _rev = self.db.save(data)
         item = self.db.get(_id)
@@ -36,7 +36,7 @@ class MigrateTest(BaseWebTest):
                     "street-address": "вул. Банкова, 11, корпус 1"
                 },
             },
-            'doc_type': 'TenderDocument',
+            'doc_type': 'Tender',
             'bidders': [{
                 "address": {
                     "country-name": "Україна",
@@ -65,7 +65,7 @@ class MigrateTest(BaseWebTest):
     def test_migrate_from2to3(self):
         set_db_schema_version(self.db, 2)
         data = {
-            'doc_type': 'TenderDocument',
+            'doc_type': 'Tender',
             'bidders': [{
                 "_id": "UUID",
                 "id": {
@@ -89,7 +89,7 @@ class MigrateTest(BaseWebTest):
     def test_migrate_from3to4(self):
         set_db_schema_version(self.db, 3)
         data = {
-            'doc_type': 'TenderDocument',
+            'doc_type': 'Tender',
             "itemsToBeProcured": [{
                 "description": "футляри до державних нагород",
                 "classificationScheme": "Other",
@@ -111,7 +111,7 @@ class MigrateTest(BaseWebTest):
     def test_migrate_from4to5(self):
         set_db_schema_version(self.db, 4)
         data = {
-            'doc_type': 'TenderDocument',
+            'doc_type': 'Tender',
             "clarificationPeriod": {
                 "endDate": "2014-10-31T00:00:00"
             },
@@ -131,7 +131,7 @@ class MigrateTest(BaseWebTest):
     def test_migrate_from5to6(self):
         set_db_schema_version(self.db, 5)
         data = {
-            'doc_type': 'TenderDocument',
+            'doc_type': 'Tender',
             "attachments": [
                 {
                     'id': 'id',
