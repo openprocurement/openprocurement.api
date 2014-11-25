@@ -60,10 +60,10 @@ Schema
     string
 
     |ocdsDescription|
-    An classification should be drawn from an existing scheme or list of
+    A classification should be drawn from an existing scheme or list of
     codes.  This field is used to indicate the scheme/codelist from which
     the classification is drawn.  For line item classifications, this value
-    should represent an known Item Classification Scheme wherever possible.
+    should represent a known Item Classification Scheme wherever possible.
 
 :id:
     string
@@ -78,7 +78,7 @@ Schema
     A textual description or title for the code.
 
 :uri:
-    uti
+    uri
 
     |ocdsDescription|
     A URI to identify the code. In the event individual URIs are not

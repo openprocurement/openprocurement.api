@@ -4,7 +4,7 @@ msgstr ""
 "Project-Id-Version: openprocurement.api 0.1\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2014-10-29 12:11+0200\n"
-"PO-Revision-Date: 2014-11-04 17:38+0300\n"
+"PO-Revision-Date: 2014-11-25 11:02+0300\n"
 "Last-Translator: \n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
@@ -12,10 +12,13 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "X-Generator: Poedit 1.5.4\n"
 
-#: ../../source/dates.rst:5
-msgid "Date Format"
-msgstr "Формат дати"
-
 #: ../../source/dates.rst:7
 msgid "The date format is `ISO 8601 <http://en.wikipedia.org/wiki/ISO_8601>`_."
 msgstr "Формат дати `ISO 8601 <http://en.wikipedia.org/wiki/ISO_8601>`_."
+
+#: ../../source/dates.rst:5
+msgid "Date Format: ISO 8601"
+msgstr "Формат дати: ISO 8601"
+
+#~ msgid "Date Format"
+#~ msgstr "Формат дати"

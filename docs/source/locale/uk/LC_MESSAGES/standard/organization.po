@@ -1,0 +1,154 @@
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: openprocurement.api 0.3\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2014-11-24 18:25+0200\n"
+"PO-Revision-Date: 2014-11-25 15:26+0300\n"
+"Last-Translator: \n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: Poedit 1.5.4\n"
+
+#: ../../source/standard/organization.rst:9
+#: ../../source/standard/organization.rst:4
+msgid "Organization"
+msgstr "Organization"
+
+#: ../../source/standard/organization.rst:12
+#: ../../source/standard/organization.rst:34
+#: ../../source/standard/organization.rst:74
+#: ../../source/standard/organization.rst:96
+msgid "Schema"
+msgstr "Схема"
+
+#: ../../source/standard/organization.rst:15
+#: ../../source/standard/organization.rst:51
+#: ../../source/standard/organization.rst:99
+msgid "string, multilingual"
+msgstr "string, багатомовний"
+
+#: ../../source/standard/organization.rst:17
+msgid ":ref:`Identifier`"
+msgstr ":ref:`Identifier`"
+
+#: ../../source/standard/organization.rst:19
+msgid "List of :ref:`identifier` objects"
+msgstr "Список об’єктів :ref:`identifier`"
+
+#: ../../source/standard/organization.rst:21
+msgid ":ref:`Address`"
+msgstr ":ref:`Address`"
+
+#: ../../source/standard/organization.rst:23
+msgid ":ref:`ContactPoint`"
+msgstr ":ref:`ContactPoint`"
+
+#: ../../source/standard/organization.rst:31
+msgid "Identifier"
+msgstr "Identifier"
+
+#: ../../source/standard/organization.rst:37
+#: ../../source/standard/organization.rst:46
+#: ../../source/standard/organization.rst:77
+#: ../../source/standard/organization.rst:79
+#: ../../source/standard/organization.rst:81
+#: ../../source/standard/organization.rst:83
+#: ../../source/standard/organization.rst:85
+#: ../../source/standard/organization.rst:103
+#: ../../source/standard/organization.rst:105
+msgid "string"
+msgstr "string"
+
+#: ../../source/standard/organization.rst:39
+msgid ""
+"|ocdsDescription| Organization identifiers be drawn from an existing "
+"identification scheme. This field is used to indicate the scheme or codelist "
+"in which the identifier will be found.  This value should be drawn from the "
+"Organization Identifier Scheme."
+msgstr ""
+"|ocdsDescription| Ідентифікатори організації беруться з існуючої схеми "
+"ідентифікації. Це поле вказує схему або список кодів, де можна знайти "
+"ідентифікатор організації. Це значення повинно братись зі Схеми "
+"Ідентифікації Організацій."
+
+#: ../../source/standard/organization.rst:48
+msgid ""
+"|ocdsDescription| The identifier of the organization in the selected scheme."
+msgstr "|ocdsDescription| Ідентифікатор організації у вибраній схемі."
+
+#: ../../source/standard/organization.rst:53
+msgid "|ocdsDescription| The legally registered name of the organization."
+msgstr "|ocdsDescription| Легально зареєстрована назва організації."
+
+#: ../../source/standard/organization.rst:57
+msgid "uri"
+msgstr "uri"
+
+#: ../../source/standard/organization.rst:59
+msgid ""
+"|ocdsDescription| A URI to identify the organization, such as those provided "
+"by Open Corporates or some other relevant URI provider.  This is not for "
+"listing the website of the organization: that can be done through the url "
+"field of the Organization contact point."
+msgstr ""
+"|ocdsDescription| URI для ідентифікації організації, наприклад, ті, які "
+"надають Open Corporates або інші постачальники URI. Це не для вебсайту "
+"організації, його можна надати в полі url в ContactPoint організації."
+
+#: ../../source/standard/organization.rst:71
+#: ../../source/standard/organization.rst:66
+msgid "Address"
+msgstr "Address"
+
+#: ../../source/standard/organization.rst:93
+#: ../../source/standard/organization.rst:88
+msgid "ContactPoint"
+msgstr "ContactPoint"
+
+#: ../../source/standard/organization.rst:101
+msgid "email"
+msgstr "email"
+
+#: ../../source/standard/organization.rst:107
+msgid "url"
+msgstr "url"
+
+#: ../../source/standard/organization.rst:4
+#: ../../source/standard/organization.rst:26
+msgid "Company"
+msgstr "Компанія"
+
+#: ../../source/standard/organization.rst:26
+msgid "id"
+msgstr "id"
+
+#: ../../source/standard/organization.rst:66
+msgid "City"
+msgstr "Місто"
+
+#: ../../source/standard/organization.rst:66
+msgid "Street"
+msgstr "Вулиця"
+
+#: ../../source/standard/organization.rst:66
+msgid "Country"
+msgstr "Країна"
+
+#: ../../source/standard/organization.rst:88
+msgid "Person"
+msgstr "Людина"
+
+#: ../../source/standard/organization.rst:88
+msgid "Phone"
+msgstr "Телефон"
+
+#: ../../source/standard/organization.rst:88
+msgid "Email"
+msgstr "Email"
+
+#: ../../source/standard/organization.rst:88
+msgid "Website"
+msgstr "Вебсайт"

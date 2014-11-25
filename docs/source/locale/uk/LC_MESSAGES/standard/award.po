@@ -1,0 +1,21 @@
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: openprocurement.api 0.3\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2014-11-24 18:25+0200\n"
+"PO-Revision-Date: 2014-11-25 12:35+0300\n"
+"Last-Translator: \n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: Poedit 1.5.4\n"
+
+#: ../../source/standard/award.rst:7 ../../source/standard/award.rst:3
+msgid "Award"
+msgstr "Award"
+
+#: ../../source/standard/award.rst:10
+msgid "Schema"
+msgstr "Схема"

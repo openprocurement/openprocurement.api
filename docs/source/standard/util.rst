@@ -14,7 +14,7 @@ Schema
     string, :ref:`date`
 
     |ocdsDescription|
-    The state date for the period.
+    The start date for the period.
 
 :endDate:
     string, :ref:`date`

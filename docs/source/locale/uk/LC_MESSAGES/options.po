@@ -4,7 +4,7 @@ msgstr ""
 "Project-Id-Version: openprocurement.api 0.1\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2014-11-04 09:37+0200\n"
-"PO-Revision-Date: 2014-11-04 17:38+0300\n"
+"PO-Revision-Date: 2014-11-25 11:01+0300\n"
 "Last-Translator: \n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
@@ -77,3 +77,11 @@ msgstr ""
 "походження (same origin policy).\" Функція названа так само як значення "
 "параметра `opt_jsonp` буде викликана з одним аргументом - JavaScript "
 "об’єктом, що представляє відповідь."
+
+#: ../../source/options.rst:36
+msgid "`?opt_fields=comma,separated,field,list`"
+msgstr "`?opt_fields=comma,separated,field,list`"
+
+#: ../../source/options.rst:38
+msgid "List of extra fields to include in response."
+msgstr "Список додаткових полів, що міститимуться у відповіді."
