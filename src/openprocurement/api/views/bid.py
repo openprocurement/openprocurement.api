@@ -18,7 +18,7 @@ from openprocurement.api.validation import (
           collection_path='/tenders/{tender_id}/bids',
           path='/tenders/{tender_id}/bids/{id}',
           description="Tender bids")
-class TenderBidderResource(object):
+class TenderBidResource(object):
 
     def __init__(self, request):
         self.request = request

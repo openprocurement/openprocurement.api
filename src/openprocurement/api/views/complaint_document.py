@@ -12,40 +12,40 @@ from openprocurement.api.validation import (
     validate_file_update,
     validate_file_upload,
     validate_patch_document_data,
-    validate_tender_bid_document_exists,
-    validate_tender_bid_exists_by_bid_id,
+    validate_tender_complaint_document_exists,
+    validate_tender_complaint_exists_by_complaint_id,
 )
 
 
-@resource(name='Tender Bid Documents',
-          collection_path='/tenders/{tender_id}/bids/{bid_id}/documents',
-          path='/tenders/{tender_id}/bids/{bid_id}/documents/{id}',
-          description="Tender bidder documents")
-class TenderBidDocumentResource(object):
+@resource(name='Tender Complaint Documents',
+          collection_path='/tenders/{tender_id}/complaints/{complaint_id}/documents',
+          path='/tenders/{tender_id}/complaints/{complaint_id}/documents/{id}',
+          description="Tender complaintder documents")
+class TenderComplaintDocumentResource(object):
 
     def __init__(self, request):
         self.request = request
         self.db = request.registry.db
 
-    @view(renderer='json', validators=(validate_tender_bid_exists_by_bid_id,))
+    @view(renderer='json', validators=(validate_tender_complaint_exists_by_complaint_id,))
     def collection_get(self):
-        """Tender Bid Documents List"""
-        bid = self.request.validated['bid']
+        """Tender Complaint Documents List"""
+        complaint = self.request.validated['complaint']
         if self.request.params.get('all', ''):
-            collection_data = [i.serialize("view") for i in bid['documents']]
+            collection_data = [i.serialize("view") for i in complaint['documents']]
         else:
             collection_data = sorted(dict([
                 (i.id, i.serialize("view"))
-                for i in bid['documents']
+                for i in complaint['documents']
             ]).values(), key=lambda i: i['dateModified'])
         return {'data': collection_data}
 
-    @view(renderer='json', validators=(validate_file_upload, validate_tender_bid_exists_by_bid_id,))
+    @view(renderer='json', validators=(validate_file_upload, validate_tender_complaint_exists_by_complaint_id,))
     def collection_post(self):
-        """Tender Bid Document Upload
+        """Tender Complaint Document Upload
         """
         tender = self.request.validated['tender']
-        if tender.status not in ['tendering', 'auction', 'qualification']:
+        if tender.status not in ['enquiries', 'tendering', 'auction', 'qualification', 'awarded']:
             self.request.errors.add('body', 'data', 'Can\'t add document in current tender status')
             self.request.errors.status = 403
             return
@@ -56,17 +56,17 @@ class TenderBidDocumentResource(object):
         document.title = data.filename
         document.format = data.type
         key = uuid4().hex
-        document.url = self.request.route_url('Tender Bid Documents', tender_id=tender.id, bid_id=self.request.validated['bid_id'], id=document.id, _query={'download': key})
-        self.request.validated['bid'].documents.append(document)
+        document.url = self.request.route_url('Tender Complaint Documents', tender_id=tender.id, complaint_id=self.request.validated['complaint_id'], id=document.id, _query={'download': key})
+        self.request.validated['complaint'].documents.append(document)
         upload_file(tender, document, key, data.file, self.request)
         save_tender(tender, src, self.request)
         self.request.response.status = 201
-        self.request.response.headers['Location'] = self.request.route_url('Tender Bid Documents', tender_id=tender.id, bid_id=self.request.validated['bid_id'], id=document.id)
+        self.request.response.headers['Location'] = self.request.route_url('Tender Complaint Documents', tender_id=tender.id, complaint_id=self.request.validated['complaint_id'], id=document.id)
         return {'data': document.serialize("view")}
 
-    @view(renderer='json', validators=(validate_tender_bid_document_exists,))
+    @view(renderer='json', validators=(validate_tender_complaint_document_exists,))
     def get(self):
-        """Tender Bid Document Read"""
+        """Tender Complaint Document Read"""
         document = self.request.validated['document']
         key = self.request.params.get('download')
         if key:
@@ -79,15 +79,15 @@ class TenderBidDocumentResource(object):
         ]
         return {'data': document_data}
 
-    @view(renderer='json', validators=(validate_file_update, validate_tender_bid_document_exists,))
+    @view(renderer='json', validators=(validate_file_update, validate_tender_complaint_document_exists,))
     def put(self):
-        """Tender Bid Document Update"""
+        """Tender Complaint Document Update"""
         tender = self.request.validated['tender']
-        first_document = self.request.validated['documents'][0]
-        if tender.status not in ['tendering', 'auction', 'qualification']:
+        if tender.status not in ['enquiries', 'tendering', 'auction', 'qualification', 'awarded']:
             self.request.errors.add('body', 'data', 'Can\'t update document in current tender status')
             self.request.errors.status = 403
             return
+        first_document = self.request.validated['documents'][0]
         src = tender.serialize("plain")
         if self.request.content_type == 'multipart/form-data':
             data = self.request.validated['file']
@@ -104,17 +104,17 @@ class TenderBidDocumentResource(object):
         document.format = content_type
         document.datePublished = first_document.datePublished
         key = uuid4().hex
-        document.url = self.request.route_url('Tender Bid Documents', tender_id=tender.id, bid_id=self.request.validated['bid_id'], id=document.id, _query={'download': key})
-        self.request.validated['bid'].documents.append(document)
+        document.url = self.request.route_url('Tender Complaint Documents', tender_id=tender.id, complaint_id=self.request.validated['complaint_id'], id=document.id, _query={'download': key})
+        self.request.validated['complaint'].documents.append(document)
         upload_file(tender, document, key, in_file, self.request)
         save_tender(tender, src, self.request)
         return {'data': document.serialize("view")}
 
-    @view(renderer='json', validators=(validate_patch_document_data, validate_tender_bid_document_exists,))
+    @view(renderer='json', validators=(validate_patch_document_data, validate_tender_complaint_document_exists,))
     def patch(self):
-        """Tender Bid Document Update"""
+        """Tender Complaint Document Update"""
         tender = self.request.validated['tender']
-        if tender.status not in ['tendering', 'auction', 'qualification']:
+        if tender.status not in ['enquiries', 'tendering', 'auction', 'qualification', 'awarded']:
             self.request.errors.add('body', 'data', 'Can\'t update document in current tender status')
             self.request.errors.status = 403
             return

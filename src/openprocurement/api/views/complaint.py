@@ -29,6 +29,10 @@ class TenderComplaintResource(object):
         """Post a complaint
         """
         tender = self.request.validated['tender']
+        if tender.status not in ['enquiries', 'tendering', 'auction', 'qualification', 'awarded']:
+            self.request.errors.add('body', 'data', 'Can\'t add complaint in current tender status')
+            self.request.errors.status = 403
+            return
         complaint_data = filter_data(self.request.validated['data'])
         complaint = Complaint(complaint_data)
         src = tender.serialize("plain")
@@ -55,6 +59,10 @@ class TenderComplaintResource(object):
         """Post a complaint resolution
         """
         tender = self.request.validated['tender']
+        if tender.status not in ['enquiries', 'tendering', 'auction', 'qualification', 'awarded']:
+            self.request.errors.add('body', 'data', 'Can\'t update complaint in current tender status')
+            self.request.errors.status = 403
+            return
         complaint = self.request.validated['complaint']
         complaint_data = filter_data(self.request.validated['data'])
         if complaint_data:

@@ -177,6 +177,23 @@ def validate_tender_complaint_exists(request, key='id'):
             request.errors.status = 404
 
 
+def validate_tender_complaint_exists_by_complaint_id(request):
+    return validate_tender_complaint_exists(request, 'complaint_id')
+
+
+def validate_tender_complaint_document_exists(request):
+    complaint = validate_tender_complaint_exists(request, 'complaint_id')
+    if complaint:
+        documents = [i for i in complaint.documents if i.id == request.matchdict['id']]
+        if not documents:
+            request.errors.add('url', 'id', 'Not Found')
+            request.errors.status = 404
+        else:
+            request.validated['id'] = request.matchdict['id']
+            request.validated['documents'] = documents
+            request.validated['document'] = documents[-1]
+
+
 def validate_file_upload(request):
     if 'file' not in request.POST:
         request.errors.add('body', 'file', 'Not Found')
