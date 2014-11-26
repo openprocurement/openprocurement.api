@@ -42,13 +42,13 @@ class TenderQuestionResource(object):
     def collection_get(self):
         """List questions
         """
-        return {'data': [i.serialize("view") for i in self.request.validated['tender'].questions]}
+        return {'data': [i.serialize(self.request.validated['tender'].status) for i in self.request.validated['tender'].questions]}
 
     @view(renderer='json', validators=(validate_tender_question_exists,))
     def get(self):
         """Retrieving the question
         """
-        return {'data': self.request.validated['question'].serialize("view")}
+        return {'data': self.request.validated['question'].serialize(self.request.validated['tender'].status)}
 
     @view(content_type="application/json", validators=(validate_patch_question_data, validate_tender_question_exists), renderer='json')
     def patch(self):
@@ -61,4 +61,4 @@ class TenderQuestionResource(object):
             src = tender.serialize("plain")
             question.import_data(apply_data_patch(question.serialize(), question_data))
             save_tender(tender, src, self.request)
-        return {'data': question.serialize("view")}
+        return {'data': question.serialize(self.request.validated['tender'].status)}

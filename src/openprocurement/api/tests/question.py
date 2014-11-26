@@ -158,7 +158,15 @@ class TenderQuestionResourceTest(BaseTenderWebTest):
         response = self.app.get('/tenders/{}/questions/{}'.format(self.tender_id, question['id']))
         self.assertEqual(response.status, '200 OK')
         self.assertEqual(response.content_type, 'application/json')
+        self.assertEqual(set(response.json['data']), set([u'id', u'date', u'title', u'description']))
+
+        self.set_status('qualification')
+
+        response = self.app.get('/tenders/{}/questions/{}'.format(self.tender_id, question['id']))
+        self.assertEqual(response.status, '200 OK')
+        self.assertEqual(response.content_type, 'application/json')
         self.assertEqual(response.json['data'], question)
+
 
         response = self.app.get('/tenders/{}/questions/some_id'.format(self.tender_id), status=404)
         self.assertEqual(response.status, '404 Not Found')
@@ -184,6 +192,13 @@ class TenderQuestionResourceTest(BaseTenderWebTest):
         self.assertEqual(response.status, '201 Created')
         self.assertEqual(response.content_type, 'application/json')
         question = response.json['data']
+
+        response = self.app.get('/tenders/{}/questions'.format(self.tender_id))
+        self.assertEqual(response.status, '200 OK')
+        self.assertEqual(response.content_type, 'application/json')
+        self.assertEqual(set(response.json['data'][0]), set([u'id', u'date', u'title', u'description']))
+
+        self.set_status('qualification')
 
         response = self.app.get('/tenders/{}/questions'.format(self.tender_id))
         self.assertEqual(response.status, '200 OK')

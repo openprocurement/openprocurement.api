@@ -67,6 +67,10 @@ def validate_award_data(request):
     return validate_data(request, Award)
 
 
+def validate_patch_award_data(request):
+    return validate_data(request, Award, True)
+
+
 def validate_patch_document_data(request):
     return validate_data(request, Document, True)
 
@@ -183,6 +187,57 @@ def validate_tender_complaint_exists_by_complaint_id(request):
 
 def validate_tender_complaint_document_exists(request):
     complaint = validate_tender_complaint_exists(request, 'complaint_id')
+    if complaint:
+        documents = [i for i in complaint.documents if i.id == request.matchdict['id']]
+        if not documents:
+            request.errors.add('url', 'id', 'Not Found')
+            request.errors.status = 404
+        else:
+            request.validated['id'] = request.matchdict['id']
+            request.validated['documents'] = documents
+            request.validated['document'] = documents[-1]
+
+
+def validate_tender_award_exists(request, key='id'):
+    tender = validate_tender_exists(request, 'tender_id')
+    if tender:
+        awards = [i for i in tender.awards if i.awardID == request.matchdict[key]]
+        if awards:
+            request.validated[key] = request.matchdict[key]
+            request.validated['awards'] = awards
+            award = awards[0]
+            request.validated['award'] = award
+            return award
+        else:
+            request.errors.add('url', key, 'Not Found')
+            request.errors.status = 404
+
+
+def validate_tender_award_exists_by_award_id(request):
+    return validate_tender_award_exists(request, 'award_id')
+
+
+def validate_tender_award_complaint_exists(request, key='id'):
+    award = validate_tender_award_exists(request, 'award_id')
+    if award:
+        complaints = [i for i in award.complaints if i.id == request.matchdict[key]]
+        if complaints:
+            request.validated[key] = request.matchdict[key]
+            request.validated['complaints'] = complaints
+            complaint = complaints[0]
+            request.validated['complaint'] = complaint
+            return complaint
+        else:
+            request.errors.add('url', key, 'Not Found')
+            request.errors.status = 404
+
+
+def validate_tender_award_complaint_exists_by_complaint_id(request):
+    return validate_tender_award_complaint_exists(request, 'complaint_id')
+
+
+def validate_tender_award_complaint_document_exists(request):
+    complaint = validate_tender_award_complaint_exists(request, 'complaint_id')
     if complaint:
         documents = [i for i in complaint.documents if i.id == request.matchdict['id']]
         if not documents:

@@ -203,27 +203,6 @@ class Bid(Model):
     documents = ListType(ModelType(Document), default=list())
 
 
-class Award(Model):
-    """ An award for the given procurement. There may be more than one award
-        per contracting process e.g. because the contract is split amongst
-        different providers, or because it is a standing offer.
-    """
-    class Options:
-        serialize_when_none = False
-        roles = {
-            "embedded": schematics_embedded_role,
-            "view": schematics_default_role,
-        }
-
-    awardID = StringType(required=True, default=lambda: uuid4().hex)
-    notice = ModelType(Notice)
-    awardDate = IsoDateTimeType(default=get_now)
-    awardValue = ModelType(Value)
-    awardStatus = StringType(required=True, choices=['pending', 'unsuccessful'])  # 'pending', 'active', 'cancelled', 'unsuccessful'
-    suppliers = ListType(ModelType(Organization), default=list())
-    itemsAwarded = ListType(ModelType(Item))
-
-
 class Revision(Model):
     date = IsoDateTimeType(default=get_now)
     changes = ListType(DictType(BaseType), default=list())
@@ -235,6 +214,13 @@ class Question(Model):
         roles = {
             "embedded": schematics_embedded_role,
             "view": schematics_default_role,
+            "enquiries": (blacklist("author") + schematics_embedded_role),
+            "tendering": (blacklist("author") + schematics_embedded_role),
+            "auction": (blacklist("author") + schematics_embedded_role),
+            "qualification": schematics_default_role,
+            "awarded": schematics_default_role,
+            "contract-signed": schematics_default_role,
+            "paused": schematics_default_role,
         }
 
     id = StringType(required=True, default=lambda: uuid4().hex)
@@ -261,6 +247,28 @@ class Complaint(Model):
     status = StringType(choices=['pending', 'invalid', 'declined', 'resolved'], default='pending')
     resolution = StringType()  # only tender
     documents = ListType(ModelType(Document), default=list())
+
+
+class Award(Model):
+    """ An award for the given procurement. There may be more than one award
+        per contracting process e.g. because the contract is split amongst
+        different providers, or because it is a standing offer.
+    """
+    class Options:
+        serialize_when_none = False
+        roles = {
+            "embedded": schematics_embedded_role,
+            "view": schematics_default_role,
+        }
+
+    awardID = StringType(required=True, default=lambda: uuid4().hex)
+    notice = ModelType(Notice)
+    awardDate = IsoDateTimeType(default=get_now)
+    awardValue = ModelType(Value)
+    awardStatus = StringType(required=True, choices=['pending', 'unsuccessful'])  # 'pending', 'active', 'cancelled', 'unsuccessful'
+    suppliers = ListType(ModelType(Organization), default=list())
+    itemsAwarded = ListType(ModelType(Item))
+    complaints = ListType(ModelType(Complaint), default=list())
 
 
 plain_role = (blacklist("_attachments", "revisions", "dateModified") + schematics_embedded_role)

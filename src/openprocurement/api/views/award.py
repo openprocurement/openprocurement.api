@@ -1,9 +1,15 @@
 # -*- coding: utf-8 -*-
 from cornice.resource import resource, view
 from openprocurement.api.models import Award
-from openprocurement.api.utils import save_tender
+from openprocurement.api.utils import (
+    apply_data_patch,
+    filter_data,
+    save_tender,
+)
 from openprocurement.api.validation import (
     validate_award_data,
+    validate_patch_award_data,
+    validate_tender_award_exists,
     validate_tender_exists_by_tender_id,
 )
 
@@ -165,5 +171,128 @@ class TenderAwardResource(object):
         tender.awards.append(award)
         save_tender(tender, src, self.request)
         self.request.response.status = 201
-        # self.request.response.headers['Location'] = self.request.route_url('Tender Bids', tender_id=tender.id, id=award['awardID'])
+        self.request.response.headers['Location'] = self.request.route_url('Tender Bids', tender_id=tender.id, id=award['awardID'])
+        return {'data': award.serialize("view")}
+
+    @view(renderer='json', validators=(validate_tender_award_exists,))
+    def get(self):
+        """Retrieving the award
+
+        Example request for retrieving the award:
+
+        .. sourcecode:: http
+
+            GET /tenders/4879d3f8ee2443169b5fbbc9f89fa607/awards/71b6c23ed8944d688e92a31ec8c3f61a HTTP/1.1
+            Host: example.com
+            Accept: application/json
+
+        And here is the response to be expected:
+
+        .. sourcecode:: http
+
+            HTTP/1.0 200 OK
+            Content-Type: application/json
+
+            {
+                "data": {
+                    "awardID": "4879d3f8ee2443169b5fbbc9f89fa607",
+                    "awardDate": "2014-10-28T11:44:17.947Z",
+                    "awardStatus": "active",
+                    "suppliers": [
+                        {
+                            "id": {
+                                "name": "Державне управління справами",
+                                "scheme": "https://ns.openprocurement.org/ua/edrpou",
+                                "uid": "00037256",
+                                "uri": "http://www.dus.gov.ua/"
+                            },
+                            "address": {
+                                "countryName": "Україна",
+                                "postalCode": "01220",
+                                "region": "м. Київ",
+                                "locality": "м. Київ",
+                                "streetAddress": "вул. Банкова, 11, корпус 1"
+                            }
+                        }
+                    ],
+                    "awardValue": {
+                        "amount": 489,
+                        "currency": "UAH",
+                        "valueAddedTaxIncluded": true
+                    }
+                }
+            }
+
+        """
+        return {'data': self.request.validated['award'].serialize("view")}
+
+    @view(content_type="application/json", validators=(validate_patch_award_data, validate_tender_award_exists), renderer='json')
+    def patch(self):
+        """Update of award
+
+        Example request to change the award:
+
+        .. sourcecode:: http
+
+            PATCH /tenders/4879d3f8ee2443169b5fbbc9f89fa607/awards/71b6c23ed8944d688e92a31ec8c3f61a HTTP/1.1
+            Host: example.com
+            Accept: application/json
+
+            {
+                "data": {
+                    "awardValue": {
+                        "amount": 600
+                    }
+                }
+            }
+
+        And here is the response to be expected:
+
+        .. sourcecode:: http
+
+            HTTP/1.0 200 OK
+            Content-Type: application/json
+
+            {
+                "data": {
+                    "awardID": "4879d3f8ee2443169b5fbbc9f89fa607",
+                    "awardDate": "2014-10-28T11:44:17.947Z",
+                    "awardStatus": "active",
+                    "suppliers": [
+                        {
+                            "id": {
+                                "name": "Державне управління справами",
+                                "scheme": "https://ns.openprocurement.org/ua/edrpou",
+                                "uid": "00037256",
+                                "uri": "http://www.dus.gov.ua/"
+                            },
+                            "address": {
+                                "countryName": "Україна",
+                                "postalCode": "01220",
+                                "region": "м. Київ",
+                                "locality": "м. Київ",
+                                "streetAddress": "вул. Банкова, 11, корпус 1"
+                            }
+                        }
+                    ],
+                    "awardValue": {
+                        "amount": 600,
+                        "currency": "UAH",
+                        "valueAddedTaxIncluded": true
+                    }
+                }
+            }
+
+        """
+        tender = self.request.validated['tender']
+        if tender.status != 'qualification':
+            self.request.errors.add('body', 'data', 'Can\'t change award in current tender status')
+            self.request.errors.status = 403
+            return
+        award = self.request.validated['award']
+        award_data = filter_data(self.request.validated['data'])
+        if award_data:
+            src = tender.serialize("plain")
+            award.import_data(apply_data_patch(award.serialize(), award_data))
+            save_tender(tender, src, self.request)
         return {'data': award.serialize("view")}
