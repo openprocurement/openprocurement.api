@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
 from cornice.resource import resource, view
-from uuid import uuid4
 from openprocurement.api.models import Document
 from openprocurement.api.utils import (
     filter_data,
+    generate_id,
     get_file,
     save_tender,
     upload_file,
@@ -52,10 +52,10 @@ class TenderAwardComplaintDocumentResource(object):
         src = tender.serialize("plain")
         data = self.request.validated['file']
         document = Document()
-        document.id = uuid4().hex
+        document.id = generate_id()
         document.title = data.filename
         document.format = data.type
-        key = uuid4().hex
+        key = generate_id()
         document.url = self.request.route_url('Tender Award Complaint Documents', tender_id=tender.id, award_id=self.request.validated['award_id'], complaint_id=self.request.validated['complaint_id'], id=document.id, _query={'download': key})
         self.request.validated['complaint'].documents.append(document)
         upload_file(tender, document, key, data.file, self.request)
@@ -103,7 +103,7 @@ class TenderAwardComplaintDocumentResource(object):
         document.title = filename
         document.format = content_type
         document.datePublished = first_document.datePublished
-        key = uuid4().hex
+        key = generate_id()
         document.url = self.request.route_url('Tender Award Complaint Documents', tender_id=tender.id, award_id=self.request.validated['award_id'], complaint_id=self.request.validated['complaint_id'], id=document.id, _query={'download': key})
         self.request.validated['complaint'].documents.append(document)
         upload_file(tender, document, key, in_file, self.request)

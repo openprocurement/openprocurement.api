@@ -1,10 +1,10 @@
 # -*- coding: utf-8 -*-
 from cornice.resource import resource, view
-from uuid import uuid4
 from openprocurement.api.models import Tender, get_now
 from openprocurement.api.utils import (
     apply_data_patch,
     filter_data,
+    generate_id,
     generate_tender_id,
     save_tender,
     tender_serialize,
@@ -240,7 +240,7 @@ class TenderResource(object):
 
         """
         tender_data = filter_data(self.request.validated['data'])
-        tender_id = uuid4().hex
+        tender_id = generate_id()
         tender_data['doc_id'] = tender_id
         tender_data['tenderID'] = generate_tender_id(tender_id)
         tender = Tender(tender_data)

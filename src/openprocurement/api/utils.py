@@ -1,8 +1,13 @@
 # -*- coding: utf-8 -*-
 from base64 import b64encode
 from jsonpatch import make_patch, apply_patch
-from urllib import quote
 from openprocurement.api.models import Revision
+from urllib import quote
+from uuid import uuid4
+
+
+def generate_id():
+    return uuid4().hex
 
 
 def generate_tender_id(tid):
