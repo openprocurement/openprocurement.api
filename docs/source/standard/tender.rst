@@ -15,7 +15,7 @@ Schema
 
    The name of the tender, displayed in listings. You can include following items:
 
-   * an contain tender code (in procuring organization management system)
+   * tender code (in procuring organization management system)
    * periodicity of the tender (annual, quarterly, etc.)
    * item being procured
    * some other info

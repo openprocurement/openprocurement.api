@@ -1,0 +1,102 @@
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: openprocurement.api 0.3\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2014-11-24 18:25+0200\n"
+"PO-Revision-Date: 2014-11-25 15:24+0300\n"
+"Last-Translator: \n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: Poedit 1.5.4\n"
+
+#: ../../source/standard/util.rst:8 ../../source/standard/util.rst:4
+msgid "Period"
+msgstr "Period"
+
+#: ../../source/standard/util.rst:11 ../../source/standard/util.rst:39
+#: ../../source/standard/util.rst:63
+msgid "Schema"
+msgstr "Схема"
+
+#: ../../source/standard/util.rst:14 ../../source/standard/util.rst:20
+#: ../../source/standard/util.rst:66
+msgid "string, :ref:`date`"
+msgstr "string, :ref:`date`"
+
+#: ../../source/standard/util.rst:22
+msgid "|ocdsDescription| The end date for the period."
+msgstr "|ocdsDescription| Кінцева дата періоду."
+
+#: ../../source/standard/util.rst:28
+msgid "Date"
+msgstr "Date"
+
+#: ../../source/standard/util.rst:30
+msgid "Date/time in :ref:`date-format`."
+msgstr "Дата/час у :ref:`date-format`."
+
+#: ../../source/standard/util.rst:36 ../../source/standard/util.rst:32
+msgid "Value"
+msgstr "Value"
+
+#: ../../source/standard/util.rst:42
+msgid "float"
+msgstr ""
+
+#: ../../source/standard/util.rst:44
+msgid "|ocdsDescription| Amount as a number."
+msgstr "|ocdsDescription| Кількість як число."
+
+#: ../../source/standard/util.rst:48
+msgid "string"
+msgstr "string"
+
+#: ../../source/standard/util.rst:50
+msgid "|ocdsDescription| The currency in 3-letter ISO 4217 format."
+msgstr "|ocdsDescription| Валюта у трибуквенному форматі ISO 4217."
+
+#: ../../source/standard/util.rst:54
+msgid "bool"
+msgstr ""
+
+#: ../../source/standard/util.rst:60 ../../source/standard/util.rst:56
+msgid "Revision"
+msgstr "Revision"
+
+#: ../../source/standard/util.rst:68
+msgid "Date when changes were recorded"
+msgstr "Дата, коли зміни були записані"
+
+#: ../../source/standard/util.rst:71
+msgid "List of :`Change` objects"
+msgstr "Список об’єктів :`Change`"
+
+#: ../../source/standard/util.rst:4
+msgid "startDate"
+msgstr "startDate"
+
+#: ../../source/standard/util.rst:4
+msgid "endDate"
+msgstr "endDate"
+
+#: ../../source/standard/util.rst:32
+msgid "Currency"
+msgstr "Валюта"
+
+#: ../../source/standard/util.rst:32
+msgid "VAT"
+msgstr "ПДВ"
+
+#: ../../source/standard/util.rst:56
+msgid "Change Tracking"
+msgstr "Відслідковування змін"
+
+#: ../../source/standard/util.rst:16
+msgid "|ocdsDescription| The start date for the period."
+msgstr "|ocdsDescription| Початкова дата періоду."
+
+#~ msgid "|ocdsDescription| The state date for the period."
+#~ msgstr "|ocdsDescription| "
