@@ -353,6 +353,10 @@ class TenderResource(object):
     def put(self):
         """Tender Edit (full)"""
         tender = self.request.validated['tender']
+        if tender.status in ['complete', 'unsuccessful']:
+            self.request.errors.add('body', 'data', 'Can\'t change tender in current status')
+            self.request.errors.status = 403
+            return
         src = tender.serialize("plain")
         tender_data = filter_data(self.request.validated['data'])
         tender.import_data(tender_data)
@@ -409,6 +413,10 @@ class TenderResource(object):
 
         """
         tender = self.request.validated['tender']
+        if tender.status in ['complete', 'unsuccessful']:
+            self.request.errors.add('body', 'data', 'Can\'t change tender in current status')
+            self.request.errors.status = 403
+            return
         src = tender.serialize("plain")
         tender_data = filter_data(self.request.validated['data'])
         if tender_data:
