@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 """ Cornice services.
 """
+from datetime import datetime
 from cornice.ext.spore import generate_spore_description
 from cornice.resource import resource, view
 from cornice.service import Service, get_services
@@ -338,11 +339,11 @@ class TenderResource(object):
         if limit:
             params['limit'] = limit
         limit = int(limit) if limit.isdigit() else 100
-        offset = self.request.params.get('offset', '')
         descending = self.request.params.get('descending')
+        offset = self.request.params.get('offset', '9' if descending else '0')
         if descending:
             params['descending'] = descending
-        next_offset = get_now().isoformat()
+        next_offset = datetime.min.isoformat() if descending else get_now().isoformat()
         results = TenderDocument.view(self.db, 'tenders/by_dateModified', limit=limit + 1, startkey=offset, descending=bool(descending))
         results = [tender_serialize(i, fields) for i in results]
         if len(results) > limit:
