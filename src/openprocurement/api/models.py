@@ -87,6 +87,8 @@ class Classification(Model):
     scheme = StringType(required=True)  # The classification scheme for the goods
     id = StringType(required=True)  # The classification ID from the Scheme used
     description = StringType(required=True)  # A description of the goods, services to be provided.
+    description_en = StringType()
+    description_ru = StringType()
     uri = URLType()
 
 
@@ -96,6 +98,8 @@ class Unit(Model):
         serialize_when_none = False
 
     name = StringType()
+    name_en = StringType()
+    name_ru = StringType()
     value = ModelType(Value)
 
 
@@ -105,6 +109,8 @@ class Item(Model):
         serialize_when_none = False
 
     description = StringType()  # A description of the goods, services to be provided.
+    description_en = StringType()
+    description_ru = StringType()
     classification = ModelType(Classification)
     additionalClassifications = ListType(ModelType(Classification), default=list())
     unit = ModelType(Unit)  # Description of the unit which the good comes in e.g. hours, kilograms
@@ -123,7 +129,11 @@ class Document(Model):
     id = StringType()
     classification = StringType(choices=['notice', 'biddingDocuments', 'technicalSpecifications', 'evaluationCriteria', 'clarifications', 'tenderers'])
     title = StringType()  # A title of the document.
+    title_en = StringType()
+    title_ru = StringType()
     description = StringType()  # A description of the document.
+    description_en = StringType()
+    description_ru = StringType()
     format = StringType()
     url = URLType()  # Link to the document or attachment.
     datePublished = IsoDateTimeType(default=get_now)
@@ -138,10 +148,12 @@ class Identifier(Model):
     scheme = URLType()  # The scheme that holds the unique identifiers used to identify the item being identified.
     id = BaseType()  # The identifier of the organization in the selected scheme.
     legalName = StringType()  # The legally registered name of the organization.
+    legalName_en = StringType()
+    legalName_ru = StringType()
     uri = URLType()  # A URI to identify the organization.
 
 
-class address(Model):
+class Address(Model):
     class Options:
         serialize_when_none = False
 
@@ -150,6 +162,8 @@ class address(Model):
     region = StringType()
     postalCode = StringType()
     countryName = StringType()
+    countryName_en = StringType()
+    countryName_ru = StringType()
 
 
 class ContactPoint(Model):
@@ -157,6 +171,8 @@ class ContactPoint(Model):
         serialize_when_none = False
 
     name = StringType()
+    name_en = StringType()
+    name_ru = StringType()
     email = EmailType()
     telephone = StringType()
     faxNumber = StringType()
@@ -173,9 +189,11 @@ class Organization(Model):
         }
 
     name = StringType(required=True)
+    name_en = StringType()
+    name_ru = StringType()
     identifier = ModelType(Identifier, required=True)
     additionalIdentifiers = ListType(ModelType(Identifier))
-    address = ModelType(address)
+    address = ModelType(Address)
     contactPoint = ModelType(ContactPoint)
 
 
