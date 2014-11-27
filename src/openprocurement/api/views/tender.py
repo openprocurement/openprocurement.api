@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+from datetime import datetime
 from cornice.resource import resource, view
 from openprocurement.api.models import Tender, get_now
 from openprocurement.api.utils import (
@@ -67,8 +68,8 @@ class TenderResource(object):
         if limit:
             params['limit'] = limit
         limit = int(limit) if limit.isdigit() else 100
-        offset = self.request.params.get('offset', '')
         descending = self.request.params.get('descending')
+        offset = self.request.params.get('offset', '9' if descending else '0')
         if descending:
             params['descending'] = descending
         next_offset = get_now().isoformat()
@@ -78,7 +79,7 @@ class TenderResource(object):
             results, last = results[:-1], results[-1]
             params['offset'] = last['dateModified']
         else:
-            params['offset'] = next_offset
+            params['offset'] = datetime.min.isoformat() if descending else next_offset
         next_url = self.request.route_url('collection_Tender', _query=params)
         next_path = self.request.route_path('collection_Tender', _query=params)
         return {
