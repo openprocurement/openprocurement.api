@@ -261,13 +261,19 @@ class Award(Model):
             "view": schematics_default_role,
         }
 
-    awardID = StringType(required=True, default=lambda: uuid4().hex)
-    notice = ModelType(Notice)
-    awardDate = IsoDateTimeType(default=get_now)
-    awardValue = ModelType(Value)
-    awardStatus = StringType(required=True, choices=['pending', 'unsuccessful'])  # 'pending', 'active', 'cancelled', 'unsuccessful'
+    id = StringType(required=True, default=lambda: uuid4().hex)
+    title = StringType()  # Award title
+    title_en = StringType()
+    title_ru = StringType()
+    description = StringType()  # Award description
+    description_en = StringType()
+    description_ru = StringType()
+    status = StringType(required=True, choices=['pending', 'unsuccessful', 'active', 'cancelled'])
+    date = IsoDateTimeType(default=get_now)
+    value = ModelType(Value)
     suppliers = ListType(ModelType(Organization), default=list())
-    itemsAwarded = ListType(ModelType(Item))
+    items = ListType(ModelType(Item))
+    documents = ListType(ModelType(Document), default=list())
     complaints = ListType(ModelType(Complaint), default=list())
 
 
@@ -296,19 +302,32 @@ class Tender(SchematicsDocument, Model):
         }
 
     title = StringType()
+    title_en = StringType()
+    title_ru = StringType()
     description = StringType()
+    description_en = StringType()
+    description_ru = StringType()
     tenderID = StringType()  # TenderID should always be the same as the OCID. It is included to make the flattened data structure more convenient.
     items = ListType(ModelType(Item))  # The goods and services to be purchased, broken into line items wherever possible. Items should not be duplicated, but a quantity of 2 specified instead.
     value = ModelType(Value)  # The total estimated value of the procurement.
     procurementMethod = StringType(choices=['Open', 'Selective', 'Limited'])  # Specify tendering method as per GPA definitions of Open, Selective, Limited (http://www.wto.org/english/docs_e/legal_e/rev-gpr-94_01_e.htm)
     procurementMethodRationale = StringType()  # Justification of procurement method, especially in the case of Limited tendering.
+    procurementMethodRationale_en = StringType()
+    procurementMethodRationale_ru = StringType()
     awardCriteria = StringType(choices=['Lowest Cost', 'Best Proposal', 'Best Value to Government', 'Single bid only'])  # Specify the selection criteria, by lowest cost,
     awardCriteriaDetails = StringType()  # Any detailed or further information on the selection criteria.
+    awardCriteriaDetails_en = StringType()
+    awardCriteriaDetails_ru = StringType()
     submissionMethod = StringType(choices=['Electronic Auction', 'Electronic Submission', 'Written', 'In Person'])  # Specify the method by which bids must be submitted, in person, written, or electronic auction
-    submissionDetails = StringType()  # Any detailed or further information on the submission method.
+    submissionMethodDetails = StringType()  # Any detailed or further information on the submission method.
+    submissionMethodDetails_en = StringType()
+    submissionMethodDetails_ru = StringType()
     tenderPeriod = ModelType(Period)  # The period when the tender is open for submissions. The end date is the closing date for tender submissions.
     enquiryPeriod = ModelType(Period)  # The period during which enquiries may be made and will be answered.
     hasEnquiries = BooleanType()  # A Yes/No field as to whether enquiries were part of tender process.
+    eligibilityCriteria = StringType()  # A description of any eligibility criteria for potential suppliers.
+    eligibilityCriteria_en = StringType()
+    eligibilityCriteria_ru = StringType()
     awardPeriod = ModelType(Period)  # The date or period on which an award is anticipated to be made.
     numberOfBidders = IntType()  # The number of unique tenderers who participated in the tender
     numberOfBids = IntType()  # The number of bids or submissions to the tender. In the case of an auction, the number of bids may differ from the numberOfBidders.

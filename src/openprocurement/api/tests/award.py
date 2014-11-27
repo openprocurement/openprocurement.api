@@ -73,11 +73,11 @@ class TenderAwardResourceTest(BaseTenderWebTest):
         self.assertEqual(response.content_type, 'application/json')
         self.assertEqual(response.json['status'], 'error')
         self.assertEqual(response.json['errors'], [
-            {u'description': [u'This field is required.'], u'location': u'body', u'name': u'awardStatus'},
+            {u'description': [u'This field is required.'], u'location': u'body', u'name': u'status'},
             {u'description': [u'name'], u'location': u'body', u'name': u'suppliers'}
         ])
 
-        response = self.app.post_json(request_path, {'data': {'awardStatus': 'pending', 'suppliers': [
+        response = self.app.post_json(request_path, {'data': {'status': 'pending', 'suppliers': [
                                       {'name': 'name', 'identifier': {'uri': 'invalid_value'}}]}}, status=422)
         self.assertEqual(response.status, '422 Unprocessable Entity')
         self.assertEqual(response.content_type, 'application/json')
@@ -88,7 +88,7 @@ class TenderAwardResourceTest(BaseTenderWebTest):
         ])
 
         response = self.app.post_json('/tenders/some_id/awards', {'data': {
-                                      'awardStatus': 'pending', 'suppliers': [{'identifier': {'id': 0}, 'name': 'Name'}]}}, status=404)
+                                      'status': 'pending', 'suppliers': [{'identifier': {'id': 0}, 'name': 'Name'}]}}, status=404)
         self.assertEqual(response.status, '404 Not Found')
         self.assertEqual(response.content_type, 'application/json')
         self.assertEqual(response.json['status'], 'error')
@@ -109,20 +109,20 @@ class TenderAwardResourceTest(BaseTenderWebTest):
         self.set_status('contract-signed')
 
         response = self.app.post_json('/tenders/{}/awards'.format(
-            self.tender_id), {'data': {'suppliers': [{'identifier': {'id': 0}, 'name': 'Name'}], 'awardStatus': 'pending'}}, status=403)
+            self.tender_id), {'data': {'suppliers': [{'identifier': {'id': 0}, 'name': 'Name'}], 'status': 'pending'}}, status=403)
         self.assertEqual(response.status, '403 Forbidden')
         self.assertEqual(response.content_type, 'application/json')
         self.assertEqual(response.json['errors'][0]["description"], "Can\'t create award in current tender status")
 
     def test_create_tender_award(self):
         response = self.app.post_json('/tenders/{}/awards'.format(
-            self.tender_id), {'data': {'suppliers': [{'identifier': {'id': 0}, 'name': 'Name'}], 'awardStatus': 'pending'}})
+            self.tender_id), {'data': {'suppliers': [{'identifier': {'id': 0}, 'name': 'Name'}], 'status': 'pending'}})
         self.assertEqual(response.status, '201 Created')
         self.assertEqual(response.content_type, 'application/json')
         award = response.json['data']
         self.assertEqual(award['suppliers'][0]['name'], 'Name')
-        self.assertTrue('awardID' in award)
-        self.assertTrue(award['awardID'] in response.headers['Location'])
+        self.assertTrue('id' in award)
+        self.assertTrue(award['id'] in response.headers['Location'])
 
         response = self.app.get('/tenders/{}/awards'.format(self.tender_id))
         self.assertEqual(response.status, '200 OK')
@@ -131,17 +131,17 @@ class TenderAwardResourceTest(BaseTenderWebTest):
 
     def test_patch_tender_award(self):
         response = self.app.post_json('/tenders/{}/awards'.format(
-            self.tender_id), {'data': {'suppliers': [{'identifier': {'id': 0}, 'name': 'Name'}], 'awardStatus': 'pending'}})
+            self.tender_id), {'data': {'suppliers': [{'identifier': {'id': 0}, 'name': 'Name'}], 'status': 'pending'}})
         self.assertEqual(response.status, '201 Created')
         self.assertEqual(response.content_type, 'application/json')
         award = response.json['data']
 
-        response = self.app.patch_json('/tenders/{}/awards/{}'.format(self.tender_id, award['awardID']), {"data": {"awardValue": {"amount": 600}}})
+        response = self.app.patch_json('/tenders/{}/awards/{}'.format(self.tender_id, award['id']), {"data": {"value": {"amount": 600}}})
         self.assertEqual(response.status, '200 OK')
         self.assertEqual(response.content_type, 'application/json')
-        self.assertEqual(response.json['data']["awardValue"]["amount"], 600)
+        self.assertEqual(response.json['data']["value"]["amount"], 600)
 
-        response = self.app.patch_json('/tenders/{}/awards/some_id'.format(self.tender_id), {"data": {"awardValue": {"amount": 600}}}, status=404)
+        response = self.app.patch_json('/tenders/{}/awards/some_id'.format(self.tender_id), {"data": {"value": {"amount": 600}}}, status=404)
         self.assertEqual(response.status, '404 Not Found')
         self.assertEqual(response.content_type, 'application/json')
         self.assertEqual(response.json['status'], 'error')
@@ -150,7 +150,7 @@ class TenderAwardResourceTest(BaseTenderWebTest):
                 u'url', u'name': u'id'}
         ])
 
-        response = self.app.patch_json('/tenders/some_id/awards/some_id', {"data": {"awardValue": {"amount": 600}}}, status=404)
+        response = self.app.patch_json('/tenders/some_id/awards/some_id', {"data": {"value": {"amount": 600}}}, status=404)
         self.assertEqual(response.status, '404 Not Found')
         self.assertEqual(response.content_type, 'application/json')
         self.assertEqual(response.json['status'], 'error')
@@ -161,24 +161,24 @@ class TenderAwardResourceTest(BaseTenderWebTest):
 
         self.set_status('contract-signed')
 
-        response = self.app.get('/tenders/{}/awards/{}'.format(self.tender_id, award['awardID']))
+        response = self.app.get('/tenders/{}/awards/{}'.format(self.tender_id, award['id']))
         self.assertEqual(response.status, '200 OK')
         self.assertEqual(response.content_type, 'application/json')
-        self.assertEqual(response.json['data']["awardValue"]["amount"], 600)
+        self.assertEqual(response.json['data']["value"]["amount"], 600)
 
-        response = self.app.patch_json('/tenders/{}/awards/{}'.format(self.tender_id, award['awardID']), {"data": {"awardValue": {"amount": 600}}}, status=403)
+        response = self.app.patch_json('/tenders/{}/awards/{}'.format(self.tender_id, award['id']), {"data": {"value": {"amount": 600}}}, status=403)
         self.assertEqual(response.status, '403 Forbidden')
         self.assertEqual(response.content_type, 'application/json')
         self.assertEqual(response.json['errors'][0]["description"], "Can't change award in current tender status")
 
     def test_get_tender_award(self):
         response = self.app.post_json('/tenders/{}/awards'.format(
-            self.tender_id), {'data': {'suppliers': [{'identifier': {'id': 0}, 'name': 'Name'}], 'awardStatus': 'pending'}})
+            self.tender_id), {'data': {'suppliers': [{'identifier': {'id': 0}, 'name': 'Name'}], 'status': 'pending'}})
         self.assertEqual(response.status, '201 Created')
         self.assertEqual(response.content_type, 'application/json')
         award = response.json['data']
 
-        response = self.app.get('/tenders/{}/awards/{}'.format(self.tender_id, award['awardID']))
+        response = self.app.get('/tenders/{}/awards/{}'.format(self.tender_id, award['id']))
         self.assertEqual(response.status, '200 OK')
         self.assertEqual(response.content_type, 'application/json')
         award_data = response.json['data']
@@ -210,9 +210,9 @@ class TenderAwardComplaintResourceTest(BaseTenderWebTest):
         super(TenderAwardComplaintResourceTest, self).setUp()
         # Create award
         response = self.app.post_json('/tenders/{}/awards'.format(
-            self.tender_id), {'data': {'suppliers': [{'identifier': {'id': 0}, 'name': 'Name'}], 'awardStatus': 'pending'}})
+            self.tender_id), {'data': {'suppliers': [{'identifier': {'id': 0}, 'name': 'Name'}], 'status': 'pending'}})
         award = response.json['data']
-        self.award_id = award['awardID']
+        self.award_id = award['id']
 
     def test_create_tender_award_complaint_invalid(self):
         response = self.app.post_json('/tenders/some_id/awards/{}/complaints', {
@@ -441,9 +441,9 @@ class TenderAwardComplaintDocumentResourceTest(BaseTenderWebTest):
         super(TenderAwardComplaintDocumentResourceTest, self).setUp()
         # Create award
         response = self.app.post_json('/tenders/{}/awards'.format(
-            self.tender_id), {'data': {'suppliers': [{'identifier': {'id': 0}, 'name': 'Name'}], 'awardStatus': 'pending'}})
+            self.tender_id), {'data': {'suppliers': [{'identifier': {'id': 0}, 'name': 'Name'}], 'status': 'pending'}})
         award = response.json['data']
-        self.award_id = award['awardID']
+        self.award_id = award['id']
         # Create complaint for award
         response = self.app.post_json('/tenders/{}/awards/{}/complaints'.format(
             self.tender_id, self.award_id), {'data': {'title': 'complaint title', 'description': 'complaint description', 'author': {'identifier': {'id': 0}, 'name': 'Name'}}})
@@ -734,11 +734,270 @@ class TenderAwardComplaintDocumentResourceTest(BaseTenderWebTest):
         self.assertEqual(response.json['errors'][0]["description"], "Can't update document in current tender status")
 
 
+class TenderAwardDocumentResourceTest(BaseTenderWebTest):
+    initial_data = {'status': 'qualification'}
+
+    def setUp(self):
+        super(TenderAwardDocumentResourceTest, self).setUp()
+        # Create award
+        response = self.app.post_json('/tenders/{}/awards'.format(
+            self.tender_id), {'data': {'suppliers': [{'identifier': {'id': 0}, 'name': 'Name'}], 'status': 'pending'}})
+        award = response.json['data']
+        self.award_id = award['id']
+
+    def test_not_found(self):
+        response = self.app.post('/tenders/some_id/awards/some_id/documents', status=404, upload_files=[
+                                 ('file', 'name.doc', 'content')])
+        self.assertEqual(response.status, '404 Not Found')
+        self.assertEqual(response.content_type, 'application/json')
+        self.assertEqual(response.json['status'], 'error')
+        self.assertEqual(response.json['errors'], [
+            {u'description': u'Not Found', u'location':
+                u'url', u'name': u'tender_id'}
+        ])
+
+        response = self.app.post('/tenders/{}/awards/some_id/documents'.format(self.tender_id), status=404, upload_files=[('file', 'name.doc', 'content')])
+        self.assertEqual(response.status, '404 Not Found')
+        self.assertEqual(response.content_type, 'application/json')
+        self.assertEqual(response.json['status'], 'error')
+        self.assertEqual(response.json['errors'], [
+            {u'description': u'Not Found', u'location':
+                u'url', u'name': u'award_id'}
+        ])
+
+        response = self.app.post('/tenders/{}/awards/{}/documents'.format(self.tender_id, self.award_id), status=404, upload_files=[
+                                 ('invalid_value', 'name.doc', 'content')])
+        self.assertEqual(response.status, '404 Not Found')
+        self.assertEqual(response.content_type, 'application/json')
+        self.assertEqual(response.json['status'], 'error')
+        self.assertEqual(response.json['errors'], [
+            {u'description': u'Not Found', u'location':
+                u'body', u'name': u'file'}
+        ])
+
+        response = self.app.get('/tenders/some_id/awards/some_id/documents', status=404)
+        self.assertEqual(response.status, '404 Not Found')
+        self.assertEqual(response.content_type, 'application/json')
+        self.assertEqual(response.json['status'], 'error')
+        self.assertEqual(response.json['errors'], [
+            {u'description': u'Not Found', u'location':
+                u'url', u'name': u'tender_id'}
+        ])
+
+        response = self.app.get('/tenders/{}/awards/some_id/documents'.format(self.tender_id), status=404)
+        self.assertEqual(response.status, '404 Not Found')
+        self.assertEqual(response.content_type, 'application/json')
+        self.assertEqual(response.json['status'], 'error')
+        self.assertEqual(response.json['errors'], [
+            {u'description': u'Not Found', u'location':
+                u'url', u'name': u'award_id'}
+        ])
+
+        response = self.app.get('/tenders/some_id/awards/some_id/documents/some_id', status=404)
+        self.assertEqual(response.status, '404 Not Found')
+        self.assertEqual(response.content_type, 'application/json')
+        self.assertEqual(response.json['status'], 'error')
+        self.assertEqual(response.json['errors'], [
+            {u'description': u'Not Found', u'location':
+                u'url', u'name': u'tender_id'}
+        ])
+
+        response = self.app.get('/tenders/{}/awards/some_id/documents/some_id'.format(self.tender_id), status=404)
+        self.assertEqual(response.status, '404 Not Found')
+        self.assertEqual(response.content_type, 'application/json')
+        self.assertEqual(response.json['status'], 'error')
+        self.assertEqual(response.json['errors'], [
+            {u'description': u'Not Found', u'location':
+                u'url', u'name': u'award_id'}
+        ])
+
+        response = self.app.get('/tenders/{}/awards/{}/documents/some_id'.format(self.tender_id, self.award_id), status=404)
+        self.assertEqual(response.status, '404 Not Found')
+        self.assertEqual(response.content_type, 'application/json')
+        self.assertEqual(response.json['status'], 'error')
+        self.assertEqual(response.json['errors'], [
+            {u'description': u'Not Found', u'location':
+                u'url', u'name': u'id'}
+        ])
+
+        response = self.app.put('/tenders/some_id/awards/some_id/documents/some_id', status=404,
+                                upload_files=[('file', 'name.doc', 'content2')])
+        self.assertEqual(response.status, '404 Not Found')
+        self.assertEqual(response.content_type, 'application/json')
+        self.assertEqual(response.json['status'], 'error')
+        self.assertEqual(response.json['errors'], [
+            {u'description': u'Not Found', u'location':
+                u'url', u'name': u'tender_id'}
+        ])
+
+        response = self.app.put('/tenders/{}/awards/some_id/documents/some_id'.format(self.tender_id), status=404,
+                                upload_files=[('file', 'name.doc', 'content2')])
+        self.assertEqual(response.status, '404 Not Found')
+        self.assertEqual(response.content_type, 'application/json')
+        self.assertEqual(response.json['status'], 'error')
+        self.assertEqual(response.json['errors'], [
+            {u'description': u'Not Found', u'location':
+                u'url', u'name': u'award_id'}
+        ])
+
+        response = self.app.put('/tenders/{}/awards/{}/documents/some_id'.format(
+            self.tender_id, self.award_id), status=404, upload_files=[('file', 'name.doc', 'content2')])
+        self.assertEqual(response.status, '404 Not Found')
+        self.assertEqual(response.content_type, 'application/json')
+        self.assertEqual(response.json['status'], 'error')
+        self.assertEqual(response.json['errors'], [
+            {u'description': u'Not Found', u'location': u'url', u'name': u'id'}
+        ])
+
+    def test_create_tender_award_document(self):
+        response = self.app.post('/tenders/{}/awards/{}/documents'.format(
+            self.tender_id, self.award_id), upload_files=[('file', 'name.doc', 'content')])
+        self.assertEqual(response.status, '201 Created')
+        self.assertEqual(response.content_type, 'application/json')
+        doc_id = response.json["data"]['id']
+        self.assertTrue(doc_id in response.headers['Location'])
+        self.assertEqual('name.doc', response.json["data"]["title"])
+        key = response.json["data"]["url"].split('?')[-1]
+
+        response = self.app.get('/tenders/{}/awards/{}/documents'.format(self.tender_id, self.award_id))
+        self.assertEqual(response.status, '200 OK')
+        self.assertEqual(response.content_type, 'application/json')
+        self.assertEqual(doc_id, response.json["data"][0]["id"])
+        self.assertEqual('name.doc', response.json["data"][0]["title"])
+
+        response = self.app.get('/tenders/{}/awards/{}/documents?all=true'.format(self.tender_id, self.award_id))
+        self.assertEqual(response.status, '200 OK')
+        self.assertEqual(response.content_type, 'application/json')
+        self.assertEqual(doc_id, response.json["data"][0]["id"])
+        self.assertEqual('name.doc', response.json["data"][0]["title"])
+
+        response = self.app.get('/tenders/{}/awards/{}/documents/{}?download=some_id'.format(
+            self.tender_id, self.award_id, doc_id), status=404)
+        self.assertEqual(response.status, '404 Not Found')
+        self.assertEqual(response.content_type, 'application/json')
+        self.assertEqual(response.json['status'], 'error')
+        self.assertEqual(response.json['errors'], [
+            {u'description': u'Not Found', u'location': u'url', u'name': u'download'}
+        ])
+
+        response = self.app.get('/tenders/{}/awards/{}/documents/{}?{}'.format(
+            self.tender_id, self.award_id, doc_id, key))
+        self.assertEqual(response.status, '200 OK')
+        self.assertEqual(response.content_type, 'application/msword')
+        self.assertEqual(response.content_length, 7)
+        self.assertEqual(response.body, 'content')
+
+        response = self.app.get('/tenders/{}/awards/{}/documents/{}'.format(
+            self.tender_id, self.award_id, doc_id))
+        self.assertEqual(response.status, '200 OK')
+        self.assertEqual(response.content_type, 'application/json')
+        self.assertEqual(doc_id, response.json["data"]["id"])
+        self.assertEqual('name.doc', response.json["data"]["title"])
+
+        self.set_status('contract-signed')
+
+        response = self.app.post('/tenders/{}/awards/{}/documents'.format(
+            self.tender_id, self.award_id), upload_files=[('file', 'name.doc', 'content')], status=403)
+        self.assertEqual(response.status, '403 Forbidden')
+        self.assertEqual(response.content_type, 'application/json')
+        self.assertEqual(response.json['errors'][0]["description"], "Can't add document in current tender status")
+
+    def test_put_tender_award_document(self):
+        response = self.app.post('/tenders/{}/awards/{}/documents'.format(
+            self.tender_id, self.award_id), upload_files=[('file', 'name.doc', 'content')])
+        self.assertEqual(response.status, '201 Created')
+        self.assertEqual(response.content_type, 'application/json')
+        doc_id = response.json["data"]['id']
+        self.assertTrue(doc_id in response.headers['Location'])
+
+        response = self.app.put('/tenders/{}/awards/{}/documents/{}'.format(self.tender_id, self.award_id, doc_id),
+                                status=404,
+                                upload_files=[('invalid_name', 'name.doc', 'content')])
+        self.assertEqual(response.status, '404 Not Found')
+        self.assertEqual(response.content_type, 'application/json')
+        self.assertEqual(response.json['status'], 'error')
+        self.assertEqual(response.json['errors'], [
+            {u'description': u'Not Found', u'location':
+                u'body', u'name': u'file'}
+        ])
+
+        response = self.app.put('/tenders/{}/awards/{}/documents/{}'.format(
+            self.tender_id, self.award_id, doc_id), upload_files=[('file', 'name.doc', 'content2')])
+        self.assertEqual(response.status, '200 OK')
+        self.assertEqual(response.content_type, 'application/json')
+        self.assertEqual(doc_id, response.json["data"]["id"])
+        key = response.json["data"]["url"].split('?')[-1]
+
+        response = self.app.get('/tenders/{}/awards/{}/documents/{}?{}'.format(
+            self.tender_id, self.award_id, doc_id, key))
+        self.assertEqual(response.status, '200 OK')
+        self.assertEqual(response.content_type, 'application/msword')
+        self.assertEqual(response.content_length, 8)
+        self.assertEqual(response.body, 'content2')
+
+        response = self.app.get('/tenders/{}/awards/{}/documents/{}'.format(
+            self.tender_id, self.award_id, doc_id))
+        self.assertEqual(response.status, '200 OK')
+        self.assertEqual(response.content_type, 'application/json')
+        self.assertEqual(doc_id, response.json["data"]["id"])
+        self.assertEqual('name.doc', response.json["data"]["title"])
+
+        response = self.app.put('/tenders/{}/awards/{}/documents/{}'.format(
+            self.tender_id, self.award_id, doc_id), 'content3', content_type='application/msword')
+        self.assertEqual(response.status, '200 OK')
+        self.assertEqual(response.content_type, 'application/json')
+        self.assertEqual(doc_id, response.json["data"]["id"])
+        key = response.json["data"]["url"].split('?')[-1]
+
+        response = self.app.get('/tenders/{}/awards/{}/documents/{}?{}'.format(
+            self.tender_id, self.award_id, doc_id, key))
+        self.assertEqual(response.status, '200 OK')
+        self.assertEqual(response.content_type, 'application/msword')
+        self.assertEqual(response.content_length, 8)
+        self.assertEqual(response.body, 'content3')
+
+        self.set_status('contract-signed')
+
+        response = self.app.put('/tenders/{}/awards/{}/documents/{}'.format(
+            self.tender_id, self.award_id, doc_id), upload_files=[('file', 'name.doc', 'content3')], status=403)
+        self.assertEqual(response.status, '403 Forbidden')
+        self.assertEqual(response.content_type, 'application/json')
+        self.assertEqual(response.json['errors'][0]["description"], "Can't update document in current tender status")
+
+    def test_patch_tender_award_document(self):
+        response = self.app.post('/tenders/{}/awards/{}/documents'.format(
+            self.tender_id, self.award_id), upload_files=[('file', 'name.doc', 'content')])
+        self.assertEqual(response.status, '201 Created')
+        self.assertEqual(response.content_type, 'application/json')
+        doc_id = response.json["data"]['id']
+        self.assertTrue(doc_id in response.headers['Location'])
+
+        response = self.app.patch_json('/tenders/{}/awards/{}/documents/{}'.format(self.tender_id, self.award_id, doc_id), {"data": {"description": "document description"}})
+        self.assertEqual(response.status, '200 OK')
+        self.assertEqual(response.content_type, 'application/json')
+        self.assertEqual(doc_id, response.json["data"]["id"])
+
+        response = self.app.get('/tenders/{}/awards/{}/documents/{}'.format(
+            self.tender_id, self.award_id, doc_id))
+        self.assertEqual(response.status, '200 OK')
+        self.assertEqual(response.content_type, 'application/json')
+        self.assertEqual(doc_id, response.json["data"]["id"])
+        self.assertEqual('document description', response.json["data"]["description"])
+
+        self.set_status('contract-signed')
+
+        response = self.app.patch_json('/tenders/{}/awards/{}/documents/{}'.format(self.tender_id, self.award_id, doc_id), {"data": {"description": "document description"}}, status=403)
+        self.assertEqual(response.status, '403 Forbidden')
+        self.assertEqual(response.content_type, 'application/json')
+        self.assertEqual(response.json['errors'][0]["description"], "Can't update document in current tender status")
+
+
 def suite():
     suite = unittest.TestSuite()
     suite.addTest(unittest.makeSuite(TenderAwardResourceTest))
     suite.addTest(unittest.makeSuite(TenderAwardComplaintResourceTest))
     suite.addTest(unittest.makeSuite(TenderAwardComplaintDocumentResourceTest))
+    suite.addTest(unittest.makeSuite(TenderAwardDocumentResourceTest))
     return suite
 
 

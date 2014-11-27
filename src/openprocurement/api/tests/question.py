@@ -167,7 +167,6 @@ class TenderQuestionResourceTest(BaseTenderWebTest):
         self.assertEqual(response.content_type, 'application/json')
         self.assertEqual(response.json['data'], question)
 
-
         response = self.app.get('/tenders/{}/questions/some_id'.format(self.tender_id), status=404)
         self.assertEqual(response.status, '404 Not Found')
         self.assertEqual(response.content_type, 'application/json')

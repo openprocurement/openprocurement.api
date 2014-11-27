@@ -201,7 +201,7 @@ def validate_tender_complaint_document_exists(request):
 def validate_tender_award_exists(request, key='id'):
     tender = validate_tender_exists(request, 'tender_id')
     if tender:
-        awards = [i for i in tender.awards if i.awardID == request.matchdict[key]]
+        awards = [i for i in tender.awards if i.id == request.matchdict[key]]
         if awards:
             request.validated[key] = request.matchdict[key]
             request.validated['awards'] = awards
@@ -240,6 +240,19 @@ def validate_tender_award_complaint_document_exists(request):
     complaint = validate_tender_award_complaint_exists(request, 'complaint_id')
     if complaint:
         documents = [i for i in complaint.documents if i.id == request.matchdict['id']]
+        if not documents:
+            request.errors.add('url', 'id', 'Not Found')
+            request.errors.status = 404
+        else:
+            request.validated['id'] = request.matchdict['id']
+            request.validated['documents'] = documents
+            request.validated['document'] = documents[-1]
+
+
+def validate_tender_award_document_exists(request):
+    award = validate_tender_award_exists(request, 'award_id')
+    if award:
+        documents = [i for i in award.documents if i.id == request.matchdict['id']]
         if not documents:
             request.errors.add('url', 'id', 'Not Found')
             request.errors.status = 404

@@ -49,7 +49,7 @@ class TenderAwardResource(object):
             {
                 "data": [
                     {
-                        "awardStatus": "active",
+                        "status": "active",
                         "suppliers": [
                             {
                                 "id": {
@@ -67,7 +67,7 @@ class TenderAwardResource(object):
                                 }
                             }
                         ],
-                        "awardValue": {
+                        "value": {
                             "amount": 489,
                             "currency": "UAH",
                             "valueAddedTaxIncluded": true
@@ -96,7 +96,7 @@ class TenderAwardResource(object):
 
             {
                 "data": {
-                    "awardStatus": "active",
+                    "status": "active",
                     "suppliers": [
                         {
                             "id": {
@@ -114,7 +114,7 @@ class TenderAwardResource(object):
                             }
                         }
                     ],
-                    "awardValue": {
+                    "value": {
                         "amount": 489,
                         "currency": "UAH",
                         "valueAddedTaxIncluded": true
@@ -131,9 +131,9 @@ class TenderAwardResource(object):
 
             {
                 "data": {
-                    "awardID": "4879d3f8ee2443169b5fbbc9f89fa607",
-                    "awardDate": "2014-10-28T11:44:17.947Z",
-                    "awardStatus": "active",
+                    "id": "4879d3f8ee2443169b5fbbc9f89fa607",
+                    "date": "2014-10-28T11:44:17.947Z",
+                    "status": "active",
                     "suppliers": [
                         {
                             "id": {
@@ -151,7 +151,7 @@ class TenderAwardResource(object):
                             }
                         }
                     ],
-                    "awardValue": {
+                    "value": {
                         "amount": 489,
                         "currency": "UAH",
                         "valueAddedTaxIncluded": true
@@ -171,7 +171,7 @@ class TenderAwardResource(object):
         tender.awards.append(award)
         save_tender(tender, src, self.request)
         self.request.response.status = 201
-        self.request.response.headers['Location'] = self.request.route_url('Tender Bids', tender_id=tender.id, id=award['awardID'])
+        self.request.response.headers['Location'] = self.request.route_url('Tender Bids', tender_id=tender.id, id=award['id'])
         return {'data': award.serialize("view")}
 
     @view(renderer='json', validators=(validate_tender_award_exists,))
@@ -195,9 +195,9 @@ class TenderAwardResource(object):
 
             {
                 "data": {
-                    "awardID": "4879d3f8ee2443169b5fbbc9f89fa607",
-                    "awardDate": "2014-10-28T11:44:17.947Z",
-                    "awardStatus": "active",
+                    "id": "4879d3f8ee2443169b5fbbc9f89fa607",
+                    "date": "2014-10-28T11:44:17.947Z",
+                    "status": "active",
                     "suppliers": [
                         {
                             "id": {
@@ -215,7 +215,7 @@ class TenderAwardResource(object):
                             }
                         }
                     ],
-                    "awardValue": {
+                    "value": {
                         "amount": 489,
                         "currency": "UAH",
                         "valueAddedTaxIncluded": true
@@ -240,7 +240,7 @@ class TenderAwardResource(object):
 
             {
                 "data": {
-                    "awardValue": {
+                    "value": {
                         "amount": 600
                     }
                 }
@@ -255,9 +255,9 @@ class TenderAwardResource(object):
 
             {
                 "data": {
-                    "awardID": "4879d3f8ee2443169b5fbbc9f89fa607",
-                    "awardDate": "2014-10-28T11:44:17.947Z",
-                    "awardStatus": "active",
+                    "id": "4879d3f8ee2443169b5fbbc9f89fa607",
+                    "date": "2014-10-28T11:44:17.947Z",
+                    "status": "active",
                     "suppliers": [
                         {
                             "id": {
@@ -275,7 +275,7 @@ class TenderAwardResource(object):
                             }
                         }
                     ],
-                    "awardValue": {
+                    "value": {
                         "amount": 600,
                         "currency": "UAH",
                         "valueAddedTaxIncluded": true

@@ -55,3 +55,6 @@ target/
 
 # Buildout
 bin/
+
+cover/
+output.html
