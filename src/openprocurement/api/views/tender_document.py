@@ -44,7 +44,7 @@ class TenderDocumentResource(object):
     def collection_post(self):
         """Tender Document Upload"""
         tender = self.request.validated['tender']
-        if tender.status != 'enquiries':
+        if tender.status != 'active.enquiries':
             self.request.errors.add('body', 'data', 'Can\'t add document in current tender status')
             self.request.errors.status = 403
             return
@@ -83,7 +83,7 @@ class TenderDocumentResource(object):
         """Tender Document Update"""
         tender = self.request.validated['tender']
         first_document = self.request.validated['documents'][0]
-        if tender.status != 'enquiries':
+        if tender.status != 'active.enquiries':
             self.request.errors.add('body', 'data', 'Can\'t update document in current tender status')
             self.request.errors.status = 403
             return
@@ -114,7 +114,7 @@ class TenderDocumentResource(object):
         """Tender Document Update"""
         tender = self.request.validated['tender']
         document = self.request.validated['document']
-        if tender.status != 'enquiries':
+        if tender.status != 'active.enquiries':
             self.request.errors.add('body', 'data', 'Can\'t update document in current tender status')
             self.request.errors.status = 403
             return

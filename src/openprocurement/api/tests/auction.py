@@ -65,7 +65,7 @@ class TenderAuctionResourceTest(BaseTenderWebTest):
         self.assertEqual(response.content_type, 'application/json')
         self.assertEqual(response.json['errors'][0]["description"], "Can't get auction info in current tender status")
 
-        self.set_status('auction')
+        self.set_status('active.auction')
 
         response = self.app.get('/tenders/{}/auction'.format(self.tender_id))
         self.assertEqual(response.status, '200 OK')
@@ -90,7 +90,7 @@ class TenderAuctionResourceTest(BaseTenderWebTest):
         self.assertEqual(response.content_type, 'application/json')
         self.assertTrue('{\n    "data": {\n        "' in response.body)
 
-        self.set_status('qualification')
+        self.set_status('active.qualification')
 
         response = self.app.get('/tenders/{}/auction'.format(self.tender_id), status=403)
         self.assertEqual(response.status, '403 Forbidden')
@@ -103,7 +103,7 @@ class TenderAuctionResourceTest(BaseTenderWebTest):
         self.assertEqual(response.content_type, 'application/json')
         self.assertEqual(response.json['errors'][0]["description"], "Can't report auction results in current tender status")
 
-        self.set_status('auction')
+        self.set_status('active.auction')
 
         patch_data = {
             'bids': [
@@ -154,7 +154,7 @@ class TenderAuctionResourceTest(BaseTenderWebTest):
         self.assertEqual(auction["bids"][0]['value']['amount'], patch_data["bids"][1]['value']['amount'])
         self.assertEqual(auction["bids"][1]['value']['amount'], patch_data["bids"][0]['value']['amount'])
 
-        self.set_status('qualification')
+        self.set_status('active.qualification')
 
         response = self.app.patch_json('/tenders/{}/auction'.format(self.tender_id), {'data': patch_data}, status=403)
         self.assertEqual(response.status, '403 Forbidden')

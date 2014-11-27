@@ -320,7 +320,7 @@ class TenderResourceTest(BaseWebTest):
         self.assertTrue('startDate' in new_tender['enquiryPeriod'])
 
         response = self.app.patch_json('/tenders/{}'.format(
-            tender['id']), {'data': {'status': 'auction'}})
+            tender['id']), {'data': {'status': 'active.auction'}})
         self.assertEqual(response.status, '200 OK')
 
         response = self.app.get('/tenders/{}'.format(tender['id']))

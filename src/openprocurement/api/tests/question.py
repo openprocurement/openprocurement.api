@@ -160,7 +160,7 @@ class TenderQuestionResourceTest(BaseTenderWebTest):
         self.assertEqual(response.content_type, 'application/json')
         self.assertEqual(set(response.json['data']), set([u'id', u'date', u'title', u'description']))
 
-        self.set_status('qualification')
+        self.set_status('active.qualification')
 
         response = self.app.get('/tenders/{}/questions/{}'.format(self.tender_id, question['id']))
         self.assertEqual(response.status, '200 OK')
@@ -197,7 +197,7 @@ class TenderQuestionResourceTest(BaseTenderWebTest):
         self.assertEqual(response.content_type, 'application/json')
         self.assertEqual(set(response.json['data'][0]), set([u'id', u'date', u'title', u'description']))
 
-        self.set_status('qualification')
+        self.set_status('active.qualification')
 
         response = self.app.get('/tenders/{}/questions'.format(self.tender_id))
         self.assertEqual(response.status, '200 OK')

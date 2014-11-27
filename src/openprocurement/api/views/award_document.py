@@ -45,7 +45,7 @@ class TenderAwardDocumentResource(object):
         """Tender Award Document Upload
         """
         tender = self.request.validated['tender']
-        if tender.status != 'qualification':
+        if tender.status != 'active.qualification':
             self.request.errors.add('body', 'data', 'Can\'t add document in current tender status')
             self.request.errors.status = 403
             return
@@ -83,7 +83,7 @@ class TenderAwardDocumentResource(object):
     def put(self):
         """Tender Award Document Update"""
         tender = self.request.validated['tender']
-        if tender.status != 'qualification':
+        if tender.status != 'active.qualification':
             self.request.errors.add('body', 'data', 'Can\'t update document in current tender status')
             self.request.errors.status = 403
             return
@@ -114,7 +114,7 @@ class TenderAwardDocumentResource(object):
     def patch(self):
         """Tender Award Document Update"""
         tender = self.request.validated['tender']
-        if tender.status != 'qualification':
+        if tender.status != 'active.qualification':
             self.request.errors.add('body', 'data', 'Can\'t update document in current tender status')
             self.request.errors.status = 403
             return

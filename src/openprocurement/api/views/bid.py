@@ -107,7 +107,7 @@ class TenderBidResource(object):
         # See https://github.com/open-contracting/standard/issues/78#issuecomment-59830415
         # for more info upon schema
         tender = self.request.validated['tender']
-        if tender.status != 'tendering':
+        if tender.status != 'active.tendering':
             self.request.errors.add('body', 'data', 'Can\'t add bid in current tender status')
             self.request.errors.status = 403
             return
@@ -156,7 +156,7 @@ class TenderBidResource(object):
 
         """
         tender = self.request.validated['tender']
-        if tender.status in ['enquiries', 'tendering']:
+        if tender.status in ['active.enquiries', 'active.tendering']:
             return {'data': []}
         return {'data': [i.serialize(tender.status) for i in tender.bids]}
 
@@ -191,10 +191,10 @@ class TenderBidResource(object):
 
         """
         tender = self.request.validated['tender']
-        if tender.status in ['enquiries', 'tendering']:
+        if tender.status in ['active.enquiries', 'active.tendering']:
             return {'data': {}}
         bid_data = self.request.validated['bid'].serialize(tender.status)
-        if tender.status in ['auction', 'qualification', 'awarded', 'contract-signed']:
+        if tender.status in ['active.auction', 'active.qualification', 'active.awarded', 'complete']:
             # auction participation url
             bid_data['participationUrl'] = 'http://auction-sandbox.openprocurement.org/tenders/{}?bidder_id={}'.format(tender.id, self.request.validated['id'])
         return {'data': bid_data}
@@ -238,7 +238,7 @@ class TenderBidResource(object):
 
         """
         tender = self.request.validated['tender']
-        if tender.status != 'tendering':
+        if tender.status != 'active.tendering':
             self.request.errors.add('body', 'data', 'Can\'t change bid in current tender status')
             self.request.errors.status = 403
             return
@@ -282,7 +282,7 @@ class TenderBidResource(object):
         """
         tender = self.request.validated['tender']
         bid = self.request.validated['bid']
-        if tender.status != 'tendering':
+        if tender.status != 'active.tendering':
             self.request.errors.add('body', 'data', 'Can\'t delete bid in current tender status')
             self.request.errors.status = 403
             return

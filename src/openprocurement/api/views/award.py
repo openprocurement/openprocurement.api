@@ -161,7 +161,7 @@ class TenderAwardResource(object):
 
         """
         tender = self.request.validated['tender']
-        if tender.status != 'qualification':
+        if tender.status != 'active.qualification':
             self.request.errors.add('body', 'data', 'Can\'t create award in current tender status')
             self.request.errors.status = 403
             return
@@ -285,7 +285,7 @@ class TenderAwardResource(object):
 
         """
         tender = self.request.validated['tender']
-        if tender.status != 'qualification':
+        if tender.status != 'active.qualification':
             self.request.errors.add('body', 'data', 'Can\'t change award in current tender status')
             self.request.errors.status = 403
             return

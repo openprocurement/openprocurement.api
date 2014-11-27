@@ -45,7 +45,7 @@ class TenderAwardComplaintDocumentResource(object):
         """Tender Award Complaint Document Upload
         """
         tender = self.request.validated['tender']
-        if tender.status not in ['enquiries', 'tendering', 'auction', 'qualification', 'awarded']:
+        if tender.status not in ['active.enquiries', 'active.tendering', 'active.auction', 'active.qualification', 'active.awarded']:
             self.request.errors.add('body', 'data', 'Can\'t add document in current tender status')
             self.request.errors.status = 403
             return
@@ -83,7 +83,7 @@ class TenderAwardComplaintDocumentResource(object):
     def put(self):
         """Tender Award Complaint Document Update"""
         tender = self.request.validated['tender']
-        if tender.status not in ['enquiries', 'tendering', 'auction', 'qualification', 'awarded']:
+        if tender.status not in ['active.enquiries', 'active.tendering', 'active.auction', 'active.qualification', 'active.awarded']:
             self.request.errors.add('body', 'data', 'Can\'t update document in current tender status')
             self.request.errors.status = 403
             return
@@ -114,7 +114,7 @@ class TenderAwardComplaintDocumentResource(object):
     def patch(self):
         """Tender Award Complaint Document Update"""
         tender = self.request.validated['tender']
-        if tender.status not in ['enquiries', 'tendering', 'auction', 'qualification', 'awarded']:
+        if tender.status not in ['active.enquiries', 'active.tendering', 'active.auction', 'active.qualification', 'active.awarded']:
             self.request.errors.add('body', 'data', 'Can\'t update document in current tender status')
             self.request.errors.status = 403
             return

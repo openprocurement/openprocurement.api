@@ -5,7 +5,7 @@ from openprocurement.api.tests.base import BaseTenderWebTest
 
 
 class TenderAwardResourceTest(BaseTenderWebTest):
-    initial_data = {'status': 'qualification'}
+    initial_data = {'status': 'active.qualification'}
 
     def test_create_tender_award_invalid(self):
         request_path = '/tenders/{}/awards'.format(self.tender_id)
@@ -106,7 +106,7 @@ class TenderAwardResourceTest(BaseTenderWebTest):
                 u'url', u'name': u'tender_id'}
         ])
 
-        self.set_status('contract-signed')
+        self.set_status('complete')
 
         response = self.app.post_json('/tenders/{}/awards'.format(
             self.tender_id), {'data': {'suppliers': [{'identifier': {'id': 0}, 'name': 'Name'}], 'status': 'pending'}}, status=403)
@@ -159,7 +159,7 @@ class TenderAwardResourceTest(BaseTenderWebTest):
                 u'url', u'name': u'tender_id'}
         ])
 
-        self.set_status('contract-signed')
+        self.set_status('complete')
 
         response = self.app.get('/tenders/{}/awards/{}'.format(self.tender_id, award['id']))
         self.assertEqual(response.status, '200 OK')
@@ -204,7 +204,7 @@ class TenderAwardResourceTest(BaseTenderWebTest):
 
 
 class TenderAwardComplaintResourceTest(BaseTenderWebTest):
-    initial_data = {'status': 'qualification'}
+    initial_data = {'status': 'active.qualification'}
 
     def setUp(self):
         super(TenderAwardComplaintResourceTest, self).setUp()
@@ -321,7 +321,7 @@ class TenderAwardComplaintResourceTest(BaseTenderWebTest):
         self.assertTrue('id' in complaint)
         self.assertTrue(complaint['id'] in response.headers['Location'])
 
-        self.set_status('contract-signed')
+        self.set_status('complete')
 
         response = self.app.post_json('/tenders/{}/awards/{}/complaints'.format(
             self.tender_id, self.award_id), {'data': {'title': 'complaint title', 'description': 'complaint description', 'author': {'identifier': {'id': 0}, 'name': 'Name'}}}, status=403)
@@ -375,7 +375,7 @@ class TenderAwardComplaintResourceTest(BaseTenderWebTest):
         self.assertEqual(response.json['data']["status"], "resolved")
         self.assertEqual(response.json['data']["resolution"], "resolution text")
 
-        self.set_status('contract-signed')
+        self.set_status('complete')
 
         response = self.app.patch_json('/tenders/{}/awards/{}/complaints/{}'.format(self.tender_id, self.award_id, complaint['id']), {"data": {"status": "resolved", "resolution": "resolution text"}}, status=403)
         self.assertEqual(response.status, '403 Forbidden')
@@ -435,7 +435,7 @@ class TenderAwardComplaintResourceTest(BaseTenderWebTest):
 
 
 class TenderAwardComplaintDocumentResourceTest(BaseTenderWebTest):
-    initial_data = {'status': 'qualification'}
+    initial_data = {'status': 'active.qualification'}
 
     def setUp(self):
         super(TenderAwardComplaintDocumentResourceTest, self).setUp()
@@ -636,7 +636,7 @@ class TenderAwardComplaintDocumentResourceTest(BaseTenderWebTest):
         self.assertEqual(doc_id, response.json["data"]["id"])
         self.assertEqual('name.doc', response.json["data"]["title"])
 
-        self.set_status('contract-signed')
+        self.set_status('complete')
 
         response = self.app.post('/tenders/{}/awards/{}/complaints/{}/documents'.format(
             self.tender_id, self.award_id, self.complaint_id), upload_files=[('file', 'name.doc', 'content')], status=403)
@@ -698,7 +698,7 @@ class TenderAwardComplaintDocumentResourceTest(BaseTenderWebTest):
         self.assertEqual(response.content_length, 8)
         self.assertEqual(response.body, 'content3')
 
-        self.set_status('contract-signed')
+        self.set_status('complete')
 
         response = self.app.put('/tenders/{}/awards/{}/complaints/{}/documents/{}'.format(
             self.tender_id, self.award_id, self.complaint_id, doc_id), upload_files=[('file', 'name.doc', 'content3')], status=403)
@@ -726,7 +726,7 @@ class TenderAwardComplaintDocumentResourceTest(BaseTenderWebTest):
         self.assertEqual(doc_id, response.json["data"]["id"])
         self.assertEqual('document description', response.json["data"]["description"])
 
-        self.set_status('contract-signed')
+        self.set_status('complete')
 
         response = self.app.patch_json('/tenders/{}/awards/{}/complaints/{}/documents/{}'.format(self.tender_id, self.award_id, self.complaint_id, doc_id), {"data": {"description": "document description"}}, status=403)
         self.assertEqual(response.status, '403 Forbidden')
@@ -735,7 +735,7 @@ class TenderAwardComplaintDocumentResourceTest(BaseTenderWebTest):
 
 
 class TenderAwardDocumentResourceTest(BaseTenderWebTest):
-    initial_data = {'status': 'qualification'}
+    initial_data = {'status': 'active.qualification'}
 
     def setUp(self):
         super(TenderAwardDocumentResourceTest, self).setUp()
@@ -894,7 +894,7 @@ class TenderAwardDocumentResourceTest(BaseTenderWebTest):
         self.assertEqual(doc_id, response.json["data"]["id"])
         self.assertEqual('name.doc', response.json["data"]["title"])
 
-        self.set_status('contract-signed')
+        self.set_status('complete')
 
         response = self.app.post('/tenders/{}/awards/{}/documents'.format(
             self.tender_id, self.award_id), upload_files=[('file', 'name.doc', 'content')], status=403)
@@ -956,7 +956,7 @@ class TenderAwardDocumentResourceTest(BaseTenderWebTest):
         self.assertEqual(response.content_length, 8)
         self.assertEqual(response.body, 'content3')
 
-        self.set_status('contract-signed')
+        self.set_status('complete')
 
         response = self.app.put('/tenders/{}/awards/{}/documents/{}'.format(
             self.tender_id, self.award_id, doc_id), upload_files=[('file', 'name.doc', 'content3')], status=403)
@@ -984,7 +984,7 @@ class TenderAwardDocumentResourceTest(BaseTenderWebTest):
         self.assertEqual(doc_id, response.json["data"]["id"])
         self.assertEqual('document description', response.json["data"]["description"])
 
-        self.set_status('contract-signed')
+        self.set_status('complete')
 
         response = self.app.patch_json('/tenders/{}/awards/{}/documents/{}'.format(self.tender_id, self.award_id, doc_id), {"data": {"description": "document description"}}, status=403)
         self.assertEqual(response.status, '403 Forbidden')

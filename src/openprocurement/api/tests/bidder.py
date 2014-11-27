@@ -5,7 +5,7 @@ from openprocurement.api.tests.base import BaseTenderWebTest
 
 
 class TenderBidderResourceTest(BaseTenderWebTest):
-    initial_data = {'status': 'tendering'}
+    initial_data = {'status': 'active.tendering'}
 
     def test_create_tender_bidder_invalid(self):
         response = self.app.post_json('/tenders/some_id/bids', {
@@ -107,7 +107,7 @@ class TenderBidderResourceTest(BaseTenderWebTest):
         self.assertTrue('id' in bidder)
         self.assertTrue(bidder['id'] in response.headers['Location'])
 
-        self.set_status('contract-signed')
+        self.set_status('complete')
 
         response = self.app.post_json('/tenders/{}/bids'.format(
             self.tender_id), {'data': {'tenderers': [{'identifier': {'id': 0}, 'name': 'Name'}]}}, status=403)
@@ -145,7 +145,7 @@ class TenderBidderResourceTest(BaseTenderWebTest):
                 u'url', u'name': u'tender_id'}
         ])
 
-        self.set_status('contract-signed')
+        self.set_status('complete')
 
         response = self.app.get('/tenders/{}/bids/{}'.format(self.tender_id, bidder['id']))
         self.assertEqual(response.status, '200 OK')
@@ -169,7 +169,7 @@ class TenderBidderResourceTest(BaseTenderWebTest):
         self.assertEqual(response.content_type, 'application/json')
         self.assertEqual(response.json['data'], {})
 
-        self.set_status('contract-signed')
+        self.set_status('complete')
 
         response = self.app.get('/tenders/{}/bids/{}'.format(self.tender_id, bidder['id']))
         self.assertEqual(response.status, '200 OK')
@@ -250,7 +250,7 @@ class TenderBidderResourceTest(BaseTenderWebTest):
         self.assertEqual(response.content_type, 'application/json')
         self.assertEqual(response.json['data'], [])
 
-        self.set_status('contract-signed')
+        self.set_status('complete')
 
         response = self.app.get('/tenders/{}/bids'.format(self.tender_id))
         self.assertEqual(response.status, '200 OK')
@@ -268,7 +268,7 @@ class TenderBidderResourceTest(BaseTenderWebTest):
 
 
 class TenderBidderDocumentResourceTest(BaseTenderWebTest):
-    initial_data = {'status': 'tendering'}
+    initial_data = {'status': 'active.tendering'}
 
     def setUp(self):
         super(TenderBidderDocumentResourceTest, self).setUp()
@@ -427,7 +427,7 @@ class TenderBidderDocumentResourceTest(BaseTenderWebTest):
         self.assertEqual(doc_id, response.json["data"]["id"])
         self.assertEqual('name.doc', response.json["data"]["title"])
 
-        self.set_status('awarded')
+        self.set_status('active.awarded')
 
         response = self.app.post('/tenders/{}/bids/{}/documents'.format(
             self.tender_id, self.bid_id), upload_files=[('file', 'name.doc', 'content')], status=403)
@@ -489,7 +489,7 @@ class TenderBidderDocumentResourceTest(BaseTenderWebTest):
         self.assertEqual(response.content_length, 8)
         self.assertEqual(response.body, 'content3')
 
-        self.set_status('awarded')
+        self.set_status('active.awarded')
 
         response = self.app.put('/tenders/{}/bids/{}/documents/{}'.format(
             self.tender_id, self.bid_id, doc_id), upload_files=[('file', 'name.doc', 'content3')], status=403)
@@ -517,7 +517,7 @@ class TenderBidderDocumentResourceTest(BaseTenderWebTest):
         self.assertEqual(doc_id, response.json["data"]["id"])
         self.assertEqual('document description', response.json["data"]["description"])
 
-        self.set_status('awarded')
+        self.set_status('active.awarded')
 
         response = self.app.patch_json('/tenders/{}/bids/{}/documents/{}'.format(self.tender_id, self.bid_id, doc_id), {"data": {"description": "document description"}}, status=403)
         self.assertEqual(response.status, '403 Forbidden')

@@ -121,9 +121,9 @@ class Document(Model):
     class Options:
         serialize_when_none = False
         roles = {
-            "embedded": schematics_embedded_role,
-            "view": (blacklist("revisions") + schematics_default_role),
-            "revisions": whitelist("uri", "dateModified"),
+            'embedded': schematics_embedded_role,
+            'view': (blacklist('revisions') + schematics_default_role),
+            'revisions': whitelist('uri', 'dateModified'),
         }
 
     id = StringType()
@@ -184,8 +184,8 @@ class Organization(Model):
     class Options:
         serialize_when_none = False
         roles = {
-            "embedded": schematics_embedded_role,
-            "view": schematics_default_role,
+            'embedded': schematics_embedded_role,
+            'view': schematics_default_role,
         }
 
     name = StringType(required=True)
@@ -201,16 +201,17 @@ class Bid(Model):
     class Options:
         serialize_when_none = False
         roles = {
-            "embedded": schematics_embedded_role,
-            "view": schematics_default_role,
-            "auction_view": whitelist("value", "id", "date"),
-            "enquiries": whitelist(),
-            "tendering": whitelist(),
-            "auction": whitelist("value"),
-            "qualification": whitelist("value"),
-            "awarded": whitelist("value"),
-            "contract-signed": schematics_default_role,
-            "paused": whitelist(),
+            'embedded': schematics_embedded_role,
+            'view': schematics_default_role,
+            'auction_view': whitelist('value', 'id', 'date'),
+            'active.enquiries': whitelist(),
+            'active.tendering': whitelist(),
+            'active.auction': whitelist('value'),
+            'active.qualification': whitelist('value'),
+            'active.awarded': whitelist('value'),
+            'complete': schematics_default_role,
+            'paused': whitelist(),
+            'unsuccessful': whitelist()
         }
 
     tenderers = ListType(ModelType(Organization), default=list())
@@ -230,15 +231,16 @@ class Question(Model):
     class Options:
         serialize_when_none = False
         roles = {
-            "embedded": schematics_embedded_role,
-            "view": schematics_default_role,
-            "enquiries": (blacklist("author") + schematics_embedded_role),
-            "tendering": (blacklist("author") + schematics_embedded_role),
-            "auction": (blacklist("author") + schematics_embedded_role),
-            "qualification": schematics_default_role,
-            "awarded": schematics_default_role,
-            "contract-signed": schematics_default_role,
-            "paused": schematics_default_role,
+            'embedded': schematics_embedded_role,
+            'view': schematics_default_role,
+            'active.enquiries': (blacklist('author') + schematics_embedded_role),
+            'active.tendering': (blacklist('author') + schematics_embedded_role),
+            'active.auction': (blacklist('author') + schematics_embedded_role),
+            'active.qualification': schematics_default_role,
+            'active.awarded': schematics_default_role,
+            'complete': schematics_default_role,
+            'paused': schematics_default_role,
+            'unsuccessful': schematics_default_role,
         }
 
     id = StringType(required=True, default=lambda: uuid4().hex)
@@ -253,8 +255,8 @@ class Complaint(Model):
     class Options:
         serialize_when_none = False
         roles = {
-            "embedded": schematics_embedded_role,
-            "view": schematics_default_role,
+            'embedded': schematics_embedded_role,
+            'view': schematics_default_role,
         }
 
     id = StringType(required=True, default=lambda: uuid4().hex)
@@ -275,8 +277,8 @@ class Award(Model):
     class Options:
         serialize_when_none = False
         roles = {
-            "embedded": schematics_embedded_role,
-            "view": schematics_default_role,
+            'embedded': schematics_embedded_role,
+            'view': schematics_default_role,
         }
 
     id = StringType(required=True, default=lambda: uuid4().hex)
@@ -295,28 +297,29 @@ class Award(Model):
     complaints = ListType(ModelType(Complaint), default=list())
 
 
-plain_role = (blacklist("_attachments", "revisions", "dateModified") + schematics_embedded_role)
-view_role = (blacklist("_attachments", "revisions") + schematics_embedded_role)
-listing_role = whitelist("dateModified", "doc_id")
-auction_view_role = whitelist("tenderID", "dateModified", "bids", "auctionPeriod", "minimalStep")
-enquiries_role = (blacklist("_attachments", "revisions", "bids") + schematics_embedded_role)
+plain_role = (blacklist('_attachments', 'revisions', 'dateModified') + schematics_embedded_role)
+view_role = (blacklist('_attachments', 'revisions') + schematics_embedded_role)
+listing_role = whitelist('dateModified', 'doc_id')
+auction_view_role = whitelist('tenderID', 'dateModified', 'bids', 'auctionPeriod', 'minimalStep')
+enquiries_role = (blacklist('_attachments', 'revisions', 'bids') + schematics_embedded_role)
 
 
 class Tender(SchematicsDocument, Model):
     """Data regarding tender process - publicly inviting prospective contractors to submit bids for evaluation and selecting a winner or winners."""
     class Options:
         roles = {
-            "plain": plain_role,
-            "view": view_role,
-            "listing": listing_role,
-            "auction_view": auction_view_role,
-            "enquiries": enquiries_role,
-            "tendering": enquiries_role,
-            "auction": view_role,
-            "qualification": view_role,
-            "awarded": view_role,
-            "contract-signed": view_role,
-            "paused": view_role,
+            'plain': plain_role,
+            'view': view_role,
+            'listing': listing_role,
+            'auction_view': auction_view_role,
+            'active.enquiries': enquiries_role,
+            'active.tendering': enquiries_role,
+            'active.auction': view_role,
+            'active.qualification': view_role,
+            'active.awarded': view_role,
+            'complete': view_role,
+            'paused': view_role,
+            'unsuccessful': view_role,
         }
 
     title = StringType()
@@ -357,14 +360,14 @@ class Tender(SchematicsDocument, Model):
     deliveryDate = ModelType(Period)
     auctionPeriod = ModelType(Period)
     minimalStep = ModelType(Value)
-    status = StringType(choices=['enquiries', 'tendering', 'auction', 'qualification', 'awarded', 'contract-signed', 'paused'], default='enquiries')
+    status = StringType(choices=['active.enquiries', 'active.tendering', 'active.auction', 'active.qualification', 'active.awarded', 'complete', 'paused', 'unsuccessful'], default='active.enquiries')
     questions = ListType(ModelType(Question), default=list())
     complaints = ListType(ModelType(Complaint), default=list())
 
     _attachments = DictType(DictType(BaseType), default=dict())  # couchdb attachments
     dateModified = IsoDateTimeType(default=get_now)
 
-    @serializable(serialized_name="id")
+    @serializable(serialized_name='id')
     def doc_id(self):
         """A property that is serialized by schematics exports."""
         return self._id

@@ -67,7 +67,7 @@ def get_auction(request):
 
     """
     tender = request.validated['tender']
-    if tender.status != 'auction':
+    if tender.status != 'active.auction':
         request.errors.add('body', 'data', 'Can\'t get auction info in current tender status')
         request.errors.status = 403
         return

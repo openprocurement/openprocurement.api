@@ -45,7 +45,7 @@ class TenderBidDocumentResource(object):
         """Tender Bid Document Upload
         """
         tender = self.request.validated['tender']
-        if tender.status not in ['tendering', 'auction', 'qualification']:
+        if tender.status not in ['active.tendering', 'active.auction', 'active.qualification']:
             self.request.errors.add('body', 'data', 'Can\'t add document in current tender status')
             self.request.errors.status = 403
             return
@@ -84,7 +84,7 @@ class TenderBidDocumentResource(object):
         """Tender Bid Document Update"""
         tender = self.request.validated['tender']
         first_document = self.request.validated['documents'][0]
-        if tender.status not in ['tendering', 'auction', 'qualification']:
+        if tender.status not in ['active.tendering', 'active.auction', 'active.qualification']:
             self.request.errors.add('body', 'data', 'Can\'t update document in current tender status')
             self.request.errors.status = 403
             return
@@ -114,7 +114,7 @@ class TenderBidDocumentResource(object):
     def patch(self):
         """Tender Bid Document Update"""
         tender = self.request.validated['tender']
-        if tender.status not in ['tendering', 'auction', 'qualification']:
+        if tender.status not in ['active.tendering', 'active.auction', 'active.qualification']:
             self.request.errors.add('body', 'data', 'Can\'t update document in current tender status')
             self.request.errors.status = 403
             return

@@ -117,7 +117,7 @@ class TenderDocumentResourceTest(BaseTenderWebTest):
         self.assertEqual(doc_id, response.json["data"]["id"])
         self.assertEqual('name.doc', response.json["data"]["title"])
 
-        self.set_status('tendering')
+        self.set_status('active.tendering')
 
         response = self.app.post('/tenders/{}/documents'.format(
             self.tender_id), upload_files=[('file', 'name.doc', 'content')], status=403)
@@ -202,7 +202,7 @@ class TenderDocumentResourceTest(BaseTenderWebTest):
         self.assertEqual(response.content_length, 8)
         self.assertEqual(response.body, 'content3')
 
-        self.set_status('tendering')
+        self.set_status('active.tendering')
 
         response = self.app.put('/tenders/{}/documents/{}'.format(
             self.tender_id, doc_id), upload_files=[('file', 'name.doc', 'content3')], status=403)
@@ -231,7 +231,7 @@ class TenderDocumentResourceTest(BaseTenderWebTest):
         self.assertEqual('document description', response.json["data"]["description"])
         self.assertTrue(dateModified < response.json["data"]["dateModified"])
 
-        self.set_status('tendering')
+        self.set_status('active.tendering')
 
         response = self.app.patch_json('/tenders/{}/documents/{}'.format(self.tender_id, doc_id), {"data": {"description": "document description"}}, status=403)
         self.assertEqual(response.status, '403 Forbidden')
