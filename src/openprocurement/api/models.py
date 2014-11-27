@@ -210,8 +210,8 @@ class Bid(Model):
             'active.qualification': whitelist('value'),
             'active.awarded': whitelist('value'),
             'complete': schematics_default_role,
+            'unsuccessful': schematics_default_role,
             'paused': whitelist(),
-            'unsuccessful': whitelist()
         }
 
     tenderers = ListType(ModelType(Organization), default=list())
@@ -239,8 +239,8 @@ class Question(Model):
             'active.qualification': schematics_default_role,
             'active.awarded': schematics_default_role,
             'complete': schematics_default_role,
-            'paused': schematics_default_role,
             'unsuccessful': schematics_default_role,
+            'paused': whitelist(),
         }
 
     id = StringType(required=True, default=lambda: uuid4().hex)
@@ -318,8 +318,8 @@ class Tender(SchematicsDocument, Model):
             'active.qualification': view_role,
             'active.awarded': view_role,
             'complete': view_role,
-            'paused': view_role,
             'unsuccessful': view_role,
+            'paused': view_role,
         }
 
     title = StringType()
