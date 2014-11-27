@@ -72,14 +72,14 @@ class TenderResource(object):
         offset = self.request.params.get('offset', '9' if descending else '0')
         if descending:
             params['descending'] = descending
-        next_offset = get_now().isoformat()
+        next_offset = datetime.min.isoformat() if descending else get_now().isoformat()
         results = Tender.view(self.db, 'tenders/by_dateModified', limit=limit + 1, startkey=offset, descending=bool(descending))
         results = [tender_serialize(i, fields) for i in results]
         if len(results) > limit:
             results, last = results[:-1], results[-1]
             params['offset'] = last['dateModified']
         else:
-            params['offset'] = datetime.min.isoformat() if descending else next_offset
+            params['offset'] = next_offset
         next_url = self.request.route_url('collection_Tender', _query=params)
         next_path = self.request.route_path('collection_Tender', _query=params)
         return {
