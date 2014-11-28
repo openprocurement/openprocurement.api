@@ -9,7 +9,8 @@ with open(os.path.join(here, 'README.rst')) as f:
 requires = [
     'setuptools',
     'cornice',
-    'waitress',
+    'chaussette',
+    'gevent',
     'couchdb-schematics',
     'sphinxcontrib-httpdomain',
     'jsonpatch',

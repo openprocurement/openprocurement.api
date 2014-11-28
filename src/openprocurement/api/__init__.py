@@ -1,9 +1,13 @@
 # -*- coding: utf-8 -*-
 """Main entry point
 """
+import gevent.monkey; gevent.monkey.patch_all()
 import os
 import pkg_resources
 from pyramid.config import Configurator
+#from openprocurement.api.authentication import AuthenticationPolicy
+from pyramid.authentication import BasicAuthAuthenticationPolicy as AuthenticationPolicy
+from pyramid.authorization import ACLAuthorizationPolicy as AuthorizationPolicy
 from pyramid.renderers import JSON, JSONP
 from pyramid.events import NewRequest
 from couchdb import Server
@@ -36,6 +40,8 @@ def set_renderer(event):
 
 def main(global_config, **settings):
     config = Configurator(settings=settings)
+    config.set_authentication_policy(AuthenticationPolicy(None))
+    config.set_authorization_policy(AuthorizationPolicy())
     config.add_renderer('prettyjson', JSON(indent=4))
     config.add_renderer('jsonp', JSONP(param_name='opt_jsonp'))
     config.add_renderer('prettyjsonp', JSONP(indent=4, param_name='opt_jsonp'))

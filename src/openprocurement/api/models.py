@@ -297,11 +297,11 @@ class Award(Model):
     complaints = ListType(ModelType(Complaint), default=list())
 
 
-plain_role = (blacklist('_attachments', 'revisions', 'dateModified') + schematics_embedded_role)
-view_role = (blacklist('_attachments', 'revisions') + schematics_embedded_role)
+plain_role = (blacklist('owner_token', '_attachments', 'revisions', 'dateModified') + schematics_embedded_role)
+view_role = (blacklist('owner_token', '_attachments', 'revisions') + schematics_embedded_role)
 listing_role = whitelist('dateModified', 'doc_id')
 auction_view_role = whitelist('tenderID', 'dateModified', 'bids', 'auctionPeriod', 'minimalStep')
-enquiries_role = (blacklist('_attachments', 'revisions', 'bids') + schematics_embedded_role)
+enquiries_role = (blacklist('owner_token', '_attachments', 'revisions', 'bids') + schematics_embedded_role)
 
 
 class Tender(SchematicsDocument, Model):
@@ -366,6 +366,7 @@ class Tender(SchematicsDocument, Model):
 
     _attachments = DictType(DictType(BaseType), default=dict())  # couchdb attachments
     dateModified = IsoDateTimeType(default=get_now)
+    owner_token = StringType(default=lambda: uuid4().hex)
 
     @serializable(serialized_name='id')
     def doc_id(self):
