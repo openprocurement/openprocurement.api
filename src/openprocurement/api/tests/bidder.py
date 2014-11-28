@@ -107,6 +107,15 @@ class TenderBidderResourceTest(BaseTenderWebTest):
         self.assertTrue('id' in bidder)
         self.assertTrue(bidder['id'] in response.headers['Location'])
 
+        response = self.app.post_json('/tenders/{}/bids'.format(
+            self.tender_id), {'data': {'tenderers': [{'identifier': {'id': 1}, 'name': 'Name'}]}})
+        self.assertEqual(response.status, '201 Created')
+        self.assertEqual(response.content_type, 'application/json')
+        bidder = response.json['data']
+        self.assertEqual(bidder['tenderers'][0]['name'], 'Name')
+        self.assertTrue('id' in bidder)
+        self.assertTrue(bidder['id'] in response.headers['Location'])
+
         self.set_status('complete')
 
         response = self.app.post_json('/tenders/{}/bids'.format(

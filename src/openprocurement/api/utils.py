@@ -14,7 +14,7 @@ def generate_tender_id(tid):
     return "UA-" + tid
 
 
-def filter_data(data, fields=['id', 'doc_id', 'date', 'dateModified', 'url']):
+def filter_data(data, fields=['id', 'doc_id', 'date', 'dateModified', 'url', 'owner_token']):
     result = data.copy()
     for i in fields:
         if i in result:
@@ -62,17 +62,28 @@ def get_file(tender, document, key, db, request):
         request.errors.status = 404
 
 
+def prepare_patch(changes, orig, patch, basepath=''):
+    if isinstance(patch, dict):
+        for i in patch:
+            if i in orig:
+                prepare_patch(changes, orig[i], patch[i], '{}/{}'.format(basepath, i))
+            else:
+                changes.append({'op': 'add', 'path': '{}/{}'.format(basepath, i), 'value': patch[i]})
+    elif isinstance(patch, list):
+        for i, j in enumerate(patch):
+            if len(orig) > i:
+                prepare_patch(changes, orig[i], patch[i], '{}/{}'.format(basepath, i))
+            else:
+                changes.append({'op': 'add', 'path': '{}/{}'.format(basepath, i), 'value': j})
+    else:
+        for x in make_patch(orig, patch).patch:
+            x['path'] = '{}{}'.format(basepath, x['path'])
+            changes.append(x)
+
+
 def apply_data_patch(item, changes):
     patch_changes = []
-    for i, j in changes.items():
-        if i in item:
-            for x in make_patch(item[i], j).patch:
-                if x['op'] == u'remove':
-                    continue
-                x['path'] = '/{}{}'.format(i, x['path'])
-                patch_changes.append(x)
-        else:
-            patch_changes.append({'op': 'add', 'path': '/{}'.format(i), 'value': j})
+    prepare_patch(patch_changes, item, changes)
     return apply_patch(item, patch_changes)
 
 

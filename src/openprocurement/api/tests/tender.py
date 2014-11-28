@@ -223,17 +223,17 @@ class TenderResourceTest(BaseWebTest):
         response = self.app.post_json('/tenders?opt_jsonp=callback', {"data": test_tender_data})
         self.assertEqual(response.status, '201 Created')
         self.assertEqual(response.content_type, 'application/javascript')
-        self.assertTrue('callback({"data": {"' in response.body)
+        self.assertTrue('callback({"' in response.body)
 
         response = self.app.post_json('/tenders?opt_pretty=1', {"data": test_tender_data})
         self.assertEqual(response.status, '201 Created')
         self.assertEqual(response.content_type, 'application/json')
-        self.assertTrue('{\n    "data": {\n        "' in response.body)
+        self.assertTrue('{\n    "' in response.body)
 
         response = self.app.post_json('/tenders', {"data": test_tender_data, "options": {"pretty": True}})
         self.assertEqual(response.status, '201 Created')
         self.assertEqual(response.content_type, 'application/json')
-        self.assertTrue('{\n    "data": {\n        "' in response.body)
+        self.assertTrue('{\n    "' in response.body)
 
     def test_get_tender(self):
         response = self.app.get('/tenders')
@@ -279,6 +279,16 @@ class TenderResourceTest(BaseWebTest):
         self.assertEqual(tender, new_tender)
         self.assertNotEqual(dateModified, new_dateModified)
 
+        response = self.app.patch_json('/tenders/{}'.format(tender['id']), {'data': {'status': 'complete'}})
+        self.assertEqual(response.status, '200 OK')
+        self.assertEqual(response.content_type, 'application/json')
+
+        response = self.app.put_json('/tenders/{}'.format(
+            tender['id']), {'data': tender}, status=403)
+        self.assertEqual(response.status, '403 Forbidden')
+        self.assertEqual(response.content_type, 'application/json')
+        self.assertEqual(response.json['errors'][0]["description"], "Can't change tender in current status")
+
     def test_patch_tender(self):
         response = self.app.get('/tenders')
         self.assertEqual(response.status, '200 OK')
@@ -313,6 +323,17 @@ class TenderResourceTest(BaseWebTest):
         self.assertEqual(revisions[0][u'changes'][0]['path'], u'/procurementMethod')
 
         response = self.app.patch_json('/tenders/{}'.format(
+            tender['id']), {'data': {'items': [test_tender_data['items'][0]]}})
+        self.assertEqual(response.status, '200 OK')
+        self.assertEqual(response.content_type, 'application/json')
+
+        response = self.app.patch_json('/tenders/{}'.format(
+            tender['id']), {'data': {'items': [{}, test_tender_data['items'][0]]}})
+        self.assertEqual(response.status, '200 OK')
+        self.assertEqual(response.content_type, 'application/json')
+        self.assertEqual(response.json['data']['items'][0], response.json['data']['items'][1])
+
+        response = self.app.patch_json('/tenders/{}'.format(
             tender['id']), {'data': {'enquiryPeriod': {'endDate': new_dateModified2}}})
         self.assertEqual(response.status, '200 OK')
         self.assertEqual(response.content_type, 'application/json')
@@ -327,6 +348,15 @@ class TenderResourceTest(BaseWebTest):
         self.assertEqual(response.status, '200 OK')
         self.assertEqual(response.content_type, 'application/json')
         self.assertTrue('auctionUrl' in response.json['data'])
+
+        response = self.app.patch_json('/tenders/{}'.format(tender['id']), {'data': {'status': 'complete'}})
+        self.assertEqual(response.status, '200 OK')
+        self.assertEqual(response.content_type, 'application/json')
+
+        response = self.app.patch_json('/tenders/{}'.format(tender['id']), {'data': {'status': 'active.auction'}}, status=403)
+        self.assertEqual(response.status, '403 Forbidden')
+        self.assertEqual(response.content_type, 'application/json')
+        self.assertEqual(response.json['errors'][0]["description"], "Can't change tender in current status")
 
     def test_dateModified_tender(self):
         response = self.app.get('/tenders')

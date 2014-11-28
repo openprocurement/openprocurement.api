@@ -154,7 +154,8 @@ def patch_auction(request):
         bids = auction_data.get('bids', [])
         tender_bids_ids = [i.id for i in tender.bids]
         auction_data['bids'] = [x for (y, x) in sorted(zip([tender_bids_ids.index(i['id']) for i in bids], bids))]
+        auction_data['status'] = 'active.qualification'
         src = tender.serialize("plain")
         tender.import_data(apply_data_patch(src, auction_data))
         save_tender(tender, src, request)
-    return {'data': tender.serialize("auction_view")}
+    return {'data': tender.serialize(tender.status)}

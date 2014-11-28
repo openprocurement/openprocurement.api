@@ -253,7 +253,12 @@ class TenderResource(object):
         self.request.response.status = 201
         self.request.response.headers[
             'Location'] = self.request.route_url('Tender', id=tender_id)
-        return {'data': tender.serialize(tender.status)}
+        return {
+            'data': tender.serialize(tender.status),
+            'access': {
+                'token': tender.owner_token
+            }
+        }
 
     @view(renderer='json', validators=(validate_tender_exists,))
     def get(self):

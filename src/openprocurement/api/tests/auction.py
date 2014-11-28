@@ -148,13 +148,13 @@ class TenderAuctionResourceTest(BaseTenderWebTest):
         response = self.app.patch_json('/tenders/{}/auction'.format(self.tender_id), {'data': patch_data})
         self.assertEqual(response.status, '200 OK')
         self.assertEqual(response.content_type, 'application/json')
-        auction = response.json['data']
-        self.assertNotEqual(auction["bids"][0]['value']['amount'], self.initial_data["bids"][0]['value']['amount'])
-        self.assertNotEqual(auction["bids"][1]['value']['amount'], self.initial_data["bids"][1]['value']['amount'])
-        self.assertEqual(auction["bids"][0]['value']['amount'], patch_data["bids"][1]['value']['amount'])
-        self.assertEqual(auction["bids"][1]['value']['amount'], patch_data["bids"][0]['value']['amount'])
-
-        self.set_status('active.qualification')
+        tender = response.json['data']
+        self.assertNotEqual(tender["bids"][0]['value']['amount'], self.initial_data["bids"][0]['value']['amount'])
+        self.assertNotEqual(tender["bids"][1]['value']['amount'], self.initial_data["bids"][1]['value']['amount'])
+        self.assertEqual(tender["bids"][0]['value']['amount'], patch_data["bids"][1]['value']['amount'])
+        self.assertEqual(tender["bids"][1]['value']['amount'], patch_data["bids"][0]['value']['amount'])
+        self.assertTrue("tenderers" in tender["bids"][0])
+        self.assertTrue("name" in tender["bids"][0]["tenderers"][0])
 
         response = self.app.patch_json('/tenders/{}/auction'.format(self.tender_id), {'data': patch_data}, status=403)
         self.assertEqual(response.status, '403 Forbidden')
