@@ -211,7 +211,7 @@ class Bid(Model):
             'active.awarded': schematics_default_role,
             'complete': schematics_default_role,
             'unsuccessful': schematics_default_role,
-            'paused': whitelist(),
+            'cancelled': schematics_default_role,
         }
 
     tenderers = ListType(ModelType(Organization), default=list())
@@ -240,7 +240,7 @@ class Question(Model):
             'active.awarded': schematics_default_role,
             'complete': schematics_default_role,
             'unsuccessful': schematics_default_role,
-            'paused': whitelist(),
+            'cancelled': schematics_default_role,
         }
 
     id = StringType(required=True, default=lambda: uuid4().hex)
@@ -319,7 +319,7 @@ class Tender(SchematicsDocument, Model):
             'active.awarded': view_role,
             'complete': view_role,
             'unsuccessful': view_role,
-            'paused': view_role,
+            'cancelled': view_role,
         }
 
     title = StringType()
@@ -360,7 +360,7 @@ class Tender(SchematicsDocument, Model):
     deliveryDate = ModelType(Period)
     auctionPeriod = ModelType(Period)
     minimalStep = ModelType(Value)
-    status = StringType(choices=['active.enquiries', 'active.tendering', 'active.auction', 'active.qualification', 'active.awarded', 'complete', 'paused', 'unsuccessful'], default='active.enquiries')
+    status = StringType(choices=['active.enquiries', 'active.tendering', 'active.auction', 'active.qualification', 'active.awarded', 'complete', 'cancelled', 'unsuccessful'], default='active.enquiries')
     questions = ListType(ModelType(Question), default=list())
     complaints = ListType(ModelType(Complaint), default=list())
 

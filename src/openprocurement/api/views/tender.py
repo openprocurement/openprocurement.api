@@ -358,7 +358,7 @@ class TenderResource(object):
     def put(self):
         """Tender Edit (full)"""
         tender = self.request.validated['tender']
-        if tender.status in ['complete', 'unsuccessful']:
+        if tender.status in ['complete', 'unsuccessful', 'cancelled']:
             self.request.errors.add('body', 'data', 'Can\'t change tender in current status')
             self.request.errors.status = 403
             return
@@ -418,7 +418,7 @@ class TenderResource(object):
 
         """
         tender = self.request.validated['tender']
-        if tender.status in ['complete', 'unsuccessful']:
+        if tender.status in ['complete', 'unsuccessful', 'cancelled']:
             self.request.errors.add('body', 'data', 'Can\'t change tender in current status')
             self.request.errors.status = 403
             return
