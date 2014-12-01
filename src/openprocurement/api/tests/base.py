@@ -8,57 +8,57 @@ from openprocurement.api import VERSION
 
 test_tender_data = {
     "procuringEntity": {
-        "name": "Державне управління справами",
+        "name": u"Державне управління справами",
         "identifier": {
-            "scheme": "https://ns.openprocurement.org/ua/edrpou",
-            "id": "00037256",
-            "uri": "http://www.dus.gov.ua/"
+            "scheme": u"https://ns.openprocurement.org/ua/edrpou",
+            "id": u"00037256",
+            "uri": u"http://www.dus.gov.ua/"
         },
         "address": {
-            "countryName": "Україна",
-            "postalCode": "01220",
-            "region": "м. Київ",
-            "locality": "м. Київ",
-            "streetAddress": "вул. Банкова, 11, корпус 1"
+            "countryName": u"Україна",
+            "postalCode": u"01220",
+            "region": u"м. Київ",
+            "locality": u"м. Київ",
+            "streetAddress": u"вул. Банкова, 11, корпус 1"
         },
     },
     "value": {
         "amount": 500,
-        "currency": "UAH"
+        "currency": u"UAH"
     },
     "minimalStep": {
         "amount": 35,
-        "currency": "UAH"
+        "currency": u"UAH"
     },
     "items": [
         {
-            "description": "футляри до державних нагород",
+            "description": u"футляри до державних нагород",
             "classification": {
-                "scheme": "CPV",
-                "id": "44617100-9",
-                "description": "Cartons"
+                "scheme": u"CPV",
+                "id": u"44617100-9",
+                "description": u"Cartons"
             },
             "additionalClassifications": [
                 {
-                    "scheme": "ДКПП",
-                    "id": "17.21.1",
-                    "description": "папір і картон гофровані, паперова й картонна тара"
+                    "scheme": u"ДКПП",
+                    "id": u"17.21.1",
+                    "description": u"папір і картон гофровані, паперова й картонна тара"
                 }
             ],
             "unit": {
-                "name": "item"
+                "name": u"item"
             },
             "quantity": 5
         }
     ],
     "enquiryPeriod": {
-        "endDate": "2014-10-31T00:00:00"
+        "endDate": u"2014-10-31T00:00:00"
     },
     "tenderPeriod": {
-        "endDate": "2014-11-06T10:00:00"
+        "endDate": u"2014-11-06T10:00:00"
     },
     "awardPeriod": {
-        "endDate": "2014-11-13T00:00:00"
+        "endDate": u"2014-11-13T00:00:00"
     }
 }
 

@@ -2,12 +2,13 @@
 import unittest
 
 from openprocurement.api.tests.base import test_tender_data, BaseTenderWebTest
+from openprocurement.api.models import get_now
 from iso8601 import parse_date
 from tzlocal import get_localzone
 
 
 tender_data = test_tender_data.copy()
-tender_data['auctionPeriod'] = test_tender_data["tenderPeriod"]
+tender_data['auctionPeriod'] = {'startDate': get_now().isoformat()}
 tender_data['bids'] = [
     {
         "id": "4879d3f8ee2443169b5fbbc9f89fa606",
@@ -78,7 +79,7 @@ class TenderAuctionResourceTest(BaseTenderWebTest):
         self.assertFalse("tenderers" in auction["bids"][0])
         self.assertEqual(auction["bids"][0]['value']['amount'], self.initial_data["bids"][0]['value']['amount'])
         self.assertEqual(auction["bids"][1]['value']['amount'], self.initial_data["bids"][1]['value']['amount'])
-        self.assertEqual(parse_date(self.initial_data["auctionPeriod"]['endDate'], get_localzone()), parse_date(auction["auctionPeriod"]['endDate']))
+        self.assertEqual(self.initial_data["auctionPeriod"]['startDate'], auction["auctionPeriod"]['startDate'])
 
         response = self.app.get('/tenders/{}/auction?opt_jsonp=callback'.format(self.tender_id))
         self.assertEqual(response.status, '200 OK')
@@ -153,8 +154,13 @@ class TenderAuctionResourceTest(BaseTenderWebTest):
         self.assertNotEqual(tender["bids"][1]['value']['amount'], self.initial_data["bids"][1]['value']['amount'])
         self.assertEqual(tender["bids"][0]['value']['amount'], patch_data["bids"][1]['value']['amount'])
         self.assertEqual(tender["bids"][1]['value']['amount'], patch_data["bids"][0]['value']['amount'])
+        self.assertEqual('active.qualification', tender["status"])
         self.assertTrue("tenderers" in tender["bids"][0])
         self.assertTrue("name" in tender["bids"][0]["tenderers"][0])
+        #self.assertTrue(tender["awards"][0]["id"] in response.headers['Location'])
+        self.assertEqual(tender["awards"][0]['bid_id'], patch_data["bids"][0]['id'])
+        self.assertEqual(tender["awards"][0]['value']['amount'], patch_data["bids"][0]['value']['amount'])
+        self.assertEqual(tender["awards"][0]['suppliers'], tender_data['bids'][0]['tenderers'])
 
         response = self.app.patch_json('/tenders/{}/auction'.format(self.tender_id), {'data': patch_data}, status=403)
         self.assertEqual(response.status, '403 Forbidden')

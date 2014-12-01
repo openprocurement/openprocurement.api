@@ -282,6 +282,7 @@ class Award(Model):
         }
 
     id = StringType(required=True, default=lambda: uuid4().hex)
+    bid_id = StringType()
     title = StringType()  # Award title
     title_en = StringType()
     title_ru = StringType()

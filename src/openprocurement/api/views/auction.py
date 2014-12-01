@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 from cornice.service import Service
+from openprocurement.api.models import Award, get_now
 from openprocurement.api.utils import (
     apply_data_patch,
     filter_data,
@@ -154,8 +155,20 @@ def patch_auction(request):
         bids = auction_data.get('bids', [])
         tender_bids_ids = [i.id for i in tender.bids]
         auction_data['bids'] = [x for (y, x) in sorted(zip([tender_bids_ids.index(i['id']) for i in bids], bids))]
+        auction_data['auctionPeriod'] = {'endDate': get_now().isoformat()}
         auction_data['status'] = 'active.qualification'
         src = tender.serialize("plain")
         tender.import_data(apply_data_patch(src, auction_data))
+        bids = sorted(tender.bids, key=lambda i: (i.value.amount, i.date))
+        bid = bids[0].serialize()
+        award_data = {
+            'bid_id': bid['id'],
+            'status': 'pending',
+            'value': bid['value'],
+            'suppliers': bid['tenderers'],
+        }
+        award = Award(award_data)
+        tender.awards.append(award)
         save_tender(tender, src, request)
+        #request.response.headers['Location'] = request.route_url('Tender Awards', tender_id=tender.id, id=award['id'])
     return {'data': tender.serialize(tender.status)}
