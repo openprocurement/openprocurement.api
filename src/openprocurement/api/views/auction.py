@@ -151,11 +151,12 @@ def patch_auction(request):
     tender = request.validated['tender']
     auction_data = filter_data(request.validated['data'])
     if auction_data:
-        auction_data['tenderID'] = tender.tenderID
+        now = get_now().isoformat()
         bids = auction_data.get('bids', [])
         tender_bids_ids = [i.id for i in tender.bids]
         auction_data['bids'] = [x for (y, x) in sorted(zip([tender_bids_ids.index(i['id']) for i in bids], bids))]
-        auction_data['auctionPeriod'] = {'endDate': get_now().isoformat()}
+        auction_data['auctionPeriod'] = {'endDate': now}
+        auction_data['awardPeriod'] = {'startDate': now}
         auction_data['status'] = 'active.qualification'
         src = tender.serialize("plain")
         tender.import_data(apply_data_patch(src, auction_data))
