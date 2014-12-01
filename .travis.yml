@@ -13,3 +13,10 @@ script:
   - nosetests
 after_success:
   - coveralls
+notifications:
+  webhooks:
+    urls:
+      - https://webhooks.gitter.im/e/82aa866c2f7ed47c961f
+    on_success: always
+    on_failure: always
+    on_start: false
