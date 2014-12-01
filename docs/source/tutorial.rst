@@ -197,3 +197,11 @@ Qualification comission registers its decision via following call:
 .. include:: tutorial/confirm-qualification.http
    :code:
 
+Canceling tender
+----------------
+
+Tender creator can cancel tender anytime:
+
+.. include:: tutorial/cancel-tender.http
+   :code:
+

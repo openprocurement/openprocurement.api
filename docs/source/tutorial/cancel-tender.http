@@ -1,0 +1,24 @@
+$ http -j PATCH https://api-sandbox.openprocurement.org/api/0/tenders/bd02634d93eb4c13923283adedc8a168 data:={"status":"cancelled"}
+PATCH /api/0/tenders/bd02634d93eb4c13923283adedc8a168 HTTP/1.1
+Content-Type: application/json; charset=utf-8
+
+{
+    "data": {
+        "status": "cancelled"
+    }
+}
+
+HTTP/1.1 200 OK
+Content-Type: application/json; charset=UTF-8
+
+{
+    "data": {
+        "dateModified": "2014-12-01T15:59:41.185408+02:00", 
+        "enquiryPeriod": {
+            "startDate": "2014-12-01T15:59:30.491291+02:00"
+        }, 
+        "id": "bd02634d93eb4c13923283adedc8a168", 
+        "status": "cancelled", 
+        "tenderID": "UA-bd02634d93eb4c13923283adedc8a168"
+    }
+}
