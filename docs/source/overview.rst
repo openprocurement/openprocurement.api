@@ -66,6 +66,21 @@ lot.  The changes in the API are communicated via `Open Procurement API
 Change log
 ----------
 
+0.4
+~~~
+Released: 2014-12-01
+
+ New Features:
+
+ - Filing Complaint on award
+ - Complaint attachments
+ - Tender Cancelling
+ - Question authors visibility
+
+ Modifications:
+ 
+ - Tender status codelist harmonized
+
 0.3
 ~~~
 Released: 2014-11-21

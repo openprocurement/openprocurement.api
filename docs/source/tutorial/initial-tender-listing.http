@@ -1,4 +1,4 @@
-$ http http://api-sandbox.openprocurement.org/api/0/tenders
+$ http https://api-sandbox.openprocurement.org/api/0/tenders
 GET /api/0/tenders HTTP/1.1
 
 
@@ -9,8 +9,8 @@ Content-Type: application/json; charset=UTF-8
 {
     "data": [], 
     "next_page": {
-        "offset": "2014-11-22T04:27:49.300971+02:00", 
-        "path": "/api/0/tenders?offset=2014-11-22T04%3A27%3A49.300971%2B02%3A00", 
-        "uri": "http://api-sandbox.openprocurement.org/api/0/tenders?offset=2014-11-22T04%3A27%3A49.300971%2B02%3A00"
+        "offset": "2014-12-01T17:39:19.104103+02:00", 
+        "path": "/api/0/tenders?offset=2014-12-01T17%3A39%3A19.104103%2B02%3A00", 
+        "uri": "http://api-sandbox.openprocurement.org/api/0/tenders?offset=2014-12-01T17%3A39%3A19.104103%2B02%3A00"
     }
 }

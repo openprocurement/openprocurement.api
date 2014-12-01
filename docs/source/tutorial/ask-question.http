@@ -1,5 +1,5 @@
-$ http -j POST http://api-sandbox.openprocurement.org/api/0/tenders/e1c4e54be2314868bab3ecfcf6241cba/questions data:=@./question.json
-POST /api/0/tenders/e1c4e54be2314868bab3ecfcf6241cba/questions HTTP/1.1
+$ http -j POST https://api-sandbox.openprocurement.org/api/0/tenders/327c00d16cff4c37be5bd4915cdff8a3/questions data:=@./question.json
+POST /api/0/tenders/327c00d16cff4c37be5bd4915cdff8a3/questions HTTP/1.1
 Content-Type: application/json; charset=utf-8
 
 {
@@ -32,7 +32,7 @@ Content-Type: application/json; charset=utf-8
 
 HTTP/1.1 201 Created
 Content-Type: application/json; charset=UTF-8
-Location: http://api-sandbox.openprocurement.org/api/0/tenders/e1c4e54be2314868bab3ecfcf6241cba/bids/2356d267b21444368c0bd155f80b6b08
+Location: http://api-sandbox.openprocurement.org/api/0/tenders/327c00d16cff4c37be5bd4915cdff8a3/questions/74fb1c83ec7549e0abd7284e05287b8b
 
 {
     "data": {
@@ -57,9 +57,9 @@ Location: http://api-sandbox.openprocurement.org/api/0/tenders/e1c4e54be2314868b
             }, 
             "name": "ДКП «Школяр»"
         }, 
-        "date": "2014-11-22T04:27:57.785461+02:00", 
+        "date": "2014-12-01T17:39:35.616161+02:00", 
         "description": "Просимо додати таблицю потрібної калорійності харчування по місяцях", 
-        "id": "2356d267b21444368c0bd155f80b6b08", 
+        "id": "74fb1c83ec7549e0abd7284e05287b8b", 
         "title": "Калорійність по місяцях"
     }
 }

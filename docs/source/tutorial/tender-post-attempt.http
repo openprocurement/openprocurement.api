@@ -1,4 +1,4 @@
-$ http POST http://api-sandbox.openprocurement.org/api/0/tenders
+$ http POST https://api-sandbox.openprocurement.org/api/0/tenders
 POST /api/0/tenders HTTP/1.1
 
 

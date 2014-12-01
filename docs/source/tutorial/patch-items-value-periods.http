@@ -1,5 +1,5 @@
-$ http -j PATCH http://api-sandbox.openprocurement.org/api/0/tenders/e1c4e54be2314868bab3ecfcf6241cba data:=@./school-tender-patch.json
-PATCH /api/0/tenders/e1c4e54be2314868bab3ecfcf6241cba HTTP/1.1
+$ http -j PATCH https://api-sandbox.openprocurement.org/api/0/tenders/327c00d16cff4c37be5bd4915cdff8a3 data:=@./school-tender-patch.json
+PATCH /api/0/tenders/327c00d16cff4c37be5bd4915cdff8a3 HTTP/1.1
 Content-Type: application/json; charset=utf-8
 
 {
@@ -50,12 +50,12 @@ Content-Type: application/json; charset=UTF-8
 
 {
     "data": {
-        "dateModified": "2014-11-22T04:27:52.922493+02:00", 
+        "dateModified": "2014-12-01T17:39:26.929784+02:00", 
         "enquiryPeriod": {
             "endDate": "2015-05-29T00:00:00+02:02", 
-            "startDate": "2014-11-22T04:27:52.011949+02:00"
+            "startDate": "2014-12-01T17:39:25.289180+02:00"
         }, 
-        "id": "e1c4e54be2314868bab3ecfcf6241cba", 
+        "id": "327c00d16cff4c37be5bd4915cdff8a3", 
         "items": [
             {
                 "additionalClassifications": [
@@ -98,8 +98,8 @@ Content-Type: application/json; charset=UTF-8
             }, 
             "name": "ЗОСШ #10 м.Вінниці"
         }, 
-        "status": "enquiries", 
-        "tenderID": "UA-e1c4e54be2314868bab3ecfcf6241cba", 
+        "status": "active.enquiries", 
+        "tenderID": "UA-327c00d16cff4c37be5bd4915cdff8a3", 
         "tenderPeriod": {
             "endDate": "2015-06-07T10:00:00+02:02", 
             "startDate": "2014-11-03T00:00:00+02:02"
