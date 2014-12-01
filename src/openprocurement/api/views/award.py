@@ -171,7 +171,7 @@ class TenderAwardResource(object):
         tender.awards.append(award)
         save_tender(tender, src, self.request)
         self.request.response.status = 201
-        self.request.response.headers['Location'] = self.request.route_url('Tender Bids', tender_id=tender.id, id=award['id'])
+        self.request.response.headers['Location'] = self.request.route_url('Tender Awards', tender_id=tender.id, id=award['id'])
         return {'data': award.serialize("view")}
 
     @view(renderer='json', validators=(validate_tender_award_exists,))
