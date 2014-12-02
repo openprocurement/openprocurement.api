@@ -10,13 +10,13 @@ def sync_design(db):
 
 tenders_all_view = ViewDefinition('tenders', 'all', '''function(doc) {
     if(doc.doc_type == 'Tender') {
-        emit(doc.tenderID, doc);
+        emit(doc.tenderID, null);
     }
 }''')
 
 
 tenders_by_dateModified_view = ViewDefinition('tenders', 'by_dateModified', '''function(doc) {
     if(doc.doc_type == 'Tender') {
-        emit(doc.dateModified, doc);
+        emit(doc.dateModified, null);
     }
 }''')

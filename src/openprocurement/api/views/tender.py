@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 from datetime import datetime
 from cornice.resource import resource, view
+from openprocurement.api.design import tenders_by_dateModified_view
 from openprocurement.api.models import Tender, get_now
 from openprocurement.api.utils import (
     apply_data_patch,
@@ -73,8 +74,12 @@ class TenderResource(object):
         if descending:
             params['descending'] = descending
         next_offset = datetime.min.isoformat() if descending else get_now().isoformat()
-        results = Tender.view(self.db, 'tenders/by_dateModified', limit=limit + 1, startkey=offset, descending=bool(descending))
-        results = [tender_serialize(i, fields) for i in results]
+        if fields:
+            results = Tender.view(self.db, 'tenders/by_dateModified', limit=limit + 1, startkey=offset, descending=bool(descending), include_docs=True)
+            results = [tender_serialize(i, fields) for i in results]
+        else:
+            results = tenders_by_dateModified_view(self.db, limit=limit + 1, startkey=offset, descending=bool(descending))
+            results = [{'id': i.id, 'dateModified': i.key} for i in results]
         if len(results) > limit:
             results, last = results[:-1], results[-1]
             params['offset'] = last['dateModified']
