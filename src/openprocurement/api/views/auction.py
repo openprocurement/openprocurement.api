@@ -171,5 +171,5 @@ def patch_auction(request):
         award = Award(award_data)
         tender.awards.append(award)
         save_tender(tender, src, request)
-        #request.response.headers['Location'] = request.route_url('Tender Awards', tender_id=tender.id, id=award['id'])
+        # request.response.headers['Location'] = request.route_url('Tender Awards', tender_id=tender.id, id=award['id'])
     return {'data': tender.serialize(tender.status)}

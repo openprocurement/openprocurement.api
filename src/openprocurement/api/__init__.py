@@ -1,11 +1,12 @@
 # -*- coding: utf-8 -*-
 """Main entry point
 """
-import gevent.monkey; gevent.monkey.patch_all()
+import gevent.monkey
+gevent.monkey.patch_all()
 import os
 import pkg_resources
 from pyramid.config import Configurator
-#from openprocurement.api.authentication import AuthenticationPolicy
+# from openprocurement.api.authentication import AuthenticationPolicy
 from pyramid.authentication import BasicAuthAuthenticationPolicy as AuthenticationPolicy
 from pyramid.authorization import ACLAuthorizationPolicy as AuthorizationPolicy
 from pyramid.renderers import JSON, JSONP

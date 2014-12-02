@@ -3,8 +3,6 @@ import unittest
 
 from openprocurement.api.tests.base import test_tender_data, BaseTenderWebTest
 from openprocurement.api.models import get_now
-from iso8601 import parse_date
-from tzlocal import get_localzone
 
 
 tender_data = test_tender_data.copy()
@@ -157,7 +155,7 @@ class TenderAuctionResourceTest(BaseTenderWebTest):
         self.assertEqual('active.qualification', tender["status"])
         self.assertTrue("tenderers" in tender["bids"][0])
         self.assertTrue("name" in tender["bids"][0]["tenderers"][0])
-        #self.assertTrue(tender["awards"][0]["id"] in response.headers['Location'])
+        # self.assertTrue(tender["awards"][0]["id"] in response.headers['Location'])
         self.assertEqual(tender["awards"][0]['bid_id'], patch_data["bids"][0]['id'])
         self.assertEqual(tender["awards"][0]['value']['amount'], patch_data["bids"][0]['value']['amount'])
         self.assertEqual(tender["awards"][0]['suppliers'], tender_data['bids'][0]['tenderers'])
