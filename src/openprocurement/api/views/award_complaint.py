@@ -33,7 +33,7 @@ class TenderAwardComplaintResource(object):
             self.request.errors.add('body', 'data', 'Can\'t add complaint in current tender status')
             self.request.errors.status = 403
             return
-        complaint_data = filter_data(self.request.validated['data'])
+        complaint_data = filter_data(self.request.validated['data'], fields=['id', 'date', 'status'])
         complaint = Complaint(complaint_data)
         src = tender.serialize("plain")
         self.request.validated['award'].complaints.append(complaint)
@@ -64,6 +64,10 @@ class TenderAwardComplaintResource(object):
             self.request.errors.status = 403
             return
         complaint = self.request.validated['complaint']
+        if complaint.status != 'accepted':
+            self.request.errors.add('body', 'data', 'Can\'t update complaint in current status')
+            self.request.errors.status = 403
+            return
         complaint_data = filter_data(self.request.validated['data'])
         if complaint_data:
             src = tender.serialize("plain")

@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 from cornice.resource import resource, view
-from openprocurement.api.models import Complaint
+from openprocurement.api.models import Complaint, STAND_STILL_TIME, get_now
 from openprocurement.api.utils import (
     apply_data_patch,
     filter_data,
@@ -33,7 +33,7 @@ class TenderComplaintResource(object):
             self.request.errors.add('body', 'data', 'Can\'t add complaint in current tender status')
             self.request.errors.status = 403
             return
-        complaint_data = filter_data(self.request.validated['data'])
+        complaint_data = filter_data(self.request.validated['data'], fields=['id', 'date', 'status'])
         complaint = Complaint(complaint_data)
         src = tender.serialize("plain")
         tender.complaints.append(complaint)
@@ -64,9 +64,38 @@ class TenderComplaintResource(object):
             self.request.errors.status = 403
             return
         complaint = self.request.validated['complaint']
+        if complaint.status != 'accepted':
+            self.request.errors.add('body', 'data', 'Can\'t update complaint in current status')
+            self.request.errors.status = 403
+            return
         complaint_data = filter_data(self.request.validated['data'])
         if complaint_data:
             src = tender.serialize("plain")
             complaint.import_data(apply_data_patch(complaint.serialize(), complaint_data))
+            if complaint.status == 'satisfied' and tender.status != 'active.enquiries':
+                tender.status = 'cancelled'
+            elif complaint.status in ['rejected', 'invalid'] and tender.status == 'active.awarded':
+                accepted_complaints = [
+                    i
+                    for i in self.request.validated['complaints']
+                    if i.status == 'accepted'
+                ]
+                accepted_awards_complaints = [
+                    i
+                    for a in tender.awards
+                    for i in a.complaints
+                    if i.status == 'accepted'
+                ]
+                stand_still_time_expired = tender.awardPeriod.endDate + STAND_STILL_TIME < get_now()
+                if not accepted_complaints and not accepted_awards_complaints and stand_still_time_expired:
+                    active_awards = [
+                        a
+                        for a in tender.awards
+                        if a.status == 'active'
+                    ]
+                    if active_awards:
+                        tender.status = 'complete'
+                    else:
+                        tender.status = 'unsuccessful'
             save_tender(tender, src, self.request)
         return {'data': complaint.serialize("view")}
