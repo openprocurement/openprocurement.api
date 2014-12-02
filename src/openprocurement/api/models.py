@@ -1,15 +1,15 @@
 # -*- coding: utf-8 -*-
+from couchdb_schematics.document import SchematicsDocument
 from datetime import datetime
 from iso8601 import parse_date, ParseError
-from uuid import uuid4
-from couchdb_schematics.document import SchematicsDocument
+from schematics.exceptions import ConversionError
 from schematics.models import Model
 from schematics.transforms import whitelist, blacklist
 from schematics.types import StringType, FloatType, IntType, URLType, BooleanType, BaseType, EmailType
 from schematics.types.compound import ModelType, ListType, DictType
 from schematics.types.serializable import serializable
-from schematics.exceptions import ConversionError
 from tzlocal import get_localzone
+from uuid import uuid4
 
 
 schematics_embedded_role = SchematicsDocument.Options.roles['embedded']
@@ -21,6 +21,19 @@ TZ = get_localzone()
 
 def get_now():
     return datetime.now(TZ)
+
+
+def read_cpv():
+    import os.path
+    from json import loads
+    curr_dir = os.path.dirname(os.path.realpath(__file__))
+    file_path = os.path.join(curr_dir, 'cpv.json')
+    with open(file_path) as lang_file:
+        data = lang_file.read()
+    return loads(data)
+
+
+CPV_CODES = read_cpv()
 
 
 class IsoDateTimeType(BaseType):
@@ -101,6 +114,7 @@ class Unit(Model):
     name_en = StringType()
     name_ru = StringType()
     value = ModelType(Value)
+    code = StringType(choices=CPV_CODES)
 
 
 class Item(Model):

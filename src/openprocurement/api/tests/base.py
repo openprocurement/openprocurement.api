@@ -46,7 +46,8 @@ test_tender_data = {
                 }
             ],
             "unit": {
-                "name": u"item"
+                "name": u"item",
+                "code": u"44617100-9"
             },
             "quantity": 5
         }
