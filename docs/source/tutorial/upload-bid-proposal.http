@@ -1,6 +1,6 @@
-$ http --form POST http://api-sandbox.openprocurement.org/api/0/tenders/e1c4e54be2314868bab3ecfcf6241cba/bids/991bfd3d936b43c4bd129b3a23c4fa85/documents file@./Proposal.pdf
-POST /api/0/tenders/e1c4e54be2314868bab3ecfcf6241cba/bids/991bfd3d936b43c4bd129b3a23c4fa85/documents HTTP/1.1
-Content-Type: multipart/form-data; boundary=b1467df85eb346a89e83742d65e0560d
+$ http --form POST https://api-sandbox.openprocurement.org/api/0/tenders/327c00d16cff4c37be5bd4915cdff8a3/bids/9b2c1ec83e1646edb2ce6056d653d390/documents file@./Proposal.pdf
+POST /api/0/tenders/327c00d16cff4c37be5bd4915cdff8a3/bids/9b2c1ec83e1646edb2ce6056d653d390/documents HTTP/1.1
+Content-Type: multipart/form-data; boundary=77f84476a6c44bceb5d66b90b906ed1e
 
 
 
@@ -10,15 +10,15 @@ Content-Type: multipart/form-data; boundary=b1467df85eb346a89e83742d65e0560d
 
 HTTP/1.1 201 Created
 Content-Type: application/json; charset=UTF-8
-Location: http://api-sandbox.openprocurement.org/api/0/tenders/e1c4e54be2314868bab3ecfcf6241cba/bids/991bfd3d936b43c4bd129b3a23c4fa85/documents/619d3552bb984221a06977b00caa6388
+Location: http://api-sandbox.openprocurement.org/api/0/tenders/327c00d16cff4c37be5bd4915cdff8a3/bids/9b2c1ec83e1646edb2ce6056d653d390/documents/316aecfb5cd9407ebc2ae980d86812d8
 
 {
     "data": {
-        "dateModified": "2014-11-22T04:28:01.016428+02:00", 
-        "datePublished": "2014-11-22T04:28:01.016385+02:00", 
+        "dateModified": "2014-12-01T17:39:41.114476+02:00", 
+        "datePublished": "2014-12-01T17:39:41.114422+02:00", 
         "format": "text/plain", 
-        "id": "619d3552bb984221a06977b00caa6388", 
+        "id": "316aecfb5cd9407ebc2ae980d86812d8", 
         "title": "Proposal.pdf", 
-        "url": "http://api-sandbox.openprocurement.org/api/0/tenders/e1c4e54be2314868bab3ecfcf6241cba/bids/991bfd3d936b43c4bd129b3a23c4fa85/documents/619d3552bb984221a06977b00caa6388?download=56d715375f374153be706e74c1b983b6"
+        "url": "http://api-sandbox.openprocurement.org/api/0/tenders/327c00d16cff4c37be5bd4915cdff8a3/bids/9b2c1ec83e1646edb2ce6056d653d390/documents/316aecfb5cd9407ebc2ae980d86812d8?download=efad340688de454486f267f8575477dc"
     }
 }

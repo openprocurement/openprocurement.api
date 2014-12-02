@@ -1,5 +1,5 @@
-$ http http://api-sandbox.openprocurement.org/api/0/tenders/ad41df97f2364911a27a7c744a8e3e62
-GET /api/0/tenders/ad41df97f2364911a27a7c744a8e3e62 HTTP/1.1
+$ http https://api-sandbox.openprocurement.org/api/0/tenders/779630aecd87417097dcfb48871b6990
+GET /api/0/tenders/779630aecd87417097dcfb48871b6990 HTTP/1.1
 
 
 
@@ -8,12 +8,12 @@ Content-Type: application/json; charset=UTF-8
 
 {
     "data": {
-        "dateModified": "2014-11-22T04:27:50.716220+02:00", 
+        "dateModified": "2014-12-01T17:39:21.504836+02:00", 
         "enquiryPeriod": {
-            "startDate": "2014-11-22T04:27:50.716220+02:00"
+            "startDate": "2014-12-01T17:39:21.504836+02:00"
         }, 
-        "id": "ad41df97f2364911a27a7c744a8e3e62", 
-        "status": "enquiries", 
-        "tenderID": "UA-ad41df97f2364911a27a7c744a8e3e62"
+        "id": "779630aecd87417097dcfb48871b6990", 
+        "status": "active.enquiries", 
+        "tenderID": "UA-779630aecd87417097dcfb48871b6990"
     }
 }

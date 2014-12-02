@@ -126,7 +126,7 @@ Schema
    The date or period on which an award is anticipated to be made.
 
 :status:
-   'enquiries', 'tendering', 'auction', 'qualification', 'awarded', 'contract-signed', 'paused'
+   'active.enquiries', 'active.tendering', 'active.auction', 'active.qualification', 'active.awarded', 'unsuccessful', 'complete', 'cancelled'
 
    Status of the Tender.
 

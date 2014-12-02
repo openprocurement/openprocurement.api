@@ -43,7 +43,7 @@ and `Location` response header reports the location of object created.  The
 body of response reveals the information about tender created, its internal
 `id` (that matches the `Location` segment), its official `tenderID` and
 `modified` datestamp stating the moment in time when tender was last
-modified.  Note that tender is created with `enquiries` status.
+modified.  Note that tender is created with `active.enquiries` status.
 
 Let's access the URL of object created (the `Location` header of the response):
 
@@ -138,7 +138,7 @@ And we can see that it is overriding the original version:
 Enquiries
 ---------
 
-When tender is in `enquiry` status, interested parties can ask questions:
+When tender is in `active.enquiry` status, interested parties can ask questions:
 
 .. include:: tutorial/ask-question.http
    :code:

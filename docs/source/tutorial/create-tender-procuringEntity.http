@@ -1,4 +1,4 @@
-$ http -j POST http://api-sandbox.openprocurement.org/api/0/tenders data:=@./school-tender.json
+$ http -j POST https://api-sandbox.openprocurement.org/api/0/tenders data:=@./school-tender.json
 POST /api/0/tenders HTTP/1.1
 Content-Type: application/json; charset=utf-8
 
@@ -25,15 +25,18 @@ Content-Type: application/json; charset=utf-8
 
 HTTP/1.1 201 Created
 Content-Type: application/json; charset=UTF-8
-Location: http://api-sandbox.openprocurement.org/api/0/tenders/e1c4e54be2314868bab3ecfcf6241cba
+Location: http://api-sandbox.openprocurement.org/api/0/tenders/327c00d16cff4c37be5bd4915cdff8a3
 
 {
+    "access": {
+        "token": "4668a63ccfd443e8b848e856952e9a2b"
+    }, 
     "data": {
-        "dateModified": "2014-11-22T04:27:52.011949+02:00", 
+        "dateModified": "2014-12-01T17:39:25.289180+02:00", 
         "enquiryPeriod": {
-            "startDate": "2014-11-22T04:27:52.011949+02:00"
+            "startDate": "2014-12-01T17:39:25.289180+02:00"
         }, 
-        "id": "e1c4e54be2314868bab3ecfcf6241cba", 
+        "id": "327c00d16cff4c37be5bd4915cdff8a3", 
         "procuringEntity": {
             "address": {
                 "countryName": "Україна", 
@@ -50,7 +53,7 @@ Location: http://api-sandbox.openprocurement.org/api/0/tenders/e1c4e54be2314868b
             }, 
             "name": "ЗОСШ #10 м.Вінниці"
         }, 
-        "status": "enquiries", 
-        "tenderID": "UA-e1c4e54be2314868bab3ecfcf6241cba"
+        "status": "active.enquiries", 
+        "tenderID": "UA-327c00d16cff4c37be5bd4915cdff8a3"
     }
 }

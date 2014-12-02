@@ -1,6 +1,6 @@
-$ http --form PUT http://api-sandbox.openprocurement.org/api/0/tenders/e1c4e54be2314868bab3ecfcf6241cba/documents/31da6e5d23464cff9e5f016871865480 file@./AwardCriteria-v2.pdf
-PUT /api/0/tenders/e1c4e54be2314868bab3ecfcf6241cba/documents/31da6e5d23464cff9e5f016871865480 HTTP/1.1
-Content-Type: multipart/form-data; boundary=4f6245badbc141b0b6222c924e1969cc
+$ http --form PUT https://api-sandbox.openprocurement.org/api/0/tenders/327c00d16cff4c37be5bd4915cdff8a3/documents/4b65c046be264da4a430823d4376a757 file@./AwardCriteria-v2.pdf
+PUT /api/0/tenders/327c00d16cff4c37be5bd4915cdff8a3/documents/4b65c046be264da4a430823d4376a757 HTTP/1.1
+Content-Type: multipart/form-data; boundary=fdb76865e76a4140994502a017fd6e14
 
 
 
@@ -13,11 +13,11 @@ Content-Type: application/json; charset=UTF-8
 
 {
     "data": {
-        "dateModified": "2014-11-22T04:27:56.815690+02:00", 
-        "datePublished": "2014-11-22T04:27:55.536271+02:00", 
+        "dateModified": "2014-12-01T17:39:33.717002+02:00", 
+        "datePublished": "2014-12-01T17:39:31.443089+02:00", 
         "format": "text/plain", 
-        "id": "31da6e5d23464cff9e5f016871865480", 
+        "id": "4b65c046be264da4a430823d4376a757", 
         "title": "AwardCriteria-v2.pdf", 
-        "url": "http://api-sandbox.openprocurement.org/api/0/tenders/e1c4e54be2314868bab3ecfcf6241cba/documents/31da6e5d23464cff9e5f016871865480?download=d2a328be22e34034a80b644e76dda25f"
+        "url": "http://api-sandbox.openprocurement.org/api/0/tenders/327c00d16cff4c37be5bd4915cdff8a3/documents/4b65c046be264da4a430823d4376a757?download=e8300d4763ff4968aef4c71b4e15a297"
     }
 }

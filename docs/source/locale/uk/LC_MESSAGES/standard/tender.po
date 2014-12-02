@@ -4,7 +4,7 @@ msgstr ""
 "Project-Id-Version: openprocurement.api 0.3\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2014-11-24 18:25+0200\n"
-"PO-Revision-Date: 2014-11-25 15:23+0300\n"
+"PO-Revision-Date: 2014-12-02 10:33+0300\n"
 "Last-Translator: \n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
@@ -221,12 +221,6 @@ msgid ""
 msgstr ""
 "|ocdsDescription| Дата або період, коли очікується визначення переможця."
 
-#: ../../source/standard/tender.rst:129
-msgid ""
-"'enquiries', 'tendering', 'auction', 'qualification', 'awarded', 'contract-"
-"signed', 'paused'"
-msgstr ""
-
 #: ../../source/standard/tender.rst:131
 msgid "Status of the Tender."
 msgstr "Статус Закупівлі."
@@ -246,3 +240,11 @@ msgstr "Аукціон"
 #: ../../source/standard/tender.rst:18
 msgid "tender code (in procuring organization management system)"
 msgstr "код закупівлі (у системі управління організації-замовника)"
+
+#: ../../source/standard/tender.rst:129
+msgid ""
+"'active.enquiries', 'active.tendering', 'active.auction', 'active."
+"qualification', 'active.awarded', 'unsuccessful', 'complete', 'cancelled'"
+msgstr ""
+"'active.enquiries', 'active.tendering', 'active.auction', 'active."
+"qualification', 'active.awarded', 'unsuccessful', 'complete', 'cancelled'"
