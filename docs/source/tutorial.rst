@@ -164,7 +164,7 @@ And individual answer:
 Registering bid
 ---------------
 
-When ``Tender.tenderingPeriod.startDate`` comes Tender switches to `tendering` status that allows registration of bids.
+When ``Tender.tenderingPeriod.startDate`` comes Tender switches to `active.tendering` status that allows registration of bids.
 
 Bidder can register a bid:
 
