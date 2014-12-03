@@ -32,6 +32,7 @@ Contents:
    procuring
    bidding
    qualification
+   complaints
    reference
 
 Indices and tables
