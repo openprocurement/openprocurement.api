@@ -189,6 +189,24 @@ For best effect (biggest economy) Tender should have multiple bidders registered
 
 .. index:: Awarding, Qualification
 
+Auction
+-------
+
+After auction is scheduled anybody can visit it to watch. The auction can be reached at `Tender.auctionUrl`:
+
+.. include:: tutorial/auction-url.http
+   :code:
+
+And bidders can find out their participation URLs via their bids:
+
+.. include:: tutorial/bidder-participation-url.http
+   :code:
+
+See the `Bid.participationUrl` in the response. The similar, but different, url can be retrieved for the other participants:
+
+.. include:: tutorial/bidder2-participation-url.http
+   :code:
+
 Confirming qualification
 ------------------------
 
