@@ -70,9 +70,16 @@ class TenderComplaintResource(object):
             return
         complaint_data = filter_data(self.request.validated['data'])
         if complaint_data:
+            if complaint_data.get('status', '') == 'cancelled':
+                self.request.errors.add('body', 'data', 'Can\'t cancel complaint')
+                self.request.errors.status = 403
+                return
             src = tender.serialize("plain")
             complaint.import_data(apply_data_patch(complaint.serialize(), complaint_data))
             if complaint.status == 'satisfied' and tender.status != 'active.enquiries':
+                for i in self.request.validated['complaints']:
+                    if i.status == 'pending':
+                        i.status = 'cancelled'
                 tender.status = 'cancelled'
             elif complaint.status in ['rejected', 'invalid'] and tender.status == 'active.awarded':
                 accepted_complaints = [

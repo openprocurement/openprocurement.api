@@ -117,6 +117,11 @@ class TenderComplaintResourceTest(BaseTenderWebTest):
         self.assertEqual(response.status, '200 OK')
         self.assertEqual(response.content_type, 'application/json')
 
+        response = self.app.patch_json('/tenders/{}/complaints/{}'.format(self.tender_id, complaint['id']), {"data": {"status": "cancelled"}}, status=403)
+        self.assertEqual(response.status, '403 Forbidden')
+        self.assertEqual(response.content_type, 'application/json')
+        self.assertEqual(response.json['errors'][0]["description"], "Can't cancel complaint")
+
         response = self.app.patch_json('/tenders/{}/complaints/{}'.format(self.tender_id, complaint['id']), {"data": {"status": "invalid", "resolution": "resolution text"}})
         self.assertEqual(response.status, '200 OK')
         self.assertEqual(response.content_type, 'application/json')
