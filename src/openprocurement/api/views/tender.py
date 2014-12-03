@@ -364,7 +364,7 @@ class TenderResource(object):
         """Tender Edit (full)"""
         tender = self.request.validated['tender']
         if tender.status in ['complete', 'unsuccessful', 'cancelled']:
-            self.request.errors.add('body', 'data', 'Can\'t change tender in current status')
+            self.request.errors.add('body', 'data', 'Can\'t update tender in current status')
             self.request.errors.status = 403
             return
         src = tender.serialize("plain")
@@ -424,7 +424,7 @@ class TenderResource(object):
         """
         tender = self.request.validated['tender']
         if tender.status in ['complete', 'unsuccessful', 'cancelled']:
-            self.request.errors.add('body', 'data', 'Can\'t change tender in current status')
+            self.request.errors.add('body', 'data', 'Can\'t update tender in current status')
             self.request.errors.status = 403
             return
         src = tender.serialize("plain")

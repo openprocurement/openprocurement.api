@@ -286,46 +286,38 @@ class TenderAwardResource(object):
         """
         tender = self.request.validated['tender']
         if tender.status != 'active.qualification':
-            self.request.errors.add('body', 'data', 'Can\'t change award in current tender status')
+            self.request.errors.add('body', 'data', 'Can\'t update award in current tender status')
             self.request.errors.status = 403
             return
         award = self.request.validated['award']
+        if award.status != 'pending':
+            self.request.errors.add('body', 'data', 'Can\'t update award in current status')
+            self.request.errors.status = 403
+            return
         award_data = filter_data(self.request.validated['data'])
         if award_data:
             src = tender.serialize("plain")
-            last_award_status = award.status
             award.import_data(apply_data_patch(award.serialize(), award_data))
-            current_award_status = award.status
-            if last_award_status == current_award_status:
-                pass
-            elif last_award_status == 'pending' and current_award_status == 'active':
+            if award.status == 'active':
                 tender.awardPeriod.endDate = get_now()
                 tender.status = 'active.awarded'
-            elif last_award_status == 'pending' and current_award_status == 'unsuccessful':
+            elif award.status == 'unsuccessful':
                 awards = self.request.validated['awards']
-                canceled_awards = [i for i in awards if i.status == 'cancelled']
-                if canceled_awards:
-                    canceled_awards[0].status = 'pending'
+                unsuccessful_awards = [i.bid_id for i in awards if i.status == 'unsuccessful']
+                bids = [i for i in sorted(tender.bids, key=lambda i: (i.value.amount, i.date)) if i.id not in unsuccessful_awards]
+                if bids:
+                    bid = bids[0].serialize()
+                    award_data = {
+                        'bid_id': bid['id'],
+                        'status': 'pending',
+                        'value': bid['value'],
+                        'suppliers': bid['tenderers'],
+                    }
+                    award = Award(award_data)
+                    tender.awards.append(award)
+                    self.request.response.headers['Location'] = self.request.route_url('Tender Awards', tender_id=tender.id, id=award['id'])
                 else:
-                    available_awards = [i.bid_id for i in awards]
-                    bids = [i for i in sorted(tender.bids, key=lambda i: (i.value.amount, i.date)) if i.id not in available_awards]
-                    if bids:
-                        bid = bids[0].serialize()
-                        award_data = {
-                            'bid_id': bid['id'],
-                            'status': 'pending',
-                            'value': bid['value'],
-                            'suppliers': bid['tenderers'],
-                        }
-                        award = Award(award_data)
-                        tender.awards.append(award)
-                        self.request.response.headers['Location'] = self.request.route_url('Tender Awards', tender_id=tender.id, id=award['id'])
-                    else:
-                        tender.awardPeriod.endDate = get_now()
-                        tender.status = 'active.awarded'
-            else:
-                self.request.errors.add('body', 'data', 'Can\'t change award in current status')
-                self.request.errors.status = 403
-                return
+                    tender.awardPeriod.endDate = get_now()
+                    tender.status = 'active.awarded'
             save_tender(tender, src, self.request)
         return {'data': award.serialize("view")}

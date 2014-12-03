@@ -287,7 +287,7 @@ class TenderResourceTest(BaseWebTest):
             tender['id']), {'data': tender}, status=403)
         self.assertEqual(response.status, '403 Forbidden')
         self.assertEqual(response.content_type, 'application/json')
-        self.assertEqual(response.json['errors'][0]["description"], "Can't change tender in current status")
+        self.assertEqual(response.json['errors'][0]["description"], "Can't update tender in current status")
 
     def test_patch_tender(self):
         response = self.app.get('/tenders')
@@ -356,7 +356,7 @@ class TenderResourceTest(BaseWebTest):
         response = self.app.patch_json('/tenders/{}'.format(tender['id']), {'data': {'status': 'active.auction'}}, status=403)
         self.assertEqual(response.status, '403 Forbidden')
         self.assertEqual(response.content_type, 'application/json')
-        self.assertEqual(response.json['errors'][0]["description"], "Can't change tender in current status")
+        self.assertEqual(response.json['errors'][0]["description"], "Can't update tender in current status")
 
     def test_dateModified_tender(self):
         response = self.app.get('/tenders')

@@ -239,7 +239,7 @@ class TenderBidResource(object):
         """
         tender = self.request.validated['tender']
         if tender.status != 'active.tendering':
-            self.request.errors.add('body', 'data', 'Can\'t change bid in current tender status')
+            self.request.errors.add('body', 'data', 'Can\'t update bid in current tender status')
             self.request.errors.status = 403
             return
         bid = self.request.validated['bid']

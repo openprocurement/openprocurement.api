@@ -164,7 +164,7 @@ class TenderBidderResourceTest(BaseTenderWebTest):
         response = self.app.patch_json('/tenders/{}/bids/{}'.format(self.tender_id, bidder['id']), {"data": {"value": {"amount": 600}}}, status=403)
         self.assertEqual(response.status, '403 Forbidden')
         self.assertEqual(response.content_type, 'application/json')
-        self.assertEqual(response.json['errors'][0]["description"], "Can't change bid in current tender status")
+        self.assertEqual(response.json['errors'][0]["description"], "Can't update bid in current tender status")
 
     def test_get_tender_bidder(self):
         response = self.app.post_json('/tenders/{}/bids'.format(
