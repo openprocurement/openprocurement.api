@@ -3,7 +3,6 @@ from cornice.resource import resource, view
 from openprocurement.api.models import Complaint, STAND_STILL_TIME, get_now
 from openprocurement.api.utils import (
     apply_data_patch,
-    filter_data,
     save_tender,
 )
 from openprocurement.api.validation import (
@@ -31,7 +30,7 @@ class TenderComplaintResource(object):
             self.request.errors.add('body', 'data', 'Can\'t add complaint in current tender status')
             self.request.errors.status = 403
             return
-        complaint_data = filter_data(self.request.validated['data'], fields=['id', 'date', 'status'])
+        complaint_data = self.request.validated['data']
         complaint = Complaint(complaint_data)
         src = tender.serialize("plain")
         tender.complaints.append(complaint)
@@ -66,7 +65,7 @@ class TenderComplaintResource(object):
             self.request.errors.add('body', 'data', 'Can\'t update complaint in current status')
             self.request.errors.status = 403
             return
-        complaint_data = filter_data(self.request.validated['data'])
+        complaint_data = self.request.validated['data']
         if complaint_data:
             if complaint_data.get('status', '') == 'cancelled':
                 self.request.errors.add('body', 'data', 'Can\'t cancel complaint')

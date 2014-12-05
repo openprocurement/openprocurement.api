@@ -2,7 +2,6 @@
 from cornice.resource import resource, view
 from openprocurement.api.models import Document
 from openprocurement.api.utils import (
-    filter_data,
     generate_id,
     get_file,
     save_tender,
@@ -116,7 +115,7 @@ class TenderDocumentResource(object):
             self.request.errors.add('body', 'data', 'Can\'t update document in current tender status')
             self.request.errors.status = 403
             return
-        document_data = filter_data(self.request.validated['data'])
+        document_data = self.request.validated['data']
         if document_data:
             src = tender.serialize("plain")
             document.import_data(document_data)

@@ -3,7 +3,6 @@ from cornice.resource import resource, view
 from openprocurement.api.models import Question
 from openprocurement.api.utils import (
     apply_data_patch,
-    filter_data,
     save_tender,
 )
 from openprocurement.api.validation import (
@@ -27,7 +26,7 @@ class TenderQuestionResource(object):
         """Post a question
         """
         tender = self.request.validated['tender']
-        question_data = filter_data(self.request.validated['data'])
+        question_data = self.request.validated['data']
         question = Question(question_data)
         src = tender.serialize("plain")
         tender.questions.append(question)
@@ -54,7 +53,7 @@ class TenderQuestionResource(object):
         """
         tender = self.request.validated['tender']
         question = self.request.validated['question']
-        question_data = filter_data(self.request.validated['data'])
+        question_data = self.request.validated['data']
         if question_data:
             src = tender.serialize("plain")
             question.import_data(apply_data_patch(question.serialize(), question_data))

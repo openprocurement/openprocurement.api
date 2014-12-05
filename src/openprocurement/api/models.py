@@ -307,7 +307,7 @@ class Award(Model):
     description = StringType()  # Award description
     description_en = StringType()
     description_ru = StringType()
-    status = StringType(required=True, choices=['pending', 'unsuccessful', 'active', 'cancelled'])
+    status = StringType(required=True, choices=['pending', 'unsuccessful', 'active', 'cancelled'], default='pending')
     date = IsoDateTimeType(default=get_now)
     value = ModelType(Value)
     suppliers = ListType(ModelType(Organization), default=list())

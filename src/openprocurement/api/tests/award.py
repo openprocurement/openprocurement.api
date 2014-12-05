@@ -107,11 +107,10 @@ class TenderAwardResourceTest(BaseTenderWebTest):
         self.assertEqual(response.content_type, 'application/json')
         self.assertEqual(response.json['status'], 'error')
         self.assertEqual(response.json['errors'], [
-            {u'description': [u'This field is required.'], u'location': u'body', u'name': u'status'},
             {u'description': [u'name'], u'location': u'body', u'name': u'suppliers'}
         ])
 
-        response = self.app.post_json(request_path, {'data': {'status': 'pending', 'suppliers': [
+        response = self.app.post_json(request_path, {'data': {'suppliers': [
                                       {'name': 'name', 'identifier': {'uri': 'invalid_value'}}]}}, status=422)
         self.assertEqual(response.status, '422 Unprocessable Entity')
         self.assertEqual(response.content_type, 'application/json')
@@ -122,7 +121,7 @@ class TenderAwardResourceTest(BaseTenderWebTest):
         ])
 
         response = self.app.post_json('/tenders/some_id/awards', {'data': {
-                                      'status': 'pending', 'suppliers': [{'identifier': {'id': 0}, 'name': 'Name'}]}}, status=404)
+                                      'suppliers': [{'identifier': {'id': 0}, 'name': 'Name'}]}}, status=404)
         self.assertEqual(response.status, '404 Not Found')
         self.assertEqual(response.content_type, 'application/json')
         self.assertEqual(response.json['status'], 'error')

@@ -40,7 +40,6 @@ def set_renderer(event):
 
 
 def main(global_config, **settings):
-    auth_file = settings.get('auth.file')
     config = Configurator(
         settings=settings,
         root_factory=factory,

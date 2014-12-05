@@ -15,14 +15,6 @@ def generate_tender_id(tid):
     return "UA-" + tid
 
 
-def filter_data(data, fields=['id', 'doc_id', 'date', 'dateModified', 'url', 'owner_token']):
-    result = data.copy()
-    for i in fields:
-        if i in result:
-            del result[i]
-    return result
-
-
 def upload_file(tender, document, key, in_file, request):
     conn = getattr(request.registry, 's3_connection', None)
     if conn:

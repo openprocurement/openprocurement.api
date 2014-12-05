@@ -5,7 +5,6 @@ from openprocurement.api.design import tenders_by_dateModified_view
 from openprocurement.api.models import Tender, get_now
 from openprocurement.api.utils import (
     apply_data_patch,
-    filter_data,
     generate_id,
     generate_tender_id,
     save_tender,
@@ -244,7 +243,7 @@ class TenderResource(object):
             }
 
         """
-        tender_data = filter_data(self.request.validated['data'])
+        tender_data = self.request.validated['data']
         tender_id = generate_id()
         tender_data['doc_id'] = tender_id
         tender_data['tenderID'] = generate_tender_id(tender_id)
@@ -367,7 +366,7 @@ class TenderResource(object):
             self.request.errors.status = 403
             return
         src = tender.serialize("plain")
-        tender_data = filter_data(self.request.validated['data'])
+        tender_data = self.request.validated['data']
         tender.import_data(tender_data)
         save_tender(tender, src, self.request)
         return {'data': tender.serialize(tender.status)}
@@ -427,7 +426,7 @@ class TenderResource(object):
             self.request.errors.status = 403
             return
         src = tender.serialize("plain")
-        tender_data = filter_data(self.request.validated['data'])
+        tender_data = self.request.validated['data']
         if tender_data:
             tender.import_data(apply_data_patch(src, tender_data))
             save_tender(tender, src, self.request)

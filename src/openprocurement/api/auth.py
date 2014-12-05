@@ -24,7 +24,6 @@ class AuthenticationPolicy(BasicAuthAuthenticationPolicy):
             return token
 
     def check(self, user, group, request):
-        res = ['g:{}'.format(group)]
         token = request.params.get('acc_token')
         if not token:
             token = request.headers.get('X-Access-Token')

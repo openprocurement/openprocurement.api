@@ -3,7 +3,6 @@ from cornice.resource import resource, view
 from openprocurement.api.models import Award, get_now
 from openprocurement.api.utils import (
     apply_data_patch,
-    filter_data,
     save_tender,
 )
 from openprocurement.api.validation import (
@@ -292,7 +291,7 @@ class TenderAwardResource(object):
             self.request.errors.add('body', 'data', 'Can\'t update award in current status')
             self.request.errors.status = 403
             return
-        award_data = filter_data(self.request.validated['data'])
+        award_data = self.request.validated['data']
         if award_data:
             src = tender.serialize("plain")
             award.import_data(apply_data_patch(award.serialize(), award_data))

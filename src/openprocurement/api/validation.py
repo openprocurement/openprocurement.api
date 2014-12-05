@@ -3,6 +3,12 @@ from openprocurement.api.models import Tender, Bid, Award, Document, Question, C
 from schematics.exceptions import ModelValidationError, ModelConversionError
 
 
+def filter_data(data, blacklist=[], whitelist=None):
+    blacklist += ['id', 'doc_id', 'date', 'dateModified', 'url', 'owner_token']
+    filter_func = lambda i: i in whitelist if whitelist else i not in blacklist
+    return dict([(i, j) for i, j in data.items() if filter_func(i)])
+
+
 def validate_data(request, model, partial=False):
     try:
         json = request.json_body
@@ -21,7 +27,10 @@ def validate_data(request, model, partial=False):
         for i in e.message:
             request.errors.add('body', i, e.message[i])
         request.errors.status = 422
-    request.validated['data'] = data
+    if partial:
+        request.validated['data'] = filter_data(data)
+    else:
+        request.validated['data'] = filter_data(data, blacklist=['status'])
     return data
 
 

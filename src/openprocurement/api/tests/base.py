@@ -4,11 +4,6 @@ import webtest
 import os
 
 from openprocurement.api import VERSION
-from pyramid.security import (
-    Everyone,
-    Allow,
-    ALL_PERMISSIONS,
-)
 
 
 test_tender_data = {
@@ -110,6 +105,8 @@ class BaseTenderWebTest(BaseWebTest):
         response = self.app.post_json('/tenders', {'data': self.initial_data})
         tender = response.json['data']
         self.tender_id = tender['id']
+        if 'status' in self.initial_data:
+            self.set_status(self.initial_data['status'])
 
     def tearDown(self):
         del self.db[self.tender_id]

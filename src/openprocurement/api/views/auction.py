@@ -3,7 +3,6 @@ from cornice.service import Service
 from openprocurement.api.models import Award, get_now
 from openprocurement.api.utils import (
     apply_data_patch,
-    filter_data,
     save_tender,
 )
 from openprocurement.api.validation import (
@@ -148,7 +147,7 @@ def patch_auction(request):
 
     """
     tender = request.validated['tender']
-    auction_data = filter_data(request.validated['data'])
+    auction_data = request.validated['data']
     if auction_data:
         now = get_now().isoformat()
         bids = auction_data.get('bids', [])

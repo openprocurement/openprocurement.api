@@ -3,7 +3,6 @@ from cornice.resource import resource, view
 from openprocurement.api.models import Bid
 from openprocurement.api.utils import (
     apply_data_patch,
-    filter_data,
     save_tender,
 )
 from openprocurement.api.validation import (
@@ -109,7 +108,7 @@ class TenderBidResource(object):
             self.request.errors.add('body', 'data', 'Can\'t add bid in current tender status')
             self.request.errors.status = 403
             return
-        bid_data = filter_data(self.request.validated['data'])
+        bid_data = self.request.validated['data']
         bid = Bid(bid_data)
         src = tender.serialize("plain")
         tender.bids.append(bid)
@@ -241,7 +240,7 @@ class TenderBidResource(object):
             self.request.errors.status = 403
             return
         bid = self.request.validated['bid']
-        bid_data = filter_data(self.request.validated['data'])
+        bid_data = self.request.validated['data']
         if bid_data:
             src = tender.serialize("plain")
             bid.import_data(apply_data_patch(bid.serialize(), bid_data))
