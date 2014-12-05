@@ -12,14 +12,12 @@ from openprocurement.api.validation import (
     validate_file_update,
     validate_file_upload,
     validate_patch_document_data,
-    validate_tender_bid_document_exists,
-    validate_tender_bid_exists_by_bid_id,
 )
 
 
 @resource(name='Tender Bid Documents',
           collection_path='/tenders/{tender_id}/bids/{bid_id}/documents',
-          path='/tenders/{tender_id}/bids/{bid_id}/documents/{id}',
+          path='/tenders/{tender_id}/bids/{bid_id}/documents/{document_id}',
           description="Tender bidder documents")
 class TenderBidDocumentResource(object):
 
@@ -27,7 +25,7 @@ class TenderBidDocumentResource(object):
         self.request = request
         self.db = request.registry.db
 
-    @view(renderer='json', validators=(validate_tender_bid_exists_by_bid_id,))
+    @view(renderer='json', permission='view_tender')
     def collection_get(self):
         """Tender Bid Documents List"""
         bid = self.request.validated['bid']
@@ -40,7 +38,7 @@ class TenderBidDocumentResource(object):
             ]).values(), key=lambda i: i['dateModified'])
         return {'data': collection_data}
 
-    @view(renderer='json', validators=(validate_file_upload, validate_tender_bid_exists_by_bid_id,))
+    @view(renderer='json', validators=(validate_file_upload,), permission='view_tender')
     def collection_post(self):
         """Tender Bid Document Upload
         """
@@ -56,15 +54,15 @@ class TenderBidDocumentResource(object):
         document.title = data.filename
         document.format = data.type
         key = generate_id()
-        document.url = self.request.route_url('Tender Bid Documents', tender_id=tender.id, bid_id=self.request.validated['bid_id'], id=document.id, _query={'download': key})
+        document.url = self.request.route_url('Tender Bid Documents', tender_id=tender.id, bid_id=self.request.validated['bid_id'], document_id=document.id, _query={'download': key})
         self.request.validated['bid'].documents.append(document)
         upload_file(tender, document, key, data.file, self.request)
         save_tender(tender, src, self.request)
         self.request.response.status = 201
-        self.request.response.headers['Location'] = self.request.route_url('Tender Bid Documents', tender_id=tender.id, bid_id=self.request.validated['bid_id'], id=document.id)
+        self.request.response.headers['Location'] = self.request.route_url('Tender Bid Documents', tender_id=tender.id, bid_id=self.request.validated['bid_id'], document_id=document.id)
         return {'data': document.serialize("view")}
 
-    @view(renderer='json', validators=(validate_tender_bid_document_exists,))
+    @view(renderer='json', permission='view_tender')
     def get(self):
         """Tender Bid Document Read"""
         document = self.request.validated['document']
@@ -79,7 +77,7 @@ class TenderBidDocumentResource(object):
         ]
         return {'data': document_data}
 
-    @view(renderer='json', validators=(validate_file_update, validate_tender_bid_document_exists,))
+    @view(renderer='json', validators=(validate_file_update,), permission='view_tender')
     def put(self):
         """Tender Bid Document Update"""
         tender = self.request.validated['tender']
@@ -99,18 +97,18 @@ class TenderBidDocumentResource(object):
             content_type = self.request.content_type
             in_file = self.request.body_file
         document = Document()
-        document.id = self.request.matchdict['id']
+        document.id = self.request.validated['id']
         document.title = filename
         document.format = content_type
         document.datePublished = first_document.datePublished
         key = generate_id()
-        document.url = self.request.route_url('Tender Bid Documents', tender_id=tender.id, bid_id=self.request.validated['bid_id'], id=document.id, _query={'download': key})
+        document.url = self.request.route_url('Tender Bid Documents', tender_id=tender.id, bid_id=self.request.validated['bid_id'], document_id=document.id, _query={'download': key})
         self.request.validated['bid'].documents.append(document)
         upload_file(tender, document, key, in_file, self.request)
         save_tender(tender, src, self.request)
         return {'data': document.serialize("view")}
 
-    @view(renderer='json', validators=(validate_patch_document_data, validate_tender_bid_document_exists,))
+    @view(renderer='json', validators=(validate_patch_document_data,), permission='view_tender')
     def patch(self):
         """Tender Bid Document Update"""
         tender = self.request.validated['tender']

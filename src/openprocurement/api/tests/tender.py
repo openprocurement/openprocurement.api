@@ -196,7 +196,7 @@ class TenderResourceTest(BaseWebTest):
         self.assertEqual(response.status, '201 Created')
         self.assertEqual(response.content_type, 'application/json')
         tender = response.json['data']
-        self.assertEqual(set(tender), set([u'id', u'dateModified', u'tenderID', u'status', u'enquiryPeriod']))
+        self.assertEqual(set(tender), set([u'id', u'dateModified', u'tenderID', u'status', u'enquiryPeriod', u'owner']))
         self.assertNotEqual(data['id'], tender['id'])
         self.assertNotEqual(data['doc_id'], tender['id'])
         self.assertNotEqual(data['tenderID'], tender['tenderID'])
@@ -211,7 +211,7 @@ class TenderResourceTest(BaseWebTest):
         self.assertEqual(response.content_type, 'application/json')
         tender = response.json['data']
         self.assertEqual(set(tender) - set(test_tender_data), set(
-            [u'id', u'dateModified', u'tenderID', u'status']))
+            [u'id', u'dateModified', u'tenderID', u'status', u'owner']))
         self.assertTrue(tender['id'] in response.headers['Location'])
 
         response = self.app.get('/tenders/{}'.format(tender['id']))
@@ -397,7 +397,7 @@ class TenderResourceTest(BaseWebTest):
         self.assertEqual(response.content_type, 'application/json')
         self.assertEqual(response.json['status'], 'error')
         self.assertEqual(response.json['errors'], [
-            {u'description': u'Not Found', u'location': u'url', u'name': u'id'}
+            {u'description': u'Not Found', u'location': u'url', u'name': u'tender_id'}
         ])
 
         response = self.app.put_json(
@@ -406,7 +406,7 @@ class TenderResourceTest(BaseWebTest):
         self.assertEqual(response.content_type, 'application/json')
         self.assertEqual(response.json['status'], 'error')
         self.assertEqual(response.json['errors'], [
-            {u'description': u'Not Found', u'location': u'url', u'name': u'id'}
+            {u'description': u'Not Found', u'location': u'url', u'name': u'tender_id'}
         ])
 
         response = self.app.patch_json(
@@ -415,7 +415,7 @@ class TenderResourceTest(BaseWebTest):
         self.assertEqual(response.content_type, 'application/json')
         self.assertEqual(response.json['status'], 'error')
         self.assertEqual(response.json['errors'], [
-            {u'description': u'Not Found', u'location': u'url', u'name': u'id'}
+            {u'description': u'Not Found', u'location': u'url', u'name': u'tender_id'}
         ])
 
 

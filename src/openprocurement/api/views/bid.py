@@ -9,14 +9,12 @@ from openprocurement.api.utils import (
 from openprocurement.api.validation import (
     validate_bid_data,
     validate_patch_bid_data,
-    validate_tender_bid_exists,
-    validate_tender_exists_by_tender_id,
 )
 
 
 @resource(name='Tender Bids',
           collection_path='/tenders/{tender_id}/bids',
-          path='/tenders/{tender_id}/bids/{id}',
+          path='/tenders/{tender_id}/bids/{bid_id}',
           description="Tender bids")
 class TenderBidResource(object):
 
@@ -24,7 +22,7 @@ class TenderBidResource(object):
         self.request = request
         self.db = request.registry.db
 
-    @view(content_type="application/json", validators=(validate_bid_data, validate_tender_exists_by_tender_id), renderer='json')
+    @view(content_type="application/json", permission='view_tender', validators=(validate_bid_data,), renderer='json')
     def collection_post(self):
         """Registration of new bid proposal
 
@@ -117,10 +115,10 @@ class TenderBidResource(object):
         tender.bids.append(bid)
         save_tender(tender, src, self.request)
         self.request.response.status = 201
-        self.request.response.headers['Location'] = self.request.route_url('Tender Bids', tender_id=tender.id, id=bid['id'])
+        self.request.response.headers['Location'] = self.request.route_url('Tender Bids', tender_id=tender.id, bid_id=bid['id'])
         return {'data': bid.serialize("view")}
 
-    @view(renderer='json', validators=(validate_tender_exists_by_tender_id,))
+    @view(renderer='json', permission='view_tender')
     def collection_get(self):
         """Bids Listing
 
@@ -160,7 +158,7 @@ class TenderBidResource(object):
             return {'data': []}
         return {'data': [i.serialize(tender.status) for i in tender.bids]}
 
-    @view(renderer='json', validators=(validate_tender_bid_exists,))
+    @view(renderer='json', permission='view_tender')
     def get(self):
         """Retrieving the proposal
 
@@ -199,7 +197,7 @@ class TenderBidResource(object):
             bid_data['participationUrl'] = 'http://auction-sandbox.openprocurement.org/tenders/{}?bidder_id={}'.format(tender.id, self.request.validated['id'])
         return {'data': bid_data}
 
-    @view(content_type="application/json", validators=(validate_patch_bid_data, validate_tender_bid_exists), renderer='json')
+    @view(content_type="application/json", permission='view_tender', validators=(validate_patch_bid_data,), renderer='json')
     def patch(self):
         """Update of proposal
 
@@ -250,7 +248,7 @@ class TenderBidResource(object):
             save_tender(tender, src, self.request)
         return {'data': bid.serialize("view")}
 
-    @view(renderer='json', validators=(validate_tender_bid_exists,))
+    @view(renderer='json', permission='view_tender')
     def delete(self):
         """Cancelling the proposal
 

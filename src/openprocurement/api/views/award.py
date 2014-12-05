@@ -9,14 +9,12 @@ from openprocurement.api.utils import (
 from openprocurement.api.validation import (
     validate_award_data,
     validate_patch_award_data,
-    validate_tender_award_exists,
-    validate_tender_exists_by_tender_id,
 )
 
 
 @resource(name='Tender Awards',
           collection_path='/tenders/{tender_id}/awards',
-          path='/tenders/{tender_id}/awards/{id}',
+          path='/tenders/{tender_id}/awards/{award_id}',
           description="Tender awards")
 class TenderAwardResource(object):
 
@@ -24,7 +22,7 @@ class TenderAwardResource(object):
         self.request = request
         self.db = request.registry.db
 
-    @view(renderer='json', validators=(validate_tender_exists_by_tender_id,))
+    @view(renderer='json', permission='view_tender')
     def collection_get(self):
         """Tender Awards List
 
@@ -79,7 +77,7 @@ class TenderAwardResource(object):
         """
         return {'data': [i.serialize("view") for i in self.request.validated['tender'].awards]}
 
-    @view(content_type="application/json", validators=(validate_award_data, validate_tender_exists_by_tender_id), renderer='json')
+    @view(content_type="application/json", permission='edit_tender', validators=(validate_award_data,), renderer='json')
     def collection_post(self):
         """Accept or reject bidder application
 
@@ -171,10 +169,10 @@ class TenderAwardResource(object):
         tender.awards.append(award)
         save_tender(tender, src, self.request)
         self.request.response.status = 201
-        self.request.response.headers['Location'] = self.request.route_url('Tender Awards', tender_id=tender.id, id=award['id'])
+        self.request.response.headers['Location'] = self.request.route_url('Tender Awards', tender_id=tender.id, award_id=award['id'])
         return {'data': award.serialize("view")}
 
-    @view(renderer='json', validators=(validate_tender_award_exists,))
+    @view(renderer='json', permission='view_tender')
     def get(self):
         """Retrieving the award
 
@@ -226,7 +224,7 @@ class TenderAwardResource(object):
         """
         return {'data': self.request.validated['award'].serialize("view")}
 
-    @view(content_type="application/json", validators=(validate_patch_award_data, validate_tender_award_exists), renderer='json')
+    @view(content_type="application/json", permission='edit_tender', validators=(validate_patch_award_data,), renderer='json')
     def patch(self):
         """Update of award
 
@@ -315,7 +313,7 @@ class TenderAwardResource(object):
                     }
                     award = Award(award_data)
                     tender.awards.append(award)
-                    self.request.response.headers['Location'] = self.request.route_url('Tender Awards', tender_id=tender.id, id=award['id'])
+                    self.request.response.headers['Location'] = self.request.route_url('Tender Awards', tender_id=tender.id, award_id=award['id'])
                 else:
                     tender.awardPeriod.endDate = get_now()
                     tender.status = 'active.awarded'

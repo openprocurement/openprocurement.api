@@ -8,14 +8,13 @@ from openprocurement.api.utils import (
 )
 from openprocurement.api.validation import (
     validate_tender_auction_data,
-    validate_tender_exists_by_tender_id,
 )
 
 
 auction = Service(name='Tender Auction', path='/tenders/{tender_id}/auction', renderer='json')
 
 
-@auction.get(renderer='json', validators=(validate_tender_exists_by_tender_id,))
+@auction.get(renderer='json', permission='auction')
 def get_auction(request):
     """Get auction info.
 
@@ -76,7 +75,7 @@ def get_auction(request):
     return {'data': auction_info}
 
 
-@auction.patch(content_type="application/json", validators=(validate_tender_auction_data), renderer='json')
+@auction.patch(content_type="application/json", permission='auction', validators=(validate_tender_auction_data), renderer='json')
 def patch_auction(request):
     """Report auction results.
 

@@ -9,14 +9,12 @@ from openprocurement.api.utils import (
 from openprocurement.api.validation import (
     validate_complaint_data,
     validate_patch_complaint_data,
-    validate_tender_award_complaint_exists,
-    validate_tender_award_exists_by_award_id,
 )
 
 
 @resource(name='Tender Award Complaints',
           collection_path='/tenders/{tender_id}/awards/{award_id}/complaints',
-          path='/tenders/{tender_id}/awards/{award_id}/complaints/{id}',
+          path='/tenders/{tender_id}/awards/{award_id}/complaints/{complaint_id}',
           description="Tender award complaints")
 class TenderAwardComplaintResource(object):
 
@@ -24,7 +22,7 @@ class TenderAwardComplaintResource(object):
         self.request = request
         self.db = request.registry.db
 
-    @view(content_type="application/json", validators=(validate_complaint_data, validate_tender_award_exists_by_award_id), renderer='json')
+    @view(content_type="application/json", permission='view_tender', validators=(validate_complaint_data,), renderer='json')
     def collection_post(self):
         """Post a complaint for award
         """
@@ -39,22 +37,22 @@ class TenderAwardComplaintResource(object):
         self.request.validated['award'].complaints.append(complaint)
         save_tender(tender, src, self.request)
         self.request.response.status = 201
-        self.request.response.headers['Location'] = self.request.route_url('Tender Award Complaints', tender_id=tender.id, award_id=self.request.validated['award_id'], id=complaint['id'])
+        self.request.response.headers['Location'] = self.request.route_url('Tender Award Complaints', tender_id=tender.id, award_id=self.request.validated['award_id'], complaint_id=complaint['id'])
         return {'data': complaint.serialize("view")}
 
-    @view(renderer='json', validators=(validate_tender_award_exists_by_award_id,))
+    @view(renderer='json', permission='view_tender')
     def collection_get(self):
         """List complaints for award
         """
         return {'data': [i.serialize("view") for i in self.request.validated['award'].complaints]}
 
-    @view(renderer='json', validators=(validate_tender_award_complaint_exists,))
+    @view(renderer='json', permission='view_tender')
     def get(self):
         """Retrieving the complaint for award
         """
         return {'data': self.request.validated['complaint'].serialize("view")}
 
-    @view(content_type="application/json", validators=(validate_patch_complaint_data, validate_tender_award_complaint_exists), renderer='json')
+    @view(content_type="application/json", permission='edit_tender', validators=(validate_patch_complaint_data,), renderer='json')
     def patch(self):
         """Post a complaint resolution for award
         """

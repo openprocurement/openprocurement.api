@@ -49,6 +49,7 @@ class TenderAuctionResourceTest(BaseTenderWebTest):
             {u'description': u'Not Found', u'location':
                 u'url', u'name': u'tender_id'}
         ])
+
         response = self.app.patch_json('/tenders/some_id/auction', {'data': {}}, status=404)
         self.assertEqual(response.status, '404 Not Found')
         self.assertEqual(response.content_type, 'application/json')

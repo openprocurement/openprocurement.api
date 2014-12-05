@@ -131,7 +131,7 @@ class TenderQuestionResourceTest(BaseTenderWebTest):
         self.assertEqual(response.json['status'], 'error')
         self.assertEqual(response.json['errors'], [
             {u'description': u'Not Found', u'location':
-                u'url', u'name': u'id'}
+                u'url', u'name': u'question_id'}
         ])
 
         response = self.app.patch_json('/tenders/some_id/questions/some_id', {"data": {"answer": "answer"}}, status=404)
@@ -173,7 +173,7 @@ class TenderQuestionResourceTest(BaseTenderWebTest):
         self.assertEqual(response.json['status'], 'error')
         self.assertEqual(response.json['errors'], [
             {u'description': u'Not Found', u'location':
-                u'url', u'name': u'id'}
+                u'url', u'name': u'question_id'}
         ])
 
         response = self.app.get('/tenders/some_id/questions/some_id', status=404)

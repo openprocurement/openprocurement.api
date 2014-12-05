@@ -6,8 +6,7 @@ gevent.monkey.patch_all()
 import os
 import pkg_resources
 from pyramid.config import Configurator
-# from openprocurement.api.authentication import AuthenticationPolicy
-from pyramid.authentication import BasicAuthAuthenticationPolicy as AuthenticationPolicy
+from openprocurement.api.auth import AuthenticationPolicy
 from pyramid.authorization import ACLAuthorizationPolicy as AuthorizationPolicy
 from pyramid.renderers import JSON, JSONP
 from pyramid.events import NewRequest
@@ -15,6 +14,7 @@ from couchdb import Server
 from openprocurement.api.design import sync_design
 from openprocurement.api.migration import migrate_data
 from boto.s3.connection import S3Connection, Location
+from openprocurement.api.traversal import factory
 
 
 VERSION = int(pkg_resources.get_distribution(__package__).parsed_version[0])
@@ -40,9 +40,13 @@ def set_renderer(event):
 
 
 def main(global_config, **settings):
-    config = Configurator(settings=settings)
-    config.set_authentication_policy(AuthenticationPolicy(None))
-    config.set_authorization_policy(AuthorizationPolicy())
+    auth_file = settings.get('auth.file')
+    config = Configurator(
+        settings=settings,
+        root_factory=factory,
+        authentication_policy=AuthenticationPolicy(settings['auth.file'], __name__),
+        authorization_policy=AuthorizationPolicy(),
+    )
     config.add_renderer('prettyjson', JSON(indent=4))
     config.add_renderer('jsonp', JSONP(param_name='opt_jsonp'))
     config.add_renderer('prettyjsonp', JSONP(indent=4, param_name='opt_jsonp'))

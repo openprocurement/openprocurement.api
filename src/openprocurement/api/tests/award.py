@@ -191,7 +191,7 @@ class TenderAwardResourceTest(BaseTenderWebTest):
         self.assertEqual(response.json['status'], 'error')
         self.assertEqual(response.json['errors'], [
             {u'description': u'Not Found', u'location':
-                u'url', u'name': u'id'}
+                u'url', u'name': u'award_id'}
         ])
 
         response = self.app.patch_json('/tenders/some_id/awards/some_id', {"data": {"value": {"amount": 600}}}, status=404)
@@ -251,7 +251,7 @@ class TenderAwardResourceTest(BaseTenderWebTest):
         self.assertEqual(response.json['status'], 'error')
         self.assertEqual(response.json['errors'], [
             {u'description': u'Not Found', u'location':
-                u'url', u'name': u'id'}
+                u'url', u'name': u'award_id'}
         ])
 
         response = self.app.get('/tenders/some_id/awards/some_id', status=404)
@@ -425,7 +425,7 @@ class TenderAwardComplaintResourceTest(BaseTenderWebTest):
         self.assertEqual(response.json['status'], 'error')
         self.assertEqual(response.json['errors'], [
             {u'description': u'Not Found', u'location':
-                u'url', u'name': u'id'}
+                u'url', u'name': u'complaint_id'}
         ])
 
         response = self.app.patch_json('/tenders/some_id/awards/some_id/complaints/some_id', {"data": {"status": "satisfied", "resolution": "resolution text"}}, status=404)
@@ -482,7 +482,7 @@ class TenderAwardComplaintResourceTest(BaseTenderWebTest):
         self.assertEqual(response.json['status'], 'error')
         self.assertEqual(response.json['errors'], [
             {u'description': u'Not Found', u'location':
-                u'url', u'name': u'id'}
+                u'url', u'name': u'complaint_id'}
         ])
 
         response = self.app.get('/tenders/some_id/awards/some_id/complaints/some_id', status=404)
@@ -631,7 +631,7 @@ class TenderAwardComplaintDocumentResourceTest(BaseTenderWebTest):
         self.assertEqual(response.json['status'], 'error')
         self.assertEqual(response.json['errors'], [
             {u'description': u'Not Found', u'location':
-                u'url', u'name': u'id'}
+                u'url', u'name': u'document_id'}
         ])
 
         response = self.app.put('/tenders/some_id/awards/some_id/complaints/some_id/documents/some_id', status=404,
@@ -670,7 +670,7 @@ class TenderAwardComplaintDocumentResourceTest(BaseTenderWebTest):
         self.assertEqual(response.content_type, 'application/json')
         self.assertEqual(response.json['status'], 'error')
         self.assertEqual(response.json['errors'], [
-            {u'description': u'Not Found', u'location': u'url', u'name': u'id'}
+            {u'description': u'Not Found', u'location': u'url', u'name': u'document_id'}
         ])
 
     def test_create_tender_award_complaint_document(self):
@@ -899,7 +899,7 @@ class TenderAwardDocumentResourceTest(BaseTenderWebTest):
         self.assertEqual(response.json['status'], 'error')
         self.assertEqual(response.json['errors'], [
             {u'description': u'Not Found', u'location':
-                u'url', u'name': u'id'}
+                u'url', u'name': u'document_id'}
         ])
 
         response = self.app.put('/tenders/some_id/awards/some_id/documents/some_id', status=404,
@@ -928,7 +928,7 @@ class TenderAwardDocumentResourceTest(BaseTenderWebTest):
         self.assertEqual(response.content_type, 'application/json')
         self.assertEqual(response.json['status'], 'error')
         self.assertEqual(response.json['errors'], [
-            {u'description': u'Not Found', u'location': u'url', u'name': u'id'}
+            {u'description': u'Not Found', u'location': u'url', u'name': u'document_id'}
         ])
 
     def test_create_tender_award_document(self):

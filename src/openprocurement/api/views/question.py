@@ -9,14 +9,12 @@ from openprocurement.api.utils import (
 from openprocurement.api.validation import (
     validate_question_data,
     validate_patch_question_data,
-    validate_tender_question_exists,
-    validate_tender_exists_by_tender_id,
 )
 
 
 @resource(name='Tender Questions',
           collection_path='/tenders/{tender_id}/questions',
-          path='/tenders/{tender_id}/questions/{id}',
+          path='/tenders/{tender_id}/questions/{question_id}',
           description="Tender questions")
 class TenderQuestionResource(object):
 
@@ -24,7 +22,7 @@ class TenderQuestionResource(object):
         self.request = request
         self.db = request.registry.db
 
-    @view(content_type="application/json", validators=(validate_question_data, validate_tender_exists_by_tender_id), renderer='json')
+    @view(content_type="application/json", validators=(validate_question_data,), permission='view_tender', renderer='json')
     def collection_post(self):
         """Post a question
         """
@@ -35,22 +33,22 @@ class TenderQuestionResource(object):
         tender.questions.append(question)
         save_tender(tender, src, self.request)
         self.request.response.status = 201
-        self.request.response.headers['Location'] = self.request.route_url('Tender Questions', tender_id=tender.id, id=question['id'])
+        self.request.response.headers['Location'] = self.request.route_url('Tender Questions', tender_id=tender.id, question_id=question['id'])
         return {'data': question.serialize("view")}
 
-    @view(renderer='json', validators=(validate_tender_exists_by_tender_id,))
+    @view(renderer='json', permission='view_tender')
     def collection_get(self):
         """List questions
         """
         return {'data': [i.serialize(self.request.validated['tender'].status) for i in self.request.validated['tender'].questions]}
 
-    @view(renderer='json', validators=(validate_tender_question_exists,))
+    @view(renderer='json', permission='view_tender')
     def get(self):
         """Retrieving the question
         """
         return {'data': self.request.validated['question'].serialize(self.request.validated['tender'].status)}
 
-    @view(content_type="application/json", validators=(validate_patch_question_data, validate_tender_question_exists), renderer='json')
+    @view(content_type="application/json", permission='edit_tender', validators=(validate_patch_question_data,), renderer='json')
     def patch(self):
         """Post an Answer
         """
@@ -61,4 +59,4 @@ class TenderQuestionResource(object):
             src = tender.serialize("plain")
             question.import_data(apply_data_patch(question.serialize(), question_data))
             save_tender(tender, src, self.request)
-        return {'data': question.serialize(self.request.validated['tender'].status)}
+        return {'data': question.serialize(tender.status)}

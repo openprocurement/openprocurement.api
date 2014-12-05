@@ -2,6 +2,7 @@
 from couchdb_schematics.document import SchematicsDocument
 from datetime import datetime, timedelta
 from iso8601 import parse_date, ParseError
+from pyramid.security import Allow
 from schematics.exceptions import ConversionError
 from schematics.models import Model
 from schematics.transforms import whitelist, blacklist
@@ -383,6 +384,20 @@ class Tender(SchematicsDocument, Model):
     _attachments = DictType(DictType(BaseType), default=dict())  # couchdb attachments
     dateModified = IsoDateTimeType(default=get_now)
     owner_token = StringType(default=lambda: uuid4().hex)
+    owner = StringType()
+
+    __parent__ = None
+    __name__ = ''
+
+    def __acl__(self):
+        return [
+            (Allow, self.owner, 'view_tender'),
+            (Allow, '{}_{}'.format(self.owner, self.owner_token), 'edit_tender'),
+            (Allow, 'chronograph', 'edit_tender'),
+        ]
+
+    def __repr__(self):
+        return '<%s:%r@%r>' % (type(self).__name__, self.id, self.rev)
 
     @serializable(serialized_name='id')
     def doc_id(self):

@@ -14,13 +14,12 @@ from openprocurement.api.utils import (
 from openprocurement.api.validation import (
     validate_patch_tender_data,
     validate_tender_data,
-    validate_tender_exists,
 )
 
 
 @resource(name='Tender',
           collection_path='/tenders',
-          path='/tenders/{id}',
+          path='/tenders/{tender_id}',
           description="Open Contracting compatible data exchange format. See http://ocds.open-contracting.org/standard/r/master/#tender for more info")
 class TenderResource(object):
 
@@ -28,7 +27,7 @@ class TenderResource(object):
         self.request = request
         self.db = request.registry.db
 
-    @view(renderer='json')
+    @view(renderer='json', permission='view_tenders')
     def collection_get(self):
         """Tenders List
 
@@ -96,7 +95,7 @@ class TenderResource(object):
             }
         }
 
-    @view(content_type="application/json", validators=(validate_tender_data,), renderer='json')
+    @view(content_type="application/json", permission='create_tender', validators=(validate_tender_data,), renderer='json')
     def collection_post(self):
         """This API request is targeted to creating new Tenders by procuring organizations.
 
@@ -257,7 +256,7 @@ class TenderResource(object):
         save_tender(tender, None, self.request)
         self.request.response.status = 201
         self.request.response.headers[
-            'Location'] = self.request.route_url('Tender', id=tender_id)
+            'Location'] = self.request.route_url('Tender', tender_id=tender_id)
         return {
             'data': tender.serialize(tender.status),
             'access': {
@@ -265,7 +264,7 @@ class TenderResource(object):
             }
         }
 
-    @view(renderer='json', validators=(validate_tender_exists,))
+    @view(renderer='json', permission='view_tender')
     def get(self):
         """Tender Read
 
@@ -359,7 +358,7 @@ class TenderResource(object):
             tender_data['auctionUrl'] = 'http://auction-sandbox.openprocurement.org/tenders/{}'.format(tender.id)
         return {'data': tender_data}
 
-    @view(content_type="application/json", validators=(validate_tender_data, validate_tender_exists), renderer='json')
+    @view(content_type="application/json", validators=(validate_tender_data, ), permission='edit_tender', renderer='json')
     def put(self):
         """Tender Edit (full)"""
         tender = self.request.validated['tender']
@@ -373,7 +372,7 @@ class TenderResource(object):
         save_tender(tender, src, self.request)
         return {'data': tender.serialize(tender.status)}
 
-    @view(content_type="application/json", validators=(validate_patch_tender_data, validate_tender_exists), renderer='json')
+    @view(content_type="application/json", validators=(validate_patch_tender_data, ), permission='edit_tender', renderer='json')
     def patch(self):
         """Tender Edit (partial)
 

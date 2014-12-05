@@ -52,7 +52,7 @@ class TenderDocumentResourceTest(BaseTenderWebTest):
         self.assertEqual(response.content_type, 'application/json')
         self.assertEqual(response.json['status'], 'error')
         self.assertEqual(response.json['errors'], [
-            {u'description': u'Not Found', u'location': u'url', u'name': u'id'}
+            {u'description': u'Not Found', u'location': u'url', u'name': u'document_id'}
         ])
 
         response = self.app.get('/tenders/some_id/documents/some_id', status=404)
@@ -70,7 +70,7 @@ class TenderDocumentResourceTest(BaseTenderWebTest):
         self.assertEqual(response.content_type, 'application/json')
         self.assertEqual(response.json['status'], 'error')
         self.assertEqual(response.json['errors'], [
-            {u'description': u'Not Found', u'location': u'url', u'name': u'id'}
+            {u'description': u'Not Found', u'location': u'url', u'name': u'document_id'}
         ])
 
     def test_create_tender_document(self):

@@ -12,14 +12,12 @@ from openprocurement.api.validation import (
     validate_file_update,
     validate_file_upload,
     validate_patch_document_data,
-    validate_tender_document_exists,
-    validate_tender_exists_by_tender_id,
 )
 
 
 @resource(name='Tender Documents',
           collection_path='/tenders/{tender_id}/documents',
-          path='/tenders/{tender_id}/documents/{id}',
+          path='/tenders/{tender_id}/documents/{document_id}',
           description="Tender related binary files (PDFs, etc.)")
 class TenderDocumentResource(object):
 
@@ -27,7 +25,7 @@ class TenderDocumentResource(object):
         self.request = request
         self.db = request.registry.db
 
-    @view(renderer='json', validators=(validate_tender_exists_by_tender_id,))
+    @view(renderer='json', permission='view_tender')
     def collection_get(self):
         """Tender Documents List"""
         tender = self.request.validated['tender']
@@ -40,7 +38,7 @@ class TenderDocumentResource(object):
             ]).values(), key=lambda i: i['dateModified'])
         return {'data': collection_data}
 
-    @view(renderer='json', validators=(validate_file_upload, validate_tender_exists_by_tender_id,))
+    @view(renderer='json', permission='edit_tender', validators=(validate_file_upload,))
     def collection_post(self):
         """Tender Document Upload"""
         tender = self.request.validated['tender']
@@ -55,15 +53,15 @@ class TenderDocumentResource(object):
         document.title = data.filename
         document.format = data.type
         key = generate_id()
-        document.url = self.request.route_url('Tender Documents', tender_id=tender.id, id=document.id, _query={'download': key})
+        document.url = self.request.route_url('Tender Documents', tender_id=tender.id, document_id=document.id, _query={'download': key})
         tender.documents.append(document)
         upload_file(tender, document, key, data.file, self.request)
         save_tender(tender, src, self.request)
         self.request.response.status = 201
-        self.request.response.headers['Location'] = self.request.route_url('Tender Documents', tender_id=tender.id, id=document.id)
+        self.request.response.headers['Location'] = self.request.route_url('Tender Documents', tender_id=tender.id, document_id=document.id)
         return {'data': document.serialize("view")}
 
-    @view(validators=(validate_tender_document_exists,))
+    @view(permission='view_tender')
     def get(self):
         """Tender Document Read"""
         document = self.request.validated['document']
@@ -78,7 +76,7 @@ class TenderDocumentResource(object):
         ]
         return {'data': document_data}
 
-    @view(renderer='json', validators=(validate_file_update, validate_tender_document_exists,))
+    @view(renderer='json', permission='edit_tender', validators=(validate_file_update,))
     def put(self):
         """Tender Document Update"""
         tender = self.request.validated['tender']
@@ -102,14 +100,14 @@ class TenderDocumentResource(object):
         document.format = content_type
         document.datePublished = first_document.datePublished
         key = generate_id()
-        document.url = self.request.route_url('Tender Documents', tender_id=tender.id, id=document.id, _query={'download': key})
+        document.url = self.request.route_url('Tender Documents', tender_id=tender.id, document_id=document.id, _query={'download': key})
         src = tender.serialize("plain")
         tender.documents.append(document)
         upload_file(tender, document, key, in_file, self.request)
         save_tender(tender, src, self.request)
         return {'data': document.serialize("view")}
 
-    @view(renderer='json', validators=(validate_patch_document_data, validate_tender_document_exists,))
+    @view(renderer='json', permission='edit_tender', validators=(validate_patch_document_data,))
     def patch(self):
         """Tender Document Update"""
         tender = self.request.validated['tender']

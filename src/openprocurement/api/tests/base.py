@@ -4,6 +4,11 @@ import webtest
 import os
 
 from openprocurement.api import VERSION
+from pyramid.security import (
+    Everyone,
+    Allow,
+    ALL_PERMISSIONS,
+)
 
 
 test_tender_data = {
@@ -83,6 +88,7 @@ class BaseWebTest(unittest.TestCase):
         self.app = webtest.TestApp(
             "config:tests.ini", relative_to=os.path.dirname(__file__))
         self.app.RequestClass = PrefixedRequestClass
+        self.app.authorization = ('Basic', ('token', ''))
         self.couchdb_server = self.app.app.registry.couchdb_server
         self.db = self.app.app.registry.db
 

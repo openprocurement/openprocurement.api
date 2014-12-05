@@ -4,6 +4,7 @@ from jsonpatch import make_patch, apply_patch
 from openprocurement.api.models import Revision
 from urllib import quote
 from uuid import uuid4
+from pyramid.security import authenticated_userid
 
 
 def generate_id():
@@ -97,6 +98,8 @@ def get_revision_changes(dst, src):
 
 
 def save_tender(tender, src, request):
+    if not tender.owner:
+        tender.owner = authenticated_userid(request)
     if src:
         patch = get_revision_changes(tender.serialize("plain"), src)
         if patch:
