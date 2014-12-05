@@ -21,7 +21,9 @@ class AuthenticationPolicy(BasicAuthAuthenticationPolicy):
         """ The userid parsed from the ``Authorization`` request header."""
         token = self._get_credentials(request)
         if token:
-            return token
+            user = self.users.get(token)
+            if user:
+                return user['name']
 
     def check(self, user, group, request):
         token = request.params.get('acc_token')

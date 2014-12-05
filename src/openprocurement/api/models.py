@@ -394,6 +394,7 @@ class Tender(SchematicsDocument, Model):
         return [
             (Allow, self.owner, 'view_tender'),
             (Allow, '{}_{}'.format(self.owner, self.owner_token), 'edit_tender'),
+            (Allow, 'chronograph', 'view_tender'),
             (Allow, 'chronograph', 'edit_tender'),
         ]
 
