@@ -4,7 +4,7 @@ msgstr ""
 "Project-Id-Version: openprocurement.api 0.1\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2014-10-21 10:42+0300\n"
-"PO-Revision-Date: 2014-12-02 10:23+0300\n"
+"PO-Revision-Date: 2014-12-04 11:00+0300\n"
 "Last-Translator: \n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
@@ -184,11 +184,11 @@ msgstr "І завантажити документ пропозиції:"
 msgid "It is possible to check documents uploaded:"
 msgstr "Можна перевірити завантажений документ:"
 
-#: ../../source/tutorial.rst:193
+#: ../../source/tutorial.rst:211
 msgid "Confirming qualification"
 msgstr "Підтвердження кваліфікації"
 
-#: ../../source/tutorial.rst:195
+#: ../../source/tutorial.rst:213
 msgid "Qualification comission registers its decision via following call:"
 msgstr "Кваліфікаційна комісія реєструє своє рішення через такий виклик:"
 
@@ -207,14 +207,6 @@ msgstr "Можна отримати список запитань:"
 #: ../../source/tutorial.rst:156
 msgid "And individual answer:"
 msgstr "та окрему відповідь:"
-
-#: ../../source/tutorial.rst:167
-msgid ""
-"When ``Tender.tenderingPeriod.startDate`` comes Tender switches to "
-"`tendering` status that allows registration of bids."
-msgstr ""
-"Коли приходить ``Tender.tenderingPeriod.startDate``, Закупівля отримує "
-"статус `tendering`, що дозволяє реєстрацію пропозицій."
 
 #: ../../source/tutorial.rst:184
 msgid ""
@@ -277,13 +269,53 @@ msgstr ""
 "Коли закупівля має статус `active.enquiry`, зацікавлені сторони можуть "
 "задавати питання:"
 
-#: ../../source/tutorial.rst:201
+#: ../../source/tutorial.rst:219
 msgid "Canceling tender"
 msgstr "Відміна закупівлі"
 
-#: ../../source/tutorial.rst:203
+#: ../../source/tutorial.rst:221
 msgid "Tender creator can cancel tender anytime:"
 msgstr "Створювач закупівлі може відмінити її в будь-який момент:"
+
+#: ../../source/tutorial.rst:167
+msgid ""
+"When ``Tender.tenderingPeriod.startDate`` comes Tender switches to `active."
+"tendering` status that allows registration of bids."
+msgstr ""
+"Коли приходить ``Tender.tenderingPeriod.startDate``, Закупівля отримує "
+"статус `active.tendering`, що дозволяє реєстрацію пропозицій."
+
+#: ../../source/tutorial.rst:193
+msgid "Auction"
+msgstr "Аукціон"
+
+#: ../../source/tutorial.rst:195
+msgid ""
+"After auction is scheduled anybody can visit it to watch. The auction can be "
+"reached at `Tender.auctionUrl`:"
+msgstr ""
+"Після того, як аукціон заплановано, будь-хто може його відвідати для "
+"перегляду. Аукціон можна подивитись за допомогою `Tender.auctionUrl`:"
+
+#: ../../source/tutorial.rst:200
+msgid "And bidders can find out their participation URLs via their bids:"
+msgstr ""
+"Учасники можуть дізнатись свої URL-адреси для участі через свої пропозиції:"
+
+#: ../../source/tutorial.rst:205
+msgid ""
+"See the `Bid.participationUrl` in the response. The similar, but different, "
+"url can be retrieved for the other participants:"
+msgstr ""
+"Дивіться на `Bid.participationUrl` у відповіді. Схожу, але іншу, URL-адресу "
+"можна отримати для інших учасників."
+
+#~ msgid ""
+#~ "When ``Tender.tenderingPeriod.startDate`` comes Tender switches to "
+#~ "`tendering` status that allows registration of bids."
+#~ msgstr ""
+#~ "Коли приходить ``Tender.tenderingPeriod.startDate``, Закупівля отримує "
+#~ "статус `tendering`, що дозволяє реєстрацію пропозицій."
 
 #~ msgid ""
 #~ "Success! Now we can see that new object was created. Response code is "

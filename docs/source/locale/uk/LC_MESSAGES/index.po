@@ -32,15 +32,15 @@ msgstr ""
 "через `issue tracker "
 "<https://github.com/openprocurement/openprocurement.api/issues>`_."
 
-#: ../../source/index.rst:38
+#: ../../source/index.rst:39
 msgid "Indices and tables"
 msgstr "Індекси та таблиці"
 
-#: ../../source/index.rst:40
+#: ../../source/index.rst:41
 msgid ":ref:`genindex`"
 msgstr ":ref:`genindex`"
 
-#: ../../source/index.rst:41
+#: ../../source/index.rst:42
 msgid ":ref:`search`"
 msgstr ":ref:`search`"
 
