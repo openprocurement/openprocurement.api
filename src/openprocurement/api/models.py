@@ -119,6 +119,19 @@ class Unit(Model):
     code = StringType(choices=CPV_CODES)
 
 
+class Address(Model):
+    class Options:
+        serialize_when_none = False
+
+    streetAddress = StringType()
+    locality = StringType()
+    region = StringType()
+    postalCode = StringType()
+    countryName = StringType()
+    countryName_en = StringType()
+    countryName_ru = StringType()
+
+
 class Item(Model):
     """A good, service, or work to be contracted."""
     class Options:
@@ -131,6 +144,8 @@ class Item(Model):
     additionalClassifications = ListType(ModelType(Classification), default=list())
     unit = ModelType(Unit)  # Description of the unit which the good comes in e.g. hours, kilograms
     quantity = IntType()  # The number of units required
+    deliveryDate = ModelType(Period)
+    deliveryAddress = ModelType(Address)
 
 
 class Document(Model):
@@ -167,19 +182,6 @@ class Identifier(Model):
     legalName_en = StringType()
     legalName_ru = StringType()
     uri = URLType()  # A URI to identify the organization.
-
-
-class Address(Model):
-    class Options:
-        serialize_when_none = False
-
-    streetAddress = StringType()
-    locality = StringType()
-    region = StringType()
-    postalCode = StringType()
-    countryName = StringType()
-    countryName_en = StringType()
-    countryName_ru = StringType()
 
 
 class ContactPoint(Model):
@@ -374,7 +376,6 @@ class Tender(SchematicsDocument, Model):
     documents = ListType(ModelType(Document), default=list())  # All documents and attachments related to the tender.
     awards = ListType(ModelType(Award), default=list())
     revisions = ListType(ModelType(Revision), default=list())
-    deliveryDate = ModelType(Period)
     auctionPeriod = ModelType(Period)
     minimalStep = ModelType(Value)
     status = StringType(choices=['active.enquiries', 'active.tendering', 'active.auction', 'active.qualification', 'active.awarded', 'complete', 'cancelled', 'unsuccessful'], default='active.enquiries')
