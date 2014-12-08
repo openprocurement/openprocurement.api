@@ -92,6 +92,8 @@ def get_revision_changes(dst, src):
 def save_tender(tender, src, request):
     if not tender.owner:
         tender.owner = authenticated_userid(request)
+    if not tender.owner_token:
+        tender.owner_token = generate_id()
     if src:
         patch = get_revision_changes(tender.serialize("plain"), src)
         if patch:

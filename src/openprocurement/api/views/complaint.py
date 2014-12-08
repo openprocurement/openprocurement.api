@@ -74,14 +74,14 @@ class TenderComplaintResource(object):
             src = tender.serialize("plain")
             complaint.import_data(apply_data_patch(complaint.serialize(), complaint_data))
             if complaint.status == 'satisfied' and tender.status != 'active.enquiries':
-                for i in self.request.validated['complaints']:
-                    if i.status == 'pending':
+                for i in tender.complaints:
+                    if i.status == 'accepted':
                         i.status = 'cancelled'
                 tender.status = 'cancelled'
             elif complaint.status in ['rejected', 'invalid'] and tender.status == 'active.awarded':
                 accepted_complaints = [
                     i
-                    for i in self.request.validated['complaints']
+                    for i in tender.complaints
                     if i.status == 'accepted'
                 ]
                 accepted_awards_complaints = [

@@ -104,7 +104,7 @@ class TenderAwardComplaintResource(object):
             elif complaint.status in ['rejected', 'invalid'] and tender.status == 'active.awarded':
                 accepted_complaints = [
                     i
-                    for i in self.request.validated['complaints']
+                    for i in tender.complaints
                     if i.status == 'accepted'
                 ]
                 accepted_awards_complaints = [

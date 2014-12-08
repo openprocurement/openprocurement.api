@@ -384,7 +384,7 @@ class Tender(SchematicsDocument, Model):
 
     _attachments = DictType(DictType(BaseType), default=dict())  # couchdb attachments
     dateModified = IsoDateTimeType(default=get_now)
-    owner_token = StringType(default=lambda: uuid4().hex)
+    owner_token = StringType()
     owner = StringType()
 
     __parent__ = None
@@ -394,8 +394,6 @@ class Tender(SchematicsDocument, Model):
         return [
             (Allow, self.owner, 'view_tender'),
             (Allow, '{}_{}'.format(self.owner, self.owner_token), 'edit_tender'),
-            (Allow, 'chronograph', 'view_tender'),
-            (Allow, 'chronograph', 'edit_tender'),
         ]
 
     def __repr__(self):
