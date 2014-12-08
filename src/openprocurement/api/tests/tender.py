@@ -429,10 +429,7 @@ class TenderProcessTest(BaseWebTest):
         response = self.app.post_json('/tenders',
                                       {"data": test_tender_data})
         tender_id = response.json['data']['id']
-        # switch to active.tendering
-        self.app.authorization = ('Basic', ('chronograph', ''))
-        response = self.app.patch_json('/tenders/{}'.format(tender_id),
-                                       {'data': {'status': 'active.tendering'}})
+        owner_token = response.json['access']['token']
         # create compaint
         self.app.authorization = ('Basic', ('broker', ''))
         response = self.app.post_json('/tenders/{}/complaints'.format(tender_id),
@@ -441,13 +438,16 @@ class TenderProcessTest(BaseWebTest):
         # create second compaint
         response = self.app.post_json('/tenders/{}/complaints'.format(tender_id),
                                       {'data': {'title': 'invalid conditions', 'description': 'description', 'author': {'identifier': {'id': 0}, 'name': 'Name'}}})
+        # switch to active.tendering
+        self.app.authorization = ('Basic', ('chronograph', ''))
+        response = self.app.patch_json('/tenders/{}'.format(tender_id),
+                                       {'data': {'status': 'active.tendering'}})
         # satisfying tender conditions complaint
         # XXX correct auth
-        self.app.authorization = ('Basic', ('token', ''))
-        response = self.app.patch_json('/tenders/{}/complaints/{}'.format(tender_id, complaint_id),
+        self.app.authorization = ('Basic', ('broker', ''))
+        response = self.app.patch_json('/tenders/{}/complaints/{}?acc_token={}'.format(tender_id, complaint_id, owner_token),
                                        {"data": {"status": "resolved", "resolution": "resolution text"}})
         # check status
-        self.app.authorization = ('Basic', ('broker', ''))
         response = self.app.get('/tenders/{}'.format(tender_id))
         self.assertEqual(response.json['data']['status'], 'cancelled')
 

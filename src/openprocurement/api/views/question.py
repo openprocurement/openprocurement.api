@@ -26,6 +26,10 @@ class TenderQuestionResource(object):
         """Post a question
         """
         tender = self.request.validated['tender']
+        if tender.status != 'active.enquiries':
+            self.request.errors.add('body', 'data', 'Can\'t add question in current tender status')
+            self.request.errors.status = 403
+            return
         question_data = self.request.validated['data']
         question = Question(question_data)
         src = tender.serialize("plain")
@@ -52,6 +56,10 @@ class TenderQuestionResource(object):
         """Post an Answer
         """
         tender = self.request.validated['tender']
+        if tender.status != 'active.enquiries':
+            self.request.errors.add('body', 'data', 'Can\'t update question in current tender status')
+            self.request.errors.status = 403
+            return
         question = self.request.validated['question']
         question_data = self.request.validated['data']
         if question_data:
