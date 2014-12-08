@@ -141,18 +141,18 @@ class TenderComplaintResourceTest(BaseTenderWebTest):
         self.assertEqual(response.content_type, 'application/json')
         complaint = response.json['data']
 
-        response = self.app.patch_json('/tenders/{}/complaints/{}'.format(self.tender_id, complaint['id']), {"data": {"status": "satisfied", "resolution": "resolution text"}})
+        response = self.app.patch_json('/tenders/{}/complaints/{}'.format(self.tender_id, complaint['id']), {"data": {"status": "resolved", "resolution": "resolution text"}})
         self.assertEqual(response.status, '200 OK')
         self.assertEqual(response.content_type, 'application/json')
-        self.assertEqual(response.json['data']["status"], "satisfied")
+        self.assertEqual(response.json['data']["status"], "resolved")
         self.assertEqual(response.json['data']["resolution"], "resolution text")
 
-        response = self.app.patch_json('/tenders/{}/complaints/{}'.format(self.tender_id, complaint['id']), {"data": {"status": "accepted"}}, status=403)
+        response = self.app.patch_json('/tenders/{}/complaints/{}'.format(self.tender_id, complaint['id']), {"data": {"status": "pending"}}, status=403)
         self.assertEqual(response.status, '403 Forbidden')
         self.assertEqual(response.content_type, 'application/json')
         self.assertEqual(response.json['errors'][0]["description"], "Can't update complaint in current status")
 
-        response = self.app.patch_json('/tenders/{}/complaints/some_id'.format(self.tender_id), {"data": {"status": "satisfied", "resolution": "resolution text"}}, status=404)
+        response = self.app.patch_json('/tenders/{}/complaints/some_id'.format(self.tender_id), {"data": {"status": "resolved", "resolution": "resolution text"}}, status=404)
         self.assertEqual(response.status, '404 Not Found')
         self.assertEqual(response.content_type, 'application/json')
         self.assertEqual(response.json['status'], 'error')
@@ -161,7 +161,7 @@ class TenderComplaintResourceTest(BaseTenderWebTest):
                 u'url', u'name': u'complaint_id'}
         ])
 
-        response = self.app.patch_json('/tenders/some_id/complaints/some_id', {"data": {"status": "satisfied", "resolution": "resolution text"}}, status=404)
+        response = self.app.patch_json('/tenders/some_id/complaints/some_id', {"data": {"status": "resolved", "resolution": "resolution text"}}, status=404)
         self.assertEqual(response.status, '404 Not Found')
         self.assertEqual(response.content_type, 'application/json')
         self.assertEqual(response.json['status'], 'error')
@@ -173,12 +173,12 @@ class TenderComplaintResourceTest(BaseTenderWebTest):
         response = self.app.get('/tenders/{}/complaints/{}'.format(self.tender_id, complaint['id']))
         self.assertEqual(response.status, '200 OK')
         self.assertEqual(response.content_type, 'application/json')
-        self.assertEqual(response.json['data']["status"], "satisfied")
+        self.assertEqual(response.json['data']["status"], "resolved")
         self.assertEqual(response.json['data']["resolution"], "resolution text")
 
         self.set_status('complete')
 
-        response = self.app.patch_json('/tenders/{}/complaints/{}'.format(self.tender_id, complaint['id']), {"data": {"status": "satisfied", "resolution": "resolution text"}}, status=403)
+        response = self.app.patch_json('/tenders/{}/complaints/{}'.format(self.tender_id, complaint['id']), {"data": {"status": "resolved", "resolution": "resolution text"}}, status=403)
         self.assertEqual(response.status, '403 Forbidden')
         self.assertEqual(response.content_type, 'application/json')
         self.assertEqual(response.json['errors'][0]["description"], "Can't update complaint in current tender status")

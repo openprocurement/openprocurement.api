@@ -61,7 +61,7 @@ class TenderAwardComplaintResource(object):
             self.request.errors.status = 403
             return
         complaint = self.request.validated['complaint']
-        if complaint.status != 'accepted':
+        if complaint.status != 'pending':
             self.request.errors.add('body', 'data', 'Can\'t update complaint in current status')
             self.request.errors.status = 403
             return
@@ -73,7 +73,7 @@ class TenderAwardComplaintResource(object):
                 return
             src = tender.serialize("plain")
             complaint.import_data(apply_data_patch(complaint.serialize(), complaint_data))
-            if complaint.status == 'satisfied':
+            if complaint.status == 'resolved':
                 award = self.request.validated['award']
                 if tender.status == 'active.awarded':
                     tender.status = 'active.qualification'
@@ -82,7 +82,7 @@ class TenderAwardComplaintResource(object):
                     for i in tender.awards[tender.awards.index(award):]:
                         i.status = 'cancelled'
                         for j in i.complaints:
-                            if j.status == 'accepted':
+                            if j.status == 'pending':
                                 j.status = 'cancelled'
                 award.status = 'cancelled'
                 unsuccessful_awards = [i.bid_id for i in tender.awards if i.status == 'unsuccessful']
@@ -100,20 +100,20 @@ class TenderAwardComplaintResource(object):
                 else:
                     tender.awardPeriod.endDate = get_now()
                     tender.status = 'active.awarded'
-            elif complaint.status in ['rejected', 'invalid'] and tender.status == 'active.awarded':
-                accepted_complaints = [
+            elif complaint.status in ['declined', 'invalid'] and tender.status == 'active.awarded':
+                pending_complaints = [
                     i
                     for i in tender.complaints
-                    if i.status == 'accepted'
+                    if i.status == 'pending'
                 ]
-                accepted_awards_complaints = [
+                pending_awards_complaints = [
                     i
                     for a in tender.awards
                     for i in a.complaints
-                    if i.status == 'accepted'
+                    if i.status == 'pending'
                 ]
                 stand_still_time_expired = tender.awardPeriod.endDate + STAND_STILL_TIME < get_now()
-                if not accepted_complaints and not accepted_awards_complaints and stand_still_time_expired:
+                if not pending_complaints and not pending_awards_complaints and stand_still_time_expired:
                     active_awards = [
                         a
                         for a in tender.awards

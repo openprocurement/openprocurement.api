@@ -61,7 +61,7 @@ class TenderComplaintResource(object):
             self.request.errors.status = 403
             return
         complaint = self.request.validated['complaint']
-        if complaint.status != 'accepted':
+        if complaint.status != 'pending':
             self.request.errors.add('body', 'data', 'Can\'t update complaint in current status')
             self.request.errors.status = 403
             return
@@ -73,25 +73,25 @@ class TenderComplaintResource(object):
                 return
             src = tender.serialize("plain")
             complaint.import_data(apply_data_patch(complaint.serialize(), complaint_data))
-            if complaint.status == 'satisfied' and tender.status != 'active.enquiries':
+            if complaint.status == 'resolved' and tender.status != 'active.enquiries':
                 for i in tender.complaints:
-                    if i.status == 'accepted':
+                    if i.status == 'pending':
                         i.status = 'cancelled'
                 tender.status = 'cancelled'
-            elif complaint.status in ['rejected', 'invalid'] and tender.status == 'active.awarded':
-                accepted_complaints = [
+            elif complaint.status in ['declined', 'invalid'] and tender.status == 'active.awarded':
+                pending_complaints = [
                     i
                     for i in tender.complaints
-                    if i.status == 'accepted'
+                    if i.status == 'pending'
                 ]
-                accepted_awards_complaints = [
+                pending_awards_complaints = [
                     i
                     for a in tender.awards
                     for i in a.complaints
-                    if i.status == 'accepted'
+                    if i.status == 'pending'
                 ]
                 stand_still_time_expired = tender.awardPeriod.endDate + STAND_STILL_TIME < get_now()
-                if not accepted_complaints and not accepted_awards_complaints and stand_still_time_expired:
+                if not pending_complaints and not pending_awards_complaints and stand_still_time_expired:
                     active_awards = [
                         a
                         for a in tender.awards
