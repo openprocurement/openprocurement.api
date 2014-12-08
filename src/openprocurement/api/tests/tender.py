@@ -319,8 +319,8 @@ class TenderResourceTest(BaseWebTest):
         self.assertEqual(new_dateModified, new_dateModified2)
 
         revisions = self.db.get(tender['id']).get('revisions')
-        self.assertEqual(revisions[0][u'changes'][-1]['op'], u'remove')
-        self.assertEqual(revisions[0][u'changes'][-1]['path'], u'/procurementMethod')
+        self.assertEqual(revisions[-1][u'changes'][0]['op'], u'remove')
+        self.assertEqual(revisions[-1][u'changes'][0]['path'], u'/procurementMethod')
 
         response = self.app.patch_json('/tenders/{}'.format(
             tender['id']), {'data': {'items': [test_tender_data['items'][0]]}})
