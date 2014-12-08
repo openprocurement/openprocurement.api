@@ -254,7 +254,7 @@ class TenderResource(object):
             tender.enquiryPeriod.startDate = tender.dateModified
         else:
             tender.enquiryPeriod = {'startDate': tender.dateModified}
-        save_tender(tender, None, self.request)
+        save_tender(tender, {}, self.request)
         self.request.response.status = 201
         self.request.response.headers[
             'Location'] = self.request.route_url('Tender', tender_id=tender_id)

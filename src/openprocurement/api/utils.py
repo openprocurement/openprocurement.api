@@ -94,13 +94,9 @@ def save_tender(tender, src, request):
         tender.owner = authenticated_userid(request)
     if not tender.owner_token:
         tender.owner_token = generate_id()
-    if src:
-        patch = get_revision_changes(tender.serialize("plain"), src)
-        if patch:
-            tender.revisions.append(Revision({'changes': patch}))
-    else:
-        patch = True
+    patch = get_revision_changes(tender.serialize("plain"), src)
     if patch:
+        tender.revisions.append(Revision({'author': request.authenticated_userid, 'changes': patch}))
         try:
             tender.store(request.registry.db)
         except Exception, e:
