@@ -29,11 +29,11 @@ class AuthenticationPolicy(BasicAuthAuthenticationPolicy):
         token = request.params.get('acc_token')
         if not token:
             token = request.headers.get('X-Access-Token')
-            if not token: 
+            if not token:
                 if request.method == 'POST' and request.content_type == 'application/json':
                     try:
                         json = request.json_body
-                    except ValueError, e:
+                    except ValueError:
                         json = None
                     token = isinstance(json, dict) and json.get('access', {}).get('token')
                 if not token:
