@@ -45,7 +45,7 @@ def get_item(parent, key, request, root):
 
 def factory(request):
     root = Root(request)
-    if not request.matchdict.get('tender_id'):
+    if not request.matchdict or not request.matchdict.get('tender_id'):
         return root
     request.validated['tender_id'] = request.matchdict['tender_id']
     tender = Tender.load(root.db, request.matchdict['tender_id'])
