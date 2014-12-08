@@ -16,7 +16,7 @@ class AuthTest(TestBasicAuthAuthenticationPolicy):
         request = testing.DummyRequest()
         request.headers['Authorization'] = 'Bearer chrisr'
         policy = self._makeOne(None)
-        self.assertEqual(policy.unauthenticated_userid(request), 'test')
+        self.assertEqual(policy.unauthenticated_userid(request), 'chrisr')
 
 
 def suite():
