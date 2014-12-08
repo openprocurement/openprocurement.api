@@ -75,18 +75,17 @@ class TenderAwardComplaintResource(object):
             complaint.import_data(apply_data_patch(complaint.serialize(), complaint_data))
             if complaint.status == 'satisfied':
                 award = self.request.validated['award']
-                awards = self.request.validated['awards']
                 if tender.status == 'active.awarded':
                     tender.status = 'active.qualification'
                     tender.awardPeriod.endDate = None
                 if award.status == 'unsuccessful':
-                    for i in awards[awards.index(award):]:
+                    for i in tender.awards[tender.awards.index(award):]:
                         i.status = 'cancelled'
                         for j in i.complaints:
-                            if i.status == 'pending':
-                                i.status = 'cancelled'
+                            if j.status == 'accepted':
+                                j.status = 'cancelled'
                 award.status = 'cancelled'
-                unsuccessful_awards = [i.bid_id for i in awards if i.status == 'unsuccessful']
+                unsuccessful_awards = [i.bid_id for i in tender.awards if i.status == 'unsuccessful']
                 bids = [i for i in sorted(tender.bids, key=lambda i: (i.value.amount, i.date)) if i.id not in unsuccessful_awards]
                 if bids:
                     bid = bids[0].serialize()
@@ -97,7 +96,7 @@ class TenderAwardComplaintResource(object):
                         'suppliers': bid['tenderers'],
                     }
                     award = Award(award_data)
-                    awards.append(award)
+                    tender.awards.append(award)
                 else:
                     tender.awardPeriod.endDate = get_now()
                     tender.status = 'active.awarded'
