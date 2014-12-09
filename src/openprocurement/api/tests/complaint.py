@@ -236,7 +236,6 @@ class TenderComplaintResourceTest(BaseTenderWebTest):
 
 
 class TenderComplaintDocumentResourceTest(BaseTenderWebTest):
-    #initial_data = {'status': 'active.tendering'}
 
     def setUp(self):
         super(TenderComplaintDocumentResourceTest, self).setUp()

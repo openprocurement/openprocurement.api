@@ -253,7 +253,6 @@ class Bid(Model):
         ]
 
 
-
 class Revision(Model):
     author = StringType()
     date = IsoDateTimeType(default=get_now)

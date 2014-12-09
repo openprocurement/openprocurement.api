@@ -3,7 +3,6 @@ from cornice.resource import resource, view
 from openprocurement.api.models import Bid
 from openprocurement.api.utils import (
     apply_data_patch,
-    generate_id,
     save_tender,
     set_ownership,
 )
