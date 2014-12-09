@@ -113,6 +113,14 @@ class TenderQuestionResourceTest(BaseTenderWebTest):
         self.assertTrue('id' in question)
         self.assertTrue(question['id'] in response.headers['Location'])
 
+        self.set_status('active.tendering')
+
+        response = self.app.post_json('/tenders/{}/questions'.format(
+            self.tender_id), {'data': {'title': 'question title', 'description': 'question description', 'author': {'identifier': {'id': 0}, 'name': 'Name'}}}, status=403)
+        self.assertEqual(response.status, '403 Forbidden')
+        self.assertEqual(response.content_type, 'application/json')
+        self.assertEqual(response.json['errors'][0]["description"], "Can't add question in current tender status")
+
     def test_patch_tender_question(self):
         response = self.app.post_json('/tenders/{}/questions'.format(
             self.tender_id), {'data': {'title': 'question title', 'description': 'question description', 'author': {'identifier': {'id': 0}, 'name': 'Name'}}})
@@ -147,6 +155,13 @@ class TenderQuestionResourceTest(BaseTenderWebTest):
         self.assertEqual(response.status, '200 OK')
         self.assertEqual(response.content_type, 'application/json')
         self.assertEqual(response.json['data']["answer"], "answer")
+
+        self.set_status('active.tendering')
+
+        response = self.app.patch_json('/tenders/{}/questions/{}'.format(self.tender_id, question['id']), {"data": {"answer": "answer"}}, status=403)
+        self.assertEqual(response.status, '403 Forbidden')
+        self.assertEqual(response.content_type, 'application/json')
+        self.assertEqual(response.json['errors'][0]["description"], "Can't update question in current tender status")
 
     def test_get_tender_question(self):
         response = self.app.post_json('/tenders/{}/questions'.format(

@@ -3,7 +3,9 @@ from cornice.resource import resource, view
 from openprocurement.api.models import Bid
 from openprocurement.api.utils import (
     apply_data_patch,
+    generate_id,
     save_tender,
+    set_ownership,
 )
 from openprocurement.api.validation import (
     validate_bid_data,
@@ -110,12 +112,18 @@ class TenderBidResource(object):
             return
         bid_data = self.request.validated['data']
         bid = Bid(bid_data)
+        set_ownership(bid, self.request)
         src = tender.serialize("plain")
         tender.bids.append(bid)
         save_tender(tender, src, self.request)
         self.request.response.status = 201
         self.request.response.headers['Location'] = self.request.route_url('Tender Bids', tender_id=tender.id, bid_id=bid['id'])
-        return {'data': bid.serialize("view")}
+        return {
+            'data': bid.serialize('view'),
+            'access': {
+                'token': bid.owner_token
+            }
+        }
 
     @view(renderer='json', permission='view_tender')
     def collection_get(self):
@@ -196,7 +204,7 @@ class TenderBidResource(object):
             bid_data['participationUrl'] = 'http://auction-sandbox.openprocurement.org/tenders/{}?bidder_id={}'.format(tender.id, self.request.validated['id'])
         return {'data': bid_data}
 
-    @view(content_type="application/json", permission='view_tender', validators=(validate_patch_bid_data,), renderer='json')
+    @view(content_type="application/json", permission='edit_bid', validators=(validate_patch_bid_data,), renderer='json')
     def patch(self):
         """Update of proposal
 
@@ -247,7 +255,7 @@ class TenderBidResource(object):
             save_tender(tender, src, self.request)
         return {'data': bid.serialize("view")}
 
-    @view(renderer='json', permission='view_tender')
+    @view(renderer='json', permission='edit_bid')
     def delete(self):
         """Cancelling the proposal
 

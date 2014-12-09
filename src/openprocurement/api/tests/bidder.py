@@ -178,7 +178,7 @@ class TenderBidderResourceTest(BaseTenderWebTest):
         self.assertEqual(response.content_type, 'application/json')
         self.assertEqual(response.json['data'], {})
 
-        self.set_status('complete')
+        self.set_status('active.qualification')
 
         response = self.app.get('/tenders/{}/bids/{}'.format(self.tender_id, bidder['id']))
         self.assertEqual(response.status, '200 OK')
@@ -259,7 +259,7 @@ class TenderBidderResourceTest(BaseTenderWebTest):
         self.assertEqual(response.content_type, 'application/json')
         self.assertEqual(response.json['data'], [])
 
-        self.set_status('complete')
+        self.set_status('active.qualification')
 
         response = self.app.get('/tenders/{}/bids'.format(self.tender_id))
         self.assertEqual(response.status, '200 OK')

@@ -215,21 +215,24 @@ class Organization(Model):
     contactPoint = ModelType(ContactPoint)
 
 
+view_bid_role = (blacklist('owner_token', 'owner') + schematics_default_role)
+
+
 class Bid(Model):
     class Options:
         serialize_when_none = False
         roles = {
-            'embedded': schematics_embedded_role,
-            'view': schematics_default_role,
+            'embedded': view_bid_role,
+            'view': view_bid_role,
             'auction_view': whitelist('value', 'id', 'date'),
             'active.enquiries': whitelist(),
             'active.tendering': whitelist(),
             'active.auction': whitelist('value'),
-            'active.qualification': schematics_default_role,
-            'active.awarded': schematics_default_role,
-            'complete': schematics_default_role,
-            'unsuccessful': schematics_default_role,
-            'cancelled': schematics_default_role,
+            'active.qualification': view_bid_role,
+            'active.awarded': view_bid_role,
+            'complete': view_bid_role,
+            'unsuccessful': view_bid_role,
+            'cancelled': view_bid_role,
         }
 
     tenderers = ListType(ModelType(Organization), default=list())
@@ -238,6 +241,17 @@ class Bid(Model):
     status = StringType(choices=['registration', 'validBid', 'invalidBid'])
     value = ModelType(Value)
     documents = ListType(ModelType(Document), default=list())
+    owner_token = StringType()
+    owner = StringType()
+
+    __parent__ = None
+    __name__ = ''
+
+    def __acl__(self):
+        return [
+            (Allow, '{}_{}'.format(self.owner, self.owner_token), 'edit_bid'),
+        ]
+
 
 
 class Revision(Model):

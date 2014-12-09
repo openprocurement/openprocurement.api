@@ -13,12 +13,12 @@ class Root(object):
     __name__ = None
     __parent__ = None
     __acl__ = [
-        (Allow, Everyone, ALL_PERMISSIONS),
+        #(Allow, Everyone, ALL_PERMISSIONS),
         (Allow, Authenticated, 'view_tenders'),
-        (Allow, Authenticated, 'create_tender'),
+        (Allow, Authenticated, 'view_tender'),
+        (Allow, 'g:brokers', 'create_tender'),
         (Allow, 'auction', 'auction'),
         (Allow, 'chronograph', 'edit_tender'),
-        (Allow, 'chronograph', 'view_tender'),
         (Allow, 'g:admins', ALL_PERMISSIONS),
     ]
 

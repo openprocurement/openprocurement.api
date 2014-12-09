@@ -8,6 +8,7 @@ from openprocurement.api.utils import (
     generate_id,
     generate_tender_id,
     save_tender,
+    set_ownership,
     tender_serialize,
 )
 from openprocurement.api.validation import (
@@ -254,6 +255,7 @@ class TenderResource(object):
             tender.enquiryPeriod.startDate = tender.dateModified
         else:
             tender.enquiryPeriod = {'startDate': tender.dateModified}
+        set_ownership(tender, self.request)
         save_tender(tender, {}, self.request)
         self.request.response.status = 201
         self.request.response.headers[

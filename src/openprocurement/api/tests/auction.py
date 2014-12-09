@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+1/0
 import unittest
 
 from openprocurement.api.tests.base import test_tender_data, BaseTenderWebTest

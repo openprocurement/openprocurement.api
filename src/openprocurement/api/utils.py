@@ -89,11 +89,12 @@ def get_revision_changes(dst, src):
     return make_patch(dst, src).patch
 
 
+def set_ownership(item, request):
+    item.owner = request.authenticated_userid
+    item.owner_token = generate_id()
+
+
 def save_tender(tender, src, request):
-    if not tender.owner:
-        tender.owner = authenticated_userid(request)
-    if not tender.owner_token:
-        tender.owner_token = generate_id()
     patch = get_revision_changes(tender.serialize("plain"), src)
     if patch:
         tender.revisions.append(Revision({'author': request.authenticated_userid, 'changes': patch}))

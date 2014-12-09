@@ -599,7 +599,7 @@ class TenderProcessTest(BaseWebTest):
         response = self.app.post_json('/tenders/{}/awards/{}/complaints'.format(tender_id, award_id),
                                       {'data': {'title': 'complaint title', 'description': 'complaint description', 'author': {'identifier': {'id': 1}, 'name': 'Name'}}})
         # satisfying award complaint
-        response = self.app.patch_json('/tenders/{}/awards/{}/complaints/{}'.format(tender_id, award_id, complaint_id), {"data": {"status": "resolved", "resolution": "resolution text"}})
+        response = self.app.patch_json('/tenders/{}/awards/{}/complaints/{}?acc_token={}'.format(tender_id, award_id, complaint_id, owner_token), {"data": {"status": "resolved", "resolution": "resolution text"}})
         # get awards
         self.app.authorization = ('Basic', ('broker', ''))
         response = self.app.get('/tenders/{}/awards?acc_token={}'.format(tender_id, owner_token))
