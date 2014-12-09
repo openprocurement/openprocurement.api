@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-1/0
 import unittest
 
 from openprocurement.api.migration import migrate_data, get_db_schema_version, set_db_schema_version, SCHEMA_VERSION
