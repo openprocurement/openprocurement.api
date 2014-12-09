@@ -22,7 +22,7 @@ class TenderBidResource(object):
         self.request = request
         self.db = request.registry.db
 
-    @view(content_type="application/json", permission='view_tender', validators=(validate_bid_data,), renderer='json')
+    @view(content_type="application/json", permission='create_tender', validators=(validate_bid_data,), renderer='json')
     def collection_post(self):
         """Registration of new bid proposal
 

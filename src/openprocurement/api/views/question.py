@@ -21,7 +21,7 @@ class TenderQuestionResource(object):
         self.request = request
         self.db = request.registry.db
 
-    @view(content_type="application/json", validators=(validate_question_data,), permission='view_tender', renderer='json')
+    @view(content_type="application/json", validators=(validate_question_data,), permission='create_tender', renderer='json')
     def collection_post(self):
         """Post a question
         """

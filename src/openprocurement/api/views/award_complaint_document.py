@@ -37,7 +37,7 @@ class TenderAwardComplaintDocumentResource(object):
             ]).values(), key=lambda i: i['dateModified'])
         return {'data': collection_data}
 
-    @view(renderer='json', permission='view_tender', validators=(validate_file_upload,))
+    @view(renderer='json', permission='review_complaint', validators=(validate_file_upload,))
     def collection_post(self):
         """Tender Award Complaint Document Upload
         """
@@ -76,7 +76,7 @@ class TenderAwardComplaintDocumentResource(object):
         ]
         return {'data': document_data}
 
-    @view(renderer='json', validators=(validate_file_update,), permission='view_tender')
+    @view(renderer='json', validators=(validate_file_update,), permission='review_complaint')
     def put(self):
         """Tender Award Complaint Document Update"""
         tender = self.request.validated['tender']
@@ -107,7 +107,7 @@ class TenderAwardComplaintDocumentResource(object):
         save_tender(tender, src, self.request)
         return {'data': document.serialize("view")}
 
-    @view(renderer='json', validators=(validate_patch_document_data,), permission='view_tender')
+    @view(renderer='json', validators=(validate_patch_document_data,), permission='review_complaint')
     def patch(self):
         """Tender Award Complaint Document Update"""
         tender = self.request.validated['tender']

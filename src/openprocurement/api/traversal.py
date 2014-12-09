@@ -5,7 +5,7 @@ from pyramid.security import (
     ALL_PERMISSIONS,
     Allow,
     Authenticated,
-    # Everyone,
+    Everyone,
 )
 
 
@@ -14,8 +14,8 @@ class Root(object):
     __parent__ = None
     __acl__ = [
         # (Allow, Everyone, ALL_PERMISSIONS),
-        (Allow, Authenticated, 'view_tenders'),
-        (Allow, Authenticated, 'view_tender'),
+        (Allow, Everyone, 'view_tenders'),
+        (Allow, Everyone, 'view_tender'),
         (Allow, 'g:brokers', 'create_tender'),
         (Allow, 'auction', 'auction'),
         (Allow, 'chronograph', 'edit_tender'),

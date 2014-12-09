@@ -21,7 +21,7 @@ class TenderComplaintResource(object):
         self.request = request
         self.db = request.registry.db
 
-    @view(content_type="application/json", validators=(validate_complaint_data,), permission='view_tender', renderer='json')
+    @view(content_type="application/json", validators=(validate_complaint_data,), permission='create_tender', renderer='json')
     def collection_post(self):
         """Post a complaint
         """
@@ -51,7 +51,7 @@ class TenderComplaintResource(object):
         """
         return {'data': self.request.validated['complaint'].serialize("view")}
 
-    @view(content_type="application/json", validators=(validate_patch_complaint_data,), permission='edit_tender', renderer='json')
+    @view(content_type="application/json", validators=(validate_patch_complaint_data,), permission='review_complaint', renderer='json')
     def patch(self):
         """Post a complaint resolution
         """

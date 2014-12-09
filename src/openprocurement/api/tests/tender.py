@@ -561,6 +561,7 @@ class TenderProcessTest(BaseWebTest):
         self.app.authorization = ('Basic', ('broker', ''))
         response = self.app.post_json('/tenders/{}/bids'.format(tender_id),
                                       {'data': {'tenderers': [{'identifier': {'id': 1}, 'name': 'Name'}], "value": {"amount": 600}}})
+        bid_token = response.json['access']['token']
         # create second bid
         self.app.authorization = ('Basic', ('broker', ''))
         response = self.app.post_json('/tenders/{}/bids'.format(tender_id),
@@ -592,20 +593,21 @@ class TenderProcessTest(BaseWebTest):
         self.assertNotEqual(award_id, award2_id)
         # create first award complaint
         self.app.authorization = ('Basic', ('broker', ''))
-        response = self.app.post_json('/tenders/{}/awards/{}/complaints'.format(tender_id, award_id),
+        response = self.app.post_json('/tenders/{}/awards/{}/complaints?acc_token={}'.format(tender_id, award_id, bid_token),
                                       {'data': {'title': 'complaint title', 'description': 'complaint description', 'author': {'identifier': {'id': 1}, 'name': 'Name'}}})
         complaint_id = response.json['data']['id']
         # create first award complaint #2
-        response = self.app.post_json('/tenders/{}/awards/{}/complaints'.format(tender_id, award_id),
+        response = self.app.post_json('/tenders/{}/awards/{}/complaints?acc_token={}'.format(tender_id, award_id, bid_token),
                                       {'data': {'title': 'complaint title', 'description': 'complaint description', 'author': {'identifier': {'id': 1}, 'name': 'Name'}}})
         # satisfying award complaint
-        response = self.app.patch_json('/tenders/{}/awards/{}/complaints/{}?acc_token={}'.format(tender_id, award_id, complaint_id, owner_token), {"data": {"status": "resolved", "resolution": "resolution text"}})
+        response = self.app.patch_json('/tenders/{}/awards/{}/complaints/{}?acc_token={}'.format(tender_id, award_id, complaint_id, owner_token),
+                                       {"data": {"status": "resolved", "resolution": "resolution text"}})
         # get awards
         self.app.authorization = ('Basic', ('broker', ''))
         response = self.app.get('/tenders/{}/awards?acc_token={}'.format(tender_id, owner_token))
         # get pending award
         award_id = [i['id'] for i in response.json['data'] if i['status'] == 'pending'][0]
-        # set award as unsuccessful
+        # set award as active
         response = self.app.patch_json('/tenders/{}/awards/{}?acc_token={}'.format(tender_id, award_id, owner_token),
                                        {"data": {"status": "active"}})
         # set tender status after stand slill period

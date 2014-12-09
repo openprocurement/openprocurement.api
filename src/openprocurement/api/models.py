@@ -405,10 +405,15 @@ class Tender(SchematicsDocument, Model):
     __name__ = ''
 
     def __acl__(self):
-        return [
-            (Allow, self.owner, 'view_tender'),
-            (Allow, '{}_{}'.format(self.owner, self.owner_token), 'edit_tender'),
+        acl = [
+            (Allow, '{}_{}'.format(i.owner, i.owner_token), 'create_award_complaint')
+            for i in self.bids
         ]
+        acl.extend([
+            (Allow, '{}_{}'.format(self.owner, self.owner_token), 'edit_tender'),
+            (Allow, '{}_{}'.format(self.owner, self.owner_token), 'review_complaint'),
+        ])
+        return acl
 
     def __repr__(self):
         return '<%s:%r@%r>' % (type(self).__name__, self.id, self.rev)
