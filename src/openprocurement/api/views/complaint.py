@@ -21,7 +21,7 @@ class TenderComplaintResource(object):
         self.request = request
         self.db = request.registry.db
 
-    @view(content_type="application/json", validators=(validate_complaint_data,), permission='create_tender', renderer='json')
+    @view(content_type="application/json", validators=(validate_complaint_data,), permission='create_complaint', renderer='json')
     def collection_post(self):
         """Post a complaint
         """

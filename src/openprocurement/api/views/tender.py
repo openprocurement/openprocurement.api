@@ -27,7 +27,7 @@ class TenderResource(object):
         self.request = request
         self.db = request.registry.db
 
-    @view(renderer='json', permission='view_tenders')
+    @view(renderer='json', permission='view_tender')
     def collection_get(self):
         """Tenders List
 

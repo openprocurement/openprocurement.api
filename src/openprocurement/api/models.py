@@ -3,7 +3,7 @@ from couchdb_schematics.document import SchematicsDocument
 from datetime import datetime, timedelta
 from iso8601 import parse_date, ParseError
 from pyramid.security import Allow
-from schematics.exceptions import ConversionError
+from schematics.exceptions import ConversionError, ValidationError
 from schematics.models import Model
 from schematics.transforms import whitelist, blacklist
 from schematics.types import StringType, FloatType, IntType, URLType, BooleanType, BaseType, EmailType
@@ -252,6 +252,9 @@ class Bid(Model):
             (Allow, '{}_{}'.format(self.owner, self.owner_token), 'edit_bid'),
         ]
 
+    #def validate_value(self, data, value):
+        #print self, data, value
+        #raise ValidationError('Error')
 
 class Revision(Model):
     author = StringType()
