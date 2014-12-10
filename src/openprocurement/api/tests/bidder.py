@@ -184,8 +184,8 @@ class TenderBidderResourceTest(BaseTenderWebTest):
         self.assertEqual(response.status, '200 OK')
         self.assertEqual(response.content_type, 'application/json')
         bidder_data = response.json['data']
-        self.assertTrue(u'participationUrl' in bidder_data)
-        bidder_data.pop(u'participationUrl')
+        #self.assertTrue(u'participationUrl' in bidder_data)
+        #bidder_data.pop(u'participationUrl')
         self.assertEqual(bidder_data, bidder)
 
         response = self.app.get('/tenders/{}/bids/some_id'.format(self.tender_id), status=404)
