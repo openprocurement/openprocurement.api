@@ -241,6 +241,7 @@ class Bid(Model):
     status = StringType(choices=['registration', 'validBid', 'invalidBid'])
     value = ModelType(Value)
     documents = ListType(ModelType(Document), default=list())
+    participationUrl = URLType()
     owner_token = StringType()
     owner = StringType()
 
@@ -252,9 +253,6 @@ class Bid(Model):
             (Allow, '{}_{}'.format(self.owner, self.owner_token), 'edit_bid'),
         ]
 
-    #def validate_value(self, data, value):
-        #print self, data, value
-        #raise ValidationError('Error')
 
 class Revision(Model):
     author = StringType()
@@ -398,6 +396,7 @@ class Tender(SchematicsDocument, Model):
     status = StringType(choices=['active.enquiries', 'active.tendering', 'active.auction', 'active.qualification', 'active.awarded', 'complete', 'cancelled', 'unsuccessful'], default='active.enquiries')
     questions = ListType(ModelType(Question), default=list())
     complaints = ListType(ModelType(Complaint), default=list())
+    auctionUrl = URLType()
 
     _attachments = DictType(DictType(BaseType), default=dict())  # couchdb attachments
     dateModified = IsoDateTimeType(default=get_now)

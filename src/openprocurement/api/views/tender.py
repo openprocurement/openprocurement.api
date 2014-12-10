@@ -356,9 +356,6 @@ class TenderResource(object):
         """
         tender = self.request.validated['tender']
         tender_data = tender.serialize(tender.status)
-        if tender.status in ['active.auction', 'active.qualification', 'active.awarded', 'complete']:
-            # auction url
-            tender_data['auctionUrl'] = 'http://auction-sandbox.openprocurement.org/tenders/{}'.format(tender.id)
         return {'data': tender_data}
 
     @view(content_type="application/json", validators=(validate_tender_data, ), permission='edit_tender', renderer='json')

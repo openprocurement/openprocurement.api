@@ -198,9 +198,6 @@ class TenderBidResource(object):
         if tender.status in ['active.enquiries', 'active.tendering']:
             return {'data': {}}
         bid_data = self.request.validated['bid'].serialize(tender.status)
-        if tender.status in ['active.auction', 'active.qualification', 'active.awarded', 'complete']:
-            # auction participation url
-            bid_data['participationUrl'] = 'http://auction-sandbox.openprocurement.org/tenders/{}?bidder_id={}'.format(tender.id, self.request.validated['id'])
         return {'data': bid_data}
 
     @view(content_type="application/json", permission='edit_bid', validators=(validate_patch_bid_data,), renderer='json')
