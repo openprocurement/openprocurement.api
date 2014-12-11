@@ -17,6 +17,8 @@ requires = [
     'boto',
     'iso8601',
     'tzlocal',
+    'zope.securitypolicy',
+    'pyramid_zcml',
 ]
 test_requires = requires + [
     'webtest',

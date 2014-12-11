@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 from openprocurement.api.models import Tender, Bid, Award, Document, Question, Complaint
 from schematics.exceptions import ModelValidationError, ModelConversionError
+from zope.security.proxy import isinstance
 
 
 def filter_data(data, blacklist=[], whitelist=None):
