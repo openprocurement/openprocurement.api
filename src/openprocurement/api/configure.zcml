@@ -1,0 +1,33 @@
+<configure
+    xmlns="http://namespaces.zope.org/zope"
+    xmlns:zcml="http://namespaces.zope.org/zcml"
+    i18n_domain="zope"
+    >
+
+    <include package="zope.securitypolicy" file="meta.zcml" />
+    <include package="zope.securitypolicy" />
+
+    <permission id="OpenProcurement.BidsAccess" title="OpenProcurement: Access bids information" />
+    <permission id="OpenProcurement.PostQuestionAnswer" title="OpenProcurement: Post question answer" />
+    <permission id="OpenProcurement.SerializeTender" title="OpenProcurement: Serialize tender" />
+    <role id="OpenProcurement.Manager" title="OpenProcurement: Manager" />
+
+<!--
+    <class class="openprocurement.api.models.Tender">
+        <allow attributes="status bids" />
+    </class>
+    <class class="openprocurement.api.models.Bid">
+        <allow attributes="id" />
+    </class>
+    <class class="openprocurement.api.models.Tender">
+        <allow attributes="__parent__ id title description status __getitem__ import_data serialize bids" />
+    </class>
+    <class class="openprocurement.api.models.Bid">
+        <allow attributes="id" />
+    </class>
+    <class class="openprocurement.api.models.Question">
+        <allow attributes="id title description" />
+        <require permission="OpenProcurement.PostQuestionAnswer" attributes="answer" />
+    </class>
+-->
+</configure>
