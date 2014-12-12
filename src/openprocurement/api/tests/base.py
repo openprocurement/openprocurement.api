@@ -21,6 +21,9 @@ test_tender_data = {
             "locality": u"м. Київ",
             "streetAddress": u"вул. Банкова, 11, корпус 1"
         },
+        "contactPoint": {
+            "name": u"Державне управління справами"
+        }
     },
     "value": {
         "amount": 500,
@@ -92,7 +95,8 @@ class BaseWebTest(unittest.TestCase):
 
 
 class BaseTenderWebTest(BaseWebTest):
-    initial_data = {}
+    initial_data = test_tender_data
+    initial_status = None
 
     def set_status(self, status):
         response = self.app.patch_json('/tenders/{}'.format(self.tender_id), {'data': {'status': status}})
@@ -105,8 +109,8 @@ class BaseTenderWebTest(BaseWebTest):
         response = self.app.post_json('/tenders', {'data': self.initial_data})
         tender = response.json['data']
         self.tender_id = tender['id']
-        if 'status' in self.initial_data:
-            self.set_status(self.initial_data['status'])
+        if self.initial_status:
+            self.set_status(self.initial_status)
 
     def tearDown(self):
         del self.db[self.tender_id]

@@ -1,14 +1,14 @@
 # -*- coding: utf-8 -*-
 import unittest
 
-from openprocurement.api.tests.base import BaseTenderWebTest
+from openprocurement.api.tests.base import BaseTenderWebTest, test_tender_data
 
 
 class TenderQuestionResourceTest(BaseTenderWebTest):
 
     def test_create_tender_question_invalid(self):
         response = self.app.post_json('/tenders/some_id/questions', {
-                                      'data': {'title': 'question title', 'description': 'question description', 'author': {'identifier': {}, 'name': 'Name'}}}, status=404)
+                                      'data': {'title': 'question title', 'description': 'question description', 'author': test_tender_data["procuringEntity"]}}, status=404)
         self.assertEqual(response.status, '404 Not Found')
         self.assertEqual(response.content_type, 'application/json')
         self.assertEqual(response.json['status'], 'error')
@@ -61,7 +61,7 @@ class TenderQuestionResourceTest(BaseTenderWebTest):
         self.assertEqual(response.content_type, 'application/json')
         self.assertEqual(response.json['status'], 'error')
         self.assertEqual(response.json['errors'], [
-            {u'description': [u'This field is required.'], u'location': u'body', u'name': u'description'},
+            {u'description': [u'This field is required.'], u'location': u'body', u'name': u'author'},
             {u'description': [u'This field is required.'], u'location': u'body', u'name': u'title'},
         ])
 
@@ -81,8 +81,7 @@ class TenderQuestionResourceTest(BaseTenderWebTest):
         self.assertEqual(response.content_type, 'application/json')
         self.assertEqual(response.json['status'], 'error')
         self.assertEqual(response.json['errors'], [
-            {u'description': {u'identifier': [
-                u'Please use a mapping for this field or Identifier instance instead of unicode.']}, u'location': u'body', u'name': u'author'}
+            {u'description': {u'identifier': [u'Please use a mapping for this field or Identifier instance instead of unicode.']}, u'location': u'body', u'name': u'author'}
         ])
 
         response = self.app.post_json(request_path, {
@@ -91,7 +90,7 @@ class TenderQuestionResourceTest(BaseTenderWebTest):
         self.assertEqual(response.content_type, 'application/json')
         self.assertEqual(response.json['status'], 'error')
         self.assertEqual(response.json['errors'], [
-            {u'description': {u'name': [u'This field is required.']}, u'location': u'body', u'name': u'author'}
+            {u'description': {u'contactPoint': [u'This field is required.'], u'identifier': {u'scheme': [u'This field is required.'], u'id': [u'This field is required.']}, u'name': [u'This field is required.'], u'address': [u'This field is required.']}, u'location': u'body', u'name': u'author'}
         ])
 
         response = self.app.post_json(request_path, {'data': {'title': 'question title', 'description': 'question description', 'author': {
@@ -100,30 +99,30 @@ class TenderQuestionResourceTest(BaseTenderWebTest):
         self.assertEqual(response.content_type, 'application/json')
         self.assertEqual(response.json['status'], 'error')
         self.assertEqual(response.json['errors'], [
-            {u'description': {u'identifier': {u'uri': [u'Not a well formed URL.']}}, u'location': u'body', u'name': u'author'}
+            {u'description': {u'contactPoint': [u'This field is required.'], u'identifier': {u'scheme': [u'This field is required.'], u'id': [u'This field is required.'], u'uri': [u'Not a well formed URL.']}, u'address': [u'This field is required.']}, u'location': u'body', u'name': u'author'}
         ])
 
     def test_create_tender_question(self):
         response = self.app.post_json('/tenders/{}/questions'.format(
-            self.tender_id), {'data': {'title': 'question title', 'description': 'question description', 'author': {'identifier': {'id': 0}, 'name': 'Name'}}})
+            self.tender_id), {'data': {'title': 'question title', 'description': 'question description', 'author': test_tender_data["procuringEntity"]}})
         self.assertEqual(response.status, '201 Created')
         self.assertEqual(response.content_type, 'application/json')
         question = response.json['data']
-        self.assertEqual(question['author']['name'], 'Name')
+        self.assertEqual(question['author']['name'], test_tender_data["procuringEntity"]['name'])
         self.assertTrue('id' in question)
         self.assertTrue(question['id'] in response.headers['Location'])
 
         self.set_status('active.tendering')
 
         response = self.app.post_json('/tenders/{}/questions'.format(
-            self.tender_id), {'data': {'title': 'question title', 'description': 'question description', 'author': {'identifier': {'id': 0}, 'name': 'Name'}}}, status=403)
+            self.tender_id), {'data': {'title': 'question title', 'description': 'question description', 'author': test_tender_data["procuringEntity"]}}, status=403)
         self.assertEqual(response.status, '403 Forbidden')
         self.assertEqual(response.content_type, 'application/json')
         self.assertEqual(response.json['errors'][0]["description"], "Can't add question in current tender status")
 
     def test_patch_tender_question(self):
         response = self.app.post_json('/tenders/{}/questions'.format(
-            self.tender_id), {'data': {'title': 'question title', 'description': 'question description', 'author': {'identifier': {'id': 0}, 'name': 'Name'}}})
+            self.tender_id), {'data': {'title': 'question title', 'description': 'question description', 'author': test_tender_data["procuringEntity"]}})
         self.assertEqual(response.status, '201 Created')
         self.assertEqual(response.content_type, 'application/json')
         question = response.json['data']
@@ -165,7 +164,7 @@ class TenderQuestionResourceTest(BaseTenderWebTest):
 
     def test_get_tender_question(self):
         response = self.app.post_json('/tenders/{}/questions'.format(
-            self.tender_id), {'data': {'title': 'question title', 'description': 'question description', 'author': {'identifier': {'id': 0}, 'name': 'Name'}}})
+            self.tender_id), {'data': {'title': 'question title', 'description': 'question description', 'author': test_tender_data["procuringEntity"]}})
         self.assertEqual(response.status, '201 Created')
         self.assertEqual(response.content_type, 'application/json')
         question = response.json['data']
@@ -202,7 +201,7 @@ class TenderQuestionResourceTest(BaseTenderWebTest):
 
     def test_get_tender_questions(self):
         response = self.app.post_json('/tenders/{}/questions'.format(
-            self.tender_id), {'data': {'title': 'question title', 'description': 'question description', 'author': {'identifier': {'id': 0}, 'name': 'Name'}}})
+            self.tender_id), {'data': {'title': 'question title', 'description': 'question description', 'author': test_tender_data["procuringEntity"]}})
         self.assertEqual(response.status, '201 Created')
         self.assertEqual(response.content_type, 'application/json')
         question = response.json['data']

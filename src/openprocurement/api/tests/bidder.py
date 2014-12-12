@@ -1,15 +1,15 @@
 # -*- coding: utf-8 -*-
 import unittest
 
-from openprocurement.api.tests.base import BaseTenderWebTest
+from openprocurement.api.tests.base import BaseTenderWebTest, test_tender_data
 
 
 class TenderBidderResourceTest(BaseTenderWebTest):
-    initial_data = {'status': 'active.tendering'}
+    initial_status =  'active.tendering'
 
     def test_create_tender_bidder_invalid(self):
         response = self.app.post_json('/tenders/some_id/bids', {
-                                      'data': {'tenderers': [{'identifier': {}, 'name': 'Name'}]}}, status=404)
+                                      'data': {'tenderers': [test_tender_data["procuringEntity"]], "value": {"amount": 500}}}, status=404)
         self.assertEqual(response.status, '404 Not Found')
         self.assertEqual(response.content_type, 'application/json')
         self.assertEqual(response.json['status'], 'error')
@@ -83,8 +83,8 @@ class TenderBidderResourceTest(BaseTenderWebTest):
         self.assertEqual(response.content_type, 'application/json')
         self.assertEqual(response.json['status'], 'error')
         self.assertEqual(response.json['errors'], [
-            {u'description': [u'name'],
-                u'location': u'body', u'name': u'tenderers'}
+            {u'description': [u'This field is required.'], u'location': u'body', u'name': u'value'},
+            {u'description': [u'contactPoint', u'identifier', u'name', u'address'], u'location': u'body', u'name': u'tenderers'}
         ])
 
         response = self.app.post_json(request_path, {'data': {'tenderers': [{
@@ -93,40 +93,31 @@ class TenderBidderResourceTest(BaseTenderWebTest):
         self.assertEqual(response.content_type, 'application/json')
         self.assertEqual(response.json['status'], 'error')
         self.assertEqual(response.json['errors'], [
-            {u'description': [u'identifier'],
-                u'location': u'body', u'name': u'tenderers'}
+            {u'description': [u'This field is required.'], u'location': u'body', u'name': u'value'},
+            {u'description': [u'contactPoint', u'identifier', u'address'], u'location': u'body', u'name': u'tenderers'}
         ])
 
     def test_create_tender_bidder(self):
         response = self.app.post_json('/tenders/{}/bids'.format(
-            self.tender_id), {'data': {'tenderers': [{'identifier': {'id': 0}, 'name': 'Name'}]}})
+            self.tender_id), {'data': {'tenderers': [test_tender_data["procuringEntity"]], "value": {"amount": 500}}})
         self.assertEqual(response.status, '201 Created')
         self.assertEqual(response.content_type, 'application/json')
         bidder = response.json['data']
-        self.assertEqual(bidder['tenderers'][0]['name'], 'Name')
-        self.assertTrue('id' in bidder)
-        self.assertTrue(bidder['id'] in response.headers['Location'])
-
-        response = self.app.post_json('/tenders/{}/bids'.format(
-            self.tender_id), {'data': {'tenderers': [{'identifier': {'id': 1}, 'name': 'Name'}]}})
-        self.assertEqual(response.status, '201 Created')
-        self.assertEqual(response.content_type, 'application/json')
-        bidder = response.json['data']
-        self.assertEqual(bidder['tenderers'][0]['name'], 'Name')
+        self.assertEqual(bidder['tenderers'][0]['name'], test_tender_data["procuringEntity"]['name'])
         self.assertTrue('id' in bidder)
         self.assertTrue(bidder['id'] in response.headers['Location'])
 
         self.set_status('complete')
 
         response = self.app.post_json('/tenders/{}/bids'.format(
-            self.tender_id), {'data': {'tenderers': [{'identifier': {'id': 0}, 'name': 'Name'}]}}, status=403)
+            self.tender_id), {'data': {'tenderers': [test_tender_data["procuringEntity"]], "value": {"amount": 500}}}, status=403)
         self.assertEqual(response.status, '403 Forbidden')
         self.assertEqual(response.content_type, 'application/json')
         self.assertEqual(response.json['errors'][0]["description"], "Can't add bid in current tender status")
 
     def test_patch_tender_bidder(self):
         response = self.app.post_json('/tenders/{}/bids'.format(
-            self.tender_id), {'data': {'tenderers': [{'identifier': {'id': 0}, 'name': 'Name'}]}})
+            self.tender_id), {'data': {'tenderers': [test_tender_data["procuringEntity"]], "value": {"amount": 500}}})
         self.assertEqual(response.status, '201 Created')
         self.assertEqual(response.content_type, 'application/json')
         bidder = response.json['data']
@@ -168,7 +159,7 @@ class TenderBidderResourceTest(BaseTenderWebTest):
 
     def test_get_tender_bidder(self):
         response = self.app.post_json('/tenders/{}/bids'.format(
-            self.tender_id), {'data': {'tenderers': [{'identifier': {"id": 0}, 'name': 'Name'}]}})
+            self.tender_id), {'data': {'tenderers': [test_tender_data["procuringEntity"]], "value": {"amount": 500}}})
         self.assertEqual(response.status, '201 Created')
         self.assertEqual(response.content_type, 'application/json')
         bidder = response.json['data']
@@ -213,7 +204,7 @@ class TenderBidderResourceTest(BaseTenderWebTest):
 
     def test_delete_tender_bidder(self):
         response = self.app.post_json('/tenders/{}/bids'.format(
-            self.tender_id), {'data': {'tenderers': [{'identifier': {'id': 0}, 'name': 'Name'}]}})
+            self.tender_id), {'data': {'tenderers': [test_tender_data["procuringEntity"]], "value": {"amount": 500}}})
         self.assertEqual(response.status, '201 Created')
         self.assertEqual(response.content_type, 'application/json')
         bidder = response.json['data']
@@ -249,7 +240,7 @@ class TenderBidderResourceTest(BaseTenderWebTest):
 
     def test_get_tender_tenderers(self):
         response = self.app.post_json('/tenders/{}/bids'.format(
-            self.tender_id), {'data': {'tenderers': [{'identifier': {"id": 0}, 'name': 'Name'}]}})
+            self.tender_id), {'data': {'tenderers': [test_tender_data["procuringEntity"]], "value": {"amount": 500}}})
         self.assertEqual(response.status, '201 Created')
         self.assertEqual(response.content_type, 'application/json')
         bidder = response.json['data']
@@ -277,13 +268,13 @@ class TenderBidderResourceTest(BaseTenderWebTest):
 
 
 class TenderBidderDocumentResourceTest(BaseTenderWebTest):
-    initial_data = {'status': 'active.tendering'}
+    initial_status = 'active.tendering'
 
     def setUp(self):
         super(TenderBidderDocumentResourceTest, self).setUp()
         # Create bid
         response = self.app.post_json('/tenders/{}/bids'.format(
-            self.tender_id), {'data': {'tenderers': [{'identifier': {"id": 0}, 'name': 'Name'}]}})
+            self.tender_id), {'data': {'tenderers': [test_tender_data["procuringEntity"]], "value": {"amount": 500}}})
         bid = response.json['data']
         self.bid_id = bid['id']
 
