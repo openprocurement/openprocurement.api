@@ -84,6 +84,8 @@ class TenderAwardComplaintResource(object):
                         for j in i.complaints:
                             if j.status == 'pending':
                                 j.status = 'cancelled'
+                for i in award.contracts:
+                    i.status = 'cancelled'
                 award.status = 'cancelled'
                 unsuccessful_awards = [i.bid_id for i in tender.awards if i.status == 'unsuccessful']
                 bids = [i for i in sorted(tender.bids, key=lambda i: (i.value.amount, i.date)) if i.id not in unsuccessful_awards]

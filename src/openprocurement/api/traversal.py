@@ -4,7 +4,6 @@ from openprocurement.api.models import Tender
 from pyramid.security import (
     ALL_PERMISSIONS,
     Allow,
-    Authenticated,
     Everyone,
 )
 
@@ -69,6 +68,14 @@ def factory(request):
                 return get_item(complaint, 'document', request, root)
             else:
                 return complaint
+        elif request.matchdict.get('contract_id'):
+            contract = get_item(award, 'contract', request, root)
+            if contract == root:
+                return root
+            elif request.matchdict.get('document_id'):
+                return get_item(contract, 'document', request, root)
+            else:
+                return contract
         elif request.matchdict.get('document_id'):
             return get_item(award, 'document', request, root)
         else:
