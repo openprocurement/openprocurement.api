@@ -110,6 +110,15 @@ class Address(Model):
     countryName_ru = StringType()
 
 
+class Location(Model):
+    class Options:
+        serialize_when_none = False
+
+    latitude = BaseType(required=True)
+    longitudee = BaseType(required=True)
+    elevation = BaseType()
+
+
 class Item(Model):
     """A good, service, or work to be contracted."""
     class Options:
@@ -124,6 +133,7 @@ class Item(Model):
     quantity = IntType()  # The number of units required
     deliveryDate = ModelType(Period)
     deliveryAddress = ModelType(Address)
+    deliveryLocation = ModelType(Location)
 
 
 class Document(Model):
