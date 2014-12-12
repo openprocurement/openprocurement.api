@@ -8,7 +8,7 @@ from openprocurement.api.tests.base import test_tender_data, BaseWebTest
 class TenderTest(BaseWebTest):
 
     def test_simple_add_tender(self):
-        u = Tender()
+        u = Tender(test_tender_data)
         u.tenderID = "UA-X"
 
         assert u.id is None
@@ -73,7 +73,7 @@ class TenderResourceTest(BaseWebTest):
         tenders = []
 
         for i in range(3):
-            response = self.app.post_json('/tenders', {'data': {}})
+            response = self.app.post_json('/tenders', {'data': test_tender_data})
             self.assertEqual(response.status, '201 Created')
             self.assertEqual(response.content_type, 'application/json')
             tenders.append(response.json['data'])
@@ -178,8 +178,9 @@ class TenderResourceTest(BaseWebTest):
         self.assertEqual(response.content_type, 'application/json')
         self.assertEqual(response.json['status'], 'error')
         self.assertEqual(response.json['errors'], [
-            {u'description': [
-                u"Value must be one of ['Open', 'Selective', 'Limited']."], u'location': u'body', u'name': u'procurementMethod'}
+            {u'description': [u"Value must be one of ['Open', 'Selective', 'Limited']."], u'location': u'body', u'name': u'procurementMethod'},
+            {u'description': [u'This field is required.'], u'location': u'body', u'name': u'minimalStep'},
+            {u'description': [u'This field is required.'], u'location': u'body', u'name': u'value'}
         ])
 
         response = self.app.post_json(request_path, {'data': {'enquiryPeriod': {'endDate': 'invalid_value'}}}, status=422)
@@ -191,12 +192,16 @@ class TenderResourceTest(BaseWebTest):
         ])
 
     def test_create_tender_generated(self):
-        data = {'id': 'hash', 'doc_id': 'hash2', 'tenderID': 'hash3'}
+        data = test_tender_data.copy()
+        del data['awardPeriod']
+        del data['procuringEntity']
+        data.update({'id': 'hash', 'doc_id': 'hash2', 'tenderID': 'hash3'})
         response = self.app.post_json('/tenders', {'data': data})
         self.assertEqual(response.status, '201 Created')
         self.assertEqual(response.content_type, 'application/json')
         tender = response.json['data']
-        self.assertEqual(set(tender), set([u'id', u'dateModified', u'tenderID', u'status', u'enquiryPeriod', u'owner']))
+        self.assertEqual(set(tender), set([u'id', u'dateModified', u'tenderID', u'status', u'enquiryPeriod', u'owner',
+                                           u'tenderPeriod', u'minimalStep', u'items', u'value']))
         self.assertNotEqual(data['id'], tender['id'])
         self.assertNotEqual(data['doc_id'], tender['id'])
         self.assertNotEqual(data['tenderID'], tender['tenderID'])
@@ -240,7 +245,7 @@ class TenderResourceTest(BaseWebTest):
         self.assertEqual(response.status, '200 OK')
         self.assertEqual(len(response.json['data']), 0)
 
-        response = self.app.post_json('/tenders', {'data': {}})
+        response = self.app.post_json('/tenders', {'data': test_tender_data})
         self.assertEqual(response.status, '201 Created')
         tender = response.json['data']
 
@@ -264,7 +269,7 @@ class TenderResourceTest(BaseWebTest):
         self.assertEqual(response.status, '200 OK')
         self.assertEqual(len(response.json['data']), 0)
 
-        response = self.app.post_json('/tenders', {'data': {}})
+        response = self.app.post_json('/tenders', {'data': test_tender_data})
         self.assertEqual(response.status, '201 Created')
         tender = response.json['data']
         tender['procurementMethod'] = 'Open'
@@ -294,7 +299,7 @@ class TenderResourceTest(BaseWebTest):
         self.assertEqual(response.status, '200 OK')
         self.assertEqual(len(response.json['data']), 0)
 
-        response = self.app.post_json('/tenders', {'data': {}})
+        response = self.app.post_json('/tenders', {'data': test_tender_data})
         self.assertEqual(response.status, '201 Created')
         tender = response.json['data']
         dateModified = tender.pop('dateModified')
@@ -328,7 +333,7 @@ class TenderResourceTest(BaseWebTest):
         self.assertEqual(response.content_type, 'application/json')
 
         response = self.app.patch_json('/tenders/{}'.format(
-            tender['id']), {'data': {'items': [{}, test_tender_data['items'][0]]}})
+            tender['id']), {'data': {'items': [test_tender_data['items'][0], test_tender_data['items'][0]]}})
         self.assertEqual(response.status, '200 OK')
         self.assertEqual(response.content_type, 'application/json')
         self.assertEqual(response.json['data']['items'][0], response.json['data']['items'][1])
@@ -362,7 +367,7 @@ class TenderResourceTest(BaseWebTest):
         self.assertEqual(response.status, '200 OK')
         self.assertEqual(len(response.json['data']), 0)
 
-        response = self.app.post_json('/tenders', {'data': {}})
+        response = self.app.post_json('/tenders', {'data': test_tender_data})
         self.assertEqual(response.status, '201 Created')
         tender = response.json['data']
         dateModified = tender['dateModified']
@@ -400,7 +405,7 @@ class TenderResourceTest(BaseWebTest):
         ])
 
         response = self.app.put_json(
-            '/tenders/some_id', {'data': {}}, status=404)
+            '/tenders/some_id', {'data': test_tender_data}, status=404)
         self.assertEqual(response.status, '404 Not Found')
         self.assertEqual(response.content_type, 'application/json')
         self.assertEqual(response.json['status'], 'error')
@@ -432,11 +437,11 @@ class TenderProcessTest(BaseWebTest):
         # create compaint
         self.app.authorization = ('Basic', ('broker', ''))
         response = self.app.post_json('/tenders/{}/complaints'.format(tender_id),
-                                      {'data': {'title': 'invalid conditions', 'description': 'description', 'author': {'identifier': {'id': 0}, 'name': 'Name'}}})
+                                      {'data': {'title': 'invalid conditions', 'description': 'description', 'author': test_tender_data["procuringEntity"]}})
         complaint_id = response.json['data']['id']
         # create second compaint
         response = self.app.post_json('/tenders/{}/complaints'.format(tender_id),
-                                      {'data': {'title': 'invalid conditions', 'description': 'description', 'author': {'identifier': {'id': 0}, 'name': 'Name'}}})
+                                      {'data': {'title': 'invalid conditions', 'description': 'description', 'author': test_tender_data["procuringEntity"]}})
         # switch to active.tendering
         self.app.authorization = ('Basic', ('chronograph', ''))
         response = self.app.patch_json('/tenders/{}'.format(tender_id),
@@ -467,7 +472,7 @@ class TenderProcessTest(BaseWebTest):
         # create bid
         self.app.authorization = ('Basic', ('broker', ''))
         response = self.app.post_json('/tenders/{}/bids'.format(tender_id),
-                                      {'data': {'tenderers': [{'identifier': {'id': 1}, 'name': 'Name'}], "value": {"amount": 600}}})
+                                      {'data': {'tenderers': [test_tender_data["procuringEntity"]], "value": {"amount": 600}}})
         # switch to active.auction
         self.app.authorization = ('Basic', ('chronograph', ''))
         response = self.app.patch_json('/tenders/{}'.format(tender_id),
@@ -513,7 +518,7 @@ class TenderProcessTest(BaseWebTest):
         # create bid
         self.app.authorization = ('Basic', ('broker', ''))
         response = self.app.post_json('/tenders/{}/bids'.format(tender_id),
-                                      {'data': {'tenderers': [{'identifier': {'id': 1}, 'name': 'Name'}], "value": {"amount": 600}}})
+                                      {'data': {'tenderers': [test_tender_data["procuringEntity"]], "value": {"amount": 600}}})
         # switch to active.auction
         self.app.authorization = ('Basic', ('chronograph', ''))
         response = self.app.patch_json('/tenders/{}'.format(tender_id),
@@ -559,12 +564,12 @@ class TenderProcessTest(BaseWebTest):
         # create bid
         self.app.authorization = ('Basic', ('broker', ''))
         response = self.app.post_json('/tenders/{}/bids'.format(tender_id),
-                                      {'data': {'tenderers': [{'identifier': {'id': 1}, 'name': 'Name'}], "value": {"amount": 600}}})
+                                      {'data': {'tenderers': [test_tender_data["procuringEntity"]], "value": {"amount": 600}}})
         bid_token = response.json['access']['token']
         # create second bid
         self.app.authorization = ('Basic', ('broker', ''))
         response = self.app.post_json('/tenders/{}/bids'.format(tender_id),
-                                      {'data': {'tenderers': [{'identifier': {'id': 2}, 'name': 'Name'}], "value": {"amount": 700}}})
+                                      {'data': {'tenderers': [test_tender_data["procuringEntity"]], "value": {"amount": 700}}})
         # switch to active.auction
         self.app.authorization = ('Basic', ('chronograph', ''))
         response = self.app.patch_json('/tenders/{}'.format(tender_id),
@@ -593,11 +598,11 @@ class TenderProcessTest(BaseWebTest):
         # create first award complaint
         self.app.authorization = ('Basic', ('broker', ''))
         response = self.app.post_json('/tenders/{}/awards/{}/complaints?acc_token={}'.format(tender_id, award_id, bid_token),
-                                      {'data': {'title': 'complaint title', 'description': 'complaint description', 'author': {'identifier': {'id': 1}, 'name': 'Name'}}})
+                                      {'data': {'title': 'complaint title', 'description': 'complaint description', 'author': test_tender_data["procuringEntity"]}})
         complaint_id = response.json['data']['id']
         # create first award complaint #2
         response = self.app.post_json('/tenders/{}/awards/{}/complaints?acc_token={}'.format(tender_id, award_id, bid_token),
-                                      {'data': {'title': 'complaint title', 'description': 'complaint description', 'author': {'identifier': {'id': 1}, 'name': 'Name'}}})
+                                      {'data': {'title': 'complaint title', 'description': 'complaint description', 'author': test_tender_data["procuringEntity"]}})
         # satisfying award complaint
         response = self.app.patch_json('/tenders/{}/awards/{}/complaints/{}?acc_token={}'.format(tender_id, award_id, complaint_id, owner_token),
                                        {"data": {"status": "resolved", "resolution": "resolution text"}})

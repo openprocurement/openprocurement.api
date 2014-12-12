@@ -1,14 +1,14 @@
 # -*- coding: utf-8 -*-
 import unittest
 
-from openprocurement.api.tests.base import BaseTenderWebTest
+from openprocurement.api.tests.base import BaseTenderWebTest, test_tender_data
 
 
 class TenderComplaintResourceTest(BaseTenderWebTest):
 
     def test_create_tender_complaint_invalid(self):
         response = self.app.post_json('/tenders/some_id/complaints', {
-                                      'data': {'title': 'complaint title', 'description': 'complaint description', 'author': {'identifier': {}, 'name': 'Name'}}}, status=404)
+                                      'data': {'title': 'complaint title', 'description': 'complaint description', 'author': test_tender_data["procuringEntity"]}}, status=404)
         self.assertEqual(response.status, '404 Not Found')
         self.assertEqual(response.content_type, 'application/json')
         self.assertEqual(response.json['status'], 'error')
@@ -61,7 +61,7 @@ class TenderComplaintResourceTest(BaseTenderWebTest):
         self.assertEqual(response.content_type, 'application/json')
         self.assertEqual(response.json['status'], 'error')
         self.assertEqual(response.json['errors'], [
-            {u'description': [u'This field is required.'], u'location': u'body', u'name': u'description'},
+            {u'description': [u'This field is required.'], u'location': u'body', u'name': u'author'},
             {u'description': [u'This field is required.'], u'location': u'body', u'name': u'title'},
         ])
 
@@ -91,7 +91,7 @@ class TenderComplaintResourceTest(BaseTenderWebTest):
         self.assertEqual(response.content_type, 'application/json')
         self.assertEqual(response.json['status'], 'error')
         self.assertEqual(response.json['errors'], [
-            {u'description': {u'name': [u'This field is required.']}, u'location': u'body', u'name': u'author'}
+            {u'description': {u'contactPoint': [u'This field is required.'], u'identifier': {u'scheme': [u'This field is required.'], u'id': [u'This field is required.']}, u'name': [u'This field is required.'], u'address': [u'This field is required.']}, u'location': u'body', u'name': u'author'}
         ])
 
         response = self.app.post_json(request_path, {'data': {'title': 'complaint title', 'description': 'complaint description', 'author': {
@@ -100,16 +100,16 @@ class TenderComplaintResourceTest(BaseTenderWebTest):
         self.assertEqual(response.content_type, 'application/json')
         self.assertEqual(response.json['status'], 'error')
         self.assertEqual(response.json['errors'], [
-            {u'description': {u'identifier': {u'uri': [u'Not a well formed URL.']}}, u'location': u'body', u'name': u'author'}
+            {u'description': {u'contactPoint': [u'This field is required.'], u'identifier': {u'scheme': [u'This field is required.'], u'id': [u'This field is required.'], u'uri': [u'Not a well formed URL.']}, u'address': [u'This field is required.']}, u'location': u'body', u'name': u'author'}
         ])
 
     def test_create_tender_complaint(self):
         response = self.app.post_json('/tenders/{}/complaints'.format(
-            self.tender_id), {'data': {'title': 'complaint title', 'description': 'complaint description', 'author': {'identifier': {'id': 0}, 'name': 'Name'}}})
+            self.tender_id), {'data': {'title': 'complaint title', 'description': 'complaint description', 'author': test_tender_data["procuringEntity"]}})
         self.assertEqual(response.status, '201 Created')
         self.assertEqual(response.content_type, 'application/json')
         complaint = response.json['data']
-        self.assertEqual(complaint['author']['name'], 'Name')
+        self.assertEqual(complaint['author']['name'], test_tender_data["procuringEntity"]['name'])
         self.assertTrue('id' in complaint)
         self.assertTrue(complaint['id'] in response.headers['Location'])
 
@@ -129,14 +129,14 @@ class TenderComplaintResourceTest(BaseTenderWebTest):
         self.assertEqual(response.json['data']["resolution"], "resolution text")
 
         response = self.app.post_json('/tenders/{}/complaints'.format(
-            self.tender_id), {'data': {'title': 'complaint title', 'description': 'complaint description', 'author': {'identifier': {'id': 0}, 'name': 'Name'}}}, status=403)
+            self.tender_id), {'data': {'title': 'complaint title', 'description': 'complaint description', 'author': test_tender_data["procuringEntity"]}}, status=403)
         self.assertEqual(response.status, '403 Forbidden')
         self.assertEqual(response.content_type, 'application/json')
         self.assertEqual(response.json['errors'][0]["description"], "Can't add complaint in current tender status")
 
     def test_patch_tender_complaint(self):
         response = self.app.post_json('/tenders/{}/complaints'.format(
-            self.tender_id), {'data': {'title': 'complaint title', 'description': 'complaint description', 'author': {'identifier': {'id': 0}, 'name': 'Name'}}})
+            self.tender_id), {'data': {'title': 'complaint title', 'description': 'complaint description', 'author': test_tender_data["procuringEntity"]}})
         self.assertEqual(response.status, '201 Created')
         self.assertEqual(response.content_type, 'application/json')
         complaint = response.json['data']
@@ -185,7 +185,7 @@ class TenderComplaintResourceTest(BaseTenderWebTest):
 
     def test_get_tender_complaint(self):
         response = self.app.post_json('/tenders/{}/complaints'.format(
-            self.tender_id), {'data': {'title': 'complaint title', 'description': 'complaint description', 'author': {'identifier': {'id': 0}, 'name': 'Name'}}})
+            self.tender_id), {'data': {'title': 'complaint title', 'description': 'complaint description', 'author': test_tender_data["procuringEntity"]}})
         self.assertEqual(response.status, '201 Created')
         self.assertEqual(response.content_type, 'application/json')
         complaint = response.json['data']
@@ -215,7 +215,7 @@ class TenderComplaintResourceTest(BaseTenderWebTest):
 
     def test_get_tender_complaints(self):
         response = self.app.post_json('/tenders/{}/complaints'.format(
-            self.tender_id), {'data': {'title': 'complaint title', 'description': 'complaint description', 'author': {'identifier': {'id': 0}, 'name': 'Name'}}})
+            self.tender_id), {'data': {'title': 'complaint title', 'description': 'complaint description', 'author': test_tender_data["procuringEntity"]}})
         self.assertEqual(response.status, '201 Created')
         self.assertEqual(response.content_type, 'application/json')
         complaint = response.json['data']
@@ -241,7 +241,7 @@ class TenderComplaintDocumentResourceTest(BaseTenderWebTest):
         super(TenderComplaintDocumentResourceTest, self).setUp()
         # Create complaint
         response = self.app.post_json('/tenders/{}/complaints'.format(
-            self.tender_id), {'data': {'title': 'complaint title', 'description': 'complaint description', 'author': {'identifier': {'id': 0}, 'name': 'Name'}}})
+            self.tender_id), {'data': {'title': 'complaint title', 'description': 'complaint description', 'author': test_tender_data["procuringEntity"]}})
         complaint = response.json['data']
         self.complaint_id = complaint['id']
 
