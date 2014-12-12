@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 from cornice.resource import resource, view
-from openprocurement.api.models import Award, get_now
+from openprocurement.api.models import Award, Contract, get_now
 from openprocurement.api.utils import (
     apply_data_patch,
     save_tender,
@@ -296,6 +296,7 @@ class TenderAwardResource(object):
             src = tender.serialize("plain")
             award.import_data(apply_data_patch(award.serialize(), award_data))
             if award.status == 'active':
+                award.contracts.append(Contract({'awardID': award.id}))
                 tender.awardPeriod.endDate = get_now()
                 tender.status = 'active.awarded'
             elif award.status == 'unsuccessful':

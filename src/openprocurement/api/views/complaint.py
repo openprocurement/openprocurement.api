@@ -26,7 +26,7 @@ class TenderComplaintResource(object):
         """Post a complaint
         """
         tender = self.request.validated['tender']
-        if tender.status != 'active.enquiries':
+        if tender.status not in ['active.enquiries', 'active.tendering']:
             self.request.errors.add('body', 'data', 'Can\'t add complaint in current tender status')
             self.request.errors.status = 403
             return

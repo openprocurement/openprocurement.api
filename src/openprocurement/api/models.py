@@ -3,7 +3,7 @@ from couchdb_schematics.document import SchematicsDocument
 from datetime import datetime, timedelta
 from iso8601 import parse_date, ParseError
 from pyramid.security import Allow
-from schematics.exceptions import ConversionError, ValidationError
+from schematics.exceptions import ConversionError
 from schematics.models import Model
 from schematics.transforms import whitelist, blacklist
 from schematics.types import StringType, FloatType, IntType, URLType, BooleanType, BaseType, EmailType
@@ -53,28 +53,6 @@ class IsoDateTimeType(BaseType):
 
     def to_primitive(self, value, context=None):
         return value.isoformat()
-
-
-class AmendmentInformation(Model):
-    """Amendment information"""
-    class Options:
-        serialize_when_none = False
-
-    amendmentDate = IsoDateTimeType()
-    amendedFields = StringType()  # Comma-seperated list of affected fields.
-    justification = StringType()  # An explanation / justification for the amendment.
-
-
-class Notice(Model):
-    """The notice is a published document that notifies the public at various stages of the contracting process."""
-    class Options:
-        serialize_when_none = False
-
-    id = StringType()  # The identifier that identifies the notice to the publisher. This may be the same or different from the OCID.
-    uri = URLType()  # A permanent uri that provides access to the notice.
-    publishedDate = IsoDateTimeType()  # The date this version of the notice was published. In the case of notice amendments, it is the date that reflects to this version of the data.
-    isAmendment = BooleanType()  # If true, then amendment information should be provided.
-    amendment = ModelType(AmendmentInformation)  # Amendment information
 
 
 class Value(Model):
@@ -132,6 +110,15 @@ class Address(Model):
     countryName_ru = StringType()
 
 
+class Location(Model):
+    class Options:
+        serialize_when_none = False
+
+    latitude = BaseType(required=True)
+    longitudee = BaseType(required=True)
+    elevation = BaseType()
+
+
 class Item(Model):
     """A good, service, or work to be contracted."""
     class Options:
@@ -146,6 +133,7 @@ class Item(Model):
     quantity = IntType()  # The number of units required
     deliveryDate = ModelType(Period)
     deliveryAddress = ModelType(Address)
+    deliveryLocation = ModelType(Location)
 
 
 class Document(Model):
@@ -302,6 +290,25 @@ class Complaint(Model):
     documents = ListType(ModelType(Document), default=list())
 
 
+class Contract(Model):
+    class Options:
+        serialize_when_none = False
+
+    id = StringType(required=True, default=lambda: uuid4().hex)
+    awardID = StringType()
+    title = StringType()  # Contract title
+    title_en = StringType()
+    title_ru = StringType()
+    description = StringType()  # Contract description
+    description_en = StringType()
+    description_ru = StringType()
+    status = StringType(required=True, choices=['pending', 'terminated', 'active', 'cancelled'], default='pending')
+    period = ModelType(Period)
+    value = ModelType(Value)
+    dateSigned = IsoDateTimeType(default=get_now)
+    documents = ListType(ModelType(Document), default=list())
+
+
 class Award(Model):
     """ An award for the given procurement. There may be more than one award
         per contracting process e.g. because the contract is split amongst
@@ -329,6 +336,7 @@ class Award(Model):
     items = ListType(ModelType(Item))
     documents = ListType(ModelType(Document), default=list())
     complaints = ListType(ModelType(Complaint), default=list())
+    contracts = ListType(ModelType(Contract), default=list())
 
 
 plain_role = (blacklist('owner_token', '_attachments', 'revisions', 'dateModified') + schematics_embedded_role)

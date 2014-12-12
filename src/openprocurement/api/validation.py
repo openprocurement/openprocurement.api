@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from openprocurement.api.models import Tender, Bid, Award, Document, Question, Complaint
+from openprocurement.api.models import Tender, Bid, Award, Document, Question, Complaint, Contract
 from schematics.exceptions import ModelValidationError, ModelConversionError
 from zope.security.proxy import isinstance
 
@@ -99,6 +99,14 @@ def validate_complaint_data(request):
 
 def validate_patch_complaint_data(request):
     return validate_data(request, Complaint, True)
+
+
+def validate_contract_data(request):
+    return validate_data(request, Contract)
+
+
+def validate_patch_contract_data(request):
+    return validate_data(request, Contract, True)
 
 
 def validate_file_upload(request):
