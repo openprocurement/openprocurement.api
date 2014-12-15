@@ -103,7 +103,7 @@ class Unit(Model):
     name_en = StringType()
     name_ru = StringType()
     value = ModelType(Value)
-    code = StringType(required=True, choices=CPV_CODES)
+    code = StringType(required=True)
 
 
 class Address(Model):
