@@ -73,6 +73,15 @@ class Period(Model):
     endDate = IsoDateTimeType()  # The end date for the period.
 
 
+class PeriodEndRequired(Model):
+    """The period when the tender is open for submissions. The end date is the closing date for tender submissions."""
+    class Options:
+        serialize_when_none = False
+
+    startDate = IsoDateTimeType()  # The state date for the period.
+    endDate = IsoDateTimeType(required=True)  # The end date for the period.
+
+
 class Classification(Model):
     class Options:
         serialize_when_none = False
@@ -223,7 +232,7 @@ class Bid(Model):
             'cancelled': view_bid_role,
         }
 
-    tenderers = ListType(ModelType(Organization), default=list())
+    tenderers = ListType(ModelType(Organization), required=True, min_size=1, max_size=1)
     date = IsoDateTimeType(default=get_now)
     id = StringType(required=True, default=lambda: uuid4().hex)
     status = StringType(choices=['registration', 'validBid', 'invalidBid'])
@@ -295,7 +304,7 @@ class Contract(Model):
         serialize_when_none = False
 
     id = StringType(required=True, default=lambda: uuid4().hex)
-    awardID = StringType()
+    awardID = StringType(required=True)
     title = StringType()  # Contract title
     title_en = StringType()
     title_ru = StringType()
@@ -322,7 +331,7 @@ class Award(Model):
         }
 
     id = StringType(required=True, default=lambda: uuid4().hex)
-    bid_id = StringType()
+    bid_id = StringType(required=True)
     title = StringType()  # Award title
     title_en = StringType()
     title_ru = StringType()
@@ -332,7 +341,7 @@ class Award(Model):
     status = StringType(required=True, choices=['pending', 'unsuccessful', 'active', 'cancelled'], default='pending')
     date = IsoDateTimeType(default=get_now)
     value = ModelType(Value)
-    suppliers = ListType(ModelType(Organization), default=list())
+    suppliers = ListType(ModelType(Organization), required=True, min_size=1, max_size=1)
     items = ListType(ModelType(Item))
     documents = ListType(ModelType(Document), default=list())
     complaints = ListType(ModelType(Complaint), default=list())
@@ -371,7 +380,7 @@ class Tender(SchematicsDocument, Model):
     description_en = StringType()
     description_ru = StringType()
     tenderID = StringType()  # TenderID should always be the same as the OCID. It is included to make the flattened data structure more convenient.
-    items = ListType(ModelType(Item))  # The goods and services to be purchased, broken into line items wherever possible. Items should not be duplicated, but a quantity of 2 specified instead.
+    items = ListType(ModelType(Item), required=True, min_size=1)  # The goods and services to be purchased, broken into line items wherever possible. Items should not be duplicated, but a quantity of 2 specified instead.
     value = ModelType(Value, required=True)  # The total estimated value of the procurement.
     procurementMethod = StringType(choices=['Open', 'Selective', 'Limited'])  # Specify tendering method as per GPA definitions of Open, Selective, Limited (http://www.wto.org/english/docs_e/legal_e/rev-gpr-94_01_e.htm)
     procurementMethodRationale = StringType()  # Justification of procurement method, especially in the case of Limited tendering.
@@ -385,8 +394,8 @@ class Tender(SchematicsDocument, Model):
     submissionMethodDetails = StringType()  # Any detailed or further information on the submission method.
     submissionMethodDetails_en = StringType()
     submissionMethodDetails_ru = StringType()
-    tenderPeriod = ModelType(Period)  # The period when the tender is open for submissions. The end date is the closing date for tender submissions.
-    enquiryPeriod = ModelType(Period)  # The period during which enquiries may be made and will be answered.
+    enquiryPeriod = ModelType(PeriodEndRequired, required=True)  # The period during which enquiries may be made and will be answered.
+    tenderPeriod = ModelType(PeriodEndRequired, required=True)  # The period when the tender is open for submissions. The end date is the closing date for tender submissions.
     hasEnquiries = BooleanType()  # A Yes/No field as to whether enquiries were part of tender process.
     eligibilityCriteria = StringType()  # A description of any eligibility criteria for potential suppliers.
     eligibilityCriteria_en = StringType()
@@ -395,7 +404,7 @@ class Tender(SchematicsDocument, Model):
     numberOfBidders = IntType()  # The number of unique tenderers who participated in the tender
     numberOfBids = IntType()  # The number of bids or submissions to the tender. In the case of an auction, the number of bids may differ from the numberOfBidders.
     bids = ListType(ModelType(Bid), default=list())  # A list of all the companies who entered submissions for the tender.
-    procuringEntity = ModelType(Organization)  # The entity managing the procurement, which may be different from the buyer who is paying / using the items being procured.
+    procuringEntity = ModelType(Organization, required=True)  # The entity managing the procurement, which may be different from the buyer who is paying / using the items being procured.
     documents = ListType(ModelType(Document), default=list())  # All documents and attachments related to the tender.
     awards = ListType(ModelType(Award), default=list())
     revisions = ListType(ModelType(Revision), default=list())
