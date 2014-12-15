@@ -251,10 +251,9 @@ class TenderResource(object):
         tender_data['doc_id'] = tender_id
         tender_data['tenderID'] = generate_tender_id(tender_id)
         tender = Tender(tender_data)
-        if tender.enquiryPeriod:
-            tender.enquiryPeriod.startDate = tender.dateModified
-        else:
-            tender.enquiryPeriod = {'startDate': tender.dateModified}
+        tender.enquiryPeriod.startDate = tender.dateModified
+        if not tender.tenderPeriod.startDate:
+            tender.tenderPeriod.startDate = tender.enquiryPeriod.endDate
         set_ownership(tender, self.request)
         save_tender(tender, {}, self.request)
         self.request.response.status = 201

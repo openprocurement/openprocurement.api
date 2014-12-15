@@ -105,6 +105,18 @@ class TenderAuctionResourceTest(BaseTenderWebTest):
 
         self.set_status('active.auction')
 
+        response = self.app.patch_json('/tenders/{}/auction'.format(self.tender_id), {'data': {}}, status=422)
+        self.assertEqual(response.status, '422 Unprocessable Entity')
+        self.assertEqual(response.content_type, 'application/json')
+        self.assertEqual(response.json['errors'][0]["description"], "Bids data not available")
+
+        response = self.app.patch_json('/tenders/{}/auction'.format(self.tender_id), {'data': {'bids': [{'invalid_field': 'invalid_value'}]}}, status=422)
+        self.assertEqual(response.status, '422 Unprocessable Entity')
+        self.assertEqual(response.content_type, 'application/json')
+        self.assertEqual(response.json['errors'], [
+            {u'description': u'Rogue field', u'location': u'body', u'name': u'invalid_field'}
+        ])
+
         patch_data = {
             'bids': [
                 {
