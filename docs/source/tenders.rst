@@ -38,7 +38,7 @@ The response contains `next_page` element with following properties:
     This is path section of URL with original parameters and `offset`
     parameter added/replaced above.
 
-:url:
+:uri:
     The full version of URL for next page.
 
 If next page request returns no data (i.e. empty array) then there is little

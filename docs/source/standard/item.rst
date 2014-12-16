@@ -69,7 +69,7 @@ Schema
     :elevation:
         strng, optional, usually not used
 
-    `deliveryLocation` usually takes precedance over `deliveryAddress` if both present.
+    `deliveryLocation` usually takes precedence over `deliveryAddress` if both are present.
 
 .. _Classification:
 
