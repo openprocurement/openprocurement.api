@@ -4,7 +4,7 @@ msgstr ""
 "Project-Id-Version: openprocurement.api 0.3\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2014-11-24 18:25+0200\n"
-"PO-Revision-Date: 2014-11-25 15:24+0300\n"
+"PO-Revision-Date: 2014-12-09 17:40+0300\n"
 "Last-Translator: \n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
@@ -24,7 +24,7 @@ msgstr "Схема"
 #: ../../source/standard/util.rst:14 ../../source/standard/util.rst:20
 #: ../../source/standard/util.rst:66
 msgid "string, :ref:`date`"
-msgstr "string, :ref:`date`"
+msgstr "стрічка, :ref:`date`"
 
 #: ../../source/standard/util.rst:22
 msgid "|ocdsDescription| The end date for the period."
@@ -52,7 +52,7 @@ msgstr "|ocdsDescription| Кількість як число."
 
 #: ../../source/standard/util.rst:48
 msgid "string"
-msgstr "string"
+msgstr "стрічка"
 
 #: ../../source/standard/util.rst:50
 msgid "|ocdsDescription| The currency in 3-letter ISO 4217 format."
@@ -72,7 +72,7 @@ msgstr "Дата, коли зміни були записані"
 
 #: ../../source/standard/util.rst:71
 msgid "List of :`Change` objects"
-msgstr "Список об’єктів :`Change`"
+msgstr "Список об’єктів :ref:`Change`"
 
 #: ../../source/standard/util.rst:4
 msgid "startDate"

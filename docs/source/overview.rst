@@ -75,7 +75,7 @@ Released: 2014-12-15
  - Token Broker authorization
  - Actor token authorization
  - Added Item.deliveryLocation
- - Pending complaints Tender completion blocking
+ - Tender completion blocking due to pending complaints 
 
 0.5
 ~~~
