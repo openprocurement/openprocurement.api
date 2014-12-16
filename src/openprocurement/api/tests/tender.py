@@ -503,7 +503,7 @@ class TenderProcessTest(BaseWebTest):
         response = self.app.get('/tenders/{}/auction'.format(tender_id))
         auction_bids_data = response.json['data']['bids']
         # posting auction results
-        response = self.app.patch_json('/tenders/{}/auction'.format(tender_id),
+        response = self.app.post_json('/tenders/{}/auction'.format(tender_id),
                                        {'data': {'bids': auction_bids_data}})
         # get awards
         self.app.authorization = ('Basic', ('broker', ''))
@@ -549,7 +549,7 @@ class TenderProcessTest(BaseWebTest):
         response = self.app.get('/tenders/{}/auction'.format(tender_id))
         auction_bids_data = response.json['data']['bids']
         # posting auction results
-        response = self.app.patch_json('/tenders/{}/auction'.format(tender_id),
+        response = self.app.post_json('/tenders/{}/auction'.format(tender_id),
                                        {'data': {'bids': auction_bids_data}})
         # get awards
         self.app.authorization = ('Basic', ('broker', ''))
@@ -600,7 +600,7 @@ class TenderProcessTest(BaseWebTest):
         response = self.app.get('/tenders/{}/auction'.format(tender_id))
         auction_bids_data = response.json['data']['bids']
         # posting auction results
-        response = self.app.patch_json('/tenders/{}/auction'.format(tender_id),
+        response = self.app.post_json('/tenders/{}/auction'.format(tender_id),
                                        {'data': {'bids': auction_bids_data}})
         # get awards
         self.app.authorization = ('Basic', ('broker', ''))

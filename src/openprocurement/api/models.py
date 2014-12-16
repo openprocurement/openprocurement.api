@@ -225,7 +225,7 @@ class Bid(Model):
         roles = {
             'embedded': view_bid_role,
             'view': view_bid_role,
-            'auction_view': whitelist('value', 'id', 'date'),
+            'auction_view': whitelist('value', 'id', 'date', 'participationUrl'),
             'active.enquiries': whitelist(),
             'active.tendering': whitelist(),
             'active.auction': whitelist('value'),
@@ -355,7 +355,7 @@ class Award(Model):
 plain_role = (blacklist('owner_token', '_attachments', 'revisions', 'dateModified') + schematics_embedded_role)
 view_role = (blacklist('owner_token', '_attachments', 'revisions') + schematics_embedded_role)
 listing_role = whitelist('dateModified', 'doc_id')
-auction_view_role = whitelist('tenderID', 'dateModified', 'bids', 'auctionPeriod', 'minimalStep')
+auction_view_role = whitelist('tenderID', 'dateModified', 'bids', 'auctionPeriod', 'minimalStep', 'auctionUrl')
 enquiries_role = (blacklist('owner_token', '_attachments', 'revisions', 'bids') + schematics_embedded_role)
 
 
