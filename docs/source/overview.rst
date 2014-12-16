@@ -76,15 +76,21 @@ Released: 2014-12-15
  - Actor token authorization
  - Added Item.deliveryLocation
  - Pending complaints Tender completion blocking
+ - Rescheduling of failed auctions
 
 0.5
 ~~~
 Released: not released
 
+ New features:
+
  - Actor token generation
- - Tender.deliveryDate moved to Item.deliveryDate
  - Added Item.deliveryAddress
  - Award sequential review logic
+
+ Modifications:
+
+ - Tender.deliveryDate moved to Item.deliveryDate
 
 0.4
 ~~~
