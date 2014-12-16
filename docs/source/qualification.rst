@@ -11,25 +11,27 @@ Central DB, there is award generated for auction winner.
 Listing awards
 ~~~~~~~~~~~~~~
 
-It can be retrieved via request to list all awards available:
+The pending award can be retrieved via request to list all awards available:
 
-http /awards
+.. sourcecode:: http
 
-The award is in `pending` state meaning the fact that procuring entity has
+  GET /tenders/64e93250be76435397e8c992ed4214d1/awards
+
+The award is with `pending` status meaning the fact that procuring entity has
 to review documents describing the bid and other bidder documents.
 
 Disqualification
 ~~~~~~~~~~~~~~~~
 
-The protocol of qualification comittee qualification decision should be
-uploaded as document into award and later its status should switch to either
-active (when it is accepted) or unsuccessful (if rejected).
+The protocol of Qualification Committee decision should be uploaded as
+document into award and later its status should switch to either `active`
+(if it is accepted) or `unsuccessful` (if rejected).
 
 .. sourcecode:: http
 
   POST /tenders/64e93250be76435397e8c992ed4214d1/awards/{}/documents
 
-The qualification comittee can upload several documents, like decisions to
+The Qualification Comittee can upload several documents, like decisions to
 prolong the qualification process to allow the bidder to collect all
 necessary documents or correct errors.  Such documents would help to have
 procedure as transparent as possible and will reduce risk of cancellation by
@@ -51,9 +53,9 @@ Complaint Review Body.
   Location: /tenders/64e93250be76435397e8c992ed4214d1/awards/ea36a10ad89649ccac253f23d8e0e80d HTTP/1.1
 
 Note that after award rejection the next bid in the value-sorted bid
-sequence becomes subject of subsequent award.  For convenience you can see
-the `Location` response header from the response above that point next award
-in "pending" state.
+sequence becomes subject of subsequent award.  For convenience you can use
+the `Location` response header from the response above that is pointing
+award in "pending" state.
 
 
 Contract Awarding
@@ -83,17 +85,18 @@ Confirming the Award:
 
 The procuring entity can wait until bidder provides all missing documents
 (licenses, certificates, statements, etc.) or update original bid documents
-to correct errors.  Or can reject the bid if documents provided does not
-support the pass/fail criterias of tender.
+to correct errors.  Alternatively they can reject the bid if documents
+provided does not satisfy the pass/fail criterias of tender (even before
+full package of supplementary documents is available).
 
 Influence of Complaint Satisfaction
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 If decision of the procuring entity is considered unfair any bidder can file
 complaint and after proper review the whole awarding process can start from
-the award in question.  When Complaint review body satifies the complaint,
+the award in question.  When Complaint Review Body satifies the complaint,
 all awards registered in the system that were issued (including the one that
-complaint was filed against) are cancelled (switch to cancelled status). 
-New pending award is generated and procuringEntity is obliged to qualify it
+complaint was filed against) are cancelled (switch to `cancelled` status). 
+New pending award is generated and Procuring Entity is obliged to qualify it
 again, taking into consideration recommendations in the report of Complaint
-review body.
+Review Body.
