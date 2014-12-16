@@ -354,7 +354,7 @@ class TenderResource(object):
 
         """
         tender = self.request.validated['tender']
-        tender_data = tender.serialize(tender.status)
+        tender_data = tender.serialize('view' if request.authenticated_userid == 'chronograph' else tender.status)
         return {'data': tender_data}
 
     @view(content_type="application/json", validators=(validate_tender_data, ), permission='edit_tender', renderer='json')
