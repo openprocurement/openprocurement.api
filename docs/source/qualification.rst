@@ -4,30 +4,40 @@
 Qualification Operations
 ========================
 
-Contract Awarding
-~~~~~~~~~~~~~~~~~
+When auction is over the qualification process starts. The status of tender
+is `active.qualification` then.  Right after results are submitted to
+Central DB, there is award generated for auction winner.
 
-.. sourcecode:: http
+Listing awards
+~~~~~~~~~~~~~~
 
-  POST /tenders/64e93250be76435397e8c992ed4214d1/awards HTTP/1.1
+It can be retrieved via request to list all awards available:
 
-  {
-      "data":{
-          "awardStatus": "pending"
-      }
-  }
+http /awards
 
-.. sourcecode:: http
-
-  HTTP/1.1 201 Created
-  Location: /tenders/64e93250be76435397e8c992ed4214d1/awards/ea36a10ad89649ccac253f23d8e0e80d HTTP/1.1
+The award is in `pending` state meaning the fact that procuring entity has
+to review documents describing the bid and other bidder documents.
 
 Disqualification
 ~~~~~~~~~~~~~~~~
 
+The protocol of qualification comittee qualification decision should be
+uploaded as document into award and later its status should switch to either
+active (when it is accepted) or unsuccessful (if rejected).
+
 .. sourcecode:: http
 
-  POST /tenders/64e93250be76435397e8c992ed4214d1/awards HTTP/1.1
+  POST /tenders/64e93250be76435397e8c992ed4214d1/awards/{}/documents
+
+The qualification comittee can upload several documents, like decisions to
+prolong the qualification process to allow the bidder to collect all
+necessary documents or correct errors.  Such documents would help to have
+procedure as transparent as possible and will reduce risk of cancellation by
+Complaint Review Body.
+
+.. sourcecode:: http
+
+  PATCH /tenders/64e93250be76435397e8c992ed4214d1/awards/{} HTTP/1.1
 
   {
       "data":{
@@ -37,5 +47,53 @@ Disqualification
 
 .. sourcecode:: http
 
-  HTTP/1.1 201 Created
+  HTTP/1.1 200 OK
   Location: /tenders/64e93250be76435397e8c992ed4214d1/awards/ea36a10ad89649ccac253f23d8e0e80d HTTP/1.1
+
+Note that after award rejection the next bid in the value-sorted bid
+sequence becomes subject of subsequent award.  For convenience you can see
+the `Location` response header from the response above that point next award
+in "pending" state.
+
+
+Contract Awarding
+~~~~~~~~~~~~~~~~~
+
+Protocol upload:
+
+.. sourcecode:: http
+
+  POST /tenders/64e93250be76435397e8c992ed4214d1/awards/{}/documents
+
+Confirming the Award:
+
+.. sourcecode:: http
+
+  PATCH /tenders/64e93250be76435397e8c992ed4214d1/awards/{} HTTP/1.1
+
+  {
+      "data":{
+          "awardStatus": "active"
+      }
+  }
+
+.. sourcecode:: http
+
+  HTTP/1.1 200 OK
+
+The procuring entity can wait until bidder provides all missing documents
+(licenses, certificates, statements, etc.) or update original bid documents
+to correct errors.  Or can reject the bid if documents provided does not
+support the pass/fail criterias of tender.
+
+Influence of Complaint Satisfaction
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+If decision of the procuring entity is considered unfair any bidder can file
+complaint and after proper review the whole awarding process can start from
+the award in question.  When Complaint review body satifies the complaint,
+all awards registered in the system that were issued (including the one that
+complaint was filed against) are cancelled (switch to cancelled status). 
+New pending award is generated and procuringEntity is obliged to qualify it
+again, taking into consideration recommendations in the report of Complaint
+review body.
