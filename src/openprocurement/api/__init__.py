@@ -18,6 +18,8 @@ from openprocurement.api.traversal import factory
 
 
 VERSION = int(pkg_resources.get_distribution(__package__).parsed_version[0])
+if os.environ.get('READTHEDOCS', None) == 'True':
+    os.environ['TZ'] = 'Europe/Kiev'
 
 
 def set_renderer(event):
