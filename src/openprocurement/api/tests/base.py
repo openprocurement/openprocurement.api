@@ -13,7 +13,7 @@ test_tender_data = {
     "procuringEntity": {
         "name": u"Державне управління справами",
         "identifier": {
-            "scheme": u"https://ns.openprocurement.org/ua/edrpou",
+            "scheme": u"UA-EDR",
             "id": u"00037256",
             "uri": u"http://www.dus.gov.ua/"
         },

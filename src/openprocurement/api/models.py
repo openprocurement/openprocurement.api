@@ -29,17 +29,18 @@ def get_now():
     return datetime.now(TZ)
 
 
-def read_cpv():
+def read_json(name):
     import os.path
     from json import loads
     curr_dir = os.path.dirname(os.path.realpath(__file__))
-    file_path = os.path.join(curr_dir, 'cpv.json')
+    file_path = os.path.join(curr_dir, name)
     with open(file_path) as lang_file:
         data = lang_file.read()
     return loads(data)
 
 
-CPV_CODES = read_cpv()
+CPV_CODES = read_json('cpv.json')
+ORA_CODES = [i['code'] for i in read_json('OrganisationRegistrationAgency.json')['data']] + [u'UA-EDR']
 
 
 class IsoDateTimeType(BaseType):
@@ -180,7 +181,7 @@ class Identifier(Model):
     class Options:
         serialize_when_none = False
 
-    scheme = URLType(required=True)  # The scheme that holds the unique identifiers used to identify the item being identified.
+    scheme = StringType(required=True, choices=ORA_CODES)  # The scheme that holds the unique identifiers used to identify the item being identified.
     id = BaseType(required=True)  # The identifier of the organization in the selected scheme.
     legalName = StringType()  # The legally registered name of the organization.
     legalName_en = StringType()
