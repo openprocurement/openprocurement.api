@@ -4,7 +4,7 @@ msgstr ""
 "Project-Id-Version: openprocurement.api 0.3\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2014-11-24 18:25+0200\n"
-"PO-Revision-Date: 2014-11-25 15:32+0300\n"
+"PO-Revision-Date: 2014-12-16 11:10+0300\n"
 "Last-Translator: \n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
@@ -16,14 +16,14 @@ msgstr ""
 msgid "Item"
 msgstr "Item"
 
-#: ../../source/standard/item.rst:12 ../../source/standard/item.rst:57
-#: ../../source/standard/item.rst:94
+#: ../../source/standard/item.rst:12 ../../source/standard/item.rst:80
+#: ../../source/standard/item.rst:117
 msgid "Schema"
 msgstr "Схема"
 
 #: ../../source/standard/item.rst:15
 msgid "string, multilingual"
-msgstr "string, багатомовний"
+msgstr "стрічка, багатомовний"
 
 #: ../../source/standard/item.rst:17
 msgid "|ocdsDescription| A description of the goods, services to be provided."
@@ -73,31 +73,31 @@ msgstr ""
 
 #: ../../source/standard/item.rst:45
 msgid "integer"
-msgstr "integer"
+msgstr "ціле число"
 
 #: ../../source/standard/item.rst:47
 msgid "|ocdsDescription| The number of units required"
 msgstr "|ocdsDescription| Кількість необхідних одиниць."
 
-#: ../../source/standard/item.rst:54 ../../source/standard/item.rst:4
+#: ../../source/standard/item.rst:77 ../../source/standard/item.rst:4
 msgid "Classification"
 msgstr "Classification"
 
-#: ../../source/standard/item.rst:60 ../../source/standard/item.rst:69
-#: ../../source/standard/item.rst:75 ../../source/standard/item.rst:97
+#: ../../source/standard/item.rst:83 ../../source/standard/item.rst:92
+#: ../../source/standard/item.rst:98 ../../source/standard/item.rst:120
 msgid "string"
-msgstr "string"
+msgstr "стрічка"
 
-#: ../../source/standard/item.rst:71
+#: ../../source/standard/item.rst:94
 msgid ""
 "|ocdsDescription| The classification code drawn from the selected scheme."
 msgstr "|ocdsDescription| Код класифікації взятий з вибраної схеми."
 
-#: ../../source/standard/item.rst:77
+#: ../../source/standard/item.rst:100
 msgid "|ocdsDescription| A textual description or title for the code."
 msgstr "|ocdsDescription| Текстовий опис або назва коду."
 
-#: ../../source/standard/item.rst:83
+#: ../../source/standard/item.rst:106
 msgid ""
 "|ocdsDescription| A URI to identify the code. In the event individual URIs "
 "are not available for items in the identifier scheme this value should be "
@@ -107,11 +107,11 @@ msgstr ""
 "доступні для елементів у схемі ідентифікації це значення треба залишити "
 "пустим."
 
-#: ../../source/standard/item.rst:91 ../../source/standard/item.rst:4
+#: ../../source/standard/item.rst:114 ../../source/standard/item.rst:4
 msgid "Unit"
 msgstr "Unit"
 
-#: ../../source/standard/item.rst:99
+#: ../../source/standard/item.rst:122
 msgid "|ocdsDescription| Name of the unit"
 msgstr "|ocdsDescription| Назва одиниці"
 
@@ -119,7 +119,7 @@ msgstr "|ocdsDescription| Назва одиниці"
 msgid "CPV"
 msgstr "CPV"
 
-#: ../../source/standard/item.rst:62
+#: ../../source/standard/item.rst:85
 msgid ""
 "|ocdsDescription| A classification should be drawn from an existing scheme "
 "or list of codes.  This field is used to indicate the scheme/codelist from "
@@ -132,9 +132,52 @@ msgstr ""
 "значення повинно представляти відому Схему Класифікації Елементів, де це "
 "можливо."
 
-#: ../../source/standard/item.rst:81
+#: ../../source/standard/item.rst:104
 msgid "uri"
 msgstr "uri"
+
+#: ../../source/standard/item.rst:51
+msgid ":ref:`Period`"
+msgstr ":ref:`Period`"
+
+#: ../../source/standard/item.rst:53
+msgid "Period during which the item should be delivered."
+msgstr "Період, протягом якого елемент повинен бути доставлений."
+
+#: ../../source/standard/item.rst:56
+msgid ":ref:`Address`"
+msgstr ":ref:`Address`"
+
+#: ../../source/standard/item.rst:58
+msgid "Address, where the item should be delivered."
+msgstr "Адреса місця, куди елемент повинен бути доставлений."
+
+#: ../../source/standard/item.rst:61
+msgid "dictionary"
+msgstr "словник"
+
+#: ../../source/standard/item.rst:63
+msgid ""
+"Geographical coordinates of delivery location. Element consist of following "
+"items:"
+msgstr ""
+"Географічні координати місця доставки. Складається з таких компонентів:"
+
+#: ../../source/standard/item.rst:66 ../../source/standard/item.rst:68
+msgid "string, required"
+msgstr "стрічка, обов’язково"
+
+#: ../../source/standard/item.rst:70
+msgid "strng, optional, usually not used"
+msgstr "стрічка, не обов’язково, переважно не використовується"
+
+#: ../../source/standard/item.rst:72
+msgid ""
+"`deliveryLocation` usually takes precedence over `deliveryAddress` if both "
+"are present."
+msgstr ""
+"`deliveryLocation` зазвичай має вищий пріоритет ніж `deliveryAddress`, якщо "
+"вони обидва вказані."
 
 #~ msgid "uti"
 #~ msgstr "uti"

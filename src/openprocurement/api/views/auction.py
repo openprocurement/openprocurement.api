@@ -70,12 +70,27 @@ def get_auction(request):
         request.errors.add('body', 'data', 'Can\'t get auction info in current tender status')
         request.errors.status = 403
         return
-    auction_info = tender.serialize("auction_view")
-    return {'data': auction_info}
+    return {'data': tender.serialize("auction_view")}
 
 
 @auction.patch(content_type="application/json", permission='auction', validators=(validate_tender_auction_data), renderer='json')
 def patch_auction(request):
+    """Set urls for access to auction.
+    """
+    tender = request.validated['tender']
+    auction_data = request.validated['data']
+    if auction_data:
+        bids = auction_data.get('bids', [])
+        tender_bids_ids = [i.id for i in tender.bids]
+        auction_data['bids'] = [x for (y, x) in sorted(zip([tender_bids_ids.index(i['id']) for i in bids], bids))]
+        src = tender.serialize("plain")
+        tender.import_data(apply_data_patch(src, auction_data))
+        save_tender(tender, src, request)
+    return {'data': tender.serialize("auction_view")}
+
+
+@auction.post(content_type="application/json", permission='auction', validators=(validate_tender_auction_data), renderer='json')
+def post_auction(request):
     """Report auction results.
 
     Report auction results
@@ -85,7 +100,7 @@ def patch_auction(request):
 
     .. sourcecode:: http
 
-        PATCH /tenders/4879d3f8ee2443169b5fbbc9f89fa607/auction HTTP/1.1
+        POST /tenders/4879d3f8ee2443169b5fbbc9f89fa607/auction HTTP/1.1
         Host: example.com
         Accept: application/json
 

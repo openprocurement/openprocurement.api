@@ -1,9 +1,11 @@
 # -*- coding: utf-8 -*-
+import os
 from couchdb_schematics.document import SchematicsDocument
 from datetime import datetime, timedelta
 from iso8601 import parse_date, ParseError
+from pytz import timezone
 from pyramid.security import Allow
-from schematics.exceptions import ConversionError
+from schematics.exceptions import ConversionError, ValidationError
 from schematics.models import Model
 from schematics.transforms import whitelist, blacklist
 from schematics.types import StringType, FloatType, IntType, URLType, BooleanType, BaseType, EmailType
@@ -17,8 +19,10 @@ STAND_STILL_TIME = timedelta(days=10)
 schematics_embedded_role = SchematicsDocument.Options.roles['embedded']
 schematics_default_role = SchematicsDocument.Options.roles['default']
 
+if os.environ.get('READTHEDOCS', None) == 'True':
+    os.environ['TZ'] = 'Europe/Kiev'
 
-TZ = get_localzone()
+TZ = timezone(get_localzone().tzname(datetime.now()))
 
 
 def get_now():
@@ -59,7 +63,7 @@ class Value(Model):
     class Options:
         serialize_when_none = False
 
-    amount = FloatType(required=True)  # Amount as a number.
+    amount = FloatType(required=True, min_value=0)  # Amount as a number.
     currency = StringType(required=True, default=u'UAH', max_length=3, min_length=3)  # The currency in 3-letter ISO 4217 format.
     valueAddedTaxIncluded = BooleanType(required=True, default=True)
 
@@ -72,13 +76,16 @@ class Period(Model):
     startDate = IsoDateTimeType()  # The state date for the period.
     endDate = IsoDateTimeType()  # The end date for the period.
 
+    def validate_startDate(self, data, value):
+        if value and data.get('endDate') and data.get('endDate') < value:
+            raise ValidationError(u"startDate value should be less than endDate")
 
-class PeriodEndRequired(Model):
-    """The period when the tender is open for submissions. The end date is the closing date for tender submissions."""
-    class Options:
-        serialize_when_none = False
+    def validate_endDate(self, data, value):
+        if value and data.get('startDate') and data.get('startDate') > value:
+            raise ValidationError(u"endDate value should be greater than startDate")
 
-    startDate = IsoDateTimeType()  # The state date for the period.
+
+class PeriodEndRequired(Period):
     endDate = IsoDateTimeType(required=True)  # The end date for the period.
 
 
@@ -114,7 +121,7 @@ class Address(Model):
     locality = StringType()
     region = StringType()
     postalCode = StringType()
-    countryName = StringType()
+    countryName = StringType(required=True)
     countryName_en = StringType()
     countryName_ru = StringType()
 
@@ -185,7 +192,7 @@ class ContactPoint(Model):
     class Options:
         serialize_when_none = False
 
-    name = StringType()
+    name = StringType(required=True)
     name_en = StringType()
     name_ru = StringType()
     email = EmailType()
@@ -221,7 +228,7 @@ class Bid(Model):
         roles = {
             'embedded': view_bid_role,
             'view': view_bid_role,
-            'auction_view': whitelist('value', 'id', 'date'),
+            'auction_view': whitelist('value', 'id', 'date', 'participationUrl'),
             'active.enquiries': whitelist(),
             'active.tendering': whitelist(),
             'active.auction': whitelist('value'),
@@ -351,7 +358,7 @@ class Award(Model):
 plain_role = (blacklist('owner_token', '_attachments', 'revisions', 'dateModified') + schematics_embedded_role)
 view_role = (blacklist('owner_token', '_attachments', 'revisions') + schematics_embedded_role)
 listing_role = whitelist('dateModified', 'doc_id')
-auction_view_role = whitelist('tenderID', 'dateModified', 'bids', 'auctionPeriod', 'minimalStep')
+auction_view_role = whitelist('tenderID', 'dateModified', 'bids', 'auctionPeriod', 'minimalStep', 'auctionUrl')
 enquiries_role = (blacklist('owner_token', '_attachments', 'revisions', 'bids') + schematics_embedded_role)
 
 
@@ -456,3 +463,7 @@ class Tender(SchematicsDocument, Model):
 
         self._data.update(data)
         return self
+
+    def validate_minimalStep(self, data, value):
+        if value and value.amount and data.get('value') and data.get('value').amount < value.amount:
+            raise ValidationError(u"minimalStep value should be be less than value of tender")

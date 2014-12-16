@@ -22,6 +22,7 @@ Contents:
    :maxdepth: 2
 
    overview
+   authentication
    errors
    options
    dates

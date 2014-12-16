@@ -391,6 +391,8 @@ class TenderAwardComplaintResourceTest(BaseTenderWebTest):
         self.assertEqual(response.json['data']["status"], "invalid")
         self.assertEqual(response.json['data']["resolution"], "spam")
 
+        self.set_status('complete')
+
         response = self.app.post_json('/tenders/{}/awards/{}/complaints'.format(
             self.tender_id, self.award_id), {'data': {'title': 'complaint title', 'description': 'complaint description', 'author': test_tender_data["procuringEntity"]}}, status=403)
         self.assertEqual(response.status, '403 Forbidden')

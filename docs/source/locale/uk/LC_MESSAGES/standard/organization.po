@@ -4,7 +4,7 @@ msgstr ""
 "Project-Id-Version: openprocurement.api 0.3\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2014-11-24 18:25+0200\n"
-"PO-Revision-Date: 2014-11-25 15:26+0300\n"
+"PO-Revision-Date: 2014-12-09 17:27+0300\n"
 "Last-Translator: \n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
@@ -28,7 +28,7 @@ msgstr "Схема"
 #: ../../source/standard/organization.rst:51
 #: ../../source/standard/organization.rst:99
 msgid "string, multilingual"
-msgstr "string, багатомовний"
+msgstr "стрічка, багатомовна"
 
 #: ../../source/standard/organization.rst:17
 msgid ":ref:`Identifier`"
@@ -60,7 +60,7 @@ msgstr "Identifier"
 #: ../../source/standard/organization.rst:103
 #: ../../source/standard/organization.rst:105
 msgid "string"
-msgstr "string"
+msgstr "стрічка"
 
 #: ../../source/standard/organization.rst:39
 msgid ""

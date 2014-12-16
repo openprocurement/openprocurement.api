@@ -42,7 +42,7 @@ Success! Now we can see that new object was created. Response code is `201`
 and `Location` response header reports the location of object created.  The
 body of response reveals the information about tender created, its internal
 `id` (that matches the `Location` segment), its official `tenderID` and
-`modified` datestamp stating the moment in time when tender was last
+`dateModified` datestamp stating the moment in time when tender was last
 modified.  Note that tender is created with `active.enquiries` status.
 
 Let's access the URL of object created (the `Location` header of the response):
@@ -59,14 +59,14 @@ Let's see what listing of tenders reveals us:
 .. include:: tutorial/tender-listing.http
    :code:
 
-We do see the internal `id` of a tender (that can be used to construct full URL by prepending `http://api-sandbox.openprocurement.org/api/0/tenders/`) and its `modified` datestamp.
+We do see the internal `id` of a tender (that can be used to construct full URL by prepending `http://api-sandbox.openprocurement.org/api/0/tenders/`) and its `dateModified` datestamp.
 
 Let's try creating tender with more data, passing the `procuringEntity` of a tender:
 
 .. include:: tutorial/create-tender-procuringEntity.http
    :code:
 
-And again we have `201 Created` response code, `Location` header and body wth extra `id`, `tenderID`, and `modified` properties.
+And again we have `201 Created` response code, `Location` header and body wth extra `id`, `tenderID`, and `dateModified` properties.
 
 Let's check what tender registry contains:
 
@@ -86,7 +86,7 @@ Let's update tender by providing it with all other essential properties:
 
 .. XXX body is empty for some reason (printf fails)
 
-We see the added properies merged with existing data of tender. Additionally the `modified` property updated to reflect the last modification datestamp.
+We see the added properies merged with existing data of tender. Additionally the `dateModified` property updated to reflect the last modification datestamp.
 
 Checking the listing again reflects the new modification date:
 
