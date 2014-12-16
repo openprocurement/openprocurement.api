@@ -47,6 +47,29 @@ Schema
     |ocdsDescription|
     The number of units required
 
+:deliveryDate:
+    :ref:`Period`
+
+    Period during which the item should be delivered.
+
+:deliveryAddress:
+    :ref:`Address`
+
+    Address, where the item should be delivered.
+
+:deliveryLocation:
+    dictionary
+
+    Geographical coordinates of delivery location. Element consist of following items:
+
+    :latitude:
+        string, required
+    :longitude:
+        string, required
+    :elevation:
+        strng, optional, usually not used
+
+    `deliveryLocation` usually takes precedance over `deliveryAddress` if both present.
 
 .. _Classification:
 

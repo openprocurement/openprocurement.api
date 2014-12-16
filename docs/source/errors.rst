@@ -72,13 +72,13 @@ Here is response describing tender
       "data":{
           "id": "64e93250be76435397e8c992ed4214d1",
           "tenderID": "UA-2014-DUS-156",
-          "modified": "2014-10-27T08:06:58.158Z",
+          "dateModified": "2014-10-27T08:06:58.158Z",
           "procuringEntity": {
-              "id": {
+              "name": "ДУС"б
+              "identifier": {
                   "name": "Державне управління справами",
-                  "scheme": "https://ns.openprocurement.org/ua/edrpou",
-                  "uid": "00037256",
-                  "uri": "http://www.dus.gov.ua/"
+                  "scheme": "UA-EDR",
+                  "uid": "00037256"
               },
               "address": {
                   "countryName": "Україна",
@@ -88,28 +88,33 @@ Here is response describing tender
                   "streetAddress": "вул. Банкова, 11, корпус 1"
               }
           },
-          "totalValue": {
+          "value": {
               "amount": 500,
               "currency": "UAH",
               "valueAddedTaxIncluded": true
           },
-          "itemsToBeProcured": [
+          "items": [
               {
                   "description": "футляри до державних нагород",
-                  "primaryClassification": {
+                  "classification": {
                       "scheme": "CPV",
                       "id": "44617100-9",
                       "description": "Cartons"
                   },
-                  "additionalClassification": [
+                  "additionalClassifications": [
                       {
                           "scheme": "ДКПП",
                           "id": "17.21.1",
                           "description": "папір і картон гофровані, паперова й картонна тара"
                       }
                   ],
-                  "unitOfMeasure": "item",
-                  "quantity": 5
+                  "quantity": 5,
+                  "unit": {
+                      "name": "item"
+                  },
+                  "deliveryDate": {
+                      "endDate": "2014-11-20T00:00:00"
+                  }
               }
           ],
           "clarificationPeriod": {
@@ -119,15 +124,10 @@ Here is response describing tender
               "startDate": "2014-11-03T00:00:00",
               "endDate": "2014-11-06T10:00:00"
           },
-          "awardPeriod": {
-              "endDate": "2014-11-13T00:00:00"
-          },
-          "deliveryDate": {
-              "endDate": "2014-11-20T00:00:00"
-          },
           "minimalStep": {
               "amount": 35,
-              "currency", "UAH"
+              "currency", "UAH",
+              "valueAddedTaxIncluded": true
           }
       }
   }

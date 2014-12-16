@@ -66,6 +66,26 @@ lot.  The changes in the API are communicated via `Open Procurement API
 Change log
 ----------
 
+0.6
+~~~
+Released: 2014-12-15
+
+ New features:
+
+ - Token Broker authorization
+ - Actor token authorization
+ - Added Item.deliveryLocation
+ - Pending complaints Tender completion blocking
+
+0.5
+~~~
+Released: not released
+
+ - Actor token generation
+ - Tender.deliveryDate moved to Item.deliveryDate
+ - Added Item.deliveryAddress
+ - Award sequential review logic
+
 0.4
 ~~~
 Released: 2014-12-01
