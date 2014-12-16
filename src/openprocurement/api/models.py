@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+import os
 from couchdb_schematics.document import SchematicsDocument
 from datetime import datetime, timedelta
 from iso8601 import parse_date, ParseError
@@ -18,6 +19,8 @@ STAND_STILL_TIME = timedelta(days=10)
 schematics_embedded_role = SchematicsDocument.Options.roles['embedded']
 schematics_default_role = SchematicsDocument.Options.roles['default']
 
+if os.environ.get('READTHEDOCS', None) == 'True':
+    os.environ['TZ'] = 'Europe/Kiev'
 
 TZ = timezone(get_localzone().tzname(datetime.now()))
 
