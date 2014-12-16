@@ -118,7 +118,7 @@ class Address(Model):
     locality = StringType()
     region = StringType()
     postalCode = StringType()
-    countryName = StringType()
+    countryName = StringType(required=True)
     countryName_en = StringType()
     countryName_ru = StringType()
 
@@ -189,7 +189,7 @@ class ContactPoint(Model):
     class Options:
         serialize_when_none = False
 
-    name = StringType()
+    name = StringType(required=True)
     name_en = StringType()
     name_ru = StringType()
     email = EmailType()
