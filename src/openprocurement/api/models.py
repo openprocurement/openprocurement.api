@@ -2,6 +2,7 @@
 from couchdb_schematics.document import SchematicsDocument
 from datetime import datetime, timedelta
 from iso8601 import parse_date, ParseError
+from pytz import timezone
 from pyramid.security import Allow
 from schematics.exceptions import ConversionError, ValidationError
 from schematics.models import Model
@@ -18,7 +19,7 @@ schematics_embedded_role = SchematicsDocument.Options.roles['embedded']
 schematics_default_role = SchematicsDocument.Options.roles['default']
 
 
-TZ = get_localzone()
+TZ = timezone(get_localzone().tzname(datetime.now()))
 
 
 def get_now():
@@ -459,3 +460,7 @@ class Tender(SchematicsDocument, Model):
 
         self._data.update(data)
         return self
+
+    def validate_minimalStep(self, data, value):
+        if value and value.amount and data.get('value') and data.get('value').amount < value.amount:
+            raise ValidationError(u"minimalStep value should be be less than value of tender")
