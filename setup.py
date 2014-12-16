@@ -17,6 +17,7 @@ requires = [
     'boto',
     'iso8601',
     'tzlocal',
+    'pytz',
 ]
 test_requires = requires + [
     'webtest',

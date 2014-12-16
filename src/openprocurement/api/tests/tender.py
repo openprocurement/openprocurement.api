@@ -193,6 +193,26 @@ class TenderResourceTest(BaseWebTest):
             {u'description': {u'endDate': [u"Could not parse invalid_value. Should be ISO8601."]}, u'location': u'body', u'name': u'enquiryPeriod'}
         ])
 
+        data = test_tender_data.copy()
+        data['tenderPeriod'] = {'startDate': '2014-10-31T00:00:00', 'endDate': '2014-09-30T00:00:00'}
+        response = self.app.post_json(request_path, {'data': data}, status=422)
+        self.assertEqual(response.status, '422 Unprocessable Entity')
+        self.assertEqual(response.content_type, 'application/json')
+        self.assertEqual(response.json['status'], 'error')
+        self.assertEqual(response.json['errors'], [
+            {u'description': {u'startDate': [u'startDate value should be less than endDate'], u'endDate': [u'endDate value should be greater than startDate']}, u'location': u'body', u'name': u'tenderPeriod'}
+        ])
+
+        data = test_tender_data.copy()
+        data['minimalStep'] = {'amount': '1000.0'}
+        response = self.app.post_json(request_path, {'data': data}, status=422)
+        self.assertEqual(response.status, '422 Unprocessable Entity')
+        self.assertEqual(response.content_type, 'application/json')
+        self.assertEqual(response.json['status'], 'error')
+        self.assertEqual(response.json['errors'], [
+            {u'description': [u'minimalStep value should be be less than value of tender'], u'location': u'body', u'name': u'minimalStep'}
+        ])
+
     def test_create_tender_generated(self):
         data = test_tender_data.copy()
         del data['awardPeriod']
