@@ -4,6 +4,7 @@ from jsonpatch import make_patch, apply_patch
 from openprocurement.api.models import Revision
 from urllib import quote
 from uuid import uuid4
+from schematics.exceptions import ModelValidationError
 
 
 def generate_id():
@@ -99,5 +100,9 @@ def save_tender(tender, src, request):
         tender.revisions.append(Revision({'author': request.authenticated_userid, 'changes': patch}))
         try:
             tender.store(request.registry.db)
+        except ModelValidationError, e:
+            for i in e.message:
+                request.errors.add('body', i, e.message[i])
+            request.errors.status = 422
         except Exception, e:
             request.errors.add('body', 'data', str(e))

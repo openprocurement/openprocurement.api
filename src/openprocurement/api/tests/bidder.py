@@ -122,12 +122,20 @@ class TenderBidderResourceTest(BaseTenderWebTest):
         self.assertEqual(response.content_type, 'application/json')
         bidder = response.json['data']
 
-        response = self.app.patch_json('/tenders/{}/bids/{}'.format(self.tender_id, bidder['id']), {"data": {"value": {"amount": 600}}})
+        response = self.app.patch_json('/tenders/{}/bids/{}'.format(self.tender_id, bidder['id']), {"data": {"value": {"amount": 600}}}, status=422)
+        self.assertEqual(response.status, '422 Unprocessable Entity')
+        self.assertEqual(response.content_type, 'application/json')
+        self.assertEqual(response.json['status'], 'error')
+        self.assertEqual(response.json['errors'], [
+            {"location": "body", "name": "bids", "description": ["value of bid should be less than value of tender"]}
+        ])
+
+        response = self.app.patch_json('/tenders/{}/bids/{}'.format(self.tender_id, bidder['id']), {"data": {"value": {"amount": 400}}})
         self.assertEqual(response.status, '200 OK')
         self.assertEqual(response.content_type, 'application/json')
-        self.assertEqual(response.json['data']["value"]["amount"], 600)
+        self.assertEqual(response.json['data']["value"]["amount"], 400)
 
-        response = self.app.patch_json('/tenders/{}/bids/some_id'.format(self.tender_id), {"data": {"value": {"amount": 600}}}, status=404)
+        response = self.app.patch_json('/tenders/{}/bids/some_id'.format(self.tender_id), {"data": {"value": {"amount": 400}}}, status=404)
         self.assertEqual(response.status, '404 Not Found')
         self.assertEqual(response.content_type, 'application/json')
         self.assertEqual(response.json['status'], 'error')
@@ -136,7 +144,7 @@ class TenderBidderResourceTest(BaseTenderWebTest):
                 u'url', u'name': u'bid_id'}
         ])
 
-        response = self.app.patch_json('/tenders/some_id/bids/some_id', {"data": {"value": {"amount": 600}}}, status=404)
+        response = self.app.patch_json('/tenders/some_id/bids/some_id', {"data": {"value": {"amount": 400}}}, status=404)
         self.assertEqual(response.status, '404 Not Found')
         self.assertEqual(response.content_type, 'application/json')
         self.assertEqual(response.json['status'], 'error')
@@ -150,9 +158,9 @@ class TenderBidderResourceTest(BaseTenderWebTest):
         response = self.app.get('/tenders/{}/bids/{}'.format(self.tender_id, bidder['id']))
         self.assertEqual(response.status, '200 OK')
         self.assertEqual(response.content_type, 'application/json')
-        self.assertEqual(response.json['data']["value"]["amount"], 600)
+        self.assertEqual(response.json['data']["value"]["amount"], 400)
 
-        response = self.app.patch_json('/tenders/{}/bids/{}'.format(self.tender_id, bidder['id']), {"data": {"value": {"amount": 600}}}, status=403)
+        response = self.app.patch_json('/tenders/{}/bids/{}'.format(self.tender_id, bidder['id']), {"data": {"value": {"amount": 400}}}, status=403)
         self.assertEqual(response.status, '403 Forbidden')
         self.assertEqual(response.content_type, 'application/json')
         self.assertEqual(response.json['errors'][0]["description"], "Can't update bid in current tender status")

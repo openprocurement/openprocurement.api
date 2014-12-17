@@ -493,7 +493,7 @@ class TenderProcessTest(BaseWebTest):
         # create bid
         self.app.authorization = ('Basic', ('broker', ''))
         response = self.app.post_json('/tenders/{}/bids'.format(tender_id),
-                                      {'data': {'tenderers': [test_tender_data["procuringEntity"]], "value": {"amount": 600}}})
+                                      {'data': {'tenderers': [test_tender_data["procuringEntity"]], "value": {"amount": 500}}})
         # switch to active.auction
         self.app.authorization = ('Basic', ('chronograph', ''))
         response = self.app.patch_json('/tenders/{}'.format(tender_id),
@@ -539,7 +539,7 @@ class TenderProcessTest(BaseWebTest):
         # create bid
         self.app.authorization = ('Basic', ('broker', ''))
         response = self.app.post_json('/tenders/{}/bids'.format(tender_id),
-                                      {'data': {'tenderers': [test_tender_data["procuringEntity"]], "value": {"amount": 600}}})
+                                      {'data': {'tenderers': [test_tender_data["procuringEntity"]], "value": {"amount": 500}}})
         # switch to active.auction
         self.app.authorization = ('Basic', ('chronograph', ''))
         response = self.app.patch_json('/tenders/{}'.format(tender_id),
@@ -585,12 +585,12 @@ class TenderProcessTest(BaseWebTest):
         # create bid
         self.app.authorization = ('Basic', ('broker', ''))
         response = self.app.post_json('/tenders/{}/bids'.format(tender_id),
-                                      {'data': {'tenderers': [test_tender_data["procuringEntity"]], "value": {"amount": 600}}})
+                                      {'data': {'tenderers': [test_tender_data["procuringEntity"]], "value": {"amount": 450}}})
         bid_token = response.json['access']['token']
         # create second bid
         self.app.authorization = ('Basic', ('broker', ''))
         response = self.app.post_json('/tenders/{}/bids'.format(tender_id),
-                                      {'data': {'tenderers': [test_tender_data["procuringEntity"]], "value": {"amount": 700}}})
+                                      {'data': {'tenderers': [test_tender_data["procuringEntity"]], "value": {"amount": 475}}})
         # switch to active.auction
         self.app.authorization = ('Basic', ('chronograph', ''))
         response = self.app.patch_json('/tenders/{}'.format(tender_id),

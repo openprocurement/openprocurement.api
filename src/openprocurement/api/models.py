@@ -483,3 +483,7 @@ class Tender(SchematicsDocument, Model):
     def validate_minimalStep(self, data, value):
         if value and value.amount and data.get('value') and data.get('value').amount < value.amount:
             raise ValidationError(u"minimalStep value should be be less than value of tender")
+
+    def validate_bids(self, data, bids):
+        if bids and data.get('value') and data.get('value').amount < max([i.value.amount for i in bids]):
+            raise ValidationError(u"value of bid should be less than value of tender")
