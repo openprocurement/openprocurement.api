@@ -102,6 +102,11 @@ class Classification(Model):
     uri = URLType()
 
 
+class CPVClassification(Classification):
+    scheme = StringType(required=True, default=u'CPV', choices=[u'CPV'])
+    id = StringType(required=True, choices=CPV_CODES)
+
+
 class Unit(Model):
     """Description of the unit which the good comes in e.g. hours, kilograms. Made up of a unit name, and the value of a single unit."""
     class Options:
@@ -136,6 +141,11 @@ class Location(Model):
     elevation = BaseType()
 
 
+def validate_dkpp(items, *args):
+    if not any([i.scheme == u'ДКПП' for i in items]):
+        raise ValidationError(u"One of additional classifications should be 'ДКПП'")
+
+
 class Item(Model):
     """A good, service, or work to be contracted."""
     class Options:
@@ -144,8 +154,8 @@ class Item(Model):
     description = StringType(required=True)  # A description of the goods, services to be provided.
     description_en = StringType()
     description_ru = StringType()
-    classification = ModelType(Classification)
-    additionalClassifications = ListType(ModelType(Classification), default=list())
+    classification = ModelType(CPVClassification)
+    additionalClassifications = ListType(ModelType(Classification), default=list(), validators=[validate_dkpp])
     unit = ModelType(Unit)  # Description of the unit which the good comes in e.g. hours, kilograms
     quantity = IntType()  # The number of units required
     deliveryDate = ModelType(Period)
@@ -200,6 +210,11 @@ class ContactPoint(Model):
     telephone = StringType()
     faxNumber = StringType()
     url = URLType()
+
+    def validate_email(self, data, value):
+        if not value and not data.get('telephone'):
+            raise ValidationError(u"telephone or email should be present")
+
 
 
 class Organization(Model):

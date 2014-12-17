@@ -25,7 +25,8 @@ test_tender_data = {
             "streetAddress": u"вул. Банкова, 11, корпус 1"
         },
         "contactPoint": {
-            "name": u"Державне управління справами"
+            "name": u"Державне управління справами",
+            "telephone": u"0440000000"
         }
     },
     "value": {
