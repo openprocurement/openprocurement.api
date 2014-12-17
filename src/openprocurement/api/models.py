@@ -487,3 +487,15 @@ class Tender(SchematicsDocument, Model):
     def validate_bids(self, data, bids):
         if bids and data.get('value') and data.get('value').amount < max([i.value.amount for i in bids]):
             raise ValidationError(u"value of bid should be less than value of tender")
+
+    def validate_tenderPeriod(self, data, period):
+        if period and period.startDate and data.get('enquiryPeriod') and data.get('enquiryPeriod').endDate and period.startDate < data.get('enquiryPeriod').endDate:
+            raise ValidationError(u"period should begin after enquiryPeriod")
+
+    def validate_auctionPeriod(self, data, period):
+        if period and period.startDate and data.get('tenderPeriod') and data.get('tenderPeriod').endDate and period.startDate < data.get('tenderPeriod').endDate:
+            raise ValidationError(u"period should begin after tenderPeriod")
+
+    def validate_awardPeriod(self, data, period):
+        if period and period.startDate and data.get('auctionPeriod') and data.get('auctionPeriod').endDate and period.startDate < data.get('auctionPeriod').endDate:
+            raise ValidationError(u"period should begin after auctionPeriod")

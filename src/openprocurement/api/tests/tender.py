@@ -215,7 +215,7 @@ class TenderResourceTest(BaseWebTest):
 
     def test_create_tender_generated(self):
         data = test_tender_data.copy()
-        del data['awardPeriod']
+        #del data['awardPeriod']
         data.update({'id': 'hash', 'doc_id': 'hash2', 'tenderID': 'hash3'})
         response = self.app.post_json('/tenders', {'data': data})
         self.assertEqual(response.status, '201 Created')

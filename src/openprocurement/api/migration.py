@@ -147,6 +147,7 @@ def from5to6(db):
         if changed:
             db.save(doc)
 
+
 def from10to11(db):
     results = db.view('tenders/all', include_docs=True)
     for i in results:

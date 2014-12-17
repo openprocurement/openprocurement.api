@@ -2,11 +2,11 @@
 import unittest
 
 from openprocurement.api.tests.base import BaseTenderWebTest, test_tender_data
-from openprocurement.api.models import get_now
+#from openprocurement.api.models import get_now
 
 
 tender_data = test_tender_data.copy()
-tender_data['auctionPeriod'] = {'startDate': get_now().isoformat()}
+#tender_data['auctionPeriod'] = {'startDate': get_now().isoformat()}
 tender_data['bids'] = [
     {
         "id": "4879d3f8ee2443169b5fbbc9f89fa606",

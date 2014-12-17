@@ -2,11 +2,9 @@
 import unittest
 
 from openprocurement.api.tests.base import test_tender_data, BaseTenderWebTest
-from openprocurement.api.models import get_now
 
 
 tender_data = test_tender_data.copy()
-tender_data['auctionPeriod'] = {'startDate': get_now().isoformat()}
 tender_data['bids'] = [
     {
         "id": "4879d3f8ee2443169b5fbbc9f89fa606",
@@ -87,7 +85,7 @@ class TenderAuctionResourceTest(BaseTenderWebTest):
         self.assertFalse("tenderers" in auction["bids"][0])
         self.assertEqual(auction["bids"][0]['value']['amount'], self.initial_data["bids"][0]['value']['amount'])
         self.assertEqual(auction["bids"][1]['value']['amount'], self.initial_data["bids"][1]['value']['amount'])
-        self.assertEqual(self.initial_data["auctionPeriod"]['startDate'], auction["auctionPeriod"]['startDate'])
+        #self.assertEqual(self.initial_data["auctionPeriod"]['startDate'], auction["auctionPeriod"]['startDate'])
 
         response = self.app.get('/tenders/{}/auction?opt_jsonp=callback'.format(self.tender_id))
         self.assertEqual(response.status, '200 OK')

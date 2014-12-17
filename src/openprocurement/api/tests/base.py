@@ -64,9 +64,6 @@ test_tender_data = {
     },
     "tenderPeriod": {
         "endDate": (now + timedelta(days=14)).isoformat() #u"2014-11-06T10:00:00"
-    },
-    "awardPeriod": {
-        "endDate": (now + timedelta(days=21)).isoformat() #u"2014-11-13T00:00:00"
     }
 }
 
@@ -103,7 +100,100 @@ class BaseTenderWebTest(BaseWebTest):
     initial_status = None
 
     def set_status(self, status):
-        response = self.app.patch_json('/tenders/{}'.format(self.tender_id), {'data': {'status': status}})
+        data = {'status': status}
+        if status == 'active.enquiries':
+            data.update({
+                "enquiryPeriod": {
+                    "startDate": (now).isoformat(),
+                    "endDate": (now + timedelta(days=7)).isoformat()
+                },
+                "tenderPeriod": {
+                    "startDate": (now + timedelta(days=7)).isoformat(),
+                    "endDate": (now + timedelta(days=14)).isoformat()
+                }
+            })
+        elif status == 'active.tendering':
+            data.update({
+                "enquiryPeriod": {
+                    "startDate": (now - timedelta(days=10)).isoformat(),
+                    "endDate": (now).isoformat()
+                },
+                "tenderPeriod": {
+                    "startDate": (now).isoformat(),
+                    "endDate": (now + timedelta(days=7)).isoformat()
+                }
+            })
+        elif status == 'active.auction':
+            data.update({
+                "enquiryPeriod": {
+                    "startDate": (now - timedelta(days=14)).isoformat(),
+                    "endDate": (now - timedelta(days=7)).isoformat()
+                },
+                "tenderPeriod": {
+                    "startDate": (now - timedelta(days=7)).isoformat(),
+                    "endDate": (now).isoformat()
+                },
+                "auctionPeriod": {
+                    "startDate": (now).isoformat()
+                }
+            })
+        elif status == 'active.qualification':
+            data.update({
+                "enquiryPeriod": {
+                    "startDate": (now - timedelta(days=15)).isoformat(),
+                    "endDate": (now - timedelta(days=8)).isoformat()
+                },
+                "tenderPeriod": {
+                    "startDate": (now - timedelta(days=8)).isoformat(),
+                    "endDate": (now - timedelta(days=1)).isoformat()
+                },
+                "auctionPeriod": {
+                    "startDate": (now - timedelta(days=1)).isoformat(),
+                    "endDate": (now).isoformat()
+                },
+                "awardPeriod": {
+                    "startDate": (now).isoformat()
+                }
+            })
+        elif status == 'active.awarded':
+            data.update({
+                "enquiryPeriod": {
+                    "startDate": (now - timedelta(days=15)).isoformat(),
+                    "endDate": (now - timedelta(days=8)).isoformat()
+                },
+                "tenderPeriod": {
+                    "startDate": (now - timedelta(days=8)).isoformat(),
+                    "endDate": (now - timedelta(days=1)).isoformat()
+                },
+                "auctionPeriod": {
+                    "startDate": (now - timedelta(days=1)).isoformat(),
+                    "endDate": (now).isoformat()
+                },
+                "awardPeriod": {
+                    "startDate": (now).isoformat(),
+                    "endDate": (now).isoformat()
+                }
+            })
+        elif status == 'complete':
+            data.update({
+                "enquiryPeriod": {
+                    "startDate": (now - timedelta(days=25)).isoformat(),
+                    "endDate": (now - timedelta(days=18)).isoformat()
+                },
+                "tenderPeriod": {
+                    "startDate": (now - timedelta(days=18)).isoformat(),
+                    "endDate": (now - timedelta(days=11)).isoformat()
+                },
+                "auctionPeriod": {
+                    "startDate": (now - timedelta(days=11)).isoformat(),
+                    "endDate": (now - timedelta(days=10)).isoformat()
+                },
+                "awardPeriod": {
+                    "startDate": (now - timedelta(days=10)).isoformat(),
+                    "endDate": (now - timedelta(days=10)).isoformat()
+                }
+            })
+        response = self.app.patch_json('/tenders/{}'.format(self.tender_id), {'data': data})
         self.assertEqual(response.status, '200 OK')
         self.assertEqual(response.content_type, 'application/json')
 
