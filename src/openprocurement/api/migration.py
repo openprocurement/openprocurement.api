@@ -3,7 +3,7 @@ import logging
 
 
 LOGGER = logging.getLogger(__name__)
-SCHEMA_VERSION = 10
+SCHEMA_VERSION = 11
 SCHEMA_DOC = 'openprocurement_schema'
 
 
@@ -144,5 +144,34 @@ def from5to6(db):
                         })
                     bid['documents'] = items
                     changed = True
+        if changed:
+            db.save(doc)
+
+def from10to11(db):
+    results = db.view('tenders/all', include_docs=True)
+    for i in results:
+        doc = i.doc
+        changed = False
+        if doc.get("procuringEntity", {}).get("identifier", {}).get("scheme"):
+            changed = True
+            doc["procuringEntity"]["identifier"]["scheme"] = 'UA-EDR'
+        for j in doc.get('bids', []):
+            for i in j.get('tenderers', []):
+                if i.get("identifier", {}).get("scheme"):
+                    changed = True
+                    i["identifier"]["scheme"] = 'UA-EDR'
+        for i in doc.get('questions', []):
+            if i.get("author", {}).get("identifier", {}).get("scheme"):
+                changed = True
+                i["author"]["identifier"]["scheme"] = 'UA-EDR'
+        for i in doc.get('complaints', []):
+            if i.get("author", {}).get("identifier", {}).get("scheme"):
+                changed = True
+                i["author"]["identifier"]["scheme"] = 'UA-EDR'
+        for j in doc.get('awards', []):
+            for i in j.get('complaints', []):
+                if i.get("author", {}).get("identifier", {}).get("scheme"):
+                    changed = True
+                    i["author"]["identifier"]["scheme"] = 'UA-EDR'
         if changed:
             db.save(doc)
