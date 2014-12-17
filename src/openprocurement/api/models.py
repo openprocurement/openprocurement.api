@@ -481,12 +481,22 @@ class Tender(SchematicsDocument, Model):
         return self
 
     def validate_minimalStep(self, data, value):
-        if value and value.amount and data.get('value') and data.get('value').amount < value.amount:
-            raise ValidationError(u"minimalStep value should be be less than value of tender")
+        if value and value.amount and data.get('value'):
+            if data.get('value').amount < value.amount:
+                raise ValidationError(u"value should be less than value of tender")
+            if data.get('value').currency != value.currency:
+                raise ValidationError(u"currency should be identical to currency of value of tender")
+            if data.get('value').valueAddedTaxIncluded != value.valueAddedTaxIncluded:
+                raise ValidationError(u"valueAddedTaxIncluded should be identical to valueAddedTaxIncluded of value of tender")
 
     def validate_bids(self, data, bids):
-        if bids and data.get('value') and data.get('value').amount < max([i.value.amount for i in bids]):
-            raise ValidationError(u"value of bid should be less than value of tender")
+        if bids and data.get('value'):
+            if data.get('value').amount < max([i.value.amount for i in bids]):
+                raise ValidationError(u"value of bid should be less than value of tender")
+            if not all([i.value.currency == data.get('value').currency for i in bids]):
+                raise ValidationError(u"currency of bid should be identical to currency of value of tender")
+            if not all([i.value.valueAddedTaxIncluded == data.get('value').valueAddedTaxIncluded for i in bids]):
+                raise ValidationError(u"valueAddedTaxIncluded of bid should be identical to valueAddedTaxIncluded of value of tender")
 
     def validate_tenderPeriod(self, data, period):
         if period and period.startDate and data.get('enquiryPeriod') and data.get('enquiryPeriod').endDate and period.startDate < data.get('enquiryPeriod').endDate:

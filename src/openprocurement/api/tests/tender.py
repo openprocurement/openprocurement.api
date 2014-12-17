@@ -210,7 +210,7 @@ class TenderResourceTest(BaseWebTest):
         self.assertEqual(response.content_type, 'application/json')
         self.assertEqual(response.json['status'], 'error')
         self.assertEqual(response.json['errors'], [
-            {u'description': [u'minimalStep value should be be less than value of tender'], u'location': u'body', u'name': u'minimalStep'}
+            {u'description': [u'value should be less than value of tender'], u'location': u'body', u'name': u'minimalStep'}
         ])
 
     def test_create_tender_generated(self):
