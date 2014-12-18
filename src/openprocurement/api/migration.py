@@ -170,6 +170,10 @@ def from10to11(db):
                 changed = True
                 i["author"]["identifier"]["scheme"] = 'UA-EDR'
         for j in doc.get('awards', []):
+            for i in j.get('suppliers', []):
+                if i.get("identifier", {}).get("scheme"):
+                    changed = True
+                    i["identifier"]["scheme"] = 'UA-EDR'
             for i in j.get('complaints', []):
                 if i.get("author", {}).get("identifier", {}).get("scheme"):
                     changed = True

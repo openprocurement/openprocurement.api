@@ -79,11 +79,7 @@ class Period(Model):
 
     def validate_startDate(self, data, value):
         if value and data.get('endDate') and data.get('endDate') < value:
-            raise ValidationError(u"startDate value should be less than endDate")
-
-    def validate_endDate(self, data, value):
-        if value and data.get('startDate') and data.get('startDate') > value:
-            raise ValidationError(u"endDate value should be greater than startDate")
+            raise ValidationError(u"period should begin before its end")
 
 
 class PeriodEndRequired(Period):
@@ -142,7 +138,7 @@ class Location(Model):
 
 
 def validate_dkpp(items, *args):
-    if not any([i.scheme == u'ДКПП' for i in items]):
+    if items and not any([i.scheme == u'ДКПП' for i in items]):
         raise ValidationError(u"One of additional classifications should be 'ДКПП'")
 
 

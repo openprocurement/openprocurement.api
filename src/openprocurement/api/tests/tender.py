@@ -193,24 +193,103 @@ class TenderResourceTest(BaseWebTest):
             {u'description': {u'endDate': [u"Could not parse invalid_value. Should be ISO8601."]}, u'location': u'body', u'name': u'enquiryPeriod'}
         ])
 
-        data = test_tender_data.copy()
-        data['tenderPeriod'] = {'startDate': '2014-10-31T00:00:00', 'endDate': '2014-09-30T00:00:00'}
-        response = self.app.post_json(request_path, {'data': data}, status=422)
+        data = test_tender_data['tenderPeriod']
+        test_tender_data['tenderPeriod'] = {'startDate': '2014-10-31T00:00:00', 'endDate': '2014-10-01T00:00:00'}
+        response = self.app.post_json(request_path, {'data': test_tender_data}, status=422)
+        test_tender_data['tenderPeriod'] = data
         self.assertEqual(response.status, '422 Unprocessable Entity')
         self.assertEqual(response.content_type, 'application/json')
         self.assertEqual(response.json['status'], 'error')
         self.assertEqual(response.json['errors'], [
-            {u'description': {u'startDate': [u'startDate value should be less than endDate'], u'endDate': [u'endDate value should be greater than startDate']}, u'location': u'body', u'name': u'tenderPeriod'}
+            {u'description': {u'startDate': [u'period should begin before its end']}, u'location': u'body', u'name': u'tenderPeriod'}
         ])
 
-        data = test_tender_data.copy()
-        data['minimalStep'] = {'amount': '1000.0'}
-        response = self.app.post_json(request_path, {'data': data}, status=422)
+        data = test_tender_data['tenderPeriod']
+        test_tender_data['tenderPeriod'] = {'startDate': '2014-10-31T00:00:00', 'endDate': '2015-10-01T00:00:00'}
+        response = self.app.post_json(request_path, {'data': test_tender_data}, status=422)
+        test_tender_data['tenderPeriod'] = data
+        self.assertEqual(response.status, '422 Unprocessable Entity')
+        self.assertEqual(response.content_type, 'application/json')
+        self.assertEqual(response.json['status'], 'error')
+        self.assertEqual(response.json['errors'], [
+            {u'description': [u'period should begin after enquiryPeriod'], u'location': u'body', u'name': u'tenderPeriod'}
+        ])
+
+        test_tender_data['auctionPeriod'] = {'startDate': '2014-10-31T00:00:00', 'endDate': '2015-10-01T00:00:00'}
+        response = self.app.post_json(request_path, {'data': test_tender_data}, status=422)
+        del test_tender_data['auctionPeriod']
+        self.assertEqual(response.status, '422 Unprocessable Entity')
+        self.assertEqual(response.content_type, 'application/json')
+        self.assertEqual(response.json['status'], 'error')
+        self.assertEqual(response.json['errors'], [
+            {u'description': [u'period should begin after tenderPeriod'], u'location': u'body', u'name': u'auctionPeriod'}
+        ])
+
+        test_tender_data['auctionPeriod'] = {'startDate': '2015-10-31T00:00:00', 'endDate': '2016-10-01T00:00:00'}
+        test_tender_data['awardPeriod'] = {'startDate': '2014-10-31T00:00:00', 'endDate': '2015-10-01T00:00:00'}
+        response = self.app.post_json(request_path, {'data': test_tender_data}, status=422)
+        del test_tender_data['auctionPeriod']
+        del test_tender_data['awardPeriod']
+        self.assertEqual(response.status, '422 Unprocessable Entity')
+        self.assertEqual(response.content_type, 'application/json')
+        self.assertEqual(response.json['status'], 'error')
+        self.assertEqual(response.json['errors'], [
+            {u'description': [u'period should begin after auctionPeriod'], u'location': u'body', u'name': u'awardPeriod'}
+        ])
+
+        data = test_tender_data['minimalStep']
+        test_tender_data['minimalStep'] = {'amount': '1000.0'}
+        response = self.app.post_json(request_path, {'data': test_tender_data}, status=422)
+        test_tender_data['minimalStep'] = data
         self.assertEqual(response.status, '422 Unprocessable Entity')
         self.assertEqual(response.content_type, 'application/json')
         self.assertEqual(response.json['status'], 'error')
         self.assertEqual(response.json['errors'], [
             {u'description': [u'value should be less than value of tender'], u'location': u'body', u'name': u'minimalStep'}
+        ])
+
+        data = test_tender_data['minimalStep']
+        test_tender_data['minimalStep'] = {'amount': '100.0', 'valueAddedTaxIncluded': False}
+        response = self.app.post_json(request_path, {'data': test_tender_data}, status=422)
+        test_tender_data['minimalStep'] = data
+        self.assertEqual(response.status, '422 Unprocessable Entity')
+        self.assertEqual(response.content_type, 'application/json')
+        self.assertEqual(response.json['status'], 'error')
+        self.assertEqual(response.json['errors'], [
+            {u'description': [u'valueAddedTaxIncluded should be identical to valueAddedTaxIncluded of value of tender'], u'location': u'body', u'name': u'minimalStep'}
+        ])
+
+        data = test_tender_data['minimalStep']
+        test_tender_data['minimalStep'] = {'amount': '100.0', 'currency': "USD"}
+        response = self.app.post_json(request_path, {'data': test_tender_data}, status=422)
+        test_tender_data['minimalStep'] = data
+        self.assertEqual(response.status, '422 Unprocessable Entity')
+        self.assertEqual(response.content_type, 'application/json')
+        self.assertEqual(response.json['status'], 'error')
+        self.assertEqual(response.json['errors'], [
+            {u'description': [u'currency should be identical to currency of value of tender'], u'location': u'body', u'name': u'minimalStep'}
+        ])
+
+        data = test_tender_data["items"][0]["additionalClassifications"][0]["scheme"]
+        test_tender_data["items"][0]["additionalClassifications"][0]["scheme"] = 'Не ДКПП'
+        response = self.app.post_json(request_path, {'data': test_tender_data}, status=422)
+        test_tender_data["items"][0]["additionalClassifications"][0]["scheme"] = data
+        self.assertEqual(response.status, '422 Unprocessable Entity')
+        self.assertEqual(response.content_type, 'application/json')
+        self.assertEqual(response.json['status'], 'error')
+        self.assertEqual(response.json['errors'], [
+            {u'description': [u'additionalClassifications'], u'location': u'body', u'name': u'items'}
+        ])
+
+        data = test_tender_data["procuringEntity"]["contactPoint"]["telephone"]
+        del test_tender_data["procuringEntity"]["contactPoint"]["telephone"]
+        response = self.app.post_json(request_path, {'data': test_tender_data}, status=422)
+        test_tender_data["procuringEntity"]["contactPoint"]["telephone"] = data
+        self.assertEqual(response.status, '422 Unprocessable Entity')
+        self.assertEqual(response.content_type, 'application/json')
+        self.assertEqual(response.json['status'], 'error')
+        self.assertEqual(response.json['errors'], [
+            {u'description': {u'contactPoint': {u'email': [u'telephone or email should be present']}}, u'location': u'body', u'name': u'procuringEntity'}
         ])
 
     def test_create_tender_generated(self):

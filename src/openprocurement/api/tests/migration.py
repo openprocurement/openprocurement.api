@@ -169,6 +169,86 @@ class MigrateTest(BaseWebTest):
         self.assertEqual(item["bids"][0]["attachments"][0]["lastModified"], migrated_item["bids"][0]["documents"][0]["modified"])
         self.assertEqual(item["bids"][0]["attachments"][0]["uri"] + "?download=0_description", migrated_item["bids"][0]["documents"][0]["url"])
 
+    def test_migrate_from10to11(self):
+        set_db_schema_version(self.db, 10)
+        data = {
+            'doc_type': 'Tender',
+            "procuringEntity": {
+                "identifier": {
+                    "scheme": "scheme"
+                }
+            },
+            "bids": [
+                {
+                    "tenderers": [
+                        {
+                            "identifier": {
+                                "scheme": "scheme"
+                            }
+                        }
+                    ]
+                }
+            ],
+            "awards": [
+                {
+                    "suppliers": [
+                        {
+                            "identifier": {
+                                "scheme": "scheme"
+                            }
+                        }
+                    ],
+                    "complaints": [
+                        {
+                            "author": {
+                                "identifier": {
+                                    "scheme": "scheme"
+                                }
+                            }
+                        }
+                    ]
+                }
+            ],
+            "complaints": [
+                {
+                    "author": {
+                        "identifier": {
+                            "scheme": "scheme"
+                        }
+                    }
+                }
+            ],
+            "questions": [
+                {
+                    "author": {
+                        "identifier": {
+                            "scheme": "scheme"
+                        }
+                    }
+                }
+            ],
+        }
+        _id, _rev = self.db.save(data)
+        item = self.db.get(_id)
+        migrate_data(self.db, 11)
+        migrated_item = self.db.get(_id)
+        self.assertTrue(all([
+            i["identifier"]["scheme"] == 'UA-EDR'
+            for i in [
+                migrated_item["procuringEntity"]
+            ] + [
+                x["author"] for x in migrated_item["questions"]
+            ] + [
+                x["author"] for x in migrated_item["complaints"]
+            ] + [
+                x for b in migrated_item["bids"] for x in b["tenderers"]
+            ] + [
+                x for a in migrated_item["awards"] for x in a["suppliers"]
+            ] + [
+                x["author"] for a in migrated_item["awards"] for x in a["complaints"]
+            ]
+        ]))
+
 
 def suite():
     suite = unittest.TestSuite()
