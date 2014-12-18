@@ -248,9 +248,9 @@ class TenderResource(object):
         """
         tender_data = self.request.validated['data']
         tender_id = generate_id()
-        tender_data['doc_id'] = tender_id
-        tender_data['tenderID'] = generate_tender_id(tender_id)
         tender = Tender(tender_data)
+        tender.id = tender_id
+        tender.tenderID = generate_tender_id(tender.dateModified, self.db)
         tender.enquiryPeriod.startDate = tender.dateModified
         if not tender.tenderPeriod.startDate:
             tender.tenderPeriod.startDate = tender.enquiryPeriod.endDate

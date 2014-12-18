@@ -5,14 +5,29 @@ from openprocurement.api.models import Revision
 from urllib import quote
 from uuid import uuid4
 from schematics.exceptions import ModelValidationError
+from couchdb.http import ResourceConflict
+from time import sleep
 
 
 def generate_id():
     return uuid4().hex
 
 
-def generate_tender_id(tid):
-    return "UA-" + tid
+def generate_tender_id(ctime, db):
+    key = ctime.date().isoformat()
+    while True:
+        try:
+            tenderID = db.get('tenderID', {'_id': 'tenderID'})
+            index = tenderID.get(key, 1)
+            tenderID[key] = index + 1
+            db.save(tenderID)
+        except ResourceConflict:
+            pass
+        except Exception:
+            sleep(1)
+        else:
+            break
+    return 'UA-{:04}-{:02}-{:02}-{:06}'.format(ctime.year, ctime.month, ctime.day, index)
 
 
 def upload_file(tender, document, key, in_file, request):
