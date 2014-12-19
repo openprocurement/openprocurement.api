@@ -212,7 +212,6 @@ class ContactPoint(Model):
             raise ValidationError(u"telephone or email should be present")
 
 
-
 class Organization(Model):
     """An organization."""
     class Options:
