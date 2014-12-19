@@ -1,9 +1,23 @@
-$ http -j POST https://api-sandbox.openprocurement.org/api/0/tenders data:=@./school-tender.json
+$ http --auth demo: -j POST https://api-sandbox.openprocurement.org/api/0/tenders data:=@./school-tender.json
 POST /api/0/tenders HTTP/1.1
+Authorization: Basic ZGVtbzo=
 Content-Type: application/json; charset=utf-8
 
 {
     "data": {
+        "enquiryPeriod": {
+            "endDate": "2015-12-01"
+        }, 
+        "items": [
+            {
+                "description": "Послуги шкільних їдалень"
+            }
+        ], 
+        "minimalStep": {
+            "amount": 35000, 
+            "currency": "UAH", 
+            "valueAddedTaxIncluded": true
+        }, 
         "procuringEntity": {
             "address": {
                 "countryName": "Україна", 
@@ -12,31 +26,55 @@ Content-Type: application/json; charset=utf-8
                 "region": "м. Вінниця", 
                 "streetAddress": "вул. Стахурського. 22"
             }, 
+            "contactPoint": {
+                "name": "Куца Світлана Валентинівна", 
+                "telephone": "+380 (432) 46-53-02", 
+                "url": "http://sch10.edu.vn.ua/"
+            }, 
             "identifier": {
                 "id": "21725150", 
                 "legalName": "Заклад \"Загальноосвітня школа І-ІІІ ступенів № 10 Вінницької міської ради\"", 
-                "scheme": "https://ns.openprocurement.org/ua/edrpou", 
-                "uri": "http://sch10.edu.vn.ua/"
+                "scheme": "UA-EDR"
             }, 
             "name": "ЗОСШ #10 м.Вінниці"
+        }, 
+        "tenderPeriod": {
+            "endDate": "2015-12-10"
+        }, 
+        "value": {
+            "amount": 500000, 
+            "currency": "UAH", 
+            "valueAddedTaxIncluded": true
         }
     }
 }
 
 HTTP/1.1 201 Created
 Content-Type: application/json; charset=UTF-8
-Location: http://api-sandbox.openprocurement.org/api/0/tenders/327c00d16cff4c37be5bd4915cdff8a3
+Location: http://api-sandbox.openprocurement.org/api/0/tenders/b62095b27d5a4d9c9529f6b40a4385ec
 
 {
     "access": {
-        "token": "4668a63ccfd443e8b848e856952e9a2b"
+        "token": "b7a39e6379a14d7596388405052093a2"
     }, 
     "data": {
-        "dateModified": "2014-12-01T17:39:25.289180+02:00", 
+        "dateModified": "2014-12-19T13:00:42.412390+02:00", 
         "enquiryPeriod": {
-            "startDate": "2014-12-01T17:39:25.289180+02:00"
+            "endDate": "2015-12-01T00:00:00+02:00", 
+            "startDate": "2014-12-19T13:00:42.412390+02:00"
         }, 
-        "id": "327c00d16cff4c37be5bd4915cdff8a3", 
+        "id": "b62095b27d5a4d9c9529f6b40a4385ec", 
+        "items": [
+            {
+                "description": "Послуги шкільних їдалень"
+            }
+        ], 
+        "minimalStep": {
+            "amount": 35000.0, 
+            "currency": "UAH", 
+            "valueAddedTaxIncluded": true
+        }, 
+        "owner": "demo", 
         "procuringEntity": {
             "address": {
                 "countryName": "Україна", 
@@ -45,15 +83,28 @@ Location: http://api-sandbox.openprocurement.org/api/0/tenders/327c00d16cff4c37b
                 "region": "м. Вінниця", 
                 "streetAddress": "вул. Стахурського. 22"
             }, 
+            "contactPoint": {
+                "name": "Куца Світлана Валентинівна", 
+                "telephone": "+380 (432) 46-53-02", 
+                "url": "http://sch10.edu.vn.ua/"
+            }, 
             "identifier": {
                 "id": "21725150", 
                 "legalName": "Заклад \"Загальноосвітня школа І-ІІІ ступенів № 10 Вінницької міської ради\"", 
-                "scheme": "https://ns.openprocurement.org/ua/edrpou", 
-                "uri": "http://sch10.edu.vn.ua/"
+                "scheme": "UA-EDR"
             }, 
             "name": "ЗОСШ #10 м.Вінниці"
         }, 
         "status": "active.enquiries", 
-        "tenderID": "UA-327c00d16cff4c37be5bd4915cdff8a3"
+        "tenderID": "UA-2014-12-19-000014", 
+        "tenderPeriod": {
+            "endDate": "2015-12-10T00:00:00+02:00", 
+            "startDate": "2015-12-01T00:00:00+02:00"
+        }, 
+        "value": {
+            "amount": 500000.0, 
+            "currency": "UAH", 
+            "valueAddedTaxIncluded": true
+        }
     }
 }
