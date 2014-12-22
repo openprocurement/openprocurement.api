@@ -63,11 +63,6 @@ Schema
    |ocdsDescription|
    All documents and attachments related to the tender.
 
-:deliveryDate:
-   :ref:`period`
-
-   The expected delivery dates for a tendered goods or services. 
-
 :questions:
    List of :ref:`question` objects
 
