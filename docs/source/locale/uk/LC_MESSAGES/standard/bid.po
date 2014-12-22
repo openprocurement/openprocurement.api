@@ -4,7 +4,7 @@ msgstr ""
 "Project-Id-Version: openprocurement.api 0.3\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2014-11-24 18:25+0200\n"
-"PO-Revision-Date: 2014-12-09 17:26+0300\n"
+"PO-Revision-Date: 2014-12-22 15:12+0300\n"
 "Last-Translator: \n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
@@ -52,11 +52,7 @@ msgstr "`validBid` - дійсна пропозиція"
 msgid "`invalidBid`"
 msgstr "`invalidBid` - недійсна пропозиція"
 
-#: ../../source/standard/bid.rst:32
-msgid ":ref:`Value`"
-msgstr ":ref:`Value`"
-
-#: ../../source/standard/bid.rst:35
+#: ../../source/standard/bid.rst:41
 msgid "List of :ref:`Document` objects"
 msgstr "Список об’єктів :ref:`Document`"
 
@@ -71,3 +67,32 @@ msgstr "учасник"
 #: ../../source/standard/bid.rst:3
 msgid "pretendent"
 msgstr "претендент"
+
+#: ../../source/standard/bid.rst:32
+msgid ":ref:`Value`, required"
+msgstr ":ref:`Value`, обов’язково"
+
+#: ../../source/standard/bid.rst:34
+msgid "Validation rules:"
+msgstr "Правила валідації:"
+
+#: ../../source/standard/bid.rst:36
+msgid "`amount` should be less than `Tender.value.amout`"
+msgstr "Значення `amount` повинно бути меншим за `Tender.value.amout`"
+
+#: ../../source/standard/bid.rst:37
+msgid "`currency` should either be absent or match `Tender.value.currency`"
+msgstr ""
+"Значення `currency` повинно бути або відсутнім, або співпадати з `Tender."
+"value.currency`"
+
+#: ../../source/standard/bid.rst:38
+msgid ""
+"`valueAddedTaxIncluded` should either be absent or match `Tender.value."
+"valueAddedTaxIncluded`"
+msgstr ""
+"Значення `valueAddedTaxIncluded` повинно бути або відсутнім, або співпадати "
+"з `Tender.value.valueAddedTaxIncluded`"
+
+#~ msgid ":ref:`Value`"
+#~ msgstr ":ref:`Value`"

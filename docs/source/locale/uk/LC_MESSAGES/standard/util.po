@@ -4,7 +4,7 @@ msgstr ""
 "Project-Id-Version: openprocurement.api 0.3\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2014-11-24 18:25+0200\n"
-"PO-Revision-Date: 2014-12-09 17:40+0300\n"
+"PO-Revision-Date: 2014-12-22 14:55+0300\n"
 "Last-Translator: \n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
@@ -16,13 +16,13 @@ msgstr ""
 msgid "Period"
 msgstr "Period"
 
-#: ../../source/standard/util.rst:11 ../../source/standard/util.rst:39
-#: ../../source/standard/util.rst:63
+#: ../../source/standard/util.rst:11 ../../source/standard/util.rst:41
+#: ../../source/standard/util.rst:67
 msgid "Schema"
 msgstr "Схема"
 
 #: ../../source/standard/util.rst:14 ../../source/standard/util.rst:20
-#: ../../source/standard/util.rst:66
+#: ../../source/standard/util.rst:70
 msgid "string, :ref:`date`"
 msgstr "стрічка, :ref:`date`"
 
@@ -30,47 +30,35 @@ msgstr "стрічка, :ref:`date`"
 msgid "|ocdsDescription| The end date for the period."
 msgstr "|ocdsDescription| Кінцева дата періоду."
 
-#: ../../source/standard/util.rst:28
+#: ../../source/standard/util.rst:30
 msgid "Date"
 msgstr "Date"
 
-#: ../../source/standard/util.rst:30
+#: ../../source/standard/util.rst:32
 msgid "Date/time in :ref:`date-format`."
 msgstr "Дата/час у :ref:`date-format`."
 
-#: ../../source/standard/util.rst:36 ../../source/standard/util.rst:32
+#: ../../source/standard/util.rst:38 ../../source/standard/util.rst:34
 msgid "Value"
 msgstr "Value"
 
-#: ../../source/standard/util.rst:42
-msgid "float"
-msgstr ""
-
-#: ../../source/standard/util.rst:44
+#: ../../source/standard/util.rst:46
 msgid "|ocdsDescription| Amount as a number."
 msgstr "|ocdsDescription| Кількість як число."
 
-#: ../../source/standard/util.rst:48
-msgid "string"
-msgstr "стрічка"
-
-#: ../../source/standard/util.rst:50
+#: ../../source/standard/util.rst:54
 msgid "|ocdsDescription| The currency in 3-letter ISO 4217 format."
 msgstr "|ocdsDescription| Валюта у трибуквенному форматі ISO 4217."
 
-#: ../../source/standard/util.rst:54
-msgid "bool"
-msgstr ""
-
-#: ../../source/standard/util.rst:60 ../../source/standard/util.rst:56
+#: ../../source/standard/util.rst:64 ../../source/standard/util.rst:60
 msgid "Revision"
 msgstr "Revision"
 
-#: ../../source/standard/util.rst:68
+#: ../../source/standard/util.rst:72
 msgid "Date when changes were recorded"
 msgstr "Дата, коли зміни були записані"
 
-#: ../../source/standard/util.rst:71
+#: ../../source/standard/util.rst:75
 msgid "List of :`Change` objects"
 msgstr "Список об’єктів :ref:`Change`"
 
@@ -82,21 +70,44 @@ msgstr "startDate"
 msgid "endDate"
 msgstr "endDate"
 
-#: ../../source/standard/util.rst:32
+#: ../../source/standard/util.rst:34
 msgid "Currency"
 msgstr "Валюта"
 
-#: ../../source/standard/util.rst:32
+#: ../../source/standard/util.rst:34
 msgid "VAT"
 msgstr "ПДВ"
 
-#: ../../source/standard/util.rst:56
+#: ../../source/standard/util.rst:60
 msgid "Change Tracking"
 msgstr "Відслідковування змін"
 
 #: ../../source/standard/util.rst:16
 msgid "|ocdsDescription| The start date for the period."
 msgstr "|ocdsDescription| Початкова дата періоду."
+
+#: ../../source/standard/util.rst:25
+msgid "`startDate` should always precede `endDate`."
+msgstr "Значення `startDate` завжди повинно йти перед `endDate`."
+
+#: ../../source/standard/util.rst:44
+msgid "float, required"
+msgstr "float, обов’язково"
+
+#: ../../source/standard/util.rst:49
+msgid "Should be positive."
+msgstr "Повинно бути додатнім."
+
+#: ../../source/standard/util.rst:52
+msgid "string, required"
+msgstr "стрічка, обов’язково"
+
+#: ../../source/standard/util.rst:58
+msgid "bool, required"
+msgstr "bool, обов’язково"
+
+#~ msgid "string"
+#~ msgstr "стрічка"
 
 #~ msgid "|ocdsDescription| The state date for the period."
 #~ msgstr "|ocdsDescription| "

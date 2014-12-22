@@ -48,9 +48,9 @@ Schema
    |ocdsDescription| The identifier of the organization in the selected
    scheme.
 
-   The alloved codes are ones found in `Organisation Registration Agency"
+   The allowed codes are the ones found in `"Organisation Registration Agency"
    codelist of IATI
-   Standard<http://iatistandard.org/codelists/OrganisationRegistrationAgency/>`_
+   Standard <http://iatistandard.org/codelists/OrganisationRegistrationAgency/>`_
    with addition of `UA-EDR` code for organizations registered in Ukraine
    (EDRPOU and IPN).
 

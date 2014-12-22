@@ -4,7 +4,7 @@ msgstr ""
 "Project-Id-Version: openprocurement.api 0.3\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2014-11-24 18:25+0200\n"
-"PO-Revision-Date: 2014-12-09 17:25+0300\n"
+"PO-Revision-Date: 2014-12-22 14:24+0300\n"
 "Last-Translator: \n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
@@ -82,3 +82,7 @@ msgstr "Список об’єктів :ref:`Document`"
 #: ../../source/standard/award.rst:42
 msgid "List of :ref:`Complaint` objects"
 msgstr "Список об’єктів :ref:`Complaint`"
+
+#: ../../source/standard/award.rst:44
+msgid "List of :ref:`Contract` objects"
+msgstr "Список об’єктів :ref:`Contract`"

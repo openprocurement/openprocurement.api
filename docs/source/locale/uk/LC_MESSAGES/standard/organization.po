@@ -4,7 +4,7 @@ msgstr ""
 "Project-Id-Version: openprocurement.api 0.3\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2014-11-24 18:25+0200\n"
-"PO-Revision-Date: 2014-12-09 17:27+0300\n"
+"PO-Revision-Date: 2014-12-22 15:23+0300\n"
 "Last-Translator: \n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
@@ -19,14 +19,13 @@ msgstr "Organization"
 
 #: ../../source/standard/organization.rst:12
 #: ../../source/standard/organization.rst:34
-#: ../../source/standard/organization.rst:74
-#: ../../source/standard/organization.rst:96
+#: ../../source/standard/organization.rst:81
+#: ../../source/standard/organization.rst:103
 msgid "Schema"
 msgstr "Схема"
 
 #: ../../source/standard/organization.rst:15
-#: ../../source/standard/organization.rst:51
-#: ../../source/standard/organization.rst:99
+#: ../../source/standard/organization.rst:58
 msgid "string, multilingual"
 msgstr "стрічка, багатомовна"
 
@@ -38,27 +37,17 @@ msgstr ":ref:`Identifier`"
 msgid "List of :ref:`identifier` objects"
 msgstr "Список об’єктів :ref:`identifier`"
 
-#: ../../source/standard/organization.rst:21
-msgid ":ref:`Address`"
-msgstr ":ref:`Address`"
-
-#: ../../source/standard/organization.rst:23
-msgid ":ref:`ContactPoint`"
-msgstr ":ref:`ContactPoint`"
-
 #: ../../source/standard/organization.rst:31
 msgid "Identifier"
 msgstr "Identifier"
 
 #: ../../source/standard/organization.rst:37
-#: ../../source/standard/organization.rst:46
-#: ../../source/standard/organization.rst:77
-#: ../../source/standard/organization.rst:79
-#: ../../source/standard/organization.rst:81
-#: ../../source/standard/organization.rst:83
-#: ../../source/standard/organization.rst:85
-#: ../../source/standard/organization.rst:103
-#: ../../source/standard/organization.rst:105
+#: ../../source/standard/organization.rst:84
+#: ../../source/standard/organization.rst:86
+#: ../../source/standard/organization.rst:88
+#: ../../source/standard/organization.rst:90
+#: ../../source/standard/organization.rst:110
+#: ../../source/standard/organization.rst:112
 msgid "string"
 msgstr "стрічка"
 
@@ -79,15 +68,15 @@ msgid ""
 "|ocdsDescription| The identifier of the organization in the selected scheme."
 msgstr "|ocdsDescription| Ідентифікатор організації у вибраній схемі."
 
-#: ../../source/standard/organization.rst:53
+#: ../../source/standard/organization.rst:60
 msgid "|ocdsDescription| The legally registered name of the organization."
 msgstr "|ocdsDescription| Легально зареєстрована назва організації."
 
-#: ../../source/standard/organization.rst:57
+#: ../../source/standard/organization.rst:64
 msgid "uri"
 msgstr "uri"
 
-#: ../../source/standard/organization.rst:59
+#: ../../source/standard/organization.rst:66
 msgid ""
 "|ocdsDescription| A URI to identify the organization, such as those provided "
 "by Open Corporates or some other relevant URI provider.  This is not for "
@@ -98,21 +87,21 @@ msgstr ""
 "надають Open Corporates або інші постачальники URI. Це не для вебсайту "
 "організації, його можна надати в полі url в ContactPoint організації."
 
-#: ../../source/standard/organization.rst:71
-#: ../../source/standard/organization.rst:66
+#: ../../source/standard/organization.rst:78
+#: ../../source/standard/organization.rst:73
 msgid "Address"
 msgstr "Address"
 
-#: ../../source/standard/organization.rst:93
-#: ../../source/standard/organization.rst:88
+#: ../../source/standard/organization.rst:100
+#: ../../source/standard/organization.rst:95
 msgid "ContactPoint"
 msgstr "ContactPoint"
 
-#: ../../source/standard/organization.rst:101
+#: ../../source/standard/organization.rst:108
 msgid "email"
 msgstr "email"
 
-#: ../../source/standard/organization.rst:107
+#: ../../source/standard/organization.rst:114
 msgid "url"
 msgstr "url"
 
@@ -125,30 +114,81 @@ msgstr "Компанія"
 msgid "id"
 msgstr "id"
 
-#: ../../source/standard/organization.rst:66
+#: ../../source/standard/organization.rst:73
 msgid "City"
 msgstr "Місто"
 
-#: ../../source/standard/organization.rst:66
+#: ../../source/standard/organization.rst:73
 msgid "Street"
 msgstr "Вулиця"
 
-#: ../../source/standard/organization.rst:66
+#: ../../source/standard/organization.rst:73
 msgid "Country"
 msgstr "Країна"
 
-#: ../../source/standard/organization.rst:88
+#: ../../source/standard/organization.rst:95
 msgid "Person"
 msgstr "Людина"
 
-#: ../../source/standard/organization.rst:88
+#: ../../source/standard/organization.rst:95
 msgid "Phone"
 msgstr "Телефон"
 
-#: ../../source/standard/organization.rst:88
+#: ../../source/standard/organization.rst:95
 msgid "Email"
 msgstr "Email"
 
-#: ../../source/standard/organization.rst:88
+#: ../../source/standard/organization.rst:95
 msgid "Website"
 msgstr "Вебсайт"
+
+#: ../../source/standard/organization.rst:21
+msgid ":ref:`Address`, required"
+msgstr ":ref:`Address`, обов’язково"
+
+#: ../../source/standard/organization.rst:23
+msgid ":ref:`ContactPoint`, required"
+msgstr ":ref:`ContactPoint`, обов’язково"
+
+#: ../../source/standard/organization.rst:46
+#: ../../source/standard/organization.rst:92
+msgid "string, required"
+msgstr "стрічка, обов’язково"
+
+#: ../../source/standard/organization.rst:106
+msgid "string, multilingual, required"
+msgstr "стрічка, багатомовна, обов’язково"
+
+#: ../../source/standard/organization.rst:116
+msgid "Either `email` or `telephone` fields have to be provided."
+msgstr ""
+"Повинне бути заповнене хоча б одне з полів: або `email`, або `telephone`."
+
+#: ../../source/standard/organization.rst:51
+msgid ""
+"The allowed codes are the ones found in `\"Organisation Registration Agency"
+"\" codelist of IATI Standard <http://iatistandard.org/codelists/"
+"OrganisationRegistrationAgency/>`_ with addition of `UA-EDR` code for "
+"organizations registered in Ukraine (EDRPOU and IPN)."
+msgstr ""
+"Дозволеними є коди зі `спику кодів \"Organisation Registration Agency\" "
+"Стандарту IATI <http://iatistandard.org/codelists/"
+"OrganisationRegistrationAgency/>`_ з додаванням коду `UA-EDR` для "
+"організацій, зареєстрованих в Україні (EDRPOU та IPN)."
+
+#~ msgid ""
+#~ "The allowed codes are the ones found in `Organisation Registration Agency"
+#~ "\" codelist of IATI Standard<http://iatistandard.org/codelists/"
+#~ "OrganisationRegistrationAgency/>`_ with addition of `UA-EDR` code for "
+#~ "organizations registered in Ukraine (EDRPOU and IPN)."
+#~ msgstr ""
+#~ "Дозволеними є коди зі `спику кодів \"Organisation Registration Agency\" "
+#~ "Стандарту IATI <http://iatistandard.org/codelists/"
+#~ "OrganisationRegistrationAgency/>`_ з додаванням коду `UA-EDR` для "
+#~ "організацій, зареєстрованих в Україні (EDRPOU та IPN)."
+
+#~ msgid ":ref:`Address`"
+#~ msgstr ":ref:`Address`"
+
+#~ msgid ":ref:`ContactPoint`"
+#~ msgstr ":ref:`ContactPoint`"
