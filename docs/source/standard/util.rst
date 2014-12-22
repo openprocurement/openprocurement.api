@@ -22,6 +22,8 @@ Schema
     |ocdsDescription|
     The end date for the period.
 
+`startDate` should always precede `endDate`.
+
 .. _Date:
 
 Date
@@ -39,19 +41,21 @@ Schema
 ------
 
 :amount:
-    float
+    float, required
 
     |ocdsDescription|
     Amount as a number.
 
+    Should be positive.
+
 :currency:
-    string
+    string, required
 
     |ocdsDescription|
     The currency in 3-letter ISO 4217 format.
 
 :valueAddedTaxIncluded:
-    bool
+    bool, required
 
 .. index:: Revision, Change Tracking
 .. _revision:

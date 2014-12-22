@@ -29,7 +29,13 @@ Schema
     * `invalidBid`
 
 :value:
-    :ref:`Value`
+    :ref:`Value`, required
+
+    Validation rules:
+
+    * `amount` should be less than `Tender.value.amout`
+    * `currency` should either be absent or match `Tender.value.currency`
+    * `valueAddedTaxIncluded` should either be absent or match `Tender.value.valueAddedTaxIncluded`
 
 :documents:
     List of :ref:`Document` objects

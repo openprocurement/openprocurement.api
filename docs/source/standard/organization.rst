@@ -18,9 +18,9 @@ Schema
 :additionalIdentifiers:
     List of :ref:`identifier` objects
 :address:
-    :ref:`Address`
+    :ref:`Address`, required
 :contactPoint:
-    :ref:`ContactPoint`
+    :ref:`ContactPoint`, required
 
 
 .. index:: Company, id
@@ -43,9 +43,16 @@ Schema
    Organization Identifier Scheme.
 
 :id:
-   string
+   string, required
    
-   |ocdsDescription| The identifier of the organization in the selected scheme.
+   |ocdsDescription| The identifier of the organization in the selected
+   scheme.
+
+   The alloved codes are ones found in `Organisation Registration Agency"
+   codelist of IATI
+   Standard<http://iatistandard.org/codelists/OrganisationRegistrationAgency/>`_
+   with addition of `UA-EDR` code for organizations registered in Ukraine
+   (EDRPOU and IPN).
 
 :legalName:
    string, multilingual
@@ -82,7 +89,7 @@ Schema
 :postalCode:
     string
 :countryName:
-    string
+    string, required
 
 
 .. index:: Person, Phone, Email, Website, ContactPoint
@@ -96,7 +103,7 @@ Schema
 ------
 
 :name:
-    string, multilingual
+    string, multilingual, required
 :email:
     email
 :telephone:
@@ -105,3 +112,5 @@ Schema
     string
 :url:
     url
+
+Either `email` or `telephone` fields have to be provided.

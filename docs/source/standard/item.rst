@@ -12,7 +12,7 @@ Schema
 ------
 
 :description:
-    string, multilingual
+    string, multilingual, required
 
     |ocdsDescription|
     A description of the goods, services to be provided.
@@ -25,6 +25,9 @@ Schema
     itemClassificationScheme to identify preferred classification lists,
     including CPV and GSIN.
 
+    It is mandatory for `classification.scheme` to be `CPV`. The
+    `classification.id` should be valid CPV code.
+
 :additionalClassifications:
     List of :ref:`Classification` objects
 
@@ -33,6 +36,8 @@ Schema
     itemClassificationScheme codelist for common options to use in OCDS. 
     This may also be used to present codes from an internal classification
     scheme.
+
+    It is mandatory to have at least one item with `ДКПП` as `scheme`.
 
 :unit:
     :ref:`Unit`
