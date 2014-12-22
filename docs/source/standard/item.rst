@@ -116,6 +116,11 @@ Unit
 Schema
 ------
 
+:code:
+    string, required
+
+    UN/CEFACT Recommendation 20 unit code.
+
 :name:
     string
 
