@@ -40,3 +40,5 @@ Schema
     List of :ref:`Document` objects
 :complaints:
     List of :ref:`Complaint` objects
+:contracts:
+    List of :ref:`Contract` objects
