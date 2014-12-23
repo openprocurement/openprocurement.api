@@ -433,10 +433,16 @@ class TenderResourceTest(BaseWebTest):
         self.assertEqual(response.content_type, 'application/json')
 
         response = self.app.patch_json('/tenders/{}'.format(
-            tender['id']), {'data': {'items': [test_tender_data['items'][0], test_tender_data['items'][0]]}})
+            tender['id']), {'data': {'items': [{}, test_tender_data['items'][0]]}})
         self.assertEqual(response.status, '200 OK')
         self.assertEqual(response.content_type, 'application/json')
         self.assertEqual(response.json['data']['items'][0], response.json['data']['items'][1])
+
+        response = self.app.patch_json('/tenders/{}'.format(
+            tender['id']), {'data': {'items': [{}]}})
+        self.assertEqual(response.status, '200 OK')
+        self.assertEqual(response.content_type, 'application/json')
+        self.assertEqual(len(response.json['data']['items']), 1)
 
         response = self.app.patch_json('/tenders/{}'.format(
             tender['id']), {'data': {'enquiryPeriod': {'endDate': new_dateModified2}}})

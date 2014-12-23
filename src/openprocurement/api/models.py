@@ -240,6 +240,8 @@ class Bid(Model):
             'embedded': view_bid_role,
             'view': view_bid_role,
             'auction_view': whitelist('value', 'id', 'date', 'participationUrl'),
+            'auction_post': whitelist('value', 'id'),
+            'auction_patch': whitelist('id', 'participationUrl'),
             'active.enquiries': whitelist(),
             'active.tendering': whitelist(),
             'active.auction': whitelist('value'),
@@ -366,11 +368,15 @@ class Award(Model):
     contracts = ListType(ModelType(Contract), default=list())
 
 
-plain_role = (blacklist('owner_token', '_attachments', 'revisions', 'dateModified') + schematics_embedded_role)
+plain_role = (blacklist('_attachments', 'revisions', 'dateModified') + schematics_embedded_role)
+edit_role = (blacklist('owner_token', 'owner', '_attachments', 'revisions', 'dateModified', 'id', 'tenderID') + schematics_embedded_role)
 view_role = (blacklist('owner_token', '_attachments', 'revisions') + schematics_embedded_role)
 listing_role = whitelist('dateModified', 'doc_id')
 auction_view_role = whitelist('tenderID', 'dateModified', 'bids', 'auctionPeriod', 'minimalStep', 'auctionUrl')
+auction_post_role = whitelist('bids')
+auction_patch_role = whitelist('auctionUrl', 'bids')
 enquiries_role = (blacklist('owner_token', '_attachments', 'revisions', 'bids') + schematics_embedded_role)
+chronograph_role = whitelist('status', 'enquiryPeriod', 'tenderPeriod', 'auctionPeriod', 'awardPeriod')
 
 
 class Tender(SchematicsDocument, Model):
@@ -378,9 +384,12 @@ class Tender(SchematicsDocument, Model):
     class Options:
         roles = {
             'plain': plain_role,
+            'edit': edit_role,
             'view': view_role,
             'listing': listing_role,
             'auction_view': auction_view_role,
+            'auction_post': auction_post_role,
+            'auction_patch': auction_patch_role,
             'active.enquiries': enquiries_role,
             'active.tendering': enquiries_role,
             'active.auction': view_role,
@@ -389,6 +398,7 @@ class Tender(SchematicsDocument, Model):
             'complete': view_role,
             'unsuccessful': view_role,
             'cancelled': view_role,
+            'chronograph': chronograph_role,
         }
 
     title = StringType()
@@ -434,7 +444,7 @@ class Tender(SchematicsDocument, Model):
     auctionUrl = URLType()
 
     _attachments = DictType(DictType(BaseType), default=dict())  # couchdb attachments
-    dateModified = IsoDateTimeType(default=get_now)
+    dateModified = IsoDateTimeType()
     owner_token = StringType()
     owner = StringType()
 

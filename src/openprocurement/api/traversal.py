@@ -45,6 +45,7 @@ def get_item(parent, key, request, root):
 
 
 def factory(request):
+    request.validated['tender_src'] = {}
     root = Root(request)
     if not request.matchdict or not request.matchdict.get('tender_id'):
         return root
@@ -56,6 +57,9 @@ def factory(request):
         return root
     tender.__parent__ = root
     request.validated['tender'] = tender
+    request.validated['tender_status'] = tender.status
+    if request.method != 'GET':
+        request.validated['tender_src'] = tender.serialize('plain')
     if request.matchdict.get('award_id'):
         award = get_item(tender, 'award', request, root)
         if award == root:

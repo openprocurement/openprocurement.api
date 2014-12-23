@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from base64 import b64encode
-from jsonpatch import make_patch, apply_patch
-from openprocurement.api.models import Revision
+from jsonpatch import make_patch, apply_patch as _apply_patch
+from openprocurement.api.models import Revision, get_now
 from urllib import quote
 from uuid import uuid4
 from schematics.exceptions import ModelValidationError
@@ -78,6 +78,9 @@ def prepare_patch(changes, orig, patch, basepath=''):
             else:
                 changes.append({'op': 'add', 'path': '{}/{}'.format(basepath, i), 'value': patch[i]})
     elif isinstance(patch, list):
+        if len(patch) < len(orig):
+            for i in range(len(patch), len(orig)):
+                changes.append({'op': 'remove', 'path': '{}/{}'.format(basepath, i)})
         for i, j in enumerate(patch):
             if len(orig) > i:
                 prepare_patch(changes, orig[i], patch[i], '{}/{}'.format(basepath, i))
@@ -92,7 +95,9 @@ def prepare_patch(changes, orig, patch, basepath=''):
 def apply_data_patch(item, changes):
     patch_changes = []
     prepare_patch(patch_changes, item, changes)
-    return apply_patch(item, patch_changes)
+    if not patch_changes:
+        return {}
+    return _apply_patch(item, patch_changes)
 
 
 def tender_serialize(tender, fields):
@@ -110,9 +115,11 @@ def set_ownership(item, request):
 
 
 def save_tender(tender, src, request):
-    patch = get_revision_changes(tender.serialize("plain"), src)
+    tender = tender or request.validated['tender']
+    patch = get_revision_changes(tender.serialize("plain"), request.validated['tender_src'])
     if patch:
         tender.revisions.append(Revision({'author': request.authenticated_userid, 'changes': patch}))
+        tender.dateModified = get_now()
         try:
             tender.store(request.registry.db)
         except ModelValidationError, e:
@@ -121,3 +128,14 @@ def save_tender(tender, src, request):
             request.errors.status = 422
         except Exception, e:
             request.errors.add('body', 'data', str(e))
+
+
+def apply_patch(request, data=None, save=True, src=None):
+    data = request.validated['data'] if data is None else data
+    if not data:
+        return
+    patch = apply_data_patch(src or request.validated['tender_src'], data)
+    if patch:
+        request.context.import_data(patch)
+        if save:
+            save_tender(None, None, request)

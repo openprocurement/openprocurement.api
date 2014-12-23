@@ -10,6 +10,7 @@ from openprocurement.api.utils import (
     save_tender,
     set_ownership,
     tender_serialize,
+    apply_patch,
 )
 from openprocurement.api.validation import (
     validate_patch_tender_data,
@@ -250,8 +251,8 @@ class TenderResource(object):
         tender_id = generate_id()
         tender = Tender(tender_data)
         tender.id = tender_id
-        tender.tenderID = generate_tender_id(tender.dateModified, self.db)
-        tender.enquiryPeriod.startDate = tender.dateModified
+        tender.enquiryPeriod.startDate = get_now()
+        tender.tenderID = generate_tender_id(tender.enquiryPeriod.startDate, self.db)
         if not tender.tenderPeriod.startDate:
             tender.tenderPeriod.startDate = tender.enquiryPeriod.endDate
         set_ownership(tender, self.request)
@@ -425,9 +426,5 @@ class TenderResource(object):
             self.request.errors.add('body', 'data', 'Can\'t update tender in current status')
             self.request.errors.status = 403
             return
-        src = tender.serialize("plain")
-        tender_data = self.request.validated['data']
-        if tender_data:
-            tender.import_data(apply_data_patch(src, tender_data))
-            save_tender(tender, src, self.request)
+        apply_patch(self.request)
         return {'data': tender.serialize(tender.status)}

@@ -1,10 +1,11 @@
 # -*- coding: utf-8 -*-
-from openprocurement.api.models import Tender, Bid, Award, Document, Question, Complaint, Contract
+from openprocurement.api.models import Tender, Bid, Award, Document, Question, Complaint, Contract, get_now
 from schematics.exceptions import ModelValidationError, ModelConversionError
+from openprocurement.api.utils import apply_data_patch
 
 
 def filter_data(data, blacklist=[], whitelist=None):
-    blacklist += ['id', 'doc_id', 'date', 'dateModified', 'url', 'owner_token']
+    blacklist += ['id', 'doc_id', 'date', 'dateModified', 'url', 'owner_token', 'owner']
     filter_func = lambda i: i in whitelist if whitelist else i not in blacklist
     return dict([(i, j) for i, j in data.items() if filter_func(i)])
 
@@ -27,17 +28,32 @@ def validate_data(request, model, partial=False):
     data = validate_json_data(request)
     if data is None:
         return
+    if partial:
+        data = filter_data(data)
+    else:
+        data = filter_data(data, blacklist=['status'])
     try:
-        model(data).validate(partial=partial)
+        if partial and isinstance(request.context, model):
+            new_patch = apply_data_patch(request.context.serialize(), data)
+            m = model(request.context.serialize())
+            m.import_data(new_patch)
+            m.validate()
+            if request.authenticated_userid == 'chronograph':
+                data = m.serialize('chronograph')
+            elif request.authenticated_userid == 'auction':
+                data = m.serialize('auction_{}'.format(request.method.lower()))
+            elif model == Tender:
+                data = m.serialize('edit')
+            else:
+                data = m.serialize()
+        else:
+            model(data).validate(partial=partial)
     except (ModelValidationError, ModelConversionError), e:
         for i in e.message:
             request.errors.add('body', i, e.message[i])
         request.errors.status = 422
         return
-    if partial:
-        request.validated['data'] = filter_data(data)
-    else:
-        request.validated['data'] = filter_data(data, blacklist=['status'])
+    request.validated['data'] = data
     return data
 
 
@@ -50,38 +66,42 @@ def validate_patch_tender_data(request):
 
 
 def validate_tender_auction_data(request):
-    data = validate_json_data(request)
+    data = validate_patch_tender_data(request)
     tender = request.context
-    if data is None or not tender or not isinstance(tender, Tender):
+    if not tender or not isinstance(tender, Tender):
         return
-    if tender.status != 'active.auction':
-        request.errors.add('body', 'data', 'Can\'t report auction results in current tender status')
-        request.errors.status = 403
-        return
-    bids = data.get('bids', [])
-    if not bids:
-        request.errors.add('body', 'data', "Bids data not available")
-        request.errors.status = 422
-        return
-    for b in bids:
-        try:
-            Bid(b).validate(partial=True)
-        except (ModelValidationError, ModelConversionError), e:
-            for i in e.message:
-                request.errors.add('body', i, e.message[i])
+    if data is not None:
+        if tender.status != 'active.auction':
+            request.errors.add('body', 'data', 'Can\'t report auction results in current tender status')
+            request.errors.status = 403
+            return
+        bids = data.get('bids', [])
+        #if not bids:
+            #request.errors.add('body', 'data', "Bids data not available")
+            #request.errors.status = 422
+            #return
+        tender_bids_ids = [i.id for i in tender.bids]
+        if len(bids) != len(tender.bids):
+            request.errors.add('body', 'bids', "Number of auction results did not match the number of tender bids")
             request.errors.status = 422
             return
-    request.validated['data'] = filter_data(data)
-    tender_bids_ids = [i.id for i in tender.bids]
-    if len(bids) != len(tender.bids):
-        request.errors.add('body', 'bids', "Number of auction results did not match the number of tender bids")
-        request.errors.status = 422
-    elif not all(['id' in i for i in bids]):
-        request.errors.add('body', 'bids', "Results of auction bids should contains id of bid")
-        request.errors.status = 422
-    elif set([i['id'] for i in bids]) != set(tender_bids_ids):
-        request.errors.add('body', 'bids', "Auction bids should be identical to the tender bids")
-        request.errors.status = 422
+        #elif not all(['id' in i for i in bids]):
+            #request.errors.add('body', 'bids', "Results of auction bids should contains id of bid")
+            #request.errors.status = 422
+            #return
+        elif set([i['id'] for i in bids]) != set(tender_bids_ids):
+            request.errors.add('body', 'bids', "Auction bids should be identical to the tender bids")
+            request.errors.status = 422
+            return
+        data['bids'] = [x for (y, x) in sorted(zip([tender_bids_ids.index(i['id']) for i in bids], bids))]
+    else:
+        data = {}
+    if request.method == 'POST':
+        now = get_now().isoformat()
+        data['auctionPeriod'] = {'endDate': now}
+        data['awardPeriod'] = {'startDate': now}
+        data['status'] = 'active.qualification'
+    request.validated['data'] = data
 
 
 def validate_bid_data(request):

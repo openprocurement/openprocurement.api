@@ -135,5 +135,6 @@ class TenderAwardContractDocumentResource(object):
         if document_data:
             src = tender.serialize("plain")
             document.import_data(document_data)
+            document.dateModified = None
             save_tender(tender, src, self.request)
         return {'data': document.serialize("view")}
