@@ -4,7 +4,6 @@ from cornice.resource import resource, view
 from openprocurement.api.design import tenders_by_dateModified_view
 from openprocurement.api.models import Tender, get_now
 from openprocurement.api.utils import (
-    apply_data_patch,
     generate_id,
     generate_tender_id,
     save_tender,
@@ -256,7 +255,9 @@ class TenderResource(object):
         if not tender.tenderPeriod.startDate:
             tender.tenderPeriod.startDate = tender.enquiryPeriod.endDate
         set_ownership(tender, self.request)
-        save_tender(tender, {}, self.request)
+        self.request.validated['tender'] = tender
+        self.request.validated['tender_src'] = {}
+        save_tender(self.request)
         self.request.response.status = 201
         self.request.response.headers[
             'Location'] = self.request.route_url('Tender', tender_id=tender_id)
@@ -366,10 +367,7 @@ class TenderResource(object):
             self.request.errors.add('body', 'data', 'Can\'t update tender in current status')
             self.request.errors.status = 403
             return
-        src = tender.serialize("plain")
-        tender_data = self.request.validated['data']
-        tender.import_data(tender_data)
-        save_tender(tender, src, self.request)
+        apply_patch(self.request, src=self.request.validated['tender_src'])
         return {'data': tender.serialize(tender.status)}
 
     @view(content_type="application/json", validators=(validate_patch_tender_data, ), permission='edit_tender', renderer='json')
@@ -426,5 +424,5 @@ class TenderResource(object):
             self.request.errors.add('body', 'data', 'Can\'t update tender in current status')
             self.request.errors.status = 403
             return
-        apply_patch(self.request)
+        apply_patch(self.request, src=self.request.validated['tender_src'])
         return {'data': tender.serialize(tender.status)}

@@ -2,9 +2,9 @@
 from cornice.resource import resource, view
 from openprocurement.api.models import Bid
 from openprocurement.api.utils import (
-    apply_data_patch,
     save_tender,
     set_ownership,
+    apply_patch,
 )
 from openprocurement.api.validation import (
     validate_bid_data,
@@ -112,9 +112,8 @@ class TenderBidResource(object):
         bid_data = self.request.validated['data']
         bid = Bid(bid_data)
         set_ownership(bid, self.request)
-        src = tender.serialize("plain")
         tender.bids.append(bid)
-        save_tender(tender, src, self.request)
+        save_tender(self.request)
         self.request.response.status = 201
         self.request.response.headers['Location'] = self.request.route_url('Tender Bids', tender_id=tender.id, bid_id=bid['id'])
         return {
@@ -238,18 +237,12 @@ class TenderBidResource(object):
             }
 
         """
-        tender = self.request.validated['tender']
-        if tender.status != 'active.tendering':
+        if self.request.validated['tender_status'] != 'active.tendering':
             self.request.errors.add('body', 'data', 'Can\'t update bid in current tender status')
             self.request.errors.status = 403
             return
-        bid = self.request.validated['bid']
-        bid_data = self.request.validated['data']
-        if bid_data:
-            src = tender.serialize("plain")
-            bid.import_data(apply_data_patch(bid.serialize(), bid_data))
-            save_tender(tender, src, self.request)
-        return {'data': bid.serialize("view")}
+        apply_patch(self.request, src=self.request.context.serialize())
+        return {'data': self.request.validated['bid'].serialize("view")}
 
     @view(renderer='json', permission='edit_bid')
     def delete(self):
@@ -287,8 +280,7 @@ class TenderBidResource(object):
             self.request.errors.add('body', 'data', 'Can\'t delete bid in current tender status')
             self.request.errors.status = 403
             return
-        src = tender.serialize("plain")
         res = bid.serialize("view")
         tender.bids.remove(bid)
-        save_tender(tender, src, self.request)
+        save_tender(self.request)
         return {'data': res}

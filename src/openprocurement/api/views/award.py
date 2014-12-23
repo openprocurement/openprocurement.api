@@ -162,11 +162,10 @@ class TenderAwardResource(object):
             self.request.errors.add('body', 'data', 'Can\'t create award in current tender status')
             self.request.errors.status = 403
             return
-        src = tender.serialize("plain")
         award_data = self.request.validated['data']
         award = Award(award_data)
         tender.awards.append(award)
-        save_tender(tender, src, self.request)
+        save_tender(self.request)
         self.request.response.status = 201
         self.request.response.headers['Location'] = self.request.route_url('Tender Awards', tender_id=tender.id, award_id=award['id'])
         return {'data': award.serialize("view")}
@@ -293,7 +292,6 @@ class TenderAwardResource(object):
             return
         award_data = self.request.validated['data']
         if award_data:
-            src = tender.serialize("plain")
             award.import_data(apply_data_patch(award.serialize(), award_data))
             if award.status == 'active':
                 award.contracts.append(Contract({'awardID': award.id}))
@@ -317,5 +315,5 @@ class TenderAwardResource(object):
                 else:
                     tender.awardPeriod.endDate = get_now()
                     tender.status = 'active.awarded'
-            save_tender(tender, src, self.request)
+            save_tender(self.request)
         return {'data': award.serialize("view")}

@@ -32,9 +32,8 @@ class TenderQuestionResource(object):
             return
         question_data = self.request.validated['data']
         question = Question(question_data)
-        src = tender.serialize("plain")
         tender.questions.append(question)
-        save_tender(tender, src, self.request)
+        save_tender(self.request)
         self.request.response.status = 201
         self.request.response.headers['Location'] = self.request.route_url('Tender Questions', tender_id=tender.id, question_id=question['id'])
         return {'data': question.serialize("view")}
@@ -63,7 +62,6 @@ class TenderQuestionResource(object):
         question = self.request.validated['question']
         question_data = self.request.validated['data']
         if question_data:
-            src = tender.serialize("plain")
             question.import_data(apply_data_patch(question.serialize(), question_data))
-            save_tender(tender, src, self.request)
+            save_tender(self.request)
         return {'data': question.serialize(tender.status)}

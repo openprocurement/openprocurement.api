@@ -1,8 +1,7 @@
 # -*- coding: utf-8 -*-
 from cornice.service import Service
-from openprocurement.api.models import Award, get_now
+from openprocurement.api.models import Award
 from openprocurement.api.utils import (
-    apply_data_patch,
     save_tender,
     apply_patch,
 )
@@ -78,7 +77,7 @@ def get_auction(request):
 def patch_auction(request):
     """Set urls for access to auction.
     """
-    apply_patch(request)
+    apply_patch(request, src=request.validated['tender_src'])
     return {'data': request.validated['tender'].serialize("auction_view")}
 
 
@@ -154,7 +153,7 @@ def post_auction(request):
         }
 
     """
-    apply_patch(request, save=False)
+    apply_patch(request, save=False, src=request.validated['tender_src'])
     tender = request.validated['tender']
     bids = sorted(tender.bids, key=lambda i: (i.value.amount, i.date))
     bid = bids[0].serialize()
@@ -166,5 +165,5 @@ def post_auction(request):
     }
     award = Award(award_data)
     tender.awards.append(award)
-    save_tender(None, None, request)
+    save_tender(request)
     return {'data': tender.serialize(tender.status)}

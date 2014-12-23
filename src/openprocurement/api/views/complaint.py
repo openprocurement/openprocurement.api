@@ -32,9 +32,8 @@ class TenderComplaintResource(object):
             return
         complaint_data = self.request.validated['data']
         complaint = Complaint(complaint_data)
-        src = tender.serialize("plain")
         tender.complaints.append(complaint)
-        save_tender(tender, src, self.request)
+        save_tender(self.request)
         self.request.response.status = 201
         self.request.response.headers['Location'] = self.request.route_url('Tender Complaints', tender_id=tender.id, complaint_id=complaint['id'])
         return {'data': complaint.serialize("view")}
@@ -71,7 +70,6 @@ class TenderComplaintResource(object):
                 self.request.errors.add('body', 'data', 'Can\'t cancel complaint')
                 self.request.errors.status = 403
                 return
-            src = tender.serialize("plain")
             complaint.import_data(apply_data_patch(complaint.serialize(), complaint_data))
             if complaint.status == 'resolved' and tender.status != 'active.enquiries':
                 for i in tender.complaints:
@@ -101,5 +99,5 @@ class TenderComplaintResource(object):
                         tender.status = 'complete'
                     else:
                         tender.status = 'unsuccessful'
-            save_tender(tender, src, self.request)
+            save_tender(self.request)
         return {'data': complaint.serialize("view")}

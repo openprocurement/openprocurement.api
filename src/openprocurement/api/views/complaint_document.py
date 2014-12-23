@@ -46,7 +46,6 @@ class TenderComplaintDocumentResource(object):
             self.request.errors.add('body', 'data', 'Can\'t add document in current tender status')
             self.request.errors.status = 403
             return
-        src = tender.serialize("plain")
         data = self.request.validated['file']
         document = Document()
         document.id = generate_id()
@@ -56,7 +55,7 @@ class TenderComplaintDocumentResource(object):
         document.url = self.request.route_url('Tender Complaint Documents', tender_id=tender.id, complaint_id=self.request.validated['complaint_id'], document_id=document.id, _query={'download': key})
         self.request.validated['complaint'].documents.append(document)
         upload_file(tender, document, key, data.file, self.request)
-        save_tender(tender, src, self.request)
+        save_tender(self.request)
         self.request.response.status = 201
         self.request.response.headers['Location'] = self.request.route_url('Tender Complaint Documents', tender_id=tender.id, complaint_id=self.request.validated['complaint_id'], document_id=document.id)
         return {'data': document.serialize("view")}
@@ -85,7 +84,6 @@ class TenderComplaintDocumentResource(object):
             self.request.errors.status = 403
             return
         first_document = self.request.validated['documents'][0]
-        src = tender.serialize("plain")
         if self.request.content_type == 'multipart/form-data':
             data = self.request.validated['file']
             filename = data.filename
@@ -104,22 +102,20 @@ class TenderComplaintDocumentResource(object):
         document.url = self.request.route_url('Tender Complaint Documents', tender_id=tender.id, complaint_id=self.request.validated['complaint_id'], document_id=document.id, _query={'download': key})
         self.request.validated['complaint'].documents.append(document)
         upload_file(tender, document, key, in_file, self.request)
-        save_tender(tender, src, self.request)
+        save_tender(self.request)
         return {'data': document.serialize("view")}
 
     @view(renderer='json', validators=(validate_patch_document_data,), permission='review_complaint')
     def patch(self):
         """Tender Complaint Document Update"""
-        tender = self.request.validated['tender']
-        if tender.status not in ['active.enquiries', 'active.tendering', 'active.auction', 'active.qualification', 'active.awarded']:
+        if self.request.validated['tender_status'] not in ['active.enquiries', 'active.tendering', 'active.auction', 'active.qualification', 'active.awarded']:
             self.request.errors.add('body', 'data', 'Can\'t update document in current tender status')
             self.request.errors.status = 403
             return
         document = self.request.validated['document']
         document_data = self.request.validated['data']
         if document_data:
-            src = tender.serialize("plain")
             document.import_data(document_data)
             document.dateModified = None
-            save_tender(tender, src, self.request)
+            save_tender(self.request)
         return {'data': document.serialize("view")}

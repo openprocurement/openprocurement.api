@@ -114,8 +114,8 @@ def set_ownership(item, request):
     item.owner_token = generate_id()
 
 
-def save_tender(tender, src, request):
-    tender = tender or request.validated['tender']
+def save_tender(request):
+    tender = request.validated['tender']
     patch = get_revision_changes(tender.serialize("plain"), request.validated['tender_src'])
     if patch:
         tender.revisions.append(Revision({'author': request.authenticated_userid, 'changes': patch}))
@@ -132,10 +132,8 @@ def save_tender(tender, src, request):
 
 def apply_patch(request, data=None, save=True, src=None):
     data = request.validated['data'] if data is None else data
-    if not data:
-        return
-    patch = apply_data_patch(src or request.validated['tender_src'], data)
+    patch = data and apply_data_patch(src or request.context.serialize(), data)
     if patch:
         request.context.import_data(patch)
         if save:
-            save_tender(None, None, request)
+            save_tender(request)

@@ -33,9 +33,8 @@ class TenderAwardContractResource(object):
         contract_data = self.request.validated['data']
         contract = Contract(contract_data)
         contract.awardID = self.request.validated['award_id']
-        src = tender.serialize("plain")
         self.request.validated['award'].contracts.append(contract)
-        save_tender(tender, src, self.request)
+        save_tender(self.request)
         self.request.response.status = 201
         self.request.response.headers['Location'] = self.request.route_url('Tender Award Contracts', tender_id=tender.id, award_id=self.request.validated['award_id'], contract_id=contract['id'])
         return {'data': contract.serialize()}
@@ -56,15 +55,13 @@ class TenderAwardContractResource(object):
     def patch(self):
         """Update of contract
         """
-        tender = self.request.validated['tender']
-        if tender.status not in ['active.awarded', 'complete']:
+        if self.request.validated['tender_status'] not in ['active.awarded', 'complete']:
             self.request.errors.add('body', 'data', 'Can\'t update contract in current tender status')
             self.request.errors.status = 403
             return
         contract = self.request.validated['contract']
         contract_data = self.request.validated['data']
         if contract_data:
-            src = tender.serialize("plain")
             contract.import_data(apply_data_patch(contract.serialize(), contract_data))
-            save_tender(tender, src, self.request)
+            save_tender(self.request)
         return {'data': contract.serialize()}

@@ -32,9 +32,8 @@ class TenderAwardComplaintResource(object):
             return
         complaint_data = self.request.validated['data']
         complaint = Complaint(complaint_data)
-        src = tender.serialize("plain")
         self.request.validated['award'].complaints.append(complaint)
-        save_tender(tender, src, self.request)
+        save_tender(self.request)
         self.request.response.status = 201
         self.request.response.headers['Location'] = self.request.route_url('Tender Award Complaints', tender_id=tender.id, award_id=self.request.validated['award_id'], complaint_id=complaint['id'])
         return {'data': complaint.serialize("view")}
@@ -71,7 +70,6 @@ class TenderAwardComplaintResource(object):
                 self.request.errors.add('body', 'data', 'Can\'t cancel complaint')
                 self.request.errors.status = 403
                 return
-            src = tender.serialize("plain")
             complaint.import_data(apply_data_patch(complaint.serialize(), complaint_data))
             if complaint.status == 'resolved':
                 award = self.request.validated['award']
@@ -125,5 +123,5 @@ class TenderAwardComplaintResource(object):
                         tender.status = 'complete'
                     else:
                         tender.status = 'unsuccessful'
-            save_tender(tender, src, self.request)
+            save_tender(self.request)
         return {'data': complaint.serialize("view")}
