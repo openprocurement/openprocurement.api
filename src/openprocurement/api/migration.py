@@ -260,16 +260,16 @@ def from11to12(db):
                 if not item.get('description'):
                     changed = True
                     item["description"] = u"item description"
-                if item.get('classification') and item['classification'].get('scheme') != 'CPV':
+                if item.get('classification') is not None and item['classification'].get('scheme') != 'CPV':
                     changed = True
                     item['classification']['scheme'] = 'CPV'
-                if item.get('classification') and item['classification'].get('id') not in CPV_CODES:
+                if item.get('classification') is not None and item['classification'].get('id') not in CPV_CODES:
                     changed = True
                     item['classification']['id'] = CPV_CODES[0]
                 if item.get('additionalClassifications') and not any([i['scheme'] == u'ДКПП' for i in item['additionalClassifications']]):
                     changed = True
                     item['additionalClassifications'][0]['scheme'] = u'ДКПП'
-                if item.get('unit') and 'code' not in item['unit']:
+                if item.get('unit') is not None and 'code' not in item['unit']:
                     changed = True
                     item['unit']['code'] = 'code'
         else:
