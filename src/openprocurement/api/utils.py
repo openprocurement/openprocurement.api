@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from base64 import b64encode
 from jsonpatch import make_patch, apply_patch as _apply_patch
-from openprocurement.api.models import Revision, get_now
+from openprocurement.api.models import Document, Revision, get_now
 from urllib import quote
 from uuid import uuid4
 from schematics.exceptions import ModelValidationError
@@ -30,14 +30,35 @@ def generate_tender_id(ctime, db):
     return 'UA-{:04}-{:02}-{:02}-{:06}'.format(ctime.year, ctime.month, ctime.day, index)
 
 
-def upload_file(tender, document, key, in_file, request):
+def upload_file(request):
+    first_document = None
+    if request.content_type == 'multipart/form-data':
+        data = request.validated['file']
+        filename = data.filename
+        content_type = data.type
+        in_file = data.file
+    else:
+        first_document = request.validated['documents'][0]
+        filename = first_document.title
+        content_type = request.content_type
+        in_file = request.body_file
+    document = Document()
+    document.id = request.validated['document_id'] if 'document_id' in request.validated else generate_id()
+    document.title = filename
+    document.format = content_type
+    if first_document:
+        document.datePublished = first_document.datePublished
+    key = generate_id()
+    document_route = request.matched_route.name.replace("collection_", "")
+    document.url = request.current_route_url(_route_name=document_route, document_id=document.id, _query={'download': key})
+    tender = request.validated['tender']
     conn = getattr(request.registry, 's3_connection', None)
     if conn:
         bucket = conn.get_bucket(request.registry.bucket_name)
         filename = "{}/{}/{}".format(tender.id, document.id, key)
         key = bucket.new_key(filename)
         key.set_metadata('Content-Type', document.format)
-        key.set_metadata("Content-Disposition", "attachment; filename*=UTF-8''%s" % quote(document.title))
+        key.set_metadata("Content-Disposition", "attachment; filename={}".format(quote(document.title.encode('utf-8'))))
         key.set_contents_from_file(in_file)
         key.set_acl('private')
     else:
@@ -46,12 +67,16 @@ def upload_file(tender, document, key, in_file, request):
             "content_type": document.format,
             "data": b64encode(in_file.read())
         }
+    return document
 
 
-def get_file(tender, document, key, db, request):
+def get_file(request):
+    tender_id = request.validated['tender_id']
+    document = request.validated['document']
+    key = request.params.get('download')
     conn = getattr(request.registry, 's3_connection', None)
     if conn:
-        filename = "{}/{}/{}".format(tender.id, document.id, key)
+        filename = "{}/{}/{}".format(tender_id, document.id, key)
         url = conn.generate_url(method='GET', bucket=request.registry.bucket_name, key=filename, expires_in=300)
         request.response.content_type = document.format.encode('utf-8')
         request.response.content_disposition = 'attachment; filename={}'.format(quote(document.title.encode('utf-8')))
@@ -60,7 +85,7 @@ def get_file(tender, document, key, db, request):
         return url
     else:
         filename = "{}_{}".format(document.id, key)
-        data = db.get_attachment(tender.id, filename)
+        data = request.registry.db.get_attachment(tender_id, filename)
         if data:
             request.response.content_type = document.format.encode('utf-8')
             request.response.content_disposition = 'attachment; filename={}'.format(quote(document.title.encode('utf-8')))

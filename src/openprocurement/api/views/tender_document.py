@@ -45,27 +45,20 @@ class TenderDocumentResource(object):
             self.request.errors.add('body', 'data', 'Can\'t add document in current tender status')
             self.request.errors.status = 403
             return
-        data = self.request.validated['file']
-        document = Document()
-        document.id = generate_id()
-        document.title = data.filename
-        document.format = data.type
-        key = generate_id()
-        document.url = self.request.route_url('Tender Documents', tender_id=tender.id, document_id=document.id, _query={'download': key})
+        document = upload_file(self.request)
         tender.documents.append(document)
-        upload_file(tender, document, key, data.file, self.request)
         save_tender(self.request)
         self.request.response.status = 201
-        self.request.response.headers['Location'] = self.request.route_url('Tender Documents', tender_id=tender.id, document_id=document.id)
+        document_route = self.request.matched_route.name.replace("collection_", "")
+        self.request.response.headers['Location'] = self.request.current_route_url(_route_name=document_route, document_id=document.id)
         return {'data': document.serialize("view")}
 
     @view(permission='view_tender')
     def get(self):
         """Tender Document Read"""
+        if self.request.params.get('download'):
+            return get_file(self.request)
         document = self.request.validated['document']
-        key = self.request.params.get('download')
-        if key:
-            return get_file(self.request.validated['tender'], document, key, self.db, self.request)
         document_data = document.serialize("view")
         document_data['previousVersions'] = [
             i.serialize("view")
@@ -78,29 +71,12 @@ class TenderDocumentResource(object):
     def put(self):
         """Tender Document Update"""
         tender = self.request.validated['tender']
-        first_document = self.request.validated['documents'][0]
         if tender.status != 'active.enquiries':
             self.request.errors.add('body', 'data', 'Can\'t update document in current tender status')
             self.request.errors.status = 403
             return
-        if self.request.content_type == 'multipart/form-data':
-            data = self.request.validated['file']
-            filename = data.filename
-            content_type = data.type
-            in_file = data.file
-        else:
-            filename = first_document.title
-            content_type = self.request.content_type
-            in_file = self.request.body_file
-        document = Document()
-        document.id = self.request.validated['id']
-        document.title = filename
-        document.format = content_type
-        document.datePublished = first_document.datePublished
-        key = generate_id()
-        document.url = self.request.route_url('Tender Documents', tender_id=tender.id, document_id=document.id, _query={'download': key})
+        document = upload_file(self.request)
         tender.documents.append(document)
-        upload_file(tender, document, key, in_file, self.request)
         save_tender(self.request)
         return {'data': document.serialize("view")}
 
