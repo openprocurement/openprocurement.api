@@ -369,7 +369,7 @@ class Award(Model):
 
 
 plain_role = (blacklist('_attachments', 'revisions', 'dateModified') + schematics_embedded_role)
-edit_role = (blacklist('owner_token', 'owner', '_attachments', 'revisions', 'dateModified', 'id', 'tenderID') + schematics_embedded_role)
+edit_role = (blacklist('owner_token', 'owner', '_attachments', 'revisions', 'dateModified', 'id', 'tenderID', 'bids', 'documents', 'awards', 'questions', 'complaints', 'auctionUrl') + schematics_embedded_role)
 view_role = (blacklist('owner_token', '_attachments', 'revisions') + schematics_embedded_role)
 listing_role = whitelist('dateModified', 'doc_id')
 auction_view_role = whitelist('tenderID', 'dateModified', 'bids', 'auctionPeriod', 'minimalStep', 'auctionUrl')
