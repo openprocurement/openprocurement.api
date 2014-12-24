@@ -359,16 +359,16 @@ class TenderResource(object):
         tender_data = tender.serialize('view' if self.request.authenticated_userid == 'chronograph' else tender.status)
         return {'data': tender_data}
 
-    @view(content_type="application/json", validators=(validate_tender_data, ), permission='edit_tender', renderer='json')
-    def put(self):
-        """Tender Edit (full)"""
-        tender = self.request.validated['tender']
-        if tender.status in ['complete', 'unsuccessful', 'cancelled']:
-            self.request.errors.add('body', 'data', 'Can\'t update tender in current status')
-            self.request.errors.status = 403
-            return
-        apply_patch(self.request, src=self.request.validated['tender_src'])
-        return {'data': tender.serialize(tender.status)}
+    #@view(content_type="application/json", validators=(validate_tender_data, ), permission='edit_tender', renderer='json')
+    #def put(self):
+        #"""Tender Edit (full)"""
+        #tender = self.request.validated['tender']
+        #if tender.status in ['complete', 'unsuccessful', 'cancelled']:
+            #self.request.errors.add('body', 'data', 'Can\'t update tender in current status')
+            #self.request.errors.status = 403
+            #return
+        #apply_patch(self.request, src=self.request.validated['tender_src'])
+        #return {'data': tender.serialize(tender.status)}
 
     @view(content_type="application/json", validators=(validate_patch_tender_data, ), permission='edit_tender', renderer='json')
     def patch(self):

@@ -364,35 +364,35 @@ class TenderResourceTest(BaseWebTest):
         self.assertEqual(response.content_type, 'application/json')
         self.assertTrue('{\n    "data": {\n        "' in response.body)
 
-    def test_put_tender(self):
-        response = self.app.get('/tenders')
-        self.assertEqual(response.status, '200 OK')
-        self.assertEqual(len(response.json['data']), 0)
+    #def test_put_tender(self):
+        #response = self.app.get('/tenders')
+        #self.assertEqual(response.status, '200 OK')
+        #self.assertEqual(len(response.json['data']), 0)
 
-        response = self.app.post_json('/tenders', {'data': test_tender_data})
-        self.assertEqual(response.status, '201 Created')
-        tender = response.json['data']
-        tender['procurementMethod'] = 'Open'
-        dateModified = tender.pop('dateModified')
+        #response = self.app.post_json('/tenders', {'data': test_tender_data})
+        #self.assertEqual(response.status, '201 Created')
+        #tender = response.json['data']
+        #tender['procurementMethod'] = 'Open'
+        #dateModified = tender.pop('dateModified')
 
-        response = self.app.put_json('/tenders/{}'.format(
-            tender['id']), {'data': tender})
-        self.assertEqual(response.status, '200 OK')
-        self.assertEqual(response.content_type, 'application/json')
-        new_tender = response.json['data']
-        new_dateModified = new_tender.pop('dateModified')
-        self.assertEqual(tender, new_tender)
-        self.assertNotEqual(dateModified, new_dateModified)
+        #response = self.app.put_json('/tenders/{}'.format(
+            #tender['id']), {'data': tender})
+        #self.assertEqual(response.status, '200 OK')
+        #self.assertEqual(response.content_type, 'application/json')
+        #new_tender = response.json['data']
+        #new_dateModified = new_tender.pop('dateModified')
+        #self.assertEqual(tender, new_tender)
+        #self.assertNotEqual(dateModified, new_dateModified)
 
-        response = self.app.patch_json('/tenders/{}'.format(tender['id']), {'data': {'status': 'complete'}})
-        self.assertEqual(response.status, '200 OK')
-        self.assertEqual(response.content_type, 'application/json')
+        #response = self.app.patch_json('/tenders/{}'.format(tender['id']), {'data': {'status': 'complete'}})
+        #self.assertEqual(response.status, '200 OK')
+        #self.assertEqual(response.content_type, 'application/json')
 
-        response = self.app.put_json('/tenders/{}'.format(
-            tender['id']), {'data': tender}, status=403)
-        self.assertEqual(response.status, '403 Forbidden')
-        self.assertEqual(response.content_type, 'application/json')
-        self.assertEqual(response.json['errors'][0]["description"], "Can't update tender in current status")
+        #response = self.app.put_json('/tenders/{}'.format(
+            #tender['id']), {'data': tender}, status=403)
+        #self.assertEqual(response.status, '403 Forbidden')
+        #self.assertEqual(response.content_type, 'application/json')
+        #self.assertEqual(response.json['errors'][0]["description"], "Can't update tender in current status")
 
     def test_patch_tender(self):
         response = self.app.get('/tenders')
@@ -518,14 +518,14 @@ class TenderResourceTest(BaseWebTest):
             {u'description': u'Not Found', u'location': u'url', u'name': u'tender_id'}
         ])
 
-        response = self.app.put_json(
-            '/tenders/some_id', {'data': test_tender_data}, status=404)
-        self.assertEqual(response.status, '404 Not Found')
-        self.assertEqual(response.content_type, 'application/json')
-        self.assertEqual(response.json['status'], 'error')
-        self.assertEqual(response.json['errors'], [
-            {u'description': u'Not Found', u'location': u'url', u'name': u'tender_id'}
-        ])
+        #response = self.app.put_json(
+            #'/tenders/some_id', {'data': test_tender_data}, status=404)
+        #self.assertEqual(response.status, '404 Not Found')
+        #self.assertEqual(response.content_type, 'application/json')
+        #self.assertEqual(response.json['status'], 'error')
+        #self.assertEqual(response.json['errors'], [
+            #{u'description': u'Not Found', u'location': u'url', u'name': u'tender_id'}
+        #])
 
         response = self.app.patch_json(
             '/tenders/some_id', {'data': {}}, status=404)
