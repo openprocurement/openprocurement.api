@@ -194,7 +194,7 @@ msgstr "Обов’язково мати хоча б один елемент з 
 
 #: ../../source/standard/item.rst:127
 msgid "UN/CEFACT Recommendation 20 unit code."
-msgstr "Код одиниці у Рекомендації UN/CEFACT 20"
+msgstr "Код одиниці з Рекомендації № 20 UN/CEFACT"
 
 #~ msgid "string, multilingual"
 #~ msgstr "стрічка, багатомовний"
