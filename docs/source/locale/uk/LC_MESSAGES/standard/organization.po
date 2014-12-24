@@ -174,7 +174,7 @@ msgstr ""
 "Дозволеними є коди зі `спику кодів \"Organisation Registration Agency\" "
 "Стандарту IATI <http://iatistandard.org/codelists/"
 "OrganisationRegistrationAgency/>`_ з додаванням коду `UA-EDR` для "
-"організацій, зареєстрованих в Україні (EDRPOU та IPN)."
+"організацій, зареєстрованих в Україні (ЄДРПОУ та ІПН)."
 
 #~ msgid ""
 #~ "The allowed codes are the ones found in `Organisation Registration Agency"
