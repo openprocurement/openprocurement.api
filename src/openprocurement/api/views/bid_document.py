@@ -51,7 +51,7 @@ class TenderBidDocumentResource(object):
         save_tender(self.request)
         self.request.response.status = 201
         document_route = self.request.matched_route.name.replace("collection_", "")
-        self.request.response.headers['Location'] = self.request.current_route_url(_route_name=document_route, document_id=document.id)
+        self.request.response.headers['Location'] = self.request.current_route_url(_route_name=document_route, document_id=document.id, _query={})
         return {'data': document.serialize("view")}
 
     @view(renderer='json', permission='view_tender')
