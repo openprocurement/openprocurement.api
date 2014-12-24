@@ -42,20 +42,21 @@ def upload_file(request):
         filename = first_document.title
         content_type = request.content_type
         in_file = request.body_file
-    document = Document()
-    document.id = request.validated['document_id'] if 'document_id' in request.validated else generate_id()
-    document.title = filename
-    document.format = content_type
+    document = Document({
+        'title': filename,
+        'format': content_type
+    })
+    if 'document_id' in request.validated:
+        document.id = request.validated['document_id']
     if first_document:
         document.datePublished = first_document.datePublished
     key = generate_id()
     document_route = request.matched_route.name.replace("collection_", "")
     document.url = request.current_route_url(_route_name=document_route, document_id=document.id, _query={'download': key})
-    tender = request.validated['tender']
     conn = getattr(request.registry, 's3_connection', None)
     if conn:
         bucket = conn.get_bucket(request.registry.bucket_name)
-        filename = "{}/{}/{}".format(tender.id, document.id, key)
+        filename = "{}/{}/{}".format(request.validated['tender_id'], document.id, key)
         key = bucket.new_key(filename)
         key.set_metadata('Content-Type', document.format)
         key.set_metadata("Content-Disposition", "attachment; filename={}".format(quote(document.title.encode('utf-8'))))
@@ -63,7 +64,7 @@ def upload_file(request):
         key.set_acl('private')
     else:
         filename = "{}_{}".format(document.id, key)
-        tender['_attachments'][filename] = {
+        request.validated['tender']['_attachments'][filename] = {
             "content_type": document.format,
             "data": b64encode(in_file.read())
         }

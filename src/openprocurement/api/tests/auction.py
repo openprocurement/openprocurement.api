@@ -161,6 +161,13 @@ class TenderAuctionResourceTest(BaseTenderWebTest):
         response = self.app.post_json('/tenders/{}/auction'.format(self.tender_id), {'data': patch_data}, status=422)
         self.assertEqual(response.status, '422 Unprocessable Entity')
         self.assertEqual(response.content_type, 'application/json')
+        self.assertEqual(response.json['errors'][0]["description"], {u'id': [u'Hash value is wrong length.']})
+
+        patch_data['bids'][1]['id'] = "00000000000000000000000000000000"
+
+        response = self.app.post_json('/tenders/{}/auction'.format(self.tender_id), {'data': patch_data}, status=422)
+        self.assertEqual(response.status, '422 Unprocessable Entity')
+        self.assertEqual(response.content_type, 'application/json')
         self.assertEqual(response.json['errors'][0]["description"], "Auction bids should be identical to the tender bids")
 
         patch_data['bids'][1]['id'] = "4879d3f8ee2443169b5fbbc9f89fa606"
@@ -204,7 +211,6 @@ class TenderAuctionResourceTest(BaseTenderWebTest):
         self.assertEqual(response.content_type, 'application/json')
         self.assertEqual(response.json['errors'], [
             {u'description': {u'invalid_field': u'Rogue field'}, u'location': u'body', u'name': u'bids'}
-            #{u'description': u'Rogue field', u'location': u'body', u'name': u'invalid_field'}
         ])
 
         patch_data = {
@@ -232,6 +238,13 @@ class TenderAuctionResourceTest(BaseTenderWebTest):
         #self.assertEqual(response.json['errors'][0]["description"], "Results of auction bids should contains id of bid")
 
         patch_data['bids'][1]['id'] = "some_id"
+
+        response = self.app.patch_json('/tenders/{}/auction'.format(self.tender_id), {'data': patch_data}, status=422)
+        self.assertEqual(response.status, '422 Unprocessable Entity')
+        self.assertEqual(response.content_type, 'application/json')
+        self.assertEqual(response.json['errors'][0]["description"], {u'id': [u'Hash value is wrong length.']})
+
+        patch_data['bids'][1]['id'] = "00000000000000000000000000000000"
 
         response = self.app.patch_json('/tenders/{}/auction'.format(self.tender_id), {'data': patch_data}, status=422)
         self.assertEqual(response.status, '422 Unprocessable Entity')

@@ -8,7 +8,7 @@ from pyramid.security import Allow
 from schematics.exceptions import ConversionError, ValidationError
 from schematics.models import Model
 from schematics.transforms import whitelist, blacklist
-from schematics.types import StringType, FloatType, IntType, URLType, BooleanType, BaseType, EmailType
+from schematics.types import StringType, FloatType, IntType, URLType, BooleanType, BaseType, EmailType, MD5Type
 from schematics.types.compound import ModelType, ListType, DictType
 from schematics.types.serializable import serializable
 from tzlocal import get_localzone
@@ -168,7 +168,7 @@ class Document(Model):
             'revisions': whitelist('url', 'dateModified'),
         }
 
-    id = StringType()
+    id = MD5Type(required=True, default=lambda: uuid4().hex)
     classification = StringType(choices=['notice', 'biddingDocuments', 'technicalSpecifications', 'evaluationCriteria', 'clarifications', 'tenderers'])
     title = StringType()  # A title of the document.
     title_en = StringType()
@@ -254,7 +254,7 @@ class Bid(Model):
 
     tenderers = ListType(ModelType(Organization), required=True, min_size=1, max_size=1)
     date = IsoDateTimeType(default=get_now)
-    id = StringType(required=True, default=lambda: uuid4().hex)
+    id = MD5Type(required=True, default=lambda: uuid4().hex)
     status = StringType(choices=['registration', 'validBid', 'invalidBid'])
     value = ModelType(Value, required=True)
     documents = ListType(ModelType(Document), default=list())
@@ -293,7 +293,7 @@ class Question(Model):
             'cancelled': schematics_default_role,
         }
 
-    id = StringType(required=True, default=lambda: uuid4().hex)
+    id = MD5Type(required=True, default=lambda: uuid4().hex)
     author = ModelType(Organization, required=True)  # who is asking question (contactPoint - person, identification - organization that person represents)
     title = StringType(required=True)  # title of the question
     description = StringType()  # description of the question
@@ -309,7 +309,7 @@ class Complaint(Model):
             'view': schematics_default_role,
         }
 
-    id = StringType(required=True, default=lambda: uuid4().hex)
+    id = MD5Type(required=True, default=lambda: uuid4().hex)
     author = ModelType(Organization, required=True)  # who is asking question (contactPoint - person, identification - organization that person represents)
     title = StringType(required=True)  # title of the question
     description = StringType()  # description of the question
@@ -323,7 +323,7 @@ class Contract(Model):
     class Options:
         serialize_when_none = False
 
-    id = StringType(required=True, default=lambda: uuid4().hex)
+    id = MD5Type(required=True, default=lambda: uuid4().hex)
     awardID = StringType(required=True)
     title = StringType()  # Contract title
     title_en = StringType()
@@ -350,7 +350,7 @@ class Award(Model):
             'view': schematics_default_role,
         }
 
-    id = StringType(required=True, default=lambda: uuid4().hex)
+    id = MD5Type(required=True, default=lambda: uuid4().hex)
     bid_id = StringType(required=True)
     title = StringType()  # Award title
     title_en = StringType()
