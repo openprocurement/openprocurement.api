@@ -1,8 +1,6 @@
 # -*- coding: utf-8 -*-
 from cornice.resource import resource, view
-from openprocurement.api.models import Document
 from openprocurement.api.utils import (
-    generate_id,
     get_file,
     save_tender,
     upload_file,

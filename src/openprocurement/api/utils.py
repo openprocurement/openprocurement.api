@@ -76,7 +76,8 @@ def get_file(request):
     document = request.validated['document']
     key = request.params.get('download')
     conn = getattr(request.registry, 's3_connection', None)
-    if conn:
+    filename = "{}_{}".format(document.id, key)
+    if conn and filename not in request.validated['tender']['_attachments']:
         filename = "{}/{}/{}".format(tender_id, document.id, key)
         url = conn.generate_url(method='GET', bucket=request.registry.bucket_name, key=filename, expires_in=300)
         request.response.content_type = document.format.encode('utf-8')

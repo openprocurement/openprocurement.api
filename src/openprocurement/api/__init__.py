@@ -69,10 +69,10 @@ def main(global_config, **settings):
     migrate_data(config.registry.db)
 
     # S3 connection
-    if 'aws.access_key' in settings and 'aws.secret_key' in settings and 'aws.bucket' in settings:
+    if 'aws.access_key' in settings and 'aws.secret_key' in settings and 'aws.s3_bucket' in settings:
         connection = S3Connection(settings['aws.access_key'], settings['aws.secret_key'])
         config.registry.s3_connection = connection
-        bucket_name = settings['aws.bucket']
+        bucket_name = settings['aws.s3_bucket']
         if bucket_name not in [b.name for b in connection.get_all_buckets()]:
             connection.create_bucket(bucket_name, location=Location.EU)
         config.registry.bucket_name = bucket_name
