@@ -181,6 +181,7 @@ def from10to11(db):
                     changed = True
                     i["author"]["identifier"]["scheme"] = 'UA-EDR'
         if changed:
+            doc['dateModified'] = get_now().isoformat()
             db.save(doc)
 
 
