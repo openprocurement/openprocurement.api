@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 from cornice.resource import resource, view
-from openprocurement.api.models import Question
+from openprocurement.api.models import Question, get_now
 from openprocurement.api.utils import (
     apply_data_patch,
     save_tender,
@@ -26,8 +26,8 @@ class TenderQuestionResource(object):
         """Post a question
         """
         tender = self.request.validated['tender']
-        if tender.status != 'active.enquiries':
-            self.request.errors.add('body', 'data', 'Can\'t add question in current tender status')
+        if tender.status != 'active.enquiries' or get_now() > tender.enquiryPeriod.endDate:
+            self.request.errors.add('body', 'data', 'Can add question only in enquiryPeriod')
             self.request.errors.status = 403
             return
         question_data = self.request.validated['data']

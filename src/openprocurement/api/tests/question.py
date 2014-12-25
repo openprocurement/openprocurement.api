@@ -118,7 +118,7 @@ class TenderQuestionResourceTest(BaseTenderWebTest):
             self.tender_id), {'data': {'title': 'question title', 'description': 'question description', 'author': test_tender_data["procuringEntity"]}}, status=403)
         self.assertEqual(response.status, '403 Forbidden')
         self.assertEqual(response.content_type, 'application/json')
-        self.assertEqual(response.json['errors'][0]["description"], "Can't add question in current tender status")
+        self.assertEqual(response.json['errors'][0]["description"], "Can add question only in enquiryPeriod")
 
     def test_patch_tender_question(self):
         response = self.app.post_json('/tenders/{}/questions'.format(
