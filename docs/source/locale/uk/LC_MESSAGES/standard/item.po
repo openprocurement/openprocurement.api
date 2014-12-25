@@ -4,7 +4,7 @@ msgstr ""
 "Project-Id-Version: openprocurement.api 0.3\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2014-11-24 18:25+0200\n"
-"PO-Revision-Date: 2014-12-22 14:41+0300\n"
+"PO-Revision-Date: 2014-12-25 10:56+0300\n"
 "Last-Translator: \n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
@@ -82,7 +82,7 @@ msgstr "Classification"
 #: ../../source/standard/item.rst:88 ../../source/standard/item.rst:97
 #: ../../source/standard/item.rst:103 ../../source/standard/item.rst:130
 msgid "string"
-msgstr "стрічка"
+msgstr "рядок"
 
 #: ../../source/standard/item.rst:99
 msgid ""
@@ -162,7 +162,7 @@ msgstr ""
 #: ../../source/standard/item.rst:71 ../../source/standard/item.rst:73
 #: ../../source/standard/item.rst:125
 msgid "string, required"
-msgstr "стрічка, обов’язково"
+msgstr "рядок, обов’язковий"
 
 #: ../../source/standard/item.rst:75
 msgid "strng, optional, usually not used"
@@ -178,7 +178,7 @@ msgstr ""
 
 #: ../../source/standard/item.rst:15
 msgid "string, multilingual, required"
-msgstr "стрічка, багатомовна, обов’язково"
+msgstr "рядок, багатомовний, обов’язковий"
 
 #: ../../source/standard/item.rst:28
 msgid ""
@@ -194,7 +194,7 @@ msgstr "Обов’язково мати хоча б один елемент з 
 
 #: ../../source/standard/item.rst:127
 msgid "UN/CEFACT Recommendation 20 unit code."
-msgstr "Код одиниці з Рекомендації № 20 UN/CEFACT"
+msgstr "Код одиниці в UN/CEFACT Recommendation 20."
 
 #~ msgid "string, multilingual"
 #~ msgstr "стрічка, багатомовний"

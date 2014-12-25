@@ -4,7 +4,7 @@ msgstr ""
 "Project-Id-Version: openprocurement.api 0.3\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2014-11-24 18:25+0200\n"
-"PO-Revision-Date: 2014-12-22 14:55+0300\n"
+"PO-Revision-Date: 2014-12-25 10:55+0300\n"
 "Last-Translator: \n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
@@ -24,7 +24,7 @@ msgstr "Схема"
 #: ../../source/standard/util.rst:14 ../../source/standard/util.rst:20
 #: ../../source/standard/util.rst:70
 msgid "string, :ref:`date`"
-msgstr "стрічка, :ref:`date`"
+msgstr "рядок, :ref:`date`"
 
 #: ../../source/standard/util.rst:22
 msgid "|ocdsDescription| The end date for the period."
@@ -100,7 +100,7 @@ msgstr "Повинно бути додатнім."
 
 #: ../../source/standard/util.rst:52
 msgid "string, required"
-msgstr "стрічка, обов’язково"
+msgstr "рядок, обов’язковий"
 
 #: ../../source/standard/util.rst:58
 msgid "bool, required"

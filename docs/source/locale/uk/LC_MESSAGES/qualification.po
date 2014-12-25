@@ -4,7 +4,7 @@ msgstr ""
 "Project-Id-Version: openprocurement.api 0.1\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2014-10-29 12:11+0200\n"
-"PO-Revision-Date: 2014-12-19 12:51+0300\n"
+"PO-Revision-Date: 2014-12-25 11:14+0300\n"
 "Last-Translator: \n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
@@ -18,7 +18,7 @@ msgstr "Операції кваліфікації"
 
 #: ../../source/qualification.rst:62
 msgid "Contract Awarding"
-msgstr "Визначення переможця з ціллю підписання контракту"
+msgstr "Визначення переможця з ціллю підписання договору"
 
 #: ../../source/qualification.rst:24
 msgid "Disqualification"
