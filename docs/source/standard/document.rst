@@ -20,22 +20,28 @@ Schema
     
 
     * `notice` - **Tender notice**
-    The formal notice that gives details of a tender. This may be a link to a downloadable document, to a web page, or to an official gazette in which the notice is contained.
- 
+      
+      The formal notice that gives details of a tender. This may be a link to a downloadable document, to a web page, or to an official gazette in which the notice is contained.
+    
     * `biddingDocuments` - **Bidding Documents**
-    Information for potential suppliers, describing the goals of the contract (e.g. goods and services to be procured), and the bidding process.
+      
+      Information for potential suppliers, describing the goals of the contract (e.g. goods and services to be procured), and the bidding process.
 
     * `technicalSpecifications` - **Technical Specifications**
-    Detailed technical information about goods or services to be provided.
+    
+      Detailed technical information about goods or services to be provided.
 
     * `evaluationCriteria` - **Evaluation Criteria**
-    Information about how bids will be evaluated.
+    
+      Information about how bids will be evaluated.
     
     * `clarifications` - **Clarifications to bidders questions**
-    Including replies to issues raised in pre-bid conferences.
+    
+      Including replies to issues raised in pre-bid conferences.
     
     * `eligibilityCriteria` - **Eligibility Criteria**
-    Detailed documents about the eligibility of bidders.
+   
+      Detailed documents about the eligibility of bidders.
     
     * `shortlistedFirms` - **Shortlisted Firms**
     
@@ -44,30 +50,36 @@ Schema
     * `billOfQuantity` - **Bill Of Quantity**
     
     * `bidders` - **Information on bidders**
-    Information on bidders or participants, their validation documents and any procedural exemptions for which they qualify.
+    
+      Information on bidders or participants, their validation documents and any procedural exemptions for which they qualify.
     
     * `conflictOfInterest` - **conflicts of interest uncovered**
     
     * `debarments` - **debarments issued**
     
+    
     Possible values for :ref:`award`
     
     
     * `notice` - **Award Notice**
-    The formal notice that gives details of the contract award. This may be a link to a downloadable document, to a web page, or to an official gazette in which the notice is contained.
+    
+      The formal notice that gives details of the contract award. This may be a link to a downloadable document, to a web page, or to an official gazette in which the notice is contained.
     
     * `evaluationReports` - **Evaluation report**
-    Report on the evaluation of the bids and the application of the evaluation criteria, including the justification fo the award.
+    
+      Report on the evaluation of the bids and the application of the evaluation criteria, including the justification fo the award.
     
     * `winningBid` - **Winning Bid**
     
     * `complaints` - **Complaints and decisions**
 
+    
     Possible values for :ref:`contract`
     
     
     * `notice` - **Contract notice**
-    The formal notice that gives details of a contract being signed and valid to start implementation. This may be a link to a downloadable document, to a web page, or to an official gazette in which the notice is contained.
+    
+      The formal notice that gives details of a contract being signed and valid to start implementation. This may be a link to a downloadable document, to a web page, or to an official gazette in which the notice is contained.
     
     * `contractSigned` - **Signed Contract**
     
