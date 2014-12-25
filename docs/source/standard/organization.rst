@@ -13,8 +13,16 @@ Schema
 
 :name:
     string, multilingual
+    
+    |ocdsDescription|
+    The common name of the organization.
+    
 :identifier:
     :ref:`Identifier`
+    
+    |ocdsDescription|
+    The primary identifier for this organization. 
+    
 :additionalIdentifiers:
     List of :ref:`identifier` objects
 :address:
@@ -82,14 +90,33 @@ Schema
 
 :streetAddress:
     string
+    
+    |ocdsDescription|
+    The street address. For example, 1600 Amphitheatre Pkwy.
+    
 :locality:
     string
+    
+    |ocdsDescription|
+    The locality. For example, Mountain View.
+    
 :region:
     string
+    
+    |ocdsDescription|
+    The region. For example, CA.
+    
 :postalCode:
     string
+    
+    |ocdsDescription|
+    The postal code. For example, 94043.
+    
 :countryName:
     string, required
+    
+    |ocdsDescription|
+    The country name. For example, United States.
 
 
 .. index:: Person, Phone, Email, Website, ContactPoint
@@ -104,13 +131,33 @@ Schema
 
 :name:
     string, multilingual, required
+    
+    |ocdsDescription|
+    The name of the contact person, department, or contact point, for correspondence relating to this contracting process.
+    
 :email:
     email
+    
+    |ocdsDescription|
+    The e-mail address of the contact point/person.
+    
 :telephone:
     string
+    
+    |ocdsDescription|
+    The telephone number of the contact point/person. This should include the international dialling code.
+    
 :faxNumber:
     string
+    
+    |ocdsDescription|
+    The fax number of the contact point/person. This should include the international dialling code.
+    
 :url:
     url
+    
+    |ocdsDescription|
+    A web address for the contact point/person.
+    
 
 Either `email` or `telephone` fields have to be provided.
