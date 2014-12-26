@@ -128,7 +128,6 @@ def apply_data_patch(item, changes):
 
 
 def tender_serialize(tender, fields):
-    fields = fields.split(',') + ["dateModified", "id"]
     return dict([(i, j) for i, j in tender.serialize(tender.status).items() if i in fields])
 
 

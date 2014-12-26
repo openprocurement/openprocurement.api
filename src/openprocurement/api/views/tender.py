@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 from datetime import datetime
+from logging import getLogger
 from cornice.resource import resource, view
 from openprocurement.api.design import tenders_by_dateModified_view
 from openprocurement.api.models import Tender, get_now
@@ -15,6 +16,9 @@ from openprocurement.api.validation import (
     validate_patch_tender_data,
     validate_tender_data,
 )
+
+
+LOGGER = getLogger(__name__)
 
 
 @resource(name='Tender',
@@ -74,6 +78,8 @@ class TenderResource(object):
             params['descending'] = descending
         next_offset = datetime.min.isoformat() if descending else get_now().isoformat()
         if fields:
+            LOGGER.info('Used custom fields for tenders list: {}'.format(','.join(sorted(fields.split(',')))))
+            fields = fields.split(',') + ['dateModified', 'id']
             results = [
                 tender_serialize(i, fields)
                 for i in Tender.view(self.db, 'tenders/by_dateModified', limit=limit + 1, startkey=offset, descending=bool(descending), include_docs=True)
