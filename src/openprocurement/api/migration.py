@@ -241,7 +241,7 @@ def from11to12(db):
         doc = i.doc
         changed = False
         if 'owner' not in doc:
-            doc['owner'] = 'demo'
+            doc['owner'] = 'broker05'
         if 'owner_token' not in doc:
             doc['owner_token'] = doc.id
         if not doc.get("value", {}):
@@ -314,9 +314,9 @@ def from11to12(db):
         bid_id = None
         for item in doc.get('bids', []):
             if 'owner' not in item:
-                item['owner'] = doc['owner']
+                item['owner'] = 'broker05'
             if 'owner_token' not in item:
-                item['owner_token'] = doc['owner_token']
+                item['owner_token'] = item['id']
             if "value" in item:
                 item["value"], changed = fix_value(item["value"], value, changed)
             else:
