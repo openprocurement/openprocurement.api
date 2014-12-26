@@ -5,11 +5,12 @@ import gevent.monkey
 gevent.monkey.patch_all()
 import os
 import pkg_resources
+from urlparse import urlparse
 from pyramid.config import Configurator
 from openprocurement.api.auth import AuthenticationPolicy
 from pyramid.authorization import ACLAuthorizationPolicy as AuthorizationPolicy
 from pyramid.renderers import JSON, JSONP
-from pyramid.events import NewRequest
+from pyramid.events import NewRequest, BeforeRender
 from couchdb import Server
 from openprocurement.api.design import sync_design
 from openprocurement.api.migration import migrate_data
@@ -39,6 +40,30 @@ def set_renderer(event):
         return True
 
 
+def fix_url(item, app_url):
+    if isinstance(item, list):
+        [
+            fix_url(i, app_url)
+            for i in item
+            if isinstance(i, dict) or isinstance(i, list)
+        ]
+    elif isinstance(item, dict):
+        if "format" in item and "url" in item and '?download=' in item['url']:
+            s = urlparse(item["url"])
+            item["url"] = app_url + s.path + '?' + s.query
+            return
+        [
+            fix_url(item[i], app_url)
+            for i in item
+            if isinstance(item[i], dict) or isinstance(item[i], list)
+        ]
+
+
+def beforerender(event):
+    if 'data' in event.rendering_val:
+        fix_url(event.rendering_val['data'], event['request'].application_url)
+
+
 def main(global_config, **settings):
     config = Configurator(
         settings=settings,
@@ -50,6 +75,7 @@ def main(global_config, **settings):
     config.add_renderer('jsonp', JSONP(param_name='opt_jsonp'))
     config.add_renderer('prettyjsonp', JSONP(indent=4, param_name='opt_jsonp'))
     config.add_subscriber(set_renderer, NewRequest)
+    config.add_subscriber(beforerender, BeforeRender)
     config.include("cornice")
     config.route_prefix = '/api/{}'.format(VERSION)
     config.scan("openprocurement.api.views")
