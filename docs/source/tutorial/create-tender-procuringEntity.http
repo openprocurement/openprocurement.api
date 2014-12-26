@@ -1,6 +1,6 @@
-$ http --auth demo: -j POST https://api-sandbox.openprocurement.org/api/0/tenders data:=@./school-tender.json
+$ http --auth broker: -j POST https://api-sandbox.openprocurement.org/api/0/tenders data:=@./school-tender.json
 POST /api/0/tenders HTTP/1.1
-Authorization: Basic ZGVtbzo=
+Authorization: Basic YnJva2VyOg==
 Content-Type: application/json; charset=utf-8
 
 {
@@ -51,19 +51,19 @@ Content-Type: application/json; charset=utf-8
 
 HTTP/1.1 201 Created
 Content-Type: application/json; charset=UTF-8
-Location: http://api-sandbox.openprocurement.org/api/0/tenders/b62095b27d5a4d9c9529f6b40a4385ec
+Location: https://api-sandbox.openprocurement.org/api/0/tenders/166b4a36611047a492d85c3693b86b4e
 
 {
     "access": {
-        "token": "b7a39e6379a14d7596388405052093a2"
+        "token": "953613dd25d6421588b2597504b747ed"
     }, 
     "data": {
-        "dateModified": "2014-12-19T13:00:42.412390+02:00", 
+        "dateModified": "2014-12-26T21:30:56.586789+02:00", 
         "enquiryPeriod": {
             "endDate": "2015-12-01T00:00:00+02:00", 
-            "startDate": "2014-12-19T13:00:42.412390+02:00"
+            "startDate": "2014-12-26T21:30:56.522694+02:00"
         }, 
-        "id": "b62095b27d5a4d9c9529f6b40a4385ec", 
+        "id": "166b4a36611047a492d85c3693b86b4e", 
         "items": [
             {
                 "description": "Послуги шкільних їдалень"
@@ -74,7 +74,7 @@ Location: http://api-sandbox.openprocurement.org/api/0/tenders/b62095b27d5a4d9c9
             "currency": "UAH", 
             "valueAddedTaxIncluded": true
         }, 
-        "owner": "demo", 
+        "owner": "broker", 
         "procuringEntity": {
             "address": {
                 "countryName": "Україна", 
@@ -96,7 +96,7 @@ Location: http://api-sandbox.openprocurement.org/api/0/tenders/b62095b27d5a4d9c9
             "name": "ЗОСШ #10 м.Вінниці"
         }, 
         "status": "active.enquiries", 
-        "tenderID": "UA-2014-12-19-000014", 
+        "tenderID": "UA-2014-12-26-000050", 
         "tenderPeriod": {
             "endDate": "2015-12-10T00:00:00+02:00", 
             "startDate": "2015-12-01T00:00:00+02:00"
