@@ -242,7 +242,6 @@ def from11to12(db):
         changed = False
         if 'owner' not in doc:
             doc['owner'] = 'broker05'
-        if 'owner_token' not in doc:
             doc['owner_token'] = doc.id
         if not doc.get("value", {}):
             changed = True
