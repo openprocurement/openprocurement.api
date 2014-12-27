@@ -7,5 +7,5 @@ Sphinx supports (html, PDF, etc.) Source format is 'reStructuredText'
 
 It is also translated into Ukrainian and English via Transifex.
 
-This documentation is published at http://docs.openprocurement.org/
+This documentation is published at http://api-docs.openprocurement.org/
 
