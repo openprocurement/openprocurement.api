@@ -4,12 +4,6 @@ from schematics.exceptions import ModelValidationError, ModelConversionError
 from openprocurement.api.utils import apply_data_patch
 
 
-def filter_data(data, blacklist=[], whitelist=None):
-    blacklist += ['id', 'doc_id', 'date', 'dateModified', 'url', 'owner_token', 'owner']
-    filter_func = lambda i: i in whitelist if whitelist else i not in blacklist
-    return dict([(i, j) for i, j in data.items() if filter_func(i)])
-
-
 def validate_json_data(request):
     try:
         json = request.json_body
@@ -28,10 +22,6 @@ def validate_data(request, model, partial=False):
     data = validate_json_data(request)
     if data is None:
         return
-    #if partial:
-        #data = filter_data(data)
-    #else:
-        #data = filter_data(data, blacklist=['status'])
     try:
         if partial and isinstance(request.context, model):
             new_patch = apply_data_patch(request.context.serialize(), data)
