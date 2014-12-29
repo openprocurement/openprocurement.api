@@ -2,7 +2,7 @@
 import unittest
 
 from openprocurement.api.migration import migrate_data, get_db_schema_version, set_db_schema_version, SCHEMA_VERSION
-from openprocurement.api.tests.base import BaseWebTest
+from openprocurement.api.tests.base import BaseWebTest, test_tender_data
 
 
 class MigrateTest(BaseWebTest):
@@ -467,6 +467,8 @@ class MigrateTest(BaseWebTest):
         for item in items:
             migrated_item = self.db.get(item['_id'])
             self.assertNotEqual(item, migrated_item)
+        self.app.authorization = ('Basic', ('broker05', ''))
+        self.app.post_json('/tenders', {'data': test_tender_data}, status=403)
 
 
 def suite():
