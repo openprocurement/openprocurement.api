@@ -4,7 +4,7 @@ msgstr ""
 "Project-Id-Version: openprocurement.api 0.5\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2014-12-16 10:43+0200\n"
-"PO-Revision-Date: 2014-12-16 12:32+0300\n"
+"PO-Revision-Date: 2014-12-29 11:05+0300\n"
 "Last-Translator: \n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
@@ -30,17 +30,9 @@ msgstr ""
 msgid "Owner tokens"
 msgstr "Токени власника"
 
-#: ../../source/authentication.rst:19
+#: ../../source/authentication.rst:22
 msgid "The token is issued when object is created in the database:"
 msgstr "Токен видається, коли об'єкт створюється в базі даних:"
-
-#: ../../source/authentication.rst:24
-msgid ""
-"You can see the `access` with `token` in response.  Its value can be used to "
-"modify objects further under \"Owner role\":"
-msgstr ""
-"У відповіді є  `access` з `token`. Це значення можна використати для "
-"модифікації об’єктів у \"ролі Власника\":"
 
 #: ../../source/authentication.rst:6
 msgid ""
@@ -54,3 +46,46 @@ msgstr ""
 "аутентифікації. Інші, ті, які модифікують дані у базі даних, потребують "
 "аутентифікації брокера через ключ API. Додатково видаються токени власника, "
 "щоб забезпечити кілька ролей дійових осіб при створенні об’єкта."
+
+#: ../../source/authentication.rst:20
+msgid "Getting token"
+msgstr "Отримання токена"
+
+#: ../../source/authentication.rst:27
+msgid ""
+"You can see the `access` with `token` in response.  Its value can be used to "
+"modify objects further under \"Owner role\"."
+msgstr ""
+"У відповіді є `access` разом з `token`. Це значення можна використати для "
+"модифікації об’єктів у \"ролі Власника\"."
+
+#: ../../source/authentication.rst:31
+msgid "Using token"
+msgstr "Використання токена"
+
+#: ../../source/authentication.rst:33
+msgid "You can pass access token in following ways:"
+msgstr "Ви можете передати токен доступу такими способами:"
+
+#: ../../source/authentication.rst:35
+msgid "`acc_token` URL query string parameter"
+msgstr "параметр рядка URL запиту `acc_token` "
+
+#: ../../source/authentication.rst:36
+msgid "`X-Access-Token` HTTP request header"
+msgstr "заголовок HTTP запиту `X-Access-Token`"
+
+#: ../../source/authentication.rst:37
+msgid "`access.token` in the body of POST/PUT/PATCH request"
+msgstr "`access.token` в тілі запитів POST/PUT/PATCH"
+
+#: ../../source/authentication.rst:39
+msgid "See the example of the action with token passed as URL query string:"
+msgstr "Ось приклад, де токен передається як рядок URL запиту:"
+
+#~ msgid ""
+#~ "You can see the `access` with `token` in response.  Its value can be used "
+#~ "to modify objects further under \"Owner role\":"
+#~ msgstr ""
+#~ "У відповіді є  `access` з `token`. Це значення можна використати для "
+#~ "модифікації об’єктів у \"ролі Власника\":"
