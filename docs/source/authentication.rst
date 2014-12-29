@@ -36,7 +36,7 @@ You can pass access token in following ways:
 2) `X-Access-Token` HTTP request header
 3) `access.token` in the body of POST/PUT/PATCH request
 
-See the eample of the action with token passed as URL query string:
+See the example of the action with token passed as URL query string:
 
 .. include:: tutorial/patch-items-value-periods.http
    :code:

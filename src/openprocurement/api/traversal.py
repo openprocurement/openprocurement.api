@@ -4,6 +4,7 @@ from openprocurement.api.models import Tender
 from pyramid.security import (
     ALL_PERMISSIONS,
     Allow,
+    Deny,
     Everyone,
 )
 
@@ -14,6 +15,10 @@ class Root(object):
     __acl__ = [
         # (Allow, Everyone, ALL_PERMISSIONS),
         (Allow, Everyone, 'view_tender'),
+        (Deny, 'broker05', 'create_bid'),
+        (Deny, 'broker05', 'create_complaint'),
+        (Deny, 'broker05', 'create_question'),
+        (Deny, 'broker05', 'create_tender'),
         (Allow, 'g:brokers', 'create_bid'),
         (Allow, 'g:brokers', 'create_complaint'),
         (Allow, 'g:brokers', 'create_question'),

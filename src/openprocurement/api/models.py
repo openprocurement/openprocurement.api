@@ -170,7 +170,14 @@ class Document(Model):
         }
 
     id = MD5Type(required=True, default=lambda: uuid4().hex)
-    classification = StringType(choices=['notice', 'biddingDocuments', 'technicalSpecifications', 'evaluationCriteria', 'clarifications', 'tenderers'])
+    documentType = StringType(choices=[
+        'notice', 'biddingDocuments', 'technicalSpecifications',
+        'evaluationCriteria', 'clarifications', 'shortlistedFirms',
+        'riskProvisions', 'billOfQuantity', 'bidders', 'conflictOfInterest',
+        'debarments', 'evaluationReports', 'winningBid', 'complaints',
+        'contractSigned', 'contractArrangements', 'contractSchedule',
+        'contractAnnexes', 'contractGuarantees', 'subContract'
+    ])
     title = StringType()  # A title of the document.
     title_en = StringType()
     title_ru = StringType()
