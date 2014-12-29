@@ -4,6 +4,7 @@ from openprocurement.api.utils import (
     get_file,
     save_tender,
     upload_file,
+    apply_patch,
 )
 from openprocurement.api.validation import (
     validate_file_update,
@@ -86,10 +87,5 @@ class TenderAwardDocumentResource(object):
             self.request.errors.add('body', 'data', 'Can\'t update document in current tender status')
             self.request.errors.status = 403
             return
-        document = self.request.validated['document']
-        document_data = self.request.validated['data']
-        if document_data:
-            document.import_data(document_data)
-            document.dateModified = None
-            save_tender(self.request)
-        return {'data': document.serialize("view")}
+        apply_patch(self.request, src=self.request.context.serialize())
+        return {'data': self.request.context.serialize("view")}

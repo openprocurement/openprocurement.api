@@ -1,42 +1,34 @@
 # -*- coding: utf-8 -*-
 import unittest
 
-from openprocurement.api.tests.base import test_tender_data, BaseTenderWebTest
-
-
-tender_data = test_tender_data.copy()
-tender_data['bids'] = [
-    {
-        "id": "4879d3f8ee2443169b5fbbc9f89fa606",
-        "status": "registration",
-        "date": "2014-10-28T11:44:17.946",
-        "tenderers": [
-            test_tender_data["procuringEntity"]
-        ],
-        "value": {
-            "amount": 469,
-            "currency": "UAH",
-            "valueAddedTaxIncluded": True
-        }
-    },
-    {
-        "id": "4879d3f8ee2443169b5fbbc9f89fa607",
-        "status": "registration",
-        "date": "2014-10-28T11:44:17.947",
-        "tenderers": [
-            test_tender_data["procuringEntity"]
-        ],
-        "value": {
-            "amount": 479,
-            "currency": "UAH",
-            "valueAddedTaxIncluded": True
-        }
-    }
-]
+from openprocurement.api.tests.base import BaseTenderWebTest, test_tender_data
 
 
 class TenderAuctionResourceTest(BaseTenderWebTest):
-    initial_data = tender_data
+    #initial_data = tender_data
+    initial_status = 'active.tendering'
+    initial_bids = [
+        {
+            "tenderers": [
+                test_tender_data["procuringEntity"]
+            ],
+            "value": {
+                "amount": 469,
+                "currency": "UAH",
+                "valueAddedTaxIncluded": True
+            }
+        },
+        {
+            "tenderers": [
+                test_tender_data["procuringEntity"]
+            ],
+            "value": {
+                "amount": 479,
+                "currency": "UAH",
+                "valueAddedTaxIncluded": True
+            }
+        }
+    ]
 
     def test_get_tender_auction_not_found(self):
         response = self.app.get('/tenders/some_id/auction', status=404)
@@ -83,8 +75,8 @@ class TenderAuctionResourceTest(BaseTenderWebTest):
         self.assertTrue('minimalStep' in auction)
         self.assertFalse("procuringEntity" in auction)
         self.assertFalse("tenderers" in auction["bids"][0])
-        self.assertEqual(auction["bids"][0]['value']['amount'], self.initial_data["bids"][0]['value']['amount'])
-        self.assertEqual(auction["bids"][1]['value']['amount'], self.initial_data["bids"][1]['value']['amount'])
+        self.assertEqual(auction["bids"][0]['value']['amount'], self.initial_bids[0]['value']['amount'])
+        self.assertEqual(auction["bids"][1]['value']['amount'], self.initial_bids[1]['value']['amount'])
         #self.assertEqual(self.initial_data["auctionPeriod"]['startDate'], auction["auctionPeriod"]['startDate'])
 
         response = self.app.get('/tenders/{}/auction?opt_jsonp=callback'.format(self.tender_id))
@@ -131,7 +123,7 @@ class TenderAuctionResourceTest(BaseTenderWebTest):
         patch_data = {
             'bids': [
                 {
-                    "id": "4879d3f8ee2443169b5fbbc9f89fa607",
+                    "id": self.initial_bids[1]['id'],
                     "value": {
                         "amount": 409,
                         "currency": "UAH",
@@ -173,14 +165,14 @@ class TenderAuctionResourceTest(BaseTenderWebTest):
         self.assertEqual(response.content_type, 'application/json')
         self.assertEqual(response.json['errors'][0]["description"], "Auction bids should be identical to the tender bids")
 
-        patch_data['bids'][1]['id'] = "4879d3f8ee2443169b5fbbc9f89fa606"
+        patch_data['bids'][1]['id'] = self.initial_bids[0]['id']
 
         response = self.app.post_json('/tenders/{}/auction'.format(self.tender_id), {'data': patch_data})
         self.assertEqual(response.status, '200 OK')
         self.assertEqual(response.content_type, 'application/json')
         tender = response.json['data']
-        self.assertNotEqual(tender["bids"][0]['value']['amount'], self.initial_data["bids"][0]['value']['amount'])
-        self.assertNotEqual(tender["bids"][1]['value']['amount'], self.initial_data["bids"][1]['value']['amount'])
+        self.assertNotEqual(tender["bids"][0]['value']['amount'], self.initial_bids[0]['value']['amount'])
+        self.assertNotEqual(tender["bids"][1]['value']['amount'], self.initial_bids[1]['value']['amount'])
         self.assertEqual(tender["bids"][0]['value']['amount'], patch_data["bids"][1]['value']['amount'])
         self.assertEqual(tender["bids"][1]['value']['amount'], patch_data["bids"][0]['value']['amount'])
         self.assertEqual('active.qualification', tender["status"])
@@ -189,7 +181,7 @@ class TenderAuctionResourceTest(BaseTenderWebTest):
         # self.assertTrue(tender["awards"][0]["id"] in response.headers['Location'])
         self.assertEqual(tender["awards"][0]['bid_id'], patch_data["bids"][0]['id'])
         self.assertEqual(tender["awards"][0]['value']['amount'], patch_data["bids"][0]['value']['amount'])
-        self.assertEqual(tender["awards"][0]['suppliers'], tender_data['bids'][0]['tenderers'])
+        self.assertEqual(tender["awards"][0]['suppliers'], self.initial_bids[0]['tenderers'])
 
         response = self.app.post_json('/tenders/{}/auction'.format(self.tender_id), {'data': patch_data}, status=403)
         self.assertEqual(response.status, '403 Forbidden')
@@ -223,8 +215,8 @@ class TenderAuctionResourceTest(BaseTenderWebTest):
             'auctionUrl': u'http://auction-sandbox.openprocurement.org/tenders/{}'.format(self.tender_id),
             'bids': [
                 {
-                    "id": "4879d3f8ee2443169b5fbbc9f89fa607",
-                    "participationUrl": u'http://auction-sandbox.openprocurement.org/tenders/{}?key_for_bid={}'.format(self.tender_id, "4879d3f8ee2443169b5fbbc9f89fa607")
+                    "id": self.initial_bids[1]['id'],
+                    "participationUrl": u'http://auction-sandbox.openprocurement.org/tenders/{}?key_for_bid={}'.format(self.tender_id, self.initial_bids[1]['id'])
                 }
             ]
         }
@@ -235,7 +227,7 @@ class TenderAuctionResourceTest(BaseTenderWebTest):
         self.assertEqual(response.json['errors'][0]["description"], "Number of auction results did not match the number of tender bids")
 
         patch_data['bids'].append({
-            "participationUrl": u'http://auction-sandbox.openprocurement.org/tenders/{}?key_for_bid={}'.format(self.tender_id, "4879d3f8ee2443169b5fbbc9f89fa606")
+            "participationUrl": u'http://auction-sandbox.openprocurement.org/tenders/{}?key_for_bid={}'.format(self.tender_id, self.initial_bids[0]['id'])
         })
 
         #response = self.app.patch_json('/tenders/{}/auction'.format(self.tender_id), {'data': patch_data}, status=422)
@@ -257,7 +249,7 @@ class TenderAuctionResourceTest(BaseTenderWebTest):
         self.assertEqual(response.content_type, 'application/json')
         self.assertEqual(response.json['errors'][0]["description"], "Auction bids should be identical to the tender bids")
 
-        patch_data['bids'][1]['id'] = "4879d3f8ee2443169b5fbbc9f89fa606"
+        patch_data['bids'][1]['id'] = self.initial_bids[0]['id']
 
         response = self.app.patch_json('/tenders/{}/auction'.format(self.tender_id), {'data': patch_data})
         self.assertEqual(response.status, '200 OK')

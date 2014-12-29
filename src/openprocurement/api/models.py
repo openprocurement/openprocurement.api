@@ -163,6 +163,7 @@ class Document(Model):
     class Options:
         serialize_when_none = False
         roles = {
+            'edit': blacklist('id', 'format', 'url', 'datePublished'),
             'embedded': schematics_embedded_role,
             'view': (blacklist('revisions') + schematics_default_role),
             'revisions': whitelist('url', 'dateModified'),
@@ -239,6 +240,8 @@ class Bid(Model):
         roles = {
             'embedded': view_bid_role,
             'view': view_bid_role,
+            'create': whitelist('value', 'tenderers'),
+            'edit': whitelist('value', 'tenderers'),
             'auction_view': whitelist('value', 'id', 'date', 'participationUrl'),
             'auction_post': whitelist('value', 'id'),
             'auction_patch': whitelist('id', 'participationUrl'),
@@ -281,6 +284,8 @@ class Question(Model):
     class Options:
         serialize_when_none = False
         roles = {
+            'create': whitelist('author', 'title', 'description'),
+            'edit': whitelist('answer'),
             'embedded': schematics_embedded_role,
             'view': schematics_default_role,
             'active.enquiries': (blacklist('author') + schematics_embedded_role),
@@ -305,6 +310,8 @@ class Complaint(Model):
     class Options:
         serialize_when_none = False
         roles = {
+            'create': whitelist('author', 'title', 'description'),
+            'edit': whitelist('status', 'resolution'),
             'embedded': schematics_embedded_role,
             'view': schematics_default_role,
         }
@@ -322,6 +329,12 @@ class Complaint(Model):
 class Contract(Model):
     class Options:
         serialize_when_none = False
+        roles = {
+            'create': blacklist('id', 'status', 'documents', 'dateSigned'),
+            'edit': blacklist('id', 'documents'),
+            'embedded': schematics_embedded_role,
+            'view': schematics_default_role,
+        }
 
     id = MD5Type(required=True, default=lambda: uuid4().hex)
     awardID = StringType(required=True)
@@ -334,7 +347,7 @@ class Contract(Model):
     status = StringType(required=True, choices=['pending', 'terminated', 'active', 'cancelled'], default='pending')
     period = ModelType(Period)
     value = ModelType(Value)
-    dateSigned = IsoDateTimeType(default=get_now)
+    dateSigned = IsoDateTimeType()
     documents = ListType(ModelType(Document), default=list())
 
 
@@ -346,6 +359,8 @@ class Award(Model):
     class Options:
         serialize_when_none = False
         roles = {
+            'create': blacklist('id', 'status', 'date', 'documents', 'complaints', 'contracts'),
+            'edit': whitelist('status'),
             'embedded': schematics_embedded_role,
             'view': schematics_default_role,
         }
@@ -369,7 +384,8 @@ class Award(Model):
 
 
 plain_role = (blacklist('_attachments', 'revisions', 'dateModified') + schematics_embedded_role)
-edit_role = (blacklist('owner_token', 'owner', '_attachments', 'revisions', 'dateModified', 'id', 'tenderID', 'bids', 'documents', 'awards', 'questions', 'complaints', 'auctionUrl') + schematics_embedded_role)
+create_role = (blacklist('owner_token', 'owner', '_attachments', 'revisions', 'dateModified', 'doc_id', 'tenderID', 'bids', 'documents', 'awards', 'questions', 'complaints', 'auctionUrl', 'status') + schematics_embedded_role)
+edit_role = (blacklist('owner_token', 'owner', '_attachments', 'revisions', 'dateModified', 'doc_id', 'tenderID', 'bids', 'documents', 'awards', 'questions', 'complaints', 'auctionUrl') + schematics_embedded_role)
 view_role = (blacklist('owner_token', '_attachments', 'revisions') + schematics_embedded_role)
 listing_role = whitelist('dateModified', 'doc_id')
 auction_view_role = whitelist('tenderID', 'dateModified', 'bids', 'auctionPeriod', 'minimalStep', 'auctionUrl')
@@ -384,6 +400,7 @@ class Tender(SchematicsDocument, Model):
     class Options:
         roles = {
             'plain': plain_role,
+            'create': create_role,
             'edit': edit_role,
             'view': view_role,
             'listing': listing_role,

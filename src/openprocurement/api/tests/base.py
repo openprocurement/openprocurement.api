@@ -98,6 +98,7 @@ class BaseWebTest(unittest.TestCase):
 class BaseTenderWebTest(BaseWebTest):
     initial_data = test_tender_data
     initial_status = None
+    initial_bids = None
 
     def set_status(self, status):
         data = {'status': status}
@@ -203,6 +204,13 @@ class BaseTenderWebTest(BaseWebTest):
         response = self.app.post_json('/tenders', {'data': self.initial_data})
         tender = response.json['data']
         self.tender_id = tender['id']
+        if self.initial_bids:
+            self.set_status('active.tendering')
+            bids = []
+            for i in self.initial_bids:
+                response = self.app.post_json('/tenders/{}/bids'.format(self.tender_id), {'data': i})
+                bids.append(response.json['data'])
+            self.initial_bids = bids
         if self.initial_status:
             self.set_status(self.initial_status)
 

@@ -28,10 +28,10 @@ def validate_data(request, model, partial=False):
     data = validate_json_data(request)
     if data is None:
         return
-    if partial:
-        data = filter_data(data)
-    else:
-        data = filter_data(data, blacklist=['status'])
+    #if partial:
+        #data = filter_data(data)
+    #else:
+        #data = filter_data(data, blacklist=['status'])
     try:
         if partial and isinstance(request.context, model):
             new_patch = apply_data_patch(request.context.serialize(), data)
@@ -42,12 +42,16 @@ def validate_data(request, model, partial=False):
                 data = m.serialize('chronograph')
             elif request.authenticated_userid == 'auction':
                 data = m.serialize('auction_{}'.format(request.method.lower()))
-            elif model == Tender:
-                data = m.serialize('edit')
             else:
-                data = m.serialize()
+                data = m.serialize('edit')
+        elif partial:
+            m = model(data)
+            m.validate(partial=partial)
+            data = m.serialize('edit')
         else:
-            model(data).validate(partial=partial)
+            m = model(data)
+            m.validate()
+            data = m.serialize('create')
     except (ModelValidationError, ModelConversionError), e:
         for i in e.message:
             request.errors.add('body', i, e.message[i])
