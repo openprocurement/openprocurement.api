@@ -393,12 +393,12 @@ class Award(Model):
 plain_role = (blacklist('_attachments', 'revisions', 'dateModified') + schematics_embedded_role)
 create_role = (blacklist('owner_token', 'owner', '_attachments', 'revisions', 'dateModified', 'doc_id', 'tenderID', 'bids', 'documents', 'awards', 'questions', 'complaints', 'auctionUrl', 'status') + schematics_embedded_role)
 edit_role = (blacklist('owner_token', 'owner', '_attachments', 'revisions', 'dateModified', 'doc_id', 'tenderID', 'bids', 'documents', 'awards', 'questions', 'complaints', 'auctionUrl') + schematics_embedded_role)
-view_role = (blacklist('owner_token', '_attachments', 'revisions') + schematics_embedded_role)
+view_role = (blacklist('owner', 'owner_token', '_attachments', 'revisions') + schematics_embedded_role)
 listing_role = whitelist('dateModified', 'doc_id')
 auction_view_role = whitelist('tenderID', 'dateModified', 'bids', 'auctionPeriod', 'minimalStep', 'auctionUrl')
 auction_post_role = whitelist('bids')
 auction_patch_role = whitelist('auctionUrl', 'bids')
-enquiries_role = (blacklist('owner_token', '_attachments', 'revisions', 'bids') + schematics_embedded_role)
+enquiries_role = (blacklist('owner', 'owner_token', '_attachments', 'revisions', 'bids') + schematics_embedded_role)
 chronograph_role = whitelist('status', 'enquiryPeriod', 'tenderPeriod', 'auctionPeriod', 'awardPeriod')
 
 
