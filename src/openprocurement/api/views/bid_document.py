@@ -26,6 +26,10 @@ class TenderBidDocumentResource(object):
     @view(renderer='json', permission='view_tender')
     def collection_get(self):
         """Tender Bid Documents List"""
+        if self.request.validated['tender_status'] in ['active.tendering', 'active.auction'] and self.request.authenticated_role != 'bid_owner':
+            self.request.errors.add('body', 'data', 'Can\'t view bid documents in current tender status')
+            self.request.errors.status = 403
+            return
         bid = self.request.validated['bid']
         if self.request.params.get('all', ''):
             collection_data = [i.serialize("view") for i in bid['documents']]
@@ -56,6 +60,10 @@ class TenderBidDocumentResource(object):
     @view(renderer='json', permission='view_tender')
     def get(self):
         """Tender Bid Document Read"""
+        if self.request.validated['tender_status'] in ['active.tendering', 'active.auction'] and self.request.authenticated_role != 'bid_owner':
+            self.request.errors.add('body', 'data', 'Can\'t view bid document in current tender status')
+            self.request.errors.status = 403
+            return
         if self.request.params.get('download'):
             return get_file(self.request)
         document = self.request.validated['document']

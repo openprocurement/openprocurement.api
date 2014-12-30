@@ -402,6 +402,7 @@ class TenderResourceTest(BaseWebTest):
         response = self.app.post_json('/tenders', {'data': test_tender_data})
         self.assertEqual(response.status, '201 Created')
         tender = response.json['data']
+        owner_token = response.json['access']['token']
         dateModified = tender.pop('dateModified')
 
         response = self.app.patch_json('/tenders/{}'.format(
@@ -466,6 +467,11 @@ class TenderResourceTest(BaseWebTest):
         #self.assertEqual(response.status, '200 OK')
         #self.assertEqual(response.content_type, 'application/json')
         #self.assertTrue('auctionUrl' in response.json['data'])
+
+        response = self.app.patch_json('/tenders/{}?acc_token={}'.format(tender['id'], owner_token), {'data': {'status': 'active.auction'}}, status=403)
+        self.assertEqual(response.status, '403 Forbidden')
+        self.assertEqual(response.content_type, 'application/json')
+        self.assertEqual(response.json['errors'][0]["description"], "Can't update tender status")
 
         response = self.app.patch_json('/tenders/{}'.format(tender['id']), {'data': {'status': 'complete'}})
         self.assertEqual(response.status, '200 OK')
@@ -679,6 +685,7 @@ class TenderProcessTest(BaseWebTest):
         self.app.authorization = ('Basic', ('broker', ''))
         response = self.app.post_json('/tenders/{}/bids'.format(tender_id),
                                       {'data': {'tenderers': [test_tender_data["procuringEntity"]], "value": {"amount": 450}}})
+        bid_id = response.json['data']['id']
         bid_token = response.json['access']['token']
         # create second bid
         self.app.authorization = ('Basic', ('broker', ''))
@@ -692,7 +699,27 @@ class TenderProcessTest(BaseWebTest):
         self.app.authorization = ('Basic', ('auction', ''))
         response = self.app.get('/tenders/{}/auction'.format(tender_id))
         auction_bids_data = response.json['data']['bids']
+        # posting auction urls
+        response = self.app.patch_json('/tenders/{}/auction'.format(tender_id),
+                                       {
+                                           'data': {
+                                               'auctionUrl': 'https://tender.auction.url',
+                                               'bids': [
+                                                   {
+                                                       'id': i['id'],
+                                                       'participationUrl': 'https://tender.auction.url/for_bid/{}'.format(i['id'])
+                                                   }
+                                                   for i in auction_bids_data
+                                               ]
+                                           }
+                                       })
+        # view bid participationUrl
+        self.app.authorization = ('Basic', ('broker', ''))
+        response = self.app.get('/tenders/{}/bids/{}?acc_token={}'.format(tender_id, bid_id, bid_token))
+        self.assertEqual(response.json['data']['participationUrl'], 'https://tender.auction.url/for_bid/{}'.format(bid_id))
+        
         # posting auction results
+        self.app.authorization = ('Basic', ('auction', ''))
         response = self.app.post_json('/tenders/{}/auction'.format(tender_id),
                                        {'data': {'bids': auction_bids_data}})
         # get awards

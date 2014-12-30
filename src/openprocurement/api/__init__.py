@@ -40,6 +40,30 @@ def set_renderer(event):
         return True
 
 
+def get_local_roles(context):
+    from pyramid.location import lineage
+    roles = {}
+    for location in lineage(context):
+        try:
+            roles = location.__local_roles__
+        except AttributeError:
+            continue
+        if roles and callable(roles):
+            roles = roles()
+        break
+    return roles
+
+
+def authenticated_role(request):
+    principals = reversed(request.effective_principals)
+    roles = get_local_roles(request.context)
+    local_roles = [roles[i] for i in principals if i in roles]
+    if local_roles:
+        return local_roles[0]
+    groups = [g for g in principals if g.startswith('g:')]
+    return groups[0][2:] if groups else 'anonymous'
+
+
 def fix_url(item, app_url):
     if isinstance(item, list):
         [
@@ -71,6 +95,7 @@ def main(global_config, **settings):
         authentication_policy=AuthenticationPolicy(settings['auth.file'], __name__),
         authorization_policy=AuthorizationPolicy(),
     )
+    config.add_request_method(authenticated_role, reify=True)
     config.add_renderer('prettyjson', JSON(indent=4))
     config.add_renderer('jsonp', JSONP(param_name='opt_jsonp'))
     config.add_renderer('prettyjsonp', JSONP(indent=4, param_name='opt_jsonp'))

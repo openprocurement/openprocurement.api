@@ -262,6 +262,9 @@ class Bid(Model):
             'cancelled': view_bid_role,
         }
 
+    def __local_roles__(self):
+        return dict([('{}_{}'.format(self.owner, self.owner_token), 'bid_owner')])
+
     tenderers = ListType(ModelType(Organization), required=True, min_size=1, max_size=1)
     date = IsoDateTimeType(default=get_now)
     id = MD5Type(required=True, default=lambda: uuid4().hex)
@@ -433,6 +436,9 @@ class Tender(SchematicsDocument, Model):
             'cancelled': view_role,
             'chronograph': chronograph_role,
         }
+
+    def __local_roles__(self):
+        return dict([('{}_{}'.format(self.owner, self.owner_token), 'tender_owner')])
 
     title = StringType()
     title_en = StringType()

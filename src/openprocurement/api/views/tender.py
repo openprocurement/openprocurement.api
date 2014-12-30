@@ -430,5 +430,10 @@ class TenderResource(object):
             self.request.errors.add('body', 'data', 'Can\'t update tender in current status')
             self.request.errors.status = 403
             return
+        data = self.request.validated['data']
+        if self.request.authenticated_role == 'tender_owner' and 'status' in data and data['status'] != 'cancelled':
+            self.request.errors.add('body', 'data', 'Can\'t update tender status')
+            self.request.errors.status = 403
+            return
         apply_patch(self.request, src=self.request.validated['tender_src'])
         return {'data': tender.serialize(tender.status)}

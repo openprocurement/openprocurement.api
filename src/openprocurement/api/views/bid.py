@@ -159,8 +159,10 @@ class TenderBidResource(object):
 
         """
         tender = self.request.validated['tender']
-        if tender.status in ['active.enquiries', 'active.tendering']:
-            return {'data': []}
+        if self.request.validated['tender_status'] in ['active.tendering', 'active.auction']:
+            self.request.errors.add('body', 'data', 'Can\'t view bids in current tender status')
+            self.request.errors.status = 403
+            return
         return {'data': [i.serialize(tender.status) for i in tender.bids]}
 
     @view(renderer='json', permission='view_tender')
@@ -193,11 +195,13 @@ class TenderBidResource(object):
             }
 
         """
-        tender = self.request.validated['tender']
-        if tender.status in ['active.enquiries', 'active.tendering']:
-            return {'data': {}}
-        bid_data = self.request.validated['bid'].serialize(tender.status)
-        return {'data': bid_data}
+        if self.request.authenticated_role == 'bid_owner':
+            return {'data': self.request.context.serialize('view')}
+        if self.request.validated['tender_status'] in ['active.tendering', 'active.auction']:
+            self.request.errors.add('body', 'data', 'Can\'t view bid in current tender status')
+            self.request.errors.status = 403
+            return
+        return {'data': self.request.context.serialize(self.request.validated['tender_status'])}
 
     @view(content_type="application/json", permission='edit_bid', validators=(validate_patch_bid_data,), renderer='json')
     def patch(self):
@@ -242,7 +246,7 @@ class TenderBidResource(object):
             self.request.errors.status = 403
             return
         apply_patch(self.request, src=self.request.context.serialize())
-        return {'data': self.request.validated['bid'].serialize("view")}
+        return {'data': self.request.context.serialize("view")}
 
     @view(renderer='json', permission='edit_bid')
     def delete(self):
@@ -275,7 +279,7 @@ class TenderBidResource(object):
 
         """
         tender = self.request.validated['tender']
-        bid = self.request.validated['bid']
+        bid = self.request.context
         if tender.status != 'active.tendering':
             self.request.errors.add('body', 'data', 'Can\'t delete bid in current tender status')
             self.request.errors.status = 403
