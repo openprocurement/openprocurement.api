@@ -391,8 +391,9 @@ class Award(Model):
 
 
 plain_role = (blacklist('_attachments', 'revisions', 'dateModified') + schematics_embedded_role)
-create_role = (blacklist('owner_token', 'owner', '_attachments', 'revisions', 'dateModified', 'doc_id', 'tenderID', 'bids', 'documents', 'awards', 'questions', 'complaints', 'auctionUrl', 'status') + schematics_embedded_role)
-edit_role = (blacklist('owner_token', 'owner', '_attachments', 'revisions', 'dateModified', 'doc_id', 'tenderID', 'bids', 'documents', 'awards', 'questions', 'complaints', 'auctionUrl') + schematics_embedded_role)
+create_role = (blacklist('owner_token', 'owner', '_attachments', 'revisions', 'dateModified', 'doc_id', 'tenderID', 'bids', 'documents', 'awards', 'questions', 'complaints', 'auctionUrl', 'status', 'auctionPeriod', 'awardPeriod') + schematics_embedded_role)
+edit_role = (blacklist('owner_token', 'owner', '_attachments', 'revisions', 'dateModified', 'doc_id', 'tenderID', 'bids', 'documents', 'awards', 'questions', 'complaints', 'auctionUrl', 'auctionPeriod', 'awardPeriod') + schematics_embedded_role)
+cancel_role = whitelist('status')
 view_role = (blacklist('owner', 'owner_token', '_attachments', 'revisions') + schematics_embedded_role)
 listing_role = whitelist('dateModified', 'doc_id')
 auction_view_role = whitelist('tenderID', 'dateModified', 'bids', 'auctionPeriod', 'minimalStep', 'auctionUrl')
@@ -409,6 +410,14 @@ class Tender(SchematicsDocument, Model):
             'plain': plain_role,
             'create': create_role,
             'edit': edit_role,
+            'edit_active.enquiries': edit_role,
+            'edit_active.tendering': cancel_role,
+            'edit_active.auction': cancel_role,
+            'edit_active.qualification': cancel_role,
+            'edit_active.awarded': cancel_role,
+            'edit_complete': whitelist(),
+            'edit_unsuccessful': whitelist(),
+            'edit_cancelled': whitelist(),
             'view': view_role,
             'listing': listing_role,
             'auction_view': auction_view_role,

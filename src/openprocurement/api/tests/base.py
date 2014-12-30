@@ -194,7 +194,10 @@ class BaseTenderWebTest(BaseWebTest):
                     "endDate": (now - timedelta(days=10)).isoformat()
                 }
             })
+        authorization = self.app.authorization
+        self.app.authorization = ('Basic', ('chronograph', ''))
         response = self.app.patch_json('/tenders/{}'.format(self.tender_id), {'data': data})
+        self.app.authorization = authorization
         self.assertEqual(response.status, '200 OK')
         self.assertEqual(response.content_type, 'application/json')
 

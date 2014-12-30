@@ -32,6 +32,8 @@ def validate_data(request, model, partial=False):
                 data = m.serialize('chronograph')
             elif request.authenticated_userid == 'auction':
                 data = m.serialize('auction_{}'.format(request.method.lower()))
+            elif isinstance(request.context, Tender):
+                data = m.serialize('edit_{}'.format(request.context.status))
             else:
                 data = m.serialize('edit')
         elif partial:
