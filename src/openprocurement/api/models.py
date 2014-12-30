@@ -254,7 +254,7 @@ class Bid(Model):
             'auction_patch': whitelist('id', 'participationUrl'),
             'active.enquiries': whitelist(),
             'active.tendering': whitelist(),
-            'active.auction': whitelist('value'),
+            'active.auction': whitelist(),
             'active.qualification': view_bid_role,
             'active.awarded': view_bid_role,
             'complete': view_bid_role,
@@ -402,7 +402,8 @@ listing_role = whitelist('dateModified', 'doc_id')
 auction_view_role = whitelist('tenderID', 'dateModified', 'bids', 'auctionPeriod', 'minimalStep', 'auctionUrl')
 auction_post_role = whitelist('bids')
 auction_patch_role = whitelist('auctionUrl', 'bids')
-enquiries_role = (blacklist('owner', 'owner_token', '_attachments', 'revisions', 'bids') + schematics_embedded_role)
+enquiries_role = (blacklist('owner', 'owner_token', '_attachments', 'revisions', 'bids', 'numberOfBids') + schematics_embedded_role)
+auction_role = (blacklist('owner', 'owner_token', '_attachments', 'revisions', 'bids') + schematics_embedded_role)
 chronograph_role = whitelist('status', 'enquiryPeriod', 'tenderPeriod', 'auctionPeriod', 'awardPeriod')
 
 
@@ -428,7 +429,7 @@ class Tender(SchematicsDocument, Model):
             'auction_patch': auction_patch_role,
             'active.enquiries': enquiries_role,
             'active.tendering': enquiries_role,
-            'active.auction': view_role,
+            'active.auction': auction_role,
             'active.qualification': view_role,
             'active.awarded': view_role,
             'complete': view_role,
@@ -469,7 +470,7 @@ class Tender(SchematicsDocument, Model):
     eligibilityCriteria_ru = StringType()
     awardPeriod = ModelType(Period)  # The date or period on which an award is anticipated to be made.
     numberOfBidders = IntType()  # The number of unique tenderers who participated in the tender
-    numberOfBids = IntType()  # The number of bids or submissions to the tender. In the case of an auction, the number of bids may differ from the numberOfBidders.
+    #numberOfBids = IntType()  # The number of bids or submissions to the tender. In the case of an auction, the number of bids may differ from the numberOfBidders.
     bids = ListType(ModelType(Bid), default=list())  # A list of all the companies who entered submissions for the tender.
     procuringEntity = ModelType(Organization, required=True)  # The entity managing the procurement, which may be different from the buyer who is paying / using the items being procured.
     documents = ListType(ModelType(Document), default=list())  # All documents and attachments related to the tender.
@@ -503,6 +504,11 @@ class Tender(SchematicsDocument, Model):
 
     def __repr__(self):
         return '<%s:%r@%r>' % (type(self).__name__, self.id, self.rev)
+
+    @serializable
+    def numberOfBids(self):
+        """A property that is serialized by schematics exports."""
+        return len(self.bids)
 
     @serializable(serialized_name='id')
     def doc_id(self):
