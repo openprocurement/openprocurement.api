@@ -29,8 +29,9 @@ VERSION = int(pkg_resources.get_distribution(__package__).parsed_version[0])
 
 def set_journal_handler(event):
     params = {'PARAMS': str(dict(event.request.params))}
-    for i, j in event.request.matchdict.items():
-        params[i.upper()] = j
+    if event.request.matchdict:
+        for i, j in event.request.matchdict.items():
+            params[i.upper()] = j
     LOGGER.addHandler(JournalHandler(**params))
 
 
