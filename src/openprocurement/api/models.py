@@ -40,6 +40,7 @@ def read_json(name):
 
 
 CPV_CODES = read_json('cpv.json')
+DKPP_CODES = read_json('dkpp.json')
 ORA_CODES = [i['code'] for i in read_json('OrganisationRegistrationAgency.json')['data']] + [u'UA-EDR']
 
 
