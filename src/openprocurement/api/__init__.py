@@ -5,20 +5,33 @@ import gevent.monkey
 gevent.monkey.patch_all()
 import os
 import pkg_resources
+from logging import getLogger
 from urlparse import urlparse
 from pyramid.config import Configurator
 from openprocurement.api.auth import AuthenticationPolicy
 from pyramid.authorization import ACLAuthorizationPolicy as AuthorizationPolicy
 from pyramid.renderers import JSON, JSONP
-from pyramid.events import NewRequest, BeforeRender
+from pyramid.events import NewRequest, BeforeRender, ContextFound
 from couchdb import Server
 from openprocurement.api.design import sync_design
 from openprocurement.api.migration import migrate_data
 from boto.s3.connection import S3Connection, Location
 from openprocurement.api.traversal import factory
 
+try:
+    from systemd.journal import JournalHandler
+except ImportError:
+    JournalHandler = False
 
+LOGGER = getLogger(__name__)
 VERSION = int(pkg_resources.get_distribution(__package__).parsed_version[0])
+
+
+def set_journal_handler(event):
+    params = {'PARAMS': str(dict(event.request.params))}
+    for i, j in event.request.matchdict.items():
+        params[i.upper()] = j
+    LOGGER.addHandler(JournalHandler(**params))
 
 
 def set_renderer(event):
@@ -84,6 +97,8 @@ def fix_url(item, app_url):
 
 
 def beforerender(event):
+    for i in LOGGER.handlers:
+        LOGGER.removeHandler(i)
     if 'data' in event.rendering_val:
         fix_url(event.rendering_val['data'], event['request'].application_url)
 
@@ -99,8 +114,11 @@ def main(global_config, **settings):
     config.add_renderer('prettyjson', JSON(indent=4))
     config.add_renderer('jsonp', JSONP(param_name='opt_jsonp'))
     config.add_renderer('prettyjsonp', JSONP(indent=4, param_name='opt_jsonp'))
+    if JournalHandler:
+        config.add_subscriber(set_journal_handler, ContextFound)
     config.add_subscriber(set_renderer, NewRequest)
     config.add_subscriber(beforerender, BeforeRender)
+    config.include('pyramid_exclog')
     config.include("cornice")
     config.route_prefix = '/api/{}'.format(VERSION)
     config.scan("openprocurement.api.views")
