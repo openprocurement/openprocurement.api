@@ -26,6 +26,7 @@ except ImportError:
 LOGGER = getLogger(__name__)
 #VERSION = int(pkg_resources.get_distribution(__package__).parsed_version[0])
 VERSION = pkg_resources.get_distribution(__package__).version
+ROUTE_PREFIX = '/api/{}'.format(VERSION)
 
 
 def set_journal_handler(event):
@@ -94,8 +95,8 @@ def fix_url(item, app_url):
         ]
     elif isinstance(item, dict):
         if "format" in item and "url" in item and '?download=' in item['url']:
-            s = urlparse(item["url"])
-            item["url"] = app_url + s.path + '?' + s.query
+            path = item["url"] if item["url"].startswith('/tenders') else '/tenders' + item['url'].split('/tenders', 1)[1]
+            item["url"] = app_url + ROUTE_PREFIX + path
             return
         [
             fix_url(item[i], app_url)
@@ -117,7 +118,7 @@ def main(global_config, **settings):
         root_factory=factory,
         authentication_policy=AuthenticationPolicy(settings['auth.file'], __name__),
         authorization_policy=AuthorizationPolicy(),
-        route_prefix='/api/{}'.format(VERSION),
+        route_prefix=ROUTE_PREFIX,
     )
     config.add_request_method(authenticated_role, reify=True)
     config.add_renderer('prettyjson', JSON(indent=4))

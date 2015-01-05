@@ -186,7 +186,7 @@ class Document(Model):
     description_en = StringType()
     description_ru = StringType()
     format = StringType()
-    url = URLType()  # Link to the document or attachment.
+    url = StringType()  # Link to the document or attachment.
     datePublished = IsoDateTimeType(default=get_now)
     dateModified = IsoDateTimeType(default=get_now)  # Date that the document was last dateModified
     language = StringType()

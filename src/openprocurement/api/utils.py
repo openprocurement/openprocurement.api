@@ -52,7 +52,8 @@ def upload_file(request):
         document.datePublished = first_document.datePublished
     key = generate_id()
     document_route = request.matched_route.name.replace("collection_", "")
-    document.url = request.current_route_url(_route_name=document_route, document_id=document.id, _query={'download': key})
+    document_path = request.current_route_path(_route_name=document_route, document_id=document.id, _query={'download': key})
+    document.url = '/tenders' + document_path.split('/tenders', 1)[1]
     conn = getattr(request.registry, 's3_connection', None)
     if conn:
         bucket = conn.get_bucket(request.registry.bucket_name)
