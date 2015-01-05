@@ -264,6 +264,7 @@ class TenderResource(object):
         self.request.validated['tender'] = tender
         self.request.validated['tender_src'] = {}
         save_tender(self.request)
+        LOGGER.info('Created tender {}'.format(tender_id))
         self.request.response.status = 201
         self.request.response.headers[
             'Location'] = self.request.route_url('Tender', tender_id=tender_id)
@@ -436,4 +437,5 @@ class TenderResource(object):
             self.request.errors.status = 403
             return
         apply_patch(self.request, src=self.request.validated['tender_src'])
+        LOGGER.info('Updated tender {}'.format(tender.id))
         return {'data': tender.serialize(tender.status)}

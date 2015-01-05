@@ -1,14 +1,19 @@
 # -*- coding: utf-8 -*-
+from logging import getLogger
 from cornice.resource import resource, view
 from openprocurement.api.models import Question, get_now
 from openprocurement.api.utils import (
-    apply_data_patch,
+    apply_patch,
     save_tender,
 )
 from openprocurement.api.validation import (
     validate_question_data,
     validate_patch_question_data,
 )
+
+
+LOGGER = getLogger(__name__)
+
 
 
 @resource(name='Tender Questions',
@@ -34,8 +39,9 @@ class TenderQuestionResource(object):
         question = Question(question_data)
         tender.questions.append(question)
         save_tender(self.request)
+        LOGGER.info('Created tender question {}'.format(question.id))
         self.request.response.status = 201
-        self.request.response.headers['Location'] = self.request.route_url('Tender Questions', tender_id=tender.id, question_id=question['id'])
+        self.request.response.headers['Location'] = self.request.route_url('Tender Questions', tender_id=tender.id, question_id=question.id)
         return {'data': question.serialize("view")}
 
     @view(renderer='json', permission='view_tender')
@@ -59,9 +65,6 @@ class TenderQuestionResource(object):
             self.request.errors.add('body', 'data', 'Can\'t update question in current tender status')
             self.request.errors.status = 403
             return
-        question = self.request.validated['question']
-        question_data = self.request.validated['data']
-        if question_data:
-            question.import_data(apply_data_patch(question.serialize(), question_data))
-            save_tender(self.request)
-        return {'data': question.serialize(tender.status)}
+        apply_patch(self.request, src=self.request.context.serialize())
+        LOGGER.info('Updated tender question {}'.format(self.request.context.id))
+        return {'data': self.request.context.serialize(tender.status)}
