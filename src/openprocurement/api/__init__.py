@@ -24,11 +24,18 @@ except ImportError:
     JournalHandler = False
 
 LOGGER = getLogger(__name__)
-VERSION = int(pkg_resources.get_distribution(__package__).parsed_version[0])
+#VERSION = int(pkg_resources.get_distribution(__package__).parsed_version[0])
+VERSION = pkg_resources.get_distribution(__package__).version
 
 
 def set_journal_handler(event):
-    params = {'PARAMS': str(dict(event.request.params))}
+    params = {
+        'TAGS': 'python,api',
+        'USER_ID': str(event.request.authenticated_userid),
+        'ROLE': str(event.request.authenticated_role),
+    }
+    if event.request.params:
+        params['PARAMS'] = str(dict(event.request.params))
     if event.request.matchdict:
         for i, j in event.request.matchdict.items():
             params[i.upper()] = j
@@ -110,6 +117,7 @@ def main(global_config, **settings):
         root_factory=factory,
         authentication_policy=AuthenticationPolicy(settings['auth.file'], __name__),
         authorization_policy=AuthorizationPolicy(),
+        route_prefix='/api/{}'.format(VERSION),
     )
     config.add_request_method(authenticated_role, reify=True)
     config.add_renderer('prettyjson', JSON(indent=4))
@@ -121,7 +129,6 @@ def main(global_config, **settings):
     config.add_subscriber(beforerender, BeforeRender)
     config.include('pyramid_exclog')
     config.include("cornice")
-    config.route_prefix = '/api/{}'.format(VERSION)
     config.scan("openprocurement.api.views")
 
     # CouchDB connection
