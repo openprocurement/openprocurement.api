@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+from logging import getLogger
 from cornice.resource import resource, view
 from openprocurement.api.models import Award, Contract, get_now
 from openprocurement.api.utils import (
@@ -9,6 +10,9 @@ from openprocurement.api.validation import (
     validate_award_data,
     validate_patch_award_data,
 )
+
+
+LOGGER = getLogger(__name__)
 
 
 @resource(name='Tender Awards',
@@ -166,6 +170,7 @@ class TenderAwardResource(object):
         award = Award(award_data)
         tender.awards.append(award)
         save_tender(self.request)
+        LOGGER.info('Created tender award {}'.format(award.id))
         self.request.response.status = 201
         self.request.response.headers['Location'] = self.request.route_url('Tender Awards', tender_id=tender.id, award_id=award['id'])
         return {'data': award.serialize("view")}
@@ -316,4 +321,5 @@ class TenderAwardResource(object):
                     tender.awardPeriod.endDate = get_now()
                     tender.status = 'active.awarded'
             save_tender(self.request)
+            LOGGER.info('Updated tender award {}'.format(self.request.context.id))
         return {'data': award.serialize("view")}

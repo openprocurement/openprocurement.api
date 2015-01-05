@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+from logging import getLogger
 from cornice.service import Service
 from openprocurement.api.models import Award
 from openprocurement.api.utils import (
@@ -8,6 +9,9 @@ from openprocurement.api.utils import (
 from openprocurement.api.validation import (
     validate_tender_auction_data,
 )
+
+
+LOGGER = getLogger(__name__)
 
 
 auction = Service(name='Tender Auction', path='/tenders/{tender_id}/auction', renderer='json')
@@ -78,6 +82,7 @@ def patch_auction(request):
     """Set urls for access to auction.
     """
     apply_patch(request, src=request.validated['tender_src'])
+    LOGGER.info('Updated auction urls')
     return {'data': request.validated['tender'].serialize("auction_view")}
 
 
@@ -166,4 +171,5 @@ def post_auction(request):
     award = Award(award_data)
     tender.awards.append(award)
     save_tender(request)
+    LOGGER.info('Report auction results')
     return {'data': tender.serialize(tender.status)}

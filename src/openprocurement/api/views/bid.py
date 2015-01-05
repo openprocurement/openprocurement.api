@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+from logging import getLogger
 from cornice.resource import resource, view
 from openprocurement.api.models import Bid
 from openprocurement.api.utils import (
@@ -10,6 +11,9 @@ from openprocurement.api.validation import (
     validate_bid_data,
     validate_patch_bid_data,
 )
+
+
+LOGGER = getLogger(__name__)
 
 
 @resource(name='Tender Bids',
@@ -114,6 +118,7 @@ class TenderBidResource(object):
         set_ownership(bid, self.request)
         tender.bids.append(bid)
         save_tender(self.request)
+        LOGGER.info('Created tender bid {}'.format(bid.id))
         self.request.response.status = 201
         self.request.response.headers['Location'] = self.request.route_url('Tender Bids', tender_id=tender.id, bid_id=bid['id'])
         return {
@@ -246,6 +251,7 @@ class TenderBidResource(object):
             self.request.errors.status = 403
             return
         apply_patch(self.request, src=self.request.context.serialize())
+        LOGGER.info('Updated tender bid {}'.format(self.request.context.id))
         return {'data': self.request.context.serialize("view")}
 
     @view(renderer='json', permission='edit_bid')
@@ -287,4 +293,5 @@ class TenderBidResource(object):
         res = bid.serialize("view")
         tender.bids.remove(bid)
         save_tender(self.request)
+        LOGGER.info('Deleted tender bid {}'.format(self.request.context.id))
         return {'data': res}

@@ -1,14 +1,18 @@
 # -*- coding: utf-8 -*-
+from logging import getLogger
 from cornice.resource import resource, view
 from openprocurement.api.models import Contract
 from openprocurement.api.utils import (
-    apply_data_patch,
+    apply_patch,
     save_tender,
 )
 from openprocurement.api.validation import (
     validate_contract_data,
     validate_patch_contract_data,
 )
+
+
+LOGGER = getLogger(__name__)
 
 
 @resource(name='Tender Award Contracts',
@@ -35,6 +39,7 @@ class TenderAwardContractResource(object):
         contract.awardID = self.request.validated['award_id']
         self.request.validated['award'].contracts.append(contract)
         save_tender(self.request)
+        LOGGER.info('Created tender award contract {}'.format(contract.id))
         self.request.response.status = 201
         self.request.response.headers['Location'] = self.request.route_url('Tender Award Contracts', tender_id=tender.id, award_id=self.request.validated['award_id'], contract_id=contract['id'])
         return {'data': contract.serialize()}
@@ -59,9 +64,6 @@ class TenderAwardContractResource(object):
             self.request.errors.add('body', 'data', 'Can\'t update contract in current tender status')
             self.request.errors.status = 403
             return
-        contract = self.request.validated['contract']
-        contract_data = self.request.validated['data']
-        if contract_data:
-            contract.import_data(apply_data_patch(contract.serialize(), contract_data))
-            save_tender(self.request)
-        return {'data': contract.serialize()}
+        apply_patch(self.request, src=self.request.context.serialize())
+        LOGGER.info('Updated tender award contract {}'.format(self.request.context.id))
+        return {'data': self.request.context.serialize()}

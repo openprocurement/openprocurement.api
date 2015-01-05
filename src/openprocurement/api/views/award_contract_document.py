@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+from logging import getLogger
 from cornice.resource import resource, view
 from openprocurement.api.utils import (
     get_file,
@@ -11,6 +12,9 @@ from openprocurement.api.validation import (
     validate_file_upload,
     validate_patch_document_data,
 )
+
+
+LOGGER = getLogger(__name__)
 
 
 @resource(name='Tender Award Contract Documents',
@@ -53,6 +57,7 @@ class TenderAwardContractDocumentResource(object):
         document = upload_file(self.request)
         self.request.validated['contract'].documents.append(document)
         save_tender(self.request)
+        LOGGER.info('Created tender award contract document {}'.format(document.id))
         self.request.response.status = 201
         document_route = self.request.matched_route.name.replace("collection_", "")
         self.request.response.headers['Location'] = self.request.current_route_url(_route_name=document_route, document_id=document.id, _query={})
@@ -88,6 +93,7 @@ class TenderAwardContractDocumentResource(object):
         document = upload_file(self.request)
         self.request.validated['contract'].documents.append(document)
         save_tender(self.request)
+        LOGGER.info('Updated tender award contract document {}'.format(self.request.context.id))
         return {'data': document.serialize("view")}
 
     @view(renderer='json', validators=(validate_patch_document_data,), permission='edit_tender')
@@ -102,4 +108,5 @@ class TenderAwardContractDocumentResource(object):
             self.request.errors.status = 403
             return
         apply_patch(self.request, src=self.request.context.serialize())
+        LOGGER.info('Updated tender award contract document {}'.format(self.request.context.id))
         return {'data': self.request.context.serialize("view")}

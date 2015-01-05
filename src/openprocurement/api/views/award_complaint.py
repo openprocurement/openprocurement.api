@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+from logging import getLogger
 from cornice.resource import resource, view
 from openprocurement.api.models import Award, Complaint, STAND_STILL_TIME, get_now
 from openprocurement.api.utils import (
@@ -9,6 +10,9 @@ from openprocurement.api.validation import (
     validate_complaint_data,
     validate_patch_complaint_data,
 )
+
+
+LOGGER = getLogger(__name__)
 
 
 @resource(name='Tender Award Complaints',
@@ -34,6 +38,7 @@ class TenderAwardComplaintResource(object):
         complaint = Complaint(complaint_data)
         self.request.validated['award'].complaints.append(complaint)
         save_tender(self.request)
+        LOGGER.info('Created tender award complaint {}'.format(complaint.id))
         self.request.response.status = 201
         self.request.response.headers['Location'] = self.request.route_url('Tender Award Complaints', tender_id=tender.id, award_id=self.request.validated['award_id'], complaint_id=complaint['id'])
         return {'data': complaint.serialize("view")}
@@ -124,4 +129,5 @@ class TenderAwardComplaintResource(object):
                     else:
                         tender.status = 'unsuccessful'
             save_tender(self.request)
+            LOGGER.info('Updated tender award complaint {}'.format(self.request.context.id))
         return {'data': complaint.serialize("view")}
