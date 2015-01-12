@@ -303,8 +303,7 @@ class TenderAwardResource(object):
                 tender.awardPeriod.endDate = get_now()
                 tender.status = 'active.awarded'
             elif award.status == 'unsuccessful':
-                awards = self.request.validated['awards']
-                unsuccessful_awards = [i.bid_id for i in awards if i.status == 'unsuccessful']
+                unsuccessful_awards = [i.bid_id for i in tender.awards if i.status == 'unsuccessful']
                 bids = [i for i in sorted(tender.bids, key=lambda i: (i.value.amount, i.date)) if i.id not in unsuccessful_awards]
                 if bids:
                     bid = bids[0].serialize()
