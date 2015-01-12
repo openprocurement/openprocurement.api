@@ -32,7 +32,7 @@ ROUTE_PREFIX = '/api/{}'.format(VERSION)
 def set_journal_handler(event):
     params = {
         'TAGS': 'python,api',
-        'USER_ID': str(event.request.authenticated_userid),
+        'USER_ID': str(event.request.authenticated_userid or ''),
         'ROLE': str(event.request.authenticated_role),
     }
     if event.request.params:
@@ -77,12 +77,12 @@ def get_local_roles(context):
 
 
 def authenticated_role(request):
-    principals = reversed(request.effective_principals)
+    principals = request.effective_principals
     roles = get_local_roles(request.context)
-    local_roles = [roles[i] for i in principals if i in roles]
+    local_roles = [roles[i] for i in reversed(principals) if i in roles]
     if local_roles:
         return local_roles[0]
-    groups = [g for g in principals if g.startswith('g:')]
+    groups = [g for g in reversed(principals) if g.startswith('g:')]
     return groups[0][2:] if groups else 'anonymous'
 
 
