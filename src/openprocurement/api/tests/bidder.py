@@ -5,7 +5,7 @@ from openprocurement.api.tests.base import BaseTenderWebTest, test_tender_data
 
 
 class TenderBidderResourceTest(BaseTenderWebTest):
-    initial_status =  'active.tendering'
+    initial_status = 'active.tendering'
 
     def test_create_tender_bidder_invalid(self):
         response = self.app.post_json('/tenders/some_id/bids', {

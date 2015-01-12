@@ -1,10 +1,10 @@
 # -*- coding: utf-8 -*-
 from logging import getLogger
 from cornice.service import Service
-from openprocurement.api.models import Award
 from openprocurement.api.utils import (
     save_tender,
     apply_patch,
+    add_next_award,
 )
 from openprocurement.api.validation import (
     validate_tender_auction_data,
@@ -159,17 +159,7 @@ def post_auction(request):
 
     """
     apply_patch(request, save=False, src=request.validated['tender_src'])
-    tender = request.validated['tender']
-    bids = sorted(tender.bids, key=lambda i: (i.value.amount, i.date))
-    bid = bids[0].serialize()
-    award_data = {
-        'bid_id': bid['id'],
-        'status': 'pending',
-        'value': bid['value'],
-        'suppliers': bid['tenderers'],
-    }
-    award = Award(award_data)
-    tender.awards.append(award)
+    add_next_award(request)
     save_tender(request)
     LOGGER.info('Report auction results')
-    return {'data': tender.serialize(tender.status)}
+    return {'data': request.context.serialize(request.context.status)}

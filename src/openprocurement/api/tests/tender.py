@@ -2,7 +2,7 @@
 import unittest
 
 from openprocurement.api.models import Tender, get_now
-from openprocurement.api.tests.base import test_tender_data, BaseWebTest
+from openprocurement.api.tests.base import test_tender_data, BaseWebTest, BaseTenderWebTest
 
 
 class TenderTest(BaseWebTest):
@@ -543,7 +543,9 @@ class TenderResourceTest(BaseWebTest):
         ])
 
 
-class TenderProcessTest(BaseWebTest):
+class TenderProcessTest(BaseTenderWebTest):
+    setUp = BaseWebTest.setUp
+
     def test_invalid_tender_conditions(self):
         self.app.authorization = ('Basic', ('broker', ''))
         # empty tenders listing
@@ -552,7 +554,7 @@ class TenderProcessTest(BaseWebTest):
         # create tender
         response = self.app.post_json('/tenders',
                                       {"data": test_tender_data})
-        tender_id = response.json['data']['id']
+        tender_id = self.tender_id = response.json['data']['id']
         owner_token = response.json['access']['token']
         # create compaint
         self.app.authorization = ('Basic', ('broker', ''))
@@ -563,9 +565,7 @@ class TenderProcessTest(BaseWebTest):
         response = self.app.post_json('/tenders/{}/complaints'.format(tender_id),
                                       {'data': {'title': 'invalid conditions', 'description': 'description', 'author': test_tender_data["procuringEntity"]}})
         # switch to active.tendering
-        self.app.authorization = ('Basic', ('chronograph', ''))
-        response = self.app.patch_json('/tenders/{}'.format(tender_id),
-                                       {'data': {'status': 'active.tendering'}})
+        self.set_status('active.tendering')
         # satisfying tender conditions complaint
         # XXX correct auth
         self.app.authorization = ('Basic', ('broker', ''))
@@ -583,27 +583,16 @@ class TenderProcessTest(BaseWebTest):
         # create tender
         response = self.app.post_json('/tenders',
                                       {"data": test_tender_data})
-        tender_id = response.json['data']['id']
+        tender_id = self.tender_id = response.json['data']['id']
         owner_token = response.json['access']['token']
         # switch to active.tendering
-        self.app.authorization = ('Basic', ('chronograph', ''))
-        response = self.app.patch_json('/tenders/{}'.format(tender_id),
-                                       {'data': {'status': 'active.tendering'}})
+        self.set_status('active.tendering')
         # create bid
         self.app.authorization = ('Basic', ('broker', ''))
         response = self.app.post_json('/tenders/{}/bids'.format(tender_id),
                                       {'data': {'tenderers': [test_tender_data["procuringEntity"]], "value": {"amount": 500}}})
-        # switch to active.auction
-        self.app.authorization = ('Basic', ('chronograph', ''))
-        response = self.app.patch_json('/tenders/{}'.format(tender_id),
-                                       {'data': {'status': 'active.auction'}})
-        # get auction info
-        self.app.authorization = ('Basic', ('auction', ''))
-        response = self.app.get('/tenders/{}/auction'.format(tender_id))
-        auction_bids_data = response.json['data']['bids']
-        # posting auction results
-        response = self.app.post_json('/tenders/{}/auction'.format(tender_id),
-                                       {'data': {'bids': auction_bids_data}})
+        # switch to active.qualification
+        self.set_status('active.qualification')
         # get awards
         self.app.authorization = ('Basic', ('broker', ''))
         response = self.app.get('/tenders/{}/awards?acc_token={}'.format(tender_id, owner_token))
@@ -629,27 +618,16 @@ class TenderProcessTest(BaseWebTest):
         # create tender
         response = self.app.post_json('/tenders',
                                       {"data": test_tender_data})
-        tender_id = response.json['data']['id']
+        tender_id = self.tender_id = response.json['data']['id']
         owner_token = response.json['access']['token']
         # switch to active.tendering
-        self.app.authorization = ('Basic', ('chronograph', ''))
-        response = self.app.patch_json('/tenders/{}'.format(tender_id),
-                                       {'data': {'status': 'active.tendering'}})
+        self.set_status('active.tendering')
         # create bid
         self.app.authorization = ('Basic', ('broker', ''))
         response = self.app.post_json('/tenders/{}/bids'.format(tender_id),
                                       {'data': {'tenderers': [test_tender_data["procuringEntity"]], "value": {"amount": 500}}})
-        # switch to active.auction
-        self.app.authorization = ('Basic', ('chronograph', ''))
-        response = self.app.patch_json('/tenders/{}'.format(tender_id),
-                                       {'data': {'status': 'active.auction'}})
-        # get auction info
-        self.app.authorization = ('Basic', ('auction', ''))
-        response = self.app.get('/tenders/{}/auction'.format(tender_id))
-        auction_bids_data = response.json['data']['bids']
-        # posting auction results
-        response = self.app.post_json('/tenders/{}/auction'.format(tender_id),
-                                       {'data': {'bids': auction_bids_data}})
+        # switch to active.qualification
+        self.set_status('active.qualification')
         # get awards
         self.app.authorization = ('Basic', ('broker', ''))
         response = self.app.get('/tenders/{}/awards?acc_token={}'.format(tender_id, owner_token))
@@ -675,12 +653,10 @@ class TenderProcessTest(BaseWebTest):
         # create tender
         response = self.app.post_json('/tenders',
                                       {"data": test_tender_data})
-        tender_id = response.json['data']['id']
+        tender_id = self.tender_id = response.json['data']['id']
         owner_token = response.json['access']['token']
         # switch to active.tendering
-        self.app.authorization = ('Basic', ('chronograph', ''))
-        response = self.app.patch_json('/tenders/{}'.format(tender_id),
-                                       {'data': {'status': 'active.tendering'}})
+        self.set_status('active.tendering')
         # create bid
         self.app.authorization = ('Basic', ('broker', ''))
         response = self.app.post_json('/tenders/{}/bids'.format(tender_id),
@@ -692,9 +668,8 @@ class TenderProcessTest(BaseWebTest):
         response = self.app.post_json('/tenders/{}/bids'.format(tender_id),
                                       {'data': {'tenderers': [test_tender_data["procuringEntity"]], "value": {"amount": 475}}})
         # switch to active.auction
-        self.app.authorization = ('Basic', ('chronograph', ''))
-        response = self.app.patch_json('/tenders/{}'.format(tender_id),
-                                       {'data': {'status': 'active.auction'}})
+        self.set_status('active.auction')
+
         # get auction info
         self.app.authorization = ('Basic', ('auction', ''))
         response = self.app.get('/tenders/{}/auction'.format(tender_id))

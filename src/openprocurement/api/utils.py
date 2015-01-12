@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from base64 import b64encode
 from jsonpatch import make_patch, apply_patch as _apply_patch
-from openprocurement.api.models import Document, Revision, get_now
+from openprocurement.api.models import Document, Revision, Award, get_now
 from urllib import quote
 from uuid import uuid4
 from schematics.exceptions import ModelValidationError
@@ -164,3 +164,23 @@ def apply_patch(request, data=None, save=True, src=None):
         request.context.import_data(patch)
         if save:
             save_tender(request)
+
+
+def add_next_award(request):
+    tender = request.validated['tender']
+    unsuccessful_awards = [i.bid_id for i in tender.awards if i.status == 'unsuccessful']
+    bids = [i for i in sorted(tender.bids, key=lambda i: (i.value.amount, i.date)) if i.id not in unsuccessful_awards]
+    if bids:
+        bid = bids[0].serialize()
+        award_data = {
+            'bid_id': bid['id'],
+            'status': 'pending',
+            'value': bid['value'],
+            'suppliers': bid['tenderers'],
+        }
+        award = Award(award_data)
+        tender.awards.append(award)
+        request.response.headers['Location'] = request.route_url('Tender Awards', tender_id=tender.id, award_id=award['id'])
+    else:
+        tender.awardPeriod.endDate = get_now()
+        tender.status = 'active.awarded'

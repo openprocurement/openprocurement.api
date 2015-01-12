@@ -1,10 +1,11 @@
 # -*- coding: utf-8 -*-
 from logging import getLogger
 from cornice.resource import resource, view
-from openprocurement.api.models import Award, Complaint, STAND_STILL_TIME, get_now
+from openprocurement.api.models import Complaint, STAND_STILL_TIME, get_now
 from openprocurement.api.utils import (
     apply_data_patch,
     save_tender,
+    add_next_award,
 )
 from openprocurement.api.validation import (
     validate_complaint_data,
@@ -90,21 +91,7 @@ class TenderAwardComplaintResource(object):
                 for i in award.contracts:
                     i.status = 'cancelled'
                 award.status = 'cancelled'
-                unsuccessful_awards = [i.bid_id for i in tender.awards if i.status == 'unsuccessful']
-                bids = [i for i in sorted(tender.bids, key=lambda i: (i.value.amount, i.date)) if i.id not in unsuccessful_awards]
-                if bids:
-                    bid = bids[0].serialize()
-                    award_data = {
-                        'bid_id': bid['id'],
-                        'status': 'pending',
-                        'value': bid['value'],
-                        'suppliers': bid['tenderers'],
-                    }
-                    award = Award(award_data)
-                    tender.awards.append(award)
-                else:
-                    tender.awardPeriod.endDate = get_now()
-                    tender.status = 'active.awarded'
+                add_next_award(self.request)
             elif complaint.status in ['declined', 'invalid'] and tender.status == 'active.awarded':
                 pending_complaints = [
                     i

@@ -6,7 +6,6 @@ gevent.monkey.patch_all()
 import os
 import pkg_resources
 from logging import getLogger
-from urlparse import urlparse
 from pyramid.config import Configurator
 from openprocurement.api.auth import AuthenticationPolicy
 from pyramid.authorization import ACLAuthorizationPolicy as AuthorizationPolicy

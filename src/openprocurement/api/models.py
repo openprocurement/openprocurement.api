@@ -560,3 +560,5 @@ class Tender(SchematicsDocument, Model):
     def validate_awardPeriod(self, data, period):
         if period and period.startDate and data.get('auctionPeriod') and data.get('auctionPeriod').endDate and period.startDate < data.get('auctionPeriod').endDate:
             raise ValidationError(u"period should begin after auctionPeriod")
+        if period and period.startDate and data.get('tenderPeriod') and data.get('tenderPeriod').endDate and period.startDate < data.get('tenderPeriod').endDate:
+            raise ValidationError(u"period should begin after tenderPeriod")

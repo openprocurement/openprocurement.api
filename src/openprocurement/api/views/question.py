@@ -15,7 +15,6 @@ from openprocurement.api.validation import (
 LOGGER = getLogger(__name__)
 
 
-
 @resource(name='Tender Questions',
           collection_path='/tenders/{tender_id}/questions',
           path='/tenders/{tender_id}/questions/{question_id}',

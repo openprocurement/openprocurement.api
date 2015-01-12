@@ -11,6 +11,7 @@ from openprocurement.api.utils import (
     set_ownership,
     tender_serialize,
     apply_patch,
+    add_next_award,
 )
 from openprocurement.api.validation import (
     validate_patch_tender_data,
@@ -363,7 +364,7 @@ class TenderResource(object):
 
         """
         tender = self.request.validated['tender']
-        tender_data = tender.serialize('view' if self.request.authenticated_userid == 'chronograph' else tender.status)
+        tender_data = tender.serialize('view' if self.request.authenticated_role == 'chronograph' else tender.status)
         return {'data': tender_data}
 
     #@view(content_type="application/json", validators=(validate_tender_data, ), permission='edit_tender', renderer='json')
@@ -436,6 +437,11 @@ class TenderResource(object):
             self.request.errors.add('body', 'data', 'Can\'t update tender status')
             self.request.errors.status = 403
             return
-        apply_patch(self.request, src=self.request.validated['tender_src'])
+        if self.request.authenticated_role == 'chronograph' and tender.status == 'active.tendering' and data.get('status', tender.status) == 'active.qualification' and tender.numberOfBids == 1:
+            apply_patch(self.request, save=False, src=self.request.validated['tender_src'])
+            add_next_award(self.request)
+            save_tender(self.request)
+        else:
+            apply_patch(self.request, src=self.request.validated['tender_src'])
         LOGGER.info('Updated tender {}'.format(tender.id))
         return {'data': tender.serialize(tender.status)}

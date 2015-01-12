@@ -28,9 +28,9 @@ def validate_data(request, model, partial=False):
             m = model(request.context.serialize())
             m.import_data(new_patch)
             m.validate()
-            if request.authenticated_userid == 'chronograph':
+            if request.authenticated_role == 'chronograph':
                 data = m.serialize('chronograph')
-            elif request.authenticated_userid == 'auction':
+            elif request.authenticated_role == 'auction':
                 data = m.serialize('auction_{}'.format(request.method.lower()))
             elif isinstance(request.context, Tender):
                 data = m.serialize('edit_{}'.format(request.context.status))

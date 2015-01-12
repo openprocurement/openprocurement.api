@@ -5,6 +5,7 @@ from openprocurement.api.models import Award, Contract, get_now
 from openprocurement.api.utils import (
     apply_data_patch,
     save_tender,
+    add_next_award,
 )
 from openprocurement.api.validation import (
     validate_award_data,
@@ -303,22 +304,7 @@ class TenderAwardResource(object):
                 tender.awardPeriod.endDate = get_now()
                 tender.status = 'active.awarded'
             elif award.status == 'unsuccessful':
-                unsuccessful_awards = [i.bid_id for i in tender.awards if i.status == 'unsuccessful']
-                bids = [i for i in sorted(tender.bids, key=lambda i: (i.value.amount, i.date)) if i.id not in unsuccessful_awards]
-                if bids:
-                    bid = bids[0].serialize()
-                    award_data = {
-                        'bid_id': bid['id'],
-                        'status': 'pending',
-                        'value': bid['value'],
-                        'suppliers': bid['tenderers'],
-                    }
-                    award = Award(award_data)
-                    tender.awards.append(award)
-                    self.request.response.headers['Location'] = self.request.route_url('Tender Awards', tender_id=tender.id, award_id=award['id'])
-                else:
-                    tender.awardPeriod.endDate = get_now()
-                    tender.status = 'active.awarded'
+                add_next_award(self.request)
             save_tender(self.request)
             LOGGER.info('Updated tender award {}'.format(self.request.context.id))
         return {'data': award.serialize("view")}
