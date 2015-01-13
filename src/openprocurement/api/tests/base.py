@@ -100,7 +100,7 @@ class BaseTenderWebTest(BaseWebTest):
     initial_status = None
     initial_bids = None
 
-    def set_status(self, status):
+    def set_status(self, status, extra=None):
         data = {'status': status}
         if status == 'active.enquiries':
             data.update({
@@ -194,12 +194,15 @@ class BaseTenderWebTest(BaseWebTest):
                     "endDate": (now - timedelta(days=10)).isoformat()
                 }
             })
+        if extra:
+            data.update(extra)
         authorization = self.app.authorization
         self.app.authorization = ('Basic', ('chronograph', ''))
         response = self.app.patch_json('/tenders/{}'.format(self.tender_id), {'data': data})
         self.app.authorization = authorization
         self.assertEqual(response.status, '200 OK')
         self.assertEqual(response.content_type, 'application/json')
+        return response
 
     def setUp(self):
         super(BaseTenderWebTest, self).setUp()

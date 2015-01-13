@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 import unittest
+from datetime import timedelta
 
 from openprocurement.api.models import Tender, get_now
 from openprocurement.api.tests.base import test_tender_data, BaseWebTest, BaseTenderWebTest
@@ -406,6 +407,18 @@ class TenderResourceTest(BaseWebTest):
         dateModified = tender.pop('dateModified')
 
         response = self.app.patch_json('/tenders/{}'.format(
+            tender['id']), {'data': {'tenderPeriod': {'startDate': None}}})
+        self.assertEqual(response.status, '200 OK')
+        self.assertEqual(response.content_type, 'application/json')
+        self.assertNotIn('startDate', response.json['data']['tenderPeriod'])
+
+        response = self.app.patch_json('/tenders/{}'.format(
+            tender['id']), {'data': {'tenderPeriod': {'startDate': tender['enquiryPeriod']['endDate']}}})
+        self.assertEqual(response.status, '200 OK')
+        self.assertEqual(response.content_type, 'application/json')
+        self.assertIn('startDate', response.json['data']['tenderPeriod'])
+
+        response = self.app.patch_json('/tenders/{}'.format(
             tender['id']), {'data': {'procurementMethod': 'Open'}})
         self.assertEqual(response.status, '200 OK')
         self.assertEqual(response.content_type, 'application/json')
@@ -586,13 +599,15 @@ class TenderProcessTest(BaseTenderWebTest):
         tender_id = self.tender_id = response.json['data']['id']
         owner_token = response.json['access']['token']
         # switch to active.tendering
-        self.set_status('active.tendering')
+        response = self.set_status('active.tendering', {"auctionPeriod": {"startDate": (get_now() + timedelta(days=10)).isoformat()}})
+        self.assertIn("auctionPeriod", response.json['data'])
         # create bid
         self.app.authorization = ('Basic', ('broker', ''))
         response = self.app.post_json('/tenders/{}/bids'.format(tender_id),
                                       {'data': {'tenderers': [test_tender_data["procuringEntity"]], "value": {"amount": 500}}})
         # switch to active.qualification
-        self.set_status('active.qualification')
+        response = self.set_status('active.qualification', {"auctionPeriod": {"startDate": None}})
+        self.assertNotIn("auctionPeriod", response.json['data'])
         # get awards
         self.app.authorization = ('Basic', ('broker', ''))
         response = self.app.get('/tenders/{}/awards?acc_token={}'.format(tender_id, owner_token))

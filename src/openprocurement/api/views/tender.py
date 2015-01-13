@@ -257,7 +257,8 @@ class TenderResource(object):
         tender_id = generate_id()
         tender = Tender(tender_data)
         tender.id = tender_id
-        tender.enquiryPeriod.startDate = get_now()
+        if not tender.enquiryPeriod.startDate:
+            tender.enquiryPeriod.startDate = get_now()
         tender.tenderID = generate_tender_id(tender.enquiryPeriod.startDate, self.db)
         if not tender.tenderPeriod.startDate:
             tender.tenderPeriod.startDate = tender.enquiryPeriod.endDate

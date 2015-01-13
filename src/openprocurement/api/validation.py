@@ -29,13 +29,13 @@ def validate_data(request, model, partial=False):
             m.import_data(new_patch)
             m.validate()
             if request.authenticated_role == 'chronograph':
-                data = m.serialize('chronograph')
+                data = m.to_patch('chronograph')
             elif request.authenticated_role == 'auction':
-                data = m.serialize('auction_{}'.format(request.method.lower()))
+                data = m.to_patch('auction_{}'.format(request.method.lower()))
             elif isinstance(request.context, Tender):
-                data = m.serialize('edit_{}'.format(request.context.status))
+                data = m.to_patch('edit_{}'.format(request.context.status))
             else:
-                data = m.serialize('edit')
+                data = m.to_patch('edit')
         elif partial:
             m = model(data)
             m.validate(partial=partial)

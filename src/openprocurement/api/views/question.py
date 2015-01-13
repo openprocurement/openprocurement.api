@@ -30,7 +30,7 @@ class TenderQuestionResource(object):
         """Post a question
         """
         tender = self.request.validated['tender']
-        if tender.status != 'active.enquiries' or get_now() > tender.enquiryPeriod.endDate:
+        if tender.status != 'active.enquiries' or get_now() < tender.enquiryPeriod.startDate or get_now() > tender.enquiryPeriod.endDate:
             self.request.errors.add('body', 'data', 'Can add question only in enquiryPeriod')
             self.request.errors.status = 403
             return

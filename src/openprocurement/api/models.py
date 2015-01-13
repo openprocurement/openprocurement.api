@@ -6,8 +6,8 @@ from iso8601 import parse_date, ParseError
 from pytz import timezone
 from pyramid.security import Allow
 from schematics.exceptions import ConversionError, ValidationError
-from schematics.models import Model
-from schematics.transforms import whitelist, blacklist
+from schematics.models import Model as SchematicsModel
+from schematics.transforms import whitelist, blacklist, export_loop
 from schematics.types import StringType, FloatType, IntType, URLType, BooleanType, BaseType, EmailType, MD5Type
 from schematics.types.compound import ModelType, ListType, DictType
 from schematics.types.serializable import serializable
@@ -59,6 +59,16 @@ class IsoDateTimeType(BaseType):
 
     def to_primitive(self, value, context=None):
         return value.isoformat()
+
+
+class Model(SchematicsModel):
+    def to_patch(self, role=None):
+        """Return data as it would be validated. No filtering of output unless
+        role is defined.
+        """
+        field_converter = lambda field, value: field.to_primitive(value)
+        data = export_loop(self.__class__, self, field_converter, role=role, raise_error_on_role=True, print_none=True)
+        return data
 
 
 class Value(Model):
