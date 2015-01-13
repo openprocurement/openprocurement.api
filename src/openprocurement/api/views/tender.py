@@ -79,7 +79,7 @@ class TenderResource(object):
             params['descending'] = descending
         next_offset = datetime.min.isoformat() if descending else get_now().isoformat()
         if fields:
-            LOGGER.info('Used custom fields for tenders list: {}'.format(','.join(sorted(fields.split(',')))))
+            LOGGER.info('Used custom fields for tenders list: {}'.format(','.join(sorted(fields.split(',')))), extra={'MESSAGE_ID': 'tender_list_custom'})
             fields = fields.split(',') + ['dateModified', 'id']
             results = [
                 tender_serialize(i, fields)
@@ -266,7 +266,7 @@ class TenderResource(object):
         self.request.validated['tender'] = tender
         self.request.validated['tender_src'] = {}
         save_tender(self.request)
-        LOGGER.info('Created tender {}'.format(tender_id))
+        LOGGER.info('Created tender {}'.format(tender_id), extra={'MESSAGE_ID': 'tender_create'})
         self.request.response.status = 201
         self.request.response.headers[
             'Location'] = self.request.route_url('Tender', tender_id=tender_id)
@@ -444,5 +444,5 @@ class TenderResource(object):
             save_tender(self.request)
         else:
             apply_patch(self.request, src=self.request.validated['tender_src'])
-        LOGGER.info('Updated tender {}'.format(tender.id))
+        LOGGER.info('Updated tender {}'.format(tender.id), extra={'MESSAGE_ID': 'tender_patch'})
         return {'data': tender.serialize(tender.status)}

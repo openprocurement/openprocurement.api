@@ -25,7 +25,7 @@ def migrate_data(db, destination=None):
     if cur_version == SCHEMA_VERSION:
         return cur_version
     for step in xrange(cur_version, destination or SCHEMA_VERSION):
-        LOGGER.info("Migrate openprocurement schema from {} to {}".format(step, step + 1))
+        LOGGER.info("Migrate openprocurement schema from {} to {}".format(step, step + 1), extra={'MESSAGE_ID': 'migrate_data'})
         migration_func = globals().get('from{}to{}'.format(step, step + 1))
         if migration_func:
             migration_func(db)

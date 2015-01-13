@@ -39,7 +39,7 @@ class TenderAwardContractResource(object):
         contract.awardID = self.request.validated['award_id']
         self.request.validated['award'].contracts.append(contract)
         save_tender(self.request)
-        LOGGER.info('Created tender award contract {}'.format(contract.id))
+        LOGGER.info('Created tender award contract {}'.format(contract.id), extra={'MESSAGE_ID': 'tender_award_contract_create'})
         self.request.response.status = 201
         self.request.response.headers['Location'] = self.request.route_url('Tender Award Contracts', tender_id=tender.id, award_id=self.request.validated['award_id'], contract_id=contract['id'])
         return {'data': contract.serialize()}
@@ -65,5 +65,5 @@ class TenderAwardContractResource(object):
             self.request.errors.status = 403
             return
         apply_patch(self.request, src=self.request.context.serialize())
-        LOGGER.info('Updated tender award contract {}'.format(self.request.context.id))
+        LOGGER.info('Updated tender award contract {}'.format(self.request.context.id), extra={'MESSAGE_ID': 'tender_award_contract_patch'})
         return {'data': self.request.context.serialize()}

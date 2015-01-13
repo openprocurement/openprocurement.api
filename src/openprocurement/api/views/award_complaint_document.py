@@ -52,7 +52,7 @@ class TenderAwardComplaintDocumentResource(object):
         document = upload_file(self.request)
         self.request.validated['complaint'].documents.append(document)
         save_tender(self.request)
-        LOGGER.info('Created tender award complaint document {}'.format(document.id))
+        LOGGER.info('Created tender award complaint document {}'.format(document.id), extra={'MESSAGE_ID': 'tender_award_complaint_document_create'})
         self.request.response.status = 201
         document_route = self.request.matched_route.name.replace("collection_", "")
         self.request.response.headers['Location'] = self.request.current_route_url(_route_name=document_route, document_id=document.id, _query={})
@@ -83,7 +83,7 @@ class TenderAwardComplaintDocumentResource(object):
         document = upload_file(self.request)
         self.request.validated['complaint'].documents.append(document)
         save_tender(self.request)
-        LOGGER.info('Updated tender award complaint document {}'.format(self.request.context.id))
+        LOGGER.info('Updated tender award complaint document {}'.format(self.request.context.id), extra={'MESSAGE_ID': 'tender_award_complaint_document_put'})
         return {'data': document.serialize("view")}
 
     @view(renderer='json', validators=(validate_patch_document_data,), permission='review_complaint')
@@ -94,5 +94,5 @@ class TenderAwardComplaintDocumentResource(object):
             self.request.errors.status = 403
             return
         apply_patch(self.request, src=self.request.context.serialize())
-        LOGGER.info('Updated tender award complaint document {}'.format(self.request.context.id))
+        LOGGER.info('Updated tender award complaint document {}'.format(self.request.context.id), extra={'MESSAGE_ID': 'tender_award_complaint_document_patch'})
         return {'data': self.request.context.serialize("view")}

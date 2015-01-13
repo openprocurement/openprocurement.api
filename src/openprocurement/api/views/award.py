@@ -171,7 +171,7 @@ class TenderAwardResource(object):
         award = Award(award_data)
         tender.awards.append(award)
         save_tender(self.request)
-        LOGGER.info('Created tender award {}'.format(award.id))
+        LOGGER.info('Created tender award {}'.format(award.id), extra={'MESSAGE_ID': 'tender_award_create'})
         self.request.response.status = 201
         self.request.response.headers['Location'] = self.request.route_url('Tender Awards', tender_id=tender.id, award_id=award['id'])
         return {'data': award.serialize("view")}
@@ -306,5 +306,5 @@ class TenderAwardResource(object):
             elif award.status == 'unsuccessful':
                 add_next_award(self.request)
             save_tender(self.request)
-            LOGGER.info('Updated tender award {}'.format(self.request.context.id))
+            LOGGER.info('Updated tender award {}'.format(self.request.context.id), extra={'MESSAGE_ID': 'tender_award_patch'})
         return {'data': award.serialize("view")}

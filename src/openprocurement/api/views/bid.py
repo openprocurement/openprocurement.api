@@ -118,7 +118,7 @@ class TenderBidResource(object):
         set_ownership(bid, self.request)
         tender.bids.append(bid)
         save_tender(self.request)
-        LOGGER.info('Created tender bid {}'.format(bid.id))
+        LOGGER.info('Created tender bid {}'.format(bid.id), extra={'MESSAGE_ID': 'tender_bid_create'})
         self.request.response.status = 201
         self.request.response.headers['Location'] = self.request.route_url('Tender Bids', tender_id=tender.id, bid_id=bid['id'])
         return {
@@ -251,7 +251,7 @@ class TenderBidResource(object):
             self.request.errors.status = 403
             return
         apply_patch(self.request, src=self.request.context.serialize())
-        LOGGER.info('Updated tender bid {}'.format(self.request.context.id))
+        LOGGER.info('Updated tender bid {}'.format(self.request.context.id), extra={'MESSAGE_ID': 'tender_bid_patch'})
         return {'data': self.request.context.serialize("view")}
 
     @view(renderer='json', permission='edit_bid')
@@ -293,5 +293,5 @@ class TenderBidResource(object):
         res = bid.serialize("view")
         tender.bids.remove(bid)
         save_tender(self.request)
-        LOGGER.info('Deleted tender bid {}'.format(self.request.context.id))
+        LOGGER.info('Deleted tender bid {}'.format(self.request.context.id), extra={'MESSAGE_ID': 'tender_bid_delete'})
         return {'data': res}

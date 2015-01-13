@@ -38,7 +38,7 @@ class TenderComplaintResource(object):
         complaint = Complaint(complaint_data)
         tender.complaints.append(complaint)
         save_tender(self.request)
-        LOGGER.info('Created tender complaint {}'.format(complaint.id))
+        LOGGER.info('Created tender complaint {}'.format(complaint.id), extra={'MESSAGE_ID': 'tender_complaint_create'})
         self.request.response.status = 201
         self.request.response.headers['Location'] = self.request.route_url('Tender Complaints', tender_id=tender.id, complaint_id=complaint.id)
         return {'data': complaint.serialize("view")}
@@ -104,5 +104,5 @@ class TenderComplaintResource(object):
                     else:
                         tender.status = 'unsuccessful'
             save_tender(self.request)
-            LOGGER.info('Updated tender complaint {}'.format(self.request.context.id))
+            LOGGER.info('Updated tender complaint {}'.format(self.request.context.id), extra={'MESSAGE_ID': 'tender_complaint_patch'})
         return {'data': self.request.context.serialize("view")}

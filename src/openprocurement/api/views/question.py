@@ -38,7 +38,7 @@ class TenderQuestionResource(object):
         question = Question(question_data)
         tender.questions.append(question)
         save_tender(self.request)
-        LOGGER.info('Created tender question {}'.format(question.id))
+        LOGGER.info('Created tender question {}'.format(question.id), extra={'MESSAGE_ID': 'tender_question_create'})
         self.request.response.status = 201
         self.request.response.headers['Location'] = self.request.route_url('Tender Questions', tender_id=tender.id, question_id=question.id)
         return {'data': question.serialize("view")}
@@ -65,5 +65,5 @@ class TenderQuestionResource(object):
             self.request.errors.status = 403
             return
         apply_patch(self.request, src=self.request.context.serialize())
-        LOGGER.info('Updated tender question {}'.format(self.request.context.id))
+        LOGGER.info('Updated tender question {}'.format(self.request.context.id), extra={'MESSAGE_ID': 'tender_question_patch'})
         return {'data': self.request.context.serialize(tender.status)}
