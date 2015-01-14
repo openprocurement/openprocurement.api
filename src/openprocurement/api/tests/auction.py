@@ -62,7 +62,7 @@ class TenderAuctionResourceTest(BaseTenderWebTest):
         response = self.app.get('/tenders/{}/auction'.format(self.tender_id), status=403)
         self.assertEqual(response.status, '403 Forbidden')
         self.assertEqual(response.content_type, 'application/json')
-        self.assertEqual(response.json['errors'][0]["description"], "Can't get auction info in current tender status")
+        self.assertEqual(response.json['errors'][0]["description"], "Can't get auction info in current (active.tendering) tender status")
 
         self.set_status('active.auction')
 
@@ -94,14 +94,14 @@ class TenderAuctionResourceTest(BaseTenderWebTest):
         response = self.app.get('/tenders/{}/auction'.format(self.tender_id), status=403)
         self.assertEqual(response.status, '403 Forbidden')
         self.assertEqual(response.content_type, 'application/json')
-        self.assertEqual(response.json['errors'][0]["description"], "Can't get auction info in current tender status")
+        self.assertEqual(response.json['errors'][0]["description"], "Can't get auction info in current (active.qualification) tender status")
 
     def test_post_tender_auction(self):
         self.app.authorization = ('Basic', ('auction', ''))
         response = self.app.post_json('/tenders/{}/auction'.format(self.tender_id), {'data': {}}, status=403)
         self.assertEqual(response.status, '403 Forbidden')
         self.assertEqual(response.content_type, 'application/json')
-        self.assertEqual(response.json['errors'][0]["description"], "Can't report auction results in current tender status")
+        self.assertEqual(response.json['errors'][0]["description"], "Can't report auction results in current (active.tendering) tender status")
 
         self.app.authorization = ('Basic', ('token', ''))
         self.set_status('active.auction')
@@ -186,14 +186,14 @@ class TenderAuctionResourceTest(BaseTenderWebTest):
         response = self.app.post_json('/tenders/{}/auction'.format(self.tender_id), {'data': patch_data}, status=403)
         self.assertEqual(response.status, '403 Forbidden')
         self.assertEqual(response.content_type, 'application/json')
-        self.assertEqual(response.json['errors'][0]["description"], "Can't report auction results in current tender status")
+        self.assertEqual(response.json['errors'][0]["description"], "Can't report auction results in current (active.qualification) tender status")
 
     def test_patch_tender_auction(self):
         self.app.authorization = ('Basic', ('auction', ''))
         response = self.app.patch_json('/tenders/{}/auction'.format(self.tender_id), {'data': {}}, status=403)
         self.assertEqual(response.status, '403 Forbidden')
         self.assertEqual(response.content_type, 'application/json')
-        self.assertEqual(response.json['errors'][0]["description"], "Can't report auction results in current tender status")
+        self.assertEqual(response.json['errors'][0]["description"], "Can't report auction results in current (active.tendering) tender status")
 
         self.app.authorization = ('Basic', ('token', ''))
         self.set_status('active.auction')
@@ -265,7 +265,7 @@ class TenderAuctionResourceTest(BaseTenderWebTest):
         response = self.app.patch_json('/tenders/{}/auction'.format(self.tender_id), {'data': patch_data}, status=403)
         self.assertEqual(response.status, '403 Forbidden')
         self.assertEqual(response.content_type, 'application/json')
-        self.assertEqual(response.json['errors'][0]["description"], "Can't report auction results in current tender status")
+        self.assertEqual(response.json['errors'][0]["description"], "Can't report auction results in current (complete) tender status")
 
 
 def suite():

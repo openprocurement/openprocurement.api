@@ -32,7 +32,7 @@ class TenderAwardComplaintResource(object):
         """
         tender = self.request.validated['tender']
         if tender.status not in ['active.qualification', 'active.awarded']:
-            self.request.errors.add('body', 'data', 'Can\'t add complaint in current tender status')
+            self.request.errors.add('body', 'data', 'Can\'t add complaint in current ({}) tender status'.format(tender.status))
             self.request.errors.status = 403
             return
         complaint_data = self.request.validated['data']
@@ -62,12 +62,12 @@ class TenderAwardComplaintResource(object):
         """
         tender = self.request.validated['tender']
         if tender.status not in ['active.qualification', 'active.awarded']:
-            self.request.errors.add('body', 'data', 'Can\'t update complaint in current tender status')
+            self.request.errors.add('body', 'data', 'Can\'t update complaint in current ({}) tender status'.format(tender.status))
             self.request.errors.status = 403
             return
         complaint = self.request.validated['complaint']
         if complaint.status != 'pending':
-            self.request.errors.add('body', 'data', 'Can\'t update complaint in current status')
+            self.request.errors.add('body', 'data', 'Can\'t update complaint in current ({}) status'.format(complaint.status))
             self.request.errors.status = 403
             return
         complaint_data = self.request.validated['data']

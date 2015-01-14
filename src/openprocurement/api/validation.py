@@ -68,7 +68,7 @@ def validate_tender_auction_data(request):
         return
     if data is not None:
         if tender.status != 'active.auction':
-            request.errors.add('body', 'data', 'Can\'t report auction results in current tender status')
+            request.errors.add('body', 'data', 'Can\'t report auction results in current ({}) tender status'.format(tender.status))
             request.errors.status = 403
             return
         bids = data.get('bids', [])

@@ -69,12 +69,11 @@ def get_auction(request):
         }
 
     """
-    tender = request.validated['tender']
-    if tender.status != 'active.auction':
-        request.errors.add('body', 'data', 'Can\'t get auction info in current tender status')
+    if request.validated['tender_status'] != 'active.auction':
+        request.errors.add('body', 'data', 'Can\'t get auction info in current ({}) tender status'.format(request.validated['tender_status']))
         request.errors.status = 403
         return
-    return {'data': tender.serialize("auction_view")}
+    return {'data': request.validated['tender'].serialize("auction_view")}
 
 
 @auction.patch(content_type="application/json", permission='auction', validators=(validate_tender_auction_data), renderer='json')

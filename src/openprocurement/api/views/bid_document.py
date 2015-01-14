@@ -31,7 +31,7 @@ class TenderBidDocumentResource(object):
     def collection_get(self):
         """Tender Bid Documents List"""
         if self.request.validated['tender_status'] in ['active.tendering', 'active.auction'] and self.request.authenticated_role != 'bid_owner':
-            self.request.errors.add('body', 'data', 'Can\'t view bid documents in current tender status')
+            self.request.errors.add('body', 'data', 'Can\'t view bid documents in current ({}) tender status'.format(self.request.validated['tender_status']))
             self.request.errors.status = 403
             return
         bid = self.request.validated['bid']
@@ -48,9 +48,8 @@ class TenderBidDocumentResource(object):
     def collection_post(self):
         """Tender Bid Document Upload
         """
-        tender = self.request.validated['tender']
-        if tender.status not in ['active.tendering', 'active.auction', 'active.qualification']:
-            self.request.errors.add('body', 'data', 'Can\'t add document in current tender status')
+        if self.request.validated['tender_status'] not in ['active.tendering', 'active.auction', 'active.qualification']:
+            self.request.errors.add('body', 'data', 'Can\'t add document in current ({}) tender status'.format(self.request.validated['tender_status']))
             self.request.errors.status = 403
             return
         document = upload_file(self.request)
@@ -66,7 +65,7 @@ class TenderBidDocumentResource(object):
     def get(self):
         """Tender Bid Document Read"""
         if self.request.validated['tender_status'] in ['active.tendering', 'active.auction'] and self.request.authenticated_role != 'bid_owner':
-            self.request.errors.add('body', 'data', 'Can\'t view bid document in current tender status')
+            self.request.errors.add('body', 'data', 'Can\'t view bid document in current ({}) tender status'.format(self.request.validated['tender_status']))
             self.request.errors.status = 403
             return
         if self.request.params.get('download'):
@@ -83,9 +82,8 @@ class TenderBidDocumentResource(object):
     @view(renderer='json', validators=(validate_file_update,), permission='edit_bid')
     def put(self):
         """Tender Bid Document Update"""
-        tender = self.request.validated['tender']
-        if tender.status not in ['active.tendering', 'active.auction', 'active.qualification']:
-            self.request.errors.add('body', 'data', 'Can\'t update document in current tender status')
+        if self.request.validated['tender_status'] not in ['active.tendering', 'active.auction', 'active.qualification']:
+            self.request.errors.add('body', 'data', 'Can\'t update document in current ({}) tender status'.format(self.request.validated['tender_status']))
             self.request.errors.status = 403
             return
         document = upload_file(self.request)
@@ -98,7 +96,7 @@ class TenderBidDocumentResource(object):
     def patch(self):
         """Tender Bid Document Update"""
         if self.request.validated['tender_status'] not in ['active.tendering', 'active.auction', 'active.qualification']:
-            self.request.errors.add('body', 'data', 'Can\'t update document in current tender status')
+            self.request.errors.add('body', 'data', 'Can\'t update document in current ({}) tender status'.format(self.request.validated['tender_status']))
             self.request.errors.status = 403
             return
         apply_patch(self.request, src=self.request.context.serialize())

@@ -135,7 +135,7 @@ class TenderComplaintResourceTest(BaseTenderWebTest):
             self.tender_id), {'data': {'title': 'complaint title', 'description': 'complaint description', 'author': test_tender_data["procuringEntity"]}}, status=403)
         self.assertEqual(response.status, '403 Forbidden')
         self.assertEqual(response.content_type, 'application/json')
-        self.assertEqual(response.json['errors'][0]["description"], "Can't add complaint in current tender status")
+        self.assertEqual(response.json['errors'][0]["description"], "Can't add complaint in current (unsuccessful) tender status")
 
     def test_patch_tender_complaint(self):
         response = self.app.post_json('/tenders/{}/complaints'.format(
@@ -153,7 +153,7 @@ class TenderComplaintResourceTest(BaseTenderWebTest):
         response = self.app.patch_json('/tenders/{}/complaints/{}'.format(self.tender_id, complaint['id']), {"data": {"status": "pending"}}, status=403)
         self.assertEqual(response.status, '403 Forbidden')
         self.assertEqual(response.content_type, 'application/json')
-        self.assertEqual(response.json['errors'][0]["description"], "Can't update complaint in current status")
+        self.assertEqual(response.json['errors'][0]["description"], "Can't update complaint in current (resolved) status")
 
         response = self.app.patch_json('/tenders/{}/complaints/some_id'.format(self.tender_id), {"data": {"status": "resolved", "resolution": "resolution text"}}, status=404)
         self.assertEqual(response.status, '404 Not Found')
@@ -184,7 +184,7 @@ class TenderComplaintResourceTest(BaseTenderWebTest):
         response = self.app.patch_json('/tenders/{}/complaints/{}'.format(self.tender_id, complaint['id']), {"data": {"status": "resolved", "resolution": "resolution text"}}, status=403)
         self.assertEqual(response.status, '403 Forbidden')
         self.assertEqual(response.content_type, 'application/json')
-        self.assertEqual(response.json['errors'][0]["description"], "Can't update complaint in current tender status")
+        self.assertEqual(response.json['errors'][0]["description"], "Can't update complaint in current (complete) tender status")
 
     def test_get_tender_complaint(self):
         response = self.app.post_json('/tenders/{}/complaints'.format(
@@ -403,7 +403,7 @@ class TenderComplaintDocumentResourceTest(BaseTenderWebTest):
             self.tender_id, self.complaint_id), upload_files=[('file', 'name.doc', 'content')], status=403)
         self.assertEqual(response.status, '403 Forbidden')
         self.assertEqual(response.content_type, 'application/json')
-        self.assertEqual(response.json['errors'][0]["description"], "Can't add document in current tender status")
+        self.assertEqual(response.json['errors'][0]["description"], "Can't add document in current (complete) tender status")
 
     def test_put_tender_complaint_document(self):
         response = self.app.post('/tenders/{}/complaints/{}/documents'.format(
@@ -465,7 +465,7 @@ class TenderComplaintDocumentResourceTest(BaseTenderWebTest):
             self.tender_id, self.complaint_id, doc_id), upload_files=[('file', 'name.doc', 'content3')], status=403)
         self.assertEqual(response.status, '403 Forbidden')
         self.assertEqual(response.content_type, 'application/json')
-        self.assertEqual(response.json['errors'][0]["description"], "Can't update document in current tender status")
+        self.assertEqual(response.json['errors'][0]["description"], "Can't update document in current (complete) tender status")
 
     def test_patch_tender_complaint_document(self):
         response = self.app.post('/tenders/{}/complaints/{}/documents'.format(
@@ -492,7 +492,7 @@ class TenderComplaintDocumentResourceTest(BaseTenderWebTest):
         response = self.app.patch_json('/tenders/{}/complaints/{}/documents/{}'.format(self.tender_id, self.complaint_id, doc_id), {"data": {"description": "document description"}}, status=403)
         self.assertEqual(response.status, '403 Forbidden')
         self.assertEqual(response.content_type, 'application/json')
-        self.assertEqual(response.json['errors'][0]["description"], "Can't update document in current tender status")
+        self.assertEqual(response.json['errors'][0]["description"], "Can't update document in current (complete) tender status")
 
 
 def suite():

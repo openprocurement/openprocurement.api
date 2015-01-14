@@ -43,13 +43,12 @@ class TenderDocumentResource(object):
     @view(renderer='json', permission='edit_tender', validators=(validate_file_upload,))
     def collection_post(self):
         """Tender Document Upload"""
-        tender = self.request.validated['tender']
-        if tender.status != 'active.enquiries':
-            self.request.errors.add('body', 'data', 'Can\'t add document in current tender status')
+        if self.request.validated['tender_status'] != 'active.enquiries':
+            self.request.errors.add('body', 'data', 'Can\'t add document in current ({}) tender status'.format(self.request.validated['tender_status']))
             self.request.errors.status = 403
             return
         document = upload_file(self.request)
-        tender.documents.append(document)
+        self.request.validated['tender'].documents.append(document)
         save_tender(self.request)
         LOGGER.info('Created tender document {}'.format(document.id), extra={'MESSAGE_ID': 'tender_document_create'})
         self.request.response.status = 201
@@ -74,13 +73,12 @@ class TenderDocumentResource(object):
     @view(renderer='json', permission='edit_tender', validators=(validate_file_update,))
     def put(self):
         """Tender Document Update"""
-        tender = self.request.validated['tender']
-        if tender.status != 'active.enquiries':
-            self.request.errors.add('body', 'data', 'Can\'t update document in current tender status')
+        if self.request.validated['tender_status'] != 'active.enquiries':
+            self.request.errors.add('body', 'data', 'Can\'t update document in current ({}) tender status'.format(self.request.validated['tender_status']))
             self.request.errors.status = 403
             return
         document = upload_file(self.request)
-        tender.documents.append(document)
+        self.request.validated['tender'].documents.append(document)
         save_tender(self.request)
         LOGGER.info('Updated tender document {}'.format(self.request.context.id), extra={'MESSAGE_ID': 'tender_document_put'})
         return {'data': document.serialize("view")}
@@ -89,7 +87,7 @@ class TenderDocumentResource(object):
     def patch(self):
         """Tender Document Update"""
         if self.request.validated['tender_status'] != 'active.enquiries':
-            self.request.errors.add('body', 'data', 'Can\'t update document in current tender status')
+            self.request.errors.add('body', 'data', 'Can\'t update document in current ({}) tender status'.format(self.request.validated['tender_status']))
             self.request.errors.status = 403
             return
         apply_patch(self.request, src=self.request.context.serialize())

@@ -44,9 +44,8 @@ class TenderAwardContractDocumentResource(object):
     def collection_post(self):
         """Tender Award Contract Document Upload
         """
-        tender = self.request.validated['tender']
-        if tender.status not in ['active.awarded', 'complete']:
-            self.request.errors.add('body', 'data', 'Can\'t add document in current tender status')
+        if self.request.validated['tender_status'] not in ['active.awarded', 'complete']:
+            self.request.errors.add('body', 'data', 'Can\'t add document in current ({}) tender status'.format(self.request.validated['tender_status']))
             self.request.errors.status = 403
             return
         contract = self.request.validated['contract']
@@ -80,9 +79,8 @@ class TenderAwardContractDocumentResource(object):
     @view(renderer='json', validators=(validate_file_update,), permission='edit_tender')
     def put(self):
         """Tender Award Contract Document Update"""
-        tender = self.request.validated['tender']
-        if tender.status not in ['active.awarded', 'complete']:
-            self.request.errors.add('body', 'data', 'Can\'t update document in current tender status')
+        if self.request.validated['tender_status'] not in ['active.awarded', 'complete']:
+            self.request.errors.add('body', 'data', 'Can\'t update document in current ({}) tender status'.format(self.request.validated['tender_status']))
             self.request.errors.status = 403
             return
         contract = self.request.validated['contract']
@@ -100,7 +98,7 @@ class TenderAwardContractDocumentResource(object):
     def patch(self):
         """Tender Award Contract Document Update"""
         if self.request.validated['tender_status'] not in ['active.awarded', 'complete']:
-            self.request.errors.add('body', 'data', 'Can\'t update document in current tender status')
+            self.request.errors.add('body', 'data', 'Can\'t update document in current ({}) tender status'.format(self.request.validated['tender_status']))
             self.request.errors.status = 403
             return
         if self.request.validated['contract'].status not in ['pending', 'active']:

@@ -138,7 +138,7 @@ class TenderDocumentResourceTest(BaseTenderWebTest):
             self.tender_id), upload_files=[('file', 'name.doc', 'content')], status=403)
         self.assertEqual(response.status, '403 Forbidden')
         self.assertEqual(response.content_type, 'application/json')
-        self.assertEqual(response.json['errors'][0]["description"], "Can't add document in current tender status")
+        self.assertEqual(response.json['errors'][0]["description"], "Can't add document in current (active.tendering) tender status")
 
     def test_put_tender_document(self):
         response = self.app.post('/tenders/{}/documents'.format(
@@ -236,7 +236,7 @@ class TenderDocumentResourceTest(BaseTenderWebTest):
             self.tender_id, doc_id), upload_files=[('file', 'name.doc', 'content3')], status=403)
         self.assertEqual(response.status, '403 Forbidden')
         self.assertEqual(response.content_type, 'application/json')
-        self.assertEqual(response.json['errors'][0]["description"], "Can't update document in current tender status")
+        self.assertEqual(response.json['errors'][0]["description"], "Can't update document in current (active.tendering) tender status")
 
     def test_patch_tender_document(self):
         response = self.app.post('/tenders/{}/documents'.format(
@@ -264,7 +264,7 @@ class TenderDocumentResourceTest(BaseTenderWebTest):
         response = self.app.patch_json('/tenders/{}/documents/{}'.format(self.tender_id, doc_id), {"data": {"description": "document description"}}, status=403)
         self.assertEqual(response.status, '403 Forbidden')
         self.assertEqual(response.content_type, 'application/json')
-        self.assertEqual(response.json['errors'][0]["description"], "Can't update document in current tender status")
+        self.assertEqual(response.json['errors'][0]["description"], "Can't update document in current (active.tendering) tender status")
 
 
 import boto

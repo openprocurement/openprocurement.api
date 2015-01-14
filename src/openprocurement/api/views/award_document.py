@@ -44,9 +44,8 @@ class TenderAwardDocumentResource(object):
     def collection_post(self):
         """Tender Award Document Upload
         """
-        tender = self.request.validated['tender']
-        if tender.status != 'active.qualification':
-            self.request.errors.add('body', 'data', 'Can\'t add document in current tender status')
+        if self.request.validated['tender_status'] != 'active.qualification':
+            self.request.errors.add('body', 'data', 'Can\'t add document in current ({}) tender status'.format(self.request.validated['tender_status']))
             self.request.errors.status = 403
             return
         document = upload_file(self.request)
@@ -75,9 +74,8 @@ class TenderAwardDocumentResource(object):
     @view(renderer='json', validators=(validate_file_update,), permission='edit_tender')
     def put(self):
         """Tender Award Document Update"""
-        tender = self.request.validated['tender']
-        if tender.status != 'active.qualification':
-            self.request.errors.add('body', 'data', 'Can\'t update document in current tender status')
+        if self.request.validated['tender_status'] != 'active.qualification':
+            self.request.errors.add('body', 'data', 'Can\'t update document in current ({}) tender status'.format(self.request.validated['tender_status']))
             self.request.errors.status = 403
             return
         document = upload_file(self.request)
@@ -90,7 +88,7 @@ class TenderAwardDocumentResource(object):
     def patch(self):
         """Tender Award Document Update"""
         if self.request.validated['tender_status'] != 'active.qualification':
-            self.request.errors.add('body', 'data', 'Can\'t update document in current tender status')
+            self.request.errors.add('body', 'data', 'Can\'t update document in current ({}) tender status'.format(self.request.validated['tender_status']))
             self.request.errors.status = 403
             return
         apply_patch(self.request, src=self.request.context.serialize())

@@ -109,8 +109,8 @@ class TenderBidResource(object):
         # See https://github.com/open-contracting/standard/issues/78#issuecomment-59830415
         # for more info upon schema
         tender = self.request.validated['tender']
-        if tender.status != 'active.tendering':
-            self.request.errors.add('body', 'data', 'Can\'t add bid in current tender status')
+        if self.request.validated['tender_status'] != 'active.tendering':
+            self.request.errors.add('body', 'data', 'Can\'t add bid in current ({}) tender status'.format(self.request.validated['tender_status']))
             self.request.errors.status = 403
             return
         bid_data = self.request.validated['data']
@@ -165,10 +165,10 @@ class TenderBidResource(object):
         """
         tender = self.request.validated['tender']
         if self.request.validated['tender_status'] in ['active.tendering', 'active.auction']:
-            self.request.errors.add('body', 'data', 'Can\'t view bids in current tender status')
+            self.request.errors.add('body', 'data', 'Can\'t view bids in current ({}) tender status'.format(self.request.validated['tender_status']))
             self.request.errors.status = 403
             return
-        return {'data': [i.serialize(tender.status) for i in tender.bids]}
+        return {'data': [i.serialize(self.request.validated['tender_status']) for i in tender.bids]}
 
     @view(renderer='json', permission='view_tender')
     def get(self):
@@ -203,7 +203,7 @@ class TenderBidResource(object):
         if self.request.authenticated_role == 'bid_owner':
             return {'data': self.request.context.serialize('view')}
         if self.request.validated['tender_status'] in ['active.tendering', 'active.auction']:
-            self.request.errors.add('body', 'data', 'Can\'t view bid in current tender status')
+            self.request.errors.add('body', 'data', 'Can\'t view bid in current ({}) tender status'.format(self.request.validated['tender_status']))
             self.request.errors.status = 403
             return
         return {'data': self.request.context.serialize(self.request.validated['tender_status'])}
@@ -247,7 +247,7 @@ class TenderBidResource(object):
 
         """
         if self.request.validated['tender_status'] != 'active.tendering':
-            self.request.errors.add('body', 'data', 'Can\'t update bid in current tender status')
+            self.request.errors.add('body', 'data', 'Can\'t update bid in current ({}) tender status'.format(self.request.validated['tender_status']))
             self.request.errors.status = 403
             return
         apply_patch(self.request, src=self.request.context.serialize())
@@ -284,14 +284,13 @@ class TenderBidResource(object):
             }
 
         """
-        tender = self.request.validated['tender']
         bid = self.request.context
-        if tender.status != 'active.tendering':
-            self.request.errors.add('body', 'data', 'Can\'t delete bid in current tender status')
+        if self.request.validated['tender_status'] != 'active.tendering':
+            self.request.errors.add('body', 'data', 'Can\'t delete bid in current ({}) tender status'.format(self.request.validated['tender_status']))
             self.request.errors.status = 403
             return
         res = bid.serialize("view")
-        tender.bids.remove(bid)
+        self.request.validated['tender'].bids.remove(bid)
         save_tender(self.request)
         LOGGER.info('Deleted tender bid {}'.format(self.request.context.id), extra={'MESSAGE_ID': 'tender_bid_delete'})
         return {'data': res}

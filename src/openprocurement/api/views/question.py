@@ -61,7 +61,7 @@ class TenderQuestionResource(object):
         """
         tender = self.request.validated['tender']
         if tender.status != 'active.enquiries':
-            self.request.errors.add('body', 'data', 'Can\'t update question in current tender status')
+            self.request.errors.add('body', 'data', 'Can\'t update question in current ({}) tender status'.format(tender.status))
             self.request.errors.status = 403
             return
         apply_patch(self.request, src=self.request.context.serialize())
