@@ -5,6 +5,7 @@ from openprocurement.api.models import Question, get_now
 from openprocurement.api.utils import (
     apply_patch,
     save_tender,
+    error_handler,
 )
 from openprocurement.api.validation import (
     validate_question_data,
@@ -18,7 +19,8 @@ LOGGER = getLogger(__name__)
 @resource(name='Tender Questions',
           collection_path='/tenders/{tender_id}/questions',
           path='/tenders/{tender_id}/questions/{question_id}',
-          description="Tender questions")
+          description="Tender questions",
+          error_handler=error_handler)
 class TenderQuestionResource(object):
 
     def __init__(self, request):

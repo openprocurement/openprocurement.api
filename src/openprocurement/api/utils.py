@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+from logging import getLogger
 from base64 import b64encode
 from jsonpatch import make_patch, apply_patch as _apply_patch
 from openprocurement.api.models import Document, Revision, Award, get_now
@@ -7,6 +8,8 @@ from uuid import uuid4
 from schematics.exceptions import ModelValidationError
 from couchdb.http import ResourceConflict
 from time import sleep
+from cornice.util import json_error
+from json import dumps
 
 
 def generate_id():
@@ -184,3 +187,11 @@ def add_next_award(request):
     else:
         tender.awardPeriod.endDate = get_now()
         tender.status = 'active.awarded'
+
+
+def error_handler(errors):
+    LOGGER = getLogger('openprocurement.api')
+    LOGGER.info('Error on processing request "{}"'.format(dumps(errors, indent=4)), extra={'MESSAGE_ID': 'error_handler'})
+    for i in LOGGER.handlers:
+        LOGGER.removeHandler(i)
+    return json_error(errors)

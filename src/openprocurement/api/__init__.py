@@ -33,6 +33,15 @@ def set_journal_handler(event):
         'TAGS': 'python,api',
         'USER_ID': str(event.request.authenticated_userid or ''),
         'ROLE': str(event.request.authenticated_role),
+        'CURRENT_ROUTE_URL': event.request.current_route_url(),
+        'CURRENT_ROUTE_PATH': event.request.current_route_path(),
+        'AWARD_ID': '',
+        'BID_ID': '',
+        'COMPLAINT_ID': '',
+        'CONTRACT_ID': '',
+        'DOCUMENT_ID': '',
+        'QUESTION_ID': '',
+        'TENDER_ID': '',
     }
     if event.request.params:
         params['PARAMS'] = str(dict(event.request.params))

@@ -5,6 +5,7 @@ from openprocurement.api.utils import (
     save_tender,
     apply_patch,
     add_next_award,
+    error_handler,
 )
 from openprocurement.api.validation import (
     validate_tender_auction_data,
@@ -14,7 +15,10 @@ from openprocurement.api.validation import (
 LOGGER = getLogger(__name__)
 
 
-auction = Service(name='Tender Auction', path='/tenders/{tender_id}/auction', renderer='json')
+auction = Service(name='Tender Auction',
+                  path='/tenders/{tender_id}/auction',
+                  renderer='json',
+                  error_handler=error_handler)
 
 
 @auction.get(renderer='json', permission='auction')

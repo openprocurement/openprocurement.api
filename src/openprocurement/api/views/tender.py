@@ -12,6 +12,7 @@ from openprocurement.api.utils import (
     tender_serialize,
     apply_patch,
     add_next_award,
+    error_handler,
 )
 from openprocurement.api.validation import (
     validate_patch_tender_data,
@@ -25,7 +26,8 @@ LOGGER = getLogger(__name__)
 @resource(name='Tender',
           collection_path='/tenders',
           path='/tenders/{tender_id}',
-          description="Open Contracting compatible data exchange format. See http://ocds.open-contracting.org/standard/r/master/#tender for more info")
+          description="Open Contracting compatible data exchange format. See http://ocds.open-contracting.org/standard/r/master/#tender for more info",
+          error_handler=error_handler)
 class TenderResource(object):
 
     def __init__(self, request):

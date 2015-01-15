@@ -6,6 +6,7 @@ from openprocurement.api.utils import (
     save_tender,
     set_ownership,
     apply_patch,
+    error_handler,
 )
 from openprocurement.api.validation import (
     validate_bid_data,
@@ -19,7 +20,8 @@ LOGGER = getLogger(__name__)
 @resource(name='Tender Bids',
           collection_path='/tenders/{tender_id}/bids',
           path='/tenders/{tender_id}/bids/{bid_id}',
-          description="Tender bids")
+          description="Tender bids",
+          error_handler=error_handler)
 class TenderBidResource(object):
 
     def __init__(self, request):

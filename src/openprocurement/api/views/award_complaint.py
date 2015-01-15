@@ -6,6 +6,7 @@ from openprocurement.api.utils import (
     apply_data_patch,
     save_tender,
     add_next_award,
+    error_handler,
 )
 from openprocurement.api.validation import (
     validate_complaint_data,
@@ -19,7 +20,8 @@ LOGGER = getLogger(__name__)
 @resource(name='Tender Award Complaints',
           collection_path='/tenders/{tender_id}/awards/{award_id}/complaints',
           path='/tenders/{tender_id}/awards/{award_id}/complaints/{complaint_id}',
-          description="Tender award complaints")
+          description="Tender award complaints",
+          error_handler=error_handler)
 class TenderAwardComplaintResource(object):
 
     def __init__(self, request):

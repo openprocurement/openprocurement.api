@@ -5,6 +5,7 @@ from openprocurement.api.models import Complaint, STAND_STILL_TIME, get_now
 from openprocurement.api.utils import (
     apply_patch,
     save_tender,
+    error_handler,
 )
 from openprocurement.api.validation import (
     validate_complaint_data,
@@ -18,7 +19,8 @@ LOGGER = getLogger(__name__)
 @resource(name='Tender Complaints',
           collection_path='/tenders/{tender_id}/complaints',
           path='/tenders/{tender_id}/complaints/{complaint_id}',
-          description="Tender complaints")
+          description="Tender complaints",
+          error_handler=error_handler)
 class TenderComplaintResource(object):
 
     def __init__(self, request):

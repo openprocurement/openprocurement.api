@@ -6,6 +6,7 @@ from openprocurement.api.utils import (
     save_tender,
     upload_file,
     apply_patch,
+    error_handler,
 )
 from openprocurement.api.validation import (
     validate_file_update,
@@ -20,7 +21,8 @@ LOGGER = getLogger(__name__)
 @resource(name='Tender Award Complaint Documents',
           collection_path='/tenders/{tender_id}/awards/{award_id}/complaints/{complaint_id}/documents',
           path='/tenders/{tender_id}/awards/{award_id}/complaints/{complaint_id}/documents/{document_id}',
-          description="Tender award complaint documents")
+          description="Tender award complaint documents",
+          error_handler=error_handler)
 class TenderAwardComplaintDocumentResource(object):
 
     def __init__(self, request):

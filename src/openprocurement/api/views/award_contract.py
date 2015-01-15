@@ -5,6 +5,7 @@ from openprocurement.api.models import Contract
 from openprocurement.api.utils import (
     apply_patch,
     save_tender,
+    error_handler,
 )
 from openprocurement.api.validation import (
     validate_contract_data,
@@ -18,7 +19,8 @@ LOGGER = getLogger(__name__)
 @resource(name='Tender Award Contracts',
           collection_path='/tenders/{tender_id}/awards/{award_id}/contracts',
           path='/tenders/{tender_id}/awards/{award_id}/contracts/{contract_id}',
-          description="Tender award contracts")
+          description="Tender award contracts",
+          error_handler=error_handler)
 class TenderAwardContractResource(object):
 
     def __init__(self, request):
