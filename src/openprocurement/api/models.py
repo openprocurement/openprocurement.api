@@ -405,8 +405,8 @@ class Award(Model):
 
 
 plain_role = (blacklist('_attachments', 'revisions', 'dateModified') + schematics_embedded_role)
-create_role = (blacklist('owner_token', 'owner', '_attachments', 'revisions', 'dateModified', 'doc_id', 'tenderID', 'bids', 'documents', 'awards', 'questions', 'complaints', 'auctionUrl', 'status', 'auctionPeriod', 'awardPeriod') + schematics_embedded_role)
-edit_role = (blacklist('owner_token', 'owner', '_attachments', 'revisions', 'dateModified', 'doc_id', 'tenderID', 'bids', 'documents', 'awards', 'questions', 'complaints', 'auctionUrl', 'auctionPeriod', 'awardPeriod') + schematics_embedded_role)
+create_role = (blacklist('owner_token', 'owner', '_attachments', 'revisions', 'dateModified', 'doc_id', 'tenderID', 'bids', 'documents', 'awards', 'questions', 'complaints', 'auctionUrl', 'status', 'auctionPeriod', 'awardPeriod', 'procurementMethod', 'awardCriteria', 'submissionMethod') + schematics_embedded_role)
+edit_role = (blacklist('owner_token', 'owner', '_attachments', 'revisions', 'dateModified', 'doc_id', 'tenderID', 'bids', 'documents', 'awards', 'questions', 'complaints', 'auctionUrl', 'auctionPeriod', 'awardPeriod', 'procurementMethod', 'awardCriteria', 'submissionMethod') + schematics_embedded_role)
 cancel_role = whitelist('status')
 view_role = (blacklist('owner', 'owner_token', '_attachments', 'revisions') + schematics_embedded_role)
 listing_role = whitelist('dateModified', 'doc_id')
@@ -461,15 +461,15 @@ class Tender(SchematicsDocument, Model):
     tenderID = StringType()  # TenderID should always be the same as the OCID. It is included to make the flattened data structure more convenient.
     items = ListType(ModelType(Item), required=True, min_size=1)  # The goods and services to be purchased, broken into line items wherever possible. Items should not be duplicated, but a quantity of 2 specified instead.
     value = ModelType(Value, required=True)  # The total estimated value of the procurement.
-    procurementMethod = StringType(choices=['Open', 'Selective', 'Limited'])  # Specify tendering method as per GPA definitions of Open, Selective, Limited (http://www.wto.org/english/docs_e/legal_e/rev-gpr-94_01_e.htm)
+    procurementMethod = StringType(choices=['Open', 'Selective', 'Limited'], default='Open')  # Specify tendering method as per GPA definitions of Open, Selective, Limited (http://www.wto.org/english/docs_e/legal_e/rev-gpr-94_01_e.htm)
     procurementMethodRationale = StringType()  # Justification of procurement method, especially in the case of Limited tendering.
     procurementMethodRationale_en = StringType()
     procurementMethodRationale_ru = StringType()
-    awardCriteria = StringType(choices=['Lowest Cost', 'Best Proposal', 'Best Value to Government', 'Single bid only'])  # Specify the selection criteria, by lowest cost,
+    awardCriteria = StringType(choices=['Lowest Cost', 'Best Proposal', 'Best Value to Government', 'Single bid only'], default='Lowest Cost')  # Specify the selection criteria, by lowest cost,
     awardCriteriaDetails = StringType()  # Any detailed or further information on the selection criteria.
     awardCriteriaDetails_en = StringType()
     awardCriteriaDetails_ru = StringType()
-    submissionMethod = StringType(choices=['Electronic Auction', 'Electronic Submission', 'Written', 'In Person'])  # Specify the method by which bids must be submitted, in person, written, or electronic auction
+    submissionMethod = StringType(choices=['Electronic Auction', 'Electronic Submission', 'Written', 'In Person'], default='Electronic Auction')  # Specify the method by which bids must be submitted, in person, written, or electronic auction
     submissionMethodDetails = StringType()  # Any detailed or further information on the submission method.
     submissionMethodDetails_en = StringType()
     submissionMethodDetails_ru = StringType()
