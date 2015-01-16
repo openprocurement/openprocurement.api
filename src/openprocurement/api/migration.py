@@ -5,7 +5,7 @@ from openprocurement.api.models import CPV_CODES, get_now
 
 
 LOGGER = logging.getLogger(__name__)
-SCHEMA_VERSION = 12
+SCHEMA_VERSION = 13
 SCHEMA_DOC = 'openprocurement_schema'
 
 
@@ -459,3 +459,14 @@ def from11to12(db):
         if changed:
             doc['dateModified'] = get_now().isoformat()
             db.save(doc)
+
+
+def from12to13(db):
+    results = db.view('tenders/all', include_docs=True)
+    for i in results:
+        doc = i.doc
+        doc['procurementMethod'] = 'open'
+        doc['awardCriteria'] = 'lowestCost'
+        doc['submissionMethod'] = 'electronicAuction'
+        doc['dateModified'] = get_now().isoformat()
+        db.save(doc)

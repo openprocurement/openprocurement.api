@@ -470,6 +470,22 @@ class MigrateTest(BaseWebTest):
         self.app.authorization = ('Basic', ('broker05', ''))
         self.app.post_json('/tenders', {'data': test_tender_data}, status=403)
 
+    def test_migrate_from12to13(self):
+        set_db_schema_version(self.db, 12)
+        data = {
+            'doc_type': 'Tender',
+            'procurementMethod': 'Open',
+            'awardCriteria': 'Lowest Cost',
+            'submissionMethod': 'Electronic Auction',
+        }
+        _id, _rev = self.db.save(data)
+        item = self.db.get(_id)
+        migrate_data(self.db, 13)
+        migrated_item = self.db.get(_id)
+        self.assertEqual('open', migrated_item['procurementMethod'])
+        self.assertEqual('lowestCost', migrated_item['awardCriteria'])
+        self.assertEqual('electronicAuction', migrated_item['submissionMethod'])
+
 
 def suite():
     suite = unittest.TestSuite()
