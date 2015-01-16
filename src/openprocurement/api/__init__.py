@@ -33,8 +33,10 @@ def set_journal_handler(event):
         'TAGS': 'python,api',
         'USER_ID': str(event.request.authenticated_userid or ''),
         'ROLE': str(event.request.authenticated_role),
-        'CURRENT_ROUTE_URL': event.request.current_route_url(),
-        'CURRENT_ROUTE_PATH': event.request.current_route_path(),
+        'CURRENT_URL': event.request.url,
+        'CURRENT_PATH': event.request.path_info,
+        'REMOTE_ADDR': event.request.remote_addr,
+        'USER_AGENT': event.request.user_agent,
         'AWARD_ID': '',
         'BID_ID': '',
         'COMPLAINT_ID': '',
@@ -48,6 +50,8 @@ def set_journal_handler(event):
     if event.request.matchdict:
         for i, j in event.request.matchdict.items():
             params[i.upper()] = j
+    for i in LOGGER.handlers:
+        LOGGER.removeHandler(i)
     LOGGER.addHandler(JournalHandler(**params))
 
 
