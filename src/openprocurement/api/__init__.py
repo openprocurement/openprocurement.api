@@ -16,6 +16,7 @@ from openprocurement.api.design import sync_design
 from openprocurement.api.migration import migrate_data
 from boto.s3.connection import S3Connection, Location
 from openprocurement.api.traversal import factory
+from openprocurement.api.models import get_now
 
 try:
     from systemd.journal import JournalHandler
@@ -44,6 +45,7 @@ def set_journal_handler(event):
         'DOCUMENT_ID': '',
         'QUESTION_ID': '',
         'TENDER_ID': '',
+        'TIMESTAMP': get_now().isoformat(),
     }
     if event.request.params:
         params['PARAMS'] = str(dict(event.request.params))
@@ -120,7 +122,7 @@ def fix_url(item, app_url):
 def beforerender(event):
     for i in LOGGER.handlers:
         LOGGER.removeHandler(i)
-    if 'data' in event.rendering_val:
+    if event.rendering_val and 'data' in event.rendering_val:
         fix_url(event.rendering_val['data'], event['request'].application_url)
 
 

@@ -56,12 +56,12 @@ class TenderBidDocumentResource(object):
             return
         document = upload_file(self.request)
         self.request.validated['bid'].documents.append(document)
-        save_tender(self.request)
-        LOGGER.info('Created tender bid document {}'.format(document.id), extra={'MESSAGE_ID': 'tender_bid_document_create'})
-        self.request.response.status = 201
-        document_route = self.request.matched_route.name.replace("collection_", "")
-        self.request.response.headers['Location'] = self.request.current_route_url(_route_name=document_route, document_id=document.id, _query={})
-        return {'data': document.serialize("view")}
+        if save_tender(self.request):
+            LOGGER.info('Created tender bid document {}'.format(document.id), extra={'MESSAGE_ID': 'tender_bid_document_create'})
+            self.request.response.status = 201
+            document_route = self.request.matched_route.name.replace("collection_", "")
+            self.request.response.headers['Location'] = self.request.current_route_url(_route_name=document_route, document_id=document.id, _query={})
+            return {'data': document.serialize("view")}
 
     @view(renderer='json', permission='view_tender')
     def get(self):
@@ -90,9 +90,9 @@ class TenderBidDocumentResource(object):
             return
         document = upload_file(self.request)
         self.request.validated['bid'].documents.append(document)
-        save_tender(self.request)
-        LOGGER.info('Updated tender bid document {}'.format(self.request.context.id), extra={'MESSAGE_ID': 'tender_bid_document_put'})
-        return {'data': document.serialize("view")}
+        if save_tender(self.request):
+            LOGGER.info('Updated tender bid document {}'.format(self.request.context.id), extra={'MESSAGE_ID': 'tender_bid_document_put'})
+            return {'data': document.serialize("view")}
 
     @view(renderer='json', validators=(validate_patch_document_data,), permission='edit_bid')
     def patch(self):
@@ -101,6 +101,6 @@ class TenderBidDocumentResource(object):
             self.request.errors.add('body', 'data', 'Can\'t update document in current ({}) tender status'.format(self.request.validated['tender_status']))
             self.request.errors.status = 403
             return
-        apply_patch(self.request, src=self.request.context.serialize())
-        LOGGER.info('Updated tender bid document {}'.format(self.request.context.id), extra={'MESSAGE_ID': 'tender_bid_document_patch'})
-        return {'data': self.request.context.serialize("view")}
+        if apply_patch(self.request, src=self.request.context.serialize()):
+            LOGGER.info('Updated tender bid document {}'.format(self.request.context.id), extra={'MESSAGE_ID': 'tender_bid_document_patch'})
+            return {'data': self.request.context.serialize("view")}

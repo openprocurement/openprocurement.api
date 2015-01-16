@@ -3,7 +3,7 @@ from logging import getLogger
 from cornice.resource import resource, view
 from openprocurement.api.models import Award, Contract, get_now
 from openprocurement.api.utils import (
-    apply_data_patch,
+    apply_patch,
     save_tender,
     add_next_award,
     error_handler,
@@ -172,11 +172,11 @@ class TenderAwardResource(object):
         award_data = self.request.validated['data']
         award = Award(award_data)
         tender.awards.append(award)
-        save_tender(self.request)
-        LOGGER.info('Created tender award {}'.format(award.id), extra={'MESSAGE_ID': 'tender_award_create'})
-        self.request.response.status = 201
-        self.request.response.headers['Location'] = self.request.route_url('Tender Awards', tender_id=tender.id, award_id=award['id'])
-        return {'data': award.serialize("view")}
+        if save_tender(self.request):
+            LOGGER.info('Created tender award {}'.format(award.id), extra={'MESSAGE_ID': 'tender_award_create'})
+            self.request.response.status = 201
+            self.request.response.headers['Location'] = self.request.route_url('Tender Awards', tender_id=tender.id, award_id=award['id'])
+            return {'data': award.serialize("view")}
 
     @view(renderer='json', permission='view_tender')
     def get(self):
@@ -293,20 +293,18 @@ class TenderAwardResource(object):
             self.request.errors.add('body', 'data', 'Can\'t update award in current ({}) tender status'.format(tender.status))
             self.request.errors.status = 403
             return
-        award = self.request.validated['award']
+        award = self.request.context
         if award.status != 'pending':
             self.request.errors.add('body', 'data', 'Can\'t update award in current ({}) status'.format(award.status))
             self.request.errors.status = 403
             return
-        award_data = self.request.validated['data']
-        if award_data:
-            award.import_data(apply_data_patch(award.serialize(), award_data))
-            if award.status == 'active':
-                award.contracts.append(Contract({'awardID': award.id}))
-                tender.awardPeriod.endDate = get_now()
-                tender.status = 'active.awarded'
-            elif award.status == 'unsuccessful':
-                add_next_award(self.request)
-            save_tender(self.request)
+        apply_patch(self.request, save=False, src=self.request.context.serialize())
+        if award.status == 'active':
+            award.contracts.append(Contract({'awardID': award.id}))
+            tender.awardPeriod.endDate = get_now()
+            tender.status = 'active.awarded'
+        elif award.status == 'unsuccessful':
+            add_next_award(self.request)
+        if save_tender(self.request):
             LOGGER.info('Updated tender award {}'.format(self.request.context.id), extra={'MESSAGE_ID': 'tender_award_patch'})
-        return {'data': award.serialize("view")}
+            return {'data': award.serialize("view")}

@@ -119,16 +119,16 @@ class TenderBidResource(object):
         bid = Bid(bid_data)
         set_ownership(bid, self.request)
         tender.bids.append(bid)
-        save_tender(self.request)
-        LOGGER.info('Created tender bid {}'.format(bid.id), extra={'MESSAGE_ID': 'tender_bid_create'})
-        self.request.response.status = 201
-        self.request.response.headers['Location'] = self.request.route_url('Tender Bids', tender_id=tender.id, bid_id=bid['id'])
-        return {
-            'data': bid.serialize('view'),
-            'access': {
-                'token': bid.owner_token
+        if save_tender(self.request):
+            LOGGER.info('Created tender bid {}'.format(bid.id), extra={'MESSAGE_ID': 'tender_bid_create'})
+            self.request.response.status = 201
+            self.request.response.headers['Location'] = self.request.route_url('Tender Bids', tender_id=tender.id, bid_id=bid['id'])
+            return {
+                'data': bid.serialize('view'),
+                'access': {
+                    'token': bid.owner_token
+                }
             }
-        }
 
     @view(renderer='json', permission='view_tender')
     def collection_get(self):
@@ -252,9 +252,9 @@ class TenderBidResource(object):
             self.request.errors.add('body', 'data', 'Can\'t update bid in current ({}) tender status'.format(self.request.validated['tender_status']))
             self.request.errors.status = 403
             return
-        apply_patch(self.request, src=self.request.context.serialize())
-        LOGGER.info('Updated tender bid {}'.format(self.request.context.id), extra={'MESSAGE_ID': 'tender_bid_patch'})
-        return {'data': self.request.context.serialize("view")}
+        if apply_patch(self.request, src=self.request.context.serialize()):
+            LOGGER.info('Updated tender bid {}'.format(self.request.context.id), extra={'MESSAGE_ID': 'tender_bid_patch'})
+            return {'data': self.request.context.serialize("view")}
 
     @view(renderer='json', permission='edit_bid')
     def delete(self):
@@ -293,6 +293,6 @@ class TenderBidResource(object):
             return
         res = bid.serialize("view")
         self.request.validated['tender'].bids.remove(bid)
-        save_tender(self.request)
-        LOGGER.info('Deleted tender bid {}'.format(self.request.context.id), extra={'MESSAGE_ID': 'tender_bid_delete'})
-        return {'data': res}
+        if save_tender(self.request):
+            LOGGER.info('Deleted tender bid {}'.format(self.request.context.id), extra={'MESSAGE_ID': 'tender_bid_delete'})
+            return {'data': res}

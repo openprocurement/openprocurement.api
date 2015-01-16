@@ -84,9 +84,9 @@ def get_auction(request):
 def patch_auction(request):
     """Set urls for access to auction.
     """
-    apply_patch(request, src=request.validated['tender_src'])
-    LOGGER.info('Updated auction urls', extra={'MESSAGE_ID': 'tender_auction_patch'})
-    return {'data': request.validated['tender'].serialize("auction_view")}
+    if apply_patch(request, src=request.validated['tender_src']):
+        LOGGER.info('Updated auction urls', extra={'MESSAGE_ID': 'tender_auction_patch'})
+        return {'data': request.validated['tender'].serialize("auction_view")}
 
 
 @auction.post(content_type="application/json", permission='auction', validators=(validate_tender_auction_data), renderer='json')
@@ -163,6 +163,6 @@ def post_auction(request):
     """
     apply_patch(request, save=False, src=request.validated['tender_src'])
     add_next_award(request)
-    save_tender(request)
-    LOGGER.info('Report auction results', extra={'MESSAGE_ID': 'tender_auction_post'})
-    return {'data': request.context.serialize(request.context.status)}
+    if save_tender(request):
+        LOGGER.info('Report auction results', extra={'MESSAGE_ID': 'tender_auction_post'})
+        return {'data': request.context.serialize(request.context.status)}

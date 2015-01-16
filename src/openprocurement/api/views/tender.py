@@ -267,17 +267,17 @@ class TenderResource(object):
         set_ownership(tender, self.request)
         self.request.validated['tender'] = tender
         self.request.validated['tender_src'] = {}
-        save_tender(self.request)
-        LOGGER.info('Created tender {}'.format(tender_id), extra={'MESSAGE_ID': 'tender_create'})
-        self.request.response.status = 201
-        self.request.response.headers[
-            'Location'] = self.request.route_url('Tender', tender_id=tender_id)
-        return {
-            'data': tender.serialize(tender.status),
-            'access': {
-                'token': tender.owner_token
+        if save_tender(self.request):
+            LOGGER.info('Created tender {}'.format(tender_id), extra={'MESSAGE_ID': 'tender_create'})
+            self.request.response.status = 201
+            self.request.response.headers[
+                'Location'] = self.request.route_url('Tender', tender_id=tender_id)
+            return {
+                'data': tender.serialize(tender.status),
+                'access': {
+                    'token': tender.owner_token
+                }
             }
-        }
 
     @view(renderer='json', permission='view_tender')
     def get(self):

@@ -158,6 +158,8 @@ def save_tender(request):
             request.errors.status = 422
         except Exception, e:
             request.errors.add('body', 'data', str(e))
+        finally:
+            return True
 
 
 def apply_patch(request, data=None, save=True, src=None):
@@ -166,7 +168,7 @@ def apply_patch(request, data=None, save=True, src=None):
     if patch:
         request.context.import_data(patch)
         if save:
-            save_tender(request)
+            return save_tender(request)
 
 
 def add_next_award(request):

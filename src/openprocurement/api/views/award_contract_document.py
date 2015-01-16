@@ -57,12 +57,12 @@ class TenderAwardContractDocumentResource(object):
             return
         document = upload_file(self.request)
         self.request.validated['contract'].documents.append(document)
-        save_tender(self.request)
-        LOGGER.info('Created tender award contract document {}'.format(document.id), extra={'MESSAGE_ID': 'tender_award_contract_document_create'})
-        self.request.response.status = 201
-        document_route = self.request.matched_route.name.replace("collection_", "")
-        self.request.response.headers['Location'] = self.request.current_route_url(_route_name=document_route, document_id=document.id, _query={})
-        return {'data': document.serialize("view")}
+        if save_tender(self.request):
+            LOGGER.info('Created tender award contract document {}'.format(document.id), extra={'MESSAGE_ID': 'tender_award_contract_document_create'})
+            self.request.response.status = 201
+            document_route = self.request.matched_route.name.replace("collection_", "")
+            self.request.response.headers['Location'] = self.request.current_route_url(_route_name=document_route, document_id=document.id, _query={})
+            return {'data': document.serialize("view")}
 
     @view(renderer='json', permission='view_tender')
     def get(self):
@@ -92,9 +92,9 @@ class TenderAwardContractDocumentResource(object):
             return
         document = upload_file(self.request)
         self.request.validated['contract'].documents.append(document)
-        save_tender(self.request)
-        LOGGER.info('Updated tender award contract document {}'.format(self.request.context.id), extra={'MESSAGE_ID': 'tender_award_contract_document_put'})
-        return {'data': document.serialize("view")}
+        if save_tender(self.request):
+            LOGGER.info('Updated tender award contract document {}'.format(self.request.context.id), extra={'MESSAGE_ID': 'tender_award_contract_document_put'})
+            return {'data': document.serialize("view")}
 
     @view(renderer='json', validators=(validate_patch_document_data,), permission='edit_tender')
     def patch(self):
@@ -107,6 +107,6 @@ class TenderAwardContractDocumentResource(object):
             self.request.errors.add('body', 'data', 'Can\'t update document in current contract status')
             self.request.errors.status = 403
             return
-        apply_patch(self.request, src=self.request.context.serialize())
-        LOGGER.info('Updated tender award contract document {}'.format(self.request.context.id), extra={'MESSAGE_ID': 'tender_award_contract_document_patch'})
-        return {'data': self.request.context.serialize("view")}
+        if apply_patch(self.request, src=self.request.context.serialize()):
+            LOGGER.info('Updated tender award contract document {}'.format(self.request.context.id), extra={'MESSAGE_ID': 'tender_award_contract_document_patch'})
+            return {'data': self.request.context.serialize("view")}
