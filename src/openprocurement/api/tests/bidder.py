@@ -413,6 +413,16 @@ class TenderBidderDocumentResourceTest(BaseTenderWebTest):
             {u'description': u'Not Found', u'location': u'url', u'name': u'document_id'}
         ])
 
+        self.app.authorization = ('Basic', ('invalid', ''))
+        response = self.app.put('/tenders/{}/bids/{}/documents/some_id'.format(
+            self.tender_id, self.bid_id), status=404, upload_files=[('file', 'name.doc', 'content2')])
+        self.assertEqual(response.status, '404 Not Found')
+        self.assertEqual(response.content_type, 'application/json')
+        self.assertEqual(response.json['status'], 'error')
+        self.assertEqual(response.json['errors'], [
+            {u'description': u'Not Found', u'location': u'url', u'name': u'document_id'}
+        ])
+
     def test_create_tender_bidder_document(self):
         response = self.app.post('/tenders/{}/bids/{}/documents'.format(
             self.tender_id, self.bid_id), upload_files=[('file', 'name.doc', 'content')])

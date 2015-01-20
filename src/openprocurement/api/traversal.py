@@ -7,6 +7,8 @@ from pyramid.security import (
     Deny,
     Everyone,
 )
+from pyramid.httpexceptions import HTTPNotFound
+from openprocurement.api.utils import error_handler
 
 
 class Root(object):
@@ -39,9 +41,10 @@ def get_item(parent, key, request, root):
     if not items:
         request.errors.add('url', '{}_id'.format(key), 'Not Found')
         request.errors.status = 404
-        return root
+        raise error_handler(request.errors)
     else:
-        request.validated['{}s'.format(key)] = items
+        if key == 'document':
+            request.validated['{}s'.format(key)] = items
         item = items[-1]
         request.validated[key] = item
         request.validated['id'] = request.matchdict['{}_id'.format(key)]
@@ -59,7 +62,7 @@ def factory(request):
     if not tender:
         request.errors.add('url', 'tender_id', 'Not Found')
         request.errors.status = 404
-        return root
+        raise error_handler(request.errors)
     tender.__parent__ = root
     request.validated['tender'] = tender
     request.validated['tender_status'] = tender.status
@@ -67,21 +70,15 @@ def factory(request):
         request.validated['tender_src'] = tender.serialize('plain')
     if request.matchdict.get('award_id'):
         award = get_item(tender, 'award', request, root)
-        if award == root:
-            return root
-        elif request.matchdict.get('complaint_id'):
+        if request.matchdict.get('complaint_id'):
             complaint = get_item(award, 'complaint', request, root)
-            if complaint == root:
-                return root
-            elif request.matchdict.get('document_id'):
+            if request.matchdict.get('document_id'):
                 return get_item(complaint, 'document', request, root)
             else:
                 return complaint
         elif request.matchdict.get('contract_id'):
             contract = get_item(award, 'contract', request, root)
-            if contract == root:
-                return root
-            elif request.matchdict.get('document_id'):
+            if request.matchdict.get('document_id'):
                 return get_item(contract, 'document', request, root)
             else:
                 return contract
@@ -91,17 +88,13 @@ def factory(request):
             return award
     elif request.matchdict.get('bid_id'):
         bid = get_item(tender, 'bid', request, root)
-        if bid == root:
-            return root
-        elif request.matchdict.get('document_id'):
+        if request.matchdict.get('document_id'):
             return get_item(bid, 'document', request, root)
         else:
             return bid
     elif request.matchdict.get('complaint_id'):
         complaint = get_item(tender, 'complaint', request, root)
-        if complaint == root:
-            return root
-        elif request.matchdict.get('document_id'):
+        if request.matchdict.get('document_id'):
             return get_item(complaint, 'document', request, root)
         else:
             return complaint
