@@ -31,14 +31,15 @@ ROUTE_PREFIX = '/api/{}'.format(VERSION)
 
 
 def set_journal_handler(event):
+    request = event.request
     params = {
         'TAGS': 'python,api',
-        'USER_ID': str(event.request.authenticated_userid or ''),
-        'ROLE': str(event.request.authenticated_role),
-        'CURRENT_URL': event.request.url,
-        'CURRENT_PATH': event.request.path_info,
-        'REMOTE_ADDR': event.request.remote_addr or '',
-        'USER_AGENT': event.request.user_agent or '',
+        'USER_ID': str(request.authenticated_userid or ''),
+        'ROLE': str(request.authenticated_role),
+        'CURRENT_URL': request.url,
+        'CURRENT_PATH': request.path_info,
+        'REMOTE_ADDR': request.remote_addr or '',
+        'USER_AGENT': request.user_agent or '',
         'AWARD_ID': '',
         'BID_ID': '',
         'COMPLAINT_ID': '',
@@ -48,14 +49,20 @@ def set_journal_handler(event):
         'TENDER_ID': '',
         'TIMESTAMP': get_now().isoformat(),
     }
-    if event.request.params:
-        params['PARAMS'] = str(dict(event.request.params))
-    if event.request.matchdict:
-        for i, j in event.request.matchdict.items():
+    if request.params:
+        params['PARAMS'] = str(dict(request.params))
+    if request.matchdict:
+        for i, j in request.matchdict.items():
             params[i.upper()] = j
     for i in LOGGER.handlers:
         LOGGER.removeHandler(i)
     LOGGER.addHandler(JournalHandler(**params))
+
+
+def update_journal_handler_role(event):
+    for i in LOGGER.handlers:
+        if isinstance(i, JournalHandler):
+            i._extra.update({'ROLE': str(event.request.authenticated_role)})
 
 
 def set_renderer(event):
@@ -93,10 +100,11 @@ def get_local_roles(context):
 
 def authenticated_role(request):
     principals = request.effective_principals
-    roles = get_local_roles(request.context)
-    local_roles = [roles[i] for i in reversed(principals) if i in roles]
-    if local_roles:
-        return local_roles[0]
+    if hasattr(request, 'context'):
+        roles = get_local_roles(request.context)
+        local_roles = [roles[i] for i in reversed(principals) if i in roles]
+        if local_roles:
+            return local_roles[0]
     groups = [g for g in reversed(principals) if g.startswith('g:')]
     return groups[0][2:] if groups else 'anonymous'
 
@@ -147,7 +155,8 @@ def main(global_config, **settings):
     config.add_renderer('jsonp', JSONP(param_name='opt_jsonp'))
     config.add_renderer('prettyjsonp', JSONP(indent=4, param_name='opt_jsonp'))
     if JournalHandler:
-        config.add_subscriber(set_journal_handler, ContextFound)
+        config.add_subscriber(set_journal_handler, NewRequest)
+        config.add_subscriber(update_journal_handler_role, ContextFound)
     config.add_subscriber(set_renderer, NewRequest)
     config.add_subscriber(beforerender, BeforeRender)
     config.include('pyramid_exclog')
