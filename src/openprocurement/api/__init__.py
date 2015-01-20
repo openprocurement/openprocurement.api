@@ -17,6 +17,7 @@ from openprocurement.api.migration import migrate_data
 from boto.s3.connection import S3Connection, Location
 from openprocurement.api.traversal import factory
 from openprocurement.api.models import get_now
+from openprocurement.api.utils import error_handler
 
 try:
     from systemd.journal import JournalHandler
@@ -126,6 +127,12 @@ def beforerender(event):
         fix_url(event.rendering_val['data'], event['request'].application_url)
 
 
+def forbidden(request):
+    request.errors.add('url', 'permission', 'Forbidden')
+    request.errors.status = 403
+    return error_handler(request.errors)
+
+
 def main(global_config, **settings):
     config = Configurator(
         settings=settings,
@@ -134,6 +141,7 @@ def main(global_config, **settings):
         authorization_policy=AuthorizationPolicy(),
         route_prefix=ROUTE_PREFIX,
     )
+    config.add_forbidden_view(forbidden)
     config.add_request_method(authenticated_role, reify=True)
     config.add_renderer('prettyjson', JSON(indent=4))
     config.add_renderer('jsonp', JSONP(param_name='opt_jsonp'))
