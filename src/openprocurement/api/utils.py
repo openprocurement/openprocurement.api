@@ -158,7 +158,7 @@ def save_tender(request):
             request.errors.status = 422
         except Exception, e:
             request.errors.add('body', 'data', str(e))
-        finally:
+        else:
             return True
 
 
