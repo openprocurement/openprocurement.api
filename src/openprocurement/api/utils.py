@@ -252,10 +252,10 @@ def update_journal_handler_role(event):
         if isinstance(i, JournalHandler):
             i._extra['ROLE'] = str(request.authenticated_role)
             if request.params:
-                params['PARAMS'] = str(dict(request.params))
+                i._extra['PARAMS'] = str(dict(request.params))
             if request.matchdict:
-                for i, j in request.matchdict.items():
-                    params[i.upper()] = j
+                for x, j in request.matchdict.items():
+                    i._extra[x.upper()] = j
 
 
 def cleanup_journal_handler(event):
