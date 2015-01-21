@@ -35,7 +35,7 @@ def set_journal_handler(event):
     params = {
         'TAGS': 'python,api',
         'USER_ID': str(request.authenticated_userid or ''),
-        'ROLE': str(request.authenticated_role),
+        #'ROLE': str(request.authenticated_role),
         'CURRENT_URL': request.url,
         'CURRENT_PATH': request.path_info,
         'REMOTE_ADDR': request.remote_addr or '',
