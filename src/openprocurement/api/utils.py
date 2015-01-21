@@ -203,6 +203,13 @@ def error_handler(errors):
     for i in LOGGER.handlers:
         if isinstance(i, JournalHandler):
             i._extra['ERROR_STATUS'] = errors.status
+            if 'ROLE' not in i._extra:
+                i._extra['ROLE'] = str(errors.request.authenticated_role)
+            if errors.request.params and 'PARAMS' not in i._extra:
+                i._extra['PARAMS'] = str(dict(errors.request.params))
+            if errors.request.matchdict:
+                for x, j in errors.request.matchdict.items():
+                    i._extra[x.upper()] = j
     LOGGER.info('Error on processing request "{}"'.format(dumps(errors, indent=4)), extra={'MESSAGE_ID': 'error_handler'})
     for i in LOGGER.handlers:
         LOGGER.removeHandler(i)
@@ -234,20 +241,21 @@ def set_journal_handler(event):
         'TENDER_ID': '',
         'TIMESTAMP': get_now().isoformat(),
     }
-    if request.params:
-        params['PARAMS'] = str(dict(request.params))
-    if request.matchdict:
-        for i, j in request.matchdict.items():
-            params[i.upper()] = j
     for i in LOGGER.handlers:
         LOGGER.removeHandler(i)
     LOGGER.addHandler(JournalHandler(**params))
 
 
 def update_journal_handler_role(event):
+    request = event.request
     for i in LOGGER.handlers:
         if isinstance(i, JournalHandler):
-            i._extra['ROLE'] = str(event.request.authenticated_role)
+            i._extra['ROLE'] = str(request.authenticated_role)
+            if request.params:
+                params['PARAMS'] = str(dict(request.params))
+            if request.matchdict:
+                for i, j in request.matchdict.items():
+                    params[i.upper()] = j
 
 
 def cleanup_journal_handler(event):
