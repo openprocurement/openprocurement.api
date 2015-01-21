@@ -60,10 +60,10 @@ test_tender_data = {
         }
     ],
     "enquiryPeriod": {
-        "endDate": (now + timedelta(days=7)).isoformat() #"2014-10-31T00:00:00"
+        "endDate": (now + timedelta(days=7)).isoformat()
     },
     "tenderPeriod": {
-        "endDate": (now + timedelta(days=14)).isoformat() #u"2014-11-06T10:00:00"
+        "endDate": (now + timedelta(days=14)).isoformat()
     }
 }
 

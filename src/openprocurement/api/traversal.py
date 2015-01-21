@@ -7,7 +7,6 @@ from pyramid.security import (
     Deny,
     Everyone,
 )
-from pyramid.httpexceptions import HTTPNotFound
 from openprocurement.api.utils import error_handler
 
 

@@ -703,16 +703,16 @@ class TenderProcessTest(BaseTenderWebTest):
                                                    for i in auction_bids_data
                                                ]
                                            }
-                                       })
+        })
         # view bid participationUrl
         self.app.authorization = ('Basic', ('broker', ''))
         response = self.app.get('/tenders/{}/bids/{}?acc_token={}'.format(tender_id, bid_id, bid_token))
         self.assertEqual(response.json['data']['participationUrl'], 'https://tender.auction.url/for_bid/{}'.format(bid_id))
-        
+
         # posting auction results
         self.app.authorization = ('Basic', ('auction', ''))
         response = self.app.post_json('/tenders/{}/auction'.format(tender_id),
-                                       {'data': {'bids': auction_bids_data}})
+                                      {'data': {'bids': auction_bids_data}})
         # get awards
         self.app.authorization = ('Basic', ('broker', ''))
         response = self.app.get('/tenders/{}/awards?acc_token={}'.format(tender_id, owner_token))

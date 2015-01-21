@@ -5,7 +5,6 @@ import gevent.monkey
 gevent.monkey.patch_all()
 import os
 import pkg_resources
-from logging import getLogger
 from pyramid.config import Configurator
 from openprocurement.api.auth import AuthenticationPolicy
 from pyramid.authorization import ACLAuthorizationPolicy as AuthorizationPolicy
@@ -16,53 +15,16 @@ from openprocurement.api.design import sync_design
 from openprocurement.api.migration import migrate_data
 from boto.s3.connection import S3Connection, Location
 from openprocurement.api.traversal import factory
-from openprocurement.api.models import get_now
-from openprocurement.api.utils import error_handler
+from openprocurement.api.utils import forbidden, set_journal_handler, cleanup_journal_handler, update_journal_handler_role
 
 try:
     from systemd.journal import JournalHandler
 except ImportError:
     JournalHandler = False
 
-LOGGER = getLogger(__name__)
 #VERSION = int(pkg_resources.get_distribution(__package__).parsed_version[0])
 VERSION = pkg_resources.get_distribution(__package__).version
 ROUTE_PREFIX = '/api/{}'.format(VERSION)
-
-
-def set_journal_handler(event):
-    request = event.request
-    params = {
-        'TAGS': 'python,api',
-        'USER_ID': str(request.authenticated_userid or ''),
-        #'ROLE': str(request.authenticated_role),
-        'CURRENT_URL': request.url,
-        'CURRENT_PATH': request.path_info,
-        'REMOTE_ADDR': request.remote_addr or '',
-        'USER_AGENT': request.user_agent or '',
-        'AWARD_ID': '',
-        'BID_ID': '',
-        'COMPLAINT_ID': '',
-        'CONTRACT_ID': '',
-        'DOCUMENT_ID': '',
-        'QUESTION_ID': '',
-        'TENDER_ID': '',
-        'TIMESTAMP': get_now().isoformat(),
-    }
-    if request.params:
-        params['PARAMS'] = str(dict(request.params))
-    if request.matchdict:
-        for i, j in request.matchdict.items():
-            params[i.upper()] = j
-    for i in LOGGER.handlers:
-        LOGGER.removeHandler(i)
-    LOGGER.addHandler(JournalHandler(**params))
-
-
-def update_journal_handler_role(event):
-    for i in LOGGER.handlers:
-        if isinstance(i, JournalHandler):
-            i._extra.update({'ROLE': str(event.request.authenticated_role)})
 
 
 def set_renderer(event):
@@ -129,16 +91,8 @@ def fix_url(item, app_url):
 
 
 def beforerender(event):
-    for i in LOGGER.handlers:
-        LOGGER.removeHandler(i)
     if event.rendering_val and 'data' in event.rendering_val:
         fix_url(event.rendering_val['data'], event['request'].application_url)
-
-
-def forbidden(request):
-    request.errors.add('url', 'permission', 'Forbidden')
-    request.errors.status = 403
-    return error_handler(request.errors)
 
 
 def main(global_config, **settings):
@@ -157,6 +111,7 @@ def main(global_config, **settings):
     if JournalHandler:
         config.add_subscriber(set_journal_handler, NewRequest)
         config.add_subscriber(update_journal_handler_role, ContextFound)
+        config.add_subscriber(cleanup_journal_handler, BeforeRender)
     config.add_subscriber(set_renderer, NewRequest)
     config.add_subscriber(beforerender, BeforeRender)
     config.include('pyramid_exclog')

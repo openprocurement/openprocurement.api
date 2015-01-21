@@ -11,6 +11,14 @@ from time import sleep
 from cornice.util import json_error
 from json import dumps
 
+try:
+    from systemd.journal import JournalHandler
+except ImportError:
+    JournalHandler = False
+
+
+LOGGER = getLogger('openprocurement.api')
+
 
 def generate_id():
     return uuid4().hex
@@ -192,8 +200,56 @@ def add_next_award(request):
 
 
 def error_handler(errors):
-    LOGGER = getLogger('openprocurement.api')
+    for i in LOGGER.handlers:
+        if isinstance(i, JournalHandler):
+            i._extra['ERROR_STATUS'] = errors.status
     LOGGER.info('Error on processing request "{}"'.format(dumps(errors, indent=4)), extra={'MESSAGE_ID': 'error_handler'})
     for i in LOGGER.handlers:
         LOGGER.removeHandler(i)
     return json_error(errors)
+
+
+def forbidden(request):
+    request.errors.add('url', 'permission', 'Forbidden')
+    request.errors.status = 403
+    return error_handler(request.errors)
+
+
+def set_journal_handler(event):
+    request = event.request
+    params = {
+        'TAGS': 'python,api',
+        'USER_ID': str(request.authenticated_userid or ''),
+        #'ROLE': str(request.authenticated_role),
+        'CURRENT_URL': request.url,
+        'CURRENT_PATH': request.path_info,
+        'REMOTE_ADDR': request.remote_addr or '',
+        'USER_AGENT': request.user_agent or '',
+        'AWARD_ID': '',
+        'BID_ID': '',
+        'COMPLAINT_ID': '',
+        'CONTRACT_ID': '',
+        'DOCUMENT_ID': '',
+        'QUESTION_ID': '',
+        'TENDER_ID': '',
+        'TIMESTAMP': get_now().isoformat(),
+    }
+    if request.params:
+        params['PARAMS'] = str(dict(request.params))
+    if request.matchdict:
+        for i, j in request.matchdict.items():
+            params[i.upper()] = j
+    for i in LOGGER.handlers:
+        LOGGER.removeHandler(i)
+    LOGGER.addHandler(JournalHandler(**params))
+
+
+def update_journal_handler_role(event):
+    for i in LOGGER.handlers:
+        if isinstance(i, JournalHandler):
+            i._extra['ROLE'] = str(event.request.authenticated_role)
+
+
+def cleanup_journal_handler(event):
+    for i in LOGGER.handlers:
+        LOGGER.removeHandler(i)
