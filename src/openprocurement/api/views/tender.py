@@ -13,6 +13,7 @@ from openprocurement.api.utils import (
     apply_patch,
     add_next_award,
     error_handler,
+    update_journal_handler_params,
 )
 from openprocurement.api.validation import (
     validate_patch_tender_data,
@@ -268,7 +269,8 @@ class TenderResource(object):
         self.request.validated['tender'] = tender
         self.request.validated['tender_src'] = {}
         if save_tender(self.request):
-            LOGGER.info('Created tender {}'.format(tender_id), extra={'MESSAGE_ID': 'tender_create'})
+            update_journal_handler_params({'tender_id': tender_id, 'tenderID': tender.tenderID})
+            LOGGER.info('Created tender {} ({})'.format(tender_id, tender.tenderID), extra={'MESSAGE_ID': 'tender_create'})
             self.request.response.status = 201
             self.request.response.headers[
                 'Location'] = self.request.route_url('Tender', tender_id=tender_id)

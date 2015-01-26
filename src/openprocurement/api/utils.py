@@ -210,6 +210,9 @@ def error_handler(errors):
             if errors.request.matchdict:
                 for x, j in errors.request.matchdict.items():
                     i._extra[x.upper()] = j
+            if 'tender' in errors.request.validated:
+                i._extra['TENDERID'] = errors.request.validated['tender'].tenderID
+                i._extra['TENDER_STATUS'] = errors.request.validated['tender'].status
     LOGGER.info('Error on processing request "{}"'.format(dumps(errors, indent=4)), extra={'MESSAGE_ID': 'error_handler'})
     for i in LOGGER.handlers:
         LOGGER.removeHandler(i)
@@ -256,8 +259,18 @@ def update_journal_handler_role(event):
             if request.matchdict:
                 for x, j in request.matchdict.items():
                     i._extra[x.upper()] = j
+            if 'tender' in request.validated:
+                i._extra['TENDERID'] = request.validated['tender'].tenderID
+                i._extra['TENDER_STATUS'] = request.validated['tender'].status
 
 
 def cleanup_journal_handler(event):
     for i in LOGGER.handlers:
         LOGGER.removeHandler(i)
+
+
+def update_journal_handler_params(params):
+    for i in LOGGER.handlers:
+        if isinstance(i, JournalHandler):
+            for x, j in params.items():
+                i._extra[x.upper()] = j
