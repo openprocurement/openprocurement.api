@@ -152,8 +152,19 @@ def set_ownership(item, request):
     item.owner_token = generate_id()
 
 
+def set_modetest_titles(tender):
+    if not tender.title or u'[ТЕСТУВАННЯ]' not in tender.title:
+        tender.title = u'[ТЕСТУВАННЯ]{}'.format(tender.title or u'')
+    if not tender.title_en or u'[TESTING]' not in tender.title_en:
+        tender.title_en = u'[TESTING]{}'.format(tender.title_en or u'')
+    if not tender.title_ru or u'[ТЕСТИРОВАНИЕ]' not in tender.title_ru:
+        tender.title_ru = u'[ТЕСТИРОВАНИЕ]{}'.format(tender.title_ru or u'')
+
+
 def save_tender(request):
     tender = request.validated['tender']
+    if tender.mode == u'test':
+        set_modetest_titles(tender)
     patch = get_revision_changes(tender.serialize("plain"), request.validated['tender_src'])
     if patch:
         tender.revisions.append(Revision({'author': request.authenticated_userid, 'changes': patch}))
