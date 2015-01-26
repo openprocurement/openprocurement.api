@@ -2,7 +2,11 @@
 from datetime import datetime
 from logging import getLogger
 from cornice.resource import resource, view
-from openprocurement.api.design import tenders_by_dateModified_view
+from openprocurement.api.design import (
+    tenders_by_dateModified_view,
+    tenders_real_by_dateModified_view,
+    tenders_test_by_dateModified_view,
+)
 from openprocurement.api.models import Tender, get_now
 from openprocurement.api.utils import (
     generate_id,
@@ -22,6 +26,10 @@ from openprocurement.api.validation import (
 
 
 LOGGER = getLogger(__name__)
+VIEW_MAP = {
+    u'test': tenders_test_by_dateModified_view,
+    u'_all_': tenders_by_dateModified_view,
+}
 
 
 @resource(name='Tender',
@@ -80,18 +88,23 @@ class TenderResource(object):
         offset = self.request.params.get('offset', '9' if descending else '0')
         if descending:
             params['descending'] = descending
+        mode = self.request.params.get('mode')
+        if mode:
+            params['mode'] = mode
+        list_view = VIEW_MAP.get(mode, tenders_real_by_dateModified_view)
         next_offset = datetime.min.isoformat() if descending else get_now().isoformat()
         if fields:
             LOGGER.info('Used custom fields for tenders list: {}'.format(','.join(sorted(fields.split(',')))), extra={'MESSAGE_ID': 'tender_list_custom'})
             fields = fields.split(',') + ['dateModified', 'id']
+            list_view_name = '/'.join([list_view.design, list_view.name])
             results = [
                 tender_serialize(i, fields)
-                for i in Tender.view(self.db, 'tenders/by_dateModified', limit=limit + 1, startkey=offset, descending=bool(descending), include_docs=True)
+                for i in Tender.view(self.db, list_view_name, limit=limit + 1, startkey=offset, descending=bool(descending), include_docs=True)
             ]
         else:
             results = [
                 {'id': i.id, 'dateModified': i.key}
-                for i in tenders_by_dateModified_view(self.db, limit=limit + 1, startkey=offset, descending=bool(descending))
+                for i in list_view(self.db, limit=limit + 1, startkey=offset, descending=bool(descending))
             ]
         if len(results) > limit:
             results, last = results[:-1], results[-1]
