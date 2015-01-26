@@ -6,6 +6,7 @@ from openprocurement.api.utils import (
     apply_patch,
     save_tender,
     error_handler,
+    update_journal_handler_params,
 )
 from openprocurement.api.validation import (
     validate_question_data,
@@ -40,6 +41,7 @@ class TenderQuestionResource(object):
         question = Question(question_data)
         tender.questions.append(question)
         if save_tender(self.request):
+            update_journal_handler_params({'question_id': question.id})
             LOGGER.info('Created tender question {}'.format(question.id), extra={'MESSAGE_ID': 'tender_question_create'})
             self.request.response.status = 201
             self.request.response.headers['Location'] = self.request.route_url('Tender Questions', tender_id=tender.id, question_id=question.id)

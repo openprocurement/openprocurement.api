@@ -7,6 +7,7 @@ from openprocurement.api.utils import (
     save_tender,
     add_next_award,
     error_handler,
+    update_journal_handler_params,
 )
 from openprocurement.api.validation import (
     validate_award_data,
@@ -173,6 +174,7 @@ class TenderAwardResource(object):
         award = Award(award_data)
         tender.awards.append(award)
         if save_tender(self.request):
+            update_journal_handler_params({'award_id': award.id})
             LOGGER.info('Created tender award {}'.format(award.id), extra={'MESSAGE_ID': 'tender_award_create'})
             self.request.response.status = 201
             self.request.response.headers['Location'] = self.request.route_url('Tender Awards', tender_id=tender.id, award_id=award['id'])

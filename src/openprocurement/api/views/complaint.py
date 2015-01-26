@@ -6,6 +6,7 @@ from openprocurement.api.utils import (
     apply_patch,
     save_tender,
     error_handler,
+    update_journal_handler_params,
 )
 from openprocurement.api.validation import (
     validate_complaint_data,
@@ -40,6 +41,7 @@ class TenderComplaintResource(object):
         complaint = Complaint(complaint_data)
         tender.complaints.append(complaint)
         if save_tender(self.request):
+            update_journal_handler_params({'complaint_id': complaint.id})
             LOGGER.info('Created tender complaint {}'.format(complaint.id), extra={'MESSAGE_ID': 'tender_complaint_create'})
             self.request.response.status = 201
             self.request.response.headers['Location'] = self.request.route_url('Tender Complaints', tender_id=tender.id, complaint_id=complaint.id)
