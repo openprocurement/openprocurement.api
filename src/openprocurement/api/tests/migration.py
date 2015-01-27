@@ -486,6 +486,30 @@ class MigrateTest(BaseWebTest):
         self.assertEqual('electronicAuction', migrated_item['submissionMethod'])
 
 
+    def test_migrate_from13to14(self):
+        set_db_schema_version(self.db, 13)
+        data = {
+            'doc_type': 'Tender',
+            'items': [
+                {
+                    "description": u"футляри до державних нагород",
+                    "unit": {
+                        "name": u"item",
+                        "code": u"44617100-9"
+                    },
+                    "quantity": 5
+                }
+            ]
+        }
+        _id, _rev = self.db.save(data)
+        migrate_data(self.db, 14)
+        migrated_item = self.db.get(_id)
+        self.assertIn('title', migrated_item)
+        self.assertEqual(data['items'][0]["description"], migrated_item['title'])
+        self.assertEqual(u"CPV", migrated_item['items'][0]['classification']["scheme"])
+        self.assertEqual(u"ДКПП", migrated_item['items'][0]['additionalClassifications'][0]["scheme"])
+
+
 def suite():
     suite = unittest.TestSuite()
     suite.addTest(unittest.makeSuite(MigrateTest))

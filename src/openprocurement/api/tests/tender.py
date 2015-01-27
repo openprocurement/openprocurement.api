@@ -317,7 +317,7 @@ class TenderResourceTest(BaseWebTest):
         tender = response.json['data']
         self.assertEqual(set(tender), set([u'id', u'dateModified', u'tenderID', u'status', u'enquiryPeriod',
                                            u'tenderPeriod', u'minimalStep', u'items', u'value', u'procuringEntity',
-                                           u'procurementMethod', u'awardCriteria', u'submissionMethod']))
+                                           u'procurementMethod', u'awardCriteria', u'submissionMethod', u'title']))
         self.assertNotEqual(data['id'], tender['id'])
         self.assertNotEqual(data['doc_id'], tender['id'])
         self.assertNotEqual(data['tenderID'], tender['tenderID'])

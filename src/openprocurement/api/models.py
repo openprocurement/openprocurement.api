@@ -161,8 +161,8 @@ class Item(Model):
     description = StringType(required=True)  # A description of the goods, services to be provided.
     description_en = StringType()
     description_ru = StringType()
-    classification = ModelType(CPVClassification)
-    additionalClassifications = ListType(ModelType(Classification), default=list(), validators=[validate_dkpp])
+    classification = ModelType(CPVClassification, required=True)
+    additionalClassifications = ListType(ModelType(Classification), default=list(), required=True, min_size=1, validators=[validate_dkpp])
     unit = ModelType(Unit)  # Description of the unit which the good comes in e.g. hours, kilograms
     quantity = IntType()  # The number of units required
     deliveryDate = ModelType(Period)
@@ -452,7 +452,7 @@ class Tender(SchematicsDocument, Model):
     def __local_roles__(self):
         return dict([('{}_{}'.format(self.owner, self.owner_token), 'tender_owner')])
 
-    title = StringType()
+    title = StringType(required=True)
     title_en = StringType()
     title_ru = StringType()
     description = StringType()
