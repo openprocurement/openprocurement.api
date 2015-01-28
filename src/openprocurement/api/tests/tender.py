@@ -631,10 +631,13 @@ class TenderProcessTest(BaseTenderWebTest):
         # set award as active
         response = self.app.patch_json('/tenders/{}/awards/{}?acc_token={}'.format(tender_id, award_id, owner_token),
                                        {"data": {"status": "active"}})
-        # set tender status after stand slill period
+        contract_id = response.json['data']['contracts'][0]['id']
+        # after stand slill period
         self.app.authorization = ('Basic', ('chronograph', ''))
-        response = self.app.patch_json('/tenders/{}'.format(tender_id),
-                                       {'data': {'status': 'complete'}})
+        self.set_status('complete', {'status': 'active.awarded'})
+        # sign contract
+        self.app.authorization = ('Basic', ('broker', ''))
+        response = self.app.patch_json('/tenders/{}/awards/{}/contracts/{}?acc_token={}'.format(tender_id, award_id, contract_id, owner_token), {"data": {"status": "active"}})
         # check status
         self.app.authorization = ('Basic', ('broker', ''))
         response = self.app.get('/tenders/{}'.format(tender_id))
@@ -760,10 +763,13 @@ class TenderProcessTest(BaseTenderWebTest):
         # set award as active
         response = self.app.patch_json('/tenders/{}/awards/{}?acc_token={}'.format(tender_id, award_id, owner_token),
                                        {"data": {"status": "active"}})
-        # set tender status after stand slill period
+        contract_id = response.json['data']['contracts'][0]['id']
+        # after stand slill period
         self.app.authorization = ('Basic', ('chronograph', ''))
-        response = self.app.patch_json('/tenders/{}'.format(tender_id),
-                                       {'data': {'status': 'complete'}})
+        self.set_status('complete', {'status': 'active.awarded'})
+        # sign contract
+        self.app.authorization = ('Basic', ('broker', ''))
+        response = self.app.patch_json('/tenders/{}/awards/{}/contracts/{}?acc_token={}'.format(tender_id, award_id, contract_id, owner_token), {"data": {"status": "active"}})
         # check status
         self.app.authorization = ('Basic', ('broker', ''))
         response = self.app.get('/tenders/{}'.format(tender_id))

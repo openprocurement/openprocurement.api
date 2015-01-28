@@ -922,6 +922,13 @@ class TenderAwardContractResourceTest(BaseTenderWebTest):
         self.assertEqual(response.content_type, 'application/json')
         contract = response.json['data']
 
+        response = self.app.patch_json('/tenders/{}/awards/{}/contracts/{}'.format(self.tender_id, self.award_id, contract['id']), {"data": {"status": "active"}}, status=403)
+        self.assertEqual(response.status, '403 Forbidden')
+        self.assertEqual(response.content_type, 'application/json')
+        self.assertIn("Can't sign contract before stand-still period end (", response.json['errors'][0]["description"])
+
+        self.set_status('complete', {'status': 'active.awarded'})
+
         response = self.app.patch_json('/tenders/{}/awards/{}/contracts/{}'.format(self.tender_id, self.award_id, contract['id']), {"data": {"status": "active"}})
         self.assertEqual(response.status, '200 OK')
         self.assertEqual(response.content_type, 'application/json')
