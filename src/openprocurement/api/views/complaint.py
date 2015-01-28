@@ -101,9 +101,7 @@ class TenderComplaintResource(object):
                     for a in tender.awards
                     if a.status == 'active'
                 ]
-                if active_awards:
-                    tender.status = 'complete'
-                else:
+                if not active_awards:
                     tender.status = 'unsuccessful'
         if save_tender(self.request):
             LOGGER.info('Updated tender complaint {}'.format(self.request.context.id), extra={'MESSAGE_ID': 'tender_complaint_patch'})

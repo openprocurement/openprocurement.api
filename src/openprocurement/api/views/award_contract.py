@@ -68,11 +68,28 @@ class TenderAwardContractResource(object):
             self.request.errors.add('body', 'data', 'Can\'t update contract in current ({}) tender status'.format(self.request.validated['tender_status']))
             self.request.errors.status = 403
         data = self.request.validated['data']
-        stand_still_end = self.request.validated['tender'].awardPeriod.endDate + STAND_STILL_TIME
-        if self.request.context.status != 'active' and 'status' in data and data['status'] == 'active' and stand_still_end > get_now():
-            self.request.errors.add('body', 'data', 'Can\'t sign contract before stand-still period end ({})'.format(stand_still_end.isoformat()))
-            self.request.errors.status = 403
-            return
+        if self.request.context.status != 'active' and 'status' in data and data['status'] == 'active':
+            tender = self.request.validated['tender']
+            stand_still_end = tender.awardPeriod.endDate + STAND_STILL_TIME
+            if stand_still_end > get_now():
+                self.request.errors.add('body', 'data', 'Can\'t sign contract before stand-still period end ({})'.format(stand_still_end.isoformat()))
+                self.request.errors.status = 403
+                return
+            pending_complaints = [
+                i
+                for i in tender.complaints
+                if i.status == 'pending'
+            ]
+            pending_awards_complaints = [
+                i
+                for a in tender.awards
+                for i in a.complaints
+                if i.status == 'pending'
+            ]
+            if pending_complaints or pending_awards_complaints:
+                self.request.errors.add('body', 'data', 'Can\'t sign contract before reviewing all complaints')
+                self.request.errors.status = 403
+                return
         apply_patch(self.request, save=False, src=self.request.context.serialize())
         if self.request.context.status == 'active' and self.request.validated['tender_status'] != 'complete':
             self.request.validated['tender'].status = 'complete'
