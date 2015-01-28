@@ -374,6 +374,11 @@ class MockBucket(object):
         self.acls[key_name] = MockAcl()
         return mock_key
 
+    def get_key(self, key_name, headers=NOT_IMPL, version_id=NOT_IMPL):
+        # Emulate behavior of boto when get_key called with non-existent key.
+        if key_name not in self.keys:
+            return None
+        return self.keys[key_name]
 
 class MockProvider(object):
 

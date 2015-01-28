@@ -10,6 +10,7 @@ from couchdb.http import ResourceConflict
 from time import sleep
 from cornice.util import json_error
 from json import dumps
+from urlparse import urlparse, parse_qs
 
 try:
     from systemd.journal import JournalHandler
@@ -81,6 +82,17 @@ def upload_file(request):
             "data": b64encode(in_file.read())
         }
     return document
+
+
+def update_file_content_type(request):
+    conn = getattr(request.registry, 's3_connection', None)
+    if conn:
+        document = request.validated['document']
+        key = parse_qs(urlparse(document.url).query).get('download').pop()
+        bucket = conn.get_bucket(request.registry.bucket_name)
+        filename = "{}/{}/{}".format(request.validated['tender_id'], document.id, key)
+        key = bucket.get_key(filename)
+        key.set_metadata('Content-Type', document.format)
 
 
 def get_file(request):

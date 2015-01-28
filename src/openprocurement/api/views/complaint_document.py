@@ -8,6 +8,7 @@ from openprocurement.api.utils import (
     apply_patch,
     error_handler,
     update_journal_handler_params,
+    update_file_content_type,
 )
 from openprocurement.api.validation import (
     validate_file_update,
@@ -96,5 +97,6 @@ class TenderComplaintDocumentResource(object):
             self.request.errors.status = 403
             return
         if apply_patch(self.request, src=self.request.context.serialize()):
+            update_file_content_type(self.request)
             LOGGER.info('Updated tender complaint document {}'.format(self.request.context.id), extra={'MESSAGE_ID': 'tender_complaint_document_patch'})
             return {'data': self.request.context.serialize("view")}

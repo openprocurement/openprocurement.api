@@ -174,7 +174,7 @@ class Document(Model):
     class Options:
         serialize_when_none = False
         roles = {
-            'edit': blacklist('id', 'format', 'url', 'datePublished'),
+            'edit': blacklist('id', 'url', 'datePublished', 'dateModified'),
             'embedded': schematics_embedded_role,
             'view': (blacklist('revisions') + schematics_default_role),
             'revisions': whitelist('url', 'dateModified'),
@@ -195,7 +195,7 @@ class Document(Model):
     description = StringType()  # A description of the document.
     description_en = StringType()
     description_ru = StringType()
-    format = StringType()
+    format = StringType(regex='^[-\w]+/[-\.\w\+]+$')
     url = StringType()  # Link to the document or attachment.
     datePublished = IsoDateTimeType(default=get_now)
     dateModified = IsoDateTimeType(default=get_now)  # Date that the document was last dateModified
