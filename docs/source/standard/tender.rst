@@ -125,7 +125,24 @@ Schema
    The date or period on which an award is anticipated to be made.
 
 :status:
-   'active.enquiries', 'active.tendering', 'active.auction', 'active.qualification', 'active.awarded', 'unsuccessful', 'complete', 'cancelled'
+   string
+
+   :`active.enquiries`:
+       Enquiries period (enquiries)
+   :`active.tendering`:
+       Tendering period (tendering)
+   :`active.auction`:
+       Auction period (auction)
+   :`active.qualification`:
+       Winner qualification (qualification)
+   :`active.awarded`:
+       Standstill period (standstill)
+   :`unsuccessful`:
+       Unsuccessful tender (unsuccessful)
+   :`complete`:
+       Complete tender (complete)
+   :`cancelled`:
+       Cancelled tender (cancelled)
 
    Status of the Tender.
 
