@@ -4,7 +4,7 @@
 import gevent.monkey
 gevent.monkey.patch_all()
 import os
-import pkg_resources
+from pkg_resources import get_distribution
 from pyramid.config import Configurator
 from openprocurement.api.auth import AuthenticationPolicy
 from pyramid.authorization import ACLAuthorizationPolicy as AuthorizationPolicy
@@ -23,7 +23,8 @@ except ImportError:
     JournalHandler = False
 
 #VERSION = int(pkg_resources.get_distribution(__package__).parsed_version[0])
-VERSION = pkg_resources.get_distribution(__package__).version
+PKG = get_distribution(__package__)
+VERSION = '{}.{}'.format(int(PKG.parsed_version[0]), int(PKG.parsed_version[1]))
 ROUTE_PREFIX = '/api/{}'.format(VERSION)
 
 

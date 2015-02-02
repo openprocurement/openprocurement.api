@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+from pkg_resources import get_distribution
 from logging import getLogger
 from base64 import b64encode
 from jsonpatch import make_patch, apply_patch as _apply_patch
@@ -18,7 +19,9 @@ except ImportError:
     JournalHandler = False
 
 
-LOGGER = getLogger('openprocurement.api')
+PKG = get_distribution(__package__)
+LOGGER = getLogger(PKG.project_name)
+VERSION = '{}.{}'.format(int(PKG.parsed_version[0]), int(PKG.parsed_version[1]))
 
 
 def generate_id():
@@ -251,6 +254,7 @@ def forbidden(request):
 def set_journal_handler(event):
     request = event.request
     params = {
+        'TENDERS_API_VERSION': VERSION,
         'TAGS': 'python,api',
         'USER_ID': str(request.authenticated_userid or ''),
         #'ROLE': str(request.authenticated_role),
@@ -266,6 +270,7 @@ def set_journal_handler(event):
         'QUESTION_ID': '',
         'TENDER_ID': '',
         'TIMESTAMP': get_now().isoformat(),
+        'REQUEST_ID': request.environ.get('REQUEST_ID', '')
     }
     for i in LOGGER.handlers:
         LOGGER.removeHandler(i)
