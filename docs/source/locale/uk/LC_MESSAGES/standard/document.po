@@ -4,7 +4,7 @@ msgstr ""
 "Project-Id-Version: openprocurement.api 0.3\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2014-11-24 18:25+0200\n"
-"PO-Revision-Date: 2014-12-25 17:11+0300\n"
+"PO-Revision-Date: 2015-02-03 10:09+0300\n"
 "Last-Translator: \n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
@@ -243,7 +243,7 @@ msgid ""
 "Report on the evaluation of the bids and the application of the evaluation "
 "criteria, including the justification fo the award."
 msgstr ""
-"Звіт про оцінку пропозицій і застосування критеріїв оцінки, включаючи "
+"Звіт про оцінку пропозицій і застосування критеріїв оцінки, у тому числі, "
 "обґрунтування рішення про визначення переможця."
 
 #: ../../source/standard/document.rst:72
@@ -282,7 +282,7 @@ msgstr "`contractArrangements` - **Заходи для припинення до
 
 #: ../../source/standard/document.rst:88
 msgid "`contractSchedule` - **Schedules and milestones**"
-msgstr "`contractSchedule` - **Розклад і віхи**"
+msgstr "`contractSchedule` - **Розклад та етапи**"
 
 #: ../../source/standard/document.rst:90
 msgid "`contractAnnexe` - **Annexes to the Contract**"
