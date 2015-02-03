@@ -30,7 +30,7 @@ main = openprocurement.api:main
 """
 
 setup(name='openprocurement.api',
-      version='0.6.1',
+      version='0.6.2',
       description='openprocurement.api',
       long_description=README,
       classifiers=[
