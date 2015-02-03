@@ -270,7 +270,8 @@ def set_journal_handler(event):
         'QUESTION_ID': '',
         'TENDER_ID': '',
         'TIMESTAMP': get_now().isoformat(),
-        'REQUEST_ID': request.environ.get('REQUEST_ID', '')
+        'REQUEST_ID': request.environ.get('REQUEST_ID', ''),
+        'CLIENT_REQUEST_ID': request.headers.get('X-Client-Request-ID', ''),
     }
     for i in LOGGER.handlers:
         LOGGER.removeHandler(i)
