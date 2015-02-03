@@ -476,6 +476,7 @@ def from13to14(db):
     results = db.view('tenders/all', include_docs=True)
     for i in results:
         doc = i.doc
+        changed = False
         if not doc.get('title'):
             doc['title'] = doc["items"][0]['description']
             changed = True
