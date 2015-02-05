@@ -28,28 +28,35 @@ def validate_data(request, model, partial=False):
             m = model(request.context.serialize())
             m.import_data(new_patch)
             m.validate()
-            if request.authenticated_role == 'chronograph':
-                data = m.to_patch('chronograph')
+            if request.authenticated_role == 'Administrator':
+                role = 'Administrator'
+            elif request.authenticated_role == 'chronograph':
+                role = 'chronograph'
             elif request.authenticated_role == 'auction':
-                data = m.to_patch('auction_{}'.format(request.method.lower()))
+                role = 'auction_{}'.format(request.method.lower())
             elif isinstance(request.context, Tender):
-                data = m.to_patch('edit_{}'.format(request.context.status))
+                role = 'edit_{}'.format(request.context.status)
             else:
-                data = m.to_patch('edit')
-        elif partial:
-            m = model(data)
-            m.validate(partial=partial)
-            data = m.serialize('edit')
+                role = 'edit'
+            method = m.to_patch
         else:
             m = model(data)
             m.validate()
-            data = m.serialize('create')
+            method = m.serialize
+            role = 'create'
     except (ModelValidationError, ModelConversionError), e:
         for i in e.message:
             request.errors.add('body', i, e.message[i])
         request.errors.status = 422
-        return
-    request.validated['data'] = data
+        data = None
+    else:
+        if hasattr(m.__class__, '_options') and role not in m.__class__._options.roles:
+            request.errors.add('url', 'role', 'Forbidden')
+            request.errors.status = 403
+            data = None
+        else:
+            data = method(role)
+            request.validated['data'] = data
     return data
 
 

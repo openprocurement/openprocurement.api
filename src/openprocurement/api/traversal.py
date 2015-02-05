@@ -26,6 +26,7 @@ class Root(object):
         (Allow, 'g:brokers', 'create_tender'),
         (Allow, 'g:auction', 'auction'),
         (Allow, 'g:chronograph', 'edit_tender'),
+        (Allow, 'g:Administrator', 'edit_tender'),
         (Allow, 'g:admins', ALL_PERMISSIONS),
     ]
 
