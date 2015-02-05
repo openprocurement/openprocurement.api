@@ -15,7 +15,7 @@ from tzlocal import get_localzone
 from uuid import uuid4
 
 
-STAND_STILL_TIME = timedelta(days=10)
+STAND_STILL_TIME = timedelta(days=1)
 schematics_embedded_role = SchematicsDocument.Options.roles['embedded']
 schematics_default_role = SchematicsDocument.Options.roles['default']
 
