@@ -24,8 +24,8 @@ class Root(object):
         (Allow, 'g:brokers', 'create_complaint'),
         (Allow, 'g:brokers', 'create_question'),
         (Allow, 'g:brokers', 'create_tender'),
-        (Allow, 'auction', 'auction'),
-        (Allow, 'chronograph', 'edit_tender'),
+        (Allow, 'g:auction', 'auction'),
+        (Allow, 'g:chronograph', 'edit_tender'),
         (Allow, 'g:admins', ALL_PERMISSIONS),
     ]
 
