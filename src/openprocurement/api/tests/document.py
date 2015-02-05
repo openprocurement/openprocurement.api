@@ -196,7 +196,6 @@ class TenderDocumentResourceTest(BaseTenderWebTest):
         response = self.app.get('/tenders/{}/documents'.format(self.tender_id))
         self.assertEqual(response.status, '200 OK')
         self.assertEqual(response.content_type, 'application/json')
-        print response.json["data"]
         self.assertEqual(dateModified2, response.json["data"][0]['dateModified'])
         self.assertEqual(dateModified, response.json["data"][1]['dateModified'])
 

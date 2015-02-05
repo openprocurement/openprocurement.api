@@ -570,6 +570,30 @@ class TenderResourceTest(BaseWebTest):
             {u'description': u'Not Found', u'location': u'url', u'name': u'tender_id'}
         ])
 
+    def test_tender_Administrator_change(self):
+        response = self.app.post_json('/tenders', {'data': test_tender_data})
+        self.assertEqual(response.status, '201 Created')
+        tender = response.json['data']
+
+        response = self.app.post_json('/tenders/{}/questions'.format(tender['id']), {'data': {'title': 'question title', 'description': 'question description', 'author': test_tender_data["procuringEntity"]}})
+        self.assertEqual(response.status, '201 Created')
+        self.assertEqual(response.content_type, 'application/json')
+        question = response.json['data']
+
+        self.app.authorization = ('Basic', ('administrator', ''))
+
+        response = self.app.patch_json('/tenders/{}'.format(tender['id']), {'data': {'mode': u'test'}})
+        self.assertEqual(response.status, '200 OK')
+        self.assertEqual(response.content_type, 'application/json')
+        self.assertEqual(response.json['data']['mode'], u'test')
+
+        response = self.app.patch_json('/tenders/{}/questions/{}'.format(tender['id'], question['id']), {"data": {"answer": "answer"}}, status=403)
+        self.assertEqual(response.status, '403 Forbidden')
+        self.assertEqual(response.content_type, 'application/json')
+        self.assertEqual(response.json['errors'], [
+            {"location": "url", "name": "role", "description": "Forbidden"}
+        ])
+
 
 class TenderProcessTest(BaseTenderWebTest):
     setUp = BaseWebTest.setUp
