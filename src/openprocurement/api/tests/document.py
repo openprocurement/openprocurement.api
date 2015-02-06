@@ -379,6 +379,7 @@ class MockBucket(object):
             return None
         return self.keys[key_name]
 
+
 class MockProvider(object):
 
     def __init__(self, provider):

@@ -485,7 +485,6 @@ class MigrateTest(BaseWebTest):
         self.assertEqual('lowestCost', migrated_item['awardCriteria'])
         self.assertEqual('electronicAuction', migrated_item['submissionMethod'])
 
-
     def test_migrate_from13to14(self):
         set_db_schema_version(self.db, 13)
         data = {

@@ -512,6 +512,7 @@ class Tender(SchematicsDocument, Model):
         ]
         acl.extend([
             (Allow, '{}_{}'.format(self.owner, self.owner_token), 'edit_tender'),
+            (Allow, '{}_{}'.format(self.owner, self.owner_token), 'upload_tender_documents'),
             (Allow, '{}_{}'.format(self.owner, self.owner_token), 'review_complaint'),
         ])
         return acl

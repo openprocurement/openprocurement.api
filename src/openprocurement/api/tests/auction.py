@@ -103,10 +103,8 @@ class TenderAuctionResourceTest(BaseTenderWebTest):
         self.assertEqual(response.content_type, 'application/json')
         self.assertEqual(response.json['errors'][0]["description"], "Can't report auction results in current (active.tendering) tender status")
 
-        self.app.authorization = ('Basic', ('token', ''))
         self.set_status('active.auction')
 
-        self.app.authorization = ('Basic', ('auction', ''))
         #response = self.app.post_json('/tenders/{}/auction'.format(self.tender_id), {'data': {}}, status=422)
         #self.assertEqual(response.status, '422 Unprocessable Entity')
         #self.assertEqual(response.content_type, 'application/json')
@@ -195,10 +193,8 @@ class TenderAuctionResourceTest(BaseTenderWebTest):
         self.assertEqual(response.content_type, 'application/json')
         self.assertEqual(response.json['errors'][0]["description"], "Can't report auction results in current (active.tendering) tender status")
 
-        self.app.authorization = ('Basic', ('token', ''))
         self.set_status('active.auction')
 
-        self.app.authorization = ('Basic', ('auction', ''))
         #response = self.app.patch_json('/tenders/{}/auction'.format(self.tender_id), {'data': {}}, status=422)
         #self.assertEqual(response.status, '422 Unprocessable Entity')
         #self.assertEqual(response.content_type, 'application/json')
@@ -258,14 +254,65 @@ class TenderAuctionResourceTest(BaseTenderWebTest):
         self.assertEqual(tender["bids"][0]['participationUrl'], patch_data["bids"][1]['participationUrl'])
         self.assertEqual(tender["bids"][1]['participationUrl'], patch_data["bids"][0]['participationUrl'])
 
-        self.app.authorization = ('Basic', ('token', ''))
         self.set_status('complete')
 
-        self.app.authorization = ('Basic', ('auction', ''))
         response = self.app.patch_json('/tenders/{}/auction'.format(self.tender_id), {'data': patch_data}, status=403)
         self.assertEqual(response.status, '403 Forbidden')
         self.assertEqual(response.content_type, 'application/json')
         self.assertEqual(response.json['errors'][0]["description"], "Can't report auction results in current (complete) tender status")
+
+    def test_post_tender_auction_document(self):
+        self.app.authorization = ('Basic', ('auction', ''))
+        response = self.app.post('/tenders/{}/documents'.format(self.tender_id), upload_files=[('file', 'name.doc', 'content')], status=403)
+        self.assertEqual(response.status, '403 Forbidden')
+        self.assertEqual(response.content_type, 'application/json')
+        self.assertEqual(response.json['errors'][0]["description"], "Can't add document in current (active.tendering) tender status")
+
+        self.set_status('active.auction')
+
+        response = self.app.post('/tenders/{}/documents'.format(self.tender_id), upload_files=[('file', 'name.doc', 'content')])
+        self.assertEqual(response.status, '201 Created')
+        self.assertEqual(response.content_type, 'application/json')
+        doc_id = response.json["data"]['id']
+        key = response.json["data"]["url"].split('?')[-1].split('=')[-1]
+
+        patch_data = {
+            'bids': [
+                {
+                    "id": self.initial_bids[1]['id'],
+                    "value": {
+                        "amount": 409,
+                        "currency": "UAH",
+                        "valueAddedTaxIncluded": True
+                    }
+                },
+                {
+                    'id': self.initial_bids[0]['id'],
+                    "value": {
+                        "amount": 419,
+                        "currency": "UAH",
+                        "valueAddedTaxIncluded": True
+                    }
+                }
+            ]
+        }
+
+        response = self.app.post_json('/tenders/{}/auction'.format(self.tender_id), {'data': patch_data})
+        self.assertEqual(response.status, '200 OK')
+        self.assertEqual(response.content_type, 'application/json')
+
+        response = self.app.put('/tenders/{}/documents/{}'.format(self.tender_id, doc_id), upload_files=[('file', 'name.doc', 'content_with_names')])
+        self.assertEqual(response.status, '200 OK')
+        self.assertEqual(response.content_type, 'application/json')
+        self.assertEqual(doc_id, response.json["data"]["id"])
+        key2 = response.json["data"]["url"].split('?')[-1].split('=')[-1]
+        self.assertNotEqual(key, key2)
+
+        self.set_status('complete')
+        response = self.app.post('/tenders/{}/documents'.format(self.tender_id), upload_files=[('file', 'name.doc', 'content')], status=403)
+        self.assertEqual(response.status, '403 Forbidden')
+        self.assertEqual(response.content_type, 'application/json')
+        self.assertEqual(response.json['errors'][0]["description"], "Can't add document in current (complete) tender status")
 
 
 def suite():
