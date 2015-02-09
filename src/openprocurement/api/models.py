@@ -144,7 +144,7 @@ class Location(Model):
         serialize_when_none = False
 
     latitude = BaseType(required=True)
-    longitudee = BaseType(required=True)
+    longitude = BaseType(required=True)
     elevation = BaseType()
 
 

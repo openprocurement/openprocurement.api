@@ -508,6 +508,23 @@ class MigrateTest(BaseWebTest):
         self.assertEqual(u"CPV", migrated_item['items'][0]['classification']["scheme"])
         self.assertEqual(u"ДКПП", migrated_item['items'][0]['additionalClassifications'][0]["scheme"])
 
+    def test_migrate_from14to15(self):
+        set_db_schema_version(self.db, 14)
+        data = {
+            'doc_type': 'Tender',
+            "items": [{
+                "deliveryLocation": {
+                    'latitude': 49,
+                    'longitudee': 24
+                }
+            }]
+        }
+        _id, _rev = self.db.save(data)
+        item = self.db.get(_id)
+        migrate_data(self.db, 15)
+        migrated_item = self.db.get(_id)
+        self.assertEqual(item["items"][0]["deliveryLocation"]["longitudee"], migrated_item["items"][0]["deliveryLocation"]["longitude"])
+
 
 def suite():
     suite = unittest.TestSuite()

@@ -5,7 +5,7 @@ from openprocurement.api.models import CPV_CODES, get_now
 
 
 LOGGER = logging.getLogger(__name__)
-SCHEMA_VERSION = 14
+SCHEMA_VERSION = 15
 SCHEMA_DOC = 'openprocurement_schema'
 
 
@@ -497,6 +497,20 @@ def from13to14(db):
                         "description": u"Вода питна"
                     }
                 ]
+        if changed:
+            doc['dateModified'] = get_now().isoformat()
+            db.save(doc)
+
+
+def from14to15(db):
+    results = db.view('tenders/all', include_docs=True)
+    for i in results:
+        doc = i.doc
+        changed = False
+        for item in doc["items"]:
+            if 'deliveryLocation' in item and 'longitudee' in item['deliveryLocation']:
+                changed = True
+                item['deliveryLocation']['longitude'] = item['deliveryLocation'].pop('longitudee')
         if changed:
             doc['dateModified'] = get_now().isoformat()
             db.save(doc)
