@@ -12,6 +12,7 @@ from time import sleep
 from cornice.util import json_error
 from json import dumps
 from urlparse import urlparse, parse_qs
+from email.header import decode_header
 
 try:
     from systemd.journal import JournalHandler
@@ -45,11 +46,25 @@ def generate_tender_id(ctime, db):
     return 'UA-{:04}-{:02}-{:02}-{:06}'.format(ctime.year, ctime.month, ctime.day, index)
 
 
+def get_filename(data):
+    try:
+        pairs = decode_header(data.filename)
+    except Exception:
+        pairs = None
+    if not pairs:
+        return data.filename
+    header = pairs[0]
+    if header[1]:
+        return header[0].decode(header[1])
+    else:
+        return header[0]
+
+
 def upload_file(request):
     first_document = None
     if request.content_type == 'multipart/form-data':
         data = request.validated['file']
-        filename = data.filename
+        filename = get_filename(data)
         content_type = data.type
         in_file = data.file
     else:
