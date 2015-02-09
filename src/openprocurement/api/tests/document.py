@@ -81,19 +81,19 @@ class TenderDocumentResourceTest(BaseTenderWebTest):
         self.assertEqual(response.json, {"data": []})
 
         response = self.app.post('/tenders/{}/documents'.format(
-            self.tender_id), upload_files=[('file', 'name.doc', 'content')])
+            self.tender_id), upload_files=[('file', u'укр.doc', 'content')])
         self.assertEqual(response.status, '201 Created')
         self.assertEqual(response.content_type, 'application/json')
         doc_id = response.json["data"]['id']
         self.assertTrue(doc_id in response.headers['Location'])
-        self.assertEqual('name.doc', response.json["data"]["title"])
+        self.assertEqual(u'укр.doc', response.json["data"]["title"])
         key = response.json["data"]["url"].split('?')[-1].split('=')[-1]
 
         response = self.app.get('/tenders/{}/documents'.format(self.tender_id))
         self.assertEqual(response.status, '200 OK')
         self.assertEqual(response.content_type, 'application/json')
         self.assertEqual(doc_id, response.json["data"][0]["id"])
-        self.assertEqual('name.doc', response.json["data"][0]["title"])
+        self.assertEqual(u'укр.doc', response.json["data"][0]["title"])
 
         if self.s3_connection:
             response = self.app.get('/tenders/{}/documents/{}?download={}'.format(
@@ -122,10 +122,10 @@ class TenderDocumentResourceTest(BaseTenderWebTest):
         self.assertEqual(response.status, '200 OK')
         self.assertEqual(response.content_type, 'application/json')
         self.assertEqual(doc_id, response.json["data"]["id"])
-        self.assertEqual('name.doc', response.json["data"]["title"])
+        self.assertEqual(u'укр.doc', response.json["data"]["title"])
 
         response = self.app.post('/tenders/{}/documents?acc_token=acc_token'.format(
-            self.tender_id), upload_files=[('file', 'name.doc', 'content')])
+            self.tender_id), upload_files=[('file', u'укр.doc', 'content')])
         self.assertEqual(response.status, '201 Created')
         self.assertEqual(response.content_type, 'application/json')
         doc_id = response.json["data"]['id']
@@ -135,7 +135,7 @@ class TenderDocumentResourceTest(BaseTenderWebTest):
         self.set_status('active.tendering')
 
         response = self.app.post('/tenders/{}/documents'.format(
-            self.tender_id), upload_files=[('file', 'name.doc', 'content')], status=403)
+            self.tender_id), upload_files=[('file', u'укр.doc', 'content')], status=403)
         self.assertEqual(response.status, '403 Forbidden')
         self.assertEqual(response.content_type, 'application/json')
         self.assertEqual(response.json['errors'][0]["description"], "Can't add document in current (active.tendering) tender status")
