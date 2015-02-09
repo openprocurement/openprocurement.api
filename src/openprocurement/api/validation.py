@@ -152,7 +152,7 @@ def validate_patch_contract_data(request):
 
 
 def validate_file_upload(request):
-    if 'file' not in request.POST:
+    if 'file' not in request.POST or not hasattr(request.POST['file'], 'filename'):
         request.errors.add('body', 'file', 'Not Found')
         request.errors.status = 404
     else:

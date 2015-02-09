@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 import unittest
-
+from email.header import Header
 from openprocurement.api.tests.base import BaseTenderWebTest
 
 
@@ -239,12 +239,13 @@ class TenderDocumentResourceTest(BaseTenderWebTest):
 
     def test_patch_tender_document(self):
         response = self.app.post('/tenders/{}/documents'.format(
-            self.tender_id), upload_files=[('file', 'name.doc', 'content')])
+            self.tender_id), upload_files=[('file', str(Header(u'укр.doc', 'utf-8')), 'content')])
         self.assertEqual(response.status, '201 Created')
         self.assertEqual(response.content_type, 'application/json')
         doc_id = response.json["data"]['id']
         #dateModified = response.json["data"]['dateModified']
         self.assertTrue(doc_id in response.headers['Location'])
+        self.assertEqual(u'укр.doc', response.json["data"]["title"])
 
         response = self.app.patch_json('/tenders/{}/documents/{}'.format(self.tender_id, doc_id), {"data": {"description": "document description"}})
         self.assertEqual(response.status, '200 OK')
