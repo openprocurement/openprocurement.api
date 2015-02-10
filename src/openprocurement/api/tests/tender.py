@@ -307,6 +307,20 @@ class TenderResourceTest(BaseWebTest):
             {u'description': {u'contactPoint': {u'email': [u'telephone or email should be present']}}, u'location': u'body', u'name': u'procuringEntity'}
         ])
 
+        data = test_tender_data["items"][0].copy()
+        classification = data['classification'].copy()
+        classification["id"] = u'19212310-1'
+        data['classification'] = classification
+        test_tender_data["items"] = [test_tender_data["items"][0], data]
+        response = self.app.post_json(request_path, {'data': test_tender_data}, status=422)
+        test_tender_data["items"] = test_tender_data["items"][:1]
+        self.assertEqual(response.status, '422 Unprocessable Entity')
+        self.assertEqual(response.content_type, 'application/json')
+        self.assertEqual(response.json['status'], 'error')
+        self.assertEqual(response.json['errors'], [
+            {u'description': [u'CPV group of items be identical'], u'location': u'body', u'name': u'items'}
+        ])
+
     def test_create_tender_generated(self):
         data = test_tender_data.copy()
         #del data['awardPeriod']
