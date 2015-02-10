@@ -113,6 +113,14 @@ class TenderBidderResourceTest(BaseTenderWebTest):
             {u'description': [u'currency of bid should be identical to currency of value of tender'], u'location': u'body', u'name': u'bids'},
         ])
 
+        response = self.app.post_json(request_path, {'data': {'tenderers': test_tender_data["procuringEntity"], "value": {"amount": 500}}}, status=422)
+        self.assertEqual(response.status, '422 Unprocessable Entity')
+        self.assertEqual(response.content_type, 'application/json')
+        self.assertEqual(response.json['status'], 'error')
+        self.assertEqual(response.json['errors'], [
+            {u'description': u"invalid literal for int() with base 10: 'contactPoint'", u'location': u'body', u'name': u'data'},
+        ])
+
     def test_create_tender_bidder(self):
         response = self.app.post_json('/tenders/{}/bids'.format(
             self.tender_id), {'data': {'tenderers': [test_tender_data["procuringEntity"]], "value": {"amount": 500}}})

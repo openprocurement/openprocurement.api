@@ -49,6 +49,10 @@ def validate_data(request, model, partial=False):
             request.errors.add('body', i, e.message[i])
         request.errors.status = 422
         data = None
+    except ValueError, e:
+        request.errors.add('body', 'data', e.message)
+        request.errors.status = 422
+        data = None
     else:
         if hasattr(m.__class__, '_options') and role not in m.__class__._options.roles:
             request.errors.add('url', 'role', 'Forbidden')
