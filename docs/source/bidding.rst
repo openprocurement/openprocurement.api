@@ -34,7 +34,7 @@ Update of proposal
 
 .. sourcecode:: http
 
-  PUT /tenders/64e93250be76435397e8c992ed4214d1/bids/4879d3f8ee2443169b5fbbc9f89fa607 HTTP/1.1
+  PATCH /tenders/64e93250be76435397e8c992ed4214d1/bids/4879d3f8ee2443169b5fbbc9f89fa607 HTTP/1.1
 
 .. sourcecode:: http
 
