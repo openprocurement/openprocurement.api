@@ -276,6 +276,7 @@ def set_journal_handler(event):
         'CURRENT_PATH': request.path_info,
         'REMOTE_ADDR': request.remote_addr or '',
         'USER_AGENT': request.user_agent or '',
+        'REQUEST_METHOD': request.method,
         'AWARD_ID': '',
         'BID_ID': '',
         'COMPLAINT_ID': '',
