@@ -97,7 +97,7 @@ class TenderBidDocumentResource(object):
             LOGGER.info('Updated tender bid document {}'.format(self.request.context.id), extra={'MESSAGE_ID': 'tender_bid_document_put'})
             return {'data': document.serialize("view")}
 
-    @view(renderer='json', validators=(validate_patch_document_data,), permission='edit_bid')
+    @view(content_type="application/json", renderer='json', validators=(validate_patch_document_data,), permission='edit_bid')
     def patch(self):
         """Tender Bid Document Update"""
         if self.request.validated['tender_status'] not in ['active.tendering', 'active.auction', 'active.qualification']:

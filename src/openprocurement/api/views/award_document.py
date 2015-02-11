@@ -89,7 +89,7 @@ class TenderAwardDocumentResource(object):
             LOGGER.info('Updated tender award document {}'.format(self.request.context.id), extra={'MESSAGE_ID': 'tender_award_document_put'})
             return {'data': document.serialize("view")}
 
-    @view(renderer='json', validators=(validate_patch_document_data,), permission='edit_tender')
+    @view(content_type="application/json", renderer='json', validators=(validate_patch_document_data,), permission='edit_tender')
     def patch(self):
         """Tender Award Document Update"""
         if self.request.validated['tender_status'] != 'active.qualification':

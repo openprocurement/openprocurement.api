@@ -61,14 +61,13 @@ def get_filename(data):
 
 
 def upload_file(request):
-    first_document = None
+    first_document = request.validated['documents'][0] if 'documents' in request.validated and request.validated['documents'] else None
     if request.content_type == 'multipart/form-data':
         data = request.validated['file']
         filename = get_filename(data)
         content_type = data.type
         in_file = data.file
     else:
-        first_document = request.validated['documents'][0]
         filename = first_document.title
         content_type = request.content_type
         in_file = request.body_file

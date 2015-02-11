@@ -90,7 +90,7 @@ class TenderDocumentResource(object):
             LOGGER.info('Updated tender document {}'.format(self.request.context.id), extra={'MESSAGE_ID': 'tender_document_put'})
             return {'data': document.serialize("view")}
 
-    @view(renderer='json', permission='upload_tender_documents', validators=(validate_patch_document_data,))
+    @view(content_type="application/json", renderer='json', permission='upload_tender_documents', validators=(validate_patch_document_data,))
     def patch(self):
         """Tender Document Update"""
         if self.request.authenticated_role != 'auction' and self.request.validated['tender_status'] != 'active.enquiries' or \

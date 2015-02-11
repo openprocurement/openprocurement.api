@@ -89,7 +89,7 @@ class TenderComplaintDocumentResource(object):
             LOGGER.info('Updated tender complaint document {}'.format(self.request.context.id), extra={'MESSAGE_ID': 'tender_complaint_document_put'})
             return {'data': document.serialize("view")}
 
-    @view(renderer='json', validators=(validate_patch_document_data,), permission='review_complaint')
+    @view(content_type="application/json", renderer='json', validators=(validate_patch_document_data,), permission='review_complaint')
     def patch(self):
         """Tender Complaint Document Update"""
         if self.request.validated['tender_status'] not in ['active.enquiries', 'active.tendering', 'active.auction', 'active.qualification', 'active.awarded']:
