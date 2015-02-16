@@ -141,10 +141,21 @@ class TenderDocumentResourceTest(BaseTenderWebTest):
         self.assertEqual(response.json['errors'][0]["description"], "Can't add document in current (active.tendering) tender status")
 
     def test_put_tender_document(self):
-        response = self.app.post('/tenders/{}/documents'.format(
-            self.tender_id), upload_files=[('file', 'name.doc', 'content')])
+        from six import BytesIO
+        from urllib import quote
+        body = u'''--BOUNDARY\nContent-Disposition: form-data; name="file"; filename*=utf-8''{}\nContent-Type: application/msword\n\ncontent\n'''.format(quote('укр.doc'))
+        environ = self.app._make_environ()
+        environ['CONTENT_TYPE'] = 'multipart/form-data; boundary=BOUNDARY'
+        environ['REQUEST_METHOD'] = 'POST'
+        req = self.app.RequestClass.blank(self.app._remove_fragment('/tenders/{}/documents'.format(self.tender_id)), environ)
+        req.environ['wsgi.input'] = BytesIO(body.encode(req.charset or 'utf8'))
+        req.content_length = len(body)
+        response = self.app.do_request(req)
+        #response = self.app.post('/tenders/{}/documents'.format(
+            #self.tender_id), upload_files=[('file', 'name.doc', 'content')])
         self.assertEqual(response.status, '201 Created')
         self.assertEqual(response.content_type, 'application/json')
+        self.assertEqual(u'укр.doc', response.json["data"]["title"])
         doc_id = response.json["data"]['id']
         dateModified = response.json["data"]['dateModified']
         self.assertTrue(doc_id in response.headers['Location'])
