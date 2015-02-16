@@ -40,6 +40,8 @@ import os
 import UserDict
 import urlparse
 
+import rfc6266
+
 from warnings import filterwarnings, catch_warnings, warn
 with catch_warnings():
     if sys.py3kwarning:
@@ -456,7 +458,8 @@ class FieldStorage:
         # Process content-disposition header
         cdisp, pdict = "", {}
         if 'content-disposition' in self.headers:
-            cdisp, pdict = parse_header(self.headers['content-disposition'])
+            cd = rfc6266.parse_headers(self.headers['content-disposition'])
+            cdisp, pdict = cd.disposition, cd.assocs
         self.disposition = cdisp
         self.disposition_options = pdict
         self.name = None
@@ -465,6 +468,13 @@ class FieldStorage:
         self.filename = None
         if 'filename' in pdict:
             self.filename = pdict['filename']
+        if 'filename*' in pdict:
+            self.filename = pdict['filename*'].string
+        if isinstance(self.filename, unicode):
+            try:
+                self.filename = self.filename.encode('iso-8859-1')
+            except UnicodeEncodeError:
+                self.filename = self.filename.encode('utf8')
 
         # Process content-type header
         #
