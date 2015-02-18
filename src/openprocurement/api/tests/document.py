@@ -125,9 +125,10 @@ class TenderDocumentResourceTest(BaseTenderWebTest):
         self.assertEqual('name.doc', response.json["data"]["title"])
 
         response = self.app.post('/tenders/{}/documents?acc_token=acc_token'.format(
-            self.tender_id), upload_files=[('file', 'name.doc', 'content')])
+            self.tender_id), upload_files=[('file', u'укр.doc'.encode("ascii", "xmlcharrefreplace"), 'content')])
         self.assertEqual(response.status, '201 Created')
         self.assertEqual(response.content_type, 'application/json')
+        self.assertEqual(u'укр.doc', response.json["data"]["title"])
         doc_id = response.json["data"]['id']
         self.assertTrue(doc_id in response.headers['Location'])
         self.assertFalse('acc_token' in response.headers['Location'])
