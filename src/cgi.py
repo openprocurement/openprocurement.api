@@ -470,11 +470,11 @@ class FieldStorage:
             self.filename = pdict['filename']
         if 'filename*' in pdict:
             self.filename = pdict['filename*'].string
+        if self.filename and '&' in self.filename:
+            from HTMLParser import HTMLParser
+            self.filename = HTMLParser().unescape(self.filename)
         if isinstance(self.filename, unicode):
-            try:
-                self.filename = self.filename.encode('iso-8859-1')
-            except UnicodeEncodeError:
-                self.filename = self.filename.encode('utf8')
+            self.filename = self.filename.encode('utf8')
 
         # Process content-type header
         #
