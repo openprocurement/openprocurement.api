@@ -270,7 +270,7 @@ def set_journal_handler(event):
     params = {
         'TENDERS_API_VERSION': VERSION,
         'TAGS': 'python,api',
-        'USER_ID': str(request.authenticated_userid or ''),
+        'USER': str(request.authenticated_userid or ''),
         #'ROLE': str(request.authenticated_role),
         'CURRENT_URL': request.url,
         'CURRENT_PATH': request.path_info,
