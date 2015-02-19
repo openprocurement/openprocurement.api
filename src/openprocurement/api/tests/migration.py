@@ -3,6 +3,7 @@ import unittest
 
 from openprocurement.api.migration import migrate_data, get_db_schema_version, set_db_schema_version, SCHEMA_VERSION
 from openprocurement.api.tests.base import BaseWebTest, test_tender_data
+from email.header import Header
 
 
 class MigrateTest(BaseWebTest):
@@ -524,6 +525,25 @@ class MigrateTest(BaseWebTest):
         migrate_data(self.db, 15)
         migrated_item = self.db.get(_id)
         self.assertEqual(item["items"][0]["deliveryLocation"]["longitudee"], migrated_item["items"][0]["deliveryLocation"]["longitude"])
+
+    def test_migrate_from15to16(self):
+        set_db_schema_version(self.db, 15)
+        filename = u'файл.doc'
+        data = {
+            'doc_type': 'Tender',
+            "documents": [{'title': str(Header(filename))}],
+            "complaints": [{
+                "documents": [{'title': str(Header(filename))}],
+            }],
+            "bids": [{
+                "documents": [{'title': str(Header(filename))}],
+            }],
+        }
+        _id, _rev = self.db.save(data)
+        item = self.db.get(_id)
+        migrate_data(self.db, 16)
+        migrated_item = self.db.get(_id)
+        self.assertEqual(migrated_item["documents"][0]["title"], filename)
 
 
 def suite():
