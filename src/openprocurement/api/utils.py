@@ -12,6 +12,7 @@ from time import sleep
 from cornice.util import json_error
 from json import dumps
 from email.header import decode_header
+from rfc6266 import build_header
 
 try:
     from systemd.journal import JournalHandler
@@ -89,7 +90,7 @@ def upload_file(request):
         filename = "{}/{}/{}".format(request.validated['tender_id'], document.id, key)
         key = bucket.new_key(filename)
         key.set_metadata('Content-Type', document.format)
-        key.set_metadata("Content-Disposition", "attachment; filename={}".format(quote(document.title.encode('utf-8'))))
+        key.set_metadata("Content-Disposition", build_header(document.title, filename_compat=quote(document.title.encode('utf-8'))))
         key.set_contents_from_file(in_file)
         key.set_acl('private')
     else:
@@ -111,7 +112,7 @@ def get_file(request):
         filename = "{}/{}/{}".format(tender_id, document.id, key)
         url = conn.generate_url(method='GET', bucket=request.registry.bucket_name, key=filename, expires_in=300)
         request.response.content_type = document.format.encode('utf-8')
-        request.response.content_disposition = 'attachment; filename={}'.format(quote(document.title.encode('utf-8')))
+        request.response.content_disposition = build_header(document.title, filename_compat=quote(document.title.encode('utf-8')))
         request.response.status = '302 Moved Temporarily'
         request.response.location = url
         return url
@@ -120,7 +121,7 @@ def get_file(request):
         data = request.registry.db.get_attachment(tender_id, filename)
         if data:
             request.response.content_type = document.format.encode('utf-8')
-            request.response.content_disposition = 'attachment; filename={}'.format(quote(document.title.encode('utf-8')))
+            request.response.content_disposition = build_header(document.title, filename_compat=quote(document.title.encode('utf-8')))
             request.response.body_file = data
             return request.response
         request.errors.add('url', 'download', 'Not Found')
