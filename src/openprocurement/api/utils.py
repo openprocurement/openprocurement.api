@@ -198,6 +198,7 @@ def save_tender(request):
     patch = get_revision_changes(tender.serialize("plain"), request.validated['tender_src'])
     if patch:
         tender.revisions.append(Revision({'author': request.authenticated_userid, 'changes': patch}))
+        old_dateModified = tender.dateModified
         tender.dateModified = get_now()
         try:
             tender.store(request.registry.db)
@@ -208,6 +209,7 @@ def save_tender(request):
         except Exception, e:
             request.errors.add('body', 'data', str(e))
         else:
+            LOGGER.info('Saved tender {}: dateModified {} -> {}'.format(tender.id, old_dateModified and old_dateModified.isoformat(), tender.dateModified.isoformat()), extra={'MESSAGE_ID': 'save_tender'})
             return True
 
 
