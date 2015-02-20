@@ -111,6 +111,7 @@ def update_file_content_type(request):
         filename = "{}/{}/{}".format(request.validated['tender_id'], document.id, key)
         key = bucket.get_key(filename)
         key.set_metadata('Content-Type', document.format)
+        key.copy(key.bucket.name, key.name, key.metadata, preserve_acl=True)
 
 
 def get_file(request):

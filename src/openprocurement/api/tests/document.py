@@ -367,6 +367,11 @@ class MockKey(object):
         else:
             self.metadata[name] = value
 
+    def copy(self, dst_bucket_name, dst_key, metadata=NOT_IMPL,
+             reduced_redundancy=NOT_IMPL, preserve_acl=NOT_IMPL):
+        dst_bucket = self.bucket.connection.get_bucket(dst_bucket_name)
+        return dst_bucket.copy_key(dst_key, self.bucket.name, self.name, metadata)
+
 
 class MockBucket(object):
 
@@ -391,6 +396,17 @@ class MockBucket(object):
         if key_name not in self.keys:
             return None
         return self.keys[key_name]
+
+    def copy_key(self, new_key_name, src_bucket_name,
+                 src_key_name, metadata=NOT_IMPL, src_version_id=NOT_IMPL,
+                 storage_class=NOT_IMPL, preserve_acl=NOT_IMPL,
+                 encrypt_key=NOT_IMPL, headers=NOT_IMPL, query_args=NOT_IMPL):
+        import copy
+        src_key = self.connection.get_bucket(src_bucket_name).get_key(src_key_name)
+        new_key = self.new_key(key_name=new_key_name)
+        new_key.data = copy.copy(src_key.data)
+        new_key.size = len(new_key.data)
+        return new_key
 
 
 class MockProvider(object):
