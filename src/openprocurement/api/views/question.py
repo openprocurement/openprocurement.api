@@ -7,6 +7,7 @@ from openprocurement.api.utils import (
     save_tender,
     error_handler,
     update_journal_handler_params,
+    filter_by_fields,
 )
 from openprocurement.api.validation import (
     validate_question_data,
@@ -45,29 +46,28 @@ class TenderQuestionResource(object):
             LOGGER.info('Created tender question {}'.format(question.id), extra={'MESSAGE_ID': 'tender_question_create'})
             self.request.response.status = 201
             self.request.response.headers['Location'] = self.request.route_url('Tender Questions', tender_id=tender.id, question_id=question.id)
-            return {'data': question.serialize("view")}
+            return {'data': filter_by_fields(question.serialize("view"), self.request)}
 
     @view(renderer='json', permission='view_tender')
     def collection_get(self):
         """List questions
         """
-        return {'data': [i.serialize(self.request.validated['tender'].status) for i in self.request.validated['tender'].questions]}
+        return {'data': [filter_by_fields(i.serialize(self.request.context.status), self.request) for i in self.request.context.questions]}
 
     @view(renderer='json', permission='view_tender')
     def get(self):
         """Retrieving the question
         """
-        return {'data': self.request.validated['question'].serialize(self.request.validated['tender'].status)}
+        return {'data': filter_by_fields(self.request.context.serialize(self.request.validated['tender_status']), self.request)}
 
     @view(content_type="application/json", permission='edit_tender', validators=(validate_patch_question_data,), renderer='json')
     def patch(self):
         """Post an Answer
         """
-        tender = self.request.validated['tender']
-        if tender.status != 'active.enquiries':
-            self.request.errors.add('body', 'data', 'Can\'t update question in current ({}) tender status'.format(tender.status))
+        if self.request.validated['tender_status'] != 'active.enquiries':
+            self.request.errors.add('body', 'data', 'Can\'t update question in current ({}) tender status'.format(self.request.validated['tender_status']))
             self.request.errors.status = 403
             return
         if apply_patch(self.request, src=self.request.context.serialize()):
             LOGGER.info('Updated tender question {}'.format(self.request.context.id), extra={'MESSAGE_ID': 'tender_question_patch'})
-            return {'data': self.request.context.serialize(tender.status)}
+            return {'data': filter_by_fields(self.request.context.serialize(self.request.validated['tender_status']), self.request)}

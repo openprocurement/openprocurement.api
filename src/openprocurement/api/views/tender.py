@@ -18,6 +18,7 @@ from openprocurement.api.utils import (
     add_next_award,
     error_handler,
     update_journal_handler_params,
+    filter_by_fields,
 )
 from openprocurement.api.validation import (
     validate_patch_tender_data,
@@ -288,7 +289,7 @@ class TenderResource(object):
             self.request.response.headers[
                 'Location'] = self.request.route_url('Tender', tender_id=tender_id)
             return {
-                'data': tender.serialize(tender.status),
+                'data': filter_by_fields(tender.serialize(tender.status), self.request),
                 'access': {
                     'token': tender.owner_token
                 }
@@ -383,7 +384,7 @@ class TenderResource(object):
         """
         tender = self.request.validated['tender']
         tender_data = tender.serialize('view' if self.request.authenticated_role == 'chronograph' else tender.status)
-        return {'data': tender_data}
+        return {'data': filter_by_fields(tender_data, self.request)}
 
     #@view(content_type="application/json", validators=(validate_tender_data, ), permission='edit_tender', renderer='json')
     #def put(self):
@@ -462,4 +463,4 @@ class TenderResource(object):
         else:
             apply_patch(self.request, src=self.request.validated['tender_src'])
         LOGGER.info('Updated tender {}'.format(tender.id), extra={'MESSAGE_ID': 'tender_patch'})
-        return {'data': tender.serialize(tender.status)}
+        return {'data': filter_by_fields(tender.serialize(tender.status), self.request)}

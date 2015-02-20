@@ -173,6 +173,14 @@ def tender_serialize(tender, fields):
     return dict([(i, j) for i, j in tender.serialize(tender.status).items() if i in fields])
 
 
+def filter_by_fields(serialized_item, request):
+    fields = request.params.get('opt_fields', '')
+    if fields:
+        fields = fields.split(',')
+        return dict([(i, j) for i, j in serialized_item.items() if i in fields])
+    return serialized_item
+
+
 def get_revision_changes(dst, src):
     return make_patch(dst, src).patch
 

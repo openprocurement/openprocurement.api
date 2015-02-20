@@ -7,6 +7,7 @@ from openprocurement.api.utils import (
     save_tender,
     error_handler,
     update_journal_handler_params,
+    filter_by_fields,
 )
 from openprocurement.api.validation import (
     validate_complaint_data,
@@ -45,19 +46,19 @@ class TenderComplaintResource(object):
             LOGGER.info('Created tender complaint {}'.format(complaint.id), extra={'MESSAGE_ID': 'tender_complaint_create'})
             self.request.response.status = 201
             self.request.response.headers['Location'] = self.request.route_url('Tender Complaints', tender_id=tender.id, complaint_id=complaint.id)
-            return {'data': complaint.serialize("view")}
+            return {'data': filter_by_fields(complaint.serialize("view"), self.request)}
 
     @view(renderer='json', permission='view_tender')
     def collection_get(self):
         """List complaints
         """
-        return {'data': [i.serialize("view") for i in self.request.validated['tender'].complaints]}
+        return {'data': [filter_by_fields(i.serialize("view"), self.request) for i in self.request.context.complaints]}
 
     @view(renderer='json', permission='view_tender')
     def get(self):
         """Retrieving the complaint
         """
-        return {'data': self.request.validated['complaint'].serialize("view")}
+        return {'data': filter_by_fields(self.request.context.serialize("view"), self.request)}
 
     @view(content_type="application/json", validators=(validate_patch_complaint_data,), permission='review_complaint', renderer='json')
     def patch(self):
@@ -105,4 +106,4 @@ class TenderComplaintResource(object):
                     tender.status = 'unsuccessful'
         if save_tender(self.request):
             LOGGER.info('Updated tender complaint {}'.format(self.request.context.id), extra={'MESSAGE_ID': 'tender_complaint_patch'})
-            return {'data': self.request.context.serialize("view")}
+            return {'data': filter_by_fields(self.request.context.serialize("view"), self.request)}

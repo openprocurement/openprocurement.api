@@ -7,6 +7,7 @@ from openprocurement.api.utils import (
     save_tender,
     error_handler,
     update_journal_handler_params,
+    filter_by_fields,
 )
 from openprocurement.api.validation import (
     validate_contract_data,
@@ -46,19 +47,19 @@ class TenderAwardContractResource(object):
             LOGGER.info('Created tender award contract {}'.format(contract.id), extra={'MESSAGE_ID': 'tender_award_contract_create'})
             self.request.response.status = 201
             self.request.response.headers['Location'] = self.request.route_url('Tender Award Contracts', tender_id=tender.id, award_id=self.request.validated['award_id'], contract_id=contract['id'])
-            return {'data': contract.serialize()}
+            return {'data': filter_by_fields(contract.serialize(), self.request)}
 
     @view(renderer='json', permission='view_tender')
     def collection_get(self):
         """List contracts for award
         """
-        return {'data': [i.serialize() for i in self.request.validated['award'].contracts]}
+        return {'data': [filter_by_fields(i.serialize(), self.request) for i in self.request.context.contracts]}
 
     @view(renderer='json', permission='view_tender')
     def get(self):
         """Retrieving the contract for award
         """
-        return {'data': self.request.validated['contract'].serialize()}
+        return {'data': filter_by_fields(self.request.context.serialize(), self.request)}
 
     @view(content_type="application/json", permission='edit_tender', validators=(validate_patch_contract_data,), renderer='json')
     def patch(self):
@@ -95,4 +96,4 @@ class TenderAwardContractResource(object):
             self.request.validated['tender'].status = 'complete'
         if save_tender(self.request):
             LOGGER.info('Updated tender award contract {}'.format(self.request.context.id), extra={'MESSAGE_ID': 'tender_award_contract_patch'})
-            return {'data': self.request.context.serialize()}
+            return {'data': filter_by_fields(self.request.context.serialize(), self.request)}

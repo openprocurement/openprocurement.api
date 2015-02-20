@@ -6,6 +6,7 @@ from openprocurement.api.utils import (
     apply_patch,
     add_next_award,
     error_handler,
+    filter_by_fields,
 )
 from openprocurement.api.validation import (
     validate_tender_auction_data,
@@ -165,4 +166,4 @@ def post_auction(request):
     add_next_award(request)
     if save_tender(request):
         LOGGER.info('Report auction results', extra={'MESSAGE_ID': 'tender_auction_post'})
-        return {'data': request.context.serialize(request.context.status)}
+        return {'data': filter_by_fields(request.context.serialize(request.context.status), request)}
