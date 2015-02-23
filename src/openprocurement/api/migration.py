@@ -473,6 +473,23 @@ def from12to13(db):
         db.save(doc)
 
 
+def fix_rfc2047(item, changed):
+    try:
+        pairs = decode_header(item['title'])
+    except Exception:
+        pairs = None
+    if pairs:
+        header = pairs[0]
+        if header[1]:
+            title = header[0].decode(header[1])
+        else:
+            title = header[0].decode('utf8')
+        if title != item['title']:
+            changed = True
+            item['title'] = title
+    return changed
+
+
 def from13to14(db):
     results = db.view('tenders/all', include_docs=True)
     for i in results:
