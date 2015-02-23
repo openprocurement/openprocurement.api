@@ -416,7 +416,7 @@ auction_patch_role = whitelist('auctionUrl', 'bids')
 enquiries_role = (blacklist('owner', 'owner_token', '_attachments', 'revisions', 'bids', 'numberOfBids') + schematics_embedded_role)
 auction_role = (blacklist('owner', 'owner_token', '_attachments', 'revisions', 'bids') + schematics_embedded_role)
 chronograph_role = whitelist('status', 'enquiryPeriod', 'tenderPeriod', 'auctionPeriod', 'awardPeriod')
-Administrator_role = whitelist('mode')
+Administrator_role = whitelist('status', 'mode')
 
 
 class Tender(SchematicsDocument, Model):
