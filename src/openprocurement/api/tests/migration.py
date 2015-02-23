@@ -488,6 +488,25 @@ class MigrateTest(BaseWebTest):
 
     def test_migrate_from13to14(self):
         set_db_schema_version(self.db, 13)
+        filename = u'файл.doc'
+        data = {
+            'doc_type': 'Tender',
+            "documents": [{'title': str(Header(filename))}],
+            "complaints": [{
+                "documents": [{'title': str(Header(filename))}],
+            }],
+            "bids": [{
+                "documents": [{'title': str(Header(filename))}],
+            }],
+        }
+        _id, _rev = self.db.save(data)
+        item = self.db.get(_id)
+        migrate_data(self.db, 14)
+        migrated_item = self.db.get(_id)
+        self.assertEqual(migrated_item["documents"][0]["title"], filename)
+
+    def test_migrate_from14to15(self):
+        set_db_schema_version(self.db, 14)
         data = {
             'doc_type': 'Tender',
             'items': [
@@ -502,15 +521,15 @@ class MigrateTest(BaseWebTest):
             ]
         }
         _id, _rev = self.db.save(data)
-        migrate_data(self.db, 14)
+        migrate_data(self.db, 15)
         migrated_item = self.db.get(_id)
         self.assertIn('title', migrated_item)
         self.assertEqual(data['items'][0]["description"], migrated_item['title'])
         self.assertEqual(u"CPV", migrated_item['items'][0]['classification']["scheme"])
         self.assertEqual(u"ДКПП", migrated_item['items'][0]['additionalClassifications'][0]["scheme"])
 
-    def test_migrate_from14to15(self):
-        set_db_schema_version(self.db, 14)
+    def test_migrate_from15to16(self):
+        set_db_schema_version(self.db, 15)
         data = {
             'doc_type': 'Tender',
             "items": [{
@@ -522,28 +541,9 @@ class MigrateTest(BaseWebTest):
         }
         _id, _rev = self.db.save(data)
         item = self.db.get(_id)
-        migrate_data(self.db, 15)
-        migrated_item = self.db.get(_id)
-        self.assertEqual(item["items"][0]["deliveryLocation"]["longitudee"], migrated_item["items"][0]["deliveryLocation"]["longitude"])
-
-    def test_migrate_from15to16(self):
-        set_db_schema_version(self.db, 15)
-        filename = u'файл.doc'
-        data = {
-            'doc_type': 'Tender',
-            "documents": [{'title': str(Header(filename))}],
-            "complaints": [{
-                "documents": [{'title': str(Header(filename))}],
-            }],
-            "bids": [{
-                "documents": [{'title': str(Header(filename))}],
-            }],
-        }
-        _id, _rev = self.db.save(data)
-        item = self.db.get(_id)
         migrate_data(self.db, 16)
         migrated_item = self.db.get(_id)
-        self.assertEqual(migrated_item["documents"][0]["title"], filename)
+        self.assertEqual(item["items"][0]["deliveryLocation"]["longitudee"], migrated_item["items"][0]["deliveryLocation"]["longitude"])
 
 
 def suite():

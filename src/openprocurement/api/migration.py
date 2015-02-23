@@ -473,7 +473,51 @@ def from12to13(db):
         db.save(doc)
 
 
+def fix_rfc2047(item, changed):
+    try:
+        pairs = decode_header(item['title'])
+    except Exception:
+        pairs = None
+    if pairs:
+        header = pairs[0]
+        if header[1]:
+            title = header[0].decode(header[1])
+        else:
+            title = header[0].decode('utf8')
+        if title != item['title']:
+            changed = True
+            item['title'] = title
+    return changed
+
+
 def from13to14(db):
+    results = db.view('tenders/all', include_docs=True)
+    for i in results:
+        doc = i.doc
+        changed = False
+        for i in doc.get('documents', []):
+            changed = fix_rfc2047(i, changed)
+        for c in doc.get('complaints', []):
+            for i in c.get('documents', []):
+                changed = fix_rfc2047(i, changed)
+        for b in doc.get('bids', []):
+            for i in b.get('documents', []):
+                changed = fix_rfc2047(i, changed)
+        for a in doc.get('complaints', []):
+            for i in c.get('documents', []):
+                changed = fix_rfc2047(i, changed)
+            for c in a.get('complaints', []):
+                for i in c.get('documents', []):
+                    changed = fix_rfc2047(i, changed)
+            for c in a.get('contracts', []):
+                for i in c.get('documents', []):
+                    changed = fix_rfc2047(i, changed)
+        if changed:
+            doc['dateModified'] = get_now().isoformat()
+            db.save(doc)
+
+
+def from14to15(db):
     results = db.view('tenders/all', include_docs=True)
     for i in results:
         doc = i.doc
@@ -503,7 +547,7 @@ def from13to14(db):
             db.save(doc)
 
 
-def from14to15(db):
+def from15to16(db):
     results = db.view('tenders/all', include_docs=True)
     for i in results:
         doc = i.doc
@@ -512,50 +556,6 @@ def from14to15(db):
             if 'deliveryLocation' in item and 'longitudee' in item['deliveryLocation']:
                 changed = True
                 item['deliveryLocation']['longitude'] = item['deliveryLocation'].pop('longitudee')
-        if changed:
-            doc['dateModified'] = get_now().isoformat()
-            db.save(doc)
-
-
-def fix_rfc2047(item, changed):
-    try:
-        pairs = decode_header(item['title'])
-    except Exception:
-        pairs = None
-    if pairs:
-        header = pairs[0]
-        if header[1]:
-            title = header[0].decode(header[1])
-        else:
-            title = header[0].decode('utf8')
-        if title != item['title']:
-            changed = True
-            item['title'] = title
-    return changed
-
-
-def from15to16(db):
-    results = db.view('tenders/all', include_docs=True)
-    for i in results:
-        doc = i.doc
-        changed = False
-        for i in doc.get('documents', []):
-            changed = fix_rfc2047(i, changed)
-        for c in doc.get('complaints', []):
-            for i in c.get('documents', []):
-                changed = fix_rfc2047(i, changed)
-        for b in doc.get('bids', []):
-            for i in b.get('documents', []):
-                changed = fix_rfc2047(i, changed)
-        for a in doc.get('complaints', []):
-            for i in c.get('documents', []):
-                changed = fix_rfc2047(i, changed)
-            for c in a.get('complaints', []):
-                for i in c.get('documents', []):
-                    changed = fix_rfc2047(i, changed)
-            for c in a.get('contracts', []):
-                for i in c.get('documents', []):
-                    changed = fix_rfc2047(i, changed)
         if changed:
             doc['dateModified'] = get_now().isoformat()
             db.save(doc)
