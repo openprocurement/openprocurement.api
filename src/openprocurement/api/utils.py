@@ -11,6 +11,8 @@ from couchdb.http import ResourceConflict
 from time import sleep
 from cornice.util import json_error
 from json import dumps
+from email.header import decode_header
+from rfc6266 import build_header
 
 try:
     from systemd.journal import JournalHandler
@@ -44,11 +46,25 @@ def generate_tender_id(ctime, db):
     return 'UA-{:04}-{:02}-{:02}-{:06}'.format(ctime.year, ctime.month, ctime.day, index)
 
 
+def get_filename(data):
+    try:
+        pairs = decode_header(data.filename)
+    except Exception:
+        pairs = None
+    if not pairs:
+        return data.filename
+    header = pairs[0]
+    if header[1]:
+        return header[0].decode(header[1])
+    else:
+        return header[0]
+
+
 def upload_file(request):
     first_document = None
     if request.content_type == 'multipart/form-data':
         data = request.validated['file']
-        filename = data.filename
+        filename = get_filename(data)
         content_type = data.type
         in_file = data.file
     else:
@@ -74,7 +90,7 @@ def upload_file(request):
         filename = "{}/{}/{}".format(request.validated['tender_id'], document.id, key)
         key = bucket.new_key(filename)
         key.set_metadata('Content-Type', document.format)
-        key.set_metadata("Content-Disposition", "attachment; filename={}".format(quote(document.title.encode('utf-8'))))
+        key.set_metadata("Content-Disposition", build_header(document.title, filename_compat=quote(document.title.encode('utf-8'))))
         key.set_contents_from_file(in_file)
         key.set_acl('private')
     else:
@@ -96,7 +112,7 @@ def get_file(request):
         filename = "{}/{}/{}".format(tender_id, document.id, key)
         url = conn.generate_url(method='GET', bucket=request.registry.bucket_name, key=filename, expires_in=300)
         request.response.content_type = document.format.encode('utf-8')
-        request.response.content_disposition = 'attachment; filename={}'.format(quote(document.title.encode('utf-8')))
+        request.response.content_disposition = build_header(document.title, filename_compat=quote(document.title.encode('utf-8')))
         request.response.status = '302 Moved Temporarily'
         request.response.location = url
         return url
@@ -105,7 +121,7 @@ def get_file(request):
         data = request.registry.db.get_attachment(tender_id, filename)
         if data:
             request.response.content_type = document.format.encode('utf-8')
-            request.response.content_disposition = 'attachment; filename={}'.format(quote(document.title.encode('utf-8')))
+            request.response.content_disposition = build_header(document.title, filename_compat=quote(document.title.encode('utf-8')))
             request.response.body_file = data
             return request.response
         request.errors.add('url', 'download', 'Not Found')
