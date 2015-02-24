@@ -11,6 +11,7 @@ from pyramid.authorization import ACLAuthorizationPolicy as AuthorizationPolicy
 from pyramid.renderers import JSON, JSONP
 from pyramid.events import NewRequest, BeforeRender, ContextFound
 from couchdb import Server
+from couchdb.http import Unauthorized, extract_credentials
 from openprocurement.api.design import sync_design
 from openprocurement.api.migration import migrate_data
 from boto.s3.connection import S3Connection, Location
@@ -121,11 +122,36 @@ def main(global_config, **settings):
 
     # CouchDB connection
     server = Server(settings.get('couchdb.url'))
+    try:
+        server.version()
+    except Unauthorized:
+        server = Server(extract_credentials(settings.get('couchdb.url'))[0])
+    if server.resource.credentials:
+        users_db = server['_users']
+        users_db.security = {u'admins': {u'names': [], u'roles': ['_admin']}, u'members': {u'names': [], u'roles': ['_admin']}}
+        if 'couchdb.reader_username' in settings and 'couchdb.reader_password' in settings:
+            reader_username = settings.get('couchdb.reader_username')
+            reader = users_db.get('org.couchdb.user:{}'.format(reader_username), {'_id': 'org.couchdb.user:{}'.format(reader_username)})
+            reader.update({
+                "name": reader_username,
+                "roles": ['reader'],
+                "type": "user",
+                "password": settings.get('couchdb.reader_password')
+            })
+            users_db.save(reader)
     config.registry.couchdb_server = server
     db_name = os.environ.get('DB_NAME', settings['couchdb.db_name'])
     if db_name not in server:
         server.create(db_name)
     config.registry.db = server[db_name]
+    if server.resource.credentials:
+        config.registry.db.security = {u'admins': {u'names': [], u'roles': ['_admin']}, u'members': {u'names': [], u'roles': ['reader']}}
+        auth_doc = config.registry.db.get('_design/_auth', {})
+        auth_doc.update({
+            '_id': '_design/_auth',
+            'validate_doc_update': "function(newDoc,oldDoc,userCtx){if(userCtx.roles.indexOf('_admin')!==-1){return;}else{throw({forbidden:'Only admins may edit the database'});}}"
+        })
+        config.registry.db.save(auth_doc)
 
     # sync couchdb views
     sync_design(config.registry.db)
