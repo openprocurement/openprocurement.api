@@ -19,6 +19,7 @@ requires = [
     'tzlocal',
     'pyramid_exclog',
     'rfc6266',
+    'pbkdf2',
 ]
 test_requires = requires + [
     'webtest',

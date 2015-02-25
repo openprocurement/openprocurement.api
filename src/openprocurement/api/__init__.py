@@ -27,6 +27,9 @@ except ImportError:
 PKG = get_distribution(__package__)
 VERSION = '{}.{}'.format(int(PKG.parsed_version[0]), int(PKG.parsed_version[1]))
 ROUTE_PREFIX = '/api/{}'.format(VERSION)
+USER_SECURITY = {u'admins': {u'names': [], u'roles': ['_admin']}, u'members': {u'names': [], u'roles': ['_admin']}}
+DB_SECURITY = {u'admins': {u'names': [], u'roles': ['_admin']}, u'members': {u'names': [], u'roles': ['reader']}}
+VALIDATE_DOC_UPDATE = "function(newDoc,oldDoc,userCtx){if(userCtx.roles.indexOf('_admin')!==-1){return;}else{throw({forbidden:'Only admins may edit the database'});}}"
 
 
 def set_renderer(event):
@@ -128,30 +131,32 @@ def main(global_config, **settings):
         server = Server(extract_credentials(settings.get('couchdb.url'))[0])
     if server.resource.credentials:
         users_db = server['_users']
-        users_db.security = {u'admins': {u'names': [], u'roles': ['_admin']}, u'members': {u'names': [], u'roles': ['_admin']}}
+        if USER_SECURITY != users_db.security:
+            users_db.security = USER_SECURITY
         if 'couchdb.reader_username' in settings and 'couchdb.reader_password' in settings:
+            from pbkdf2 import PBKDF2
             reader_username = settings.get('couchdb.reader_username')
             reader = users_db.get('org.couchdb.user:{}'.format(reader_username), {'_id': 'org.couchdb.user:{}'.format(reader_username)})
-            reader.update({
-                "name": reader_username,
-                "roles": ['reader'],
-                "type": "user",
-                "password": settings.get('couchdb.reader_password')
-            })
-            users_db.save(reader)
+            if PBKDF2(settings.get('couchdb.reader_password'), reader.get('salt', ''), reader.get('iterations', 10)).hexread(int(len(reader.get('derived_key', ''))/2)) != reader.get('derived_key', ''):
+                reader.update({
+                    "name": reader_username,
+                    "roles": ['reader'],
+                    "type": "user",
+                    "password": settings.get('couchdb.reader_password')
+                })
+                users_db.save(reader)
     config.registry.couchdb_server = server
     db_name = os.environ.get('DB_NAME', settings['couchdb.db_name'])
     if db_name not in server:
         server.create(db_name)
     config.registry.db = server[db_name]
     if server.resource.credentials:
-        config.registry.db.security = {u'admins': {u'names': [], u'roles': ['_admin']}, u'members': {u'names': [], u'roles': ['reader']}}
-        auth_doc = config.registry.db.get('_design/_auth', {})
-        auth_doc.update({
-            '_id': '_design/_auth',
-            'validate_doc_update': "function(newDoc,oldDoc,userCtx){if(userCtx.roles.indexOf('_admin')!==-1){return;}else{throw({forbidden:'Only admins may edit the database'});}}"
-        })
-        config.registry.db.save(auth_doc)
+        if DB_SECURITY != config.registry.db.security:
+            config.registry.db.security = DB_SECURITY
+        auth_doc = config.registry.db.get('_design/_auth', {'_id': '_design/_auth'})
+        if auth_doc.get('validate_doc_update') != VALIDATE_DOC_UPDATE:
+            auth_doc['validate_doc_update'] = VALIDATE_DOC_UPDATE
+            config.registry.db.save(auth_doc)
 
     # sync couchdb views
     sync_design(config.registry.db)
