@@ -155,7 +155,7 @@ def main(global_config, **settings):
             users_db.security = SECURITY
         username, password = server.resource.credentials
         user_doc = users_db.get('org.couchdb.user:{}'.format(username), {'_id': 'org.couchdb.user:{}'.format(username)})
-        if not user_doc.get('derived_key', '') or PBKDF2(password, user_doc.get('salt', ''), user_doc.get('iterations', 10)).hexread(int(len(user_doc.get('derived_key', ''))/2)) != user_doc.get('derived_key', ''):
+        if not user_doc.get('derived_key', '') or PBKDF2(password, user_doc.get('salt', ''), user_doc.get('iterations', 10)).hexread(int(len(user_doc.get('derived_key', '')) / 2)) != user_doc.get('derived_key', ''):
             user_doc.update({
                 "name": username,
                 "roles": [],
@@ -164,11 +164,11 @@ def main(global_config, **settings):
             })
             LOGGER.info("Updating api db main user", extra={'MESSAGE_ID': 'update_api_main_user'})
             users_db.save(user_doc)
-        security_users = [username,]
+        security_users = [username, ]
         if 'couchdb.reader_username' in settings and 'couchdb.reader_password' in settings:
             reader_username = settings.get('couchdb.reader_username')
             reader = users_db.get('org.couchdb.user:{}'.format(reader_username), {'_id': 'org.couchdb.user:{}'.format(reader_username)})
-            if not reader.get('derived_key', '') or PBKDF2(settings.get('couchdb.reader_password'), reader.get('salt', ''), reader.get('iterations', 10)).hexread(int(len(reader.get('derived_key', ''))/2)) != reader.get('derived_key', ''):
+            if not reader.get('derived_key', '') or PBKDF2(settings.get('couchdb.reader_password'), reader.get('salt', ''), reader.get('iterations', 10)).hexread(int(len(reader.get('derived_key', '')) / 2)) != reader.get('derived_key', ''):
                 reader.update({
                     "name": reader_username,
                     "roles": ['reader'],

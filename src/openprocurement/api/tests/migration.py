@@ -500,7 +500,6 @@ class MigrateTest(BaseWebTest):
             }],
         }
         _id, _rev = self.db.save(data)
-        item = self.db.get(_id)
         migrate_data(self.db, 14)
         migrated_item = self.db.get(_id)
         self.assertEqual(migrated_item["documents"][0]["title"], filename)
