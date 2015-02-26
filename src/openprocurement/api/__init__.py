@@ -4,32 +4,47 @@
 import gevent.monkey
 gevent.monkey.patch_all()
 import os
+from logging import getLogger
 from pkg_resources import get_distribution
 from pyramid.config import Configurator
 from openprocurement.api.auth import AuthenticationPolicy
 from pyramid.authorization import ACLAuthorizationPolicy as AuthorizationPolicy
 from pyramid.renderers import JSON, JSONP
 from pyramid.events import NewRequest, BeforeRender, ContextFound
-from couchdb import Server
+from couchdb import Server, Session
 from couchdb.http import Unauthorized, extract_credentials
 from openprocurement.api.design import sync_design
 from openprocurement.api.migration import migrate_data
 from boto.s3.connection import S3Connection, Location
 from openprocurement.api.traversal import factory
 from openprocurement.api.utils import forbidden, set_journal_handler, cleanup_journal_handler, update_journal_handler_role
+from pbkdf2 import PBKDF2
 
 try:
     from systemd.journal import JournalHandler
 except ImportError:
     JournalHandler = False
 
+LOGGER = getLogger(__name__)
 #VERSION = int(pkg_resources.get_distribution(__package__).parsed_version[0])
 PKG = get_distribution(__package__)
 VERSION = '{}.{}'.format(int(PKG.parsed_version[0]), int(PKG.parsed_version[1]))
 ROUTE_PREFIX = '/api/{}'.format(VERSION)
-USER_SECURITY = {u'admins': {u'names': [], u'roles': ['_admin']}, u'members': {u'names': [], u'roles': ['_admin']}}
-DB_SECURITY = {u'admins': {u'names': [], u'roles': ['_admin']}, u'members': {u'names': [], u'roles': ['reader']}}
-VALIDATE_DOC_UPDATE = "function(newDoc,oldDoc,userCtx){if(userCtx.roles.indexOf('_admin')!==-1){return;}else{throw({forbidden:'Only admins may edit the database'});}}"
+SECURITY = {u'admins': {u'names': [], u'roles': ['_admin']}, u'members': {u'names': [], u'roles': ['_admin']}}
+VALIDATE_DOC_ID = '_design/_auth'
+VALIDATE_DOC_UPDATE = """function(newDoc, oldDoc, userCtx){
+    if(newDoc._deleted) {
+        throw({forbidden: 'Not authorized to delete this document'});
+    }
+    if(userCtx.roles.indexOf('_admin') !== -1 && newDoc.indexOf('_design/') === 0) {
+        return;
+    }
+    if(userCtx.name === '%s') {
+        return;
+    } else {
+        throw({forbidden: 'Only authorized user may edit the database'});
+    }
+}"""
 
 
 def set_renderer(event):
@@ -124,42 +139,67 @@ def main(global_config, **settings):
     config.scan("openprocurement.api.views")
 
     # CouchDB connection
-    server = Server(settings.get('couchdb.url'))
-    try:
-        server.version()
-    except Unauthorized:
-        server = Server(extract_credentials(settings.get('couchdb.url'))[0])
-    if server.resource.credentials:
-        users_db = server['_users']
-        if USER_SECURITY != users_db.security:
-            users_db.security = USER_SECURITY
+    db_name = os.environ.get('DB_NAME', settings['couchdb.db_name'])
+    server = Server(settings.get('couchdb.url'), session=Session(retry_delays=range(10)))
+    if 'couchdb.admin_url' not in settings and server.resource.credentials:
+        try:
+            server.version()
+        except Unauthorized:
+            server = Server(extract_credentials(settings.get('couchdb.url'))[0])
+    config.registry.couchdb_server = server
+    if 'couchdb.admin_url' in settings and server.resource.credentials:
+        aserver = Server(settings.get('couchdb.admin_url'), session=Session(retry_delays=range(10)))
+        users_db = aserver['_users']
+        if SECURITY != users_db.security:
+            LOGGER.info("Updating users db security", extra={'MESSAGE_ID': 'update_users_security'})
+            users_db.security = SECURITY
+        username, password = server.resource.credentials
+        user_doc = users_db.get('org.couchdb.user:{}'.format(username), {'_id': 'org.couchdb.user:{}'.format(username)})
+        if not user_doc.get('derived_key', '') or PBKDF2(password, user_doc.get('salt', ''), user_doc.get('iterations', 10)).hexread(int(len(user_doc.get('derived_key', ''))/2)) != user_doc.get('derived_key', ''):
+            user_doc.update({
+                "name": username,
+                "roles": [],
+                "type": "user",
+                "password": password
+            })
+            LOGGER.info("Updating api db main user", extra={'MESSAGE_ID': 'update_api_main_user'})
+            users_db.save(user_doc)
+        security_users = [username,]
         if 'couchdb.reader_username' in settings and 'couchdb.reader_password' in settings:
-            from pbkdf2 import PBKDF2
             reader_username = settings.get('couchdb.reader_username')
             reader = users_db.get('org.couchdb.user:{}'.format(reader_username), {'_id': 'org.couchdb.user:{}'.format(reader_username)})
-            if PBKDF2(settings.get('couchdb.reader_password'), reader.get('salt', ''), reader.get('iterations', 10)).hexread(int(len(reader.get('derived_key', ''))/2)) != reader.get('derived_key', ''):
+            if not reader.get('derived_key', '') or PBKDF2(settings.get('couchdb.reader_password'), reader.get('salt', ''), reader.get('iterations', 10)).hexread(int(len(reader.get('derived_key', ''))/2)) != reader.get('derived_key', ''):
                 reader.update({
                     "name": reader_username,
                     "roles": ['reader'],
                     "type": "user",
                     "password": settings.get('couchdb.reader_password')
                 })
+                LOGGER.info("Updating api db reader user", extra={'MESSAGE_ID': 'update_api_reader_user'})
                 users_db.save(reader)
-    config.registry.couchdb_server = server
-    db_name = os.environ.get('DB_NAME', settings['couchdb.db_name'])
-    if db_name not in server:
-        server.create(db_name)
-    config.registry.db = server[db_name]
-    if server.resource.credentials:
-        if DB_SECURITY != config.registry.db.security:
-            config.registry.db.security = DB_SECURITY
-        auth_doc = config.registry.db.get('_design/_auth', {'_id': '_design/_auth'})
-        if auth_doc.get('validate_doc_update') != VALIDATE_DOC_UPDATE:
-            auth_doc['validate_doc_update'] = VALIDATE_DOC_UPDATE
-            config.registry.db.save(auth_doc)
-
-    # sync couchdb views
-    sync_design(config.registry.db)
+            security_users.append(reader_username)
+        if db_name not in aserver:
+            aserver.create(db_name)
+        db = aserver[db_name]
+        SECURITY[u'members'][u'names'] = security_users
+        if SECURITY != db.security:
+            LOGGER.info("Updating api db security", extra={'MESSAGE_ID': 'update_api_security'})
+            db.security = SECURITY
+        auth_doc = db.get(VALIDATE_DOC_ID, {'_id': VALIDATE_DOC_ID})
+        if auth_doc.get('validate_doc_update') != VALIDATE_DOC_UPDATE % username:
+            auth_doc['validate_doc_update'] = VALIDATE_DOC_UPDATE % username
+            LOGGER.info("Updating api db validate doc", extra={'MESSAGE_ID': 'update_api_validate_doc'})
+            db.save(auth_doc)
+        # sync couchdb views
+        sync_design(db)
+        db = server[db_name]
+    else:
+        if db_name not in server:
+            server.create(db_name)
+        db = server[db_name]
+        # sync couchdb views
+        sync_design(db)
+    config.registry.db = db
 
     # migrate data
     migrate_data(config.registry.db)
