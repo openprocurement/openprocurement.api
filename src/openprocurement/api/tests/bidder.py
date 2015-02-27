@@ -590,6 +590,40 @@ class TenderBidderDocumentResourceTest(BaseTenderWebTest):
         self.assertEqual(response.content_type, 'application/json')
         self.assertEqual(response.json['errors'][0]["description"], "Can't update document in current (active.awarded) tender status")
 
+    def test_create_tender_bidder_document_nopending(self):
+        response = self.app.post_json('/tenders/{}/bids'.format(
+            self.tender_id), {'data': {'tenderers': [test_tender_data["procuringEntity"]], "value": {"amount": 500}}})
+        bid = response.json['data']
+        bid_id = bid['id']
+
+        response = self.app.post('/tenders/{}/bids/{}/documents'.format(
+            self.tender_id, bid_id), upload_files=[('file', 'name.doc', 'content')])
+        self.assertEqual(response.status, '201 Created')
+        self.assertEqual(response.content_type, 'application/json')
+        doc_id = response.json["data"]['id']
+        self.assertTrue(doc_id in response.headers['Location'])
+
+        self.set_status('active.qualification')
+
+        response = self.app.patch_json('/tenders/{}/bids/{}/documents/{}'.format(
+            self.tender_id, bid_id, doc_id), {"data": {"description": "document description"}}, status=403)
+        self.assertEqual(response.status, '403 Forbidden')
+        self.assertEqual(response.content_type, 'application/json')
+        self.assertEqual(response.json['errors'][0]["description"], "Can't update document because award of bid is not in pending state")
+
+        response = self.app.put('/tenders/{}/bids/{}/documents/{}'.format(
+            self.tender_id, bid_id, doc_id), 'content3', content_type='application/msword', status=403)
+        self.assertEqual(response.status, '403 Forbidden')
+        self.assertEqual(response.content_type, 'application/json')
+        self.assertEqual(response.json['errors'][0]["description"], "Can't update document because award of bid is not in pending state")
+
+        response = self.app.post('/tenders/{}/bids/{}/documents'.format(
+            self.tender_id, bid_id), upload_files=[('file', 'name.doc', 'content')], status=403)
+        self.assertEqual(response.status, '403 Forbidden')
+        self.assertEqual(response.content_type, 'application/json')
+        self.assertEqual(response.json['errors'][0]["description"], "Can't add document because award of bid is not in pending state")
+
+
 
 def suite():
     suite = unittest.TestSuite()

@@ -52,8 +52,12 @@ class TenderBidDocumentResource(object):
     def collection_post(self):
         """Tender Bid Document Upload
         """
-        if self.request.validated['tender_status'] not in ['active.tendering', 'active.auction', 'active.qualification']:
+        if self.request.validated['tender_status'] not in ['active.tendering', 'active.qualification']:
             self.request.errors.add('body', 'data', 'Can\'t add document in current ({}) tender status'.format(self.request.validated['tender_status']))
+            self.request.errors.status = 403
+            return
+        if self.request.validated['tender_status'] == 'active.qualification' and not [i for i in self.request.validated['tender'].awards if i.status == 'pending' and i.bid_id == self.request.validated['bid_id']]:
+            self.request.errors.add('body', 'data', 'Can\'t add document because award of bid is not in pending state')
             self.request.errors.status = 403
             return
         document = upload_file(self.request)
@@ -87,8 +91,12 @@ class TenderBidDocumentResource(object):
     @view(renderer='json', validators=(validate_file_update,), permission='edit_bid')
     def put(self):
         """Tender Bid Document Update"""
-        if self.request.validated['tender_status'] not in ['active.tendering', 'active.auction', 'active.qualification']:
+        if self.request.validated['tender_status'] not in ['active.tendering', 'active.qualification']:
             self.request.errors.add('body', 'data', 'Can\'t update document in current ({}) tender status'.format(self.request.validated['tender_status']))
+            self.request.errors.status = 403
+            return
+        if self.request.validated['tender_status'] == 'active.qualification' and not [i for i in self.request.validated['tender'].awards if i.status == 'pending' and i.bid_id == self.request.validated['bid_id']]:
+            self.request.errors.add('body', 'data', 'Can\'t update document because award of bid is not in pending state')
             self.request.errors.status = 403
             return
         document = upload_file(self.request)
@@ -100,8 +108,12 @@ class TenderBidDocumentResource(object):
     @view(content_type="application/json", renderer='json', validators=(validate_patch_document_data,), permission='edit_bid')
     def patch(self):
         """Tender Bid Document Update"""
-        if self.request.validated['tender_status'] not in ['active.tendering', 'active.auction', 'active.qualification']:
+        if self.request.validated['tender_status'] not in ['active.tendering', 'active.qualification']:
             self.request.errors.add('body', 'data', 'Can\'t update document in current ({}) tender status'.format(self.request.validated['tender_status']))
+            self.request.errors.status = 403
+            return
+        if self.request.validated['tender_status'] == 'active.qualification' and not [i for i in self.request.validated['tender'].awards if i.status == 'pending' and i.bid_id == self.request.validated['bid_id']]:
+            self.request.errors.add('body', 'data', 'Can\'t update document because award of bid is not in pending state')
             self.request.errors.status = 403
             return
         if apply_patch(self.request, src=self.request.context.serialize()):
