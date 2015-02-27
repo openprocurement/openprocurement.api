@@ -25,7 +25,7 @@ try:
 except ImportError:
     JournalHandler = False
 
-LOGGER = getLogger(__name__)
+LOGGER = getLogger("{}.init".format(__name__))
 #VERSION = int(pkg_resources.get_distribution(__package__).parsed_version[0])
 PKG = get_distribution(__package__)
 VERSION = '{}.{}'.format(int(PKG.parsed_version[0]), int(PKG.parsed_version[1]))
