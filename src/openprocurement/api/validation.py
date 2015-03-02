@@ -26,7 +26,7 @@ def validate_data(request, model, partial=False):
         if partial and isinstance(request.context, model):
             new_patch = apply_data_patch(request.context.serialize(), data)
             m = model(request.context.serialize())
-            m.import_data(new_patch)
+            m.import_data(new_patch, strict=True)
             m.validate()
             if request.authenticated_role == 'Administrator':
                 role = 'Administrator'

@@ -196,6 +196,13 @@ class TenderAwardResourceTest(BaseTenderWebTest):
                 u'url', u'name': u'tender_id'}
         ])
 
+        response = self.app.patch_json('/tenders/{}/awards/{}'.format(self.tender_id, award['id']), {"data": {"awardStatus": "unsuccessful"}}, status=422)
+        self.assertEqual(response.status, '422 Unprocessable Entity')
+        self.assertEqual(response.content_type, 'application/json')
+        self.assertEqual(response.json['errors'], [
+            {"location": "body", "name": "awardStatus", "description": "Rogue field"}
+        ])
+
         response = self.app.patch_json('/tenders/{}/awards/{}'.format(self.tender_id, award['id']), {"data": {"status": "unsuccessful"}})
         self.assertEqual(response.status, '200 OK')
         self.assertEqual(response.content_type, 'application/json')
