@@ -1,12 +1,13 @@
 # -*- coding: utf-8 -*-
 import logging
 from datetime import timedelta
-from openprocurement.api.models import CPV_CODES, get_now
+from iso8601 import parse_date
+from openprocurement.api.models import CPV_CODES, STAND_STILL_TIME, TZ, get_now
 from email.header import decode_header
 
 
 LOGGER = logging.getLogger(__name__)
-SCHEMA_VERSION = 16
+SCHEMA_VERSION = 17
 SCHEMA_DOC = 'openprocurement_schema'
 
 
@@ -556,6 +557,25 @@ def from15to16(db):
             if 'deliveryLocation' in item and 'longitudee' in item['deliveryLocation']:
                 changed = True
                 item['deliveryLocation']['longitude'] = item['deliveryLocation'].pop('longitudee')
+        if changed:
+            doc['dateModified'] = get_now().isoformat()
+            db.save(doc)
+
+def from16to17(db):
+    results = db.view('tenders/all', include_docs=True)
+    for i in results:
+        doc = i.doc
+        changed = False
+        for i in doc.get("awards", []):
+            if 'complaintPeriod' in i:
+                continue
+            if i['status'] == 'pending':
+                i['complaintPeriod'] = {'startDate': i['date']}
+            elif i['status'] == 'cancelled':
+                i['complaintPeriod'] = {'startDate': i['date'], 'endDate': i['date']}
+            else:
+                i['complaintPeriod'] = {'startDate': i['date'], 'endDate': (parse_date(i['date'], TZ) + STAND_STILL_TIME).isoformat()}
+            changed = True
         if changed:
             doc['dateModified'] = get_now().isoformat()
             db.save(doc)
