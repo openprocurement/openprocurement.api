@@ -20,7 +20,7 @@ schematics_embedded_role = SchematicsDocument.Options.roles['embedded']
 schematics_default_role = SchematicsDocument.Options.roles['default']
 
 if os.environ.get('READTHEDOCS', None) == 'True':
-    os.environ['TZ'] = 'Europe/Kiev'
+    os.environ['TZ'] = 'Europe/Kiev'  # pragma: no cover
 
 TZ = timezone(get_localzone().tzname(datetime.now()))
 
@@ -380,7 +380,7 @@ class Award(Model):
     class Options:
         serialize_when_none = False
         roles = {
-            'create': blacklist('id', 'status', 'date', 'documents', 'complaints', 'contracts'),
+            'create': blacklist('id', 'status', 'date', 'documents', 'complaints', 'contracts', 'complaintPeriod'),
             'edit': whitelist('status'),
             'embedded': schematics_embedded_role,
             'view': schematics_default_role,
@@ -402,6 +402,7 @@ class Award(Model):
     documents = ListType(ModelType(Document), default=list())
     complaints = ListType(ModelType(Complaint), default=list())
     contracts = ListType(ModelType(Contract), default=list())
+    complaintPeriod = ModelType(Period)
 
 
 def validate_cpv_group(items, *args):

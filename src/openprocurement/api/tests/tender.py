@@ -673,6 +673,11 @@ class TenderProcessTest(BaseTenderWebTest):
         # after stand slill period
         self.app.authorization = ('Basic', ('chronograph', ''))
         self.set_status('complete', {'status': 'active.awarded'})
+        # time travel
+        tender = self.db.get(tender_id)
+        for i in tender.get('awards', []):
+            i['complaintPeriod']['endDate'] = i['complaintPeriod']['startDate']
+        self.db.save(tender)
         # sign contract
         self.app.authorization = ('Basic', ('broker', ''))
         response = self.app.patch_json('/tenders/{}/awards/{}/contracts/{}?acc_token={}'.format(tender_id, award_id, contract_id, owner_token), {"data": {"status": "active"}})
@@ -805,6 +810,11 @@ class TenderProcessTest(BaseTenderWebTest):
         # after stand slill period
         self.app.authorization = ('Basic', ('chronograph', ''))
         self.set_status('complete', {'status': 'active.awarded'})
+        # time travel
+        tender = self.db.get(tender_id)
+        for i in tender.get('awards', []):
+            i['complaintPeriod']['endDate'] = i['complaintPeriod']['startDate']
+        self.db.save(tender)
         # sign contract
         self.app.authorization = ('Basic', ('broker', ''))
         response = self.app.patch_json('/tenders/{}/awards/{}/contracts/{}?acc_token={}'.format(tender_id, award_id, contract_id, owner_token), {"data": {"status": "active"}})
