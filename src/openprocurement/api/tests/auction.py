@@ -71,8 +71,8 @@ class TenderAuctionResourceTest(BaseTenderWebTest):
         self.assertEqual(response.content_type, 'application/json')
         auction = response.json['data']
         self.assertNotEqual(auction, self.initial_data)
-        self.assertTrue('dateModified' in auction)
-        self.assertTrue('minimalStep' in auction)
+        self.assertIn('dateModified', auction)
+        self.assertIn('minimalStep', auction)
         self.assertFalse("procuringEntity" in auction)
         self.assertFalse("tenderers" in auction["bids"][0])
         self.assertEqual(auction["bids"][0]['value']['amount'], self.initial_bids[0]['value']['amount'])
@@ -82,12 +82,12 @@ class TenderAuctionResourceTest(BaseTenderWebTest):
         response = self.app.get('/tenders/{}/auction?opt_jsonp=callback'.format(self.tender_id))
         self.assertEqual(response.status, '200 OK')
         self.assertEqual(response.content_type, 'application/javascript')
-        self.assertTrue('callback({"data": {"' in response.body)
+        self.assertIn('callback({"data": {"', response.body)
 
         response = self.app.get('/tenders/{}/auction?opt_pretty=1'.format(self.tender_id))
         self.assertEqual(response.status, '200 OK')
         self.assertEqual(response.content_type, 'application/json')
-        self.assertTrue('{\n    "data": {\n        "' in response.body)
+        self.assertIn('{\n    "data": {\n        "', response.body)
 
         self.set_status('active.qualification')
 
@@ -174,9 +174,9 @@ class TenderAuctionResourceTest(BaseTenderWebTest):
         self.assertEqual(tender["bids"][0]['value']['amount'], patch_data["bids"][1]['value']['amount'])
         self.assertEqual(tender["bids"][1]['value']['amount'], patch_data["bids"][0]['value']['amount'])
         self.assertEqual('active.qualification', tender["status"])
-        self.assertTrue("tenderers" in tender["bids"][0])
-        self.assertTrue("name" in tender["bids"][0]["tenderers"][0])
-        # self.assertTrue(tender["awards"][0]["id"] in response.headers['Location'])
+        self.assertIn("tenderers", tender["bids"][0])
+        self.assertIn("name", tender["bids"][0]["tenderers"][0])
+        # self.assertIn(tender["awards"][0]["id"], response.headers['Location'])
         self.assertEqual(tender["awards"][0]['bid_id'], patch_data["bids"][0]['id'])
         self.assertEqual(tender["awards"][0]['value']['amount'], patch_data["bids"][0]['value']['amount'])
         self.assertEqual(tender["awards"][0]['suppliers'], self.initial_bids[0]['tenderers'])

@@ -85,7 +85,7 @@ class TenderDocumentResourceTest(BaseTenderWebTest):
         self.assertEqual(response.status, '201 Created')
         self.assertEqual(response.content_type, 'application/json')
         doc_id = response.json["data"]['id']
-        self.assertTrue(doc_id in response.headers['Location'])
+        self.assertIn(doc_id, response.headers['Location'])
         self.assertEqual(u'укр.doc', response.json["data"]["title"])
         key = response.json["data"]["url"].split('?')[-1].split('=')[-1]
 
@@ -130,7 +130,7 @@ class TenderDocumentResourceTest(BaseTenderWebTest):
         self.assertEqual(response.content_type, 'application/json')
         self.assertEqual(u'укр.doc', response.json["data"]["title"])
         doc_id = response.json["data"]['id']
-        self.assertTrue(doc_id in response.headers['Location'])
+        self.assertIn(doc_id, response.headers['Location'])
         self.assertFalse('acc_token' in response.headers['Location'])
 
         self.set_status('active.tendering')
@@ -159,7 +159,7 @@ class TenderDocumentResourceTest(BaseTenderWebTest):
         self.assertEqual(u'укр.doc', response.json["data"]["title"])
         doc_id = response.json["data"]['id']
         dateModified = response.json["data"]['dateModified']
-        self.assertTrue(doc_id in response.headers['Location'])
+        self.assertIn(doc_id, response.headers['Location'])
 
         response = self.app.put('/tenders/{}/documents/{}'.format(
             self.tender_id, doc_id), upload_files=[('file', 'name.doc', 'content2')])
@@ -203,7 +203,7 @@ class TenderDocumentResourceTest(BaseTenderWebTest):
         self.assertEqual(response.content_type, 'application/json')
         doc_id = response.json["data"]['id']
         dateModified = response.json["data"]['dateModified']
-        self.assertTrue(doc_id in response.headers['Location'])
+        self.assertIn(doc_id, response.headers['Location'])
 
         response = self.app.get('/tenders/{}/documents'.format(self.tender_id))
         self.assertEqual(response.status, '200 OK')
@@ -256,7 +256,7 @@ class TenderDocumentResourceTest(BaseTenderWebTest):
         self.assertEqual(response.content_type, 'application/json')
         doc_id = response.json["data"]['id']
         #dateModified = response.json["data"]['dateModified']
-        self.assertTrue(doc_id in response.headers['Location'])
+        self.assertIn(doc_id, response.headers['Location'])
         self.assertEqual(u'укр.doc', response.json["data"]["title"])
 
         response = self.app.patch_json('/tenders/{}/documents/{}'.format(self.tender_id, doc_id), {"data": {"description": "document description"}})

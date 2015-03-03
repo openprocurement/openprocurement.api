@@ -109,8 +109,8 @@ class TenderQuestionResourceTest(BaseTenderWebTest):
         self.assertEqual(response.content_type, 'application/json')
         question = response.json['data']
         self.assertEqual(question['author']['name'], test_tender_data["procuringEntity"]['name'])
-        self.assertTrue('id' in question)
-        self.assertTrue(question['id'] in response.headers['Location'])
+        self.assertIn('id', question)
+        self.assertIn(question['id'], response.headers['Location'])
 
         self.set_status('active.tendering')
 

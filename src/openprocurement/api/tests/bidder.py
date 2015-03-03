@@ -128,8 +128,8 @@ class TenderBidderResourceTest(BaseTenderWebTest):
         self.assertEqual(response.content_type, 'application/json')
         bidder = response.json['data']
         self.assertEqual(bidder['tenderers'][0]['name'], test_tender_data["procuringEntity"]['name'])
-        self.assertTrue('id' in bidder)
-        self.assertTrue(bidder['id'] in response.headers['Location'])
+        self.assertIn('id', bidder)
+        self.assertIn(bidder['id'], response.headers['Location'])
 
         self.set_status('complete')
 
@@ -213,7 +213,7 @@ class TenderBidderResourceTest(BaseTenderWebTest):
         self.assertEqual(response.status, '200 OK')
         self.assertEqual(response.content_type, 'application/json')
         bidder_data = response.json['data']
-        #self.assertTrue(u'participationUrl' in bidder_data)
+        #self.assertIn(u'participationUrl', bidder_data)
         #bidder_data.pop(u'participationUrl')
         self.assertEqual(bidder_data, bidder)
 
@@ -437,7 +437,7 @@ class TenderBidderDocumentResourceTest(BaseTenderWebTest):
         self.assertEqual(response.status, '201 Created')
         self.assertEqual(response.content_type, 'application/json')
         doc_id = response.json["data"]['id']
-        self.assertTrue(doc_id in response.headers['Location'])
+        self.assertIn(doc_id, response.headers['Location'])
         self.assertEqual('name.doc', response.json["data"]["title"])
         key = response.json["data"]["url"].split('?')[-1]
 
@@ -507,7 +507,7 @@ class TenderBidderDocumentResourceTest(BaseTenderWebTest):
         self.assertEqual(response.status, '201 Created')
         self.assertEqual(response.content_type, 'application/json')
         doc_id = response.json["data"]['id']
-        self.assertTrue(doc_id in response.headers['Location'])
+        self.assertIn(doc_id, response.headers['Location'])
 
         response = self.app.put('/tenders/{}/bids/{}/documents/{}'.format(self.tender_id, self.bid_id, doc_id),
                                 status=404,
@@ -569,7 +569,7 @@ class TenderBidderDocumentResourceTest(BaseTenderWebTest):
         self.assertEqual(response.status, '201 Created')
         self.assertEqual(response.content_type, 'application/json')
         doc_id = response.json["data"]['id']
-        self.assertTrue(doc_id in response.headers['Location'])
+        self.assertIn(doc_id, response.headers['Location'])
 
         response = self.app.patch_json('/tenders/{}/bids/{}/documents/{}'.format(self.tender_id, self.bid_id, doc_id), {"data": {"description": "document description"}})
         self.assertEqual(response.status, '200 OK')
@@ -601,7 +601,7 @@ class TenderBidderDocumentResourceTest(BaseTenderWebTest):
         self.assertEqual(response.status, '201 Created')
         self.assertEqual(response.content_type, 'application/json')
         doc_id = response.json["data"]['id']
-        self.assertTrue(doc_id in response.headers['Location'])
+        self.assertIn(doc_id, response.headers['Location'])
 
         self.set_status('active.qualification')
 

@@ -291,22 +291,29 @@ class TenderAwardResource(object):
 
         """
         tender = self.request.validated['tender']
-        if tender.status != 'active.qualification':
+        if tender.status not in ['active.qualification', 'active.awarded']:
             self.request.errors.add('body', 'data', 'Can\'t update award in current ({}) tender status'.format(tender.status))
             self.request.errors.status = 403
             return
         award = self.request.context
-        if award.status != 'pending':
-            self.request.errors.add('body', 'data', 'Can\'t update award in current ({}) status'.format(award.status))
-            self.request.errors.status = 403
-            return
+        award_status = award.status
         apply_patch(self.request, save=False, src=self.request.context.serialize())
-        if award.status == 'active':
+        if award_status == 'pending' and award.status == 'active':
             award.contracts.append(Contract({'awardID': award.id}))
             tender.awardPeriod.endDate = get_now()
             tender.status = 'active.awarded'
-        elif award.status == 'unsuccessful':
+        elif award_status == 'active' and award.status == 'cancelled':
+            for i in award.contracts:
+                i.status = 'cancelled'
             add_next_award(self.request)
+            tender.status = 'active.qualification'
+            tender.awardPeriod.endDate = None
+        elif award_status == 'pending' and award.status == 'unsuccessful':
+            add_next_award(self.request)
+        else:
+            self.request.errors.add('body', 'data', 'Can\'t update award in current ({}) status'.format(award_status))
+            self.request.errors.status = 403
+            return
         if save_tender(self.request):
             LOGGER.info('Updated tender award {}'.format(self.request.context.id), extra={'MESSAGE_ID': 'tender_award_patch'})
             return {'data': award.serialize("view")}

@@ -110,8 +110,8 @@ class TenderComplaintResourceTest(BaseTenderWebTest):
         self.assertEqual(response.content_type, 'application/json')
         complaint = response.json['data']
         self.assertEqual(complaint['author']['name'], test_tender_data["procuringEntity"]['name'])
-        self.assertTrue('id' in complaint)
-        self.assertTrue(complaint['id'] in response.headers['Location'])
+        self.assertIn('id', complaint)
+        self.assertIn(complaint['id'], response.headers['Location'])
 
         authorization = self.app.authorization
         self.app.authorization = ('Basic', ('chronograph', ''))
@@ -358,7 +358,7 @@ class TenderComplaintDocumentResourceTest(BaseTenderWebTest):
         self.assertEqual(response.status, '201 Created')
         self.assertEqual(response.content_type, 'application/json')
         doc_id = response.json["data"]['id']
-        self.assertTrue(doc_id in response.headers['Location'])
+        self.assertIn(doc_id, response.headers['Location'])
         self.assertEqual('name.doc', response.json["data"]["title"])
         key = response.json["data"]["url"].split('?')[-1]
 
@@ -411,7 +411,7 @@ class TenderComplaintDocumentResourceTest(BaseTenderWebTest):
         self.assertEqual(response.status, '201 Created')
         self.assertEqual(response.content_type, 'application/json')
         doc_id = response.json["data"]['id']
-        self.assertTrue(doc_id in response.headers['Location'])
+        self.assertIn(doc_id, response.headers['Location'])
 
         response = self.app.put('/tenders/{}/complaints/{}/documents/{}'.format(self.tender_id, self.complaint_id, doc_id),
                                 status=404,
@@ -473,7 +473,7 @@ class TenderComplaintDocumentResourceTest(BaseTenderWebTest):
         self.assertEqual(response.status, '201 Created')
         self.assertEqual(response.content_type, 'application/json')
         doc_id = response.json["data"]['id']
-        self.assertTrue(doc_id in response.headers['Location'])
+        self.assertIn(doc_id, response.headers['Location'])
 
         response = self.app.patch_json('/tenders/{}/complaints/{}/documents/{}'.format(self.tender_id, self.complaint_id, doc_id), {"data": {"description": "document description"}})
         self.assertEqual(response.status, '200 OK')
