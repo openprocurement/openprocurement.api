@@ -1,0 +1,10 @@
+PATCH /tenders/64e93250be76435397e8c992ed4214d1/awards/3e05703be0e54bf388bd11024e9661fe HTTP/1.1
+
+{
+    "data":{
+        "status": "cancelled"
+    }
+}
+
+HTTP/1.1 200 OK
+Location: /tenders/64e93250be76435397e8c992ed4214d1/awards/ea36a10ad89649ccac253f23d8e0e80d HTTP/1.1

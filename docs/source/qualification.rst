@@ -89,6 +89,36 @@ to correct errors.  Alternatively they can reject the bid if documents
 provided does not satisfy the pass/fail criterias of tender (even before
 full package of supplementary documents is available).
 
+Cancelling Active Award
+~~~~~~~~~~~~~~~~~~~~~~~
+
+Sometimes Bidder refuses to sign the contract even after passing
+qualification process.  In this case Procuring Entity is expected to be able
+to reject approved award and disqualify Bid afterwards.
+
+After we have Award with active status:
+
+.. include:: qualification/award-active-get.http
+   :code:
+
+There is need to cancel it:
+
+.. include:: qualification/award-active-cancel.http
+   :code:
+
+Note that there is Location header returned that aid in locating the "fresh"
+award that is most likely subject for disqualification:
+
+.. include:: qualification/award-active-cancel-upload.http
+   :code:
+
+.. include:: qualification/award-active-cancel-disqualify.http
+   :code:
+
+In the case there is another Bid for qualification, there will be Location
+header in the response poining its Award.
+
+
 Influence of Complaint Satisfaction
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
