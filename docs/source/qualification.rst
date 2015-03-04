@@ -43,7 +43,7 @@ Complaint Review Body.
 
   {
       "data":{
-          "awardStatus": "unsuccessful"
+          "status": "unsuccessful"
       }
   }
 
@@ -75,7 +75,7 @@ Confirming the Award:
 
   {
       "data":{
-          "awardStatus": "active"
+          "status": "active"
       }
   }
 
