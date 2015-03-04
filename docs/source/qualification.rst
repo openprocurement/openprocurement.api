@@ -15,7 +15,7 @@ The pending award can be retrieved via request to list all awards available:
 
 .. sourcecode:: http
 
-  GET /tenders/64e93250be76435397e8c992ed4214d1/awards
+  GET /tenders/64e93250be76435397e8c992ed4214d1/awards HTTP/1.1
 
 The award is with `pending` status meaning the fact that procuring entity has
 to review documents describing the bid and other bidder documents.
@@ -29,7 +29,7 @@ document into award and later its status should switch to either `active`
 
 .. sourcecode:: http
 
-  POST /tenders/64e93250be76435397e8c992ed4214d1/awards/{}/documents
+  POST /tenders/64e93250be76435397e8c992ed4214d1/awards/{}/documents HTTP/1.1
 
 The Qualification Comittee can upload several documents, like decisions to
 prolong the qualification process to allow the bidder to collect all
@@ -65,7 +65,7 @@ Protocol upload:
 
 .. sourcecode:: http
 
-  POST /tenders/64e93250be76435397e8c992ed4214d1/awards/{}/documents
+  POST /tenders/64e93250be76435397e8c992ed4214d1/awards/{}/documents HTTP/1.1
 
 Confirming the Award:
 
