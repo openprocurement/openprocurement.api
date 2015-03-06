@@ -66,6 +66,28 @@ lot.  The changes in the API are communicated via `Open Procurement API
 Change log
 ----------
 
+0.7
+~~~
+Released: not released
+
+ New features:
+
+ - Set title, classification and additionalClassifications required
+ - Added validation identical cpv groups of items
+ - Added upload tender documents by auction user
+ - Closing tender by signing contract
+ - Strict mode for patching operation
+ - Cancalling active award
+
+ Modifications:
+
+ - Authenticated couchdb access
+ - Fixed authentication of PUT and PATCH methods
+ - Optimized calls to db on start
+ - Fixed deliveryLocation fields
+ - Fixed edit format field in Documents
+ - Fixed restrictions uploading documents of bid
+
 0.6
 ~~~
 Released: 2014-12-15
