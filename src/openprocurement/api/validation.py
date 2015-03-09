@@ -76,6 +76,8 @@ def validate_patch_tender_data(request):
 def validate_tender_auction_data(request):
     data = validate_patch_tender_data(request)
     tender = request.context
+    if not tender or not isinstance(tender, Tender):
+        return
     if data is not None:
         if tender.status != 'active.auction':
             request.errors.add('body', 'data', 'Can\'t report auction results in current ({}) tender status'.format(tender.status))

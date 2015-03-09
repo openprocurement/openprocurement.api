@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from logging import getLogger
 from cornice.resource import resource, view
-from openprocurement.api.models import Award, Contract, STAND_STILL_TIME, get_now
+from openprocurement.api.models import Award, Contract, get_now
 from openprocurement.api.utils import (
     apply_patch,
     save_tender,
@@ -171,7 +171,6 @@ class TenderAwardResource(object):
             self.request.errors.status = 403
             return
         award_data = self.request.validated['data']
-        award_data['complaintPeriod'] = {'startDate': get_now().isoformat()}
         award = Award(award_data)
         tender.awards.append(award)
         if save_tender(self.request):
@@ -300,19 +299,16 @@ class TenderAwardResource(object):
         award_status = award.status
         apply_patch(self.request, save=False, src=self.request.context.serialize())
         if award_status == 'pending' and award.status == 'active':
-            award.complaintPeriod.endDate = get_now() + STAND_STILL_TIME
             award.contracts.append(Contract({'awardID': award.id}))
             tender.awardPeriod.endDate = get_now()
             tender.status = 'active.awarded'
         elif award_status == 'active' and award.status == 'cancelled':
-            award.complaintPeriod.endDate = get_now()
             for i in award.contracts:
                 i.status = 'cancelled'
             add_next_award(self.request)
             tender.status = 'active.qualification'
             tender.awardPeriod.endDate = None
         elif award_status == 'pending' and award.status == 'unsuccessful':
-            award.complaintPeriod.endDate = get_now() + STAND_STILL_TIME
             add_next_award(self.request)
         else:
             self.request.errors.add('body', 'data', 'Can\'t update award in current ({}) status'.format(award_status))

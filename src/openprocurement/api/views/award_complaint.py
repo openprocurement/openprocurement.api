@@ -38,15 +38,9 @@ class TenderAwardComplaintResource(object):
             self.request.errors.add('body', 'data', 'Can\'t add complaint in current ({}) tender status'.format(tender.status))
             self.request.errors.status = 403
             return
-        if self.request.context.complaintPeriod and \
-           (self.request.context.complaintPeriod.startDate and self.request.context.complaintPeriod.startDate > get_now() or
-                self.request.context.complaintPeriod.endDate and self.request.context.complaintPeriod.endDate < get_now()):
-            self.request.errors.add('body', 'data', 'Can add complaint only in complaintPeriod')
-            self.request.errors.status = 403
-            return
         complaint_data = self.request.validated['data']
         complaint = Complaint(complaint_data)
-        self.request.context.complaints.append(complaint)
+        self.request.validated['award'].complaints.append(complaint)
         if save_tender(self.request):
             update_journal_handler_params({'complaint_id': complaint.id})
             LOGGER.info('Created tender award complaint {}'.format(complaint.id), extra={'MESSAGE_ID': 'tender_award_complaint_create'})
@@ -58,7 +52,7 @@ class TenderAwardComplaintResource(object):
     def collection_get(self):
         """List complaints for award
         """
-        return {'data': [i.serialize("view") for i in self.request.context.complaints]}
+        return {'data': [i.serialize("view") for i in self.request.validated['award'].complaints]}
 
     @view(renderer='json', permission='view_tender')
     def get(self):
@@ -92,14 +86,12 @@ class TenderAwardComplaintResource(object):
                 tender.awardPeriod.endDate = None
             if award.status == 'unsuccessful':
                 for i in tender.awards[tender.awards.index(award):]:
-                    i.complaintPeriod.endDate = get_now() + STAND_STILL_TIME
                     i.status = 'cancelled'
                     for j in i.complaints:
                         if j.status == 'pending':
                             j.status = 'cancelled'
             for i in award.contracts:
                 i.status = 'cancelled'
-            award.complaintPeriod.endDate = get_now() + STAND_STILL_TIME
             award.status = 'cancelled'
             add_next_award(self.request)
         elif complaint.status in ['declined', 'invalid'] and tender.status == 'active.awarded':
@@ -114,13 +106,7 @@ class TenderAwardComplaintResource(object):
                 for i in a.complaints
                 if i.status == 'pending'
             ]
-            stand_still_ends = [
-                a.complaintPeriod.endDate
-                for a in tender.awards
-                if a.complaintPeriod.endDate
-            ]
-            stand_still_end = max(stand_still_ends) if stand_still_ends else get_now()
-            stand_still_time_expired = stand_still_end < get_now()
+            stand_still_time_expired = tender.awardPeriod.endDate + STAND_STILL_TIME < get_now()
             if not pending_complaints and not pending_awards_complaints and stand_still_time_expired:
                 active_awards = [
                     a

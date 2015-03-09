@@ -503,7 +503,7 @@ def from13to14(db):
         for b in doc.get('bids', []):
             for i in b.get('documents', []):
                 changed = fix_rfc2047(i, changed)
-        for a in doc.get('awards', []):
+        for a in doc.get('complaints', []):
             for i in c.get('documents', []):
                 changed = fix_rfc2047(i, changed)
             for c in a.get('complaints', []):

@@ -22,7 +22,7 @@ from pbkdf2 import PBKDF2
 
 try:
     from systemd.journal import JournalHandler
-except ImportError:  # pragma: no cover
+except ImportError:
     JournalHandler = False
 
 LOGGER = getLogger("{}.init".format(__name__))

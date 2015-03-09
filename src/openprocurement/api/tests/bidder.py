@@ -624,6 +624,7 @@ class TenderBidderDocumentResourceTest(BaseTenderWebTest):
         self.assertEqual(response.json['errors'][0]["description"], "Can't add document because award of bid is not in pending state")
 
 
+
 def suite():
     suite = unittest.TestSuite()
     suite.addTest(unittest.makeSuite(TenderBidderDocumentResourceTest))

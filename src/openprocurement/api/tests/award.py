@@ -398,11 +398,13 @@ class TenderAwardComplaintResourceTest(BaseTenderWebTest):
         self.assertEqual(response.json['data']["status"], "invalid")
         self.assertEqual(response.json['data']["resolution"], "spam")
 
+        self.set_status('complete')
+
         response = self.app.post_json('/tenders/{}/awards/{}/complaints'.format(
             self.tender_id, self.award_id), {'data': {'title': 'complaint title', 'description': 'complaint description', 'author': test_tender_data["procuringEntity"]}}, status=403)
         self.assertEqual(response.status, '403 Forbidden')
         self.assertEqual(response.content_type, 'application/json')
-        self.assertEqual(response.json['errors'][0]["description"], "Can't add complaint in current (unsuccessful) tender status")
+        self.assertEqual(response.json['errors'][0]["description"], "Can't add complaint in current (complete) tender status")
 
     def test_patch_tender_award_complaint(self):
         response = self.app.post_json('/tenders/{}/awards/{}/complaints'.format(
@@ -522,17 +524,6 @@ class TenderAwardComplaintResourceTest(BaseTenderWebTest):
             {u'description': u'Not Found', u'location':
                 u'url', u'name': u'tender_id'}
         ])
-
-        tender = self.db.get(self.tender_id)
-        for i in tender.get('awards', []):
-            i['complaintPeriod']['endDate'] = i['complaintPeriod']['startDate']
-        self.db.save(tender)
-
-        response = self.app.post_json('/tenders/{}/awards/{}/complaints'.format(
-            self.tender_id, self.award_id), {'data': {'title': 'complaint title', 'description': 'complaint description', 'author': test_tender_data["procuringEntity"]}}, status=403)
-        self.assertEqual(response.status, '403 Forbidden')
-        self.assertEqual(response.content_type, 'application/json')
-        self.assertEqual(response.json['errors'][0]["description"], "Can add complaint only in complaintPeriod")
 
 
 class TenderAwardComplaintDocumentResourceTest(BaseTenderWebTest):
@@ -955,11 +946,6 @@ class TenderAwardContractResourceTest(BaseTenderWebTest):
             self.tender_id, self.award_id), {'data': {'title': 'complaint title', 'description': 'complaint description', 'author': test_tender_data["procuringEntity"]}})
         self.assertEqual(response.status, '201 Created')
         complaint = response.json['data']
-
-        tender = self.db.get(self.tender_id)
-        for i in tender.get('awards', []):
-            i['complaintPeriod']['endDate'] = i['complaintPeriod']['startDate']
-        self.db.save(tender)
 
         response = self.app.patch_json('/tenders/{}/awards/{}/contracts/{}'.format(self.tender_id, self.award_id, contract['id']), {"data": {"status": "active"}}, status=403)
         self.assertEqual(response.status, '403 Forbidden')

@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from logging import getLogger
 from cornice.resource import resource, view
-from openprocurement.api.models import Complaint, get_now
+from openprocurement.api.models import Complaint, STAND_STILL_TIME, get_now
 from openprocurement.api.utils import (
     apply_patch,
     save_tender,
@@ -94,13 +94,7 @@ class TenderComplaintResource(object):
                 for i in a.complaints
                 if i.status == 'pending'
             ]
-            stand_still_ends = [
-                a.complaintPeriod.endDate
-                for a in tender.awards
-                if a.complaintPeriod.endDate
-            ]
-            stand_still_end = max(stand_still_ends) if stand_still_ends else get_now()
-            stand_still_time_expired = stand_still_end < get_now()
+            stand_still_time_expired = tender.awardPeriod.endDate + STAND_STILL_TIME < get_now()
             if not pending_complaints and not pending_awards_complaints and stand_still_time_expired:
                 active_awards = [
                     a

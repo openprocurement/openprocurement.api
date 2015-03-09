@@ -72,7 +72,7 @@ class AuthenticationPolicy(BasicAuthAuthenticationPolicy):
         # https://github.com/Pylons/pyramid/issues/898
         try:
             auth = authbytes.decode('utf-8')
-        except UnicodeDecodeError:  # pragma: no cover
+        except UnicodeDecodeError:
             auth = authbytes.decode('latin-1')
 
         try:

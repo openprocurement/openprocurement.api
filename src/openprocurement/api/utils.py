@@ -17,7 +17,7 @@ from rfc6266 import build_header
 
 try:
     from systemd.journal import JournalHandler
-except ImportError:  # pragma: no cover
+except ImportError:
     JournalHandler = False
 
 
@@ -38,9 +38,9 @@ def generate_tender_id(ctime, db):
             index = tenderID.get(key, 1)
             tenderID[key] = index + 1
             db.save(tenderID)
-        except ResourceConflict:  # pragma: no cover
+        except ResourceConflict:
             pass
-        except Exception:  # pragma: no cover
+        except Exception:
             sleep(1)
         else:
             break
@@ -207,7 +207,7 @@ def save_tender(request):
             for i in e.message:
                 request.errors.add('body', i, e.message[i])
             request.errors.status = 422
-        except Exception, e:  # pragma: no cover
+        except Exception, e:
             request.errors.add('body', 'data', str(e))
         else:
             LOGGER.info('Saved tender {}: dateModified {} -> {}'.format(tender.id, old_dateModified and old_dateModified.isoformat(), tender.dateModified.isoformat()), extra={'MESSAGE_ID': 'save_tender'})
@@ -234,9 +234,6 @@ def add_next_award(request):
             'status': 'pending',
             'value': bid['value'],
             'suppliers': bid['tenderers'],
-            'complaintPeriod': {
-                'startDate': get_now().isoformat()
-            }
         }
         award = Award(award_data)
         tender.awards.append(award)

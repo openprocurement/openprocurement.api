@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from logging import getLogger
 from cornice.resource import resource, view
-from openprocurement.api.models import Contract, get_now
+from openprocurement.api.models import Contract, STAND_STILL_TIME, get_now
 from openprocurement.api.utils import (
     apply_patch,
     save_tender,
@@ -70,10 +70,7 @@ class TenderAwardContractResource(object):
         data = self.request.validated['data']
         if self.request.context.status != 'active' and 'status' in data and data['status'] == 'active':
             tender = self.request.validated['tender']
-            stand_still_end = max([
-                a.complaintPeriod.endDate
-                for a in tender.awards
-            ])
+            stand_still_end = tender.awardPeriod.endDate + STAND_STILL_TIME
             if stand_still_end > get_now():
                 self.request.errors.add('body', 'data', 'Can\'t sign contract before stand-still period end ({})'.format(stand_still_end.isoformat()))
                 self.request.errors.status = 403

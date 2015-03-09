@@ -491,15 +491,6 @@ class MigrateTest(BaseWebTest):
         filename = u'файл.doc'
         data = {
             'doc_type': 'Tender',
-            "awards": [{
-                "documents": [{'title': str(Header(filename))}],
-                "contracts": [{
-                    "documents": [{'title': str(Header(filename))}],
-                }],
-                "complaints": [{
-                    "documents": [{'title': str(Header(filename))}],
-                }],
-            }],
             "documents": [{'title': str(Header(filename))}],
             "complaints": [{
                 "documents": [{'title': str(Header(filename))}],
