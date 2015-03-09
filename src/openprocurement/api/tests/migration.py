@@ -553,25 +553,6 @@ class MigrateTest(BaseWebTest):
         migrated_item = self.db.get(_id)
         self.assertEqual(item["items"][0]["deliveryLocation"]["longitudee"], migrated_item["items"][0]["deliveryLocation"]["longitude"])
 
-    def test_migrate_from16to17(self):
-        set_db_schema_version(self.db, 16)
-        data = {
-            'doc_type': 'Tender',
-            "awards": [
-                {"date": '2015-03-01T00:00:00+02:00', "status": 'pending', 'complaintPeriod': {'startDate': '2015-03-01T00:00:00+02:00'}},
-                {"date": '2015-03-01T00:00:00+02:00', "status": 'pending'},
-                {"date": '2015-03-01T00:00:00+02:00', "status": 'unsuccessful'},
-                {"date": '2015-03-01T00:00:00+02:00', "status": 'active'},
-                {"date": '2015-03-01T00:00:00+02:00', "status": 'cancelled'},
-            ]
-        }
-        _id, _rev = self.db.save(data)
-        item = self.db.get(_id)
-        migrate_data(self.db, 17)
-        migrated_item = self.db.get(_id)
-        for i in migrated_item['awards']:
-            self.assertIn('complaintPeriod', i)
-
 
 def suite():
     suite = unittest.TestSuite()
