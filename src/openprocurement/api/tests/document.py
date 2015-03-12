@@ -81,19 +81,19 @@ class TenderDocumentResourceTest(BaseTenderWebTest):
         self.assertEqual(response.json, {"data": []})
 
         response = self.app.post('/tenders/{}/documents'.format(
-            self.tender_id), upload_files=[('file', 'name.doc', 'content')])
+            self.tender_id), upload_files=[('file', u'укр.doc', 'content')])
         self.assertEqual(response.status, '201 Created')
         self.assertEqual(response.content_type, 'application/json')
         doc_id = response.json["data"]['id']
-        self.assertTrue(doc_id in response.headers['Location'])
-        self.assertEqual('name.doc', response.json["data"]["title"])
+        self.assertIn(doc_id, response.headers['Location'])
+        self.assertEqual(u'укр.doc', response.json["data"]["title"])
         key = response.json["data"]["url"].split('?')[-1].split('=')[-1]
 
         response = self.app.get('/tenders/{}/documents'.format(self.tender_id))
         self.assertEqual(response.status, '200 OK')
         self.assertEqual(response.content_type, 'application/json')
         self.assertEqual(doc_id, response.json["data"][0]["id"])
-        self.assertEqual('name.doc', response.json["data"][0]["title"])
+        self.assertEqual(u'укр.doc', response.json["data"][0]["title"])
 
         if self.s3_connection:
             response = self.app.get('/tenders/{}/documents/{}?download={}'.format(
@@ -122,7 +122,7 @@ class TenderDocumentResourceTest(BaseTenderWebTest):
         self.assertEqual(response.status, '200 OK')
         self.assertEqual(response.content_type, 'application/json')
         self.assertEqual(doc_id, response.json["data"]["id"])
-        self.assertEqual('name.doc', response.json["data"]["title"])
+        self.assertEqual(u'укр.doc', response.json["data"]["title"])
 
         response = self.app.post('/tenders/{}/documents?acc_token=acc_token'.format(
             self.tender_id), upload_files=[('file', u'укр.doc'.encode("ascii", "xmlcharrefreplace"), 'content')])
@@ -130,13 +130,13 @@ class TenderDocumentResourceTest(BaseTenderWebTest):
         self.assertEqual(response.content_type, 'application/json')
         self.assertEqual(u'укр.doc', response.json["data"]["title"])
         doc_id = response.json["data"]['id']
-        self.assertTrue(doc_id in response.headers['Location'])
+        self.assertIn(doc_id, response.headers['Location'])
         self.assertFalse('acc_token' in response.headers['Location'])
 
         self.set_status('active.tendering')
 
         response = self.app.post('/tenders/{}/documents'.format(
-            self.tender_id), upload_files=[('file', 'name.doc', 'content')], status=403)
+            self.tender_id), upload_files=[('file', u'укр.doc', 'content')], status=403)
         self.assertEqual(response.status, '403 Forbidden')
         self.assertEqual(response.content_type, 'application/json')
         self.assertEqual(response.json['errors'][0]["description"], "Can't add document in current (active.tendering) tender status")
@@ -159,7 +159,7 @@ class TenderDocumentResourceTest(BaseTenderWebTest):
         self.assertEqual(u'укр.doc', response.json["data"]["title"])
         doc_id = response.json["data"]['id']
         dateModified = response.json["data"]['dateModified']
-        self.assertTrue(doc_id in response.headers['Location'])
+        self.assertIn(doc_id, response.headers['Location'])
 
         response = self.app.put('/tenders/{}/documents/{}'.format(
             self.tender_id, doc_id), upload_files=[('file', 'name.doc', 'content2')])
@@ -203,7 +203,7 @@ class TenderDocumentResourceTest(BaseTenderWebTest):
         self.assertEqual(response.content_type, 'application/json')
         doc_id = response.json["data"]['id']
         dateModified = response.json["data"]['dateModified']
-        self.assertTrue(doc_id in response.headers['Location'])
+        self.assertIn(doc_id, response.headers['Location'])
 
         response = self.app.get('/tenders/{}/documents'.format(self.tender_id))
         self.assertEqual(response.status, '200 OK')
@@ -256,7 +256,7 @@ class TenderDocumentResourceTest(BaseTenderWebTest):
         self.assertEqual(response.content_type, 'application/json')
         doc_id = response.json["data"]['id']
         #dateModified = response.json["data"]['dateModified']
-        self.assertTrue(doc_id in response.headers['Location'])
+        self.assertIn(doc_id, response.headers['Location'])
         self.assertEqual(u'укр.doc', response.json["data"]["title"])
 
         response = self.app.patch_json('/tenders/{}/documents/{}'.format(self.tender_id, doc_id), {"data": {"description": "document description"}})
@@ -367,6 +367,11 @@ class MockKey(object):
         else:
             self.metadata[name] = value
 
+    def copy(self, dst_bucket_name, dst_key, metadata=NOT_IMPL,
+             reduced_redundancy=NOT_IMPL, preserve_acl=NOT_IMPL):
+        dst_bucket = self.bucket.connection.get_bucket(dst_bucket_name)
+        return dst_bucket.copy_key(dst_key, self.bucket.name, self.name, metadata)
+
 
 class MockBucket(object):
 
@@ -385,6 +390,23 @@ class MockBucket(object):
         self.keys[key_name] = mock_key
         self.acls[key_name] = MockAcl()
         return mock_key
+
+    def get_key(self, key_name, headers=NOT_IMPL, version_id=NOT_IMPL):
+        # Emulate behavior of boto when get_key called with non-existent key.
+        if key_name not in self.keys:
+            return None
+        return self.keys[key_name]
+
+    def copy_key(self, new_key_name, src_bucket_name,
+                 src_key_name, metadata=NOT_IMPL, src_version_id=NOT_IMPL,
+                 storage_class=NOT_IMPL, preserve_acl=NOT_IMPL,
+                 encrypt_key=NOT_IMPL, headers=NOT_IMPL, query_args=NOT_IMPL):
+        import copy
+        src_key = self.connection.get_bucket(src_bucket_name).get_key(src_key_name)
+        new_key = self.new_key(key_name=new_key_name)
+        new_key.data = copy.copy(src_key.data)
+        new_key.size = len(new_key.data)
+        return new_key
 
 
 class MockProvider(object):

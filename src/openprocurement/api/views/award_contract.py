@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from logging import getLogger
 from cornice.resource import resource, view
-from openprocurement.api.models import Contract
+from openprocurement.api.models import Contract, STAND_STILL_TIME, get_now
 from openprocurement.api.utils import (
     apply_patch,
     save_tender,
@@ -67,7 +67,32 @@ class TenderAwardContractResource(object):
         if self.request.validated['tender_status'] not in ['active.awarded', 'complete']:
             self.request.errors.add('body', 'data', 'Can\'t update contract in current ({}) tender status'.format(self.request.validated['tender_status']))
             self.request.errors.status = 403
-            return
-        if apply_patch(self.request, src=self.request.context.serialize()):
+        data = self.request.validated['data']
+        if self.request.context.status != 'active' and 'status' in data and data['status'] == 'active':
+            tender = self.request.validated['tender']
+            stand_still_end = tender.awardPeriod.endDate + STAND_STILL_TIME
+            if stand_still_end > get_now():
+                self.request.errors.add('body', 'data', 'Can\'t sign contract before stand-still period end ({})'.format(stand_still_end.isoformat()))
+                self.request.errors.status = 403
+                return
+            pending_complaints = [
+                i
+                for i in tender.complaints
+                if i.status == 'pending'
+            ]
+            pending_awards_complaints = [
+                i
+                for a in tender.awards
+                for i in a.complaints
+                if i.status == 'pending'
+            ]
+            if pending_complaints or pending_awards_complaints:
+                self.request.errors.add('body', 'data', 'Can\'t sign contract before reviewing all complaints')
+                self.request.errors.status = 403
+                return
+        apply_patch(self.request, save=False, src=self.request.context.serialize())
+        if self.request.context.status == 'active' and self.request.validated['tender_status'] != 'complete':
+            self.request.validated['tender'].status = 'complete'
+        if save_tender(self.request):
             LOGGER.info('Updated tender award contract {}'.format(self.request.context.id), extra={'MESSAGE_ID': 'tender_award_contract_patch'})
             return {'data': self.request.context.serialize()}

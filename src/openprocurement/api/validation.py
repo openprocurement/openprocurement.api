@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from openprocurement.api.models import Tender, Bid, Award, Document, Question, Complaint, Contract, get_now
 from schematics.exceptions import ModelValidationError, ModelConversionError
-from openprocurement.api.utils import apply_data_patch
+from openprocurement.api.utils import apply_data_patch, update_journal_handler_params
 
 
 def validate_json_data(request):
@@ -26,7 +26,7 @@ def validate_data(request, model, partial=False):
         if partial and isinstance(request.context, model):
             new_patch = apply_data_patch(request.context.serialize(), data)
             m = model(request.context.serialize())
-            m.import_data(new_patch)
+            m.import_data(new_patch, strict=True)
             m.validate()
             if request.authenticated_role == 'Administrator':
                 role = 'Administrator'
@@ -49,6 +49,10 @@ def validate_data(request, model, partial=False):
             request.errors.add('body', i, e.message[i])
         request.errors.status = 422
         data = None
+    except ValueError, e:
+        request.errors.add('body', 'data', e.message)
+        request.errors.status = 422
+        data = None
     else:
         if hasattr(m.__class__, '_options') and role not in m.__class__._options.roles:
             request.errors.add('url', 'role', 'Forbidden')
@@ -61,6 +65,7 @@ def validate_data(request, model, partial=False):
 
 
 def validate_tender_data(request):
+    update_journal_handler_params({'tender_id': '__new__'})
     return validate_data(request, Tender)
 
 
@@ -108,6 +113,7 @@ def validate_tender_auction_data(request):
 
 
 def validate_bid_data(request):
+    update_journal_handler_params({'bid_id': '__new__'})
     return validate_data(request, Bid)
 
 
@@ -116,6 +122,7 @@ def validate_patch_bid_data(request):
 
 
 def validate_award_data(request):
+    update_journal_handler_params({'award_id': '__new__'})
     return validate_data(request, Award)
 
 
@@ -128,6 +135,7 @@ def validate_patch_document_data(request):
 
 
 def validate_question_data(request):
+    update_journal_handler_params({'question_id': '__new__'})
     return validate_data(request, Question)
 
 
@@ -136,6 +144,7 @@ def validate_patch_question_data(request):
 
 
 def validate_complaint_data(request):
+    update_journal_handler_params({'complaint_id': '__new__'})
     return validate_data(request, Complaint)
 
 
@@ -144,6 +153,7 @@ def validate_patch_complaint_data(request):
 
 
 def validate_contract_data(request):
+    update_journal_handler_params({'contract_id': '__new__'})
     return validate_data(request, Contract)
 
 
@@ -152,6 +162,7 @@ def validate_patch_contract_data(request):
 
 
 def validate_file_upload(request):
+    update_journal_handler_params({'document_id': '__new__'})
     if 'file' not in request.POST or not hasattr(request.POST['file'], 'filename'):
         request.errors.add('body', 'file', 'Not Found')
         request.errors.status = 404

@@ -22,8 +22,8 @@ class MigrateTest(BaseWebTest):
         migrate_data(self.db, 1)
         migrated_item = self.db.get(_id)
         self.assertFalse('modified' in item)
-        self.assertTrue('modifiedAt' in item)
-        self.assertTrue('modified' in migrated_item)
+        self.assertIn('modifiedAt', item)
+        self.assertIn('modified', migrated_item)
         self.assertFalse('modifiedAt' in migrated_item)
         self.assertEqual(item['modifiedAt'], migrated_item['modified'])
 
@@ -50,9 +50,9 @@ class MigrateTest(BaseWebTest):
         item = self.db.get(_id)
         migrate_data(self.db, 2)
         migrated_item = self.db.get(_id)
-        self.assertTrue('country-name' in item["procuringEntity"]["address"])
+        self.assertIn('country-name', item["procuringEntity"]["address"])
         self.assertFalse('countryName' in item["procuringEntity"]["address"])
-        self.assertTrue('country-name' in item["bidders"][0]["address"])
+        self.assertIn('country-name', item["bidders"][0]["address"])
         self.assertFalse('countryName' in item["bidders"][0]["address"])
         self.assertFalse(
             'country-name' in migrated_item["procuringEntity"]["address"])
@@ -78,10 +78,10 @@ class MigrateTest(BaseWebTest):
         item = self.db.get(_id)
         migrate_data(self.db, 3)
         migrated_item = self.db.get(_id)
-        self.assertTrue('bidders' in item)
+        self.assertIn('bidders', item)
         self.assertFalse('bids' in item)
         self.assertFalse('bidders' in migrated_item)
-        self.assertTrue('bids' in migrated_item)
+        self.assertIn('bids', migrated_item)
         self.assertEqual(
             item["bidders"][0]["_id"], migrated_item["bids"][0]["id"])
         self.assertEqual(item["bidders"][0]["id"]["name"], migrated_item[
@@ -123,9 +123,9 @@ class MigrateTest(BaseWebTest):
         migrate_data(self.db, 5)
         migrated_item = self.db.get(_id)
         self.assertFalse('clarificationPeriod' in migrated_item)
-        self.assertTrue('enquiryPeriod' in migrated_item)
+        self.assertIn('enquiryPeriod', migrated_item)
         self.assertFalse('clarifications' in migrated_item)
-        self.assertTrue('hasEnquiries' in migrated_item)
+        self.assertIn('hasEnquiries', migrated_item)
         self.assertEqual(item["clarificationPeriod"], migrated_item["enquiryPeriod"])
         self.assertEqual(item["clarifications"], migrated_item["hasEnquiries"])
 
@@ -160,7 +160,7 @@ class MigrateTest(BaseWebTest):
         migrate_data(self.db, 6)
         migrated_item = self.db.get(_id)
         self.assertFalse('attachments' in migrated_item)
-        self.assertTrue('documents' in migrated_item)
+        self.assertIn('documents', migrated_item)
         self.assertEqual(item["attachments"][0]["id"], migrated_item["documents"][0]["id"])
         self.assertEqual(item["attachments"][0]["description"], migrated_item["documents"][0]["title"])
         self.assertEqual(item["attachments"][0]["lastModified"], migrated_item["documents"][0]["modified"])
@@ -500,10 +500,49 @@ class MigrateTest(BaseWebTest):
             }],
         }
         _id, _rev = self.db.save(data)
-        item = self.db.get(_id)
         migrate_data(self.db, 14)
         migrated_item = self.db.get(_id)
         self.assertEqual(migrated_item["documents"][0]["title"], filename)
+
+    def test_migrate_from14to15(self):
+        set_db_schema_version(self.db, 14)
+        data = {
+            'doc_type': 'Tender',
+            'items': [
+                {
+                    "description": u"футляри до державних нагород",
+                    "unit": {
+                        "name": u"item",
+                        "code": u"44617100-9"
+                    },
+                    "quantity": 5
+                }
+            ]
+        }
+        _id, _rev = self.db.save(data)
+        migrate_data(self.db, 15)
+        migrated_item = self.db.get(_id)
+        self.assertIn('title', migrated_item)
+        self.assertEqual(data['items'][0]["description"], migrated_item['title'])
+        self.assertEqual(u"CPV", migrated_item['items'][0]['classification']["scheme"])
+        self.assertEqual(u"ДКПП", migrated_item['items'][0]['additionalClassifications'][0]["scheme"])
+
+    def test_migrate_from15to16(self):
+        set_db_schema_version(self.db, 15)
+        data = {
+            'doc_type': 'Tender',
+            "items": [{
+                "deliveryLocation": {
+                    'latitude': 49,
+                    'longitudee': 24
+                }
+            }]
+        }
+        _id, _rev = self.db.save(data)
+        item = self.db.get(_id)
+        migrate_data(self.db, 16)
+        migrated_item = self.db.get(_id)
+        self.assertEqual(item["items"][0]["deliveryLocation"]["longitudee"], migrated_item["items"][0]["deliveryLocation"]["longitude"])
 
 
 def suite():

@@ -148,8 +148,8 @@ class TenderAwardResourceTest(BaseTenderWebTest):
         self.assertEqual(response.content_type, 'application/json')
         award = response.json['data']
         self.assertEqual(award['suppliers'][0]['name'], test_tender_data["procuringEntity"]['name'])
-        self.assertTrue('id' in award)
-        self.assertTrue(award['id'] in response.headers['Location'])
+        self.assertIn('id', award)
+        self.assertIn(award['id'], response.headers['Location'])
 
         response = self.app.get('/tenders/{}/awards'.format(self.tender_id))
         self.assertEqual(response.status, '200 OK')
@@ -165,6 +165,12 @@ class TenderAwardResourceTest(BaseTenderWebTest):
         self.assertEqual(response.status, '200 OK')
         self.assertEqual(response.content_type, 'application/json')
         self.assertEqual(response.json['data']['status'], u'active.awarded')
+
+        response = self.app.patch_json('/tenders/{}/awards/{}'.format(self.tender_id, award['id']), {"data": {"status": "cancelled"}})
+        self.assertEqual(response.status, '200 OK')
+        self.assertEqual(response.content_type, 'application/json')
+        self.assertEqual(response.json['data']['status'], u'cancelled')
+        self.assertIn('Location', response.headers)
 
     def test_patch_tender_award(self):
         response = self.app.post_json('/tenders/{}/awards'.format(
@@ -196,10 +202,17 @@ class TenderAwardResourceTest(BaseTenderWebTest):
                 u'url', u'name': u'tender_id'}
         ])
 
+        response = self.app.patch_json('/tenders/{}/awards/{}'.format(self.tender_id, award['id']), {"data": {"awardStatus": "unsuccessful"}}, status=422)
+        self.assertEqual(response.status, '422 Unprocessable Entity')
+        self.assertEqual(response.content_type, 'application/json')
+        self.assertEqual(response.json['errors'], [
+            {"location": "body", "name": "awardStatus", "description": "Rogue field"}
+        ])
+
         response = self.app.patch_json('/tenders/{}/awards/{}'.format(self.tender_id, award['id']), {"data": {"status": "unsuccessful"}})
         self.assertEqual(response.status, '200 OK')
         self.assertEqual(response.content_type, 'application/json')
-        self.assertTrue('Location' in response.headers)
+        self.assertIn('Location', response.headers)
         new_award_location = response.headers['Location']
 
         response = self.app.patch_json('/tenders/{}/awards/{}'.format(self.tender_id, award['id']), {"data": {"status": "pending"}}, status=403)
@@ -211,7 +224,7 @@ class TenderAwardResourceTest(BaseTenderWebTest):
         self.assertEqual(response.status, '200 OK')
         self.assertEqual(response.content_type, 'application/json')
         self.assertEqual(len(response.json['data']), 2)
-        self.assertTrue(response.json['data'][1]['id'] in new_award_location)
+        self.assertIn(response.json['data'][1]['id'], new_award_location)
 
         self.set_status('complete')
 
@@ -374,8 +387,8 @@ class TenderAwardComplaintResourceTest(BaseTenderWebTest):
         self.assertEqual(response.content_type, 'application/json')
         complaint = response.json['data']
         self.assertEqual(complaint['author']['name'], test_tender_data["procuringEntity"]['name'])
-        self.assertTrue('id' in complaint)
-        self.assertTrue(complaint['id'] in response.headers['Location'])
+        self.assertIn('id', complaint)
+        self.assertIn(complaint['id'], response.headers['Location'])
 
         self.set_status('active.awarded')
 
@@ -677,7 +690,7 @@ class TenderAwardComplaintDocumentResourceTest(BaseTenderWebTest):
         self.assertEqual(response.status, '201 Created')
         self.assertEqual(response.content_type, 'application/json')
         doc_id = response.json["data"]['id']
-        self.assertTrue(doc_id in response.headers['Location'])
+        self.assertIn(doc_id, response.headers['Location'])
         self.assertEqual('name.doc', response.json["data"]["title"])
         key = response.json["data"]["url"].split('?')[-1]
 
@@ -730,7 +743,7 @@ class TenderAwardComplaintDocumentResourceTest(BaseTenderWebTest):
         self.assertEqual(response.status, '201 Created')
         self.assertEqual(response.content_type, 'application/json')
         doc_id = response.json["data"]['id']
-        self.assertTrue(doc_id in response.headers['Location'])
+        self.assertIn(doc_id, response.headers['Location'])
 
         response = self.app.put('/tenders/{}/awards/{}/complaints/{}/documents/{}'.format(self.tender_id, self.award_id, self.complaint_id, doc_id),
                                 status=404,
@@ -792,7 +805,7 @@ class TenderAwardComplaintDocumentResourceTest(BaseTenderWebTest):
         self.assertEqual(response.status, '201 Created')
         self.assertEqual(response.content_type, 'application/json')
         doc_id = response.json["data"]['id']
-        self.assertTrue(doc_id in response.headers['Location'])
+        self.assertIn(doc_id, response.headers['Location'])
 
         response = self.app.patch_json('/tenders/{}/awards/{}/complaints/{}/documents/{}'.format(self.tender_id, self.award_id, self.complaint_id, doc_id), {"data": {"description": "document description"}})
         self.assertEqual(response.status, '200 OK')
@@ -894,8 +907,8 @@ class TenderAwardContractResourceTest(BaseTenderWebTest):
         self.assertEqual(response.status, '201 Created')
         self.assertEqual(response.content_type, 'application/json')
         contract = response.json['data']
-        self.assertTrue('id' in contract)
-        self.assertTrue(contract['id'] in response.headers['Location'])
+        self.assertIn('id', contract)
+        self.assertIn(contract['id'], response.headers['Location'])
 
         response = self.app.patch_json('/tenders/{}/awards/{}/contracts/{}'.format(self.tender_id, self.award_id, contract['id']), {"data": {"status": "terminated"}})
         self.assertEqual(response.status, '200 OK')
@@ -921,6 +934,26 @@ class TenderAwardContractResourceTest(BaseTenderWebTest):
         self.assertEqual(response.status, '201 Created')
         self.assertEqual(response.content_type, 'application/json')
         contract = response.json['data']
+
+        response = self.app.patch_json('/tenders/{}/awards/{}/contracts/{}'.format(self.tender_id, self.award_id, contract['id']), {"data": {"status": "active"}}, status=403)
+        self.assertEqual(response.status, '403 Forbidden')
+        self.assertEqual(response.content_type, 'application/json')
+        self.assertIn("Can't sign contract before stand-still period end (", response.json['errors'][0]["description"])
+
+        self.set_status('complete', {'status': 'active.awarded'})
+
+        response = self.app.post_json('/tenders/{}/awards/{}/complaints'.format(
+            self.tender_id, self.award_id), {'data': {'title': 'complaint title', 'description': 'complaint description', 'author': test_tender_data["procuringEntity"]}})
+        self.assertEqual(response.status, '201 Created')
+        complaint = response.json['data']
+
+        response = self.app.patch_json('/tenders/{}/awards/{}/contracts/{}'.format(self.tender_id, self.award_id, contract['id']), {"data": {"status": "active"}}, status=403)
+        self.assertEqual(response.status, '403 Forbidden')
+        self.assertEqual(response.content_type, 'application/json')
+        self.assertEqual(response.json['errors'][0]["description"], "Can't sign contract before reviewing all complaints")
+
+        response = self.app.patch_json('/tenders/{}/awards/{}/complaints/{}'.format(self.tender_id, self.award_id, complaint['id']), {"data": {"status": "invalid", "resolution": "spam"}})
+        self.assertEqual(response.status, '200 OK')
 
         response = self.app.patch_json('/tenders/{}/awards/{}/contracts/{}'.format(self.tender_id, self.award_id, contract['id']), {"data": {"status": "active"}})
         self.assertEqual(response.status, '200 OK')
@@ -1177,7 +1210,7 @@ class TenderAwardContractDocumentResourceTest(BaseTenderWebTest):
         self.assertEqual(response.status, '201 Created')
         self.assertEqual(response.content_type, 'application/json')
         doc_id = response.json["data"]['id']
-        self.assertTrue(doc_id in response.headers['Location'])
+        self.assertIn(doc_id, response.headers['Location'])
         self.assertEqual('name.doc', response.json["data"]["title"])
         key = response.json["data"]["url"].split('?')[-1]
 
@@ -1239,7 +1272,7 @@ class TenderAwardContractDocumentResourceTest(BaseTenderWebTest):
         self.assertEqual(response.status, '201 Created')
         self.assertEqual(response.content_type, 'application/json')
         doc_id = response.json["data"]['id']
-        self.assertTrue(doc_id in response.headers['Location'])
+        self.assertIn(doc_id, response.headers['Location'])
 
         response = self.app.put('/tenders/{}/awards/{}/contracts/{}/documents/{}'.format(self.tender_id, self.award_id, self.contract_id, doc_id),
                                 status=404,
@@ -1310,7 +1343,7 @@ class TenderAwardContractDocumentResourceTest(BaseTenderWebTest):
         self.assertEqual(response.status, '201 Created')
         self.assertEqual(response.content_type, 'application/json')
         doc_id = response.json["data"]['id']
-        self.assertTrue(doc_id in response.headers['Location'])
+        self.assertIn(doc_id, response.headers['Location'])
 
         response = self.app.patch_json('/tenders/{}/awards/{}/contracts/{}/documents/{}'.format(self.tender_id, self.award_id, self.contract_id, doc_id), {"data": {"description": "document description"}})
         self.assertEqual(response.status, '200 OK')
@@ -1462,7 +1495,7 @@ class TenderAwardDocumentResourceTest(BaseTenderWebTest):
         self.assertEqual(response.status, '201 Created')
         self.assertEqual(response.content_type, 'application/json')
         doc_id = response.json["data"]['id']
-        self.assertTrue(doc_id in response.headers['Location'])
+        self.assertIn(doc_id, response.headers['Location'])
         self.assertEqual('name.doc', response.json["data"]["title"])
         key = response.json["data"]["url"].split('?')[-1]
 
@@ -1515,7 +1548,7 @@ class TenderAwardDocumentResourceTest(BaseTenderWebTest):
         self.assertEqual(response.status, '201 Created')
         self.assertEqual(response.content_type, 'application/json')
         doc_id = response.json["data"]['id']
-        self.assertTrue(doc_id in response.headers['Location'])
+        self.assertIn(doc_id, response.headers['Location'])
 
         response = self.app.put('/tenders/{}/awards/{}/documents/{}'.format(self.tender_id, self.award_id, doc_id),
                                 status=404,
@@ -1577,7 +1610,7 @@ class TenderAwardDocumentResourceTest(BaseTenderWebTest):
         self.assertEqual(response.status, '201 Created')
         self.assertEqual(response.content_type, 'application/json')
         doc_id = response.json["data"]['id']
-        self.assertTrue(doc_id in response.headers['Location'])
+        self.assertIn(doc_id, response.headers['Location'])
 
         response = self.app.patch_json('/tenders/{}/awards/{}/documents/{}'.format(self.tender_id, self.award_id, doc_id), {"data": {"description": "document description"}})
         self.assertEqual(response.status, '200 OK')

@@ -4,8 +4,7 @@ from couchdb.design import ViewDefinition
 
 def sync_design(db):
     views = [j for i, j in globals().items() if "view" in i]
-    for view in views:
-        view.sync(db)
+    ViewDefinition.sync_many(db, views)
 
 
 tenders_all_view = ViewDefinition('tenders', 'all', '''function(doc) {

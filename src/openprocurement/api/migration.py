@@ -6,7 +6,7 @@ from email.header import decode_header
 
 
 LOGGER = logging.getLogger(__name__)
-SCHEMA_VERSION = 14
+SCHEMA_VERSION = 16
 SCHEMA_DOC = 'openprocurement_schema'
 
 
@@ -512,6 +512,50 @@ def from13to14(db):
             for c in a.get('contracts', []):
                 for i in c.get('documents', []):
                     changed = fix_rfc2047(i, changed)
+        if changed:
+            doc['dateModified'] = get_now().isoformat()
+            db.save(doc)
+
+
+def from14to15(db):
+    results = db.view('tenders/all', include_docs=True)
+    for i in results:
+        doc = i.doc
+        changed = False
+        if not doc.get('title'):
+            doc['title'] = doc["items"][0]['description']
+            changed = True
+        for item in doc["items"]:
+            if not item.get('classification'):
+                changed = True
+                item['classification'] = {
+                    "scheme": u"CPV",
+                    "id": u"41110000-3",
+                    "description": u"Drinking water"
+                }
+            if not item.get('additionalClassifications'):
+                changed = True
+                item['additionalClassifications'] = [
+                    {
+                        "scheme": u"ДКПП",
+                        "id": u"36.00.11-00.00",
+                        "description": u"Вода питна"
+                    }
+                ]
+        if changed:
+            doc['dateModified'] = get_now().isoformat()
+            db.save(doc)
+
+
+def from15to16(db):
+    results = db.view('tenders/all', include_docs=True)
+    for i in results:
+        doc = i.doc
+        changed = False
+        for item in doc["items"]:
+            if 'deliveryLocation' in item and 'longitudee' in item['deliveryLocation']:
+                changed = True
+                item['deliveryLocation']['longitude'] = item['deliveryLocation'].pop('longitudee')
         if changed:
             doc['dateModified'] = get_now().isoformat()
             db.save(doc)

@@ -19,6 +19,7 @@ requires = [
     'tzlocal',
     'pyramid_exclog',
     'rfc6266',
+    'pbkdf2',
 ]
 test_requires = requires + [
     'webtest',
@@ -31,7 +32,7 @@ main = openprocurement.api:main
 """
 
 setup(name='openprocurement.api',
-      version='0.6.6',
+      version='0.7',
       description='openprocurement.api',
       long_description=README,
       classifiers=[

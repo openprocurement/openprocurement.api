@@ -144,7 +144,7 @@ class Location(Model):
         serialize_when_none = False
 
     latitude = BaseType(required=True)
-    longitudee = BaseType(required=True)
+    longitude = BaseType(required=True)
     elevation = BaseType()
 
 
@@ -161,8 +161,8 @@ class Item(Model):
     description = StringType(required=True)  # A description of the goods, services to be provided.
     description_en = StringType()
     description_ru = StringType()
-    classification = ModelType(CPVClassification)
-    additionalClassifications = ListType(ModelType(Classification), default=list(), validators=[validate_dkpp])
+    classification = ModelType(CPVClassification, required=True)
+    additionalClassifications = ListType(ModelType(Classification), default=list(), required=True, min_size=1, validators=[validate_dkpp])
     unit = ModelType(Unit)  # Description of the unit which the good comes in e.g. hours, kilograms
     quantity = IntType()  # The number of units required
     deliveryDate = ModelType(Period)
@@ -174,7 +174,7 @@ class Document(Model):
     class Options:
         serialize_when_none = False
         roles = {
-            'edit': blacklist('id', 'format', 'url', 'datePublished'),
+            'edit': blacklist('id', 'url', 'datePublished', 'dateModified'),
             'embedded': schematics_embedded_role,
             'view': (blacklist('revisions') + schematics_default_role),
             'revisions': whitelist('url', 'dateModified'),
@@ -195,7 +195,7 @@ class Document(Model):
     description = StringType()  # A description of the document.
     description_en = StringType()
     description_ru = StringType()
-    format = StringType()
+    format = StringType(regex='^[-\w]+/[-\.\w\+]+$')
     url = StringType()  # Link to the document or attachment.
     datePublished = IsoDateTimeType(default=get_now)
     dateModified = IsoDateTimeType(default=get_now)  # Date that the document was last dateModified
@@ -404,6 +404,11 @@ class Award(Model):
     contracts = ListType(ModelType(Contract), default=list())
 
 
+def validate_cpv_group(items, *args):
+    if items and len(set([i.classification.id[:3] for i in items])) != 1:
+        raise ValidationError(u"CPV group of items be identical")
+
+
 plain_role = (blacklist('_attachments', 'revisions', 'dateModified') + schematics_embedded_role)
 create_role = (blacklist('owner_token', 'owner', '_attachments', 'revisions', 'dateModified', 'doc_id', 'tenderID', 'bids', 'documents', 'awards', 'questions', 'complaints', 'auctionUrl', 'status', 'auctionPeriod', 'awardPeriod', 'procurementMethod', 'awardCriteria', 'submissionMethod') + schematics_embedded_role)
 edit_role = (blacklist('owner_token', 'owner', '_attachments', 'revisions', 'dateModified', 'doc_id', 'tenderID', 'bids', 'documents', 'awards', 'questions', 'complaints', 'auctionUrl', 'auctionPeriod', 'awardPeriod', 'procurementMethod', 'awardCriteria', 'submissionMethod', 'mode') + schematics_embedded_role)
@@ -454,14 +459,14 @@ class Tender(SchematicsDocument, Model):
     def __local_roles__(self):
         return dict([('{}_{}'.format(self.owner, self.owner_token), 'tender_owner')])
 
-    title = StringType()
+    title = StringType(required=True)
     title_en = StringType()
     title_ru = StringType()
     description = StringType()
     description_en = StringType()
     description_ru = StringType()
     tenderID = StringType()  # TenderID should always be the same as the OCID. It is included to make the flattened data structure more convenient.
-    items = ListType(ModelType(Item), required=True, min_size=1)  # The goods and services to be purchased, broken into line items wherever possible. Items should not be duplicated, but a quantity of 2 specified instead.
+    items = ListType(ModelType(Item), required=True, min_size=1, validators=[validate_cpv_group])  # The goods and services to be purchased, broken into line items wherever possible. Items should not be duplicated, but a quantity of 2 specified instead.
     value = ModelType(Value, required=True)  # The total estimated value of the procurement.
     procurementMethod = StringType(choices=['open', 'selective', 'limited'], default='open')  # Specify tendering method as per GPA definitions of Open, Selective, Limited (http://www.wto.org/english/docs_e/legal_e/rev-gpr-94_01_e.htm)
     procurementMethodRationale = StringType()  # Justification of procurement method, especially in the case of Limited tendering.
@@ -512,6 +517,7 @@ class Tender(SchematicsDocument, Model):
         ]
         acl.extend([
             (Allow, '{}_{}'.format(self.owner, self.owner_token), 'edit_tender'),
+            (Allow, '{}_{}'.format(self.owner, self.owner_token), 'upload_tender_documents'),
             (Allow, '{}_{}'.format(self.owner, self.owner_token), 'review_complaint'),
         ])
         return acl

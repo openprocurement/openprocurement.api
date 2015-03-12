@@ -8,6 +8,7 @@ from openprocurement.api.utils import (
     apply_patch,
     error_handler,
     update_journal_handler_params,
+    update_file_content_type,
 )
 from openprocurement.api.validation import (
     validate_file_update,
@@ -88,7 +89,7 @@ class TenderAwardComplaintDocumentResource(object):
             LOGGER.info('Updated tender award complaint document {}'.format(self.request.context.id), extra={'MESSAGE_ID': 'tender_award_complaint_document_put'})
             return {'data': document.serialize("view")}
 
-    @view(renderer='json', validators=(validate_patch_document_data,), permission='review_complaint')
+    @view(content_type="application/json", renderer='json', validators=(validate_patch_document_data,), permission='review_complaint')
     def patch(self):
         """Tender Award Complaint Document Update"""
         if self.request.validated['tender_status'] not in ['active.qualification', 'active.awarded']:
@@ -96,5 +97,6 @@ class TenderAwardComplaintDocumentResource(object):
             self.request.errors.status = 403
             return
         if apply_patch(self.request, src=self.request.context.serialize()):
+            update_file_content_type(self.request)
             LOGGER.info('Updated tender award complaint document {}'.format(self.request.context.id), extra={'MESSAGE_ID': 'tender_award_complaint_document_patch'})
             return {'data': self.request.context.serialize("view")}

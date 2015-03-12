@@ -1,0 +1,153 @@
+PATCH /tenders/6d01584306ad4138bd78c9cf41056ea3/awards/77272dfb3e9645b4ab499e1d42913b87 HTTP/1.1
+
+{
+    "data":{
+        "awardStatus": "unsuccessful"
+    }
+}
+
+HTTP/1.1 200 OK
+Location: /tenders/6d01584306ad4138bd78c9cf41056ea3/awards/2beef6aa944c4a8ba0e9654ed5e25993
+
+{
+    "data": {
+        "status": "unsuccessful", 
+        "suppliers": [
+            {
+                "contactPoint": {
+                    "name": "Розалія Піддубний", 
+                    "telephone": "014 883 59 49"
+                }, 
+                "identifier": {
+                    "scheme": "UA-EDR", 
+                    "id": "0000741"
+                }, 
+                "name": "Чуйко-Скопенко", 
+                "address": {
+                    "postalCode": "21100", 
+                    "countryName": "Україна", 
+                    "streetAddress": "21284 Данько Cape", 
+                    "region": "м. Вінниця", 
+                    "locality": "м. Вінниця"
+                }
+            }
+        ], 
+        "bid_id": "1af1d3169c5947c3a30450d2f8c8e7a2", 
+        "value": {
+            "currency": "UAH", 
+            "amount": 39000.0, 
+            "valueAddedTaxIncluded": true
+        }, 
+        "date": "2015-03-04T14:22:07.937667+02:00", 
+        "id": "77272dfb3e9645b4ab499e1d42913b87"
+    }
+}
+
+
+
+GET /tenders/64e93250be76435397e8c992ed4214d1/awards  HTTP/1.1
+
+{
+    "data": [
+        {
+            "status": "cancelled", 
+            "contracts": [
+                {
+                    "status": "cancelled", 
+                    "awardID": "fbccb31b3b864c7b80ca19ebd510ee72", 
+                    "id": "40d0fe977c0f4560a1de71ab122a6fae"
+                }
+            ], 
+            "suppliers": [
+                {
+                    "contactPoint": {
+                        "name": "Розалія Піддубний", 
+                        "telephone": "014 883 59 49"
+                    }, 
+                    "identifier": {
+                        "scheme": "UA-EDR", 
+                        "id": "0000741"
+                    }, 
+                    "name": "Чуйко-Скопенко", 
+                    "address": {
+                        "postalCode": "21100", 
+                        "countryName": "Україна", 
+                        "streetAddress": "21284 Данько Cape", 
+                        "region": "м. Вінниця", 
+                        "locality": "м. Вінниця"
+                    }
+                }
+            ], 
+            "bid_id": "1af1d3169c5947c3a30450d2f8c8e7a2", 
+            "value": {
+                "currency": "UAH", 
+                "amount": 39000.0, 
+                "valueAddedTaxIncluded": true
+            }, 
+            "date": "2015-03-04T14:21:01.006685+02:00", 
+            "id": "fbccb31b3b864c7b80ca19ebd510ee72"
+        }, 
+        {
+            "status": "unsuccessful", 
+            "suppliers": [
+                {
+                    "contactPoint": {
+                        "name": "Розалія Піддубний", 
+                        "telephone": "014 883 59 49"
+                    }, 
+                    "identifier": {
+                        "scheme": "UA-EDR", 
+                        "id": "0000741"
+                    }, 
+                    "name": "Чуйко-Скопенко", 
+                    "address": {
+                        "postalCode": "21100", 
+                        "countryName": "Україна", 
+                        "streetAddress": "21284 Данько Cape", 
+                        "region": "м. Вінниця", 
+                        "locality": "м. Вінниця"
+                    }
+                }
+            ], 
+            "bid_id": "1af1d3169c5947c3a30450d2f8c8e7a2", 
+            "value": {
+                "currency": "UAH", 
+                "amount": 39000.0, 
+                "valueAddedTaxIncluded": true
+            }, 
+            "date": "2015-03-04T14:22:07.937667+02:00", 
+            "id": "77272dfb3e9645b4ab499e1d42913b87"
+        }, 
+        {
+            "status": "pending", 
+            "suppliers": [
+                {
+                    "contactPoint": {
+                        "name": "пан Остап Пелех", 
+                        "telephone": "+38 (485) 390-29-49"
+                    }, 
+                    "identifier": {
+                        "scheme": "UA-EDR", 
+                        "id": "00003195"
+                    }, 
+                    "name": "Ємець and Sons", 
+                    "address": {
+                        "postalCode": "21100", 
+                        "countryName": "Україна", 
+                        "streetAddress": "93546 John Street", 
+                        "region": "м. Вінниця", 
+                        "locality": "м. Вінниця"
+                    }
+                }
+            ], 
+            "bid_id": "bbb0b1a3344b4d79b67298af4b143bce", 
+            "value": {
+                "currency": "UAH", 
+                "amount": 40000.0, 
+                "valueAddedTaxIncluded": true
+            }, 
+            "date": "2015-03-04T14:22:11.530927+02:00", 
+            "id": "2beef6aa944c4a8ba0e9654ed5e25993"
+        }
+    ]
+}

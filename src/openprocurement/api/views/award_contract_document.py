@@ -8,6 +8,7 @@ from openprocurement.api.utils import (
     apply_patch,
     error_handler,
     update_journal_handler_params,
+    update_file_content_type,
 )
 from openprocurement.api.validation import (
     validate_file_update,
@@ -98,7 +99,7 @@ class TenderAwardContractDocumentResource(object):
             LOGGER.info('Updated tender award contract document {}'.format(self.request.context.id), extra={'MESSAGE_ID': 'tender_award_contract_document_put'})
             return {'data': document.serialize("view")}
 
-    @view(renderer='json', validators=(validate_patch_document_data,), permission='edit_tender')
+    @view(content_type="application/json", renderer='json', validators=(validate_patch_document_data,), permission='edit_tender')
     def patch(self):
         """Tender Award Contract Document Update"""
         if self.request.validated['tender_status'] not in ['active.awarded', 'complete']:
@@ -110,5 +111,6 @@ class TenderAwardContractDocumentResource(object):
             self.request.errors.status = 403
             return
         if apply_patch(self.request, src=self.request.context.serialize()):
+            update_file_content_type(self.request)
             LOGGER.info('Updated tender award contract document {}'.format(self.request.context.id), extra={'MESSAGE_ID': 'tender_award_contract_document_patch'})
             return {'data': self.request.context.serialize("view")}

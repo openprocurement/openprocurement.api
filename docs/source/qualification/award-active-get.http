@@ -1,0 +1,42 @@
+GET /tenders/64e93250be76435397e8c992ed4214d1/awards/fbccb31b3b864c7b80ca19ebd510ee72 HTTP/1.1
+
+{
+    "data": {
+        "status": "active", 
+        "contracts": [
+            {
+                "status": "pending", 
+                "awardID": "fbccb31b3b864c7b80ca19ebd510ee72", 
+                "id": "40d0fe977c0f4560a1de71ab122a6fae"
+            }
+        ], 
+        "suppliers": [
+            {
+                "contactPoint": {
+                    "name": "Розалія Піддубний", 
+                    "telephone": "014 883 59 49"
+                }, 
+                "identifier": {
+                    "scheme": "UA-EDR", 
+                    "id": "0000741"
+                }, 
+                "name": "Чуйко-Скопенко", 
+                "address": {
+                    "postalCode": "21100", 
+                    "countryName": "Україна", 
+                    "streetAddress": "21284 Данько Cape", 
+                    "region": "м. Вінниця", 
+                    "locality": "м. Вінниця"
+                }
+            }
+        ], 
+        "bid_id": "1af1d3169c5947c3a30450d2f8c8e7a2", 
+        "value": {
+            "currency": "UAH", 
+            "amount": 39000.0, 
+            "valueAddedTaxIncluded": true
+        }, 
+        "date": "2015-03-04T14:21:01.006685+02:00", 
+        "id": "fbccb31b3b864c7b80ca19ebd510ee72"
+    }
+}

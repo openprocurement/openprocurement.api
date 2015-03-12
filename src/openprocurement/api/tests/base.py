@@ -10,6 +10,7 @@ from openprocurement.api import VERSION
 
 now = datetime.now()
 test_tender_data = {
+    "title": u"футляри до державних нагород",
     "procuringEntity": {
         "name": u"Державне управління справами",
         "identifier": {

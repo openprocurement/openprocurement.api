@@ -11,6 +11,7 @@ from couchdb.http import ResourceConflict
 from time import sleep
 from cornice.util import json_error
 from json import dumps
+from urlparse import urlparse, parse_qs
 from email.header import decode_header
 from rfc6266 import build_header
 
@@ -61,14 +62,13 @@ def get_filename(data):
 
 
 def upload_file(request):
-    first_document = None
+    first_document = request.validated['documents'][0] if 'documents' in request.validated and request.validated['documents'] else None
     if request.content_type == 'multipart/form-data':
         data = request.validated['file']
         filename = get_filename(data)
         content_type = data.type
         in_file = data.file
     else:
-        first_document = request.validated['documents'][0]
         filename = first_document.title
         content_type = request.content_type
         in_file = request.body_file
@@ -100,6 +100,18 @@ def upload_file(request):
             "data": b64encode(in_file.read())
         }
     return document
+
+
+def update_file_content_type(request):
+    conn = getattr(request.registry, 's3_connection', None)
+    if conn:
+        document = request.validated['document']
+        key = parse_qs(urlparse(document.url).query).get('download').pop()
+        bucket = conn.get_bucket(request.registry.bucket_name)
+        filename = "{}/{}/{}".format(request.validated['tender_id'], document.id, key)
+        key = bucket.get_key(filename)
+        key.set_metadata('Content-Type', document.format)
+        key.copy(key.bucket.name, key.name, key.metadata, preserve_acl=True)
 
 
 def get_file(request):
@@ -187,6 +199,7 @@ def save_tender(request):
     patch = get_revision_changes(tender.serialize("plain"), request.validated['tender_src'])
     if patch:
         tender.revisions.append(Revision({'author': request.authenticated_userid, 'changes': patch}))
+        old_dateModified = tender.dateModified
         tender.dateModified = get_now()
         try:
             tender.store(request.registry.db)
@@ -197,6 +210,7 @@ def save_tender(request):
         except Exception, e:
             request.errors.add('body', 'data', str(e))
         else:
+            LOGGER.info('Saved tender {}: dateModified {} -> {}'.format(tender.id, old_dateModified and old_dateModified.isoformat(), tender.dateModified.isoformat()), extra={'MESSAGE_ID': 'save_tender'})
             return True
 
 
@@ -260,12 +274,13 @@ def set_journal_handler(event):
     params = {
         'TENDERS_API_VERSION': VERSION,
         'TAGS': 'python,api',
-        'USER_ID': str(request.authenticated_userid or ''),
+        'USER': str(request.authenticated_userid or ''),
         #'ROLE': str(request.authenticated_role),
         'CURRENT_URL': request.url,
         'CURRENT_PATH': request.path_info,
         'REMOTE_ADDR': request.remote_addr or '',
         'USER_AGENT': request.user_agent or '',
+        'REQUEST_METHOD': request.method,
         'AWARD_ID': '',
         'BID_ID': '',
         'COMPLAINT_ID': '',

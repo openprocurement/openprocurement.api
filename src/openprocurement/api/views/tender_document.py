@@ -8,6 +8,7 @@ from openprocurement.api.utils import (
     apply_patch,
     error_handler,
     update_journal_handler_params,
+    update_file_content_type,
 )
 from openprocurement.api.validation import (
     validate_file_update,
@@ -43,10 +44,11 @@ class TenderDocumentResource(object):
             ]).values(), key=lambda i: i['dateModified'])
         return {'data': collection_data}
 
-    @view(renderer='json', permission='edit_tender', validators=(validate_file_upload,))
+    @view(renderer='json', permission='upload_tender_documents', validators=(validate_file_upload,))
     def collection_post(self):
         """Tender Document Upload"""
-        if self.request.validated['tender_status'] != 'active.enquiries':
+        if self.request.authenticated_role != 'auction' and self.request.validated['tender_status'] != 'active.enquiries' or \
+           self.request.authenticated_role == 'auction' and self.request.validated['tender_status'] not in ['active.auction', 'active.qualification']:
             self.request.errors.add('body', 'data', 'Can\'t add document in current ({}) tender status'.format(self.request.validated['tender_status']))
             self.request.errors.status = 403
             return
@@ -74,10 +76,11 @@ class TenderDocumentResource(object):
         ]
         return {'data': document_data}
 
-    @view(renderer='json', permission='edit_tender', validators=(validate_file_update,))
+    @view(renderer='json', permission='upload_tender_documents', validators=(validate_file_update,))
     def put(self):
         """Tender Document Update"""
-        if self.request.validated['tender_status'] != 'active.enquiries':
+        if self.request.authenticated_role != 'auction' and self.request.validated['tender_status'] != 'active.enquiries' or \
+           self.request.authenticated_role == 'auction' and self.request.validated['tender_status'] not in ['active.auction', 'active.qualification']:
             self.request.errors.add('body', 'data', 'Can\'t update document in current ({}) tender status'.format(self.request.validated['tender_status']))
             self.request.errors.status = 403
             return
@@ -87,13 +90,15 @@ class TenderDocumentResource(object):
             LOGGER.info('Updated tender document {}'.format(self.request.context.id), extra={'MESSAGE_ID': 'tender_document_put'})
             return {'data': document.serialize("view")}
 
-    @view(renderer='json', permission='edit_tender', validators=(validate_patch_document_data,))
+    @view(content_type="application/json", renderer='json', permission='upload_tender_documents', validators=(validate_patch_document_data,))
     def patch(self):
         """Tender Document Update"""
-        if self.request.validated['tender_status'] != 'active.enquiries':
+        if self.request.authenticated_role != 'auction' and self.request.validated['tender_status'] != 'active.enquiries' or \
+           self.request.authenticated_role == 'auction' and self.request.validated['tender_status'] not in ['active.auction', 'active.qualification']:
             self.request.errors.add('body', 'data', 'Can\'t update document in current ({}) tender status'.format(self.request.validated['tender_status']))
             self.request.errors.status = 403
             return
         if apply_patch(self.request, src=self.request.context.serialize()):
+            update_file_content_type(self.request)
             LOGGER.info('Updated tender document {}'.format(self.request.context.id), extra={'MESSAGE_ID': 'tender_document_patch'})
             return {'data': self.request.context.serialize("view")}

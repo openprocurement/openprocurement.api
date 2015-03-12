@@ -15,7 +15,7 @@ The pending award can be retrieved via request to list all awards available:
 
 .. sourcecode:: http
 
-  GET /tenders/64e93250be76435397e8c992ed4214d1/awards
+  GET /tenders/64e93250be76435397e8c992ed4214d1/awards HTTP/1.1
 
 The award is with `pending` status meaning the fact that procuring entity has
 to review documents describing the bid and other bidder documents.
@@ -29,7 +29,7 @@ document into award and later its status should switch to either `active`
 
 .. sourcecode:: http
 
-  POST /tenders/64e93250be76435397e8c992ed4214d1/awards/{}/documents
+  POST /tenders/64e93250be76435397e8c992ed4214d1/awards/{}/documents HTTP/1.1
 
 The Qualification Comittee can upload several documents, like decisions to
 prolong the qualification process to allow the bidder to collect all
@@ -43,7 +43,7 @@ Complaint Review Body.
 
   {
       "data":{
-          "awardStatus": "unsuccessful"
+          "status": "unsuccessful"
       }
   }
 
@@ -65,7 +65,7 @@ Protocol upload:
 
 .. sourcecode:: http
 
-  POST /tenders/64e93250be76435397e8c992ed4214d1/awards/{}/documents
+  POST /tenders/64e93250be76435397e8c992ed4214d1/awards/{}/documents HTTP/1.1
 
 Confirming the Award:
 
@@ -75,7 +75,7 @@ Confirming the Award:
 
   {
       "data":{
-          "awardStatus": "active"
+          "status": "active"
       }
   }
 
@@ -88,6 +88,36 @@ The procuring entity can wait until bidder provides all missing documents
 to correct errors.  Alternatively they can reject the bid if documents
 provided does not satisfy the pass/fail criterias of tender (even before
 full package of supplementary documents is available).
+
+Cancelling Active Award
+~~~~~~~~~~~~~~~~~~~~~~~
+
+Sometimes Bidder refuses to sign the contract even after passing
+qualification process.  In this case Procuring Entity is expected to be able
+to reject approved award and disqualify Bid afterwards.
+
+After we have Award with active status:
+
+.. include:: qualification/award-active-get.http
+   :code:
+
+There is need to cancel it:
+
+.. include:: qualification/award-active-cancel.http
+   :code:
+
+Note that there is Location header returned that aid in locating the "fresh"
+award that is most likely subject for disqualification:
+
+.. include:: qualification/award-active-cancel-upload.http
+   :code:
+
+.. include:: qualification/award-active-cancel-disqualify.http
+   :code:
+
+In the case there is another Bid for qualification, there will be Location
+header in the response poining its Award.
+
 
 Influence of Complaint Satisfaction
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

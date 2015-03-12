@@ -30,7 +30,7 @@ class AuthenticationPolicy(BasicAuthAuthenticationPolicy):
         if not token:
             token = request.headers.get('X-Access-Token')
             if not token:
-                if request.method == 'POST' and request.content_type == 'application/json':
+                if request.method in ['POST', 'PUT', 'PATCH'] and request.content_type == 'application/json':
                     try:
                         json = request.json_body
                     except ValueError:

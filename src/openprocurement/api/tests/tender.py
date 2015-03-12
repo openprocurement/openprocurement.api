@@ -45,26 +45,26 @@ class TenderResourceTest(BaseWebTest):
         self.assertEqual(response.status, '200 OK')
         self.assertEqual(response.content_type, 'application/javascript')
         self.assertFalse('{\n    "' in response.body)
-        self.assertTrue('callback({' in response.body)
+        self.assertIn('callback({', response.body)
 
         response = self.app.get('/tenders?opt_pretty=1')
         self.assertEqual(response.status, '200 OK')
         self.assertEqual(response.content_type, 'application/json')
-        self.assertTrue('{\n    "' in response.body)
+        self.assertIn('{\n    "', response.body)
         self.assertFalse('callback({' in response.body)
 
         response = self.app.get('/tenders?opt_jsonp=callback&opt_pretty=1')
         self.assertEqual(response.status, '200 OK')
         self.assertEqual(response.content_type, 'application/javascript')
-        self.assertTrue('{\n    "' in response.body)
-        self.assertTrue('callback({' in response.body)
+        self.assertIn('{\n    "', response.body)
+        self.assertIn('callback({', response.body)
 
         response = self.app.get('/tenders?offset={}&descending=1&limit=10'.format(before))
         self.assertEqual(response.status, '200 OK')
         self.assertEqual(response.content_type, 'application/json')
         self.assertEqual(response.json['data'], [])
-        self.assertTrue('descending=1' in response.json['next_page']['uri'])
-        self.assertTrue('limit=10' in response.json['next_page']['uri'])
+        self.assertIn('descending=1', response.json['next_page']['uri'])
+        self.assertIn('limit=10', response.json['next_page']['uri'])
 
     def test_listing(self):
         response = self.app.get('/tenders')
@@ -97,7 +97,7 @@ class TenderResourceTest(BaseWebTest):
         self.assertEqual(response.status, '200 OK')
         self.assertEqual(len(response.json['data']), 3)
         self.assertEqual(set(response.json['data'][0]), set([u'id', u'dateModified', u'status', u'enquiryPeriod']))
-        self.assertTrue('opt_fields=status%2CenquiryPeriod' in response.json['next_page']['uri'])
+        self.assertIn('opt_fields=status%2CenquiryPeriod', response.json['next_page']['uri'])
 
         response = self.app.get('/tenders?descending=1')
         self.assertEqual(response.status, '200 OK')
@@ -307,6 +307,20 @@ class TenderResourceTest(BaseWebTest):
             {u'description': {u'contactPoint': {u'email': [u'telephone or email should be present']}}, u'location': u'body', u'name': u'procuringEntity'}
         ])
 
+        data = test_tender_data["items"][0].copy()
+        classification = data['classification'].copy()
+        classification["id"] = u'19212310-1'
+        data['classification'] = classification
+        test_tender_data["items"] = [test_tender_data["items"][0], data]
+        response = self.app.post_json(request_path, {'data': test_tender_data}, status=422)
+        test_tender_data["items"] = test_tender_data["items"][:1]
+        self.assertEqual(response.status, '422 Unprocessable Entity')
+        self.assertEqual(response.content_type, 'application/json')
+        self.assertEqual(response.json['status'], 'error')
+        self.assertEqual(response.json['errors'], [
+            {u'description': [u'CPV group of items be identical'], u'location': u'body', u'name': u'items'}
+        ])
+
     def test_create_tender_generated(self):
         data = test_tender_data.copy()
         #del data['awardPeriod']
@@ -317,7 +331,7 @@ class TenderResourceTest(BaseWebTest):
         tender = response.json['data']
         self.assertEqual(set(tender), set([u'id', u'dateModified', u'tenderID', u'status', u'enquiryPeriod',
                                            u'tenderPeriod', u'minimalStep', u'items', u'value', u'procuringEntity',
-                                           u'procurementMethod', u'awardCriteria', u'submissionMethod']))
+                                           u'procurementMethod', u'awardCriteria', u'submissionMethod', u'title']))
         self.assertNotEqual(data['id'], tender['id'])
         self.assertNotEqual(data['doc_id'], tender['id'])
         self.assertNotEqual(data['tenderID'], tender['tenderID'])
@@ -333,7 +347,7 @@ class TenderResourceTest(BaseWebTest):
         tender = response.json['data']
         self.assertEqual(set(tender) - set(test_tender_data), set(
             [u'id', u'dateModified', u'tenderID', u'status', u'procurementMethod', u'awardCriteria', u'submissionMethod']))
-        self.assertTrue(tender['id'] in response.headers['Location'])
+        self.assertIn(tender['id'], response.headers['Location'])
 
         response = self.app.get('/tenders/{}'.format(tender['id']))
         self.assertEqual(response.status, '200 OK')
@@ -344,17 +358,17 @@ class TenderResourceTest(BaseWebTest):
         response = self.app.post_json('/tenders?opt_jsonp=callback', {"data": test_tender_data})
         self.assertEqual(response.status, '201 Created')
         self.assertEqual(response.content_type, 'application/javascript')
-        self.assertTrue('callback({"' in response.body)
+        self.assertIn('callback({"', response.body)
 
         response = self.app.post_json('/tenders?opt_pretty=1', {"data": test_tender_data})
         self.assertEqual(response.status, '201 Created')
         self.assertEqual(response.content_type, 'application/json')
-        self.assertTrue('{\n    "' in response.body)
+        self.assertIn('{\n    "', response.body)
 
         response = self.app.post_json('/tenders', {"data": test_tender_data, "options": {"pretty": True}})
         self.assertEqual(response.status, '201 Created')
         self.assertEqual(response.content_type, 'application/json')
-        self.assertTrue('{\n    "' in response.body)
+        self.assertIn('{\n    "', response.body)
 
     def test_get_tender(self):
         response = self.app.get('/tenders')
@@ -373,12 +387,12 @@ class TenderResourceTest(BaseWebTest):
         response = self.app.get('/tenders/{}?opt_jsonp=callback'.format(tender['id']))
         self.assertEqual(response.status, '200 OK')
         self.assertEqual(response.content_type, 'application/javascript')
-        self.assertTrue('callback({"data": {"' in response.body)
+        self.assertIn('callback({"data": {"', response.body)
 
         response = self.app.get('/tenders/{}?opt_pretty=1'.format(tender['id']))
         self.assertEqual(response.status, '200 OK')
         self.assertEqual(response.content_type, 'application/json')
-        self.assertTrue('{\n    "data": {\n        "' in response.body)
+        self.assertIn('{\n    "data": {\n        "', response.body)
 
     #def test_put_tender(self):
         #response = self.app.get('/tenders')
@@ -486,7 +500,7 @@ class TenderResourceTest(BaseWebTest):
         self.assertEqual(response.status, '200 OK')
         self.assertEqual(response.content_type, 'application/json')
         new_tender = response.json['data']
-        self.assertTrue('startDate' in new_tender['enquiryPeriod'])
+        self.assertIn('startDate', new_tender['enquiryPeriod'])
 
         #response = self.app.patch_json('/tenders/{}'.format(tender['id']), {'data': {'status': 'active.auction'}})
         #self.assertEqual(response.status, '200 OK')
@@ -494,7 +508,7 @@ class TenderResourceTest(BaseWebTest):
         #response = self.app.get('/tenders/{}'.format(tender['id']))
         #self.assertEqual(response.status, '200 OK')
         #self.assertEqual(response.content_type, 'application/json')
-        #self.assertTrue('auctionUrl' in response.json['data'])
+        #self.assertIn('auctionUrl', response.json['data'])
 
         response = self.app.patch_json('/tenders/{}?acc_token={}'.format(tender['id'], owner_token), {'data': {'status': 'active.auction'}}, status=403)
         self.assertEqual(response.status, '403 Forbidden')
@@ -655,10 +669,13 @@ class TenderProcessTest(BaseTenderWebTest):
         # set award as active
         response = self.app.patch_json('/tenders/{}/awards/{}?acc_token={}'.format(tender_id, award_id, owner_token),
                                        {"data": {"status": "active"}})
-        # set tender status after stand slill period
+        contract_id = response.json['data']['contracts'][0]['id']
+        # after stand slill period
         self.app.authorization = ('Basic', ('chronograph', ''))
-        response = self.app.patch_json('/tenders/{}'.format(tender_id),
-                                       {'data': {'status': 'complete'}})
+        self.set_status('complete', {'status': 'active.awarded'})
+        # sign contract
+        self.app.authorization = ('Basic', ('broker', ''))
+        response = self.app.patch_json('/tenders/{}/awards/{}/contracts/{}?acc_token={}'.format(tender_id, award_id, contract_id, owner_token), {"data": {"status": "active"}})
         # check status
         self.app.authorization = ('Basic', ('broker', ''))
         response = self.app.get('/tenders/{}'.format(tender_id))
@@ -784,10 +801,13 @@ class TenderProcessTest(BaseTenderWebTest):
         # set award as active
         response = self.app.patch_json('/tenders/{}/awards/{}?acc_token={}'.format(tender_id, award_id, owner_token),
                                        {"data": {"status": "active"}})
-        # set tender status after stand slill period
+        contract_id = response.json['data']['contracts'][0]['id']
+        # after stand slill period
         self.app.authorization = ('Basic', ('chronograph', ''))
-        response = self.app.patch_json('/tenders/{}'.format(tender_id),
-                                       {'data': {'status': 'complete'}})
+        self.set_status('complete', {'status': 'active.awarded'})
+        # sign contract
+        self.app.authorization = ('Basic', ('broker', ''))
+        response = self.app.patch_json('/tenders/{}/awards/{}/contracts/{}?acc_token={}'.format(tender_id, award_id, contract_id, owner_token), {"data": {"status": "active"}})
         # check status
         self.app.authorization = ('Basic', ('broker', ''))
         response = self.app.get('/tenders/{}'.format(tender_id))

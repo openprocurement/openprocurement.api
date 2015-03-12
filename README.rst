@@ -1,7 +1,7 @@
 .. image:: https://travis-ci.org/openprocurement/openprocurement.api.svg?branch=master
     :target: https://travis-ci.org/openprocurement/openprocurement.api
 
-.. image:: https://coveralls.io/repos/openprocurement/openprocurement.api/badge.png
+.. image:: https://coveralls.io/repos/openprocurement/openprocurement.api/badge.svg
   :target: https://coveralls.io/r/openprocurement/openprocurement.api
 
 .. image:: https://readthedocs.org/projects/openprocurementapi/badge/?version=latest
