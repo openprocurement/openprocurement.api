@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-import os
+import os, time
 from couchdb_schematics.document import SchematicsDocument
 from datetime import datetime, timedelta
 from iso8601 import parse_date, ParseError
@@ -11,7 +11,6 @@ from schematics.transforms import whitelist, blacklist, export_loop
 from schematics.types import StringType, FloatType, IntType, URLType, BooleanType, BaseType, EmailType, MD5Type
 from schematics.types.compound import ModelType, ListType, DictType
 from schematics.types.serializable import serializable
-from tzlocal import get_localzone
 from uuid import uuid4
 
 
@@ -19,10 +18,7 @@ STAND_STILL_TIME = timedelta(days=1)
 schematics_embedded_role = SchematicsDocument.Options.roles['embedded']
 schematics_default_role = SchematicsDocument.Options.roles['default']
 
-if os.environ.get('READTHEDOCS', None) == 'True':
-    os.environ['TZ'] = 'Europe/Kiev'
-
-TZ = timezone(get_localzone().tzname(datetime.now()))
+TZ = timezone(os.environ['TZ'] if 'TZ' in os.environ else 'Europe/Kiev')
 
 
 def get_now():
