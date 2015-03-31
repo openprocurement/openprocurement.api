@@ -1,16 +1,17 @@
-#
+# 
 msgid ""
 msgstr ""
 "Project-Id-Version: openprocurement.api 0.1\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2014-10-29 12:11+0200\n"
-"PO-Revision-Date: 2014-12-25 11:14+0300\n"
-"Last-Translator: \n"
+"PO-Revision-Date: 2015-03-31 12:44+0200\n"
+"Last-Translator: Zoriana Zaiats <sorenabell@quintagroup.com>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Generator: Poedit 1.5.4\n"
+"Language: uk\n"
+"X-Generator: Poedit 1.7.3\n"
 
 #: ../../source/qualification.rst:5
 msgid "Qualification Operations"
@@ -18,7 +19,7 @@ msgstr "Операції кваліфікації"
 
 #: ../../source/qualification.rst:62
 msgid "Contract Awarding"
-msgstr "Визначення переможця з ціллю підписання договору"
+msgstr "Винагорода (визначення переможця з ціллю підписання договору)"
 
 #: ../../source/qualification.rst:24
 msgid "Disqualification"
@@ -43,15 +44,15 @@ msgid ""
 "The pending award can be retrieved via request to list all awards available:"
 msgstr ""
 "Результати аукціону, що оцінюються, можна дізнатись запитом на отримання "
-"списків усіх доступних рішень:"
+"списків усіх доступних винагород:"
 
 #: ../../source/qualification.rst:20
 msgid ""
 "The award is with `pending` status meaning the fact that procuring entity "
 "has to review documents describing the bid and other bidder documents."
 msgstr ""
-"Визначення переможця має статус `pending`, якщо замовнику потрібно "
-"перевірити документи пов’язані з пропозицією кандидата."
+"Визначення переможця (винагорода) має статус `pending`, якщо замовнику "
+"потрібно перевірити документи пов’язані з пропозицією кандидата."
 
 #: ../../source/qualification.rst:26
 msgid ""
@@ -68,14 +69,14 @@ msgid ""
 "The Qualification Comittee can upload several documents, like decisions to "
 "prolong the qualification process to allow the bidder to collect all "
 "necessary documents or correct errors.  Such documents would help to have "
-"procedure as transparent as possible and will reduce risk of cancellation by "
-"Complaint Review Body."
+"procedure as transparent as possible and will reduce risk of cancellation by"
+" Complaint Review Body."
 msgstr ""
 "Кваліфікаційний комітет може завантажити декілька документів, наприклад, "
 "рішення подовжити процес кваліфікації, щоб дозволити кандидату зібрати усі "
-"необхідні документи або виправити помилки. Такі документи допоможуть зробити "
-"процедуру прозорою та зменшать ймовірність відміни рішення органом розгляду "
-"скарг."
+"необхідні документи або виправити помилки. Такі документи допоможуть зробити"
+" процедуру прозорою та зменшать ймовірність відміни рішення органом розгляду"
+" скарг."
 
 #: ../../source/qualification.rst:55
 msgid ""
@@ -84,8 +85,8 @@ msgid ""
 "the `Location` response header from the response above that is pointing "
 "award in \"pending\" state."
 msgstr ""
-"Зверніть увагу, що після відмови визначеному переможцю наступна пропозиція у "
-"просортованому за ціновими пропозиціями списку стає претендентом на "
+"Зверніть увагу, що після відмови визначеному переможцю наступна пропозиція у"
+" просортованому за ціновими пропозиціями списку стає претендентом на "
 "перемогу. Для зручності, ви можете використати заголовок `Location` з "
 "попередньої відповіді, що вказує на \"pending\" стан оцінки, що ще триває."
 
@@ -108,23 +109,23 @@ msgstr ""
 "Замовник може почекати, доки кандидат надасть усі відсутні документи "
 "(ліцензії, сертифікати, заяви, і т.п.) або оновить існуючі документи "
 "пропозиції, щоб виправити помилку. З іншого боку, замовник може відмовити "
-"пропозиції, якщо надані документи не задовільняють умов закупівлі, навіть до "
-"того як повний пакет документів стане доступним."
+"пропозиції, якщо надані документи не задовільняють умов закупівлі, навіть до"
+" того як повний пакет документів стане доступним."
 
-#: ../../source/qualification.rst:93
+#: ../../source/qualification.rst:123
 msgid "Influence of Complaint Satisfaction"
 msgstr "Вплив задовільненої скарги"
 
-#: ../../source/qualification.rst:95
+#: ../../source/qualification.rst:125
 msgid ""
-"If decision of the procuring entity is considered unfair any bidder can file "
-"complaint and after proper review the whole awarding process can start from "
-"the award in question.  When Complaint Review Body satifies the complaint, "
-"all awards registered in the system that were issued (including the one that "
-"complaint was filed against) are cancelled (switch to `cancelled` status). "
-"New pending award is generated and Procuring Entity is obliged to qualify it "
-"again, taking into consideration recommendations in the report of Complaint "
-"Review Body."
+"If decision of the procuring entity is considered unfair any bidder can file"
+" complaint and after proper review the whole awarding process can start from"
+" the award in question.  When Complaint Review Body satifies the complaint, "
+"all awards registered in the system that were issued (including the one that"
+" complaint was filed against) are cancelled (switch to `cancelled` status). "
+"New pending award is generated and Procuring Entity is obliged to qualify it"
+" again, taking into consideration recommendations in the report of Complaint"
+" Review Body."
 msgstr ""
 "Якщо рішення замовника вважатиметься несправедливим, будь-який учасник може "
 "подати скаргу і, після її відповідного розгляду, весь процес визначення "
@@ -134,3 +135,49 @@ msgstr ""
 "Генерується новий процес визначення переможця і Замовник зобов’язаний "
 "кваліфікувати його знову, зважаючи на рекомендації зазначені в звіті органу "
 "розгляду скарг."
+
+#: ../../source/qualification.rst:93
+msgid "Cancelling Active Award"
+msgstr "Скасування активної винагороди"
+
+#: ../../source/qualification.rst:95
+msgid ""
+"Sometimes Bidder refuses to sign the contract even after passing "
+"qualification process.  In this case Procuring Entity is expected to be able"
+" to reject approved award and disqualify Bid afterwards."
+msgstr ""
+"Іноді Учасник відмовляється підписати договір, навіть після проходження "
+"процесу кваліфікації. У цьому випадку замовник закупівлі повинен мати "
+"можливість відмовитися від затвердженого переможця, а потім дискваліфікувати"
+" його цінову пропозицію."
+
+#: ../../source/qualification.rst:99
+msgid "After we have Award with active status:"
+msgstr "Коли стадія Визначення переможця активна"
+
+#: ../../source/qualification.rst:104
+msgid "There is need to cancel it:"
+msgstr "Є необхідність її скасувати"
+
+#: ../../source/qualification.rst:109
+msgid ""
+"Note that there is Location header returned that aid in locating the "
+"\"fresh\" award that is most likely subject for disqualification:"
+msgstr ""
+"Зверніть увагу, що повернуто заголовок Location, який допомогає в пошуку "
+"\"свіжої\" винагороди, яка, швидше за все, і є предметом дискваліфікації:"
+
+#: ../../source/qualification.rst:118
+msgid ""
+"In the case there is another Bid for qualification, there will be Location "
+"header in the response pointing at its Award."
+msgstr ""
+"У випадку, якщо є інша пропозиція для кваліфікації, у відповіді буде "
+"заголовок Location, що вказуватиме на відповідну винагороду."
+
+#~ msgid ""
+#~ "In the case there is another Bid for qualification, there will be Location "
+#~ "header in the response poining its Award."
+#~ msgstr ""
+#~ "У випадку, якщо є інша пропозиція для кваліфікації, у відповіді буде "
+#~ "заголовок Location, що вказуватиме на відповідну винагороду."

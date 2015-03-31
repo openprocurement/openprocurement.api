@@ -1,4 +1,4 @@
-#
+# 
 msgid ""
 msgstr ""
 "Project-Id-Version: openprocurement.api 0.1\n"
@@ -32,19 +32,19 @@ msgstr "Оновлення пропозиції"
 msgid "Updating Bid documents"
 msgstr "Оновлення документів пропозиції"
 
-#: ../../source/bidding.rst:56
+#: ../../source/bidding.rst:64
 msgid "Cancelling the proposal"
 msgstr "Відміна пропозиції"
 
-#: ../../source/bidding.rst:67
+#: ../../source/bidding.rst:75
 msgid "Bids Listing"
 msgstr "Список пропозицій"
 
-#: ../../source/bidding.rst:193
+#: ../../source/bidding.rst:201
 msgid "Retrieving the proposal"
 msgstr "Вичитка пропозиції"
 
-#: ../../source/bidding.rst:69
+#: ../../source/bidding.rst:77
 msgid ""
 "After auction ends it is possible to get full information about bids and "
 "bidders that submitted them:"
@@ -52,6 +52,6 @@ msgstr ""
 "Після закінчення аукціону можна отримати повну інформацію про пропозиції та "
 "учасників, які їх подали:"
 
-#: ../../source/bidding.rst:195
+#: ../../source/bidding.rst:203
 msgid "Individual bid can be retrieved via its `id`:"
 msgstr "Окрему пропозицію можна прочитати за її `id`:"
