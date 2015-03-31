@@ -2,13 +2,12 @@
 import unittest
 import webtest
 import os
-from datetime import timedelta
+from datetime import datetime, timedelta
 
 from openprocurement.api import VERSION
-from openprocurement.api.models import get_now
 
 
-now = get_now()
+now = datetime.now()
 test_tender_data = {
     "title": u"футляри до державних нагород",
     "procuringEntity": {

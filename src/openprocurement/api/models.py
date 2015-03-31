@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-import os, time
+import os
 from couchdb_schematics.document import SchematicsDocument
 from datetime import datetime, timedelta
 from iso8601 import parse_date, ParseError
@@ -49,7 +49,10 @@ class IsoDateTimeType(BaseType):
         if isinstance(value, datetime):
             return value
         try:
-            return parse_date(value, TZ)
+            date = parse_date(value, None)
+            if not date.tzinfo:
+                date = TZ.localize(date)
+            return date
         except ParseError:
             raise ConversionError(self.messages['parse'].format(value))
 
