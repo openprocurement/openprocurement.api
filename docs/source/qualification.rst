@@ -116,7 +116,7 @@ award that is most likely subject for disqualification:
    :code:
 
 In the case there is another Bid for qualification, there will be Location
-header in the response poining its Award.
+header in the response pointing at its Award.
 
 
 Influence of Complaint Satisfaction
