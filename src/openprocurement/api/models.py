@@ -11,7 +11,6 @@ from schematics.transforms import whitelist, blacklist, export_loop
 from schematics.types import StringType, FloatType, IntType, URLType, BooleanType, BaseType, EmailType, MD5Type
 from schematics.types.compound import ModelType, ListType, DictType
 from schematics.types.serializable import serializable
-from tzlocal import get_localzone
 from uuid import uuid4
 
 
@@ -19,10 +18,7 @@ STAND_STILL_TIME = timedelta(days=1)
 schematics_embedded_role = SchematicsDocument.Options.roles['embedded']
 schematics_default_role = SchematicsDocument.Options.roles['default']
 
-if os.environ.get('READTHEDOCS', None) == 'True':
-    os.environ['TZ'] = 'Europe/Kiev'
-
-TZ = timezone(get_localzone().tzname(datetime.now()))
+TZ = timezone(os.environ['TZ'] if 'TZ' in os.environ else 'Europe/Kiev')
 
 
 def get_now():
@@ -53,7 +49,10 @@ class IsoDateTimeType(BaseType):
         if isinstance(value, datetime):
             return value
         try:
-            return parse_date(value, TZ)
+            date = parse_date(value, None)
+            if not date.tzinfo:
+                date = TZ.localize(date)
+            return date
         except ParseError:
             raise ConversionError(self.messages['parse'].format(value))
 

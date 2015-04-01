@@ -4,7 +4,6 @@ import webtest
 import os
 from datetime import datetime, timedelta
 
-
 from openprocurement.api import VERSION
 
 
@@ -211,14 +210,18 @@ class BaseTenderWebTest(BaseWebTest):
         response = self.app.post_json('/tenders', {'data': self.initial_data})
         tender = response.json['data']
         self.tender_id = tender['id']
+        status = tender['status']
         if self.initial_bids:
-            self.set_status('active.tendering')
+            response = self.set_status('active.tendering')
+            status = response.json['data']['status']
             bids = []
             for i in self.initial_bids:
                 response = self.app.post_json('/tenders/{}/bids'.format(self.tender_id), {'data': i})
+                self.assertEqual(response.status, '201 Created')
                 bids.append(response.json['data'])
             self.initial_bids = bids
-        if self.initial_status:
+        if self.initial_status != status:
+            self.initial_status
             self.set_status(self.initial_status)
 
     def tearDown(self):
