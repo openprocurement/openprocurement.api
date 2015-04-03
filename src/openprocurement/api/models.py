@@ -55,6 +55,8 @@ class IsoDateTimeType(BaseType):
             return date
         except ParseError:
             raise ConversionError(self.messages['parse'].format(value))
+        except OverflowError as e:
+            raise ConversionError(e)
 
     def to_primitive(self, value, context=None):
         return value.isoformat()
