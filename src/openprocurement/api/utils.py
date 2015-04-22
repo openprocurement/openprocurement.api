@@ -149,7 +149,7 @@ def prepare_patch(changes, orig, patch, basepath=''):
                 changes.append({'op': 'add', 'path': '{}/{}'.format(basepath, i), 'value': patch[i]})
     elif isinstance(patch, list):
         if len(patch) < len(orig):
-            for i in range(len(patch), len(orig)):
+            for i in reversed(range(len(patch), len(orig))):
                 changes.append({'op': 'remove', 'path': '{}/{}'.format(basepath, i)})
         for i, j in enumerate(patch):
             if len(orig) > i:
