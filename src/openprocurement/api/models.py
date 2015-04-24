@@ -262,7 +262,7 @@ class Bid(Model):
             'create': whitelist('value', 'tenderers'),
             'edit': whitelist('value', 'tenderers'),
             'auction_view': whitelist('value', 'id', 'date', 'participationUrl'),
-            'auction_post': whitelist('value', 'id'),
+            'auction_post': whitelist('value', 'id', 'date'),
             'auction_patch': whitelist('id', 'participationUrl'),
             'active.enquiries': whitelist(),
             'active.tendering': whitelist(),
