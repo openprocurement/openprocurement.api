@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from logging import getLogger
 from cornice.resource import resource, view
-from openprocurement.api.models import Bid
+from openprocurement.api.models import Bid, get_now
 from openprocurement.api.utils import (
     save_tender,
     set_ownership,
@@ -254,6 +254,9 @@ class TenderBidResource(object):
             self.request.errors.add('body', 'data', 'Can\'t update bid in current ({}) tender status'.format(self.request.validated['tender_status']))
             self.request.errors.status = 403
             return
+        value = self.request.validated['data'].get("value", {}).get("amount")
+        if value and value != self.request.context.get("value", {}).get("amount"):
+            self.request.validated['data']['date'] = get_now().isoformat()
         if apply_patch(self.request, src=self.request.context.serialize()):
             LOGGER.info('Updated tender bid {}'.format(self.request.context.id), extra={'MESSAGE_ID': 'tender_bid_patch'})
             return {'data': self.request.context.serialize("view")}

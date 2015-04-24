@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 import unittest
+from datetime import timedelta
 
+from openprocurement.api.models import get_now
 from openprocurement.api.tests.base import BaseTenderWebTest, test_tender_data
 
 
@@ -315,9 +317,61 @@ class TenderAuctionResourceTest(BaseTenderWebTest):
         self.assertEqual(response.json['errors'][0]["description"], "Can't add document in current (complete) tender status")
 
 
+class TenderSameValueAuctionResourceTest(BaseTenderWebTest):
+    initial_status = 'active.auction'
+    initial_bids = [
+        {
+            "tenderers": [
+                test_tender_data["procuringEntity"]
+            ],
+            "value": {
+                "amount": 469,
+                "currency": "UAH",
+                "valueAddedTaxIncluded": True
+            }
+        }
+        for i in range(3)
+    ]
+
+    def test_post_tender_auction_not_changed(self):
+        self.app.authorization = ('Basic', ('auction', ''))
+        response = self.app.post_json('/tenders/{}/auction'.format(self.tender_id), {'data': {'bids': self.initial_bids}})
+        self.assertEqual(response.status, '200 OK')
+        self.assertEqual(response.content_type, 'application/json')
+        tender = response.json['data']
+        self.assertEqual('active.qualification', tender["status"])
+        self.assertEqual(tender["awards"][0]['bid_id'], self.initial_bids[0]['id'])
+        self.assertEqual(tender["awards"][0]['value']['amount'], self.initial_bids[0]['value']['amount'])
+        self.assertEqual(tender["awards"][0]['suppliers'], self.initial_bids[0]['tenderers'])
+
+    def test_post_tender_auction_reversed(self):
+        self.app.authorization = ('Basic', ('auction', ''))
+        now = get_now()
+        patch_data = {
+            'bids': [
+                {
+                    "id": b['id'],
+                    "date": (now - timedelta(seconds=i)).isoformat(),
+                    "value": b['value']
+                }
+                for i, b  in enumerate(self.initial_bids)
+            ]
+        }
+
+        response = self.app.post_json('/tenders/{}/auction'.format(self.tender_id), {'data': patch_data})
+        self.assertEqual(response.status, '200 OK')
+        self.assertEqual(response.content_type, 'application/json')
+        tender = response.json['data']
+        self.assertEqual('active.qualification', tender["status"])
+        self.assertEqual(tender["awards"][0]['bid_id'], self.initial_bids[2]['id'])
+        self.assertEqual(tender["awards"][0]['value']['amount'], self.initial_bids[2]['value']['amount'])
+        self.assertEqual(tender["awards"][0]['suppliers'], self.initial_bids[2]['tenderers'])
+
+
 def suite():
     suite = unittest.TestSuite()
     suite.addTest(unittest.makeSuite(TenderAuctionResourceTest))
+    suite.addTest(unittest.makeSuite(TenderSameValueAuctionResourceTest))
     return suite
 
 
