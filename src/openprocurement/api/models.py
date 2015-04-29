@@ -348,6 +348,25 @@ class Complaint(Model):
     documents = ListType(ModelType(Document), default=list())
 
 
+class Cancellation(Model):
+    class Options:
+        serialize_when_none = False
+        roles = {
+            'create': whitelist('reason', 'status'),
+            'edit': whitelist('status'),
+            'embedded': schematics_embedded_role,
+            'view': schematics_default_role,
+        }
+
+    id = MD5Type(required=True, default=lambda: uuid4().hex)
+    reason = StringType(required=True)
+    reason_en = StringType()
+    reason_ru = StringType()
+    date = IsoDateTimeType(default=get_now)
+    status = StringType(choices=['pending', 'active'], default='pending')
+    documents = ListType(ModelType(Document), default=list())
+
+
 class Contract(Model):
     class Options:
         serialize_when_none = False
@@ -503,6 +522,7 @@ class Tender(SchematicsDocument, Model):
     complaints = ListType(ModelType(Complaint), default=list())
     auctionUrl = URLType()
     mode = StringType(choices=['test'])
+    cancellations = ListType(ModelType(Cancellation), default=list())
 
     _attachments = DictType(DictType(BaseType), default=dict())  # couchdb attachments
     dateModified = IsoDateTimeType()

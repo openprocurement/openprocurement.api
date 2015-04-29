@@ -99,6 +99,12 @@ def factory(request):
             return get_item(complaint, 'document', request, root)
         else:
             return complaint
+    elif request.matchdict.get('cancellation_id'):
+        cancellation = get_item(tender, 'cancellation', request, root)
+        if request.matchdict.get('document_id'):
+            return get_item(cancellation, 'document', request, root)
+        else:
+            return cancellation
     elif request.matchdict.get('document_id'):
         return get_item(tender, 'document', request, root)
     elif request.matchdict.get('question_id'):
