@@ -613,8 +613,8 @@ class TenderResourceTest(BaseWebTest):
         self.assertEqual(response.content_type, 'application/json')
         question = response.json['data']
 
+        authorization = self.app.authorization
         self.app.authorization = ('Basic', ('administrator', ''))
-
         response = self.app.patch_json('/tenders/{}'.format(tender['id']), {'data': {'mode': u'test'}})
         self.assertEqual(response.status, '200 OK')
         self.assertEqual(response.content_type, 'application/json')
@@ -626,6 +626,21 @@ class TenderResourceTest(BaseWebTest):
         self.assertEqual(response.json['errors'], [
             {"location": "url", "name": "role", "description": "Forbidden"}
         ])
+        self.app.authorization = authorization
+
+        response = self.app.post_json('/tenders', {'data': test_tender_data})
+        self.assertEqual(response.status, '201 Created')
+        tender = response.json['data']
+
+        response = self.app.post_json('/tenders/{}/cancellations'.format(tender['id']), {'data': {'reason': 'cancellation reason', 'status': 'active'}})
+        self.assertEqual(response.status, '201 Created')
+        self.assertEqual(response.content_type, 'application/json')
+
+        self.app.authorization = ('Basic', ('administrator', ''))
+        response = self.app.patch_json('/tenders/{}'.format(tender['id']), {'data': {'mode': u'test'}})
+        self.assertEqual(response.status, '200 OK')
+        self.assertEqual(response.content_type, 'application/json')
+        self.assertEqual(response.json['data']['mode'], u'test')
 
 
 class TenderProcessTest(BaseTenderWebTest):
