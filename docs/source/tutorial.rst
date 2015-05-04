@@ -218,8 +218,61 @@ Qualification comission registers its decision via following call:
 Canceling tender
 ----------------
 
-Tender creator can cancel tender anytime:
+Tender creator can cancel tender anytime. Following steps should be followed:
 
-.. include:: tutorial/cancel-tender.http
-   :code:
+1. Prepare cancellation request
+2. Fill it with the protocol describing the cancellation reasons 
+3. Cancelling the tender with the reasons prepared.
+
+Only the request that has been activated (3rd step above) has power to
+cancel tender.  I.e.  you have not only prepare cancellation request but
+activate it as well.
+
+See :ref:`cancellation` data structure for details.
+
+Preparing the cancellation request
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+.. code::
+
+  POST /tenders/{id}/cancellations
+
+
+you should pass `reason`. `status` defaults to `pending`. `id` is
+autoenerated and passed in the Location: header of response.
+
+.. code::
+
+  Location: /tenders/{id}/cancellations/{cancellation-id}
+
+Filling cancellation with protocol and supplementary documentation
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Upload the file contents
+
+.. code::
+
+   POST /tenders/{id}/cancellations/{cancellation-id}/documents
+
+Change the document descriptiona nd other properties
+
+.. code::
+
+   PATCH /tenders/{id}/cancellations/{cancellation-id}/documents/{document-id}
+
+Upload new verson of the document
+
+.. code::
+
+   PUT /tenders/{id}/cancellations/{cancellation-id}/documents/{document-id}
+
+Activating the request and cancelling tender
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+.. code::
+
+   PATCH /tenders/{id}/cancellations/{cancellation-id}
+   
+   {“data”:{“status”:”active”}}
+
 
