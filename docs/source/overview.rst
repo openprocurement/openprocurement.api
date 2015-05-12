@@ -73,6 +73,7 @@ Released: not released
  New features:
 
  - Stand-still period for each of the awards independently 
+ - Added new cancellation API 
 
 0.7
 ~~~
