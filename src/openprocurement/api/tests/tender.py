@@ -2,6 +2,7 @@
 import unittest
 from datetime import timedelta
 
+from openprocurement.api import ROUTE_PREFIX
 from openprocurement.api.models import Tender, get_now
 from openprocurement.api.tests.base import test_tender_data, BaseWebTest, BaseTenderWebTest
 
@@ -31,15 +32,13 @@ class TenderTest(BaseWebTest):
 class TenderResourceTest(BaseWebTest):
 
     def test_empty_listing(self):
-        before = get_now().isoformat()
         response = self.app.get('/tenders')
-        after = get_now().isoformat()
         self.assertEqual(response.status, '200 OK')
         self.assertEqual(response.content_type, 'application/json')
         self.assertEqual(response.json['data'], [])
         self.assertFalse('{\n    "' in response.body)
         self.assertFalse('callback({' in response.body)
-        self.assertTrue(before < response.json['next_page']['offset'] < after)
+        self.assertEqual(response.json['next_page']['offset'], '')
 
         response = self.app.get('/tenders?opt_jsonp=callback')
         self.assertEqual(response.status, '200 OK')
@@ -59,7 +58,7 @@ class TenderResourceTest(BaseWebTest):
         self.assertIn('{\n    "', response.body)
         self.assertIn('callback({', response.body)
 
-        response = self.app.get('/tenders?offset={}&descending=1&limit=10'.format(before))
+        response = self.app.get('/tenders?offset=2015-01-01T00:00:00+02:00&descending=1&limit=10')
         self.assertEqual(response.status, '200 OK')
         self.assertEqual(response.content_type, 'application/json')
         self.assertEqual(response.json['data'], [])
@@ -87,11 +86,17 @@ class TenderResourceTest(BaseWebTest):
         self.assertEqual(set([i['dateModified'] for i in response.json['data']]), set([i['dateModified'] for i in tenders]))
         self.assertEqual([i['dateModified'] for i in response.json['data']], sorted([i['dateModified'] for i in tenders]))
 
-        before = get_now().isoformat()
         response = self.app.get('/tenders?limit=2')
         self.assertEqual(response.status, '200 OK')
         self.assertEqual(len(response.json['data']), 2)
-        self.assertFalse(before < response.json['next_page']['offset'])
+
+        response = self.app.get(response.json['next_page']['path'].replace(ROUTE_PREFIX, ''))
+        self.assertEqual(response.status, '200 OK')
+        self.assertEqual(len(response.json['data']), 1)
+
+        response = self.app.get(response.json['next_page']['path'].replace(ROUTE_PREFIX, ''))
+        self.assertEqual(response.status, '200 OK')
+        self.assertEqual(len(response.json['data']), 0)
 
         response = self.app.get('/tenders', params=[('opt_fields', 'status,enquiryPeriod')])
         self.assertEqual(response.status, '200 OK')
@@ -106,6 +111,19 @@ class TenderResourceTest(BaseWebTest):
         self.assertEqual(set(response.json['data'][0]), set([u'id', u'dateModified']))
         self.assertEqual(set([i['id'] for i in response.json['data']]), set([i['id'] for i in tenders]))
         self.assertEqual([i['dateModified'] for i in response.json['data']], sorted([i['dateModified'] for i in tenders], reverse=True))
+
+        response = self.app.get('/tenders?descending=1&limit=2')
+        self.assertEqual(response.status, '200 OK')
+        self.assertEqual(response.content_type, 'application/json')
+        self.assertEqual(len(response.json['data']), 2)
+
+        response = self.app.get(response.json['next_page']['path'].replace(ROUTE_PREFIX, ''))
+        self.assertEqual(response.status, '200 OK')
+        self.assertEqual(len(response.json['data']), 1)
+
+        response = self.app.get(response.json['next_page']['path'].replace(ROUTE_PREFIX, ''))
+        self.assertEqual(response.status, '200 OK')
+        self.assertEqual(len(response.json['data']), 0)
 
         test_tender_data2 = test_tender_data.copy()
         test_tender_data2['mode'] = 'test'
@@ -604,8 +622,8 @@ class TenderResourceTest(BaseWebTest):
         self.assertEqual(response.content_type, 'application/json')
         question = response.json['data']
 
+        authorization = self.app.authorization
         self.app.authorization = ('Basic', ('administrator', ''))
-
         response = self.app.patch_json('/tenders/{}'.format(tender['id']), {'data': {'mode': u'test'}})
         self.assertEqual(response.status, '200 OK')
         self.assertEqual(response.content_type, 'application/json')
@@ -617,6 +635,21 @@ class TenderResourceTest(BaseWebTest):
         self.assertEqual(response.json['errors'], [
             {"location": "url", "name": "role", "description": "Forbidden"}
         ])
+        self.app.authorization = authorization
+
+        response = self.app.post_json('/tenders', {'data': test_tender_data})
+        self.assertEqual(response.status, '201 Created')
+        tender = response.json['data']
+
+        response = self.app.post_json('/tenders/{}/cancellations'.format(tender['id']), {'data': {'reason': 'cancellation reason', 'status': 'active'}})
+        self.assertEqual(response.status, '201 Created')
+        self.assertEqual(response.content_type, 'application/json')
+
+        self.app.authorization = ('Basic', ('administrator', ''))
+        response = self.app.patch_json('/tenders/{}'.format(tender['id']), {'data': {'mode': u'test'}})
+        self.assertEqual(response.status, '200 OK')
+        self.assertEqual(response.content_type, 'application/json')
+        self.assertEqual(response.json['data']['mode'], u'test')
 
 
 class TenderProcessTest(BaseTenderWebTest):

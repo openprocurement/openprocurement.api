@@ -1,7 +1,8 @@
 # -*- coding: utf-8 -*-
-from datetime import datetime
+from datetime import timedelta
 from logging import getLogger
 from cornice.resource import resource, view
+from iso8601 import parse_date
 from openprocurement.api.design import (
     tenders_by_dateModified_view,
     tenders_real_by_dateModified_view,
@@ -85,14 +86,13 @@ class TenderResource(object):
             params['limit'] = limit
         limit = int(limit) if limit.isdigit() else 100
         descending = self.request.params.get('descending')
-        offset = self.request.params.get('offset', '9' if descending else '0')
+        offset = self.request.params.get('offset', '9' if descending else '')
         if descending:
             params['descending'] = descending
         mode = self.request.params.get('mode')
         if mode:
             params['mode'] = mode
         list_view = VIEW_MAP.get(mode, tenders_real_by_dateModified_view)
-        next_offset = datetime.min.isoformat() if descending else get_now().isoformat()
         if fields:
             LOGGER.info('Used custom fields for tenders list: {}'.format(','.join(sorted(fields.split(',')))), extra={'MESSAGE_ID': 'tender_list_custom'})
             fields = fields.split(',') + ['dateModified', 'id']
@@ -109,8 +109,10 @@ class TenderResource(object):
         if len(results) > limit:
             results, last = results[:-1], results[-1]
             params['offset'] = last['dateModified']
+        elif len(results) > 0:
+            params['offset'] = (parse_date(results[-1]['dateModified']) + timedelta(microseconds=-1 if descending else 1)).isoformat()
         else:
-            params['offset'] = next_offset
+            params['offset'] = offset
         return {
             'data': results,
             'next_page': {
@@ -446,7 +448,7 @@ class TenderResource(object):
 
         """
         tender = self.request.validated['tender']
-        if tender.status in ['complete', 'unsuccessful', 'cancelled']:
+        if self.request.authenticated_role != 'Administrator' and tender.status in ['complete', 'unsuccessful', 'cancelled']:
             self.request.errors.add('body', 'data', 'Can\'t update tender in current ({}) status'.format(tender.status))
             self.request.errors.status = 403
             return

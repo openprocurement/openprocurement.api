@@ -66,9 +66,18 @@ lot.  The changes in the API are communicated via `Open Procurement API
 Change log
 ----------
 
-0.7
+0.8
 ~~~
 Released: not released
+
+ New features:
+
+ - Stand-still period for each of the awards independently 
+ - Added new cancellation API 
+
+0.7
+~~~
+Released: 2015-03-13
 
  New features:
 
