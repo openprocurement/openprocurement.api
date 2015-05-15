@@ -68,7 +68,7 @@ Change log
 
 0.8
 ~~~
-Released: not released
+Released: 2015-05-12
 
  New features:
 
