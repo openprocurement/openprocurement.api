@@ -66,6 +66,13 @@ lot.  The changes in the API are communicated via `Open Procurement API
 Change log
 ----------
 
+0.9
+~~~
+Released: not released
+
+ New features:
+
+
 0.8
 ~~~
 Released: 2015-05-12
