@@ -651,6 +651,18 @@ class TenderResourceTest(BaseWebTest):
         self.assertEqual(response.content_type, 'application/json')
         self.assertEqual(response.json['data']['mode'], u'test')
 
+    def test_required_field_deletion(self):
+        response = self.app.post_json('/tenders', {'data': test_tender_data})
+        self.assertEqual(response.status, '201 Created')
+        tender = response.json['data']
+
+        # TODO: Test all the required fields
+
+        response = self.app.patch_json('/tenders/{}'.format(
+            tender['id']), {'data': {'enquiryPeriod': {'startDate': None}}})
+        self.assertNotEqual(response.status, '200 OK')
+        self.assertEqual(response.content_type, 'application/json')
+        self.assertIn('startDate', response.json['data']['enquiryPeriod'])
 
 class TenderProcessTest(BaseTenderWebTest):
     setUp = BaseWebTest.setUp
