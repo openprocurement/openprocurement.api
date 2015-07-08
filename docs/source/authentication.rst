@@ -30,7 +30,7 @@ modify objects further under "Owner role".
 Using token
 ~~~~~~~~~~~
 
-You can pass access token in following ways:
+You can pass access token in the following ways:
 
 1) `acc_token` URL query string parameter
 2) `X-Access-Token` HTTP request header

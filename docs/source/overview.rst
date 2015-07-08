@@ -5,9 +5,9 @@ The Open Procurement API is the only interface to Open Procurement database
 that is core unit of `Open Procurement <http://openprocurement.org/>`_
 infrastructure.
 
-The Open Procurement API is `REST 
+The Open Procurement API is a `REST 
 <http://en.wikipedia.org/wiki/Representational_State_Transfer>`_-ful
-interface, providing programmatic access to Tender database of Open
+interface that provides programmatic access to Tender database of Open
 Procurement system.  It provides predictable URLs for accessing resources,
 and uses built-in HTTP features to receive commands and return responses. 
 This makes it easy to communicate with.
@@ -31,7 +31,7 @@ its top level, which will contain complete information on the new tender,
 including its ID.
 
 If something went wrong during the request, we'll get a different status
-code and the JSON returned will contain an `errors` field at the top level
+code and the JSON returned will have an `errors` field at the top level
 containing a list of problems.  We look at the first one and print out its
 message.
 

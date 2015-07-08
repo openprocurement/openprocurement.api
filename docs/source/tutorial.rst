@@ -18,14 +18,14 @@ Now let's attempt creating some tender:
 .. include:: tutorial/tender-post-attempt.http
    :code:
 
-Error states that only accepted Content-Type is `application/json`.
+Error states that the only accepted Content-Type is `application/json`.
 
 Let's satisfy the Content-type requirement:
 
 .. include:: tutorial/tender-post-attempt-json.http
    :code:
 
-Error states that no `data` found in JSON body.
+Error states that no `data` has been found in JSON body.
 
 
 .. index:: Tender
@@ -39,13 +39,13 @@ Let's provide the data attribute in the body submitted:
    :code:
 
 Success! Now we can see that new object was created. Response code is `201`
-and `Location` response header reports the location of object created.  The
-body of response reveals the information about tender created, its internal
+and `Location` response header reports the location of the created object.  The
+body of response reveals the information about the created tender: its internal
 `id` (that matches the `Location` segment), its official `tenderID` and
 `dateModified` datestamp stating the moment in time when tender was last
 modified.  Note that tender is created with `active.enquiries` status.
 
-Let's access the URL of object created (the `Location` header of the response):
+Let's access the URL of the created object (the `Location` header of the response):
 
 .. include:: tutorial/blank-tender-view.http
    :code:
@@ -66,7 +66,7 @@ Let's try creating tender with more data, passing the `procuringEntity` of a ten
 .. include:: tutorial/create-tender-procuringEntity.http
    :code:
 
-And again we have `201 Created` response code, `Location` header and body wth extra `id`, `tenderID`, and `dateModified` properties.
+And again we have `201 Created` response code, `Location` header and body with extra `id`, `tenderID`, and `dateModified` properties.
 
 Let's check what tender registry contains:
 
@@ -79,14 +79,14 @@ And indeed we have 2 tenders now.
 Modifying tender
 ----------------
 
-Let's update tender by providing it with all other essential properties:
+Let's update tender by supplementing it with all other essential properties:
 
 .. include:: tutorial/patch-items-value-periods.http
    :code:
 
 .. XXX body is empty for some reason (printf fails)
 
-We see the added properies merged with existing data of tender. Additionally the `dateModified` property updated to reflect the last modification datestamp.
+We see the added properies have merged with existing tender data. Additionally, the `dateModified` property was updated to reflect the last modification datestamp.
 
 Checking the listing again reflects the new modification date:
 
@@ -99,7 +99,7 @@ Checking the listing again reflects the new modification date:
 Uploading documentation
 -----------------------
 
-Procuring entity can upload PDF files into tender created. Uploading should
+Procuring entity can upload PDF files into the created tender. Uploading should
 follow the :ref:`upload` rules.
 
 .. include:: tutorial/upload-tender-notice.http
@@ -112,7 +112,7 @@ action:
 .. include:: tutorial/tender-documents.http
    :code:
 
-The single array element describes the document uploaded. We can upload more documents:
+The single array element describes the uploaded document. We can upload more documents:
 
 .. include:: tutorial/upload-award-criteria.http
    :code:
@@ -164,7 +164,7 @@ And individual answer:
 Registering bid
 ---------------
 
-When ``Tender.tenderingPeriod.startDate`` comes Tender switches to `active.tendering` status that allows registration of bids.
+When ``Tender.tenderingPeriod.startDate`` comes, Tender switches to `active.tendering` status that allows registration of bids.
 
 Bidder can register a bid:
 
@@ -176,7 +176,7 @@ And upload proposal document:
 .. include:: tutorial/upload-bid-proposal.http
    :code:
 
-It is possible to check documents uploaded:
+It is possible to check the uploaded documents:
 
 .. include:: tutorial/bidder-documents.http
    :code:
@@ -202,7 +202,7 @@ And bidders can find out their participation URLs via their bids:
 .. include:: tutorial/bidder-participation-url.http
    :code:
 
-See the `Bid.participationUrl` in the response. The similar, but different, url can be retrieved for the other participants:
+See the `Bid.participationUrl` in the response. Similar, but different, URL can be retrieved for other participants:
 
 .. include:: tutorial/bidder2-participation-url.http
    :code:
@@ -210,7 +210,7 @@ See the `Bid.participationUrl` in the response. The similar, but different, url 
 Confirming qualification
 ------------------------
 
-Qualification comission registers its decision via following call:
+Qualification comission registers its decision via the following call:
 
 .. include:: tutorial/confirm-qualification.http
    :code:
@@ -218,15 +218,15 @@ Qualification comission registers its decision via following call:
 Cancelling tender
 ----------------
 
-Tender creator can cancel tender anytime. Following steps should be followed:
+Tender creator can cancel tender anytime. The following steps should be applied:
 
 1. Prepare cancellation request
 2. Fill it with the protocol describing the cancellation reasons 
 3. Cancel the tender with the reasons prepared.
 
 Only the request that has been activated (3rd step above) has power to
-cancel tender.  I.e.  you have not only prepare cancellation request but
-activate it as well.
+cancel tender.  I.e.  you have to not only prepare cancellation request but
+to activate it as well.
 
 See :ref:`cancellation` data structure for details.
 
