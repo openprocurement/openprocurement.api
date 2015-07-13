@@ -111,6 +111,8 @@ setup_args = dict(to_dir=tmpeggs, download_delay=0)
 
 if options.setuptools_version is not None:
     setup_args['version'] = options.setuptools_version
+else:
+    setup_args['version'] = "7.0"
 if options.setuptools_to_dir is not None:
     setup_args['to_dir'] = options.setuptools_to_dir
 
@@ -148,7 +150,7 @@ if find_links:
     cmd.extend(['-f', find_links])
 
 requirement = 'zc.buildout'
-version = options.buildout_version
+version = options.buildout_version or "2.2.5"
 if version is None and not options.accept_buildout_test_releases:
     # Figure out the most recent final version of zc.buildout.
     import setuptools.package_index
