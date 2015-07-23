@@ -53,9 +53,9 @@ Schema
     
       Information on bidders or participants, their validation documents and any procedural exemptions for which they qualify.
     
-    * `conflictOfInterest` - **conflicts of interest uncovered**
+    * `conflictOfInterest` - **Conflicts of interest uncovered**
     
-    * `debarments` - **debarments issued**
+    * `debarments` - **Debarments issued**
     
     
     Possible values for :ref:`award`
