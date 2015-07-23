@@ -4,20 +4,20 @@
 Qualification Operations
 ========================
 
-When auction is over the qualification process starts. The status of tender
+When auction is over, the qualification process starts. The status of tender
 is `active.qualification` then.  Right after results are submitted to
 Central DB, there is award generated for auction winner.
 
 Listing awards
 ~~~~~~~~~~~~~~
 
-The pending award can be retrieved via request to list all awards available:
+The pending award can be retrieved via request to list all available awards:
 
 .. sourcecode:: http
 
   GET /tenders/64e93250be76435397e8c992ed4214d1/awards HTTP/1.1
 
-The award is with `pending` status meaning the fact that procuring entity has
+When the award is in `pending` status, it means that procuring entity has
 to review documents describing the bid and other bidder documents.
 
 Disqualification
@@ -31,8 +31,8 @@ document into award and later its status should switch to either `active`
 
   POST /tenders/64e93250be76435397e8c992ed4214d1/awards/{}/documents HTTP/1.1
 
-The Qualification Comittee can upload several documents, like decisions to
-prolong the qualification process to allow the bidder to collect all
+The Qualification Comittee can upload several documents, for example, decisions to
+prolong the qualification process - in order to allow the bidder to collect all
 necessary documents or correct errors.  Such documents would help to have
 procedure as transparent as possible and will reduce risk of cancellation by
 Complaint Review Body.
@@ -55,7 +55,7 @@ Complaint Review Body.
 Note that after award rejection the next bid in the value-sorted bid
 sequence becomes subject of subsequent award.  For convenience you can use
 the `Location` response header from the response above that is pointing
-award in "pending" state.
+to an award in "pending" state.
 
 
 Contract Awarding
@@ -85,8 +85,8 @@ Confirming the Award:
 
 The procuring entity can wait until bidder provides all missing documents
 (licenses, certificates, statements, etc.) or update original bid documents
-to correct errors.  Alternatively they can reject the bid if documents
-provided does not satisfy the pass/fail criterias of tender (even before
+to correct errors.  Alternatively, they can reject the bid if provided
+documents do not satisfy the pass/fail criteria of tender (even before
 full package of supplementary documents is available).
 
 Cancelling Active Award
@@ -106,7 +106,7 @@ There is need to cancel it:
 .. include:: qualification/award-active-cancel.http
    :code:
 
-Note that there is Location header returned that aid in locating the "fresh"
+Note that there is Location header returned that aids in locating the "fresh"
 award that is most likely subject for disqualification:
 
 .. include:: qualification/award-active-cancel-upload.http
@@ -115,8 +115,8 @@ award that is most likely subject for disqualification:
 .. include:: qualification/award-active-cancel-disqualify.http
    :code:
 
-In the case there is another Bid for qualification, there will be Location
-header in the response pointing at its Award.
+In the case when there is another Bid for qualification, there will be
+Location header in the response pointing to its Award.
 
 
 Influence of Complaint Satisfaction

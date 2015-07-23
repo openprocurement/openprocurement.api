@@ -4,7 +4,7 @@
 Complaints Submission
 =====================
 
-If tender conditions are favoriting only one provider, or in any other viable case one can submit Tender Conditions Complaint.
+If tender conditions are favoriting only one provider, or in any other viable case, one can submit Tender Conditions Complaint.
 
 Tender Conditions Complaint Submission
 --------------------------------------
@@ -20,7 +20,7 @@ You can list all Tender Conditions Complaints:
 .. include:: tutorial/complaints-list.http
    :code:
 
-And can check individual complaint:
+And check individual complaint:
 
 .. include:: tutorial/complaint.http
    :code:
@@ -40,7 +40,7 @@ You can list all complaints:
 .. include:: tutorial/award-complaints-list.http
    :code:
 
-And can check individual complaint:
+And check individual complaint:
 
 .. include:: tutorial/award-complaint.http
    :code:
@@ -64,7 +64,7 @@ The Complaint Review Body uploads the resolution document:
 .. include:: tutorial/complaint-resolution-upload.http
    :code:
 
-And either resolves it:
+And either resolves complaint:
 
 .. include:: tutorial/complaint-resolve.http
    :code:

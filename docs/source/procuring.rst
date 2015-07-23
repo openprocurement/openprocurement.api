@@ -6,7 +6,7 @@ Procuring Entity Operations
 
 Registration of the Tender
 --------------------------
-Tender registration consist of primary record creation and documentation uploading.
+Tender registration consists of primary record creation and documentation uploading.
 
 Creating primary Tender record
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -16,7 +16,7 @@ When registering tender in the database, one has provide all primary tender deta
 
   POST /tenders HTTP/1.1
 
-The response produced will have URL of the tender created in Location header of response, and in ``data.id`` of body.
+The produced response will contain URL of the created tender in Location header of response, and in ``data.id`` of body.
   
 .. sourcecode:: http
 
@@ -28,14 +28,14 @@ The response produced will have URL of the tender created in Location header of 
 Uploading documentation
 ~~~~~~~~~~~~~~~~~~~~~~~
 
-All tender documentation should be uploaded following requests one request
+All tender documentation should be uploaded with the following request - one request
 per document. You can see supported request types in :ref:`upload` section.
 
 .. sourcecode:: http
 
   POST /tenders/64e93250be76435397e8c992ed4214d1/documents HTTP/1.1
 
-The response produced will have URL of the tender document uploaded in Location header of response, and in ``data.id`` of body.
+The response produced will have URL of the tender uploaded document in Location header of response and in ``data.id`` of body.
 
 .. sourcecode:: http
 
@@ -55,7 +55,7 @@ Procuring Entity can change both the primary record and associated documentation
 
 Changing primary Tender Record
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-Procuring Entity can change the Tender properties with following request. Data to change should be in payload of the message.
+Procuring Entity can change the Tender properties with the following request. Data to change should be in payload of the message.
 
 .. sourcecode:: http
 
