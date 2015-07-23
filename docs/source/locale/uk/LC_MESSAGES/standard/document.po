@@ -4,13 +4,13 @@ msgstr ""
 "Project-Id-Version: openprocurement.api 0.3\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2014-11-24 18:25+0200\n"
-"PO-Revision-Date: 2015-02-03 10:09+0300\n"
-"Last-Translator: Zoriana Zaiats\n"
-"Language-Team: LANGUAGE <LL@li.org>\n"
+"PO-Revision-Date: 2015-07-23 13:06+0200\n"
+"Last-Translator: Zoriana Zaiats <sorenabell@quintagroup.com>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Generator: Poedit 1.5.4\n"
+"X-Generator: Poedit 1.7.6\n"
+"Language-Team: \n"
 
 #: ../../source/standard/document.rst:9 ../../source/standard/document.rst:4
 msgid "Document"
@@ -80,8 +80,8 @@ msgid ""
 "describe arrangements for obtaining a copy of the document."
 msgstr ""
 "|ocdsDescription| Короткий опис документа. Якщо документ не буде доступний "
-"онлайн, то поле опису можна використати для вказання способу отримання копії "
-"документа."
+"онлайн, то поле опису можна використати для вказання способу отримання "
+"копії документа."
 
 #: ../../source/standard/document.rst:111
 msgid ""
@@ -90,10 +90,10 @@ msgid ""
 "addition of one extra value for 'offline/print', used when this document "
 "entry is being used to describe the offline publication of a document."
 msgstr ""
-"|ocdsDescription| Формат документа зі `списку кодів IANA Media Types <http://"
-"www.iana.org/assignments/media-types/>`_, з одним додатковим значенням "
-"'offline/print', що буде використовуватись, коли запис цього документа "
-"використовується для опису офлайнової публікації документа."
+"|ocdsDescription| Формат документа зі `списку кодів IANA Media Types "
+"<http://www.iana.org/assignments/media-types/>`_, з одним додатковим "
+"значенням 'offline/print', що буде використовуватись, коли запис цього "
+"документа використовується для опису офлайнової публікації документа."
 
 #: ../../source/standard/document.rst:117
 msgid "|ocdsDescription| Direct link to the document or attachment."
@@ -109,8 +109,8 @@ msgstr "|ocdsDescription| Дата, коли документ був зміне�
 
 #: ../../source/standard/document.rst:135
 msgid ""
-"|ocdsDescription| Specifies the language of the linked document using either "
-"two-digit `ISO 639-1 <https://en.wikipedia.org/wiki/"
+"|ocdsDescription| Specifies the language of the linked document using "
+"either two-digit `ISO 639-1 <https://en.wikipedia.org/wiki/"
 "List_of_ISO_639-1_codes>`_, or extended `BCP47 language tags <http://www.w3."
 "org/International/articles/language-tags/>`_."
 msgstr ""
@@ -126,8 +126,8 @@ msgstr "Можливі значення для :ref:`tender`"
 #: ../../source/standard/document.rst:24
 msgid ""
 "The formal notice that gives details of a tender. This may be a link to a "
-"downloadable document, to a web page, or to an official gazette in which the "
-"notice is contained."
+"downloadable document, to a web page, or to an official gazette in which "
+"the notice is contained."
 msgstr ""
 "Офіційне повідомлення, що містить деталі закупівлі. Це може бути посилання "
 "на документ, веб-сторінку, чи на офіційний бюлетень, де розміщено "
@@ -135,8 +135,8 @@ msgstr ""
 
 #: ../../source/standard/document.rst:28
 msgid ""
-"Information for potential suppliers, describing the goals of the contract (e."
-"g. goods and services to be procured), and the bidding process."
+"Information for potential suppliers, describing the goals of the contract "
+"(e.g. goods and services to be procured), and the bidding process."
 msgstr ""
 "Інформація для потенційних постачальників, що описує цілі договору "
 "(наприклад, товари та послуги, які будуть закуплені) і процес торгів."
@@ -208,14 +208,6 @@ msgstr ""
 "Інформація про учасників, їхні документи для перевірки та будь-які "
 "процесуальні пільги, на які вони можуть претендувати."
 
-#: ../../source/standard/document.rst:56
-msgid "`conflictOfInterest` - **conflicts of interest uncovered**"
-msgstr "`conflictOfInterest` - **виявлені конфлікти інтересів**"
-
-#: ../../source/standard/document.rst:58
-msgid "`debarments` - **debarments issued**"
-msgstr "`debarments` - **недопущення до закупівлі**"
-
 #: ../../source/standard/document.rst:61
 msgid "Possible values for :ref:`award`"
 msgstr "Можливі значення для :ref:`award`"
@@ -227,8 +219,8 @@ msgstr "`notice` - **Повідомлення про рішення**"
 #: ../../source/standard/document.rst:66
 msgid ""
 "The formal notice that gives details of the contract award. This may be a "
-"link to a downloadable document, to a web page, or to an official gazette in "
-"which the notice is contained."
+"link to a downloadable document, to a web page, or to an official gazette "
+"in which the notice is contained."
 msgstr ""
 "Офіційне повідомлення, що містить деталі рішення про визначення переможця. "
 "Це може бути посилання на документ, веб-сторінку, чи на офіційний бюлетень, "
@@ -264,9 +256,9 @@ msgstr "`notice` - **Повідомлення про договір**"
 
 #: ../../source/standard/document.rst:82
 msgid ""
-"The formal notice that gives details of a contract being signed and valid to "
-"start implementation. This may be a link to a downloadable document, to a "
-"web page, or to an official gazette in which the notice is contained."
+"The formal notice that gives details of a contract being signed and valid "
+"to start implementation. This may be a link to a downloadable document, to "
+"a web page, or to an official gazette in which the notice is contained."
 msgstr ""
 "Офіційне повідомлення, що містить деталі підписання доовору та початку його "
 "реалізації. Це може бути посилання на документ, веб-сторінку, чи на "
@@ -295,6 +287,20 @@ msgstr "`contractGuarantees` - **Гарантії**"
 #: ../../source/standard/document.rst:94
 msgid "`subContract` - **Subcontracts**"
 msgstr "`subContract` - **Субпідряд**"
+
+#: ../../source/standard/document.rst:56
+msgid "`conflictOfInterest` - **Conflicts of interest uncovered**"
+msgstr "`conflictOfInterest` - **Виявлені конфлікти інтересів**"
+
+#: ../../source/standard/document.rst:58
+msgid "`debarments` - **Debarments issued**"
+msgstr "`debarments` - **Недопущення до закупівлі**"
+
+#~ msgid "`conflictOfInterest` - **conflicts of interest uncovered**"
+#~ msgstr "`conflictOfInterest` - **виявлені конфлікти інтересів**"
+
+#~ msgid "`debarments` - **debarments issued**"
+#~ msgstr "`debarments` - **недопущення до закупівлі**"
 
 #~ msgid "`technicalSpecifications`"
 #~ msgstr "`technicalSpecifications` - технічні спицифікації"

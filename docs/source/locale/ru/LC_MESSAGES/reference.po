@@ -15,200 +15,152 @@ msgstr ""
 msgid "API Reference"
 msgstr ""
 
-#: ../<>:1 ../<>:1
-msgid ""
-"Open Contracting compatible data exchange format. See http://ocds.open-"
-"contracting.org/standard/r/master/#tender for more info"
-msgstr ""
+#~ msgid ""
+#~ "Open Contracting compatible data exchange format. See http://ocds.open-"
+#~ "contracting.org/standard/r/master/#tender for more info"
+#~ msgstr ""
 
-#: ../<>:1
-msgid ""
-"This API request is targeted to creating new Tenders by procuring "
-"organizations."
-msgstr ""
+#~ msgid ""
+#~ "This API request is targeted to creating new Tenders by procuring "
+#~ "organizations."
+#~ msgstr ""
 
-#: ../<>:4
-msgid "Creating new Tender"
-msgstr ""
+#~ msgid "Creating new Tender"
+#~ msgstr ""
 
-#: ../<>:6
-msgid "Example request to create tender:"
-msgstr ""
+#~ msgid "Example request to create tender:"
+#~ msgstr ""
 
-#: ../<>:14 ../<>:34 ../<>:14 ../<>:67 ../<>:14 ../<>:14 ../<>:41 ../<>:42
-msgid "This is what one should expect in response:"
-msgstr ""
+#~ msgid "This is what one should expect in response:"
+#~ msgstr ""
 
-#: ../<>:1
-msgid "Tender Read"
-msgstr ""
+#~ msgid "Tender Read"
+#~ msgstr ""
 
-#: ../<>:1
-msgid "Tender Edit (full)"
-msgstr ""
+#~ msgid "Tender Edit (full)"
+#~ msgstr ""
 
-#: ../<>:1
-msgid "Tender Edit (partial)"
-msgstr ""
+#~ msgid "Tender Edit (partial)"
+#~ msgstr ""
 
-#: ../<>:3
-msgid ""
-"For example here is how procuring entity can change number of items to be "
-"procured and total Value of a tender:"
-msgstr ""
+#~ msgid ""
+#~ "For example here is how procuring entity can change number of items to be "
+#~ "procured and total Value of a tender:"
+#~ msgstr ""
 
-#: ../<>:24 ../<>:11 ../<>:11 ../<>:19
-msgid "And here is the response to be expected:"
-msgstr ""
+#~ msgid "And here is the response to be expected:"
+#~ msgstr ""
 
-#: ../<>:1 ../<>:1
-msgid "Tender related binary files (PDFs, etc.)"
-msgstr ""
+#~ msgid "Tender related binary files (PDFs, etc.)"
+#~ msgstr ""
 
-#: ../<>:1
-msgid "Tender Documents List"
-msgstr ""
+#~ msgid "Tender Documents List"
+#~ msgstr ""
 
-#: ../<>:1
-msgid "Tender Document Upload"
-msgstr ""
+#~ msgid "Tender Document Upload"
+#~ msgstr ""
 
-#: ../<>:1
-msgid "Tender Document Read"
-msgstr ""
+#~ msgid "Tender Document Read"
+#~ msgstr ""
 
-#: ../<>:1
-msgid "Tender Document Update"
-msgstr ""
+#~ msgid "Tender Document Update"
+#~ msgstr ""
 
-#: ../<>:1
-msgid "Get auction info."
-msgstr ""
+#~ msgid "Get auction info."
+#~ msgstr ""
 
-#: ../<>:4
-msgid "Get tender auction info"
-msgstr ""
+#~ msgid "Get tender auction info"
+#~ msgstr ""
 
-#: ../<>:6
-msgid "Example request to get tender auction information:"
-msgstr ""
+#~ msgid "Example request to get tender auction information:"
+#~ msgstr ""
 
-#: ../<>:1
-msgid "Report auction results."
-msgstr ""
+#~ msgid "Report auction results."
+#~ msgstr ""
 
-#: ../<>:4
-msgid "Report auction results"
-msgstr ""
+#~ msgid "Report auction results"
+#~ msgstr ""
 
-#: ../<>:6
-msgid "Example request to report auction results:"
-msgstr ""
+#~ msgid "Example request to report auction results:"
+#~ msgstr ""
 
-#: ../<>:1
-msgid "Tenders List"
-msgstr ""
+#~ msgid "Tenders List"
+#~ msgstr ""
 
-#: ../<>:4
-msgid "Get Tenders List"
-msgstr ""
+#~ msgid "Get Tenders List"
+#~ msgstr ""
 
-#: ../<>:6
-msgid "Example request to get tenders list:"
-msgstr ""
+#~ msgid "Example request to get tenders list:"
+#~ msgstr ""
 
-#: ../<>:4
-msgid "Get Tender"
-msgstr ""
+#~ msgid "Get Tender"
+#~ msgstr ""
 
-#: ../<>:6
-msgid "Example request to get tender:"
-msgstr ""
+#~ msgid "Example request to get tender:"
+#~ msgstr ""
 
-#: ../<>:1 ../<>:1
-msgid "Tender bidders"
-msgstr ""
+#~ msgid "Tender bidders"
+#~ msgstr ""
 
-#: ../<>:1
-msgid "Registration of new bid proposal"
-msgstr ""
+#~ msgid "Registration of new bid proposal"
+#~ msgstr ""
 
-#: ../<>:4
-msgid "Creating new Bid proposal"
-msgstr ""
+#~ msgid "Creating new Bid proposal"
+#~ msgstr ""
 
-#: ../<>:6
-msgid "Example request to create bid proposal:"
-msgstr ""
+#~ msgid "Example request to create bid proposal:"
+#~ msgstr ""
 
-#: ../<>:1 ../<>:1
-msgid "Tender bidder documents"
-msgstr ""
+#~ msgid "Tender bidder documents"
+#~ msgstr ""
 
-#: ../<>:1
-msgid "Tender Bid Document Upload"
-msgstr ""
+#~ msgid "Tender Bid Document Upload"
+#~ msgstr ""
 
-#: ../<>:1 ../<>:1
-msgid "Tender awards"
-msgstr ""
+#~ msgid "Tender awards"
+#~ msgstr ""
 
-#: ../<>:1
-msgid "Accept or reject bidder application"
-msgstr ""
+#~ msgid "Accept or reject bidder application"
+#~ msgstr ""
 
-#: ../<>:4
-msgid "Creating new Award"
-msgstr ""
+#~ msgid "Creating new Award"
+#~ msgstr ""
 
-#: ../<>:6
-msgid "Example request to create award:"
-msgstr ""
+#~ msgid "Example request to create award:"
+#~ msgstr ""
 
-#: ../<>:1
-msgid "Bids Listing"
-msgstr ""
+#~ msgid "Bids Listing"
+#~ msgstr ""
 
-#: ../<>:4
-msgid "Get Bids List"
-msgstr ""
+#~ msgid "Get Bids List"
+#~ msgstr ""
 
-#: ../<>:6
-msgid "Example request to get bids list:"
-msgstr ""
+#~ msgid "Example request to get bids list:"
+#~ msgstr ""
 
-#: ../<>:1
-msgid "Retrieving the proposal"
-msgstr ""
+#~ msgid "Retrieving the proposal"
+#~ msgstr ""
 
-#: ../<>:3
-msgid "Example request for retrieving the proposal:"
-msgstr ""
+#~ msgid "Example request for retrieving the proposal:"
+#~ msgstr ""
 
-#: ../<>:1
-msgid "Cancelling the proposal"
-msgstr ""
+#~ msgid "Cancelling the proposal"
+#~ msgstr ""
 
-#: ../<>:3
-msgid "Example request for cancelling the proposal:"
-msgstr ""
+#~ msgid "Example request for cancelling the proposal:"
+#~ msgstr ""
 
-#: ../<>:1
-msgid "Update of proposal"
-msgstr ""
+#~ msgid "Update of proposal"
+#~ msgstr ""
 
-#: ../<>:3
-msgid "Example request to change bid proposal:"
-msgstr ""
+#~ msgid "Example request to change bid proposal:"
+#~ msgstr ""
 
-#: ../<>:1
-msgid "Tender Bid Documents List"
-msgstr ""
+#~ msgid "Tender Bid Documents List"
+#~ msgstr ""
 
-#: ../<>:1
-msgid "Tender Bid Document Read"
-msgstr ""
+#~ msgid "Tender Bid Document Read"
+#~ msgstr ""
 
-#: ../<>:1
-msgid "Tender Bid Document Update"
-msgstr ""
+#~ msgid "Tender Bid Document Update"
+#~ msgstr ""

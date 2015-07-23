@@ -4,13 +4,13 @@ msgstr ""
 "Project-Id-Version: openprocurement.api 0.3\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2014-11-24 18:25+0200\n"
-"PO-Revision-Date: 2014-12-25 13:14+0300\n"
-"Last-Translator: \n"
-"Language-Team: LANGUAGE <LL@li.org>\n"
+"PO-Revision-Date: 2015-07-23 13:01+0200\n"
+"Last-Translator: Zoriana Zaiats <sorenabell@quintagroup.com>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Generator: Poedit 1.5.4\n"
+"X-Generator: Poedit 1.7.6\n"
+"Language-Team: \n"
 
 #: ../../source/standard/organization.rst:9
 #: ../../source/standard/organization.rst:4
@@ -60,8 +60,8 @@ msgid ""
 msgstr ""
 "|ocdsDescription| Ідентифікатори організації беруться з існуючої схеми "
 "ідентифікації. Це поле вказує схему або список кодів, де можна знайти "
-"ідентифікатор організації. Це значення повинно братись зі Схеми "
-"Ідентифікації Організацій."
+"ідентифікатор організації. Це значення повинно братись зі Схеми Ідентифікації "
+"Організацій."
 
 #: ../../source/standard/organization.rst:56
 msgid ""
@@ -159,22 +159,17 @@ msgstr "рядок, обов’язковий"
 msgid "string, multilingual, required"
 msgstr "рядок, багатомовний, обов’язковий"
 
-#: ../../source/standard/organization.rst:163
-msgid "Either `email` or `telephone` fields have to be provided."
-msgstr ""
-"Повинне бути заповнене хоча б одне з полів: або `email`, або `telephone`."
-
 #: ../../source/standard/organization.rst:59
 msgid ""
-"The allowed codes are the ones found in `\"Organisation Registration Agency"
-"\" codelist of IATI Standard <http://iatistandard.org/codelists/"
+"The allowed codes are the ones found in `\"Organisation Registration Agency\" "
+"codelist of IATI Standard <http://iatistandard.org/codelists/"
 "OrganisationRegistrationAgency/>`_ with addition of `UA-EDR` code for "
 "organizations registered in Ukraine (EDRPOU and IPN)."
 msgstr ""
 "Дозволеними є коди зі `спику кодів \"Organisation Registration Agency\" "
 "Стандарту IATI <http://iatistandard.org/codelists/"
-"OrganisationRegistrationAgency/>`_ з додаванням коду `UA-EDR` для "
-"організацій, зареєстрованих в Україні (ЄДРПОУ та ІПН)."
+"OrganisationRegistrationAgency/>`_ з додаванням коду `UA-EDR` для організацій, "
+"зареєстрованих в Україні (ЄДРПОУ та ІПН)."
 
 #: ../../source/standard/organization.rst:17
 msgid "|ocdsDescription| The common name of the organization."
@@ -237,9 +232,18 @@ msgstr ""
 msgid "|ocdsDescription| A web address for the contact point/person."
 msgstr "|ocdsDescription| Веб адреса контактної особи/пункту."
 
+#: ../../source/standard/organization.rst:163
+msgid "Either `email` or `telephone` field has to be provided."
+msgstr ""
+"Повинне бути заповнене хоча б одне з полів: або `email`, або `telephone`."
+
+#~ msgid "Either `email` or `telephone` fields have to be provided."
+#~ msgstr ""
+#~ "Повинне бути заповнене хоча б одне з полів: або `email`, або `telephone`."
+
 #~ msgid ""
-#~ "The allowed codes are the ones found in `Organisation Registration Agency"
-#~ "\" codelist of IATI Standard<http://iatistandard.org/codelists/"
+#~ "The allowed codes are the ones found in `Organisation Registration Agency\" "
+#~ "codelist of IATI Standard<http://iatistandard.org/codelists/"
 #~ "OrganisationRegistrationAgency/>`_ with addition of `UA-EDR` code for "
 #~ "organizations registered in Ukraine (EDRPOU and IPN)."
 #~ msgstr ""

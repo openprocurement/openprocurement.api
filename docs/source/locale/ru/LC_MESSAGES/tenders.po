@@ -19,6 +19,94 @@ msgstr ""
 msgid "Getting list of all tenders"
 msgstr ""
 
-#: ../../source/tenders.rst:18
+#: ../../source/tenders.rst:62
 msgid "Reading the individual tender information"
+msgstr ""
+
+#: ../../source/tenders.rst:18
+msgid "Sorting"
+msgstr ""
+
+#: ../../source/tenders.rst:19
+msgid "Tenders retuned are sorted by modification time."
+msgstr ""
+
+#: ../../source/tenders.rst:22
+msgid "Limiting number of Tenders returned"
+msgstr ""
+
+#: ../../source/tenders.rst:24
+msgid ""
+"You can control the number of `data` entries in the tenders feed (batch "
+"size) with `limit` parameter. If not specified, data is being returned in "
+"batches of 100 elements."
+msgstr ""
+
+#: ../../source/tenders.rst:29
+msgid "Batching"
+msgstr ""
+
+#: ../../source/tenders.rst:31
+msgid "The response contains `next_page` element with following properties:"
+msgstr ""
+
+#: ../../source/tenders.rst:34
+msgid ""
+"This is the parameter you have to add to the original request you made to "
+"get next page."
+msgstr ""
+
+#: ../../source/tenders.rst:38
+msgid ""
+"This is path section of URL with original parameters and `offset` parameter "
+"added/replaced above."
+msgstr ""
+
+#: ../../source/tenders.rst:42
+msgid "The full version of URL for next page."
+msgstr ""
+
+#: ../../source/tenders.rst:44
+msgid ""
+"If next page request returns no data (i.e. empty array) then there is little"
+" sense in fetching further pages."
+msgstr ""
+
+#: ../../source/tenders.rst:48
+msgid "Synchronizing"
+msgstr ""
+
+#: ../../source/tenders.rst:50
+msgid ""
+"It is often necessary to be able to syncronize central database changes to "
+"other database (we'll call it \"local\").  The default sorting \"by "
+"modification date\" altogether by Batching mechanism allows one to implement"
+" synchronization effectively.  The synchronization process can go page by "
+"page until there is no new data returned.  Then the synchronizer have to "
+"pause for a while to let central database register some changes and attempt "
+"fetching subsequent page.  The `next_page` guarantees to have all changes "
+"from the last request to be included in new batch."
+msgstr ""
+
+#: ../../source/tenders.rst:59
+msgid "The safe frequency of synchronization requests is once per 5 minutes."
+msgstr ""
+
+#: ../../source/tenders.rst:72
+msgid "Reading the tender documents list"
+msgstr ""
+
+#: ../../source/tenders.rst:82
+msgid "Example request:"
+msgstr ""
+
+#: ../../source/tenders.rst:88
+msgid "Reading the tender document"
+msgstr ""
+
+#: ../../source/tenders.rst:90
+msgid ""
+"The document can be retrieved by requesting the url returned in structures "
+"from document list request in `data[*].url`.  It is safe to provide the "
+"download URL to end user for download."
 msgstr ""

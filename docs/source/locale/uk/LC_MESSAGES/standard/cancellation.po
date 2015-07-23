@@ -4,16 +4,16 @@ msgstr ""
 "Project-Id-Version: openprocurement.api 0.8\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2015-05-04 17:34+0300\n"
-"PO-Revision-Date: 2015-05-05 10:21+0200\n"
+"PO-Revision-Date: 2015-07-23 12:54+0200\n"
 "Last-Translator: Zoriana Zaiats <sorenabell@quintagroup.com>\n"
 "Language-Team: Quintagroup <info@quintagroup.com>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Generator: Poedit 1.7.3\n"
+"Language: uk\n"
 "Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n"
 "%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
-"Language: uk\n"
+"X-Generator: Poedit 1.7.6\n"
 
 #: ../../source/standard/cancellation.rst:8
 #: ../../source/standard/cancellation.rst:4
@@ -32,10 +32,6 @@ msgstr "uid, генерується автоматично"
 msgid "string, multilingual, required"
 msgstr "рядок, багатомовний, обов’язковий"
 
-#: ../../source/standard/cancellation.rst:19
-msgid "The reason, whey Tender is being cancelled"
-msgstr "Причина, з якої скасовується закупівля"
-
 #: ../../source/standard/cancellation.rst:22
 msgid "string"
 msgstr "рядок"
@@ -44,25 +40,9 @@ msgstr "рядок"
 msgid "Possible values are:"
 msgstr "Можливі значення:"
 
-#: ../../source/standard/cancellation.rst:26
-msgid "Default. The request is being prepared"
-msgstr "Стандартно. Запит оформляється."
-
-#: ../../source/standard/cancellation.rst:28
-msgid "Cancellation activated"
-msgstr "Скасування активоване"
-
 #: ../../source/standard/cancellation.rst:31
 msgid "List of :ref:`Document` objects"
 msgstr "Список об’єктів :ref:`Document`"
-
-#: ../../source/standard/cancellation.rst:33
-msgid ""
-"Documents accompanying the Cancellation: Protocol of Tender Committee with "
-"decision to cancel the Tender"
-msgstr ""
-"Супровідна документація скасування: Протокол рішення Тендерного комітету "
-"Замовника про скасування закупівлі"
 
 #: ../../source/standard/cancellation.rst:37
 msgid "string, :ref:`date`"
@@ -71,3 +51,39 @@ msgstr "рядок, :ref:`date`"
 #: ../../source/standard/cancellation.rst:39
 msgid "Cancellation date."
 msgstr "Дата скасування"
+
+#: ../../source/standard/cancellation.rst:19
+msgid "The reason, why Tender is being cancelled."
+msgstr "Причина, з якої скасовується закупівля."
+
+#: ../../source/standard/cancellation.rst:26
+msgid "Default. The request is being prepared."
+msgstr "Стандартно. Запит оформляється."
+
+#: ../../source/standard/cancellation.rst:28
+msgid "Cancellation activated."
+msgstr "Скасування активоване."
+
+#: ../../source/standard/cancellation.rst:33
+msgid ""
+"Documents accompanying the Cancellation: Protocol of Tender Committee with "
+"decision to cancel the Tender."
+msgstr ""
+"Супровідна документація скасування: Протокол рішення Тендерного комітету "
+"Замовника про скасування закупівлі."
+
+#~ msgid "The reason, whey Tender is being cancelled"
+#~ msgstr "Причина, з якої скасовується закупівля"
+
+#~ msgid "Default. The request is being prepared"
+#~ msgstr "Стандартно. Запит оформляється."
+
+#~ msgid "Cancellation activated"
+#~ msgstr "Скасування активоване"
+
+#~ msgid ""
+#~ "Documents accompanying the Cancellation: Protocol of Tender Committee with "
+#~ "decision to cancel the Tender"
+#~ msgstr ""
+#~ "Супровідна документація скасування: Протокол рішення Тендерного комітету "
+#~ "Замовника про скасування закупівлі"

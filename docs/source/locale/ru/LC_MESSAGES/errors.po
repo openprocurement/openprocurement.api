@@ -15,20 +15,6 @@ msgstr ""
 msgid "Responses"
 msgstr ""
 
-#: ../../source/errors.rst:6
-msgid ""
-"After processing API is always providing response, reporting either success "
-"or failure."
-msgstr ""
-
-#: ../../source/errors.rst:11
-msgid ""
-"In all cases, the API should return an `HTTP Status Code "
-"<http://en.wikipedia.org/wiki/List_of_HTTP_status_codes>`_ that indicates "
-"the nature of the failure (below), with a response body in JSON format "
-"containing additional information."
-msgstr ""
-
 #: ../../source/errors.rst:18
 msgid "200"
 msgstr ""
@@ -75,13 +61,6 @@ msgstr ""
 msgid "403"
 msgstr ""
 
-#: ../../source/errors.rst:36
-msgid ""
-"Forbidden. The API key and request syntax was valid but the server is "
-"refusing to complete the request.  This can happen if you try to read or "
-"write to objects or properties that the party does not have access to."
-msgstr ""
-
 #: ../../source/errors.rst:43
 msgid "404"
 msgstr ""
@@ -109,62 +88,12 @@ msgstr ""
 msgid "Server error. There was a problem on OpenProcurement's end."
 msgstr ""
 
-#: ../../source/errors.rst:130
-msgid ""
-"In the event of an error, the response body will contain an `errors` field "
-"at the top level.  This contains an array of at least one error object, "
-"described below:"
-msgstr ""
-
-#: ../../source/errors.rst:136
-msgid "message"
-msgstr ""
-
-#: ../../source/errors.rst:135
-msgid ""
-"*totalValue.amount: Missing input* - Message providing more detail about the"
-" error that occurred, if available."
-msgstr ""
-
-#: ../../source/errors.rst:140
-msgid "messageUID"
-msgstr ""
-
-#: ../../source/errors.rst:139
-msgid ""
-"Unique message id. Will stay the same even if content of the message can "
-"change, depending on other parameters."
-msgstr ""
-
-#: ../../source/errors.rst:144
-msgid "*id*"
-msgstr ""
-
-#: ../../source/errors.rst:143
-msgid ""
-"Unique correlation identifier of the error response for audit and issue "
-"reporting purposes."
-msgstr ""
-
-#: ../../source/errors.rst:148
-msgid "Sample below indicate incomplete request."
-msgstr ""
-
 #: ../../source/errors.rst:10
 msgid "Status Codes"
 msgstr ""
 
 #: ../../source/errors.rst:52
 msgid "Success Response"
-msgstr ""
-
-#: ../../source/errors.rst:53
-msgid ""
-"Every successful get, create, update, replace request results in response "
-"that contains `data` attribute.  That `data` attribute contains full JSON "
-"object representation after the operation.  If some data were generated in "
-"the results of processing (like new object IDs, of `modified` date) they are"
-" present in the respose."
 msgstr ""
 
 #: ../../source/errors.rst:59
@@ -178,17 +107,139 @@ msgstr ""
 msgid "Example Succes Response"
 msgstr ""
 
-#: ../../source/errors.rst:65
-msgid "Here is response describing tender"
-msgstr ""
-
-#: ../../source/errors.rst:129
+#: ../../source/errors.rst:137
 msgid "Error Response"
 msgstr ""
 
-#: ../../source/errors.rst:147
+#: ../../source/errors.rst:165
 msgid "Example Error Response"
 msgstr ""
+
+#: ../../source/errors.rst:6
+msgid ""
+"After processing API always provides response, reporting either success or "
+"failure."
+msgstr ""
+
+#: ../../source/errors.rst:11
+msgid ""
+"In all cases, the API should return an `HTTP Status Code "
+"<http://en.wikipedia.org/wiki/List_of_HTTP_status_codes>`_ that indicates "
+"the nature of the failure (see below), with a response body in JSON format "
+"containing additional information."
+msgstr ""
+
+#: ../../source/errors.rst:36
+msgid ""
+"Forbidden. The API key and request syntax was valid but the server is "
+"refusing to complete the request.  This can happen if you are trying to read"
+" or write to objects or properties that you do not have access to."
+msgstr ""
+
+#: ../../source/errors.rst:53
+msgid ""
+"Every successful get, create, update, replace request results in response "
+"that contains `data` attribute.  That `data` attribute contains full JSON "
+"object representation after the operation.  If some data were generated in "
+"the result of processing (like new object IDs, or `modified` date) they are "
+"present in the respose."
+msgstr ""
+
+#: ../../source/errors.rst:65
+msgid "Here is a response that describes tender"
+msgstr ""
+
+#: ../../source/errors.rst:138
+msgid ""
+"In the event of an error, the response body will contain an `errors` field "
+"at the top level.  It contains an array of at least one error object, "
+"described below:"
+msgstr ""
+
+#: ../../source/errors.rst:143
+msgid ""
+"Part of the request causing the error. Possible values are `header` and "
+"`body`."
+msgstr ""
+
+#: ../../source/errors.rst:146
+msgid ""
+"Specific header name that caused the problem (in case of `header` location)"
+msgstr ""
+
+#: ../../source/errors.rst:147
+msgid "The field name causing the error (in case of `body` location)"
+msgstr ""
+
+#: ../../source/errors.rst:150
+msgid "Verbose (human readable) description of the error."
+msgstr ""
+
+#: ../../source/errors.rst:166
+msgid "Sample below indicates incomplete request."
+msgstr ""
+
+#~ msgid ""
+#~ "After processing API is always providing response, reporting either success "
+#~ "or failure."
+#~ msgstr ""
+
+#~ msgid ""
+#~ "In all cases, the API should return an `HTTP Status Code "
+#~ "<http://en.wikipedia.org/wiki/List_of_HTTP_status_codes>`_ that indicates "
+#~ "the nature of the failure (below), with a response body in JSON format "
+#~ "containing additional information."
+#~ msgstr ""
+
+#~ msgid ""
+#~ "Forbidden. The API key and request syntax was valid but the server is "
+#~ "refusing to complete the request.  This can happen if you try to read or "
+#~ "write to objects or properties that the party does not have access to."
+#~ msgstr ""
+
+#~ msgid ""
+#~ "In the event of an error, the response body will contain an `errors` field "
+#~ "at the top level.  This contains an array of at least one error object, "
+#~ "described below:"
+#~ msgstr ""
+
+#~ msgid "message"
+#~ msgstr ""
+
+#~ msgid ""
+#~ "*totalValue.amount: Missing input* - Message providing more detail about the"
+#~ " error that occurred, if available."
+#~ msgstr ""
+
+#~ msgid "messageUID"
+#~ msgstr ""
+
+#~ msgid ""
+#~ "Unique message id. Will stay the same even if content of the message can "
+#~ "change, depending on other parameters."
+#~ msgstr ""
+
+#~ msgid "*id*"
+#~ msgstr ""
+
+#~ msgid ""
+#~ "Unique correlation identifier of the error response for audit and issue "
+#~ "reporting purposes."
+#~ msgstr ""
+
+#~ msgid "Sample below indicate incomplete request."
+#~ msgstr ""
+
+#~ msgid ""
+#~ "Every successful get, create, update, replace request results in response "
+#~ "that contains `data` attribute.  That `data` attribute contains full JSON "
+#~ "object representation after the operation.  If some data were generated in "
+#~ "the results of processing (like new object IDs, of `modified` date) they are"
+#~ " present in the respose."
+#~ msgstr ""
+
+#~ msgid "Here is response describing tender"
+#~ msgstr ""
 
 #~ msgid "Codes"
 #~ msgstr ""

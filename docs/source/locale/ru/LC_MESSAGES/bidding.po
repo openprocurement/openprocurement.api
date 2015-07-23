@@ -31,14 +31,24 @@ msgstr ""
 msgid "Updating Bid documents"
 msgstr ""
 
-#: ../../source/bidding.rst:56
+#: ../../source/bidding.rst:64
 msgid "Cancelling the proposal"
 msgstr ""
 
-#: ../../source/bidding.rst:67
+#: ../../source/bidding.rst:75
 msgid "Bids Listing"
 msgstr ""
 
-#: ../../source/bidding.rst:78
+#: ../../source/bidding.rst:201
 msgid "Retrieving the proposal"
+msgstr ""
+
+#: ../../source/bidding.rst:77
+msgid ""
+"After auction ends it is possible to get full information about bids and "
+"bidders that submitted them:"
+msgstr ""
+
+#: ../../source/bidding.rst:203
+msgid "Individual bid can be retrieved via its `id`:"
 msgstr ""
