@@ -454,16 +454,16 @@ class TenderResourceTest(BaseWebTest):
         dateModified = tender.pop('dateModified')
 
         response = self.app.patch_json('/tenders/{}'.format(
-            tender['id']), {'data': {'tenderPeriod': {'startDate': None}}})
+            tender['id']), {'data': {'procuringEntity': {'contactPoint': {'faxNumber': None}}}})
         self.assertEqual(response.status, '200 OK')
         self.assertEqual(response.content_type, 'application/json')
-        self.assertNotIn('startDate', response.json['data']['tenderPeriod'])
+        self.assertNotIn('faxNumber', response.json['data']['procuringEntity']['contactPoint'])
 
         response = self.app.patch_json('/tenders/{}'.format(
-            tender['id']), {'data': {'tenderPeriod': {'startDate': tender['enquiryPeriod']['endDate']}}})
+            tender['id']), {'data': {'procuringEntity': {'contactPoint': {'faxNumber': u"0440000000"}}}})
         self.assertEqual(response.status, '200 OK')
         self.assertEqual(response.content_type, 'application/json')
-        self.assertIn('startDate', response.json['data']['tenderPeriod'])
+        self.assertIn('faxNumber', response.json['data']['procuringEntity']['contactPoint'])
 
         response = self.app.patch_json('/tenders/{}'.format(
             tender['id']), {'data': {'procurementMethodRationale': 'Open'}})
