@@ -659,10 +659,13 @@ class TenderResourceTest(BaseWebTest):
         # TODO: Test all the required fields
 
         response = self.app.patch_json('/tenders/{}'.format(
-            tender['id']), {'data': {'enquiryPeriod': {'startDate': None}}})
-        self.assertNotEqual(response.status, '200 OK')
+            tender['id']), {'data': {'enquiryPeriod': {'startDate': None}}}, status=422)
+        self.assertEqual(response.status, '422 Unprocessable Entity')
         self.assertEqual(response.content_type, 'application/json')
-        self.assertIn('startDate', response.json['data']['enquiryPeriod'])
+        self.assertEqual(response.json['status'], 'error')
+        self.assertEqual(response.json['errors'], [
+            {u'description': {u'startDate': [u'This field is required.']}, u'location': u'body', u'name': u'enquiryPeriod'}
+        ])
 
 class TenderProcessTest(BaseTenderWebTest):
     setUp = BaseWebTest.setUp
