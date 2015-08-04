@@ -94,8 +94,7 @@ class Period(Model):
             raise ValidationError(u"period should begin before its end")
 
 
-class PeriodDatesRequired(Period):
-    startDate = IsoDateTimeType(required=True)  # The start date for the period.
+class PeriodEndRequired(Period):
     endDate = IsoDateTimeType(required=True)  # The end date for the period.
 
 
@@ -502,8 +501,8 @@ class Tender(SchematicsDocument, Model):
     submissionMethodDetails = StringType()  # Any detailed or further information on the submission method.
     submissionMethodDetails_en = StringType()
     submissionMethodDetails_ru = StringType()
-    enquiryPeriod = ModelType(PeriodDatesRequired, required=True)  # The period during which enquiries may be made and will be answered.
-    tenderPeriod = ModelType(PeriodDatesRequired, required=True)  # The period when the tender is open for submissions. The end date is the closing date for tender submissions.
+    enquiryPeriod = ModelType(PeriodEndRequired, required=True)  # The period during which enquiries may be made and will be answered.
+    tenderPeriod = ModelType(PeriodEndRequired, required=True)  # The period when the tender is open for submissions. The end date is the closing date for tender submissions.
     hasEnquiries = BooleanType()  # A Yes/No field as to whether enquiries were part of tender process.
     eligibilityCriteria = StringType()  # A description of any eligibility criteria for potential suppliers.
     eligibilityCriteria_en = StringType()
