@@ -4,6 +4,9 @@ python:
   - "2.7"
 services:
   - couchdb
+cache:
+  directories:
+    - eggs
 before_install:
   - pip install setuptools==7.0
   - python2 bootstrap.py
