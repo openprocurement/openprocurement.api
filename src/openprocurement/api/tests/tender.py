@@ -664,7 +664,7 @@ class TenderResourceTest(BaseWebTest):
         self.assertEqual(response.content_type, 'application/json')
         self.assertEqual(response.json['status'], 'error')
         self.assertEqual(response.json['errors'], [
-            {u'description': {u'startDate': [u'This field is required.']}, u'location': u'body', u'name': u'enquiryPeriod'}
+            {u'description': {u'startDate': [u'This field cannot be deleted']}, u'location': u'body', u'name': u'enquiryPeriod'}
         ])
 
 class TenderProcessTest(BaseTenderWebTest):
