@@ -69,7 +69,7 @@ Schema
 :date:
     string, :ref:`date`
 
-    Date when changes were recorded
+    Date when changes were recorded.
 
 :changes:
     List of :`Change` objects

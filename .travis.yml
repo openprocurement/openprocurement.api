@@ -1,19 +1,21 @@
 language: python
+sudo: false
 python:
   - "2.7"
 services:
   - couchdb
+cache:
+  directories:
+    - eggs
 before_install:
-  - easy_install -U setuptools
+  - pip install setuptools==7.0
+  - python2 bootstrap.py
 install:
-  - pip install . --use-mirrors
-  - pip install http://op:x9W3jZ@dist.quintagroup.com/op/rfc6266-0.0.6.zip
-before_script:
-  - pip install -r test_requirements.txt --use-mirrors
+  - bin/buildout -N
 script:
-  - nosetests
+  - bin/nosetests
 after_success:
-  - coveralls
+  - bin/coveralls
 notifications:
   webhooks:
     urls:

@@ -22,16 +22,6 @@ msgid ""
 "infrastructure."
 msgstr ""
 
-#: ../../source/overview.rst:8
-msgid ""
-"The Open Procurement API is `REST "
-"<http://en.wikipedia.org/wiki/Representational_State_Transfer>`_-ful "
-"interface, providing programmatic access to Tender database of Open "
-"Procurement system.  It provides predictable URLs for accessing resources, "
-"and uses built-in HTTP features to receive commands and return responses. "
-"This makes it easy to communicate with."
-msgstr ""
-
 #: ../../source/overview.rst:15
 msgid ""
 "The API accepts `JSON <http://json.org/>`_ or form-encoded content in "
@@ -81,19 +71,19 @@ msgstr ""
 msgid "Change log"
 msgstr ""
 
-#: ../../source/overview.rst:69
+#: ../../source/overview.rst:180
 msgid "0.1"
 msgstr ""
 
-#: ../../source/overview.rst:73
+#: ../../source/overview.rst:184
 msgid "Set up general build, testing, deployment, and ci framework."
 msgstr ""
 
-#: ../../source/overview.rst:79
+#: ../../source/overview.rst:190
 msgid "Next steps"
 msgstr ""
 
-#: ../../source/overview.rst:80
+#: ../../source/overview.rst:191
 msgid ""
 "You might find it helpful to look at the :ref:`tutorial`, or the "
 ":ref:`reference`."
@@ -120,14 +110,6 @@ msgid ""
 "including its ID."
 msgstr ""
 
-#: ../../source/overview.rst:33
-msgid ""
-"If something went wrong during the request, we'll get a different status "
-"code and the JSON returned will contain an `errors` field at the top level "
-"containing a list of problems.  We look at the first one and print out its "
-"message."
-msgstr ""
-
 #: ../../source/overview.rst:61
 msgid ""
 "API is highly unstable, and while API endpoints are expected to remain "
@@ -136,21 +118,304 @@ msgid ""
 "<https://groups.google.com/group/open-procurement-api>`_ maillist."
 msgstr ""
 
-#: ../../source/overview.rst:71
+#: ../../source/overview.rst:182
 msgid "Released: 2014-10-24"
 msgstr ""
 
-#: ../../source/overview.rst:74
+#: ../../source/overview.rst:185
 msgid "Creating/modifying tender"
 msgstr ""
 
-#: ../../source/overview.rst:75
+#: ../../source/overview.rst:186
 msgid "Adding/modifying/cancelling tender proposal"
 msgstr ""
 
-#: ../../source/overview.rst:76
+#: ../../source/overview.rst:187
 msgid "Awarding/disqualification of tender proposals"
 msgstr ""
+
+#: ../../source/overview.rst:8
+msgid ""
+"The Open Procurement API is a `REST "
+"<http://en.wikipedia.org/wiki/Representational_State_Transfer>`_-ful "
+"interface that provides programmatic access to Tender database of Open "
+"Procurement system.  It provides predictable URLs for accessing resources, "
+"and uses built-in HTTP features to receive commands and return responses. "
+"This makes it easy to communicate with."
+msgstr ""
+
+#: ../../source/overview.rst:33
+msgid ""
+"If something went wrong during the request, we'll get a different status "
+"code and the JSON returned will have an `errors` field at the top level "
+"containing a list of problems.  We look at the first one and print out its "
+"message."
+msgstr ""
+
+#: ../../source/overview.rst:70
+msgid "0.9"
+msgstr ""
+
+#: ../../source/overview.rst:71 ../../source/overview.rst:121
+msgid "Released: not released"
+msgstr ""
+
+#: ../../source/overview.rst:73 ../../source/overview.rst:80
+#: ../../source/overview.rst:89 ../../source/overview.rst:111
+#: ../../source/overview.rst:123
+msgid "New features:"
+msgstr ""
+
+#: ../../source/overview.rst:77
+msgid "0.8"
+msgstr ""
+
+#: ../../source/overview.rst:78
+msgid "Released: 2015-05-12"
+msgstr ""
+
+#: ../../source/overview.rst:82
+msgid "Stand-still period for each of the awards independently"
+msgstr ""
+
+#: ../../source/overview.rst:83
+msgid "Added new cancellation API"
+msgstr ""
+
+#: ../../source/overview.rst:86
+msgid "0.7"
+msgstr ""
+
+#: ../../source/overview.rst:87
+msgid "Released: 2015-03-13"
+msgstr ""
+
+#: ../../source/overview.rst:91
+msgid "Set title, classification and additionalClassifications required"
+msgstr ""
+
+#: ../../source/overview.rst:92
+msgid "Added validation identical cpv groups of items"
+msgstr ""
+
+#: ../../source/overview.rst:93
+msgid "Added upload tender documents by auction user"
+msgstr ""
+
+#: ../../source/overview.rst:94
+msgid "Closing tender by signing contract"
+msgstr ""
+
+#: ../../source/overview.rst:95
+msgid "Strict mode for patching operation"
+msgstr ""
+
+#: ../../source/overview.rst:96
+msgid "Cancalling active award"
+msgstr ""
+
+#: ../../source/overview.rst:98 ../../source/overview.rst:129
+#: ../../source/overview.rst:144 ../../source/overview.rst:162
+msgid "Modifications:"
+msgstr ""
+
+#: ../../source/overview.rst:100
+msgid "Authenticated couchdb access"
+msgstr ""
+
+#: ../../source/overview.rst:101
+msgid "Fixed authentication of PUT and PATCH methods"
+msgstr ""
+
+#: ../../source/overview.rst:102
+msgid "Optimized calls to db on start"
+msgstr ""
+
+#: ../../source/overview.rst:103
+msgid "Fixed deliveryLocation fields"
+msgstr ""
+
+#: ../../source/overview.rst:104
+msgid "Fixed edit format field in Documents"
+msgstr ""
+
+#: ../../source/overview.rst:105
+msgid "Fixed restrictions uploading documents of bid"
+msgstr ""
+
+#: ../../source/overview.rst:108
+msgid "0.6"
+msgstr ""
+
+#: ../../source/overview.rst:109
+msgid "Released: 2014-12-15"
+msgstr ""
+
+#: ../../source/overview.rst:113
+msgid "Token Broker authorization"
+msgstr ""
+
+#: ../../source/overview.rst:114
+msgid "Actor token authorization"
+msgstr ""
+
+#: ../../source/overview.rst:115
+msgid "Added Item.deliveryLocation"
+msgstr ""
+
+#: ../../source/overview.rst:116
+msgid "Pending complaints Tender completion blocking"
+msgstr ""
+
+#: ../../source/overview.rst:117
+msgid "Rescheduling of failed auctions"
+msgstr ""
+
+#: ../../source/overview.rst:120
+msgid "0.5"
+msgstr ""
+
+#: ../../source/overview.rst:125
+msgid "Actor token generation"
+msgstr ""
+
+#: ../../source/overview.rst:126
+msgid "Added Item.deliveryAddress"
+msgstr ""
+
+#: ../../source/overview.rst:127
+msgid "Award sequential review logic"
+msgstr ""
+
+#: ../../source/overview.rst:131
+msgid "Tender.deliveryDate moved to Item.deliveryDate"
+msgstr ""
+
+#: ../../source/overview.rst:134
+msgid "0.4"
+msgstr ""
+
+#: ../../source/overview.rst:135
+msgid "Released: 2014-12-01"
+msgstr ""
+
+#: ../../source/overview.rst:137 ../../source/overview.rst:152
+msgid "New Features:"
+msgstr ""
+
+#: ../../source/overview.rst:139
+msgid "Filing Complaint on award"
+msgstr ""
+
+#: ../../source/overview.rst:140
+msgid "Complaint attachments"
+msgstr ""
+
+#: ../../source/overview.rst:141
+msgid "Tender Cancelling"
+msgstr ""
+
+#: ../../source/overview.rst:142
+msgid "Question authors visibility"
+msgstr ""
+
+#: ../../source/overview.rst:146
+msgid "Tender status codelist harmonized"
+msgstr ""
+
+#: ../../source/overview.rst:149
+msgid "0.3"
+msgstr ""
+
+#: ../../source/overview.rst:150
+msgid "Released: 2014-11-21"
+msgstr ""
+
+#: ../../source/overview.rst:154
+msgid "Asking Questions"
+msgstr ""
+
+#: ../../source/overview.rst:155
+msgid "Filing Complaint on tender conditions"
+msgstr ""
+
+#: ../../source/overview.rst:156
+msgid "Answer Question"
+msgstr ""
+
+#: ../../source/overview.rst:157
+msgid "Publish Complaint resolution"
+msgstr ""
+
+#: ../../source/overview.rst:158
+msgid "Retrieve Questions and Answers, Complaints and Resolutions"
+msgstr ""
+
+#: ../../source/overview.rst:159
+msgid "Auction Scheduler"
+msgstr ""
+
+#: ../../source/overview.rst:160
+msgid "Auction Runner"
+msgstr ""
+
+#: ../../source/overview.rst:164
+msgid ""
+":ref:`standard` harmonized with `Open Contracting 1.0RC <http://ocds.open-"
+"contracting.org/standard/r/1__0__RC/>`_"
+msgstr ""
+
+#: ../../source/overview.rst:166
+msgid "``/bidders/`` endpoint renamed into ``/bids/``"
+msgstr ""
+
+#: ../../source/overview.rst:167
+msgid "``modified`` property renamed into ``modificationDate``"
+msgstr ""
+
+#: ../../source/overview.rst:170
+msgid "0.2"
+msgstr ""
+
+#: ../../source/overview.rst:171
+msgid "Released: 2014-11-07"
+msgstr ""
+
+#: ../../source/overview.rst:173
+msgid "Tender Listing Batching (optimized for sync operations)"
+msgstr ""
+
+#: ../../source/overview.rst:174
+msgid "Documents retrieval"
+msgstr ""
+
+#: ../../source/overview.rst:175
+msgid "Change tracking"
+msgstr ""
+
+#: ../../source/overview.rst:176
+msgid "Options: Pretty-print, JSONP"
+msgstr ""
+
+#: ../../source/overview.rst:177
+msgid "Introduction of state machine and time-based state switching"
+msgstr ""
+
+#~ msgid ""
+#~ "The Open Procurement API is `REST "
+#~ "<http://en.wikipedia.org/wiki/Representational_State_Transfer>`_-ful "
+#~ "interface, providing programmatic access to Tender database of Open "
+#~ "Procurement system.  It provides predictable URLs for accessing resources, "
+#~ "and uses built-in HTTP features to receive commands and return responses. "
+#~ "This makes it easy to communicate with."
+#~ msgstr ""
+
+#~ msgid ""
+#~ "If something went wrong during the request, we'll get a different status "
+#~ "code and the JSON returned will contain an `errors` field at the top level "
+#~ "containing a list of problems.  We look at the first one and print out its "
+#~ "message."
+#~ msgstr ""
 
 #~ msgid "Released: Not yet."
 #~ msgstr ""

@@ -28,7 +28,7 @@ batches of 100 elements.
 Batching
 ~~~~~~~~
 
-The response contains `next_page` element with following properties:
+The response contains `next_page` element with the following properties:
 
 :offset:
     This is the parameter you have to add to the original request you made
@@ -47,14 +47,14 @@ sense in fetching further pages.
 Synchronizing
 ~~~~~~~~~~~~~
 
-It is often necessary to be able to syncronize central database changes to
+It is often necessary to be able to syncronize central database changes with
 other database (we'll call it "local").  The default sorting "by
-modification date" altogether by Batching mechanism allows one to implement
+modification date" together with Batching mechanism allows one to implement
 synchronization effectively.  The synchronization process can go page by
-page until there is no new data returned.  Then the synchronizer have to
+page until there is no new data returned.  Then the synchronizer has to
 pause for a while to let central database register some changes and attempt
-fetching subsequent page.  The `next_page` guarantees to have all changes
-from the last request to be included in new batch.
+fetching subsequent page.  The `next_page` guarantees that all changes
+from the last request are included in the new batch.
 
 The safe frequency of synchronization requests is once per 5 minutes.
  

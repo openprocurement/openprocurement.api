@@ -16,22 +16,22 @@ Schema
 :reason:
     string, multilingual, required
 
-    The reason, whey Tender is being cancelled
+    The reason, why Tender is being cancelled.
 
 :status:
     string
 
     Possible values are:
      :`pending`:
-       Default. The request is being prepared
+       Default. The request is being prepared.
      :`active`:
-       Cancellation activated
+       Cancellation activated.
 
 :documents:
     List of :ref:`Document` objects
 
     Documents accompanying the Cancellation: Protocol of Tender Committee
-    with decision to cancel the Tender
+    with decision to cancel the Tender.
 
 :date:
     string, :ref:`date`

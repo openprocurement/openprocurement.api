@@ -4,37 +4,18 @@ msgstr ""
 "Project-Id-Version: openprocurement.api 0.1\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2014-10-22 03:26+0300\n"
-"PO-Revision-Date: 2014-12-09 13:35+0300\n"
-"Last-Translator: \n"
-"Language-Team: LANGUAGE <LL@li.org>\n"
+"PO-Revision-Date: 2015-07-08 16:54+0200\n"
+"Last-Translator: Zoriana Zaiats <sorenabell@quintagroup.com>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Generator: Poedit 1.5.4\n"
+"X-Generator: Poedit 1.7.6\n"
+"Language-Team: \n"
+"Language: uk\n"
 
 #: ../../source/errors.rst:4
 msgid "Responses"
 msgstr "Відповіді"
-
-#: ../../source/errors.rst:6
-msgid ""
-"After processing API is always providing response, reporting either success "
-"or failure."
-msgstr ""
-"Після обробки API завжди надає відповідь, звітуючи або про успіх, або про "
-"помилку."
-
-#: ../../source/errors.rst:11
-msgid ""
-"In all cases, the API should return an `HTTP Status Code <http://en."
-"wikipedia.org/wiki/List_of_HTTP_status_codes>`_ that indicates the nature of "
-"the failure (below), with a response body in JSON format containing "
-"additional information."
-msgstr ""
-"У будь-якому випадку API повинен повернути `Код стану HTTP <http://en."
-"wikipedia.org/wiki/List_of_HTTP_status_codes>`_, що вказуватиме природу "
-"помилки (внизу), з тілом відповіді у форматі JSON, що міститиме додаткову "
-"інформацію."
 
 #: ../../source/errors.rst:18
 msgid "200"
@@ -55,12 +36,12 @@ msgstr "201"
 #: ../../source/errors.rst:21
 msgid ""
 "Success (for object creation). Its information is available in the `data` "
-"field at the top level of the response body.  The API URL where the object "
-"can be retrieved is also returned in the `Location` header of the response."
+"field at the top level of the response body.  The API URL where the object can "
+"be retrieved is also returned in the `Location` header of the response."
 msgstr ""
 "Успіх (для створення об’єкта). Його інформація доступна у `data` полі на "
-"верхньому рівні тіла відповіді. API URL, де об’єкт можна прочитати, "
-"міститься у `Location` заголовку відповіді."
+"верхньому рівні тіла відповіді. API URL, де об’єкт можна прочитати, міститься "
+"у `Location` заголовку відповіді."
 
 #: ../../source/errors.rst:29
 msgid "400"
@@ -73,8 +54,7 @@ msgid ""
 "again."
 msgstr ""
 "Невірний запит. Зазвичай це відбувається через відсутній або неправильний "
-"параметр. Перевірте документацію та синтаксис вашого запиту і спробуйте ще "
-"раз."
+"параметр. Перевірте документацію та синтаксис вашого запиту і спробуйте ще раз."
 
 #: ../../source/errors.rst:33
 msgid "401"
@@ -85,22 +65,12 @@ msgid ""
 "No authorization. A valid API key was not provided with the request, so the "
 "API could not associate a user with the request."
 msgstr ""
-"Відсутність прав. Не було надано дійсного API ключа разом із запитом, тому "
-"API не може зв'язати користувача із запитом."
+"Відсутність прав. Не було надано дійсного API ключа разом із запитом, тому API "
+"не може зв'язати користувача із запитом."
 
 #: ../../source/errors.rst:38
 msgid "403"
 msgstr "403"
-
-#: ../../source/errors.rst:36
-msgid ""
-"Forbidden. The API key and request syntax was valid but the server is "
-"refusing to complete the request.  This can happen if you try to read or "
-"write to objects or properties that the party does not have access to."
-msgstr ""
-"Заборонено. API ключ та синтаксис запиту були дійсними, але сервер "
-"відмовляється виконати запит. Це може статися, якщо ви пробуєте прочитати "
-"або записати об'єкти чи властивості, до яких не маєте доступу."
 
 #: ../../source/errors.rst:43
 msgid "404"
@@ -108,9 +78,8 @@ msgstr "404"
 
 #: ../../source/errors.rst:41
 msgid ""
-"Not found. Either the request method and path supplied do not specify a "
-"known action in the API, or the object specified by the request does not "
-"exist."
+"Not found. Either the request method and path supplied do not specify a known "
+"action in the API, or the object specified by the request does not exist."
 msgstr ""
 "Не знайдено. Або даний метод та шлях запиту не вказують відому дію для API, "
 "або об’єкт, вказаний у запиті, не існує."
@@ -131,19 +100,6 @@ msgstr "500"
 msgid "Server error. There was a problem on OpenProcurement's end."
 msgstr "Помилка сервера. Була проблема зі сторони OpenProcurement."
 
-#: ../../source/errors.rst:138
-msgid ""
-"In the event of an error, the response body will contain an `errors` field "
-"at the top level.  This contains an array of at least one error object, "
-"described below:"
-msgstr ""
-"У випадку помилки, тіло відповіді міститиме `errors` поле на вищому рівні. "
-"Воно містить масив як мінімум одного помилкового об’єкта описаного нижче:"
-
-#: ../../source/errors.rst:166
-msgid "Sample below indicate incomplete request."
-msgstr "Зразок нижче вказує на неповний запит."
-
 #: ../../source/errors.rst:10
 msgid "Status Codes"
 msgstr "Коди стану"
@@ -152,24 +108,10 @@ msgstr "Коди стану"
 msgid "Success Response"
 msgstr "Відповідь з повідомленням про успіх"
 
-#: ../../source/errors.rst:53
-msgid ""
-"Every successful get, create, update, replace request results in response "
-"that contains `data` attribute.  That `data` attribute contains full JSON "
-"object representation after the operation.  If some data were generated in "
-"the results of processing (like new object IDs, of `modified` date) they are "
-"present in the respose."
-msgstr ""
-"Кожен успішний запит вичитки, створення, оновлення, чи заміни отримує "
-"відповідь, що містить `data` атрибут. Цей  `data` атрибут містить повне "
-"представлення JSON об’єкта після операції. Якщо деякі дані були згенеровані "
-"у результаті обробки (наприклад, нові ID об’єкта, або `modified` дата), то "
-"вони присутні у відповіді."
-
 #: ../../source/errors.rst:59
 msgid ""
-"The listing requests result in similar responses, but instead of single "
-"object in `data` attribute, the JSON response contains collection of objects."
+"The listing requests result in similar responses, but instead of single object "
+"in `data` attribute, the JSON response contains collection of objects."
 msgstr ""
 "Запити списку отримують схожі відповіді, але замість одного об'єкта в `data` "
 "атрибуті, JSON відповідь містить колекцію об'єктів."
@@ -177,10 +119,6 @@ msgstr ""
 #: ../../source/errors.rst:64
 msgid "Example Succes Response"
 msgstr "Приклад відповіді з повідомленням про успіх"
-
-#: ../../source/errors.rst:65
-msgid "Here is response describing tender"
-msgstr "Це відповідь, що описує закупівлю."
 
 #: ../../source/errors.rst:137
 msgid "Error Response"
@@ -192,18 +130,17 @@ msgstr "Приклад відповіді з повідомленням про �
 
 #: ../../source/errors.rst:143
 msgid ""
-"Part of the request causing the error. Possible values are `header` and "
-"`body`."
+"Part of the request causing the error. Possible values are `header` and `body`."
 msgstr ""
-"Частина запиту спричинює помилку. Можливі значення це `header` (заголовок) "
-"або `body` (тіло)."
+"Частина запиту спричинює помилку. Можливі значення це `header` (заголовок) або "
+"`body` (тіло)."
 
 #: ../../source/errors.rst:146
 msgid ""
 "Specific header name that caused the problem (in case of `header` location)"
 msgstr ""
-"Конкретна назва заголовку, що спричиняє проблему (у випадку "
-"місцярозташування `заголовок`)"
+"Конкретна назва заголовку, що спричиняє проблему (у випадку місцярозташування "
+"`заголовок`)"
 
 #: ../../source/errors.rst:147
 msgid "The field name causing the error (in case of `body` location)"
@@ -211,9 +148,127 @@ msgstr ""
 "Конкретна назва поля, що спричиняє проблему (у випадку місцярозташування "
 "`тіло`)"
 
+#: ../../source/errors.rst:6
+msgid ""
+"After processing API always provides response, reporting either success or "
+"failure."
+msgstr ""
+"Після обробки API завжди надає відповідь, звітуючи або про успіх, або про "
+"помилку."
+
+#: ../../source/errors.rst:11
+msgid ""
+"In all cases, the API should return an `HTTP Status Code <http://en.wikipedia."
+"org/wiki/List_of_HTTP_status_codes>`_ that indicates the nature of the failure "
+"(see below), with a response body in JSON format containing additional "
+"information."
+msgstr ""
+"У будь-якому випадку API повинен повернути `Код стану HTTP <http://en."
+"wikipedia.org/wiki/List_of_HTTP_status_codes>`_, що вказуватиме природу "
+"помилки (див. внизу), з тілом відповіді у форматі JSON, що міститиме додаткову "
+"інформацію."
+
+#: ../../source/errors.rst:36
+msgid ""
+"Forbidden. The API key and request syntax was valid but the server is refusing "
+"to complete the request.  This can happen if you are trying to read or write "
+"to objects or properties that you do not have access to."
+msgstr ""
+"Заборонено. API ключ та синтаксис запиту були дійсними, але сервер "
+"відмовляється виконати запит. Це може статися, якщо ви пробуєте прочитати або "
+"записати об'єкти чи властивості, до яких не маєте доступу."
+
+#: ../../source/errors.rst:53
+msgid ""
+"Every successful get, create, update, replace request results in response that "
+"contains `data` attribute.  That `data` attribute contains full JSON object "
+"representation after the operation.  If some data were generated in the result "
+"of processing (like new object IDs, or `modified` date) they are present in "
+"the respose."
+msgstr ""
+"Кожен успішний запит вичитки, створення, оновлення, чи заміни отримує "
+"відповідь, що містить `data` атрибут. Цей  `data` атрибут містить повне "
+"представлення JSON об’єкта після операції. Якщо деякі дані були згенеровані у "
+"результаті обробки (наприклад, нові ID об’єкта або `modified` дата), то вони "
+"присутні у відповіді."
+
+#: ../../source/errors.rst:65
+msgid "Here is a response that describes tender"
+msgstr "Це відповідь, що описує закупівлю."
+
+#: ../../source/errors.rst:138
+msgid ""
+"In the event of an error, the response body will contain an `errors` field at "
+"the top level.  It contains an array of at least one error object, described "
+"below:"
+msgstr ""
+"У випадку помилки, тіло відповіді міститиме `errors` поле на вищому рівні. "
+"Воно містить масив як мінімум одного помилкового об’єкта описаного нижче:"
+
 #: ../../source/errors.rst:150
-msgid "Verbose (human readable) description of error."
+msgid "Verbose (human readable) description of the error."
 msgstr "Докладний (придатний для читання людиною) опис помилки."
+
+#: ../../source/errors.rst:166
+msgid "Sample below indicates incomplete request."
+msgstr "Зразок нижче вказує на неповний запит."
+
+#~ msgid ""
+#~ "After processing API is always providing response, reporting either success "
+#~ "or failure."
+#~ msgstr ""
+#~ "Після обробки API завжди надає відповідь, звітуючи або про успіх, або про "
+#~ "помилку."
+
+#~ msgid ""
+#~ "In all cases, the API should return an `HTTP Status Code <http://en."
+#~ "wikipedia.org/wiki/List_of_HTTP_status_codes>`_ that indicates the nature "
+#~ "of the failure (below), with a response body in JSON format containing "
+#~ "additional information."
+#~ msgstr ""
+#~ "У будь-якому випадку API повинен повернути `Код стану HTTP <http://en."
+#~ "wikipedia.org/wiki/List_of_HTTP_status_codes>`_, що вказуватиме природу "
+#~ "помилки (внизу), з тілом відповіді у форматі JSON, що міститиме додаткову "
+#~ "інформацію."
+
+#~ msgid ""
+#~ "Forbidden. The API key and request syntax was valid but the server is "
+#~ "refusing to complete the request.  This can happen if you try to read or "
+#~ "write to objects or properties that the party does not have access to."
+#~ msgstr ""
+#~ "Заборонено. API ключ та синтаксис запиту були дійсними, але сервер "
+#~ "відмовляється виконати запит. Це може статися, якщо ви пробуєте прочитати "
+#~ "або записати об'єкти чи властивості, до яких не маєте доступу."
+
+#~ msgid ""
+#~ "In the event of an error, the response body will contain an `errors` field "
+#~ "at the top level.  This contains an array of at least one error object, "
+#~ "described below:"
+#~ msgstr ""
+#~ "У випадку помилки, тіло відповіді міститиме `errors` поле на вищому рівні. "
+#~ "Воно містить масив як мінімум одного помилкового об’єкта описаного нижче:"
+
+#~ msgid "Sample below indicate incomplete request."
+#~ msgstr "Зразок нижче вказує на неповний запит."
+
+#~ msgid ""
+#~ "Every successful get, create, update, replace request results in response "
+#~ "that contains `data` attribute.  That `data` attribute contains full JSON "
+#~ "object representation after the operation.  If some data were generated in "
+#~ "the results of processing (like new object IDs, of `modified` date) they "
+#~ "are present in the respose."
+#~ msgstr ""
+#~ "Кожен успішний запит вичитки, створення, оновлення, чи заміни отримує "
+#~ "відповідь, що містить `data` атрибут. Цей  `data` атрибут містить повне "
+#~ "представлення JSON об’єкта після операції. Якщо деякі дані були згенеровані "
+#~ "у результаті обробки (наприклад, нові ID об’єкта, або `modified` дата), то "
+#~ "вони присутні у відповіді."
+
+#~ msgid "Here is response describing tender"
+#~ msgstr "Це відповідь, що описує закупівлю."
+
+#~ msgid "Verbose (human readable) description of error."
+#~ msgstr "Докладний (придатний для читання людиною) опис помилки."
 
 #~ msgid "message"
 #~ msgstr "message"

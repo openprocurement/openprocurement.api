@@ -26,12 +26,6 @@ msgid ""
 "from URL parameter."
 msgstr ""
 
-#: ../../source/options.rst:14
-msgid ""
-"These options can be used in combination in a single request, though some of"
-" them may conflict in their impact on the response."
-msgstr ""
-
 #: ../../source/options.rst:18
 msgid "`?opt_pretty`"
 msgstr ""
@@ -40,22 +34,56 @@ msgstr ""
 msgid "`options: { pretty: true }`"
 msgstr ""
 
-#: ../../source/options.rst:22
-msgid ""
-"Provides the response in \"pretty\" output.  In the case of JSON this means "
-"doing proper line breaking and indentation to make it readable.  This will "
-"take extra time and increase the response size so it is advisable only to "
-"use this during debugging."
-msgstr ""
-
 #: ../../source/options.rst:27
 msgid "`?opt_jsonp=myCallback`"
 msgstr ""
 
+#: ../../source/options.rst:14
+msgid ""
+"These options can be used in different combinations in a single request, "
+"though some of them may conflict in their impact on the response."
+msgstr ""
+
+#: ../../source/options.rst:22
+msgid ""
+"Provides the response in \"pretty\" output.  In case of JSON this means "
+"doing proper line breaking and indentation to make it readable.  This will "
+"take extra time and increase the response size so it is advisable to use "
+"this only during debugging."
+msgstr ""
+
 #: ../../source/options.rst:29
 msgid ""
-"Returns the output in JSON-P format instead of plain JSON, to allow requests"
-" to come from within browsers and work around the \"same origin policy.\" "
-"The function named as the value of the `opt_jsonp` parameter will be called "
-"with a single argument, a JavaScript object representing the response."
+"Returns the output in JSON-P format instead of plain JSON. This allows "
+"requests to come from within browsers and work around the \"same origin "
+"policy.\" The function named as the value of the `opt_jsonp` parameter will "
+"be called with a single argument, a JavaScript object representing the "
+"response."
 msgstr ""
+
+#: ../../source/options.rst:36
+msgid "`?opt_fields=comma,separated,field,list`"
+msgstr ""
+
+#: ../../source/options.rst:38
+msgid "List of extra fields to include in response."
+msgstr ""
+
+#~ msgid ""
+#~ "These options can be used in combination in a single request, though some of"
+#~ " them may conflict in their impact on the response."
+#~ msgstr ""
+
+#~ msgid ""
+#~ "Provides the response in \"pretty\" output.  In the case of JSON this means "
+#~ "doing proper line breaking and indentation to make it readable.  This will "
+#~ "take extra time and increase the response size so it is advisable only to "
+#~ "use this during debugging."
+#~ msgstr ""
+
+#~ msgid ""
+#~ "Returns the output in JSON-P format instead of plain JSON, to allow requests"
+#~ " to come from within browsers and work around the \"same origin policy.\" "
+#~ "The function named as the value of the `opt_jsonp` parameter will be called "
+#~ "with a single argument, a JavaScript object representing the response."
+#~ msgstr ""

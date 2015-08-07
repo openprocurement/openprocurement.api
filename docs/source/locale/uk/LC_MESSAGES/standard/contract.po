@@ -4,13 +4,13 @@ msgstr ""
 "Project-Id-Version: openprocurement.api 0.5\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2014-12-25 10:46+0200\n"
-"PO-Revision-Date: 2014-12-25 11:21+0300\n"
-"Last-Translator: \n"
-"Language-Team: LANGUAGE <LL@li.org>\n"
+"PO-Revision-Date: 2015-07-23 12:55+0200\n"
+"Last-Translator: Zoriana Zaiats <sorenabell@quintagroup.com>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Generator: Poedit 1.5.4\n"
+"X-Generator: Poedit 1.7.6\n"
+"Language-Team: \n"
 
 #: ../../source/standard/contract.rst:8 ../../source/standard/contract.rst:4
 msgid "Contract"
@@ -37,8 +37,7 @@ msgstr "рядок, обов’язковий"
 msgid ""
 "|ocdsDescription| The `Award.id` against which this contract is being issued."
 msgstr ""
-"|ocdsDescription| `Award.id` вказує на рішення, згідно якого видається "
-"договір."
+"|ocdsDescription| `Award.id` вказує на рішення, згідно якого видається договір."
 
 #: ../../source/standard/contract.rst:28
 msgid "|ocdsDescription| Contract title"
@@ -59,36 +58,6 @@ msgstr "|ocdsDescription| Поточний статус договору."
 #: ../../source/standard/contract.rst:43
 msgid "Possible values are:"
 msgstr "Можливі значення:"
-
-#: ../../source/standard/contract.rst:45
-msgid ""
-"`pending` - this contract has been proposed, but is not yet in force. It may "
-"be awaiting signature"
-msgstr ""
-"`pending` - цей договір запропоновано, але він ще не діє. Можливо очікується "
-"його підписання."
-
-#: ../../source/standard/contract.rst:47
-msgid ""
-"`active` - this contract has been signed by all the parties, and is now "
-"legally in force"
-msgstr ""
-"`active` - цей договір підписаний всіма учасниками, і зараз діє на законних "
-"підставах."
-
-#: ../../source/standard/contract.rst:49
-msgid "`cancelled` - this contract has been cancelled prior to being signed"
-msgstr "`cancelled` - цей договір було скасовано до підписання."
-
-#: ../../source/standard/contract.rst:50
-msgid ""
-"`terminated` - this contract was signed and in force, and has now come to a "
-"close.  This may be due to successful completion of the contract, or may be "
-"early termination due to some non-completion"
-msgstr ""
-"`terminated` - цей договір був підписаний та діяв, але вже завершився. Це "
-"може бути пов'язано з виконанням договору, або з достроковим припиненням "
-"через якусь незавершеність."
 
 #: ../../source/standard/contract.rst:55
 msgid ":ref:`Period`"
@@ -129,3 +98,59 @@ msgid ""
 msgstr ""
 "|ocdsDescription| Усі документи та додатки пов’язані з договором, включно з "
 "будь-якими повідомленнями."
+
+#: ../../source/standard/contract.rst:45
+msgid ""
+"`pending` - this contract has been proposed, but is not yet in force. It may "
+"be awaiting signature."
+msgstr ""
+"`pending` - цей договір запропоновано, але він ще не діє. Можливо очікується "
+"його підписання."
+
+#: ../../source/standard/contract.rst:47
+msgid ""
+"`active` - this contract has been signed by all the parties, and is now "
+"legally in force."
+msgstr ""
+"`active` - цей договір підписаний всіма учасниками, і зараз діє на законних "
+"підставах."
+
+#: ../../source/standard/contract.rst:49
+msgid "`cancelled` - this contract has been cancelled prior to being signed."
+msgstr "`cancelled` - цей договір було скасовано до підписання."
+
+#: ../../source/standard/contract.rst:50
+msgid ""
+"`terminated` - this contract was signed and in force, and has now come to a "
+"close.  This may be due to a successful completion of the contract, or may be "
+"early termination due to some non-completion issue."
+msgstr ""
+"`terminated` - цей договір був підписаний та діяв, але вже завершився. Це може "
+"бути пов'язано з виконанням договору, або з достроковим припиненням через "
+"якусь незавершеність."
+
+#~ msgid ""
+#~ "`pending` - this contract has been proposed, but is not yet in force. It "
+#~ "may be awaiting signature"
+#~ msgstr ""
+#~ "`pending` - цей договір запропоновано, але він ще не діє. Можливо "
+#~ "очікується його підписання."
+
+#~ msgid ""
+#~ "`active` - this contract has been signed by all the parties, and is now "
+#~ "legally in force"
+#~ msgstr ""
+#~ "`active` - цей договір підписаний всіма учасниками, і зараз діє на законних "
+#~ "підставах."
+
+#~ msgid "`cancelled` - this contract has been cancelled prior to being signed"
+#~ msgstr "`cancelled` - цей договір було скасовано до підписання."
+
+#~ msgid ""
+#~ "`terminated` - this contract was signed and in force, and has now come to a "
+#~ "close.  This may be due to successful completion of the contract, or may be "
+#~ "early termination due to some non-completion"
+#~ msgstr ""
+#~ "`terminated` - цей договір був підписаний та діяв, але вже завершився. Це "
+#~ "може бути пов'язано з виконанням договору, або з достроковим припиненням "
+#~ "через якусь незавершеність."

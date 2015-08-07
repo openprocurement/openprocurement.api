@@ -3,14 +3,14 @@
 Responses
 =========
 
-After processing API is always providing response, reporting either success
+After processing API always provides response, reporting either success
 or failure.
 
 Status Codes
 ------------
 In all cases, the API should return an `HTTP Status Code
 <http://en.wikipedia.org/wiki/List_of_HTTP_status_codes>`_ that indicates
-the nature of the failure (below), with a response body in JSON format
+the nature of the failure (see below), with a response body in JSON format
 containing additional information.
 
 200
@@ -34,8 +34,8 @@ containing additional information.
 
 403
   Forbidden. The API key and request syntax was valid but the server is
-  refusing to complete the request.  This can happen if you try to read or
-  write to objects or properties that the party does not have access to.
+  refusing to complete the request.  This can happen if you are trying to
+  read or write to objects or properties that you do not have access to.
 
 404
   Not found. Either the request method and path supplied do not specify a
@@ -53,7 +53,7 @@ Success Response
 Every successful get, create, update, replace request results in response
 that contains `data` attribute.  That `data` attribute contains full JSON
 object representation after the operation.  If some data were generated in
-the results of processing (like new object IDs, of `modified` date) they are
+the result of processing (like new object IDs, or `modified` date) they are
 present in the respose.
 
 The listing requests result in similar responses, but instead of single
@@ -62,7 +62,7 @@ objects.
 
 Example Succes Response
 ~~~~~~~~~~~~~~~~~~~~~~~
-Here is response describing tender
+Here is a response that describes tender
 
 .. sourcecode:: http
 
@@ -136,7 +136,7 @@ Here is response describing tender
 Error Response
 --------------
 In the event of an error, the response body will contain an `errors` field
-at the top level.  This contains an array of at least one error object,
+at the top level.  It contains an array of at least one error object,
 described below:
 
 :location:
@@ -147,7 +147,7 @@ described below:
     * The field name causing the error (in case of `body` location)
 
 :description:
-    Verbose (human readable) description of error.
+    Verbose (human readable) description of the error.
 
 .. message
   *totalValue.amount: Missing input* - Message providing more detail about the
@@ -163,7 +163,7 @@ described below:
 
 Example Error Response
 ~~~~~~~~~~~~~~~~~~~~~~
-Sample below indicate incomplete request.
+Sample below indicates incomplete request.
 
 .. sourcecode:: http
 

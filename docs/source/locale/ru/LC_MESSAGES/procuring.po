@@ -35,50 +35,36 @@ msgid ""
 "details (except binary documents) in payload of request."
 msgstr ""
 
-#: ../../source/procuring.rst:27
+#: ../../source/procuring.rst:29
 msgid "Uploading documentation"
 msgstr ""
 
-#: ../../source/procuring.rst:28
-msgid ""
-"All tender documentation should be uploaded following requests one request "
-"per document."
-msgstr ""
-
-#: ../../source/procuring.rst:42
+#: ../../source/procuring.rst:51
 msgid "Changing the Tender"
 msgstr ""
 
-#: ../../source/procuring.rst:43
+#: ../../source/procuring.rst:52
 msgid ""
 "Procuring Entity can change both the primary record and associated "
 "documentation."
 msgstr ""
 
-#: ../../source/procuring.rst:48
+#: ../../source/procuring.rst:57
 msgid "Changing primary Tender Record"
 msgstr ""
 
-#: ../../source/procuring.rst:49
+#: ../../source/procuring.rst:58
 msgid ""
 "Procuring Entity can change the Tender properties with following request. "
 "Data to change should be in payload of the message."
 msgstr ""
 
-#: ../../source/procuring.rst:60
+#: ../../source/procuring.rst:69
 msgid "Changing existing documents"
 msgstr ""
 
-#: ../../source/procuring.rst:61
-msgid "Procuring Entity can upload new versions of the tender documentation."
-msgstr ""
-
-#: ../../source/procuring.rst:72
+#: ../../source/procuring.rst:88
 msgid "Uploading additional documents"
-msgstr ""
-
-#: ../../source/procuring.rst:73
-msgid "The same as Uploading documentation"
 msgstr ""
 
 #: ../../source/procuring.rst:19
@@ -87,11 +73,42 @@ msgid ""
 " of response, and in ``data.id`` of body."
 msgstr ""
 
-#: ../../source/procuring.rst:34
+#: ../../source/procuring.rst:38
 msgid ""
 "The response produced will have URL of the tender document uploaded in "
 "Location header of response, and in ``data.id`` of body."
 msgstr ""
+
+#: ../../source/procuring.rst:31
+msgid ""
+"All tender documentation should be uploaded following requests one request "
+"per document. You can see supported request types in :ref:`upload` section."
+msgstr ""
+
+#: ../../source/procuring.rst:45 ../../source/procuring.rst:82
+msgid "Example request:"
+msgstr ""
+
+#: ../../source/procuring.rst:71
+msgid ""
+"Procuring Entity can upload new versions of the tender documentation. You "
+"can see supported request types in :ref:`upload` section."
+msgstr ""
+
+#: ../../source/procuring.rst:89
+msgid "The same as :ref:`procuring-uploading-docs`."
+msgstr ""
+
+#~ msgid ""
+#~ "All tender documentation should be uploaded following requests one request "
+#~ "per document."
+#~ msgstr ""
+
+#~ msgid "Procuring Entity can upload new versions of the tender documentation."
+#~ msgstr ""
+
+#~ msgid "The same as Uploading documentation"
+#~ msgstr ""
 
 #~ msgid ""
 #~ "The response produced will have URL of the tender created in Location header"

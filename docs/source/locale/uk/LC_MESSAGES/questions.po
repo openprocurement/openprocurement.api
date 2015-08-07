@@ -4,13 +4,14 @@ msgstr ""
 "Project-Id-Version: openprocurement.api 0.5\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2014-12-29 10:09+0200\n"
-"PO-Revision-Date: 2014-12-29 11:10+0300\n"
-"Last-Translator: \n"
-"Language-Team: LANGUAGE <LL@li.org>\n"
+"PO-Revision-Date: 2015-07-23 17:06+0200\n"
+"Last-Translator: Zoriana Zaiats <sorenabell@quintagroup.com>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Generator: Poedit 1.5.4\n"
+"X-Generator: Poedit 1.7.6\n"
+"Language-Team: \n"
+"Language: uk\n"
 
 #: ../../source/questions.rst:5
 msgid "Asking Questions"
@@ -28,10 +29,6 @@ msgstr "Будь-хто (але не анонімно) може задати п�
 msgid "Retrieving Questions"
 msgstr "Як прочитати питання"
 
-#: ../../source/questions.rst:18
-msgid "Before auction is ended question author identities are not revealed:"
-msgstr "До закінчення аукціону особистість автора питання не розкривається:"
-
 #: ../../source/questions.rst:24
 msgid "Answering"
 msgstr "Відповіді"
@@ -43,3 +40,10 @@ msgstr "Як надати відповідь"
 #: ../../source/questions.rst:29
 msgid "Tender creator can answer questions:"
 msgstr "Замовник закупівлі може відповісти на питання:"
+
+#: ../../source/questions.rst:18
+msgid "Question author identities are not revealed before auction ends:"
+msgstr "До закінчення аукціону особистість автора питання не розкривається:"
+
+#~ msgid "Before auction is ended question author identities are not revealed:"
+#~ msgstr "До закінчення аукціону особистість автора питання не розкривається:"

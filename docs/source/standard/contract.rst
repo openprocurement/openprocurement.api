@@ -43,13 +43,13 @@ Schema
     Possible values are:
 
     * `pending` - this contract has been proposed, but is not yet in force.
-      It may be awaiting signature
+      It may be awaiting signature.
     * `active` - this contract has been signed by all the parties, and is
-      now legally in force
-    * `cancelled` - this contract has been cancelled prior to being signed
+      now legally in force.
+    * `cancelled` - this contract has been cancelled prior to being signed.
     * `terminated` - this contract was signed and in force, and has now come
-      to a close.  This may be due to successful completion of the contract,
-      or may be early termination due to some non-completion
+      to a close.  This may be due to a successful completion of the contract,
+      or may be early termination due to some non-completion issue.
 
 :period:
     :ref:`Period`

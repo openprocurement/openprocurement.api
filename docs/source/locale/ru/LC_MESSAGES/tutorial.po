@@ -15,99 +15,359 @@ msgstr ""
 msgid "Tutorial"
 msgstr ""
 
-#: ../../source/tutorial.rst:11
+#: ../../source/tutorial.rst:14
 msgid "Just invoking it reveals empty set."
 msgstr ""
 
-#: ../../source/tutorial.rst:18
-msgid "Error states that only accepted Content-Type is `application/json`."
-msgstr ""
-
-#: ../../source/tutorial.rst:25
-msgid "Error states that no `data` found in JSON body."
-msgstr ""
-
-#: ../../source/tutorial.rst:32
-msgid ""
-"Success! Now we can see that new object was created. Response code is `201` "
-"and `Location` response header reports the location of object created. The "
-"body of response reveals the information about tender created, its internal "
-"`id` (that matches the `Location` segment), its official `tenderID` and "
-"`modified` datestamp stating the moment in time when tender was last "
-"modified."
-msgstr ""
-
-#: ../../source/tutorial.rst:41
+#: ../../source/tutorial.rst:55
 msgid "We can see the same response we got after creating tender."
 msgstr ""
 
-#: ../../source/tutorial.rst:48
-msgid ""
-"We do see the internal `id` of a tender (that can be used to construct full "
-"URL by prepending `http://api-sandbox.openprocurement.org/api/0/tenders/`) "
-"and its `modified` datestamp."
-msgstr ""
-
-#: ../../source/tutorial.rst:55
-msgid ""
-"And again we have `201 Created` response code, `Location` header and body "
-"wth extra `id`, `tenderID`, and `modified` properties."
-msgstr ""
-
-#: ../../source/tutorial.rst:62
+#: ../../source/tutorial.rst:76
 msgid "And indeed we have 2 tenders now."
 msgstr ""
 
-#: ../../source/tutorial.rst:71
-msgid ""
-"We see the added properies merged with existing data of tender. Additionally"
-" the `modified` property updated to reflect the last modification datestamp."
-msgstr ""
-
-#: ../../source/tutorial.rst:6
+#: ../../source/tutorial.rst:9
 msgid "Let's try exploring the `/tenders` endpoint:"
 msgstr ""
 
-#: ../../source/tutorial.rst:13
+#: ../../source/tutorial.rst:16
 msgid "Now let's attempt creating some tender:"
 msgstr ""
 
-#: ../../source/tutorial.rst:20
+#: ../../source/tutorial.rst:23
 msgid "Let's satisfy the Content-type requirement:"
 msgstr ""
 
-#: ../../source/tutorial.rst:27
+#: ../../source/tutorial.rst:36
 msgid "Let's provide the data attribute in the body submitted:"
 msgstr ""
 
-#: ../../source/tutorial.rst:34
-msgid ""
-"Let's access the URL of object created (the `Location` header of the "
-"response):"
-msgstr ""
-
-#: ../../source/tutorial.rst:43
+#: ../../source/tutorial.rst:57
 msgid "Let's see what listing of tenders reveals us:"
 msgstr ""
 
-#: ../../source/tutorial.rst:50
+#: ../../source/tutorial.rst:64
 msgid ""
 "Let's try creating tender with more data, passing the `procuringEntity` of a"
 " tender:"
 msgstr ""
 
-#: ../../source/tutorial.rst:57
+#: ../../source/tutorial.rst:71
 msgid "Let's check what tender registry contains:"
 msgstr ""
 
-#: ../../source/tutorial.rst:64
-msgid ""
-"Let's update tender by providing it with all other essential properties:"
-msgstr ""
-
-#: ../../source/tutorial.rst:73
+#: ../../source/tutorial.rst:91
 msgid "Checking the listing again reflects the new modification date:"
 msgstr ""
+
+#: ../../source/tutorial.rst:7
+msgid "Exploring basic rules"
+msgstr ""
+
+#: ../../source/tutorial.rst:21
+msgid ""
+"Error states that the only accepted Content-Type is `application/json`."
+msgstr ""
+
+#: ../../source/tutorial.rst:28
+msgid "Error states that no `data` has been found in JSON body."
+msgstr ""
+
+#: ../../source/tutorial.rst:34
+msgid "Creating tender"
+msgstr ""
+
+#: ../../source/tutorial.rst:41
+msgid ""
+"Success! Now we can see that new object was created. Response code is `201` "
+"and `Location` response header reports the location of the created object.  "
+"The body of response reveals the information about the created tender: its "
+"internal `id` (that matches the `Location` segment), its official `tenderID`"
+" and `dateModified` datestamp stating the moment in time when tender was "
+"last modified.  Note that tender is created with `active.enquiries` status."
+msgstr ""
+
+#: ../../source/tutorial.rst:48
+msgid ""
+"Let's access the URL of the created object (the `Location` header of the "
+"response):"
+msgstr ""
+
+#: ../../source/tutorial.rst:62
+msgid ""
+"We do see the internal `id` of a tender (that can be used to construct full "
+"URL by prepending `http://api-sandbox.openprocurement.org/api/0/tenders/`) "
+"and its `dateModified` datestamp."
+msgstr ""
+
+#: ../../source/tutorial.rst:69
+msgid ""
+"And again we have `201 Created` response code, `Location` header and body "
+"with extra `id`, `tenderID`, and `dateModified` properties."
+msgstr ""
+
+#: ../../source/tutorial.rst:80
+msgid "Modifying tender"
+msgstr ""
+
+#: ../../source/tutorial.rst:82
+msgid ""
+"Let's update tender by supplementing it with all other essential properties:"
+msgstr ""
+
+#: ../../source/tutorial.rst:89
+msgid ""
+"We see the added properies have merged with existing tender data. "
+"Additionally, the `dateModified` property was updated to reflect the last "
+"modification datestamp."
+msgstr ""
+
+#: ../../source/tutorial.rst:100
+msgid "Uploading documentation"
+msgstr ""
+
+#: ../../source/tutorial.rst:102
+msgid ""
+"Procuring entity can upload PDF files into the created tender. Uploading "
+"should follow the :ref:`upload` rules."
+msgstr ""
+
+#: ../../source/tutorial.rst:108
+msgid ""
+"`201 Created` response code and `Location` header confirm document creation."
+" We can additionally query the `documents` collection API endpoint to "
+"confirm the action:"
+msgstr ""
+
+#: ../../source/tutorial.rst:115
+msgid ""
+"The single array element describes the uploaded document. We can upload more"
+" documents:"
+msgstr ""
+
+#: ../../source/tutorial.rst:120
+msgid "And again we can confirm that there are two documents uploaded."
+msgstr ""
+
+#: ../../source/tutorial.rst:125
+msgid ""
+"In case we made an error, we can reupload the document over the older "
+"version:"
+msgstr ""
+
+#: ../../source/tutorial.rst:130
+msgid "And we can see that it is overriding the original version:"
+msgstr ""
+
+#: ../../source/tutorial.rst:139 ../../source/tutorial.rst:136
+msgid "Enquiries"
+msgstr ""
+
+#: ../../source/tutorial.rst:141
+msgid ""
+"When tender is in `active.enquiry` status, interested parties can ask "
+"questions:"
+msgstr ""
+
+#: ../../source/tutorial.rst:146
+msgid "Bidder is answering them:"
+msgstr ""
+
+#: ../../source/tutorial.rst:151
+msgid "And one can retrieve the questions list:"
+msgstr ""
+
+#: ../../source/tutorial.rst:156
+msgid "And individual answer:"
+msgstr ""
+
+#: ../../source/tutorial.rst:165
+msgid "Registering bid"
+msgstr ""
+
+#: ../../source/tutorial.rst:167
+msgid ""
+"When ``Tender.tenderingPeriod.startDate`` comes, Tender switches to "
+"`active.tendering` status that allows registration of bids."
+msgstr ""
+
+#: ../../source/tutorial.rst:169
+msgid "Bidder can register a bid:"
+msgstr ""
+
+#: ../../source/tutorial.rst:174
+msgid "And upload proposal document:"
+msgstr ""
+
+#: ../../source/tutorial.rst:179
+msgid "It is possible to check the uploaded documents:"
+msgstr ""
+
+#: ../../source/tutorial.rst:184
+msgid ""
+"For best effect (biggest economy) Tender should have multiple bidders "
+"registered:"
+msgstr ""
+
+#: ../../source/tutorial.rst:193
+msgid "Auction"
+msgstr ""
+
+#: ../../source/tutorial.rst:195
+msgid ""
+"After auction is scheduled anybody can visit it to watch. The auction can be"
+" reached at `Tender.auctionUrl`:"
+msgstr ""
+
+#: ../../source/tutorial.rst:200
+msgid "And bidders can find out their participation URLs via their bids:"
+msgstr ""
+
+#: ../../source/tutorial.rst:205
+msgid ""
+"See the `Bid.participationUrl` in the response. Similar, but different, URL "
+"can be retrieved for other participants:"
+msgstr ""
+
+#: ../../source/tutorial.rst:211
+msgid "Confirming qualification"
+msgstr ""
+
+#: ../../source/tutorial.rst:213
+msgid "Qualification comission registers its decision via the following call:"
+msgstr ""
+
+#: ../../source/tutorial.rst:219
+msgid "Cancelling tender"
+msgstr ""
+
+#: ../../source/tutorial.rst:221
+msgid ""
+"Tender creator can cancel tender anytime. The following steps should be "
+"applied:"
+msgstr ""
+
+#: ../../source/tutorial.rst:223
+msgid "Prepare cancellation request"
+msgstr ""
+
+#: ../../source/tutorial.rst:224
+msgid "Fill it with the protocol describing the cancellation reasons"
+msgstr ""
+
+#: ../../source/tutorial.rst:225
+msgid "Cancel the tender with the reasons prepared."
+msgstr ""
+
+#: ../../source/tutorial.rst:227
+msgid ""
+"Only the request that has been activated (3rd step above) has power to "
+"cancel tender.  I.e.  you have to not only prepare cancellation request but "
+"to activate it as well."
+msgstr ""
+
+#: ../../source/tutorial.rst:231
+msgid "See :ref:`cancellation` data structure for details."
+msgstr ""
+
+#: ../../source/tutorial.rst:234
+msgid "Preparing the cancellation request"
+msgstr ""
+
+#: ../../source/tutorial.rst:241
+msgid ""
+"You should pass `reason`, `status` defaults to `pending`. `id` is "
+"autogenerated and passed in the `Location` header of response."
+msgstr ""
+
+#: ../../source/tutorial.rst:249
+msgid "Filling cancellation with protocol and supplementary documentation"
+msgstr ""
+
+#: ../../source/tutorial.rst:251
+msgid "Upload the file contents"
+msgstr ""
+
+#: ../../source/tutorial.rst:257
+msgid "Change the document description and other properties"
+msgstr ""
+
+#: ../../source/tutorial.rst:263
+msgid "Upload new version of the document"
+msgstr ""
+
+#: ../../source/tutorial.rst:270
+msgid "Activating the request and cancelling tender"
+msgstr ""
+
+#: ../../source/tutorial.rst:31
+msgid "Tender"
+msgstr ""
+
+#: ../../source/tutorial.rst:97
+msgid "Document"
+msgstr ""
+
+#: ../../source/tutorial.rst:136
+msgid "Question"
+msgstr ""
+
+#: ../../source/tutorial.rst:136
+msgid "Answer"
+msgstr ""
+
+#: ../../source/tutorial.rst:162
+msgid "Bidding"
+msgstr ""
+
+#: ../../source/tutorial.rst:190
+msgid "Awarding"
+msgstr ""
+
+#: ../../source/tutorial.rst:190
+msgid "Qualification"
+msgstr ""
+
+#~ msgid "Error states that only accepted Content-Type is `application/json`."
+#~ msgstr ""
+
+#~ msgid "Error states that no `data` found in JSON body."
+#~ msgstr ""
+
+#~ msgid ""
+#~ "Success! Now we can see that new object was created. Response code is `201` "
+#~ "and `Location` response header reports the location of object created. The "
+#~ "body of response reveals the information about tender created, its internal "
+#~ "`id` (that matches the `Location` segment), its official `tenderID` and "
+#~ "`modified` datestamp stating the moment in time when tender was last "
+#~ "modified."
+#~ msgstr ""
+
+#~ msgid ""
+#~ "We do see the internal `id` of a tender (that can be used to construct full "
+#~ "URL by prepending `http://api-sandbox.openprocurement.org/api/0/tenders/`) "
+#~ "and its `modified` datestamp."
+#~ msgstr ""
+
+#~ msgid ""
+#~ "And again we have `201 Created` response code, `Location` header and body "
+#~ "wth extra `id`, `tenderID`, and `modified` properties."
+#~ msgstr ""
+
+#~ msgid ""
+#~ "We see the added properies merged with existing data of tender. Additionally"
+#~ " the `modified` property updated to reflect the last modification datestamp."
+#~ msgstr ""
+
+#~ msgid ""
+#~ "Let's access the URL of object created (the `Location` header of the "
+#~ "response):"
+#~ msgstr ""
+
+#~ msgid ""
+#~ "Let's update tender by providing it with all other essential properties:"
+#~ msgstr ""
 
 #~ msgid "Checking the listing again reflets the new modification date:"
 #~ msgstr ""

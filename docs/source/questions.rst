@@ -15,7 +15,7 @@ Anybody (who provides their identity) can ask questions:
 Retrieving Questions
 --------------------
 
-Before auction is ended question author identities are not revealed:
+Question author identities are not revealed before auction ends:
 
 .. include:: tutorial/list-question.http
    :code:
