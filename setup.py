@@ -32,7 +32,7 @@ main = openprocurement.api:main
 """
 
 setup(name='openprocurement.api',
-      version='0.8.2',
+      version='0.8.3',
       description='openprocurement.api',
       long_description=README,
       classifiers=[
@@ -48,6 +48,7 @@ setup(name='openprocurement.api',
       license='Apache License 2.0',
       url='https://github.com/openprocurement/openprocurement.api',
       package_dir = {'': 'src'},
+      py_modules=['cgi'],
       packages=find_packages('src'),
       namespace_packages = ['openprocurement'],
       include_package_data=True,
