@@ -658,6 +658,8 @@ class TenderResourceTest(BaseWebTest):
 
         # TODO: Test all the required fields
 
+        self.assertRaises(TypeError, Tender.is_obj_fully_setup, [])
+        self.assertRaises(KeyError, Tender.is_obj_fully_setup, {})
         response = self.app.patch_json('/tenders/{}'.format(
             tender['id']), {'data': {'enquiryPeriod': {'startDate': None}}}, status=422)
         self.assertEqual(response.status, '422 Unprocessable Entity')

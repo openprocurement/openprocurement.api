@@ -611,14 +611,13 @@ class Tender(SchematicsDocument, Model):
 
     @staticmethod
     def is_obj_fully_setup(obj):
-        cls = dict
         if isinstance(obj, dict):
             try:
                 return bool(obj["revisions"])
             except KeyError as e:
                 raise KeyError(u"Object has no key 'revisions'")
         else:
-            raise TypeError(u"'%s' object is not compatible with class %s" % (obj.__class__.__name__, cls))
+            raise TypeError(u"'%s' object is not compatible with class dict" % obj.__class__.__name__)
         # XXX: Temporary solution
         # This will work with completely new tenders
         # and break with tenders that are marked as "planning",
