@@ -652,14 +652,15 @@ class TenderResourceTest(BaseWebTest):
         self.assertEqual(response.json['data']['mode'], u'test')
 
     def test_required_field_deletion(self):
+        self.assertRaises(TypeError, Tender.is_obj_fully_setup, [])
+        self.assertRaises(KeyError, Tender.is_obj_fully_setup, {})
+
         response = self.app.post_json('/tenders', {'data': test_tender_data})
         self.assertEqual(response.status, '201 Created')
         tender = response.json['data']
 
         # TODO: Test all the required fields
 
-        self.assertRaises(TypeError, Tender.is_obj_fully_setup, [])
-        self.assertRaises(KeyError, Tender.is_obj_fully_setup, {})
         response = self.app.patch_json('/tenders/{}'.format(
             tender['id']), {'data': {'enquiryPeriod': {'startDate': None}}}, status=422)
         self.assertEqual(response.status, '422 Unprocessable Entity')
@@ -667,6 +668,15 @@ class TenderResourceTest(BaseWebTest):
         self.assertEqual(response.json['status'], 'error')
         self.assertEqual(response.json['errors'], [
             {u'description': {u'startDate': [u'This field cannot be deleted']}, u'location': u'body', u'name': u'enquiryPeriod'}
+        ])
+
+        response = self.app.patch_json('/tenders/{}'.format(
+            tender['id']), {'data': {'tenderPeriod': {'startDate': None}}}, status=422)
+        self.assertEqual(response.status, '422 Unprocessable Entity')
+        self.assertEqual(response.content_type, 'application/json')
+        self.assertEqual(response.json['status'], 'error')
+        self.assertEqual(response.json['errors'], [
+            {u'description': {u'startDate': [u'This field cannot be deleted']}, u'location': u'body', u'name': u'tenderPeriod'}
         ])
 
 class TenderProcessTest(BaseTenderWebTest):

@@ -598,6 +598,9 @@ class Tender(SchematicsDocument, Model):
     def validate_tenderPeriod(self, data, period):
         if period and period.startDate and data.get('enquiryPeriod') and data.get('enquiryPeriod').endDate and period.startDate < data.get('enquiryPeriod').endDate:
             raise ValidationError(u"period should begin after enquiryPeriod")
+        if Tender.is_obj_fully_setup(data):
+            if not period.startDate:
+                raise ValidationError({u'startDate': [u'This field cannot be deleted']})
 
     def validate_auctionPeriod(self, data, period):
         if period and period.startDate and data.get('tenderPeriod') and data.get('tenderPeriod').endDate and period.startDate < data.get('tenderPeriod').endDate:
