@@ -31,3 +31,9 @@ tenders_test_by_dateModified_view = ViewDefinition('tenders', 'test_by_dateModif
         emit(doc.dateModified, null);
     }
 }''')
+
+conflicts_view = ViewDefinition('conflicts', 'all', '''function(doc) {
+    if (doc._conflicts) {
+        emit(doc._rev, [doc._rev].concat(doc._conflicts));
+    }
+}''')
