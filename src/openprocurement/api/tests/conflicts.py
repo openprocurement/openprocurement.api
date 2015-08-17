@@ -62,7 +62,7 @@ def conflicts_resolve(db):
         for r in open_revs:
             if r == trev:
                 continue
-            uu.append({'_id': tid, '_rev': r, '_deleted': True, '_conflict_branch': True})
+            uu.append({'_id': tid, '_rev': r, '_deleted': True})
         try:
             db.save(ctender)
         except:
