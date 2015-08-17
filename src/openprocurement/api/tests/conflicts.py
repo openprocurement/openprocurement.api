@@ -11,16 +11,19 @@ from jsonpatch import make_patch, apply_patch as _apply_patch
 #from json_tools import diff, patch as _patch
 from iso8601 import parse_date
 
+IGNORE = ['_attachments', '_revisions', 'revisions', 'dateModified', "_id", "_rev", "doc_type"]
 
-def conflicts_resolve(db):
+
+def conflicts_resolve0(db):
+    """ Auto sorted algorithm """
     for c in db.view('conflicts/all', include_docs=True, conflicts=True):
         tid = c[u'id']
         trev = c[u'doc'][u'_rev']
         conflicts = c[u'doc'][u'_conflicts']
-        tvalue = [c[u'doc'][u'_rev']] + conflicts
-        open_revs = dict([(i, None) for i in tvalue])
-        td = {}
-        for r in open_revs:
+        open_revs = dict([(i, None) for i in conflicts])
+        open_revs[trev] = sorted(set([i.get('rev') for i in ctender['revisions']]))
+        td = {trev: c[u'doc']}
+        for r in conflicts:
             t = c[u'doc'] if r == trev else db.get(tid, rev=r)
             open_revs[r] = sorted(set([i.get('rev') for i in t['revisions']]))
             if r not in td:
@@ -35,8 +38,8 @@ def conflicts_resolve(db):
                 tn = t.copy()
                 t = _apply_patch(t, rev['changes'])
                 #t = _patch(t, rev['changes'])
-                ti = dict([x for x in t.items() if x[0] not in ['_attachments', '_revisions', 'revisions', 'dateModified', "_id", "_rev", "doc_type"]])
-                tj = dict([x for x in tn.items() if x[0] not in ['_attachments', '_revisions', 'revisions', 'dateModified', "_id", "_rev", "doc_type"]])
+                ti = dict([x for x in t.items() if x[0] not in IGNORE])
+                tj = dict([x for x in tn.items() if x[0] not in IGNORE])
                 tt[rev['date']] = (rev['date'], rev, get_revision_changes(ti, tj))
             if r == trev:
                 t['revisions'] = revs[:common_index]
@@ -62,6 +65,66 @@ def conflicts_resolve(db):
         for r in open_revs:
             if r == trev:
                 continue
+            uu.append({'_id': tid, '_rev': r, '_deleted': True})
+        try:
+            db.save(ctender)
+        except:
+            continue
+        else:
+            db.update(uu)
+
+
+def conflicts_resolve(db):
+    """ Branch apply algorithm """
+    for c in db.view('conflicts/all', include_docs=True, conflicts=True):
+        ctender = c[u'doc']
+        tid = c[u'id']
+        trev = ctender[u'_rev']
+        conflicts = ctender[u'_conflicts']
+        open_revs = dict([(i, None) for i in conflicts])
+        open_revs[trev] = sorted(set([i.get('rev') for i in ctender['revisions']]))
+        td = {trev: ctender}
+        for r in conflicts:
+            t = ctender if r == trev else db.get(tid, rev=r)
+            open_revs[r] = sorted(set([i.get('rev') for i in t['revisions']]))
+            if r not in td:
+                td[r] = t.copy()
+        common_rev = [i[0] for i in zip(*open_revs.values()) if all(map(lambda x: i[0]==x, i))][-1]
+        common_index = [i.get('rev') for i in ctender['revisions']].index(common_rev)
+        applied = [rev['date'] for rev in ctender['revisions'][common_index:]]
+        for r in conflicts:
+            tt = []
+            t = td[r]
+            revs = t['revisions']
+            common_index = [i.get('rev') for i in revs].index(common_rev)
+            for rev in revs[common_index:][::-1]:
+                tn = t.copy()
+                t = _apply_patch(t, rev['changes'])
+                #t = _patch(t, rev['changes'])
+                ti = dict([x for x in t.items() if x[0] not in IGNORE])
+                tj = dict([x for x in tn.items() if x[0] not in IGNORE])
+                tt.append((rev['date'], rev, get_revision_changes(ti, tj)))
+            for i in tt[::-1]:
+                if i[0] in applied:
+                    continue
+                print 'changes', i[2]
+                t = ctender.copy()
+                ctender.update(_apply_patch(t, i[2]))
+                #_patch(ctender, i[2])
+                patch = get_revision_changes(ctender, t)
+                print 'patch', patch
+                revision = i[1]
+                revision['changes'] = patch
+                revision['rev'] = common_rev
+                #revision['rev'] = trev
+                ctender['revisions'].append(revision)
+                applied.append(i[0])
+        uu=[]
+        #dateModified = max([parse_date(i['dateModified']) for i in td.values()])
+        #dateModified += timedelta(microseconds=1)
+        #ctender['dateModified'] = dateModified.isoformat()
+        ctender['dateModified'] = get_now().isoformat()
+        for r in conflicts:
             uu.append({'_id': tid, '_rev': r, '_deleted': True})
         try:
             db.save(ctender)
@@ -287,11 +350,13 @@ class TenderConflictsTest(BaseTenderWebTest):
         self.assertGreater(len(self.db2.view('conflicts/all')), 0)
         conflicts_resolve(self.db2)
         self.assertEqual(len(self.db2.view('conflicts/all')), 0)
-        #self.couchdb_server.replicate(self.db.name, self.db2.name)
-        #self.couchdb_server.replicate(self.db2.name, self.db.name)
-        #self.assertGreater(len(self.db.view('conflicts/all')), 0)
-        #conflicts_resolve(self.db)
-        #self.assertEqual(len(self.db.view('conflicts/all')), 0)
+        #
+        self.couchdb_server.replicate(self.db.name, self.db2.name)
+        self.couchdb_server.replicate(self.db2.name, self.db.name)
+        self.assertGreater(len(self.db.view('conflicts/all')), 0)
+        conflicts_resolve(self.db)
+        self.assertEqual(len(self.db.view('conflicts/all')), 0)
+        #
         self.couchdb_server.replicate(self.db.name, self.db2.name)
         self.couchdb_server.replicate(self.db2.name, self.db.name)
         self.assertEqual(len(self.db.view('conflicts/all')), 0)
