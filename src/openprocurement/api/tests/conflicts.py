@@ -188,6 +188,35 @@ class TenderConflictsTest(BaseTenderWebTest):
         tender = self.db.get(self.tender_id)
         self.assertEqual(len(tender['revisions']), 11)
 
+    def test_conflict_quick_balancing(self):
+        self.couchdb_server.replicate(self.db.name, self.db2.name)
+        self.couchdb_server.replicate(self.db2.name, self.db.name)
+        self.set_status('active.tendering')
+
+        response = self.app.get('/tenders/{}'.format(self.tender_id))
+        self.assertEqual(response.status, '200 OK')
+        tender = response.json['data']
+
+        response = self.app2.post_json('/tenders/{}/bids'.format(self.tender_id), {'data': {'tenderers': [tender["procuringEntity"]], "value": {"amount": 401}}}, status=403)
+        self.assertEqual(response.status, '403 Forbidden')
+        self.assertEqual(response.content_type, 'application/json')
+        self.assertEqual(response.json['errors'][0]["description"], "Can't add bid in current (active.enquiries) tender status")
+
+        self.couchdb_server.replicate(self.db.name, self.db2.name)
+        self.couchdb_server.replicate(self.db2.name, self.db.name)
+
+        response = self.app2.post_json('/tenders/{}/bids'.format(self.tender_id), {'data': {'tenderers': [tender["procuringEntity"]], "value": {"amount": 401}}})
+        self.assertEqual(response.status, '201 Created')
+        bid_id = response.json['data']['id']
+
+        self.couchdb_server.replicate(self.db.name, self.db2.name)
+        self.couchdb_server.replicate(self.db2.name, self.db.name)
+        self.assertEqual(len(self.db.view('conflicts/all')), 0)
+        tender = self.db.get(self.tender_id)
+        self.assertEqual(len(tender['bids']), 1)
+        self.assertEqual(tender['bids'][0]["id"], bid_id)
+        self.assertEqual(tender['bids'][0]["value"]["amount"], 401)
+
     def test_conflict_insdel211(self):
         self.set_status('active.tendering')
         self.couchdb_server.replicate(self.db.name, self.db2.name)
