@@ -88,8 +88,8 @@ class BaseWebTest(unittest.TestCase):
             "config:tests.ini", relative_to=os.path.dirname(__file__))
         self.app.RequestClass = PrefixedRequestClass
         self.app.authorization = ('Basic', ('token', ''))
-        self.couchdb_server = self.app.app.registry.couchdb_server
-        self.db = self.app.app.registry.db
+        self.couchdb_server = self.app.app.application.registry.couchdb_server
+        self.db = self.app.app.application.registry.db
 
     def tearDown(self):
         del self.couchdb_server[self.db.name]

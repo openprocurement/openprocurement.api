@@ -464,11 +464,11 @@ class TenderDocumentWithS3ResourceTest(TenderDocumentResourceTest):
         super(TenderDocumentWithS3ResourceTest, self).setUp()
         # Create mock s3 connection
         connection = MockConnection()
-        self.app.app.registry.s3_connection = connection
+        self.app.app.application.registry.s3_connection = connection
         bucket_name = 'bucket'
         if bucket_name not in [b.name for b in connection.get_all_buckets()]:
             connection.create_bucket(bucket_name)
-        self.app.app.registry.bucket_name = bucket_name
+        self.app.app.application.registry.bucket_name = bucket_name
 
 
 def suite():
