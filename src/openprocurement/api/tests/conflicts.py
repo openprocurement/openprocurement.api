@@ -217,6 +217,68 @@ class TenderConflictsTest(BaseTenderWebTest):
         self.assertEqual(tender['bids'][0]["id"], bid_id)
         self.assertEqual(tender['bids'][0]["value"]["amount"], 401)
 
+    def test_conflict_insdel12(self):
+        response = self.app.get('/tenders/{}'.format(self.tender_id))
+        self.assertEqual(response.status, '200 OK')
+        tender = response.json['data']
+        self.set_status('active.tendering')
+        response = self.app.post_json('/tenders/{}/bids'.format(self.tender_id), {'data': {'tenderers': [tender["procuringEntity"]], "value": {"amount": 401}}})
+        self.assertEqual(response.status, '201 Created')
+        bid_id_to_del = response.json['data']['id']
+        self.couchdb_server.replicate(self.db.name, self.db2.name)
+        self.couchdb_server.replicate(self.db2.name, self.db.name)
+
+        response = self.app.delete('/tenders/{}/bids/{}'.format(self.tender_id, bid_id_to_del))
+        self.assertEqual(response.status, '200 OK')
+
+        response = self.app2.post_json('/tenders/{}/bids'.format(self.tender_id), {'data': {'tenderers': [tender["procuringEntity"]], "value": {"amount": 402}}})
+        self.assertEqual(response.status, '201 Created')
+        bid_id = response.json['data']['id']
+
+        self.couchdb_server.replicate(self.db.name, self.db2.name)
+        self.couchdb_server.replicate(self.db2.name, self.db.name)
+        self.assertGreater(len(self.db.view('conflicts/all')), 0)
+        conflicts_resolve(self.db)
+        self.assertEqual(len(self.db.view('conflicts/all')), 0)
+        self.couchdb_server.replicate(self.db.name, self.db2.name)
+        self.couchdb_server.replicate(self.db2.name, self.db.name)
+        self.assertEqual(len(self.db.view('conflicts/all')), 0)
+        tender = self.db.get(self.tender_id)
+        self.assertEqual(len(tender['bids']), 1)
+        self.assertEqual(tender['bids'][0]["id"], bid_id)
+        self.assertEqual(tender['bids'][0]["value"]["amount"], 402)
+
+    def test_conflict_insdel21(self):
+        response = self.app.get('/tenders/{}'.format(self.tender_id))
+        self.assertEqual(response.status, '200 OK')
+        tender = response.json['data']
+        self.set_status('active.tendering')
+        response = self.app.post_json('/tenders/{}/bids'.format(self.tender_id), {'data': {'tenderers': [tender["procuringEntity"]], "value": {"amount": 401}}})
+        self.assertEqual(response.status, '201 Created')
+        bid_id_to_del = response.json['data']['id']
+        self.couchdb_server.replicate(self.db.name, self.db2.name)
+        self.couchdb_server.replicate(self.db2.name, self.db.name)
+
+        response = self.app.post_json('/tenders/{}/bids'.format(self.tender_id), {'data': {'tenderers': [tender["procuringEntity"]], "value": {"amount": 402}}})
+        self.assertEqual(response.status, '201 Created')
+        bid_id = response.json['data']['id']
+
+        response = self.app2.delete('/tenders/{}/bids/{}'.format(self.tender_id, bid_id_to_del))
+        self.assertEqual(response.status, '200 OK')
+
+        self.couchdb_server.replicate(self.db.name, self.db2.name)
+        self.couchdb_server.replicate(self.db2.name, self.db.name)
+        self.assertGreater(len(self.db.view('conflicts/all')), 0)
+        conflicts_resolve(self.db)
+        self.assertEqual(len(self.db.view('conflicts/all')), 0)
+        self.couchdb_server.replicate(self.db.name, self.db2.name)
+        self.couchdb_server.replicate(self.db2.name, self.db.name)
+        self.assertEqual(len(self.db.view('conflicts/all')), 0)
+        tender = self.db.get(self.tender_id)
+        self.assertEqual(len(tender['bids']), 1)
+        self.assertEqual(tender['bids'][0]["id"], bid_id)
+        self.assertEqual(tender['bids'][0]["value"]["amount"], 402)
+
     def test_conflict_insdel211(self):
         self.set_status('active.tendering')
         self.couchdb_server.replicate(self.db.name, self.db2.name)
@@ -244,7 +306,6 @@ class TenderConflictsTest(BaseTenderWebTest):
         self.assertEqual(len(self.db.view('conflicts/all')), 0)
         tender = self.db.get(self.tender_id)
         self.assertEqual(len(tender['bids']), 1)
-        print [i["id"] for i in tender['bids']]
         self.assertEqual(tender['bids'][0]["id"], bid_id)
         self.assertEqual(tender['bids'][0]["value"]["amount"], 401)
 
@@ -277,7 +338,6 @@ class TenderConflictsTest(BaseTenderWebTest):
         self.assertEqual(len(self.db.view('conflicts/all')), 0)
         tender = self.db.get(self.tender_id)
         self.assertEqual(len(tender['bids']), 1)
-        print [i["id"] for i in tender['bids']]
         self.assertEqual(tender['bids'][0]["id"], bid_id)
         self.assertEqual(tender['bids'][0]["value"]["amount"], 401)
 
@@ -308,7 +368,6 @@ class TenderConflictsTest(BaseTenderWebTest):
         self.assertEqual(len(self.db.view('conflicts/all')), 0)
         tender = self.db.get(self.tender_id)
         self.assertEqual(len(tender['bids']), 1)
-        print [i["id"] for i in tender['bids']]
         self.assertEqual(tender['bids'][0]["id"], bid_id)
         self.assertEqual(tender['bids'][0]["value"]["amount"], 401)
 
