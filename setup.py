@@ -20,6 +20,7 @@ requires = [
     'pyramid_exclog',
     'rfc6266',
     'pbkdf2',
+    'repoze.retry',
 ]
 test_requires = requires + [
     'webtest',

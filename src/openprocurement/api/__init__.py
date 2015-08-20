@@ -12,13 +12,14 @@ from pyramid.authorization import ACLAuthorizationPolicy as AuthorizationPolicy
 from pyramid.renderers import JSON, JSONP
 from pyramid.events import NewRequest, BeforeRender, ContextFound
 from couchdb import Server, Session
-from couchdb.http import Unauthorized, extract_credentials
+from couchdb.http import Unauthorized, extract_credentials, ResourceConflict
 from openprocurement.api.design import sync_design
 from openprocurement.api.migration import migrate_data
 from boto.s3.connection import S3Connection, Location
 from openprocurement.api.traversal import factory
 from openprocurement.api.utils import forbidden, set_journal_handler, cleanup_journal_handler, update_journal_handler_role
 from pbkdf2 import PBKDF2
+from repoze.retry import Retry
 
 try:
     from systemd.journal import JournalHandler
@@ -212,4 +213,4 @@ def main(global_config, **settings):
         if bucket_name not in [b.name for b in connection.get_all_buckets()]:
             connection.create_bucket(bucket_name, location=Location.EU)
         config.registry.bucket_name = bucket_name
-    return config.make_wsgi_app()
+    return Retry(config.make_wsgi_app(), tries=3, retryable=ResourceConflict, log_after_try_count=10)

@@ -99,6 +99,7 @@ def upload_file(request):
             "content_type": document.format,
             "data": b64encode(in_file.read())
         }
+    in_file.seek(0)
     return document
 
 
@@ -207,6 +208,8 @@ def save_tender(request):
             for i in e.message:
                 request.errors.add('body', i, e.message[i])
             request.errors.status = 422
+        except ResourceConflict:  # pragma: no cover
+            raise
         except Exception, e:  # pragma: no cover
             request.errors.add('body', 'data', str(e))
         else:
