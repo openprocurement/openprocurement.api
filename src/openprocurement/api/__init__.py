@@ -36,7 +36,7 @@ VALIDATE_DOC_UPDATE = """function(newDoc, oldDoc, userCtx){
     if(newDoc._deleted) {
         throw({forbidden: 'Not authorized to delete this document'});
     }
-    if(userCtx.roles.indexOf('_admin') !== -1 && newDoc.indexOf('_design/') === 0) {
+    if(userCtx.roles.indexOf('_admin') !== -1 && newDoc._id.indexOf('_design/') === 0) {
         return;
     }
     if(userCtx.name === '%s') {
