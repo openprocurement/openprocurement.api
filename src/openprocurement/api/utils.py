@@ -3,7 +3,6 @@ from pkg_resources import get_distribution
 from logging import getLogger
 from base64 import b64encode
 from jsonpatch import make_patch, apply_patch as _apply_patch
-#from json_tools import diff, patch
 from openprocurement.api.models import Document, Revision, Award, get_now
 from urllib import quote
 from uuid import uuid4
@@ -176,7 +175,6 @@ def tender_serialize(tender, fields):
 
 
 def get_revision_changes(dst, src):
-    #return diff(dst, src)
     return make_patch(dst, src).patch
 
 
