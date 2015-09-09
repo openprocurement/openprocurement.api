@@ -198,7 +198,7 @@ def save_tender(request):
         set_modetest_titles(tender)
     patch = get_revision_changes(tender.serialize("plain"), request.validated['tender_src'])
     if patch:
-        tender.revisions.append(Revision({'author': request.authenticated_userid, 'changes': patch}))
+        tender.revisions.append(Revision({'author': request.authenticated_userid, 'changes': patch, 'rev': tender.rev}))
         old_dateModified = tender.dateModified
         tender.dateModified = get_now()
         try:

@@ -33,7 +33,7 @@ ROUTE_PREFIX = '/api/{}'.format(VERSION)
 SECURITY = {u'admins': {u'names': [], u'roles': ['_admin']}, u'members': {u'names': [], u'roles': ['_admin']}}
 VALIDATE_DOC_ID = '_design/_auth'
 VALIDATE_DOC_UPDATE = """function(newDoc, oldDoc, userCtx){
-    if(newDoc._deleted) {
+    if(newDoc._deleted && newDoc.tenderID) {
         throw({forbidden: 'Not authorized to delete this document'});
     }
     if(userCtx.roles.indexOf('_admin') !== -1 && newDoc._id.indexOf('_design/') === 0) {

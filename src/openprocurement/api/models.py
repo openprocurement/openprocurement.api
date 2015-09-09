@@ -300,6 +300,7 @@ class Revision(Model):
     author = StringType()
     date = IsoDateTimeType(default=get_now)
     changes = ListType(DictType(BaseType), default=list())
+    rev = StringType()
 
 
 class Question(Model):
