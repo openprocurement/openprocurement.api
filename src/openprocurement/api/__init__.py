@@ -115,6 +115,21 @@ def beforerender(event):
         fix_url(event.rendering_val['data'], event['request'].application_url)
 
 
+class Server(Server):
+    _uuid = None
+
+    @property
+    def uuid(self):
+        """The uuid of the server.
+
+        :rtype: basestring
+        """
+        if self._uuid is None:
+            _, _, data = self.resource.get_json()
+            self._uuid = data['uuid']
+        return self._uuid
+
+
 def main(global_config, **settings):
     config = Configurator(
         settings=settings,

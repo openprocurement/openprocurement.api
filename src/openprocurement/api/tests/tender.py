@@ -867,6 +867,116 @@ class TenderProcessTest(BaseTenderWebTest):
         self.assertEqual(response.json['data']['status'], 'complete')
 
 
+class TenderChangesResourceTest(BaseWebTest):
+
+    def test_empty_listing(self):
+        response = self.app.get('/tenders_changes')
+        self.assertEqual(response.status, '200 OK')
+        self.assertEqual(response.content_type, 'application/json')
+        self.assertEqual(response.json['data'], [])
+        self.assertFalse('{\n    "' in response.body)
+        self.assertFalse('callback({' in response.body)
+        self.assertNotEqual(response.json['next_page']['offset'], '')
+
+        response = self.app.get('/tenders_changes?opt_jsonp=callback')
+        self.assertEqual(response.status, '200 OK')
+        self.assertEqual(response.content_type, 'application/javascript')
+        self.assertFalse('{\n    "' in response.body)
+        self.assertIn('callback({', response.body)
+
+        response = self.app.get('/tenders_changes?opt_pretty=1')
+        self.assertEqual(response.status, '200 OK')
+        self.assertEqual(response.content_type, 'application/json')
+        self.assertIn('{\n    "', response.body)
+        self.assertFalse('callback({' in response.body)
+
+        response = self.app.get('/tenders_changes?opt_jsonp=callback&opt_pretty=1')
+        self.assertEqual(response.status, '200 OK')
+        self.assertEqual(response.content_type, 'application/javascript')
+        self.assertIn('{\n    "', response.body)
+        self.assertIn('callback({', response.body)
+
+        response = self.app.get('/tenders_changes?offset=2015-01-01T00:00:00+02:00&descending=1&limit=10')
+        self.assertEqual(response.status, '200 OK')
+        self.assertEqual(response.content_type, 'application/json')
+        self.assertEqual(response.json['data'], [])
+        self.assertNotIn('descending=1', response.json['next_page']['uri'])
+        self.assertIn('limit=10', response.json['next_page']['uri'])
+
+    def test_listing(self):
+        response = self.app.get('/tenders_changes')
+        self.assertEqual(response.status, '200 OK')
+        self.assertEqual(len(response.json['data']), 0)
+
+        tenders = []
+
+        for i in range(3):
+            response = self.app.post_json('/tenders', {'data': test_tender_data})
+            self.assertEqual(response.status, '201 Created')
+            self.assertEqual(response.content_type, 'application/json')
+            tenders.append(response.json['data'])
+
+        response = self.app.get('/tenders_changes')
+        self.assertEqual(response.status, '200 OK')
+        self.assertEqual(len(response.json['data']), 3)
+        self.assertEqual(set(response.json['data'][0]), set([u'id']))
+        self.assertEqual(set([i['id'] for i in response.json['data']]), set([i['id'] for i in tenders]))
+        self.assertEqual([i['id'] for i in response.json['data']], [i['id'] for i in tenders])
+
+        response = self.app.get('/tenders_changes?limit=2')
+        self.assertEqual(response.status, '200 OK')
+        self.assertEqual(len(response.json['data']), 2)
+
+        response = self.app.get(response.json['next_page']['path'].replace(ROUTE_PREFIX, ''))
+        self.assertEqual(response.status, '200 OK')
+        self.assertEqual(len(response.json['data']), 1)
+
+        response = self.app.get(response.json['next_page']['path'].replace(ROUTE_PREFIX, ''))
+        self.assertEqual(response.status, '200 OK')
+        self.assertEqual(len(response.json['data']), 0)
+
+        response = self.app.get('/tenders_changes', params=[('opt_fields', 'dateModified,status,enquiryPeriod')])
+        self.assertEqual(response.status, '200 OK')
+        self.assertEqual(len(response.json['data']), 3)
+        self.assertEqual(set(response.json['data'][0]), set([u'id', u'dateModified', u'status', u'enquiryPeriod']))
+        self.assertIn('opt_fields=dateModified%2Cstatus%2CenquiryPeriod', response.json['next_page']['uri'])
+
+        response = self.app.get('/tenders_changes?descending=1')
+        self.assertEqual(response.status, '200 OK')
+        self.assertEqual(response.content_type, 'application/json')
+        self.assertEqual(len(response.json['data']), 3)
+        self.assertEqual(set(response.json['data'][0]), set([u'id']))
+        self.assertEqual(set([i['id'] for i in response.json['data']]), set([i['id'] for i in tenders]))
+        self.assertEqual([i['id'] for i in response.json['data']], [i['id'] for i in tenders[::-1]])
+
+        response = self.app.get('/tenders_changes?descending=1&limit=2')
+        self.assertEqual(response.status, '200 OK')
+        self.assertEqual(response.content_type, 'application/json')
+        self.assertEqual(len(response.json['data']), 2)
+
+        response = self.app.get(response.json['next_page']['path'].replace(ROUTE_PREFIX, ''))
+        self.assertEqual(response.status, '200 OK')
+        self.assertEqual(len(response.json['data']), 1)
+
+        response = self.app.get(response.json['next_page']['path'].replace(ROUTE_PREFIX, ''))
+        self.assertEqual(response.status, '200 OK')
+        self.assertEqual(len(response.json['data']), 0)
+
+        test_tender_data2 = test_tender_data.copy()
+        test_tender_data2['mode'] = 'test'
+        response = self.app.post_json('/tenders', {'data': test_tender_data2})
+        self.assertEqual(response.status, '201 Created')
+        self.assertEqual(response.content_type, 'application/json')
+
+        response = self.app.get('/tenders_changes?mode=test')
+        self.assertEqual(response.status, '200 OK')
+        self.assertEqual(len(response.json['data']), 1)
+
+        response = self.app.get('/tenders_changes?mode=_all_')
+        self.assertEqual(response.status, '200 OK')
+        self.assertEqual(len(response.json['data']), 4)
+
+
 def suite():
     suite = unittest.TestSuite()
     suite.addTest(unittest.makeSuite(TenderProcessTest))
