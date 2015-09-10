@@ -20,6 +20,7 @@ requires = [
     'pyramid_exclog',
     'rfc6266',
     'pbkdf2',
+    'pycrypto',
 ]
 test_requires = requires + [
     'webtest',
