@@ -121,7 +121,7 @@ class TenderResource(object):
         if limit:
             params['limit'] = limit
             pparams['limit'] = limit
-        limit = int(limit) if limit.isdigit() else 100
+        limit = int(limit) if limit.isdigit() and int(limit) > 0 else 100
         descending = bool(self.request.params.get('descending'))
         offset = self.request.params.get('offset', '')
         if descending:
@@ -198,7 +198,7 @@ class TenderResource(object):
                 "uri": self.request.route_url('collection_Tender', _query=params)
             }
         }
-        if offset:
+        if descending or offset:
             data['prev_page'] = {
                 "offset": pparams['offset'],
                 "path": self.request.route_path('collection_Tender', _query=pparams),

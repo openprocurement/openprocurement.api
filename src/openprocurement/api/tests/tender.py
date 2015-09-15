@@ -75,13 +75,21 @@ class TenderResourceTest(BaseWebTest):
         self.assertEqual(response.json['next_page']['offset'], '')
         self.assertNotIn('prev_page', response.json)
 
-        response = self.app.get('/tenders?feed=changes&offset=0&descending=1&limit=10')
+        response = self.app.get('/tenders?feed=changes&offset=0')
+        self.assertEqual(response.status, '200 OK')
+        self.assertEqual(response.content_type, 'application/json')
+        self.assertEqual(response.json['data'], [])
+        self.assertEqual(response.json['next_page']['offset'], '')
+        self.assertNotIn('prev_page', response.json)
+
+        response = self.app.get('/tenders?feed=changes&descending=1&limit=10')
         self.assertEqual(response.status, '200 OK')
         self.assertEqual(response.content_type, 'application/json')
         self.assertEqual(response.json['data'], [])
         self.assertIn('descending=1', response.json['next_page']['uri'])
         self.assertIn('limit=10', response.json['next_page']['uri'])
-        self.assertNotIn('prev_page', response.json)
+        self.assertNotIn('descending=1', response.json['prev_page']['uri'])
+        self.assertIn('limit=10', response.json['prev_page']['uri'])
 
     def test_listing(self):
         response = self.app.get('/tenders')
@@ -146,7 +154,7 @@ class TenderResourceTest(BaseWebTest):
 
         response = self.app.get('/tenders?descending=1&limit=2')
         self.assertEqual(response.status, '200 OK')
-        self.assertNotIn('prev_page', response.json)
+        self.assertNotIn('descending=1', response.json['prev_page']['uri'])
         self.assertEqual(len(response.json['data']), 2)
 
         response = self.app.get(response.json['next_page']['path'].replace(ROUTE_PREFIX, ''))
@@ -231,7 +239,7 @@ class TenderResourceTest(BaseWebTest):
 
         response = self.app.get('/tenders?feed=changes&descending=1&limit=2')
         self.assertEqual(response.status, '200 OK')
-        self.assertNotIn('prev_page', response.json)
+        self.assertNotIn('descending=1', response.json['prev_page']['uri'])
         self.assertEqual(len(response.json['data']), 2)
 
         response = self.app.get(response.json['next_page']['path'].replace(ROUTE_PREFIX, ''))
