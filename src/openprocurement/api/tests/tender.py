@@ -75,12 +75,13 @@ class TenderResourceTest(BaseWebTest):
         self.assertEqual(response.json['next_page']['offset'], '')
         self.assertNotIn('prev_page', response.json)
 
-        response = self.app.get('/tenders?feed=changes&offset=0')
-        self.assertEqual(response.status, '200 OK')
+        response = self.app.get('/tenders?feed=changes&offset=0', status=404)
+        self.assertEqual(response.status, '404 Not Found')
         self.assertEqual(response.content_type, 'application/json')
-        self.assertEqual(response.json['data'], [])
-        self.assertEqual(response.json['next_page']['offset'], '')
-        self.assertNotIn('prev_page', response.json)
+        self.assertEqual(response.json['status'], 'error')
+        self.assertEqual(response.json['errors'], [
+            {u'description': u'Offset expired/invalid', u'location': u'params', u'name': u'offset'}
+        ])
 
         response = self.app.get('/tenders?feed=changes&descending=1&limit=10')
         self.assertEqual(response.status, '200 OK')

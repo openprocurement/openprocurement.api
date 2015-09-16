@@ -145,7 +145,9 @@ class TenderResource(object):
                 if view_offset and view_offset.isdigit():
                     view_offset = int(view_offset)
                 else:
-                    offset = ''
+                    self.request.errors.add('params', 'offset', 'Offset expired/invalid')
+                    self.request.errors.status = 404
+                    return
             if not offset:
                 view_offset = 'now' if descending else 0
         else:
