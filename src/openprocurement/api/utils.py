@@ -198,7 +198,7 @@ def save_tender(request):
         set_modetest_titles(tender)
     patch = get_revision_changes(tender.serialize("plain"), request.validated['tender_src'])
     if patch:
-        tender.revisions.append(Revision({'author': request.authenticated_userid, 'changes': patch}))
+        tender.revisions.append(Revision({'author': request.authenticated_userid, 'changes': patch, 'rev': tender.rev}))
         old_dateModified = tender.dateModified
         tender.dateModified = get_now()
         try:
@@ -210,6 +210,7 @@ def save_tender(request):
         except Exception, e:  # pragma: no cover
             request.errors.add('body', 'data', str(e))
         else:
+            update_journal_handler_params({'TENDER_REV': tender.rev})
             LOGGER.info('Saved tender {}: dateModified {} -> {}'.format(tender.id, old_dateModified and old_dateModified.isoformat(), tender.dateModified.isoformat()), extra={'MESSAGE_ID': 'save_tender'})
             return True
 
@@ -258,6 +259,7 @@ def error_handler(errors):
                 for x, j in errors.request.matchdict.items():
                     i._extra[x.upper()] = j
             if 'tender' in errors.request.validated:
+                i._extra['TENDER_REV'] = errors.request.validated['tender'].rev
                 i._extra['TENDERID'] = errors.request.validated['tender'].tenderID
                 i._extra['TENDER_STATUS'] = errors.request.validated['tender'].status
     LOGGER.info('Error on processing request "{}"'.format(dumps(errors, indent=4)), extra={'MESSAGE_ID': 'error_handler'})
@@ -311,6 +313,7 @@ def update_journal_handler_role(event):
                 for x, j in request.matchdict.items():
                     i._extra[x.upper()] = j
             if 'tender' in request.validated:
+                i._extra['TENDER_REV'] = request.validated['tender'].rev
                 i._extra['TENDERID'] = request.validated['tender'].tenderID
                 i._extra['TENDER_STATUS'] = request.validated['tender'].status
 

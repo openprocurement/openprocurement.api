@@ -20,6 +20,7 @@ requires = [
     'pyramid_exclog',
     'rfc6266',
     'pbkdf2',
+    'pycrypto',
 ]
 test_requires = requires + [
     'webtest',
@@ -32,7 +33,7 @@ main = openprocurement.api:main
 """
 
 setup(name='openprocurement.api',
-      version='0.8.3',
+      version='0.8.4',
       description='openprocurement.api',
       long_description=README,
       classifiers=[

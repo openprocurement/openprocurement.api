@@ -33,10 +33,10 @@ ROUTE_PREFIX = '/api/{}'.format(VERSION)
 SECURITY = {u'admins': {u'names': [], u'roles': ['_admin']}, u'members': {u'names': [], u'roles': ['_admin']}}
 VALIDATE_DOC_ID = '_design/_auth'
 VALIDATE_DOC_UPDATE = """function(newDoc, oldDoc, userCtx){
-    if(newDoc._deleted) {
+    if(newDoc._deleted && newDoc.tenderID) {
         throw({forbidden: 'Not authorized to delete this document'});
     }
-    if(userCtx.roles.indexOf('_admin') !== -1 && newDoc.indexOf('_design/') === 0) {
+    if(userCtx.roles.indexOf('_admin') !== -1 && newDoc._id.indexOf('_design/') === 0) {
         return;
     }
     if(userCtx.name === '%s') {
@@ -113,6 +113,21 @@ def fix_url(item, app_url):
 def beforerender(event):
     if event.rendering_val and 'data' in event.rendering_val:
         fix_url(event.rendering_val['data'], event['request'].application_url)
+
+
+class Server(Server):
+    _uuid = None
+
+    @property
+    def uuid(self):
+        """The uuid of the server.
+
+        :rtype: basestring
+        """
+        if self._uuid is None:
+            _, _, data = self.resource.get_json()
+            self._uuid = data['uuid']
+        return self._uuid
 
 
 def main(global_config, **settings):
