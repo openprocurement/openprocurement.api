@@ -26,7 +26,8 @@ test_tender_data = {
         },
         "contactPoint": {
             "name": u"Державне управління справами",
-            "telephone": u"0440000000"
+            "telephone": u"0440000000",
+            "faxNumber": u"0440000000"
         }
     },
     "value": {

@@ -86,7 +86,7 @@ class Period(Model):
     class Options:
         serialize_when_none = False
 
-    startDate = IsoDateTimeType()  # The state date for the period.
+    startDate = IsoDateTimeType()  # The start date for the period.
     endDate = IsoDateTimeType()  # The end date for the period.
 
     def validate_startDate(self, data, value):
@@ -591,9 +591,17 @@ class Tender(SchematicsDocument, Model):
             if not all([i.value.valueAddedTaxIncluded == data.get('value').valueAddedTaxIncluded for i in bids]):
                 raise ValidationError(u"valueAddedTaxIncluded of bid should be identical to valueAddedTaxIncluded of value of tender")
 
+    def validate_enquiryPeriod(self, data, period):
+        if Tender.is_obj_fully_setup(data):
+            if not period.startDate:
+                raise ValidationError({u'startDate': [u'This field cannot be deleted']})
+
     def validate_tenderPeriod(self, data, period):
         if period and period.startDate and data.get('enquiryPeriod') and data.get('enquiryPeriod').endDate and period.startDate < data.get('enquiryPeriod').endDate:
             raise ValidationError(u"period should begin after enquiryPeriod")
+        if Tender.is_obj_fully_setup(data):
+            if not period.startDate:
+                raise ValidationError({u'startDate': [u'This field cannot be deleted']})
 
     def validate_auctionPeriod(self, data, period):
         if period and period.startDate and data.get('tenderPeriod') and data.get('tenderPeriod').endDate and period.startDate < data.get('tenderPeriod').endDate:
@@ -604,3 +612,18 @@ class Tender(SchematicsDocument, Model):
             raise ValidationError(u"period should begin after auctionPeriod")
         if period and period.startDate and data.get('tenderPeriod') and data.get('tenderPeriod').endDate and period.startDate < data.get('tenderPeriod').endDate:
             raise ValidationError(u"period should begin after tenderPeriod")
+
+    @staticmethod
+    def is_obj_fully_setup(obj):
+        if isinstance(obj, dict):
+            try:
+                return bool(obj["revisions"])
+            except KeyError as e:
+                raise KeyError(u"Object has no key 'revisions'")
+        else:
+            raise TypeError(u"'%s' object is not compatible with class dict" % obj.__class__.__name__)
+        # XXX: Temporary solution
+        # This will work with completely new tenders
+        # and break with tenders that are marked as "planning",
+        # because those tenders may have revision history even though
+        # they are not fully setup.
