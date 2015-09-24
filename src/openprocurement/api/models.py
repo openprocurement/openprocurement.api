@@ -159,6 +159,7 @@ class Item(Model):
     class Options:
         serialize_when_none = False
 
+    id = StringType(required=True, min_length=1, default=lambda: uuid4().hex)
     description = StringType(required=True)  # A description of the goods, services to be provided.
     description_en = StringType()
     description_ru = StringType()
@@ -250,6 +251,14 @@ class Organization(Model):
     contactPoint = ModelType(ContactPoint, required=True)
 
 
+class Parameter(Model):
+    class Options:
+        serialize_when_none = False
+
+    code = StringType(required=True)
+    value = FloatType(required=True)
+
+
 view_bid_role = (blacklist('owner_token', 'owner') + schematics_default_role)
 
 
@@ -278,6 +287,7 @@ class Bid(Model):
         return dict([('{}_{}'.format(self.owner, self.owner_token), 'bid_owner')])
 
     tenderers = ListType(ModelType(Organization), required=True, min_size=1, max_size=1)
+    parameters = ListType(ModelType(Parameter), default=list())
     date = IsoDateTimeType(default=get_now)
     id = MD5Type(required=True, default=lambda: uuid4().hex)
     status = StringType(choices=['registration', 'validBid', 'invalidBid'])
@@ -426,6 +436,32 @@ class Award(Model):
     complaintPeriod = ModelType(Period)
 
 
+class FeatureValue(Model):
+    class Options:
+        serialize_when_none = False
+
+    value = FloatType(required=True)
+    title = StringType(required=True)
+    title_en = StringType()
+    title_ru = StringType()
+
+
+class Feature(Model):
+    class Options:
+        serialize_when_none = False
+
+    code = StringType(required=True, min_length=1, default=lambda: uuid4().hex)
+    featureOf = StringType(required=True, choices=['tenderer', 'item'], default='tenderer')
+    relatedItem = StringType()
+    title = StringType(required=True)
+    title_en = StringType()
+    title_ru = StringType()
+    description = StringType()
+    description_en = StringType()
+    description_ru = StringType()
+    enum = ListType(ModelType(FeatureValue), default=list())
+
+
 def validate_cpv_group(items, *args):
     if items and len(set([i.classification.id[:3] for i in items])) != 1:
         raise ValidationError(u"CPV group of items be identical")
@@ -524,6 +560,7 @@ class Tender(SchematicsDocument, Model):
     auctionUrl = URLType()
     mode = StringType(choices=['test'])
     cancellations = ListType(ModelType(Cancellation), default=list())
+    features = ListType(ModelType(Feature), default=list())
 
     _attachments = DictType(DictType(BaseType), default=dict())  # couchdb attachments
     dateModified = IsoDateTimeType()
