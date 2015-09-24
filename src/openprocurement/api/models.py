@@ -268,8 +268,8 @@ class Bid(Model):
         roles = {
             'embedded': view_bid_role,
             'view': view_bid_role,
-            'create': whitelist('value', 'tenderers'),
-            'edit': whitelist('value', 'tenderers'),
+            'create': whitelist('value', 'tenderers', 'parameters'),
+            'edit': whitelist('value', 'tenderers', 'parameters'),
             'auction_view': whitelist('value', 'id', 'date', 'participationUrl'),
             'auction_post': whitelist('value', 'id', 'date'),
             'auction_patch': whitelist('id', 'participationUrl'),
