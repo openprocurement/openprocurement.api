@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 import unittest
 
-from openprocurement.api.tests.base import BaseTenderWebTest, test_tender_data
+from openprocurement.api.tests.base import BaseTenderWebTest
 
 
 class TenderCancellationResourceTest(BaseTenderWebTest):

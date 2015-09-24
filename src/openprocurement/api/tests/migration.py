@@ -569,6 +569,8 @@ class MigrateTest(BaseWebTest):
         item = self.db.get(_id)
         migrate_data(self.db, 17)
         migrated_item = self.db.get(_id)
+        for i in item['awards']:
+            self.assertNotIn('complaintPeriod', i)
         for i in migrated_item['awards']:
             self.assertIn('complaintPeriod', i)
 

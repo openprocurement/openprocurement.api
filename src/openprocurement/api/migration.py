@@ -561,6 +561,7 @@ def from15to16(db):
             doc['dateModified'] = get_now().isoformat()
             db.save(doc)
 
+
 def from16to17(db):
     results = db.view('tenders/all', include_docs=True)
     for i in results:

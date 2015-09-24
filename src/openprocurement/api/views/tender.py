@@ -1,8 +1,6 @@
 # -*- coding: utf-8 -*-
-from datetime import timedelta
 from logging import getLogger
 from cornice.resource import resource, view
-from iso8601 import parse_date
 from binascii import hexlify, unhexlify
 from Crypto.Cipher import AES
 from openprocurement.api.design import (
@@ -192,7 +190,7 @@ class TenderResource(object):
         else:
             params['offset'] = offset
             pparams['offset'] = offset
-        data =  {
+        data = {
             'data': results,
             'next_page': {
                 "offset": params['offset'],
