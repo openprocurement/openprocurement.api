@@ -3,6 +3,92 @@ import unittest
 
 from openprocurement.api.tests.base import BaseTenderWebTest, test_tender_data
 
+test_features_tender_data = test_tender_data.copy()
+test_features_tender_data['items'][0]['id'] = "1"
+test_features_tender_data["features"] = [
+    {
+        "code": "OCDS-123454-AIR-INTAKE",
+        "featureOf": "item",
+        "relatedItem": "1",
+        "title": u"Потужність всмоктування",
+        "title_en": "Air Intake",
+        "description": u"Ефективна потужність всмоктування пилососа, в ватах (аероватах)",
+        "enum": [
+            {
+                "value": 0.1,
+                "title": u"До 1000 Вт"
+            },
+            {
+                "value": 0.15,
+                "title": u"Більше 1000 Вт"
+            }
+        ]
+    },
+    {
+        "code": "OCDS-123454-YEARS",
+        "featureOf": "tenderer",
+        "title": u"Років на ринку",
+        "title_en": "Years trading",
+        "description": u"Кількість років, які організація учасник працює на ринку",
+        "enum": [
+            {
+                "value": 0.05,
+                "title": u"До 3 років"
+            },
+            {
+                "value": 0.1,
+                "title": u"Більше 3 років, менше 5 років"
+            },
+            {
+                "value": 0.15,
+                "title": u"Більше 5 років"
+            }
+        ]
+    }
+]
+test_features_bids = [
+    {
+        "parameters": [
+            {
+                "code": "OCDS-123454-AIR-INTAKE",
+                "value": 0.1,
+            },
+            {
+                "code": "OCDS-123454-YEARS",
+                "value": 0.1,
+            }
+        ],
+        "tenderers": [
+            test_tender_data["procuringEntity"]
+        ],
+        "value": {
+            "amount": 469,
+            "currency": "UAH",
+            "valueAddedTaxIncluded": True
+        }
+    },
+    {
+        "parameters": [
+            {
+                "code": "OCDS-123454-AIR-INTAKE",
+                "value": 0.15,
+            },
+            {
+                "code": "OCDS-123454-YEARS",
+                "value": 0.15,
+            }
+        ],
+        "tenderers": [
+            test_tender_data["procuringEntity"]
+        ],
+        "value": {
+            "amount": 479,
+            "currency": "UAH",
+            "valueAddedTaxIncluded": True
+        }
+    }
+]
+
 
 class TenderBidderResourceTest(BaseTenderWebTest):
     initial_status = 'active.tendering'
@@ -316,6 +402,24 @@ class TenderBidderResourceTest(BaseTenderWebTest):
             {u'description': u'Not Found', u'location':
                 u'url', u'name': u'tender_id'}
         ])
+
+
+class TenderBidderFeaturesResourceTest(BaseTenderWebTest):
+    initial_data = test_features_tender_data
+    initial_status = 'active.tendering'
+    initial_bids = test_features_bids
+
+    def test_features_bidder(self):
+        for i, j in zip(self.initial_bids, test_features_bids):
+            bid = i.copy()
+            bid.pop(u'date')
+            bid.pop(u'id')
+            self.assertEqual(bid, j)
+        #self.assertEqual(response.content_type, 'application/json')
+        #response = self.app.post_json('/tenders/{}/bids'.format(
+            #self.tender_id), {'data': {'tenderers': [test_tender_data["procuringEntity"]], "value": {"amount": 500}}})
+        #bid = response.json['data']
+        #bid_id = bid['id']
 
 
 class TenderBidderDocumentResourceTest(BaseTenderWebTest):

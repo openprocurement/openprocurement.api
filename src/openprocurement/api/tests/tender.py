@@ -543,49 +543,52 @@ class TenderResourceTest(BaseWebTest):
     def test_tender_features(self):
         data = test_tender_data.copy()
         data['items'][0]['id'] = "1"
-        data.update({
-            "features": [
-                {
-                    "featureOf": "item",
-                    "relatedItem": "1",
-                    "title": "Потужність всмоктування",
-                    "title_en": "Air Intake",
-                    "description": "Ефективна потужність всмоктування пилососа, в ватах (аероватах)",
-                    "enum": [
-                        {
-                            "value": 0.1,
-                            "title": "До 1000 Вт"
-                        },
-                        {
-                            "value": 0.15,
-                            "title": "Більше 1000 Вт"
-                        }
-                    ]
-                },
-                {
-                    "featureOf": "tenderer",
-                    "title": "Років на ринку",
-                    "title_en": "Years trading",
-                    "description": "Кількість років, які організація учасник працює на ринку",
-                    "enum": [
-                        {
-                            "value": 0.05,
-                            "title": "До 3 років"
-                        },
-                        {
-                            "value": 0.1,
-                            "title": "Більше 3 років, менше 5 років"
-                        },
-                        {
-                            "value": 0.15,
-                            "title": "Більше 5 років"
-                        }
-                    ]
-                }
-            ]
-        })
+        data['features'] = [
+            {
+                "code": "OCDS-123454-AIR-INTAKE",
+                "featureOf": "item",
+                "relatedItem": "1",
+                "title": u"Потужність всмоктування",
+                "title_en": u"Air Intake",
+                "description": u"Ефективна потужність всмоктування пилососа, в ватах (аероватах)",
+                "enum": [
+                    {
+                        "value": 0.1,
+                        "title": u"До 1000 Вт"
+                    },
+                    {
+                        "value": 0.15,
+                        "title": u"Більше 1000 Вт"
+                    }
+                ]
+            },
+            {
+                "code": "OCDS-123454-YEARS",
+                "featureOf": "tenderer",
+                "title": u"Років на ринку",
+                "title_en": u"Years trading",
+                "description": u"Кількість років, які організація учасник працює на ринку",
+                "enum": [
+                    {
+                        "value": 0.05,
+                        "title": u"До 3 років"
+                    },
+                    {
+                        "value": 0.1,
+                        "title": u"Більше 3 років, менше 5 років"
+                    },
+                    {
+                        "value": 0.15,
+                        "title": u"Більше 5 років"
+                    }
+                ]
+            }
+        ]
         response = self.app.post_json('/tenders', {'data': data})
         self.assertEqual(response.status, '201 Created')
+        self.assertEqual(response.content_type, 'application/json')
+        tender = response.json['data']
+        self.assertEqual(tender['features'], data['features'])
 
     def test_patch_tender(self):
         response = self.app.get('/tenders')
