@@ -541,9 +541,8 @@ class TenderResourceTest(BaseWebTest):
         self.assertIn('{\n    "data": {\n        "', response.body)
 
     def test_tender_features(self):
-        data = test_tender_data.copy()
-        data['items'][0]['id'] = "1"
-        data['features'] = [
+        test_tender_data['items'][0]['id'] = "1"
+        test_tender_data['features'] = [
             {
                 "code": "OCDS-123454-AIR-INTAKE",
                 "featureOf": "item",
@@ -584,11 +583,13 @@ class TenderResourceTest(BaseWebTest):
                 ]
             }
         ]
-        response = self.app.post_json('/tenders', {'data': data})
+        response = self.app.post_json('/tenders', {'data': test_tender_data})
+        test_tender_data['items'][0].pop('id')
         self.assertEqual(response.status, '201 Created')
         self.assertEqual(response.content_type, 'application/json')
         tender = response.json['data']
-        self.assertEqual(tender['features'], data['features'])
+        self.assertEqual(tender['features'], test_tender_data['features'])
+        test_tender_data.pop('features')
 
     def test_patch_tender(self):
         response = self.app.get('/tenders')
