@@ -4,7 +4,9 @@ import unittest
 from openprocurement.api.tests.base import BaseTenderWebTest, test_tender_data
 
 test_features_tender_data = test_tender_data.copy()
-test_features_tender_data['items'][0]['id'] = "1"
+test_features_item = test_features_tender_data['items'][0].copy()
+test_features_item['id'] = "1"
+test_features_tender_data['items'] = [test_features_item]
 test_features_tender_data["features"] = [
     {
         "code": "OCDS-123454-AIR-INTAKE",
