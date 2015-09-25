@@ -23,3 +23,4 @@ areas that were not covered by it.
    contract
    util
    cancellation
+   feature
