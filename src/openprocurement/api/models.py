@@ -262,7 +262,7 @@ class Parameter(Model):
 def validate_parameters_uniq(parameters, *args):
     if parameters:
         codes = [i.code for i in parameters]
-        if [i for i in codes if parameters.count(i)]:
+        if [i for i in set(codes) if codes.count(i) > 1]:
             raise ValidationError(u"Parameter code should be uniq for all parameters")
 
 
@@ -476,6 +476,13 @@ class Feature(Model):
             raise ValidationError(u'This field is required.')
 
 
+def validate_features_uniq(features, *args):
+    if features:
+        codes = [i.code for i in features]
+        if [i for i in set(codes) if codes.count(i) > 1]:
+            raise ValidationError(u"Feature code should be uniq for all features")
+
+
 def validate_features_max_value(features, *args):
     if features and sum([max([j.value for j in i.enum]) for i in features]) > 0.3:
         raise ValidationError(u"Sum of max value of all features should be less then or equal to 30%")
@@ -579,7 +586,7 @@ class Tender(SchematicsDocument, Model):
     auctionUrl = URLType()
     mode = StringType(choices=['test'])
     cancellations = ListType(ModelType(Cancellation), default=list())
-    features = ListType(ModelType(Feature), default=list(), validators=[validate_features_max_value])
+    features = ListType(ModelType(Feature), default=list(), validators=[validate_features_uniq, validate_features_max_value])
 
     _attachments = DictType(DictType(BaseType), default=dict())  # couchdb attachments
     dateModified = IsoDateTimeType()
