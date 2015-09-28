@@ -52,4 +52,9 @@ Schema
     :title:
         string, multilingual, required
 
-        Title of the feature.
+        Title of the value.
+
+    :description:
+        string, multilingual
+
+        Description of the value.

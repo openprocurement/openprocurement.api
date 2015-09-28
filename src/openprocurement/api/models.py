@@ -444,6 +444,9 @@ class FeatureValue(Model):
     title = StringType(required=True)
     title_en = StringType()
     title_ru = StringType()
+    description = StringType()
+    description_en = StringType()
+    description_ru = StringType()
 
 
 class Feature(Model):
