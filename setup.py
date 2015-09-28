@@ -11,7 +11,6 @@ requires = [
     'cornice',
     'chaussette',
     'gevent',
-    'couchdb',
     'couchdb-schematics',
     'sphinxcontrib-httpdomain',
     'jsonpatch',

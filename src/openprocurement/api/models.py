@@ -440,7 +440,7 @@ class FeatureValue(Model):
     class Options:
         serialize_when_none = False
 
-    value = FloatType(required=True)
+    value = FloatType(required=True, min_value=0.0, max_value=0.3)
     title = StringType(required=True)
     title_en = StringType()
     title_ru = StringType()
@@ -455,14 +455,23 @@ class Feature(Model):
 
     code = StringType(required=True, min_length=1, default=lambda: uuid4().hex)
     featureOf = StringType(required=True, choices=['tenderer', 'item'], default='tenderer')
-    relatedItem = StringType()
+    relatedItem = StringType(min_length=1)
     title = StringType(required=True)
     title_en = StringType()
     title_ru = StringType()
     description = StringType()
     description_en = StringType()
     description_ru = StringType()
-    enum = ListType(ModelType(FeatureValue), default=list())
+    enum = ListType(ModelType(FeatureValue), default=list(), min_size=1)
+
+    def validate_relatedItem(self, data, relatedItem):
+        if not relatedItem and data.get('featureOf') == 'item':
+            raise ValidationError(u'This field is required.')
+
+
+def validate_features_max_value(features, *args):
+    if features and sum([max([j.value for j in i.enum]) for i in features]) > 0.3:
+        raise ValidationError(u"Sum of max value of all features should be less then or equal to 30%")
 
 
 def validate_cpv_group(items, *args):
@@ -563,7 +572,7 @@ class Tender(SchematicsDocument, Model):
     auctionUrl = URLType()
     mode = StringType(choices=['test'])
     cancellations = ListType(ModelType(Cancellation), default=list())
-    features = ListType(ModelType(Feature), default=list())
+    features = ListType(ModelType(Feature), default=list(), validators=[validate_features_max_value])
 
     _attachments = DictType(DictType(BaseType), default=dict())  # couchdb attachments
     dateModified = IsoDateTimeType()
@@ -644,3 +653,7 @@ class Tender(SchematicsDocument, Model):
             raise ValidationError(u"period should begin after auctionPeriod")
         if period and period.startDate and data.get('tenderPeriod') and data.get('tenderPeriod').endDate and period.startDate < data.get('tenderPeriod').endDate:
             raise ValidationError(u"period should begin after tenderPeriod")
+
+    def validate_features(self, data, features):
+        if features and not set([i.relatedItem for i in features if i.relatedItem]).issubset(set([i.id for i in data['items']])):
+            raise ValidationError(u"relatedItem should be one of items")
