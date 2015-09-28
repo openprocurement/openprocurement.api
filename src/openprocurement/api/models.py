@@ -259,6 +259,13 @@ class Parameter(Model):
     value = FloatType(required=True)
 
 
+def validate_parameters_uniq(parameters, *args):
+    if parameters:
+        codes = [i.code for i in parameters]
+        if [i for i in codes if parameters.count(i)]:
+            raise ValidationError(u"Parameter code should be uniq for all parameters")
+
+
 view_bid_role = (blacklist('owner_token', 'owner') + schematics_default_role)
 
 
@@ -287,7 +294,7 @@ class Bid(Model):
         return dict([('{}_{}'.format(self.owner, self.owner_token), 'bid_owner')])
 
     tenderers = ListType(ModelType(Organization), required=True, min_size=1, max_size=1)
-    parameters = ListType(ModelType(Parameter), default=list())
+    parameters = ListType(ModelType(Parameter), default=list(), validators=[validate_parameters_uniq])
     date = IsoDateTimeType(default=get_now)
     id = MD5Type(required=True, default=lambda: uuid4().hex)
     status = StringType(choices=['registration', 'validBid', 'invalidBid'])
@@ -639,6 +646,11 @@ class Tender(SchematicsDocument, Model):
                 raise ValidationError(u"currency of bid should be identical to currency of value of tender")
             if not all([i.value.valueAddedTaxIncluded == data.get('value').valueAddedTaxIncluded for i in bids]):
                 raise ValidationError(u"valueAddedTaxIncluded of bid should be identical to valueAddedTaxIncluded of value of tender")
+        if bids and data.get('features'):
+            codes = [i.code for i in data.get('features')]
+            for bid in bids:
+                if set([i['code'] for i in bid.parameters]) != set(codes):
+                    raise ValidationError(u"All features parameters is required.")
 
     def validate_tenderPeriod(self, data, period):
         if period and period.startDate and data.get('enquiryPeriod') and data.get('enquiryPeriod').endDate and period.startDate < data.get('enquiryPeriod').endDate:
