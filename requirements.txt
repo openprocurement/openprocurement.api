@@ -43,6 +43,6 @@ venusian==1.0
 waitress==0.8.9
 zope.deprecation==4.1.1
 zope.interface==4.1.1
-https://github.com/openprocurement/barbecue.git
-https://github.com/openprocurement/python-json-patch.git
-https://github.com/openprocurement/rfc6266.git
+git+https://github.com/openprocurement/barbecue.git
+git+https://github.com/openprocurement/python-json-patch.git
+git+https://github.com/openprocurement/rfc6266.git
