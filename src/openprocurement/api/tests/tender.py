@@ -439,7 +439,7 @@ class TenderResourceTest(BaseWebTest):
         self.assertEqual(response.content_type, 'application/json')
         self.assertEqual(response.json['status'], 'error')
         self.assertEqual(response.json['errors'], [
-            {u'description': [u'additionalClassifications'], u'location': u'body', u'name': u'items'}
+            {u'description': [{u'additionalClassifications': [u"One of additional classifications should be '\u0414\u041a\u041f\u041f'"]}], u'location': u'body', u'name': u'items'}
         ])
 
         data = test_tender_data["procuringEntity"]["contactPoint"]["telephone"]
