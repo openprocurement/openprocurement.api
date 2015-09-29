@@ -655,10 +655,12 @@ class Tender(SchematicsDocument, Model):
             if not all([i.value.valueAddedTaxIncluded == data.get('value').valueAddedTaxIncluded for i in bids]):
                 raise ValidationError(u"valueAddedTaxIncluded of bid should be identical to valueAddedTaxIncluded of value of tender")
         if bids and data.get('features'):
-            codes = [i.code for i in data.get('features')]
+            codes = dict([(i.code, [x.value for x in i.enum]) for i in data.get('features')])
             for bid in bids:
                 if set([i['code'] for i in bid.parameters]) != set(codes):
                     raise ValidationError(u"All features parameters is required.")
+                if [i for i in bid.parameters if i.value not in codes[i.code]]:
+                    raise ValidationError(u"Parameter value should be one of feature values.")
 
     def validate_tenderPeriod(self, data, period):
         if period and period.startDate and data.get('enquiryPeriod') and data.get('enquiryPeriod').endDate and period.startDate < data.get('enquiryPeriod').endDate:

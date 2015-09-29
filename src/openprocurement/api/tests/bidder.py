@@ -409,19 +409,69 @@ class TenderBidderResourceTest(BaseTenderWebTest):
 class TenderBidderFeaturesResourceTest(BaseTenderWebTest):
     initial_data = test_features_tender_data
     initial_status = 'active.tendering'
-    initial_bids = test_features_bids
+    #initial_bids = test_features_bids
 
     def test_features_bidder(self):
-        for i, j in zip(self.initial_bids, test_features_bids):
-            bid = i.copy()
+        for i in test_features_bids:
+            response = self.app.post_json('/tenders/{}/bids'.format(self.tender_id), {'data': i})
+            self.assertEqual(response.status, '201 Created')
+            self.assertEqual(response.content_type, 'application/json')
+            bid = response.json['data']
             bid.pop(u'date')
             bid.pop(u'id')
-            self.assertEqual(bid, j)
-        #self.assertEqual(response.content_type, 'application/json')
-        #response = self.app.post_json('/tenders/{}/bids'.format(
-            #self.tender_id), {'data': {'tenderers': [test_tender_data["procuringEntity"]], "value": {"amount": 500}}})
-        #bid = response.json['data']
-        #bid_id = bid['id']
+            self.assertEqual(bid, i)
+
+    def test_features_bidder_invalid(self):
+        data = {
+            "tenderers": [
+                test_tender_data["procuringEntity"]
+            ],
+            "value": {
+                "amount": 469,
+                "currency": "UAH",
+                "valueAddedTaxIncluded": True
+            }
+        }
+        response = self.app.post_json('/tenders/{}/bids'.format(self.tender_id), {'data': data}, status=422)
+        self.assertEqual(response.status, '422 Unprocessable Entity')
+        self.assertEqual(response.content_type, 'application/json')
+        self.assertEqual(response.json['status'], 'error')
+        self.assertEqual(response.json['errors'], [
+            {u'description': [u'All features parameters is required.'], u'location': u'body', u'name': u'bids'}
+        ])
+        data["parameters"] = [
+            {
+                "code": "OCDS-123454-AIR-INTAKE",
+                "value": 0.1,
+            }
+        ]
+        response = self.app.post_json('/tenders/{}/bids'.format(self.tender_id), {'data': data}, status=422)
+        self.assertEqual(response.status, '422 Unprocessable Entity')
+        self.assertEqual(response.content_type, 'application/json')
+        self.assertEqual(response.json['status'], 'error')
+        self.assertEqual(response.json['errors'], [
+            {u'description': [u'All features parameters is required.'], u'location': u'body', u'name': u'bids'}
+        ])
+        data["parameters"].append({
+            "code": "OCDS-123454-AIR-INTAKE",
+            "value": 0.1,
+        })
+        response = self.app.post_json('/tenders/{}/bids'.format(self.tender_id), {'data': data}, status=422)
+        self.assertEqual(response.status, '422 Unprocessable Entity')
+        self.assertEqual(response.content_type, 'application/json')
+        self.assertEqual(response.json['status'], 'error')
+        self.assertEqual(response.json['errors'], [
+            {u'description': [u'Parameter code should be uniq for all parameters'], u'location': u'body', u'name': u'parameters'}
+        ])
+        data["parameters"][1]["code"] = "OCDS-123454-YEARS"
+        data["parameters"][1]["value"] = 0.2
+        response = self.app.post_json('/tenders/{}/bids'.format(self.tender_id), {'data': data}, status=422)
+        self.assertEqual(response.status, '422 Unprocessable Entity')
+        self.assertEqual(response.content_type, 'application/json')
+        self.assertEqual(response.json['status'], 'error')
+        self.assertEqual(response.json['errors'], [
+            {u'description': [u'Parameter value should be one of feature values.'], u'location': u'body', u'name': u'bids'}
+        ])
 
 
 class TenderBidderDocumentResourceTest(BaseTenderWebTest):
