@@ -1,95 +1,7 @@
 # -*- coding: utf-8 -*-
 import unittest
 
-from openprocurement.api.tests.base import BaseTenderWebTest, test_tender_data
-
-test_features_tender_data = test_tender_data.copy()
-test_features_item = test_features_tender_data['items'][0].copy()
-test_features_item['id'] = "1"
-test_features_tender_data['items'] = [test_features_item]
-test_features_tender_data["features"] = [
-    {
-        "code": "OCDS-123454-AIR-INTAKE",
-        "featureOf": "item",
-        "relatedItem": "1",
-        "title": u"Потужність всмоктування",
-        "title_en": "Air Intake",
-        "description": u"Ефективна потужність всмоктування пилососа, в ватах (аероватах)",
-        "enum": [
-            {
-                "value": 0.1,
-                "title": u"До 1000 Вт"
-            },
-            {
-                "value": 0.15,
-                "title": u"Більше 1000 Вт"
-            }
-        ]
-    },
-    {
-        "code": "OCDS-123454-YEARS",
-        "featureOf": "tenderer",
-        "title": u"Років на ринку",
-        "title_en": "Years trading",
-        "description": u"Кількість років, які організація учасник працює на ринку",
-        "enum": [
-            {
-                "value": 0.05,
-                "title": u"До 3 років"
-            },
-            {
-                "value": 0.1,
-                "title": u"Більше 3 років, менше 5 років"
-            },
-            {
-                "value": 0.15,
-                "title": u"Більше 5 років"
-            }
-        ]
-    }
-]
-test_features_bids = [
-    {
-        "parameters": [
-            {
-                "code": "OCDS-123454-AIR-INTAKE",
-                "value": 0.1,
-            },
-            {
-                "code": "OCDS-123454-YEARS",
-                "value": 0.1,
-            }
-        ],
-        "tenderers": [
-            test_tender_data["procuringEntity"]
-        ],
-        "value": {
-            "amount": 469,
-            "currency": "UAH",
-            "valueAddedTaxIncluded": True
-        }
-    },
-    {
-        "parameters": [
-            {
-                "code": "OCDS-123454-AIR-INTAKE",
-                "value": 0.15,
-            },
-            {
-                "code": "OCDS-123454-YEARS",
-                "value": 0.15,
-            }
-        ],
-        "tenderers": [
-            test_tender_data["procuringEntity"]
-        ],
-        "value": {
-            "amount": 479,
-            "currency": "UAH",
-            "valueAddedTaxIncluded": True
-        }
-    }
-]
+from openprocurement.api.tests.base import BaseTenderWebTest, test_tender_data, test_features_tender_data
 
 
 class TenderBidderResourceTest(BaseTenderWebTest):
@@ -409,9 +321,44 @@ class TenderBidderResourceTest(BaseTenderWebTest):
 class TenderBidderFeaturesResourceTest(BaseTenderWebTest):
     initial_data = test_features_tender_data
     initial_status = 'active.tendering'
-    #initial_bids = test_features_bids
 
     def test_features_bidder(self):
+        test_features_bids = [
+            {
+                "parameters": [
+                    {
+                        "code": i["code"],
+                        "value": 0.1,
+                    }
+                    for i in self.initial_data['features']
+                ],
+                "tenderers": [
+                    test_tender_data["procuringEntity"]
+                ],
+                "value": {
+                    "amount": 469,
+                    "currency": "UAH",
+                    "valueAddedTaxIncluded": True
+                }
+            },
+            {
+                "parameters": [
+                    {
+                        "code": i["code"],
+                        "value": 0.15,
+                    }
+                    for i in self.initial_data['features']
+                ],
+                "tenderers": [
+                    test_tender_data["procuringEntity"]
+                ],
+                "value": {
+                    "amount": 479,
+                    "currency": "UAH",
+                    "valueAddedTaxIncluded": True
+                }
+            }
+        ]
         for i in test_features_bids:
             response = self.app.post_json('/tenders/{}/bids'.format(self.tender_id), {'data': i})
             self.assertEqual(response.status, '201 Created')
@@ -796,6 +743,7 @@ class TenderBidderDocumentResourceTest(BaseTenderWebTest):
 def suite():
     suite = unittest.TestSuite()
     suite.addTest(unittest.makeSuite(TenderBidderDocumentResourceTest))
+    suite.addTest(unittest.makeSuite(TenderBidderFeaturesResourceTest))
     suite.addTest(unittest.makeSuite(TenderBidderResourceTest))
     return suite
 

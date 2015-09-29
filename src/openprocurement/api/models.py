@@ -278,7 +278,7 @@ class Bid(Model):
             'view': view_bid_role,
             'create': whitelist('value', 'tenderers', 'parameters'),
             'edit': whitelist('value', 'tenderers', 'parameters'),
-            'auction_view': whitelist('value', 'id', 'date', 'participationUrl'),
+            'auction_view': whitelist('value', 'id', 'date', 'parameters', 'participationUrl'),
             'auction_post': whitelist('value', 'id', 'date'),
             'auction_patch': whitelist('id', 'participationUrl'),
             'active.enquiries': whitelist(),
@@ -500,7 +500,7 @@ edit_role = (blacklist('owner_token', 'owner', '_attachments', 'revisions', 'dat
 cancel_role = whitelist('status')
 view_role = (blacklist('owner', 'owner_token', '_attachments', 'revisions') + schematics_embedded_role)
 listing_role = whitelist('dateModified', 'doc_id')
-auction_view_role = whitelist('tenderID', 'dateModified', 'bids', 'auctionPeriod', 'minimalStep', 'auctionUrl')
+auction_view_role = whitelist('tenderID', 'dateModified', 'bids', 'auctionPeriod', 'minimalStep', 'auctionUrl', 'features')
 auction_post_role = whitelist('bids')
 auction_patch_role = whitelist('auctionUrl', 'bids')
 enquiries_role = (blacklist('owner', 'owner_token', '_attachments', 'revisions', 'bids', 'numberOfBids') + schematics_embedded_role)

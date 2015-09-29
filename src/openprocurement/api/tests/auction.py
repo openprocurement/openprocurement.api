@@ -3,7 +3,7 @@ import unittest
 from datetime import timedelta
 
 from openprocurement.api.models import get_now
-from openprocurement.api.tests.base import BaseTenderWebTest, test_tender_data
+from openprocurement.api.tests.base import BaseTenderWebTest, test_tender_data, test_features_tender_data
 
 
 class TenderAuctionResourceTest(BaseTenderWebTest):
@@ -75,8 +75,8 @@ class TenderAuctionResourceTest(BaseTenderWebTest):
         self.assertNotEqual(auction, self.initial_data)
         self.assertIn('dateModified', auction)
         self.assertIn('minimalStep', auction)
-        self.assertFalse("procuringEntity" in auction)
-        self.assertFalse("tenderers" in auction["bids"][0])
+        self.assertNotIn("procuringEntity", auction)
+        self.assertNotIn("tenderers", auction["bids"][0])
         self.assertEqual(auction["bids"][0]['value']['amount'], self.initial_bids[0]['value']['amount'])
         self.assertEqual(auction["bids"][1]['value']['amount'], self.initial_bids[1]['value']['amount'])
         #self.assertEqual(self.initial_data["auctionPeriod"]['startDate'], auction["auctionPeriod"]['startDate'])
@@ -367,11 +367,67 @@ class TenderSameValueAuctionResourceTest(BaseTenderWebTest):
         self.assertEqual(tender["awards"][0]['value']['amount'], self.initial_bids[2]['value']['amount'])
         self.assertEqual(tender["awards"][0]['suppliers'], self.initial_bids[2]['tenderers'])
 
+class TenderFeaturesAuctionResourceTest(BaseTenderWebTest):
+    initial_data = test_features_tender_data
+    initial_status = 'active.auction'
+    initial_bids = [
+        {
+            "parameters": [
+                {
+                    "code": i["code"],
+                    "value": 0.1,
+                }
+                for i in test_features_tender_data['features']
+            ],
+            "tenderers": [
+                test_tender_data["procuringEntity"]
+            ],
+            "value": {
+                "amount": 469,
+                "currency": "UAH",
+                "valueAddedTaxIncluded": True
+            }
+        },
+        {
+            "parameters": [
+                {
+                    "code": i["code"],
+                    "value": 0.15,
+                }
+                for i in test_features_tender_data['features']
+            ],
+            "tenderers": [
+                test_tender_data["procuringEntity"]
+            ],
+            "value": {
+                "amount": 479,
+                "currency": "UAH",
+                "valueAddedTaxIncluded": True
+            }
+        }
+    ]
+
+    def test_get_tender_auction(self):
+        response = self.app.get('/tenders/{}/auction'.format(self.tender_id))
+        self.assertEqual(response.status, '200 OK')
+        self.assertEqual(response.content_type, 'application/json')
+        auction = response.json['data']
+        self.assertNotEqual(auction, self.initial_data)
+        self.assertIn('dateModified', auction)
+        self.assertIn('minimalStep', auction)
+        self.assertNotIn("procuringEntity", auction)
+        self.assertNotIn("tenderers", auction["bids"][0])
+        self.assertEqual(auction["bids"][0]['value']['amount'], self.initial_bids[0]['value']['amount'])
+        self.assertEqual(auction["bids"][1]['value']['amount'], self.initial_bids[1]['value']['amount'])
+        self.assertIn('features', auction)
+        self.assertIn('parameters', auction["bids"][0])
+
 
 def suite():
     suite = unittest.TestSuite()
     suite.addTest(unittest.makeSuite(TenderAuctionResourceTest))
     suite.addTest(unittest.makeSuite(TenderSameValueAuctionResourceTest))
+    suite.addTest(unittest.makeSuite(TenderFeaturesAuctionResourceTest))
     return suite
 
 

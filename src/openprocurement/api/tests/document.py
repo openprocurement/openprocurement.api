@@ -131,7 +131,7 @@ class TenderDocumentResourceTest(BaseTenderWebTest):
         self.assertEqual(u'укр.doc', response.json["data"]["title"])
         doc_id = response.json["data"]['id']
         self.assertIn(doc_id, response.headers['Location'])
-        self.assertFalse('acc_token' in response.headers['Location'])
+        self.assertNotIn('acc_token', response.headers['Location'])
 
         self.set_status('active.tendering')
 
