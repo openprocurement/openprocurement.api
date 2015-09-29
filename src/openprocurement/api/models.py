@@ -12,6 +12,7 @@ from schematics.types import StringType, FloatType, IntType, URLType, BooleanTyp
 from schematics.types.compound import ModelType, ListType, DictType
 from schematics.types.serializable import serializable
 from uuid import uuid4
+from barbecue import vnmax
 
 
 STAND_STILL_TIME = timedelta(days=1)
@@ -448,7 +449,7 @@ class FeatureValue(Model):
         serialize_when_none = False
 
     value = FloatType(required=True, min_value=0.0, max_value=0.3)
-    title = StringType(required=True)
+    title = StringType(required=True, min_length=1)
     title_en = StringType()
     title_ru = StringType()
     description = StringType()
@@ -463,7 +464,7 @@ class Feature(Model):
     code = StringType(required=True, min_length=1, default=lambda: uuid4().hex)
     featureOf = StringType(required=True, choices=['tenderer', 'item'], default='tenderer')
     relatedItem = StringType(min_length=1)
-    title = StringType(required=True)
+    title = StringType(required=True, min_length=1)
     title_en = StringType()
     title_ru = StringType()
     description = StringType()
@@ -484,7 +485,7 @@ def validate_features_uniq(features, *args):
 
 
 def validate_features_max_value(features, *args):
-    if features and sum([max([j.value for j in i.enum]) for i in features]) > 0.3:
+    if features and vnmax(features) > 0.3:
         raise ValidationError(u"Sum of max value of all features should be less then or equal to 30%")
 
 

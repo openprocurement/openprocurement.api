@@ -14,6 +14,7 @@ from json import dumps
 from urlparse import urlparse, parse_qs
 from email.header import decode_header
 from rfc6266 import build_header
+from barbecue import chef
 
 try:
     from systemd.journal import JournalHandler
@@ -227,7 +228,7 @@ def apply_patch(request, data=None, save=True, src=None):
 def add_next_award(request):
     tender = request.validated['tender']
     unsuccessful_awards = [i.bid_id for i in tender.awards if i.status == 'unsuccessful']
-    bids = [i for i in sorted(tender.bids, key=lambda i: (i.value.amount, i.date)) if i.id not in unsuccessful_awards]
+    bids = chef(tender.bids, tender.features, unsuccessful_awards)
     if bids:
         bid = bids[0].serialize()
         award_data = {
