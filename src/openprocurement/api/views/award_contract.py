@@ -1,12 +1,12 @@
 # -*- coding: utf-8 -*-
 from logging import getLogger
-from cornice.resource import resource, view
 from openprocurement.api.models import Contract, get_now
 from openprocurement.api.utils import (
     apply_patch,
     save_tender,
-    error_handler,
     update_journal_handler_params,
+    opresource,
+    json_view,
 )
 from openprocurement.api.validation import (
     validate_contract_data,
@@ -17,18 +17,17 @@ from openprocurement.api.validation import (
 LOGGER = getLogger(__name__)
 
 
-@resource(name='Tender Award Contracts',
-          collection_path='/tenders/{tender_id}/awards/{award_id}/contracts',
-          path='/tenders/{tender_id}/awards/{award_id}/contracts/{contract_id}',
-          description="Tender award contracts",
-          error_handler=error_handler)
+@opresource(name='Tender Award Contracts',
+            collection_path='/tenders/{tender_id}/awards/{award_id}/contracts',
+            path='/tenders/{tender_id}/awards/{award_id}/contracts/{contract_id}',
+            description="Tender award contracts")
 class TenderAwardContractResource(object):
 
     def __init__(self, request):
         self.request = request
         self.db = request.registry.db
 
-    @view(content_type="application/json", permission='create_award_contract', validators=(validate_contract_data,), renderer='json')
+    @json_view(content_type="application/json", permission='create_award_contract', validators=(validate_contract_data,))
     def collection_post(self):
         """Post a contract for award
         """
@@ -48,19 +47,19 @@ class TenderAwardContractResource(object):
             self.request.response.headers['Location'] = self.request.route_url('Tender Award Contracts', tender_id=tender.id, award_id=self.request.validated['award_id'], contract_id=contract['id'])
             return {'data': contract.serialize()}
 
-    @view(renderer='json', permission='view_tender')
+    @json_view(permission='view_tender')
     def collection_get(self):
         """List contracts for award
         """
         return {'data': [i.serialize() for i in self.request.validated['award'].contracts]}
 
-    @view(renderer='json', permission='view_tender')
+    @json_view(permission='view_tender')
     def get(self):
         """Retrieving the contract for award
         """
         return {'data': self.request.validated['contract'].serialize()}
 
-    @view(content_type="application/json", permission='edit_tender', validators=(validate_patch_contract_data,), renderer='json')
+    @json_view(content_type="application/json", permission='edit_tender', validators=(validate_patch_contract_data,))
     def patch(self):
         """Update of contract
         """

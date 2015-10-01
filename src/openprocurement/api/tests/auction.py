@@ -367,6 +367,7 @@ class TenderSameValueAuctionResourceTest(BaseTenderWebTest):
         self.assertEqual(tender["awards"][0]['value']['amount'], self.initial_bids[2]['value']['amount'])
         self.assertEqual(tender["awards"][0]['suppliers'], self.initial_bids[2]['tenderers'])
 
+
 class TenderFeaturesAuctionResourceTest(BaseTenderWebTest):
     initial_data = test_features_tender_data
     initial_status = 'active.auction'

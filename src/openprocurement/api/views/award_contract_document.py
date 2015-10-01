@@ -1,14 +1,14 @@
 # -*- coding: utf-8 -*-
 from logging import getLogger
-from cornice.resource import resource, view
 from openprocurement.api.utils import (
     get_file,
     save_tender,
     upload_file,
     apply_patch,
-    error_handler,
     update_journal_handler_params,
     update_file_content_type,
+    opresource,
+    json_view,
 )
 from openprocurement.api.validation import (
     validate_file_update,
@@ -20,18 +20,17 @@ from openprocurement.api.validation import (
 LOGGER = getLogger(__name__)
 
 
-@resource(name='Tender Award Contract Documents',
-          collection_path='/tenders/{tender_id}/awards/{award_id}/contracts/{contract_id}/documents',
-          path='/tenders/{tender_id}/awards/{award_id}/contracts/{contract_id}/documents/{document_id}',
-          description="Tender award contract documents",
-          error_handler=error_handler)
+@opresource(name='Tender Award Contract Documents',
+            collection_path='/tenders/{tender_id}/awards/{award_id}/contracts/{contract_id}/documents',
+            path='/tenders/{tender_id}/awards/{award_id}/contracts/{contract_id}/documents/{document_id}',
+            description="Tender award contract documents")
 class TenderAwardContractDocumentResource(object):
 
     def __init__(self, request):
         self.request = request
         self.db = request.registry.db
 
-    @view(renderer='json', permission='view_tender')
+    @json_view(permission='view_tender')
     def collection_get(self):
         """Tender Award Contract Documents List"""
         contract = self.request.validated['contract']
@@ -44,7 +43,7 @@ class TenderAwardContractDocumentResource(object):
             ]).values(), key=lambda i: i['dateModified'])
         return {'data': collection_data}
 
-    @view(renderer='json', permission='edit_tender', validators=(validate_file_upload,))
+    @json_view(permission='edit_tender', validators=(validate_file_upload,))
     def collection_post(self):
         """Tender Award Contract Document Upload
         """
@@ -67,7 +66,7 @@ class TenderAwardContractDocumentResource(object):
             self.request.response.headers['Location'] = self.request.current_route_url(_route_name=document_route, document_id=document.id, _query={})
             return {'data': document.serialize("view")}
 
-    @view(renderer='json', permission='view_tender')
+    @json_view(permission='view_tender')
     def get(self):
         """Tender Award Contract Document Read"""
         if self.request.params.get('download'):
@@ -81,7 +80,7 @@ class TenderAwardContractDocumentResource(object):
         ]
         return {'data': document_data}
 
-    @view(renderer='json', validators=(validate_file_update,), permission='edit_tender')
+    @json_view(validators=(validate_file_update,), permission='edit_tender')
     def put(self):
         """Tender Award Contract Document Update"""
         if self.request.validated['tender_status'] not in ['active.awarded', 'complete']:
@@ -99,7 +98,7 @@ class TenderAwardContractDocumentResource(object):
             LOGGER.info('Updated tender award contract document {}'.format(self.request.context.id), extra={'MESSAGE_ID': 'tender_award_contract_document_put'})
             return {'data': document.serialize("view")}
 
-    @view(content_type="application/json", renderer='json', validators=(validate_patch_document_data,), permission='edit_tender')
+    @json_view(content_type="application/json", validators=(validate_patch_document_data,), permission='edit_tender')
     def patch(self):
         """Tender Award Contract Document Update"""
         if self.request.validated['tender_status'] not in ['active.awarded', 'complete']:

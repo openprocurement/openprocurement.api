@@ -1,12 +1,12 @@
 # -*- coding: utf-8 -*-
 from logging import getLogger
-from cornice.resource import resource, view
 from openprocurement.api.models import Question, get_now
 from openprocurement.api.utils import (
     apply_patch,
     save_tender,
-    error_handler,
     update_journal_handler_params,
+    opresource,
+    json_view,
 )
 from openprocurement.api.validation import (
     validate_question_data,
@@ -17,18 +17,17 @@ from openprocurement.api.validation import (
 LOGGER = getLogger(__name__)
 
 
-@resource(name='Tender Questions',
-          collection_path='/tenders/{tender_id}/questions',
-          path='/tenders/{tender_id}/questions/{question_id}',
-          description="Tender questions",
-          error_handler=error_handler)
+@opresource(name='Tender Questions',
+            collection_path='/tenders/{tender_id}/questions',
+            path='/tenders/{tender_id}/questions/{question_id}',
+            description="Tender questions")
 class TenderQuestionResource(object):
 
     def __init__(self, request):
         self.request = request
         self.db = request.registry.db
 
-    @view(content_type="application/json", validators=(validate_question_data,), permission='create_question', renderer='json')
+    @json_view(content_type="application/json", validators=(validate_question_data,), permission='create_question')
     def collection_post(self):
         """Post a question
         """
@@ -47,19 +46,19 @@ class TenderQuestionResource(object):
             self.request.response.headers['Location'] = self.request.route_url('Tender Questions', tender_id=tender.id, question_id=question.id)
             return {'data': question.serialize("view")}
 
-    @view(renderer='json', permission='view_tender')
+    @json_view(permission='view_tender')
     def collection_get(self):
         """List questions
         """
         return {'data': [i.serialize(self.request.validated['tender'].status) for i in self.request.validated['tender'].questions]}
 
-    @view(renderer='json', permission='view_tender')
+    @json_view(permission='view_tender')
     def get(self):
         """Retrieving the question
         """
         return {'data': self.request.validated['question'].serialize(self.request.validated['tender'].status)}
 
-    @view(content_type="application/json", permission='edit_tender', validators=(validate_patch_question_data,), renderer='json')
+    @json_view(content_type="application/json", permission='edit_tender', validators=(validate_patch_question_data,))
     def patch(self):
         """Post an Answer
         """

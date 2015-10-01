@@ -1,12 +1,12 @@
 # -*- coding: utf-8 -*-
 from logging import getLogger
-from cornice.resource import resource, view
 from openprocurement.api.models import Cancellation
 from openprocurement.api.utils import (
     apply_patch,
     save_tender,
-    error_handler,
     update_journal_handler_params,
+    opresource,
+    json_view,
 )
 from openprocurement.api.validation import (
     validate_cancellation_data,
@@ -17,18 +17,17 @@ from openprocurement.api.validation import (
 LOGGER = getLogger(__name__)
 
 
-@resource(name='Tender Cancellations',
-          collection_path='/tenders/{tender_id}/cancellations',
-          path='/tenders/{tender_id}/cancellations/{cancellation_id}',
-          description="Tender cancellations",
-          error_handler=error_handler)
+@opresource(name='Tender Cancellations',
+            collection_path='/tenders/{tender_id}/cancellations',
+            path='/tenders/{tender_id}/cancellations/{cancellation_id}',
+            description="Tender cancellations")
 class TenderCancellationResource(object):
 
     def __init__(self, request):
         self.request = request
         self.db = request.registry.db
 
-    @view(content_type="application/json", validators=(validate_cancellation_data,), permission='edit_tender', renderer='json')
+    @json_view(content_type="application/json", validators=(validate_cancellation_data,), permission='edit_tender')
     def collection_post(self):
         """Post a cancellation
         """
@@ -49,19 +48,19 @@ class TenderCancellationResource(object):
             self.request.response.headers['Location'] = self.request.route_url('Tender Cancellations', tender_id=tender.id, cancellation_id=cancellation.id)
             return {'data': cancellation.serialize("view")}
 
-    @view(renderer='json', permission='view_tender')
+    @json_view(permission='view_tender')
     def collection_get(self):
         """List cancellations
         """
         return {'data': [i.serialize("view") for i in self.request.validated['tender'].cancellations]}
 
-    @view(renderer='json', permission='view_tender')
+    @json_view(permission='view_tender')
     def get(self):
         """Retrieving the cancellation
         """
         return {'data': self.request.validated['cancellation'].serialize("view")}
 
-    @view(content_type="application/json", validators=(validate_patch_cancellation_data,), permission='edit_tender', renderer='json')
+    @json_view(content_type="application/json", validators=(validate_patch_cancellation_data,), permission='edit_tender')
     def patch(self):
         """Post a cancellation resolution
         """
