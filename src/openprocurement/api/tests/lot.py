@@ -270,6 +270,40 @@ class TenderLotResourceTest(BaseTenderWebTest):
                 u'url', u'name': u'tender_id'}
         ])
 
+    def test_delete_tender_lot(self):
+        response = self.app.post_json('/tenders/{}/lots'.format(self.tender_id), {'data': {
+            'title': 'lot title',
+            'description': 'lot description',
+            'value': {'amount': '1000.0'},
+            'minimalStep': {'amount': '100.0'},
+        }})
+        self.assertEqual(response.status, '201 Created')
+        self.assertEqual(response.content_type, 'application/json')
+        lot = response.json['data']
+
+        response = self.app.delete('/tenders/{}/lots/{}'.format(self.tender_id, lot['id']))
+        self.assertEqual(response.status, '200 OK')
+        self.assertEqual(response.content_type, 'application/json')
+        self.assertEqual(response.json['data'], lot)
+
+        response = self.app.delete('/tenders/{}/lots/some_id'.format(self.tender_id), status=404)
+        self.assertEqual(response.status, '404 Not Found')
+        self.assertEqual(response.content_type, 'application/json')
+        self.assertEqual(response.json['status'], 'error')
+        self.assertEqual(response.json['errors'], [
+            {u'description': u'Not Found', u'location':
+                u'url', u'name': u'lot_id'}
+        ])
+
+        response = self.app.delete('/tenders/some_id/lots/some_id', status=404)
+        self.assertEqual(response.status, '404 Not Found')
+        self.assertEqual(response.content_type, 'application/json')
+        self.assertEqual(response.json['status'], 'error')
+        self.assertEqual(response.json['errors'], [
+            {u'description': u'Not Found', u'location':
+                u'url', u'name': u'tender_id'}
+        ])
+
 
 def suite():
     suite = unittest.TestSuite()

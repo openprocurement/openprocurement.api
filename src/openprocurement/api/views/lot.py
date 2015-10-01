@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 from logging import getLogger
-from openprocurement.api.models import Lot, get_now
+from openprocurement.api.models import Lot
 from openprocurement.api.utils import (
     apply_patch,
     save_tender,
@@ -70,3 +70,19 @@ class TenderLotResource(object):
         if apply_patch(self.request, src=self.request.context.serialize()):
             LOGGER.info('Updated tender lot {}'.format(self.request.context.id), extra={'MESSAGE_ID': 'tender_lot_patch'})
             return {'data': self.request.context.serialize("view")}
+
+    @json_view(permission='edit_tender')
+    def delete(self):
+        """Lot deleting
+        """
+        tender = self.request.validated['tender']
+        if tender.status not in ['active.enquiries']:
+            self.request.errors.add('body', 'data', 'Can\'t delete lot in current ({}) tender status'.format(tender.status))
+            self.request.errors.status = 403
+            return
+        lot = self.request.context
+        res = lot.serialize("view")
+        self.request.validated['tender'].lots.remove(lot)
+        if save_tender(self.request):
+            LOGGER.info('Deleted tender lot {}'.format(self.request.context.id), extra={'MESSAGE_ID': 'tender_lot_delete'})
+            return {'data': res}
