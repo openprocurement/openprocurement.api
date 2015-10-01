@@ -109,5 +109,7 @@ def factory(request):
         return get_item(tender, 'document', request, root)
     elif request.matchdict.get('question_id'):
         return get_item(tender, 'question', request, root)
+    elif request.matchdict.get('lot_id'):
+        return get_item(tender, 'lot', request, root)
     request.validated['id'] = request.matchdict['tender_id']
     return tender

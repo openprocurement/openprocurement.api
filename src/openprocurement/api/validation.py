@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from openprocurement.api.models import Tender, Bid, Award, Document, Question, Complaint, Contract, Cancellation, get_now
+from openprocurement.api.models import Tender, Bid, Award, Document, Question, Complaint, Contract, Cancellation, Lot, get_now
 from schematics.exceptions import ModelValidationError, ModelConversionError
 from openprocurement.api.utils import apply_data_patch, update_journal_handler_params
 
@@ -166,6 +166,15 @@ def validate_contract_data(request):
 
 def validate_patch_contract_data(request):
     return validate_data(request, Contract, True)
+
+
+def validate_lot_data(request):
+    update_journal_handler_params({'lot_id': '__new__'})
+    return validate_data(request, Lot)
+
+
+def validate_patch_lot_data(request):
+    return validate_data(request, Lot, True)
 
 
 def validate_file_upload(request):
