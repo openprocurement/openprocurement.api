@@ -1,21 +1,23 @@
 # -*- coding: utf-8 -*-
-from pkg_resources import get_distribution
-from logging import getLogger
-from base64 import b64encode
-from jsonpatch import make_patch, apply_patch as _apply_patch
-from openprocurement.api.models import Document, Revision, Award, get_now
-from urllib import quote
-from uuid import uuid4
-from schematics.exceptions import ModelValidationError
-from couchdb.http import ResourceConflict
-from time import sleep
-from cornice.util import json_error
-from json import dumps
-from urlparse import urlparse, parse_qs
-from email.header import decode_header
-from rfc6266 import build_header
 from barbecue import chef
+from base64 import b64encode
+from cornice.resource import resource, view
+from cornice.util import json_error
+from couchdb.http import ResourceConflict
+from email.header import decode_header
+from functools import partial
+from json import dumps
+from jsonpatch import make_patch, apply_patch as _apply_patch
+from logging import getLogger
+from openprocurement.api.models import Document, Revision, Award, get_now
+from pkg_resources import get_distribution
+from rfc6266 import build_header
+from schematics.exceptions import ModelValidationError
+from time import sleep
+from urllib import quote
+from urlparse import urlparse, parse_qs
 from webob.multidict import NestedMultiDict
+from uuid import uuid4
 
 try:
     from systemd.journal import JournalHandler
@@ -26,6 +28,7 @@ except ImportError:  # pragma: no cover
 PKG = get_distribution(__package__)
 LOGGER = getLogger(PKG.project_name)
 VERSION = '{}.{}'.format(int(PKG.parsed_version[0]), int(PKG.parsed_version[1]))
+json_view = partial(view, renderer='json')
 
 
 def generate_id():
@@ -284,6 +287,9 @@ def error_handler(errors, request_params=True):
     for i in LOGGER.handlers:
         LOGGER.removeHandler(i)
     return json_error(errors)
+
+
+opresource = partial(resource, error_handler=error_handler)
 
 
 def forbidden(request):

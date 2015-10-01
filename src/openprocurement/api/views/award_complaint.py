@@ -1,13 +1,13 @@
 # -*- coding: utf-8 -*-
 from logging import getLogger
-from cornice.resource import resource, view
 from openprocurement.api.models import Complaint, STAND_STILL_TIME, get_now
 from openprocurement.api.utils import (
     apply_patch,
     save_tender,
     add_next_award,
-    error_handler,
     update_journal_handler_params,
+    opresource,
+    json_view,
 )
 from openprocurement.api.validation import (
     validate_complaint_data,
@@ -18,18 +18,17 @@ from openprocurement.api.validation import (
 LOGGER = getLogger(__name__)
 
 
-@resource(name='Tender Award Complaints',
-          collection_path='/tenders/{tender_id}/awards/{award_id}/complaints',
-          path='/tenders/{tender_id}/awards/{award_id}/complaints/{complaint_id}',
-          description="Tender award complaints",
-          error_handler=error_handler)
+@opresource(name='Tender Award Complaints',
+            collection_path='/tenders/{tender_id}/awards/{award_id}/complaints',
+            path='/tenders/{tender_id}/awards/{award_id}/complaints/{complaint_id}',
+            description="Tender award complaints")
 class TenderAwardComplaintResource(object):
 
     def __init__(self, request):
         self.request = request
         self.db = request.registry.db
 
-    @view(content_type="application/json", permission='create_award_complaint', validators=(validate_complaint_data,), renderer='json')
+    @json_view(content_type="application/json", permission='create_award_complaint', validators=(validate_complaint_data,))
     def collection_post(self):
         """Post a complaint for award
         """
@@ -54,19 +53,19 @@ class TenderAwardComplaintResource(object):
             self.request.response.headers['Location'] = self.request.route_url('Tender Award Complaints', tender_id=tender.id, award_id=self.request.validated['award_id'], complaint_id=complaint['id'])
             return {'data': complaint.serialize("view")}
 
-    @view(renderer='json', permission='view_tender')
+    @json_view(permission='view_tender')
     def collection_get(self):
         """List complaints for award
         """
         return {'data': [i.serialize("view") for i in self.request.context.complaints]}
 
-    @view(renderer='json', permission='view_tender')
+    @json_view(permission='view_tender')
     def get(self):
         """Retrieving the complaint for award
         """
         return {'data': self.request.validated['complaint'].serialize("view")}
 
-    @view(content_type="application/json", permission='review_complaint', validators=(validate_patch_complaint_data,), renderer='json')
+    @json_view(content_type="application/json", permission='review_complaint', validators=(validate_patch_complaint_data,))
     def patch(self):
         """Post a complaint resolution for award
         """
