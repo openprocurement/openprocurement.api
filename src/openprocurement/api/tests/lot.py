@@ -89,7 +89,7 @@ class TenderLotResourceTest(BaseTenderWebTest):
             'title': 'lot title',
             'description': 'lot description',
             'value': {'amount': '100.0'},
-            'minimalStep': {'amount': '1000.0'},
+            'minimalStep': {'amount': '500.0'},
         }}, status=422)
         self.assertEqual(response.status, '422 Unprocessable Entity')
         self.assertEqual(response.content_type, 'application/json')
@@ -101,7 +101,7 @@ class TenderLotResourceTest(BaseTenderWebTest):
         response = self.app.post_json(request_path, {'data': {
             'title': 'lot title',
             'description': 'lot description',
-            'value': {'amount': '1000.0'},
+            'value': {'amount': '500.0'},
             'minimalStep': {'amount': '100.0', 'valueAddedTaxIncluded': False},
         }}, status=422)
         self.assertEqual(response.status, '422 Unprocessable Entity')
@@ -114,7 +114,7 @@ class TenderLotResourceTest(BaseTenderWebTest):
         response = self.app.post_json(request_path, {'data': {
             'title': 'lot title',
             'description': 'lot description',
-            'value': {'amount': '1000.0'},
+            'value': {'amount': '500.0'},
             'minimalStep': {'amount': '100.0', 'currency': "USD"},
         }}, status=422)
         self.assertEqual(response.status, '422 Unprocessable Entity')
@@ -128,7 +128,7 @@ class TenderLotResourceTest(BaseTenderWebTest):
         response = self.app.post_json('/tenders/{}/lots'.format(self.tender_id), {'data': {
             'title': 'lot title',
             'description': 'lot description',
-            'value': {'amount': '1000.0'},
+            'value': {'amount': '500.0'},
             'minimalStep': {'amount': '100.0'},
         }})
         self.assertEqual(response.status, '201 Created')
@@ -144,7 +144,7 @@ class TenderLotResourceTest(BaseTenderWebTest):
         response = self.app.post_json('/tenders/{}/lots'.format(self.tender_id), {'data': {
             'title': 'lot title',
             'description': 'lot description',
-            'value': {'amount': '1000.0'},
+            'value': {'amount': '500.0'},
             'minimalStep': {'amount': '100.0'},
         }}, status=403)
         self.assertEqual(response.status, '403 Forbidden')
@@ -155,7 +155,7 @@ class TenderLotResourceTest(BaseTenderWebTest):
         response = self.app.post_json('/tenders/{}/lots'.format(self.tender_id), {'data': {
             'title': 'lot title',
             'description': 'lot description',
-            'value': {'amount': '1000.0'},
+            'value': {'amount': '500.0'},
             'minimalStep': {'amount': '100.0'},
         }})
         self.assertEqual(response.status, '201 Created')
@@ -201,7 +201,7 @@ class TenderLotResourceTest(BaseTenderWebTest):
         response = self.app.post_json('/tenders/{}/lots'.format(self.tender_id), {'data': {
             'title': 'lot title',
             'description': 'lot description',
-            'value': {'amount': '1000.0'},
+            'value': {'amount': '500.0'},
             'minimalStep': {'amount': '100.0'},
         }})
         self.assertEqual(response.status, '201 Created')
@@ -211,7 +211,7 @@ class TenderLotResourceTest(BaseTenderWebTest):
         response = self.app.get('/tenders/{}/lots/{}'.format(self.tender_id, lot['id']))
         self.assertEqual(response.status, '200 OK')
         self.assertEqual(response.content_type, 'application/json')
-        self.assertEqual(set(response.json['data']), set([u'id', u'title', u'description', u'minimalStep', u'value']))
+        self.assertEqual(set(response.json['data']), set([u'id', u'title', u'description', u'minimalStep', u'value', u'status']))
 
         self.set_status('active.qualification')
 
@@ -242,7 +242,7 @@ class TenderLotResourceTest(BaseTenderWebTest):
         response = self.app.post_json('/tenders/{}/lots'.format(self.tender_id), {'data': {
             'title': 'lot title',
             'description': 'lot description',
-            'value': {'amount': '1000.0'},
+            'value': {'amount': '500.0'},
             'minimalStep': {'amount': '100.0'},
         }})
         self.assertEqual(response.status, '201 Created')
@@ -252,7 +252,7 @@ class TenderLotResourceTest(BaseTenderWebTest):
         response = self.app.get('/tenders/{}/lots'.format(self.tender_id))
         self.assertEqual(response.status, '200 OK')
         self.assertEqual(response.content_type, 'application/json')
-        self.assertEqual(set(response.json['data'][0]), set([u'id', u'title', u'description', u'minimalStep', u'value']))
+        self.assertEqual(set(response.json['data'][0]), set([u'id', u'title', u'description', u'minimalStep', u'value', u'status']))
 
         self.set_status('active.qualification')
 
@@ -274,7 +274,7 @@ class TenderLotResourceTest(BaseTenderWebTest):
         response = self.app.post_json('/tenders/{}/lots'.format(self.tender_id), {'data': {
             'title': 'lot title',
             'description': 'lot description',
-            'value': {'amount': '1000.0'},
+            'value': {'amount': '500.0'},
             'minimalStep': {'amount': '100.0'},
         }})
         self.assertEqual(response.status, '201 Created')
@@ -303,6 +303,23 @@ class TenderLotResourceTest(BaseTenderWebTest):
             {u'description': u'Not Found', u'location':
                 u'url', u'name': u'tender_id'}
         ])
+
+        response = self.app.post_json('/tenders/{}/lots'.format(self.tender_id), {'data': {
+            'title': 'lot title',
+            'description': 'lot description',
+            'value': {'amount': '500.0'},
+            'minimalStep': {'amount': '100.0'},
+        }})
+        self.assertEqual(response.status, '201 Created')
+        self.assertEqual(response.content_type, 'application/json')
+        lot = response.json['data']
+
+        self.set_status('active.tendering')
+
+        response = self.app.delete('/tenders/{}/lots/{}'.format(self.tender_id, lot['id']), status=403)
+        self.assertEqual(response.status, '403 Forbidden')
+        self.assertEqual(response.content_type, 'application/json')
+        self.assertEqual(response.json['errors'][0]["description"], "Can't delete lot in current (active.tendering) tender status")
 
 
 def suite():

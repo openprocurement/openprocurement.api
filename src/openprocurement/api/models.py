@@ -416,6 +416,12 @@ class Cancellation(Model):
     date = IsoDateTimeType(default=get_now)
     status = StringType(choices=['pending', 'active'], default='pending')
     documents = ListType(ModelType(Document), default=list())
+    cancellationOf = StringType(required=True, choices=['tender', 'lot'], default='tender')
+    relatedLot = MD5Type()
+
+    def validate_relatedLot(self, data, relatedLot):
+        if not relatedLot and data.get('cancellationOf') == 'lot':
+            raise ValidationError(u'This field is required.')
 
 
 class Contract(Model):
@@ -531,6 +537,7 @@ class Lot(Model):
     minimalStep = ModelType(Value, required=True)
     auctionPeriod = ModelType(Period)
     auctionUrl = URLType()
+    status = StringType(choices=['active', 'cancelled', 'unsuccessful'], default='active')
 
     def validate_minimalStep(self, data, value):
         if value and value.amount and data.get('value'):
@@ -560,8 +567,8 @@ def validate_cpv_group(items, *args):
 
 
 plain_role = (blacklist('_attachments', 'revisions', 'dateModified') + schematics_embedded_role)
-create_role = (blacklist('owner_token', 'owner', '_attachments', 'revisions', 'dateModified', 'doc_id', 'tenderID', 'bids', 'documents', 'awards', 'questions', 'complaints', 'auctionUrl', 'status', 'auctionPeriod', 'awardPeriod', 'procurementMethod', 'awardCriteria', 'submissionMethod') + schematics_embedded_role)
-edit_role = (blacklist('owner_token', 'owner', '_attachments', 'revisions', 'dateModified', 'doc_id', 'tenderID', 'bids', 'documents', 'awards', 'questions', 'complaints', 'auctionUrl', 'auctionPeriod', 'awardPeriod', 'procurementMethod', 'awardCriteria', 'submissionMethod', 'mode') + schematics_embedded_role)
+create_role = (blacklist('lots', 'owner_token', 'owner', '_attachments', 'revisions', 'dateModified', 'doc_id', 'tenderID', 'bids', 'documents', 'awards', 'questions', 'complaints', 'auctionUrl', 'status', 'auctionPeriod', 'awardPeriod', 'procurementMethod', 'awardCriteria', 'submissionMethod') + schematics_embedded_role)
+edit_role = (blacklist('lots', 'owner_token', 'owner', '_attachments', 'revisions', 'dateModified', 'doc_id', 'tenderID', 'bids', 'documents', 'awards', 'questions', 'complaints', 'auctionUrl', 'auctionPeriod', 'awardPeriod', 'procurementMethod', 'awardCriteria', 'submissionMethod', 'mode') + schematics_embedded_role)
 cancel_role = whitelist('status')
 view_role = (blacklist('owner', 'owner_token', '_attachments', 'revisions') + schematics_embedded_role)
 listing_role = whitelist('dateModified', 'doc_id')
@@ -745,3 +752,42 @@ class Tender(SchematicsDocument, Model):
     def validate_features(self, data, features):
         if features and not set([i.relatedItem for i in features if i.relatedItem]).issubset(set([i.id for i in data['items']])):
             raise ValidationError(u"relatedItem should be one of items")
+
+    def validate_items(self, data, items):
+        if items and data.get('lots'):
+            lots = [i.id for i in data.get('lots')]
+            if [i for i in items if i.relatedLot and i.relatedLot not in lots]:
+                raise ValidationError(u"relatedLot should be one of lots")
+
+    def validate_questions(self, data, questions):
+        if questions and data.get('lots'):
+            lots = [i.id for i in data.get('lots')]
+            if [i for i in questions if i.relatedLot and i.relatedLot not in lots]:
+                raise ValidationError(u"relatedLot should be one of lots")
+
+    def validate_documents(self, data, documents):
+        if documents and data.get('lots'):
+            lots = [i.id for i in data.get('lots')]
+            if [i for i in documents if i.relatedLot and i.relatedLot not in lots]:
+                raise ValidationError(u"relatedLot should be one of lots")
+
+    def validate_awards(self, data, awards):
+        if awards and data.get('lots'):
+            lots = [i.id for i in data.get('lots')]
+            if [i for i in awards if i.lotID and i.lotID not in lots]:
+                raise ValidationError(u"lotID should be one of lots")
+
+    def validate_lots(self, data, lots):
+        if lots:
+            if [i for i in lots if data.get('value').amount < i.value.amount]:
+                raise ValidationError(u"value should be less than value of tender")
+            if [i for i in lots if data.get('value').currency != i.value.currency]:
+                raise ValidationError(u"currency should be identical to currency of value of tender")
+            if [i for i in lots if data.get('value').valueAddedTaxIncluded != i.value.valueAddedTaxIncluded]:
+                raise ValidationError(u"valueAddedTaxIncluded should be identical to valueAddedTaxIncluded of value of tender")
+            if [i for i in lots if data.get('value').currency != i.minimalStep.currency]:
+                raise ValidationError(u"currency should be identical to currency of value of tender")
+            if [i for i in lots if data.get('value').valueAddedTaxIncluded != i.minimalStep.valueAddedTaxIncluded]:
+                raise ValidationError(u"valueAddedTaxIncluded should be identical to valueAddedTaxIncluded of value of tender")
+            if [i for i in lots if i.auctionPeriod and i.auctionPeriod.startDate and data.get('tenderPeriod') and data.get('tenderPeriod').endDate and i.auctionPeriod.startDate < data.get('tenderPeriod').endDate]:
+                raise ValidationError(u"auctionPeriod should begin after tenderPeriod")
