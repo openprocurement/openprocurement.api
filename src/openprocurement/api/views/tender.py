@@ -357,6 +357,7 @@ class TenderResource(object):
         tender_data = self.request.validated['data']
         tender_id = generate_id()
         tender = Tender(tender_data)
+        tender.__parent__ = self.request.context
         tender.id = tender_id
         if not tender.enquiryPeriod.startDate:
             tender.enquiryPeriod.startDate = get_now()

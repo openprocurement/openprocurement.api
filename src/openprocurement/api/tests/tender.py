@@ -575,8 +575,10 @@ class TenderResourceTest(BaseWebTest):
         self.assertEqual(response.content_type, 'application/json')
         self.assertEqual(response.json['status'], 'error')
         self.assertEqual(response.json['errors'], [
-            {u'description': [u'relatedItem should be one of items'], u'location': u'body', u'name': u'features'}
+            #{u'description': [u'relatedItem should be one of items'], u'location': u'body', u'name': u'features'}
+            {u'description': [{u'relatedItem': [u'relatedItem should be one of items']}], u'location': u'body', u'name': u'features'}
         ])
+        data['features'][0]["relatedItem"] = "1"
         data['features'][0]["enum"][0]["value"] = 0.5
         response = self.app.post_json('/tenders', {'data': data}, status=422)
         self.assertEqual(response.status, '422 Unprocessable Entity')
@@ -593,6 +595,7 @@ class TenderResourceTest(BaseWebTest):
         self.assertEqual(response.json['status'], 'error')
         self.assertEqual(response.json['errors'], [
             {u'description': [u'Feature code should be uniq for all features'], u'location': u'body', u'name': u'features'}
+            #{u'description': [{u'relatedItem': [u'relatedItem should be one of items']}, {u'relatedItem': [u'relatedItem should be one of items']}], u'location': u'body', u'name': u'features'}
         ])
         data['features'][1]["code"] = u"OCDS-123454-YEARS"
         data['features'][1]["enum"][0]["value"] = 0.2
@@ -602,6 +605,7 @@ class TenderResourceTest(BaseWebTest):
         self.assertEqual(response.json['status'], 'error')
         self.assertEqual(response.json['errors'], [
             {u'description': [u'Sum of max value of all features should be less then or equal to 30%'], u'location': u'body', u'name': u'features'}
+            #{u'description': [{u'relatedItem': [u'relatedItem should be one of items']}, {u'relatedItem': [u'relatedItem should be one of items']}], u'location': u'body', u'name': u'features'}
         ])
 
     def test_tender_features(self):

@@ -38,6 +38,7 @@ class TenderQuestionResource(object):
             return
         question_data = self.request.validated['data']
         question = Question(question_data)
+        question.__parent__ = self.request.context
         tender.questions.append(question)
         if save_tender(self.request):
             update_journal_handler_params({'question_id': question.id})

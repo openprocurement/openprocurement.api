@@ -74,6 +74,29 @@ class TenderCancellationResourceTest(BaseTenderWebTest):
                 u'body', u'name': u'invalid_field'}
         ])
 
+        response = self.app.post_json('/tenders/{}/cancellations'.format(self.tender_id), {'data': {
+            'reason': 'cancellation reason',
+            "cancellationOf": "lot"
+        }}, status=422)
+        self.assertEqual(response.status, '422 Unprocessable Entity')
+        self.assertEqual(response.content_type, 'application/json')
+        self.assertEqual(response.json['status'], 'error')
+        self.assertEqual(response.json['errors'], [
+            {u'description': [u'This field is required.'], u'location': u'body', u'name': u'relatedLot'}
+        ])
+
+        response = self.app.post_json('/tenders/{}/cancellations'.format(self.tender_id), {'data': {
+            'reason': 'cancellation reason',
+            "cancellationOf": "lot",
+            "relatedLot": '0' * 32
+        }}, status=422)
+        self.assertEqual(response.status, '422 Unprocessable Entity')
+        self.assertEqual(response.content_type, 'application/json')
+        self.assertEqual(response.json['status'], 'error')
+        self.assertEqual(response.json['errors'], [
+            {u'description': [u'relatedLot should be one of lots'], u'location': u'body', u'name': u'relatedLot'}
+        ])
+
     def test_create_tender_cancellation(self):
         response = self.app.post_json('/tenders/{}/cancellations'.format(
             self.tender_id), {'data': {'reason': 'cancellation reason'}})

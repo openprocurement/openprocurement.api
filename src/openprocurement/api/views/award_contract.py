@@ -38,6 +38,7 @@ class TenderAwardContractResource(object):
             return
         contract_data = self.request.validated['data']
         contract = Contract(contract_data)
+        contract.__parent__ = self.request.context
         contract.awardID = self.request.validated['award_id']
         self.request.validated['award'].contracts.append(contract)
         if save_tender(self.request):

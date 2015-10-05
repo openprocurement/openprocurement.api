@@ -45,6 +45,7 @@ class TenderAwardComplaintResource(object):
             return
         complaint_data = self.request.validated['data']
         complaint = Complaint(complaint_data)
+        complaint.__parent__ = self.request.context
         self.request.context.complaints.append(complaint)
         if save_tender(self.request):
             update_journal_handler_params({'complaint_id': complaint.id})

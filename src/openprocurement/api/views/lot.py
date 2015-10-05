@@ -38,6 +38,7 @@ class TenderLotResource(object):
             return
         lot_data = self.request.validated['data']
         lot = Lot(lot_data)
+        lot.__parent__ = self.request.context
         tender.lots.append(lot)
         if save_tender(self.request):
             update_journal_handler_params({'lot_id': lot.id})

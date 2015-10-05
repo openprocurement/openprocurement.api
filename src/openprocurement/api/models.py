@@ -7,7 +7,7 @@ from pytz import timezone
 from pyramid.security import Allow
 from schematics.exceptions import ConversionError, ValidationError
 from schematics.models import Model as SchematicsModel
-from schematics.transforms import whitelist, blacklist, export_loop
+from schematics.transforms import whitelist, blacklist, export_loop, convert
 from schematics.types import StringType, FloatType, IntType, URLType, BooleanType, BaseType, EmailType, MD5Type
 from schematics.types.compound import ModelType, ListType, DictType
 from schematics.types.serializable import serializable
@@ -16,8 +16,8 @@ from barbecue import vnmax
 
 
 STAND_STILL_TIME = timedelta(days=1)
-schematics_embedded_role = SchematicsDocument.Options.roles['embedded']
-schematics_default_role = SchematicsDocument.Options.roles['default']
+schematics_embedded_role = SchematicsDocument.Options.roles['embedded'] + blacklist("__parent__")
+schematics_default_role = SchematicsDocument.Options.roles['default'] + blacklist("__parent__")
 
 TZ = timezone(os.environ['TZ'] if 'TZ' in os.environ else 'Europe/Kiev')
 
@@ -63,9 +63,45 @@ class IsoDateTimeType(BaseType):
         return value.isoformat()
 
 
+def set_parent(item, parent):
+    if hasattr(item, '__parent__'):
+        item.__parent__ = parent
+
+
+def get_tender(model):
+    while not isinstance(model, Tender):
+        model = model.__parent__
+    return model
+
+
 class Model(SchematicsModel):
+    class Options(object):
+        """Export options for Document."""
+        serialize_when_none = False
+        roles = {
+            "default": blacklist("__parent__"),
+            "embedded": blacklist("__parent__"),
+        }
+
+    __parent__ = BaseType()
+
+    def convert(self, raw_data, **kw):
+        """
+        Converts the raw data into richer Python constructs according to the
+        fields on the model
+        """
+        value = convert(self.__class__, raw_data, **kw)
+        for i, j in value.items():
+            if isinstance(j, list):
+                for x in j:
+                    set_parent(x, self)
+            else:
+                set_parent(j, self)
+        return value
+
     def to_patch(self, role=None):
-        """Return data as it would be validated. No filtering of output unless
+        """
+        Return data as it would be validated. No filtering of output unless
         role is defined.
         """
         field_converter = lambda field, value: field.to_primitive(value)
@@ -74,8 +110,6 @@ class Model(SchematicsModel):
 
 
 class Value(Model):
-    class Options:
-        serialize_when_none = False
 
     amount = FloatType(required=True, min_value=0)  # Amount as a number.
     currency = StringType(required=True, default=u'UAH', max_length=3, min_length=3)  # The currency in 3-letter ISO 4217 format.
@@ -84,8 +118,6 @@ class Value(Model):
 
 class Period(Model):
     """The period when the tender is open for submissions. The end date is the closing date for tender submissions."""
-    class Options:
-        serialize_when_none = False
 
     startDate = IsoDateTimeType()  # The state date for the period.
     endDate = IsoDateTimeType()  # The end date for the period.
@@ -100,8 +132,6 @@ class PeriodEndRequired(Period):
 
 
 class Classification(Model):
-    class Options:
-        serialize_when_none = False
 
     scheme = StringType(required=True)  # The classification scheme for the goods
     id = StringType(required=True)  # The classification ID from the Scheme used
@@ -118,8 +148,6 @@ class CPVClassification(Classification):
 
 class Unit(Model):
     """Description of the unit which the good comes in e.g. hours, kilograms. Made up of a unit name, and the value of a single unit."""
-    class Options:
-        serialize_when_none = False
 
     name = StringType()
     name_en = StringType()
@@ -129,8 +157,6 @@ class Unit(Model):
 
 
 class Address(Model):
-    class Options:
-        serialize_when_none = False
 
     streetAddress = StringType()
     locality = StringType()
@@ -142,8 +168,6 @@ class Address(Model):
 
 
 class Location(Model):
-    class Options:
-        serialize_when_none = False
 
     latitude = BaseType(required=True)
     longitude = BaseType(required=True)
@@ -157,8 +181,6 @@ def validate_dkpp(items, *args):
 
 class Item(Model):
     """A good, service, or work to be contracted."""
-    class Options:
-        serialize_when_none = False
 
     id = StringType(required=True, min_length=1, default=lambda: uuid4().hex)
     description = StringType(required=True)  # A description of the goods, services to be provided.
@@ -173,10 +195,13 @@ class Item(Model):
     deliveryLocation = ModelType(Location)
     relatedLot = MD5Type()
 
+    def validate_relatedLot(self, data, relatedLot):
+        if relatedLot and isinstance(data['__parent__'], Model) and relatedLot not in [i.id for i in data['__parent__'].lots]:
+            raise ValidationError(u"relatedLot should be one of lots")
+
 
 class Document(Model):
     class Options:
-        serialize_when_none = False
         roles = {
             'edit': blacklist('id', 'url', 'datePublished', 'dateModified'),
             'embedded': schematics_embedded_role,
@@ -210,11 +235,13 @@ class Document(Model):
     def validate_relatedLot(self, data, relatedLot):
         if not relatedLot and data.get('documentOf') == 'lot':
             raise ValidationError(u'This field is required.')
+        if relatedLot and isinstance(data['__parent__'], Model):
+            tender = get_tender(data['__parent__'])
+            if relatedLot not in [i.id for i in tender.lots]:
+                raise ValidationError(u"relatedLot should be one of lots")
 
 
 class Identifier(Model):
-    class Options:
-        serialize_when_none = False
 
     scheme = StringType(required=True, choices=ORA_CODES)  # The scheme that holds the unique identifiers used to identify the item being identified.
     id = BaseType(required=True)  # The identifier of the organization in the selected scheme.
@@ -225,8 +252,6 @@ class Identifier(Model):
 
 
 class ContactPoint(Model):
-    class Options:
-        serialize_when_none = False
 
     name = StringType(required=True)
     name_en = StringType()
@@ -244,7 +269,6 @@ class ContactPoint(Model):
 class Organization(Model):
     """An organization."""
     class Options:
-        serialize_when_none = False
         roles = {
             'embedded': schematics_embedded_role,
             'view': schematics_default_role,
@@ -260,8 +284,6 @@ class Organization(Model):
 
 
 class Parameter(Model):
-    class Options:
-        serialize_when_none = False
 
     code = StringType(required=True)
     value = FloatType(required=True)
@@ -276,7 +298,6 @@ def validate_parameters_uniq(parameters, *args):
 
 class LotValue(Model):
     class Options:
-        serialize_when_none = False
         roles = {
             'embedded': schematics_embedded_role,
             'view': schematics_default_role,
@@ -297,7 +318,6 @@ view_bid_role = (blacklist('owner_token', 'owner') + schematics_default_role)
 
 class Bid(Model):
     class Options:
-        serialize_when_none = False
         roles = {
             'embedded': view_bid_role,
             'view': view_bid_role,
@@ -331,7 +351,6 @@ class Bid(Model):
     owner_token = StringType()
     owner = StringType()
 
-    __parent__ = None
     __name__ = ''
 
     def __acl__(self):
@@ -349,7 +368,6 @@ class Revision(Model):
 
 class Question(Model):
     class Options:
-        serialize_when_none = False
         roles = {
             'create': whitelist('author', 'title', 'description', 'questionOf', 'relatedLot'),
             'edit': whitelist('answer'),
@@ -377,11 +395,12 @@ class Question(Model):
     def validate_relatedLot(self, data, relatedLot):
         if not relatedLot and data.get('questionOf') == 'lot':
             raise ValidationError(u'This field is required.')
+        if relatedLot and isinstance(data['__parent__'], Model) and relatedLot not in [i.id for i in data['__parent__'].lots]:
+            raise ValidationError(u"relatedLot should be one of lots")
 
 
 class Complaint(Model):
     class Options:
-        serialize_when_none = False
         roles = {
             'create': whitelist('author', 'title', 'description'),
             'edit': whitelist('status', 'resolution'),
@@ -401,7 +420,6 @@ class Complaint(Model):
 
 class Cancellation(Model):
     class Options:
-        serialize_when_none = False
         roles = {
             'create': whitelist('reason', 'status'),
             'edit': whitelist('status'),
@@ -422,11 +440,12 @@ class Cancellation(Model):
     def validate_relatedLot(self, data, relatedLot):
         if not relatedLot and data.get('cancellationOf') == 'lot':
             raise ValidationError(u'This field is required.')
+        if relatedLot and isinstance(data['__parent__'], Model) and relatedLot not in [i.id for i in data['__parent__'].lots]:
+            raise ValidationError(u"relatedLot should be one of lots")
 
 
 class Contract(Model):
     class Options:
-        serialize_when_none = False
         roles = {
             'create': blacklist('id', 'status', 'documents', 'dateSigned'),
             'edit': blacklist('id', 'documents'),
@@ -455,7 +474,6 @@ class Award(Model):
         different providers, or because it is a standing offer.
     """
     class Options:
-        serialize_when_none = False
         roles = {
             'create': blacklist('id', 'status', 'date', 'documents', 'complaints', 'contracts', 'complaintPeriod'),
             'edit': whitelist('status'),
@@ -482,10 +500,12 @@ class Award(Model):
     contracts = ListType(ModelType(Contract), default=list())
     complaintPeriod = ModelType(Period)
 
+    def validate_lotID(self, data, lotID):
+        if lotID and isinstance(data['__parent__'], Model) and lotID not in [i.id for i in data['__parent__'].lots]:
+            raise ValidationError(u"lotID should be one of lots")
+
 
 class FeatureValue(Model):
-    class Options:
-        serialize_when_none = False
 
     value = FloatType(required=True, min_value=0.0, max_value=0.3)
     title = StringType(required=True, min_length=1)
@@ -497,8 +517,6 @@ class FeatureValue(Model):
 
 
 class Feature(Model):
-    class Options:
-        serialize_when_none = False
 
     code = StringType(required=True, min_length=1, default=lambda: uuid4().hex)
     featureOf = StringType(required=True, choices=['tenderer', 'item'], default='tenderer')
@@ -514,11 +532,12 @@ class Feature(Model):
     def validate_relatedItem(self, data, relatedItem):
         if not relatedItem and data.get('featureOf') == 'item':
             raise ValidationError(u'This field is required.')
+        if relatedItem and isinstance(data['__parent__'], Model) and relatedItem not in [i.id for i in data['__parent__'].items]:
+            raise ValidationError(u"relatedItem should be one of items")
 
 
 class Lot(Model):
     class Options:
-        serialize_when_none = False
         roles = {
             'create': whitelist('title', 'title_en', 'title_ru', 'description', 'description_en', 'description_ru', 'value', 'minimalStep'),
             'edit': whitelist('title', 'title_en', 'title_ru', 'description', 'description_en', 'description_ru', 'value', 'minimalStep'),
@@ -611,6 +630,7 @@ class Tender(SchematicsDocument, Model):
             'cancelled': view_role,
             'chronograph': chronograph_role,
             'Administrator': Administrator_role,
+            'default': schematics_default_role,
         }
 
     def __local_roles__(self):
@@ -667,7 +687,6 @@ class Tender(SchematicsDocument, Model):
     owner_token = StringType()
     owner = StringType()
 
-    __parent__ = None
     __name__ = ''
 
     def __acl__(self):
@@ -748,34 +767,6 @@ class Tender(SchematicsDocument, Model):
             raise ValidationError(u"period should begin after auctionPeriod")
         if period and period.startDate and data.get('tenderPeriod') and data.get('tenderPeriod').endDate and period.startDate < data.get('tenderPeriod').endDate:
             raise ValidationError(u"period should begin after tenderPeriod")
-
-    def validate_features(self, data, features):
-        if features and not set([i.relatedItem for i in features if i.relatedItem]).issubset(set([i.id for i in data['items']])):
-            raise ValidationError(u"relatedItem should be one of items")
-
-    def validate_items(self, data, items):
-        if items and data.get('lots'):
-            lots = [i.id for i in data.get('lots')]
-            if [i for i in items if i.relatedLot and i.relatedLot not in lots]:
-                raise ValidationError(u"relatedLot should be one of lots")
-
-    def validate_questions(self, data, questions):
-        if questions and data.get('lots'):
-            lots = [i.id for i in data.get('lots')]
-            if [i for i in questions if i.relatedLot and i.relatedLot not in lots]:
-                raise ValidationError(u"relatedLot should be one of lots")
-
-    def validate_documents(self, data, documents):
-        if documents and data.get('lots'):
-            lots = [i.id for i in data.get('lots')]
-            if [i for i in documents if i.relatedLot and i.relatedLot not in lots]:
-                raise ValidationError(u"relatedLot should be one of lots")
-
-    def validate_awards(self, data, awards):
-        if awards and data.get('lots'):
-            lots = [i.id for i in data.get('lots')]
-            if [i for i in awards if i.lotID and i.lotID not in lots]:
-                raise ValidationError(u"lotID should be one of lots")
 
     def validate_lots(self, data, lots):
         if lots:

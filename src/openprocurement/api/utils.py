@@ -80,6 +80,7 @@ def upload_file(request):
         'title': filename,
         'format': content_type
     })
+    document.__parent__ = request.context
     if 'document_id' in request.validated:
         document.id = request.validated['document_id']
     if first_document:

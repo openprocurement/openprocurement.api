@@ -172,6 +172,7 @@ class TenderAwardResource(object):
         award_data = self.request.validated['data']
         award_data['complaintPeriod'] = {'startDate': get_now().isoformat()}
         award = Award(award_data)
+        award.__parent__ = self.request.context
         tender.awards.append(award)
         if save_tender(self.request):
             update_journal_handler_params({'award_id': award.id})

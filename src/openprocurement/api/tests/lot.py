@@ -7,8 +7,7 @@ from openprocurement.api.tests.base import BaseTenderWebTest, test_tender_data
 class TenderLotResourceTest(BaseTenderWebTest):
 
     def test_create_tender_lot_invalid(self):
-        response = self.app.post_json('/tenders/some_id/lots', {
-                                      'data': {'title': 'lot title', 'description': 'lot description', 'author': test_tender_data["procuringEntity"]}}, status=404)
+        response = self.app.post_json('/tenders/some_id/lots', {'data': {'title': 'lot title', 'description': 'lot description'}}, status=404)
         self.assertEqual(response.status, '404 Not Found')
         self.assertEqual(response.content_type, 'application/json')
         self.assertEqual(response.json['status'], 'error')
@@ -122,6 +121,14 @@ class TenderLotResourceTest(BaseTenderWebTest):
         self.assertEqual(response.json['status'], 'error')
         self.assertEqual(response.json['errors'], [
             {u'description': [u'currency should be identical to currency of value of tender'], u'location': u'body', u'name': u'minimalStep'}
+        ])
+
+        response = self.app.patch_json('/tenders/{}'.format(self.tender_id), {"data": {"items": [{'relatedLot': '0' * 32}]}}, status=422)
+        self.assertEqual(response.status, '422 Unprocessable Entity')
+        self.assertEqual(response.content_type, 'application/json')
+        self.assertEqual(response.json['status'], 'error')
+        self.assertEqual(response.json['errors'], [
+            {u'description': [{u'relatedLot': [u'relatedLot should be one of lots']}], u'location': u'body', u'name': u'items'}
         ])
 
     def test_create_tender_lot(self):

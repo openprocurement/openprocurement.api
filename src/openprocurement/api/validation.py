@@ -27,6 +27,7 @@ def validate_data(request, model, partial=False):
             new_patch = apply_data_patch(request.context.serialize(), data)
             m = model(request.context.serialize())
             m.import_data(new_patch, strict=True)
+            m.__parent__ = request.context.__parent__
             m.validate()
             if request.authenticated_role == 'Administrator':
                 role = 'Administrator'
@@ -41,6 +42,7 @@ def validate_data(request, model, partial=False):
             method = m.to_patch
         else:
             m = model(data)
+            m.__parent__ = request.context
             m.validate()
             method = m.serialize
             role = 'create'

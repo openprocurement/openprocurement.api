@@ -38,6 +38,7 @@ class TenderCancellationResource(object):
             return
         cancellation_data = self.request.validated['data']
         cancellation = Cancellation(cancellation_data)
+        cancellation.__parent__ = self.request.context
         if cancellation.status == 'active':
             tender.status = 'cancelled'
         tender.cancellations.append(cancellation)

@@ -114,6 +114,19 @@ class TenderAwardResourceTest(BaseTenderWebTest):
             {u'description': [u'This field is required.'], u'location': u'body', u'name': u'bid_id'}
         ])
 
+        response = self.app.post_json(request_path, {'data': {
+            'suppliers': [test_tender_data["procuringEntity"]],
+            'status': 'pending',
+            'bid_id': self.initial_bids[0]['id'],
+            'lotID': '0' * 32
+        }}, status=422)
+        self.assertEqual(response.status, '422 Unprocessable Entity')
+        self.assertEqual(response.content_type, 'application/json')
+        self.assertEqual(response.json['status'], 'error')
+        self.assertEqual(response.json['errors'], [
+            {u'description': [u'lotID should be one of lots'], u'location': u'body', u'name': u'lotID'}
+        ])
+
         response = self.app.post_json('/tenders/some_id/awards', {'data': {
                                       'suppliers': [test_tender_data["procuringEntity"]], 'bid_id': self.initial_bids[0]['id']}}, status=404)
         self.assertEqual(response.status, '404 Not Found')

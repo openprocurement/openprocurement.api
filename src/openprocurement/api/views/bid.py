@@ -117,6 +117,7 @@ class TenderBidResource(object):
             return
         bid_data = self.request.validated['data']
         bid = Bid(bid_data)
+        bid.__parent__ = self.request.context
         set_ownership(bid, self.request)
         tender.bids.append(bid)
         if save_tender(self.request):
