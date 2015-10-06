@@ -312,6 +312,23 @@ class LotValue(Model):
     relatedLot = MD5Type(required=True)
     participationUrl = URLType()
 
+    def validate_value(self, data, value):
+        if value and isinstance(data['__parent__'], Model) and data['relatedLot']:
+            lots = [i for i in get_tender(data['__parent__']).lots if i.id == data['relatedLot']]
+            if not lots:
+                return
+            lot = lots[0]
+            if lot.value.amount < value.amount:
+                raise ValidationError(u"value of bid should be less than value of lot")
+            if lot.get('value').currency != value.currency:
+                raise ValidationError(u"currency of bid should be identical to currency of value of lot")
+            if lot.get('value').valueAddedTaxIncluded != value.valueAddedTaxIncluded:
+                raise ValidationError(u"valueAddedTaxIncluded of bid should be identical to valueAddedTaxIncluded of value of lot")
+
+    def validate_relatedLot(self, data, relatedLot):
+        if isinstance(data['__parent__'], Model) and relatedLot not in [i.id for i in get_tender(data['__parent__']).lots]:
+            raise ValidationError(u"relatedLot should be one of lots")
+
 
 view_bid_role = (blacklist('owner_token', 'owner') + schematics_default_role)
 
@@ -345,7 +362,7 @@ class Bid(Model):
     date = IsoDateTimeType(default=get_now)
     id = MD5Type(required=True, default=lambda: uuid4().hex)
     status = StringType(choices=['registration', 'validBid', 'invalidBid'])
-    value = ModelType(Value, required=True)
+    value = ModelType(Value)
     documents = ListType(ModelType(Document), default=list())
     participationUrl = URLType()
     owner_token = StringType()
@@ -358,9 +375,17 @@ class Bid(Model):
             (Allow, '{}_{}'.format(self.owner, self.owner_token), 'edit_bid'),
         ]
 
-    def validate_value(self, data, value):
-        if value and isinstance(data['__parent__'], Model):
+    def validate_lotValues(self, data, values):
+        if isinstance(data['__parent__'], Model):
             tender = data['__parent__']
+            if tender.lots and not values:
+                raise ValidationError(u'This field is required.')
+
+    def validate_value(self, data, value):
+        if isinstance(data['__parent__'], Model):
+            tender = data['__parent__']
+            if not tender.lots and not value:
+                raise ValidationError(u'This field is required.')
             if tender.value.amount < value.amount:
                 raise ValidationError(u"value of bid should be less than value of tender")
             if tender.get('value').currency != value.currency:
@@ -370,13 +395,27 @@ class Bid(Model):
 
     def validate_parameters(self, data, parameters):
         if isinstance(data['__parent__'], Model):
-            if not parameters and data['__parent__'].features:
+            tender = data['__parent__']
+            if not parameters and tender.features:
                 raise ValidationError(u'This field is required.')
-            codes = dict([(i.code, [x.value for x in i.enum]) for i in data['__parent__'].features])
-            if set([i['code'] for i in parameters]) != set(codes):
-                raise ValidationError(u"All features parameters is required.")
-            if [i for i in parameters if i.value not in codes[i.code]]:
-                raise ValidationError(u"Parameter value should be one of feature values.")
+            if tender.lots:
+                lots = [i.relatedLot for i in data['lotValues']]
+                items = [i.id for i in tender.items if i.relatedLot in lots]
+                codes = dict([
+                    (i.code, [x.value for x in i.enum])
+                    for i in tender.features
+                    if i.featureOf == 'tenderer' or i.featureOf == 'lot' and i.relatedItem in lots or i.featureOf == 'item' and i.relatedItem in items
+                ])
+                if set([i['code'] for i in parameters]) != set(codes):
+                    raise ValidationError(u"All features parameters is required.")
+                if [i for i in parameters if i.value not in codes[i.code]]:
+                    raise ValidationError(u"Parameter value should be one of feature values.")
+            else:
+                codes = dict([(i.code, [x.value for x in i.enum]) for i in tender.features])
+                if set([i['code'] for i in parameters]) != set(codes):
+                    raise ValidationError(u"All features parameters is required.")
+                if [i for i in parameters if i.value not in codes[i.code]]:
+                    raise ValidationError(u"Parameter value should be one of feature values.")
 
 
 class Revision(Model):
@@ -539,7 +578,7 @@ class FeatureValue(Model):
 class Feature(Model):
 
     code = StringType(required=True, min_length=1, default=lambda: uuid4().hex)
-    featureOf = StringType(required=True, choices=['tenderer', 'item'], default='tenderer')
+    featureOf = StringType(required=True, choices=['tenderer', 'lot', 'item'], default='tenderer')
     relatedItem = StringType(min_length=1)
     title = StringType(required=True, min_length=1)
     title_en = StringType()
@@ -550,10 +589,12 @@ class Feature(Model):
     enum = ListType(ModelType(FeatureValue), default=list(), min_size=1)
 
     def validate_relatedItem(self, data, relatedItem):
-        if not relatedItem and data.get('featureOf') == 'item':
+        if not relatedItem and data.get('featureOf') in ['item', 'lot']:
             raise ValidationError(u'This field is required.')
-        if relatedItem and isinstance(data['__parent__'], Model) and relatedItem not in [i.id for i in data['__parent__'].items]:
+        if data.get('featureOf') == 'item' and isinstance(data['__parent__'], Model) and relatedItem not in [i.id for i in data['__parent__'].items]:
             raise ValidationError(u"relatedItem should be one of items")
+        if data.get('featureOf') == 'lot' and isinstance(data['__parent__'], Model) and relatedItem not in [i.id for i in data['__parent__'].lots]:
+            raise ValidationError(u"relatedItem should be one of lots")
 
 
 class Lot(Model):
