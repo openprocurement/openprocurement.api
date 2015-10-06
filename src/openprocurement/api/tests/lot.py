@@ -87,6 +87,45 @@ class TenderLotResourceTest(BaseTenderWebTest):
         response = self.app.post_json(request_path, {'data': {
             'title': 'lot title',
             'description': 'lot description',
+            'value': {'amount': '5000000.0'},
+            'minimalStep': {'amount': '100.0'},
+        }}, status=422)
+        self.assertEqual(response.status, '422 Unprocessable Entity')
+        self.assertEqual(response.content_type, 'application/json')
+        self.assertEqual(response.json['status'], 'error')
+        self.assertEqual(response.json['errors'], [
+            {u'description': [u'value should be less than value of tender'], u'location': u'body', u'name': u'value'}
+        ])
+
+        response = self.app.post_json(request_path, {'data': {
+            'title': 'lot title',
+            'description': 'lot description',
+            'value': {'amount': '500.0', 'currency': "USD"},
+            'minimalStep': {'amount': '100.0', 'currency': "USD"},
+        }}, status=422)
+        self.assertEqual(response.status, '422 Unprocessable Entity')
+        self.assertEqual(response.content_type, 'application/json')
+        self.assertEqual(response.json['status'], 'error')
+        self.assertEqual(response.json['errors'], [
+            {u'description': [u'currency should be identical to currency of value of tender'], u'location': u'body', u'name': u'value'}
+        ])
+
+        response = self.app.post_json(request_path, {'data': {
+            'title': 'lot title',
+            'description': 'lot description',
+            'value': {'amount': '500.0', 'valueAddedTaxIncluded': False},
+            'minimalStep': {'amount': '100.0', 'valueAddedTaxIncluded': False},
+        }}, status=422)
+        self.assertEqual(response.status, '422 Unprocessable Entity')
+        self.assertEqual(response.content_type, 'application/json')
+        self.assertEqual(response.json['status'], 'error')
+        self.assertEqual(response.json['errors'], [
+            {u'description': [u'valueAddedTaxIncluded should be identical to valueAddedTaxIncluded of value of tender'], u'location': u'body', u'name': u'value'}
+        ])
+
+        response = self.app.post_json(request_path, {'data': {
+            'title': 'lot title',
+            'description': 'lot description',
             'value': {'amount': '100.0'},
             'minimalStep': {'amount': '500.0'},
         }}, status=422)
@@ -94,7 +133,7 @@ class TenderLotResourceTest(BaseTenderWebTest):
         self.assertEqual(response.content_type, 'application/json')
         self.assertEqual(response.json['status'], 'error')
         self.assertEqual(response.json['errors'], [
-            {u'description': [u'value should be less than value of tender'], u'location': u'body', u'name': u'minimalStep'}
+            {u'description': [u'value should be less than value of lot'], u'location': u'body', u'name': u'minimalStep'}
         ])
 
         response = self.app.post_json(request_path, {'data': {
@@ -107,7 +146,7 @@ class TenderLotResourceTest(BaseTenderWebTest):
         self.assertEqual(response.content_type, 'application/json')
         self.assertEqual(response.json['status'], 'error')
         self.assertEqual(response.json['errors'], [
-            {u'description': [u'valueAddedTaxIncluded should be identical to valueAddedTaxIncluded of value of tender'], u'location': u'body', u'name': u'minimalStep'}
+            {u'description': [u'valueAddedTaxIncluded should be identical to valueAddedTaxIncluded of value of lot'], u'location': u'body', u'name': u'minimalStep'}
         ])
 
         response = self.app.post_json(request_path, {'data': {
@@ -120,7 +159,21 @@ class TenderLotResourceTest(BaseTenderWebTest):
         self.assertEqual(response.content_type, 'application/json')
         self.assertEqual(response.json['status'], 'error')
         self.assertEqual(response.json['errors'], [
-            {u'description': [u'currency should be identical to currency of value of tender'], u'location': u'body', u'name': u'minimalStep'}
+            {u'description': [u'currency should be identical to currency of value of lot'], u'location': u'body', u'name': u'minimalStep'}
+        ])
+
+        response = self.app.post_json(request_path, {'data': {
+            'title': 'lot title',
+            'description': 'lot description',
+            'value': {'amount': '500.0'},
+            'minimalStep': {'amount': '100.0'},
+            'auctionPeriod': {'startDate': '2014-10-31T00:00:00', 'endDate': '2015-10-01T00:00:00'}
+        }}, status=422)
+        self.assertEqual(response.status, '422 Unprocessable Entity')
+        self.assertEqual(response.content_type, 'application/json')
+        self.assertEqual(response.json['status'], 'error')
+        self.assertEqual(response.json['errors'], [
+            {u'description': [u'period should begin after tenderPeriod'], u'location': u'body', u'name': u'auctionPeriod'}
         ])
 
         response = self.app.patch_json('/tenders/{}'.format(self.tender_id), {"data": {"items": [{'relatedLot': '0' * 32}]}}, status=422)
