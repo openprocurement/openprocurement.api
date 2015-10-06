@@ -64,7 +64,7 @@ class IsoDateTimeType(BaseType):
 
 
 def set_parent(item, parent):
-    if hasattr(item, '__parent__'):
+    if hasattr(item, '__parent__') and item.__parent__ is None:
         item.__parent__ = parent
 
 
@@ -357,6 +357,26 @@ class Bid(Model):
         return [
             (Allow, '{}_{}'.format(self.owner, self.owner_token), 'edit_bid'),
         ]
+
+    def validate_value(self, data, value):
+        if value and isinstance(data['__parent__'], Model):
+            tender = data['__parent__']
+            if tender.value.amount < value.amount:
+                raise ValidationError(u"value of bid should be less than value of tender")
+            if tender.get('value').currency != value.currency:
+                raise ValidationError(u"currency of bid should be identical to currency of value of tender")
+            if tender.get('value').valueAddedTaxIncluded != value.valueAddedTaxIncluded:
+                raise ValidationError(u"valueAddedTaxIncluded of bid should be identical to valueAddedTaxIncluded of value of tender")
+
+    def validate_parameters(self, data, parameters):
+        if isinstance(data['__parent__'], Model):
+            if not parameters and data['__parent__'].features:
+                raise ValidationError(u'This field is required.')
+            codes = dict([(i.code, [x.value for x in i.enum]) for i in data['__parent__'].features])
+            if set([i['code'] for i in parameters]) != set(codes):
+                raise ValidationError(u"All features parameters is required.")
+            if [i for i in parameters if i.value not in codes[i.code]]:
+                raise ValidationError(u"Parameter value should be one of feature values.")
 
 
 class Revision(Model):
@@ -753,22 +773,6 @@ class Tender(SchematicsDocument, Model):
                 raise ValidationError(u"currency should be identical to currency of value of tender")
             if data.get('value').valueAddedTaxIncluded != value.valueAddedTaxIncluded:
                 raise ValidationError(u"valueAddedTaxIncluded should be identical to valueAddedTaxIncluded of value of tender")
-
-    def validate_bids(self, data, bids):
-        if bids and data.get('value'):
-            if data.get('value').amount < max([i.value.amount for i in bids]):
-                raise ValidationError(u"value of bid should be less than value of tender")
-            if not all([i.value.currency == data.get('value').currency for i in bids]):
-                raise ValidationError(u"currency of bid should be identical to currency of value of tender")
-            if not all([i.value.valueAddedTaxIncluded == data.get('value').valueAddedTaxIncluded for i in bids]):
-                raise ValidationError(u"valueAddedTaxIncluded of bid should be identical to valueAddedTaxIncluded of value of tender")
-        if bids and data.get('features'):
-            codes = dict([(i.code, [x.value for x in i.enum]) for i in data.get('features')])
-            for bid in bids:
-                if set([i['code'] for i in bid.parameters]) != set(codes):
-                    raise ValidationError(u"All features parameters is required.")
-                if [i for i in bid.parameters if i.value not in codes[i.code]]:
-                    raise ValidationError(u"Parameter value should be one of feature values.")
 
     def validate_tenderPeriod(self, data, period):
         if period and period.startDate and data.get('enquiryPeriod') and data.get('enquiryPeriod').endDate and period.startDate < data.get('enquiryPeriod').endDate:
