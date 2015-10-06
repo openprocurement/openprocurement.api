@@ -384,7 +384,9 @@ class Bid(Model):
     def validate_value(self, data, value):
         if isinstance(data['__parent__'], Model):
             tender = data['__parent__']
-            if not tender.lots and not value:
+            if tender.lots:
+                return
+            if not value:
                 raise ValidationError(u'This field is required.')
             if tender.value.amount < value.amount:
                 raise ValidationError(u"value of bid should be less than value of tender")
