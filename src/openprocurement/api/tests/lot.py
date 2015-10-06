@@ -610,6 +610,14 @@ class TenderLotFeatureBidderResourceTest(BaseTenderWebTest):
             {u'description': [u'All features parameters is required.'], u'location': u'body', u'name': u'parameters'}
         ])
 
+        response = self.app.post_json(request_path, {'data': {'tenderers': [test_tender_data["procuringEntity"]], 'lotValues': [{"value": {"amount": 500}, 'relatedLot': self.lot_id}], 'parameters': [{"code": "code_invalid", "value": 0.01}]}}, status=422)
+        self.assertEqual(response.status, '422 Unprocessable Entity')
+        self.assertEqual(response.content_type, 'application/json')
+        self.assertEqual(response.json['status'], 'error')
+        self.assertEqual(response.json['errors'], [
+            {u'description': [{u'code': [u'code should be one of feature code.']}], u'location': u'body', u'name': u'parameters'}
+        ])
+
         response = self.app.post_json(request_path, {'data': {'tenderers': [test_tender_data["procuringEntity"]], 'lotValues': [{"value": {"amount": 500}, 'relatedLot': self.lot_id}], 'parameters': [
             {"code": "code_item", "value": 0.01},
             {"code": "code_tenderer", "value": 0},
@@ -619,7 +627,7 @@ class TenderLotFeatureBidderResourceTest(BaseTenderWebTest):
         self.assertEqual(response.content_type, 'application/json')
         self.assertEqual(response.json['status'], 'error')
         self.assertEqual(response.json['errors'], [
-            {u'description': [u'Parameter value should be one of feature values.'], u'location': u'body', u'name': u'parameters'}
+            {u'description': [{u'value': [u'value should be one of feature value.']}], u'location': u'body', u'name': u'parameters'}
         ])
 
 

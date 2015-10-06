@@ -288,6 +288,17 @@ class Parameter(Model):
     code = StringType(required=True)
     value = FloatType(required=True)
 
+    def validate_code(self, data, code):
+        if isinstance(data['__parent__'], Model) and code not in [i.code for i in get_tender(data['__parent__']).features]:
+            raise ValidationError(u"code should be one of feature code.")
+
+    def validate_value(self, data, value):
+        if isinstance(data['__parent__'], Model):
+            tender = get_tender(data['__parent__'])
+            codes = dict([(i.code, [x.value for x in i.enum]) for i in tender.features])
+            if data['code'] in codes and value not in codes[data['code']]:
+                raise ValidationError(u"value should be one of feature value.")
+
 
 def validate_parameters_uniq(parameters, *args):
     if parameters:
@@ -410,14 +421,8 @@ class Bid(Model):
                 ])
                 if set([i['code'] for i in parameters]) != set(codes):
                     raise ValidationError(u"All features parameters is required.")
-                if [i for i in parameters if i.value not in codes[i.code]]:
-                    raise ValidationError(u"Parameter value should be one of feature values.")
-            else:
-                codes = dict([(i.code, [x.value for x in i.enum]) for i in tender.features])
-                if set([i['code'] for i in parameters]) != set(codes):
-                    raise ValidationError(u"All features parameters is required.")
-                if [i for i in parameters if i.value not in codes[i.code]]:
-                    raise ValidationError(u"Parameter value should be one of feature values.")
+            elif set([i['code'] for i in parameters]) != set([i.code for i in tender.features]):
+                raise ValidationError(u"All features parameters is required.")
 
 
 class Revision(Model):

@@ -423,7 +423,7 @@ class TenderBidderFeaturesResourceTest(BaseTenderWebTest):
         self.assertEqual(response.content_type, 'application/json')
         self.assertEqual(response.json['status'], 'error')
         self.assertEqual(response.json['errors'], [
-            {u'description': [u'Parameter value should be one of feature values.'], u'location': u'body', u'name': u'parameters'}
+            {u'description': [{u'value': [u'value should be one of feature value.']}], u'location': u'body', u'name': u'parameters'}
         ])
 
 
