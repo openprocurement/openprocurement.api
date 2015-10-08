@@ -79,29 +79,6 @@ Schema
 
     `deliveryLocation` usually takes precedence over `deliveryAddress` if both are present.
 
-:parameters:
-    List of :ref:`Parameter` objects
-
-.. _Parameter:
-
-Parameter
-=========
-
-Schema
-------
-
-:code:
-    string, required
-
-    Code of the feature.
-
-:value:
-    float, required
-
-    Value of the feature.
-
-.. _Classification:
-
 Classification
 ==============
 
