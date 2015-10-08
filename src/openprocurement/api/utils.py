@@ -31,11 +31,12 @@ def generate_id():
     return uuid4().hex
 
 
-def generate_tender_id(ctime, db):
+def generate_tender_id(ctime, db, server_id=''):
     key = ctime.date().isoformat()
+    tenderIDdoc = 'tenderID_' + server_id if server_id else 'tenderID'
     while True:
         try:
-            tenderID = db.get('tenderID', {'_id': 'tenderID'})
+            tenderID = db.get(tenderIDdoc, {'_id': tenderIDdoc})
             index = tenderID.get(key, 1)
             tenderID[key] = index + 1
             db.save(tenderID)
@@ -45,7 +46,7 @@ def generate_tender_id(ctime, db):
             sleep(1)
         else:
             break
-    return 'UA-{:04}-{:02}-{:02}-{:06}'.format(ctime.year, ctime.month, ctime.day, index)
+    return 'UA-{:04}-{:02}-{:02}-{:06}{}'.format(ctime.year, ctime.month, ctime.day, index, server_id and '-' + server_id)
 
 
 def get_filename(data):
