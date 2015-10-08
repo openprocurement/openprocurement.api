@@ -227,4 +227,5 @@ def main(global_config, **settings):
         if bucket_name not in [b.name for b in connection.get_all_buckets()]:
             connection.create_bucket(bucket_name, location=Location.EU)
         config.registry.bucket_name = bucket_name
+    config.registry.server_id = settings.get('id', '')
     return config.make_wsgi_app()
