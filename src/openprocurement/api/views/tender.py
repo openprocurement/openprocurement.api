@@ -72,6 +72,7 @@ class TenderResource(object):
         self.request = request
         self.server = request.registry.couchdb_server
         self.db = request.registry.db
+        self.server_id = request.registry.server_id
 
     @json_view(permission='view_tender')
     def collection_get(self):
@@ -361,7 +362,7 @@ class TenderResource(object):
         tender.id = tender_id
         if not tender.enquiryPeriod.startDate:
             tender.enquiryPeriod.startDate = get_now()
-        tender.tenderID = generate_tender_id(tender.enquiryPeriod.startDate, self.db)
+        tender.tenderID = generate_tender_id(tender.enquiryPeriod.startDate, self.db, self.server_id)
         if not tender.tenderPeriod.startDate:
             tender.tenderPeriod.startDate = tender.enquiryPeriod.endDate
         set_ownership(tender, self.request)
