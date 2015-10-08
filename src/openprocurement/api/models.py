@@ -527,11 +527,15 @@ class Contract(Model):
     description = StringType()  # Contract description
     description_en = StringType()
     description_ru = StringType()
-    status = StringType(required=True, choices=['pending', 'terminated', 'active', 'cancelled'], default='pending')
+    status = StringType(choices=['pending', 'terminated', 'active', 'cancelled'], default='pending')
     period = ModelType(Period)
     value = ModelType(Value)
     dateSigned = IsoDateTimeType()
     documents = ListType(ModelType(Document), default=list())
+
+    def validate_awardID(self, data, awardID):
+        if awardID and isinstance(data['__parent__'], Model) and awardID not in [i.id for i in data['__parent__'].awards]:
+            raise ValidationError(u"awardID should be one of awards")
 
 
 class Award(Model):
@@ -541,7 +545,7 @@ class Award(Model):
     """
     class Options:
         roles = {
-            'create': blacklist('id', 'status', 'date', 'documents', 'complaints', 'contracts', 'complaintPeriod'),
+            'create': blacklist('id', 'status', 'date', 'documents', 'complaints', 'complaintPeriod'),
             'edit': whitelist('status'),
             'embedded': schematics_embedded_role,
             'view': schematics_default_role,
@@ -563,7 +567,6 @@ class Award(Model):
     items = ListType(ModelType(Item))
     documents = ListType(ModelType(Document), default=list())
     complaints = ListType(ModelType(Complaint), default=list())
-    contracts = ListType(ModelType(Contract), default=list())
     complaintPeriod = ModelType(Period)
 
     def validate_lotID(self, data, lotID):
@@ -754,6 +757,7 @@ class Tender(SchematicsDocument, Model):
     procuringEntity = ModelType(Organization, required=True)  # The entity managing the procurement, which may be different from the buyer who is paying / using the items being procured.
     documents = ListType(ModelType(Document), default=list())  # All documents and attachments related to the tender.
     awards = ListType(ModelType(Award), default=list())
+    contracts = ListType(ModelType(Contract), default=list())
     revisions = ListType(ModelType(Revision), default=list())
     auctionPeriod = ModelType(Period)
     minimalStep = ModelType(Value, required=True)

@@ -935,9 +935,10 @@ class TenderProcessTest(BaseTenderWebTest):
         # get pending award
         award_id = [i['id'] for i in response.json['data'] if i['status'] == 'pending'][0]
         # set award as active
-        response = self.app.patch_json('/tenders/{}/awards/{}?acc_token={}'.format(tender_id, award_id, owner_token),
-                                       {"data": {"status": "active"}})
-        contract_id = response.json['data']['contracts'][0]['id']
+        self.app.patch_json('/tenders/{}/awards/{}?acc_token={}'.format(tender_id, award_id, owner_token), {"data": {"status": "active"}})
+        # get contract id
+        response = self.app.get('/tenders/{}'.format(tender_id))
+        contract_id = response.json['data']['contracts'][-1]['id']
         # after stand slill period
         self.app.authorization = ('Basic', ('chronograph', ''))
         self.set_status('complete', {'status': 'active.awarded'})
@@ -948,7 +949,7 @@ class TenderProcessTest(BaseTenderWebTest):
         self.db.save(tender)
         # sign contract
         self.app.authorization = ('Basic', ('broker', ''))
-        response = self.app.patch_json('/tenders/{}/awards/{}/contracts/{}?acc_token={}'.format(tender_id, award_id, contract_id, owner_token), {"data": {"status": "active"}})
+        self.app.patch_json('/tenders/{}/contracts/{}?acc_token={}'.format(tender_id, contract_id, owner_token), {"data": {"status": "active"}})
         # check status
         self.app.authorization = ('Basic', ('broker', ''))
         response = self.app.get('/tenders/{}'.format(tender_id))
@@ -1072,9 +1073,10 @@ class TenderProcessTest(BaseTenderWebTest):
         # get pending award
         award_id = [i['id'] for i in response.json['data'] if i['status'] == 'pending'][0]
         # set award as active
-        response = self.app.patch_json('/tenders/{}/awards/{}?acc_token={}'.format(tender_id, award_id, owner_token),
-                                       {"data": {"status": "active"}})
-        contract_id = response.json['data']['contracts'][0]['id']
+        self.app.patch_json('/tenders/{}/awards/{}?acc_token={}'.format(tender_id, award_id, owner_token), {"data": {"status": "active"}})
+        # get contract id
+        response = self.app.get('/tenders/{}'.format(tender_id))
+        contract_id = response.json['data']['contracts'][-1]['id']
         # after stand slill period
         self.app.authorization = ('Basic', ('chronograph', ''))
         self.set_status('complete', {'status': 'active.awarded'})
@@ -1085,7 +1087,7 @@ class TenderProcessTest(BaseTenderWebTest):
         self.db.save(tender)
         # sign contract
         self.app.authorization = ('Basic', ('broker', ''))
-        response = self.app.patch_json('/tenders/{}/awards/{}/contracts/{}?acc_token={}'.format(tender_id, award_id, contract_id, owner_token), {"data": {"status": "active"}})
+        self.app.patch_json('/tenders/{}/contracts/{}?acc_token={}'.format(tender_id, contract_id, owner_token), {"data": {"status": "active"}})
         # check status
         self.app.authorization = ('Basic', ('broker', ''))
         response = self.app.get('/tenders/{}'.format(tender_id))

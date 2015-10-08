@@ -77,16 +77,16 @@ def factory(request):
                 return get_item(complaint, 'document', request, root)
             else:
                 return complaint
-        elif request.matchdict.get('contract_id'):
-            contract = get_item(award, 'contract', request, root)
-            if request.matchdict.get('document_id'):
-                return get_item(contract, 'document', request, root)
-            else:
-                return contract
         elif request.matchdict.get('document_id'):
             return get_item(award, 'document', request, root)
         else:
             return award
+    elif request.matchdict.get('contract_id'):
+        contract = get_item(tender, 'contract', request, root)
+        if request.matchdict.get('document_id'):
+            return get_item(contract, 'document', request, root)
+        else:
+            return contract
     elif request.matchdict.get('bid_id'):
         bid = get_item(tender, 'bid', request, root)
         if request.matchdict.get('document_id'):

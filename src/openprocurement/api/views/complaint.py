@@ -51,7 +51,7 @@ class TenderComplaintResource(object):
     def collection_get(self):
         """List complaints
         """
-        return {'data': [i.serialize("view") for i in self.request.validated['tender'].complaints]}
+        return {'data': [i.serialize("view") for i in self.request.context.complaints]}
 
     @json_view(permission='view_tender')
     def get(self):

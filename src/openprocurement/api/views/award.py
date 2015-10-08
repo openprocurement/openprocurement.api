@@ -83,7 +83,7 @@ class TenderAwardResource(object):
         """
         return {'data': [i.serialize("view") for i in self.request.validated['tender'].awards]}
 
-    @json_view(content_type="application/json", permission='edit_tender', validators=(validate_award_data,))
+    @json_view(content_type="application/json", permission='create_award', validators=(validate_award_data,))
     def collection_post(self):
         """Accept or reject bidder application
 
@@ -301,12 +301,12 @@ class TenderAwardResource(object):
         apply_patch(self.request, save=False, src=self.request.context.serialize())
         if award_status == 'pending' and award.status == 'active':
             award.complaintPeriod.endDate = get_now() + STAND_STILL_TIME
-            award.contracts.append(Contract({'awardID': award.id}))
+            tender.contracts.append(Contract({'awardID': award.id}))
             tender.awardPeriod.endDate = get_now()
             tender.status = 'active.awarded'
         elif award_status == 'active' and award.status == 'cancelled':
             award.complaintPeriod.endDate = get_now()
-            for i in award.contracts:
+            for i in tender.contracts:
                 i.status = 'cancelled'
             add_next_award(self.request)
             tender.status = 'active.qualification'

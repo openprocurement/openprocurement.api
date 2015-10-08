@@ -17,17 +17,17 @@ from openprocurement.api.validation import (
 LOGGER = getLogger(__name__)
 
 
-@opresource(name='Tender Award Contracts',
-            collection_path='/tenders/{tender_id}/awards/{award_id}/contracts',
-            path='/tenders/{tender_id}/awards/{award_id}/contracts/{contract_id}',
-            description="Tender award contracts")
+@opresource(name='Tender Contracts',
+            collection_path='/tenders/{tender_id}/contracts',
+            path='/tenders/{tender_id}/contracts/{contract_id}',
+            description="Tender contracts")
 class TenderAwardContractResource(object):
 
     def __init__(self, request):
         self.request = request
         self.db = request.registry.db
 
-    @json_view(content_type="application/json", permission='create_award_contract', validators=(validate_contract_data,))
+    @json_view(content_type="application/json", permission='create_contract', validators=(validate_contract_data,))
     def collection_post(self):
         """Post a contract for award
         """
@@ -39,20 +39,19 @@ class TenderAwardContractResource(object):
         contract_data = self.request.validated['data']
         contract = Contract(contract_data)
         contract.__parent__ = self.request.context
-        contract.awardID = self.request.validated['award_id']
-        self.request.validated['award'].contracts.append(contract)
+        tender.contracts.append(contract)
         if save_tender(self.request):
             update_journal_handler_params({'contract_id': contract.id})
-            LOGGER.info('Created tender award contract {}'.format(contract.id), extra={'MESSAGE_ID': 'tender_award_contract_create'})
+            LOGGER.info('Created tender contract {}'.format(contract.id), extra={'MESSAGE_ID': 'tender_contract_create'})
             self.request.response.status = 201
-            self.request.response.headers['Location'] = self.request.route_url('Tender Award Contracts', tender_id=tender.id, award_id=self.request.validated['award_id'], contract_id=contract['id'])
+            self.request.response.headers['Location'] = self.request.route_url('Tender Contracts', tender_id=tender.id, contract_id=contract['id'])
             return {'data': contract.serialize()}
 
     @json_view(permission='view_tender')
     def collection_get(self):
         """List contracts for award
         """
-        return {'data': [i.serialize() for i in self.request.validated['award'].contracts]}
+        return {'data': [i.serialize() for i in self.request.context.contracts]}
 
     @json_view(permission='view_tender')
     def get(self):
@@ -97,5 +96,5 @@ class TenderAwardContractResource(object):
         if self.request.context.status == 'active' and self.request.validated['tender_status'] != 'complete':
             self.request.validated['tender'].status = 'complete'
         if save_tender(self.request):
-            LOGGER.info('Updated tender award contract {}'.format(self.request.context.id), extra={'MESSAGE_ID': 'tender_award_contract_patch'})
+            LOGGER.info('Updated tender contract {}'.format(self.request.context.id), extra={'MESSAGE_ID': 'tender_contract_patch'})
             return {'data': self.request.context.serialize()}

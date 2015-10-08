@@ -97,8 +97,9 @@ class TenderAwardComplaintResource(object):
                     for j in i.complaints:
                         if j.status == 'pending':
                             j.status = 'cancelled'
-            for i in award.contracts:
-                i.status = 'cancelled'
+            for i in tender.contracts:
+                if award.id == i.awardID:
+                    i.status = 'cancelled'
             award.complaintPeriod.endDate = get_now() + STAND_STILL_TIME
             award.status = 'cancelled'
             add_next_award(self.request)
