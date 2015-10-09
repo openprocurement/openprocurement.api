@@ -7,7 +7,7 @@ from email.header import decode_header
 
 
 LOGGER = logging.getLogger(__name__)
-SCHEMA_VERSION = 17
+SCHEMA_VERSION = 18
 SCHEMA_DOC = 'openprocurement_schema'
 
 
@@ -578,5 +578,18 @@ def from16to17(db):
                 i['complaintPeriod'] = {'startDate': i['date'], 'endDate': (parse_date(i['date'], TZ) + STAND_STILL_TIME).isoformat()}
             changed = True
         if changed:
+            doc['dateModified'] = get_now().isoformat()
+            db.save(doc)
+
+
+def from17to18(db):
+    results = db.view('tenders/all', include_docs=True)
+    for i in results:
+        doc = i.doc
+        contracts = []
+        for i in doc.get("awards", []):
+            contracts.extend(i.pop("contracts", []))
+        if contracts:
+            doc['contracts'] = contracts
             doc['dateModified'] = get_now().isoformat()
             db.save(doc)
