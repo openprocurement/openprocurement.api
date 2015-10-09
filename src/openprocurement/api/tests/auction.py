@@ -3,34 +3,13 @@ import unittest
 from datetime import timedelta
 
 from openprocurement.api.models import get_now
-from openprocurement.api.tests.base import BaseTenderWebTest, test_tender_data, test_features_tender_data
+from openprocurement.api.tests.base import BaseTenderWebTest, test_tender_data, test_features_tender_data, test_bids
 
 
 class TenderAuctionResourceTest(BaseTenderWebTest):
     #initial_data = tender_data
     initial_status = 'active.tendering'
-    initial_bids = [
-        {
-            "tenderers": [
-                test_tender_data["procuringEntity"]
-            ],
-            "value": {
-                "amount": 469,
-                "currency": "UAH",
-                "valueAddedTaxIncluded": True
-            }
-        },
-        {
-            "tenderers": [
-                test_tender_data["procuringEntity"]
-            ],
-            "value": {
-                "amount": 479,
-                "currency": "UAH",
-                "valueAddedTaxIncluded": True
-            }
-        }
-    ]
+    initial_bids = test_bids
 
     def test_get_tender_auction_not_found(self):
         response = self.app.get('/tenders/some_id/auction', status=404)

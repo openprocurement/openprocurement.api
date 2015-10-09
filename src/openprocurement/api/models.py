@@ -570,8 +570,11 @@ class Award(Model):
     complaintPeriod = ModelType(Period)
 
     def validate_lotID(self, data, lotID):
-        if lotID and isinstance(data['__parent__'], Model) and lotID not in [i.id for i in data['__parent__'].lots]:
-            raise ValidationError(u"lotID should be one of lots")
+        if isinstance(data['__parent__'], Model):
+            if not lotID and data['__parent__'].lots:
+                raise ValidationError(u'This field is required.')
+            if lotID and lotID not in [i.id for i in data['__parent__'].lots]:
+                raise ValidationError(u"lotID should be one of lots")
 
 
 class FeatureValue(Model):

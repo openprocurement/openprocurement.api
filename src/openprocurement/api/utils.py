@@ -232,25 +232,77 @@ def apply_patch(request, data=None, save=True, src=None):
 
 def add_next_award(request):
     tender = request.validated['tender']
-    unsuccessful_awards = [i.bid_id for i in tender.awards if i.status == 'unsuccessful']
-    bids = chef(tender.bids, tender.features, unsuccessful_awards)
-    if bids:
-        bid = bids[0].serialize()
-        award_data = {
-            'bid_id': bid['id'],
-            'status': 'pending',
-            'value': bid['value'],
-            'suppliers': bid['tenderers'],
-            'complaintPeriod': {
-                'startDate': get_now().isoformat()
-            }
-        }
-        award = Award(award_data)
-        tender.awards.append(award)
-        request.response.headers['Location'] = request.route_url('Tender Awards', tender_id=tender.id, award_id=award['id'])
+    if tender.lots:
+        statuses = set()
+        for lot in tender.lots:
+            lot_awards = [i for i in tender.awards if i.lotID == lot.id]
+            if lot_awards and lot_awards[-1].status in ['pending', 'active']:
+                statuses.add(lot_awards[-1].status)
+                continue
+            lot_items = [i.id for i in tender.items if i.relatedLot == lot.id]
+            features = [
+                i
+                for i in tender.features
+                if i.featureOf == 'tenderer' or i.featureOf == 'lot' and i.relatedItem == lot.id or i.featureOf == 'item' and i.relatedItem in lot_items
+            ]
+            codes = [i.code for i in features]
+            bids = [
+                {
+                    'id': bid.id,
+                    'value': [i for i in bid.lotValues if lot.id == i.relatedLot][0]['value'],
+                    'tenderers': bid.tenderers,
+                    'parameters': [i for i in bid.parameters if i.code in codes],
+                    'date': bid.date
+                }
+                for bid in tender.bids
+                if lot.id in [i.relatedLot for i in bid.lotValues]
+            ]
+            unsuccessful_awards = [i.bid_id for i in lot_awards if i.status == 'unsuccessful']
+            bids = chef(bids, features, unsuccessful_awards)
+            if bids:
+                bid = bids[0]
+                award = Award({
+                    'bid_id': bid['id'],
+                    'lotID': lot.id,
+                    'status': 'pending',
+                    'value': bid['value'],
+                    'suppliers': bid['tenderers'],
+                    'complaintPeriod': {
+                        'startDate': get_now().isoformat()
+                    }
+                })
+                tender.awards.append(award)
+                request.response.headers['Location'] = request.route_url('Tender Awards', tender_id=tender.id, award_id=award['id'])
+                statuses.add('pending')
+            else:
+                statuses.add('unsuccessful')
+        if statuses.difference(set(['unsuccessful', 'active'])):
+            tender.awardPeriod.endDate = get_now()
+            tender.status = 'active.awarded'
+        else:
+            tender.awardPeriod.endDate = None
+            tender.status = 'active.qualification'
     else:
-        tender.awardPeriod.endDate = get_now()
-        tender.status = 'active.awarded'
+        unsuccessful_awards = [i.bid_id for i in tender.awards if i.status == 'unsuccessful']
+        bids = chef(tender.bids, tender.features, unsuccessful_awards)
+        if bids:
+            bid = bids[0].serialize()
+            award = Award({
+                'bid_id': bid['id'],
+                'status': 'pending',
+                'value': bid['value'],
+                'suppliers': bid['tenderers'],
+                'complaintPeriod': {
+                    'startDate': get_now().isoformat()
+                }
+            })
+            tender.awards.append(award)
+            request.response.headers['Location'] = request.route_url('Tender Awards', tender_id=tender.id, award_id=award['id'])
+            tender.status = 'active.qualification'
+            tender.awardPeriod.endDate = None
+        else:
+            tender.awardPeriod.endDate = get_now()
+            tender.status = 'active.awarded'
 
 
 def error_handler(errors):

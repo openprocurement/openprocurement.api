@@ -1,32 +1,7 @@
 # -*- coding: utf-8 -*-
 import unittest
 
-from openprocurement.api.tests.base import BaseTenderWebTest, test_tender_data
-#from openprocurement.api.models import get_now
-
-
-test_bids = [
-    {
-        "tenderers": [
-            test_tender_data["procuringEntity"]
-        ],
-        "value": {
-            "amount": 469,
-            "currency": "UAH",
-            "valueAddedTaxIncluded": True
-        }
-    },
-    {
-        "tenderers": [
-            test_tender_data["procuringEntity"]
-        ],
-        "value": {
-            "amount": 479,
-            "currency": "UAH",
-            "valueAddedTaxIncluded": True
-        }
-    }
-]
+from openprocurement.api.tests.base import BaseTenderWebTest, test_tender_data, test_bids
 
 
 class TenderContractResourceTest(BaseTenderWebTest):
