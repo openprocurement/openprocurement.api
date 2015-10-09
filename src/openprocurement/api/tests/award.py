@@ -246,6 +246,29 @@ class TenderAwardResourceTest(BaseTenderWebTest):
         self.assertEqual(response.content_type, 'application/json')
         self.assertEqual(response.json['errors'][0]["description"], "Can't update award in current (complete) tender status")
 
+    def test_patch_tender_award_unsuccessful(self):
+        request_path = '/tenders/{}/awards'.format(self.tender_id)
+        response = self.app.post_json(request_path, {'data': {'suppliers': [test_tender_data["procuringEntity"]], 'status': u'pending', 'bid_id': self.initial_bids[0]['id'], "value": {"amount": 500}}})
+        self.assertEqual(response.status, '201 Created')
+        self.assertEqual(response.content_type, 'application/json')
+        award = response.json['data']
+
+        response = self.app.patch_json('/tenders/{}/awards/{}'.format(self.tender_id, award['id']), {"data": {"status": "unsuccessful"}})
+        self.assertEqual(response.status, '200 OK')
+        self.assertEqual(response.content_type, 'application/json')
+        self.assertIn('Location', response.headers)
+        new_award_location = response.headers['Location']
+
+        response = self.app.patch_json(new_award_location[-81:], {"data": {"status": "unsuccessful"}})
+        self.assertEqual(response.status, '200 OK')
+        self.assertEqual(response.content_type, 'application/json')
+        self.assertNotIn('Location', response.headers)
+
+        response = self.app.get(request_path)
+        self.assertEqual(response.status, '200 OK')
+        self.assertEqual(response.content_type, 'application/json')
+        self.assertEqual(len(response.json['data']), 2)
+
     def test_get_tender_award(self):
         response = self.app.post_json('/tenders/{}/awards'.format(
             self.tender_id), {'data': {'suppliers': [test_tender_data["procuringEntity"]], 'status': 'pending', 'bid_id': self.initial_bids[0]['id']}})
@@ -403,6 +426,29 @@ class TenderLotAwardResourceTest(BaseTenderWebTest):
         self.assertEqual(response.status, '403 Forbidden')
         self.assertEqual(response.content_type, 'application/json')
         self.assertEqual(response.json['errors'][0]["description"], "Can't update award in current (complete) tender status")
+
+    def test_patch_tender_award_unsuccessful(self):
+        request_path = '/tenders/{}/awards'.format(self.tender_id)
+        response = self.app.post_json(request_path, {'data': {'suppliers': [test_tender_data["procuringEntity"]], 'status': u'pending', 'bid_id': self.initial_bids[0]['id'], 'lotID': self.initial_lots[0]['id'], "value": {"amount": 500}}})
+        self.assertEqual(response.status, '201 Created')
+        self.assertEqual(response.content_type, 'application/json')
+        award = response.json['data']
+
+        response = self.app.patch_json('/tenders/{}/awards/{}'.format(self.tender_id, award['id']), {"data": {"status": "unsuccessful"}})
+        self.assertEqual(response.status, '200 OK')
+        self.assertEqual(response.content_type, 'application/json')
+        self.assertIn('Location', response.headers)
+        new_award_location = response.headers['Location']
+
+        response = self.app.patch_json(new_award_location[-81:], {"data": {"status": "unsuccessful"}})
+        self.assertEqual(response.status, '200 OK')
+        self.assertEqual(response.content_type, 'application/json')
+        self.assertNotIn('Location', response.headers)
+
+        response = self.app.get(request_path)
+        self.assertEqual(response.status, '200 OK')
+        self.assertEqual(response.content_type, 'application/json')
+        self.assertEqual(len(response.json['data']), 2)
 
 
 class TenderAwardComplaintResourceTest(BaseTenderWebTest):
@@ -1232,10 +1278,11 @@ class TenderAwardDocumentResourceTest(BaseTenderWebTest):
 
 def suite():
     suite = unittest.TestSuite()
-    suite.addTest(unittest.makeSuite(TenderAwardResourceTest))
-    suite.addTest(unittest.makeSuite(TenderAwardComplaintResourceTest))
     suite.addTest(unittest.makeSuite(TenderAwardComplaintDocumentResourceTest))
+    suite.addTest(unittest.makeSuite(TenderAwardComplaintResourceTest))
     suite.addTest(unittest.makeSuite(TenderAwardDocumentResourceTest))
+    suite.addTest(unittest.makeSuite(TenderAwardResourceTest))
+    suite.addTest(unittest.makeSuite(TenderLotAwardResourceTest))
     return suite
 
 

@@ -237,7 +237,7 @@ def add_next_award(request):
         for lot in tender.lots:
             lot_awards = [i for i in tender.awards if i.lotID == lot.id]
             if lot_awards and lot_awards[-1].status in ['pending', 'active']:
-                statuses.add(lot_awards[-1].status)
+                statuses.add(lot_awards[-1].status if lot_awards else 'unsuccessful')
                 continue
             lot_items = [i.id for i in tender.items if i.relatedLot == lot.id]
             features = [
@@ -249,10 +249,10 @@ def add_next_award(request):
             bids = [
                 {
                     'id': bid.id,
-                    'value': [i for i in bid.lotValues if lot.id == i.relatedLot][0]['value'],
+                    'value': [i for i in bid.lotValues if lot.id == i.relatedLot][0].value,
                     'tenderers': bid.tenderers,
                     'parameters': [i for i in bid.parameters if i.code in codes],
-                    'date': bid.date
+                    'date': [i for i in bid.lotValues if lot.id == i.relatedLot][0].date
                 }
                 for bid in tender.bids
                 if lot.id in [i.relatedLot for i in bid.lotValues]

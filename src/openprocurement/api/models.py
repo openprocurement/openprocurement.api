@@ -314,14 +314,15 @@ class LotValue(Model):
             'view': schematics_default_role,
             'create': whitelist('value', 'relatedLot'),
             'edit': whitelist('value', 'relatedLot'),
-            'auction_view': whitelist('value', 'relatedLot', 'participationUrl'),
-            'auction_post': whitelist('value'),
+            'auction_view': whitelist('value', 'date', 'relatedLot', 'participationUrl'),
+            'auction_post': whitelist('value', 'date'),
             'auction_patch': whitelist('value', 'participationUrl'),
         }
 
     value = ModelType(Value, required=True)
     relatedLot = MD5Type(required=True)
     participationUrl = URLType()
+    date = IsoDateTimeType(default=get_now)
 
     def validate_value(self, data, value):
         if value and isinstance(data['__parent__'], Model) and data['relatedLot']:
