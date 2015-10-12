@@ -216,7 +216,7 @@ Qualification comission registers its decision via the following call:
    :code:
 
 Cancelling tender
-----------------
+-----------------
 
 Tender creator can cancel tender anytime. The following steps should be applied:
 
