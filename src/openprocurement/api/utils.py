@@ -235,6 +235,8 @@ def add_next_award(request):
     if tender.lots:
         statuses = set()
         for lot in tender.lots:
+            if lot.status != 'active':
+                continue
             lot_awards = [i for i in tender.awards if i.lotID == lot.id]
             if lot_awards and lot_awards[-1].status in ['pending', 'active']:
                 statuses.add(lot_awards[-1].status if lot_awards else 'unsuccessful')
@@ -257,6 +259,10 @@ def add_next_award(request):
                 for bid in tender.bids
                 if lot.id in [i.relatedLot for i in bid.lotValues]
             ]
+            if not bids:
+                lot.status = 'unsuccessful'
+                statuses.add('unsuccessful')
+                continue
             unsuccessful_awards = [i.bid_id for i in lot_awards if i.status == 'unsuccessful']
             bids = chef(bids, features, unsuccessful_awards)
             if bids:
@@ -276,7 +282,7 @@ def add_next_award(request):
                 statuses.add('pending')
             else:
                 statuses.add('unsuccessful')
-        if statuses.difference(set(['unsuccessful', 'active'])):
+        if not statuses.difference(set(['unsuccessful', 'active'])):
             tender.awardPeriod.endDate = get_now()
             tender.status = 'active.awarded'
         else:

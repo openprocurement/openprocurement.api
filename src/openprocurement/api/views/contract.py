@@ -69,9 +69,11 @@ class TenderAwardContractResource(object):
         data = self.request.validated['data']
         if self.request.context.status != 'active' and 'status' in data and data['status'] == 'active':
             tender = self.request.validated['tender']
+            lotID = [a for a in tender.awards if a.id == self.request.context.awardID][0].lotID
             stand_still_end = max([
                 a.complaintPeriod.endDate
                 for a in tender.awards
+                if a.lotID == lotID
             ])
             if stand_still_end > get_now():
                 self.request.errors.add('body', 'data', 'Can\'t sign contract before stand-still period end ({})'.format(stand_still_end.isoformat()))
@@ -86,7 +88,7 @@ class TenderAwardContractResource(object):
                 i
                 for a in tender.awards
                 for i in a.complaints
-                if i.status == 'pending'
+                if i.status == 'pending' and a.lotID == lotID
             ]
             if pending_complaints or pending_awards_complaints:
                 self.request.errors.add('body', 'data', 'Can\'t sign contract before reviewing all complaints')

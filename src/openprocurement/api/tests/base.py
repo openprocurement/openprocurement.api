@@ -357,7 +357,6 @@ class BaseTenderWebTest(BaseWebTest):
                 bids.append(response.json['data'])
             self.initial_bids = bids
         if self.initial_status != status:
-            self.initial_status
             self.set_status(self.initial_status)
 
     def tearDown(self):

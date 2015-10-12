@@ -83,7 +83,7 @@ class TenderLotResource(object):
             return
         lot = self.request.context
         res = lot.serialize("view")
-        self.request.validated['tender'].lots.remove(lot)
+        tender.lots.remove(lot)
         if save_tender(self.request):
             LOGGER.info('Deleted tender lot {}'.format(self.request.context.id), extra={'MESSAGE_ID': 'tender_lot_delete'})
             return {'data': res}
