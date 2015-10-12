@@ -7,15 +7,15 @@ Besides simple price-only tenders it is possible to announce the tender
 where other factors are valuable.  Such tenders define features that
 procuring entity is interested in and how much different options influence
 the decision about the winner.  Features can describe properties of
-tenderer, lot or item(s) being procured.  Each option offered has numerical
+tenderer, lot or item(s) being procured. Each option offered has numerical
 value that defines level of its importance compared to price.  Bidders are
-doing self evaluation and providing the Parameters of their proposal, the
-actual value of each feature along with financial part of a bid.
+doing self evaluation and provide the Parameters of their proposal (the
+actual value of each feature) along with financial part of a bid.
 
-The :ref:`Feature` is data structure, part of :ref:`Tender`. And Tender can
-have multiple features associated.  Feature can be associated with tenderer,
-lot or individual Item being procured.  Features are identified with code,
-and codes are unique within the tender.
+The :ref:`Feature` is a data structure, part of the :ref:`Tender`. Tender can
+have multiple features associated. Feature can be associated with tenderer,
+lot or individual Item being procured. Features are identified with code,
+which are unique within the tender.
 
 .. sourcecode:: json
 
@@ -67,8 +67,8 @@ and codes are unique within the tender.
         }
   ]
 
-:ref:`Parameters <parameter>` provided by :ref:`bidders <Bid>` should correspond to set
-of features required.  Parameters are linked to features by code.
+:ref:`Parameters <parameter>` provided by :ref:`bidders <Bid>` should correspond to a set
+of required features.  Parameters are linked to features using their codes.
 
 
 .. sourcecode:: json
@@ -87,8 +87,8 @@ of features required.  Parameters are linked to features by code.
 Announcing MEAT
 ---------------
 
-Features can be set in :ref:`Tender` pretty :ref:`same way <procuring>` as Items are, initially with
-POST request and modified later with PATCH requests.
+Features can be set in :ref:`Tender` pretty the :ref:`same way <procuring>` as Items are: initially with
+POST request and later modified with PATCH requests.
 
 .. sourcecode:: http
 
@@ -108,7 +108,7 @@ POST request and modified later with PATCH requests.
 Bidding in MEAT
 ---------------
 
-The same applies to :ref:`Bid`, Parameters of a Bid can be set initially with POST
+The same applies to :ref:`Bid` - Parameters of a Bid can be set initially with POST
 request and modified later with PATCH requests (see more at :ref:`bidding`).
 
 .. sourcecode:: http
@@ -130,7 +130,7 @@ request and modified later with PATCH requests (see more at :ref:`bidding`).
 Qualification in MEAT
 ---------------------
 
-During auction Bidder can bid with his bid price and see normalized price of
-her bid against normalized bids of other bidders.  Ranking in auction is
+During auction Bidder can bid with his/her bid price and see normalized price of
+his/her bid against normalized bids of other bidders.  Ranking in auction is
 performed with normalized price where both price value and other
 `Bid.parameters` are taken into consideration.
