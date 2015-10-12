@@ -339,6 +339,23 @@ class TenderLotResourceTest(BaseTenderWebTest):
         self.assertEqual(response.content_type, 'application/json')
         lot = response.json['data']
 
+        response = self.app.patch_json('/tenders/{}'.format(self.tender_id), {"data": {
+            "items": [
+                {
+                    'relatedLot': lot['id']
+                }
+            ]
+        }})
+        self.assertEqual(response.status, '200 OK')
+
+        response = self.app.delete('/tenders/{}/lots/{}'.format(self.tender_id, lot['id']), status=422)
+        self.assertEqual(response.status, '422 Unprocessable Entity')
+        self.assertEqual(response.content_type, 'application/json')
+        self.assertEqual(response.json['status'], 'error')
+        self.assertEqual(response.json['errors'], [
+            {u'description': [{u'relatedLot': [u'relatedLot should be one of lots']}], u'location': u'body', u'name': u'items'}
+        ])
+
         self.set_status('active.tendering')
 
         response = self.app.delete('/tenders/{}/lots/{}'.format(self.tender_id, lot['id']), status=403)
