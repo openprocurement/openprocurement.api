@@ -257,6 +257,11 @@ class TenderBidResource(object):
         value = self.request.validated['data'].get("value", {}).get("amount")
         if value and value != self.request.context.get("value", {}).get("amount"):
             self.request.validated['data']['date'] = get_now().isoformat()
+        if self.request.context.lotValues:
+            lotValues = dict([(i.relatedLot, i.value.amount) for i in self.request.context.lotValues])
+            for lotvalue in self.request.validated['data'].get("lotValues", []):
+                if lotvalue['relatedLot'] in lotValues and lotvalue.get("value", {}).get("amount") != lotValues[lotvalue['relatedLot']]:
+                    lotvalue['date'] = get_now().isoformat()
         if apply_patch(self.request, src=self.request.context.serialize()):
             LOGGER.info('Updated tender bid {}'.format(self.request.context.id), extra={'MESSAGE_ID': 'tender_bid_patch'})
             return {'data': self.request.context.serialize("view")}

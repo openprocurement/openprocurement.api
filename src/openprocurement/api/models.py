@@ -401,15 +401,17 @@ class Bid(Model):
         if isinstance(data['__parent__'], Model):
             tender = data['__parent__']
             if tender.lots:
-                return
-            if not value:
-                raise ValidationError(u'This field is required.')
-            if tender.value.amount < value.amount:
-                raise ValidationError(u"value of bid should be less than value of tender")
-            if tender.get('value').currency != value.currency:
-                raise ValidationError(u"currency of bid should be identical to currency of value of tender")
-            if tender.get('value').valueAddedTaxIncluded != value.valueAddedTaxIncluded:
-                raise ValidationError(u"valueAddedTaxIncluded of bid should be identical to valueAddedTaxIncluded of value of tender")
+                if value:
+                    raise ValidationError(u"value should be posted for each lot of bid")
+            else:
+                if not value:
+                    raise ValidationError(u'This field is required.')
+                if tender.value.amount < value.amount:
+                    raise ValidationError(u"value of bid should be less than value of tender")
+                if tender.get('value').currency != value.currency:
+                    raise ValidationError(u"currency of bid should be identical to currency of value of tender")
+                if tender.get('value').valueAddedTaxIncluded != value.valueAddedTaxIncluded:
+                    raise ValidationError(u"valueAddedTaxIncluded of bid should be identical to valueAddedTaxIncluded of value of tender")
 
     def validate_parameters(self, data, parameters):
         if isinstance(data['__parent__'], Model):

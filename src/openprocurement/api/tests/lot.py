@@ -417,6 +417,14 @@ class TenderLotBidderResourceTest(BaseTenderWebTest):
             {u'description': [{u'value': [u'currency of bid should be identical to currency of value of lot']}], u'location': u'body', u'name': u'lotValues'},
         ])
 
+        response = self.app.post_json(request_path, {'data': {'tenderers': [test_tender_data["procuringEntity"]], "value": {"amount": 500}, 'lotValues': [{"value": {"amount": 500}, 'relatedLot': self.initial_lots[0]['id']}]}}, status=422)
+        self.assertEqual(response.status, '422 Unprocessable Entity')
+        self.assertEqual(response.content_type, 'application/json')
+        self.assertEqual(response.json['status'], 'error')
+        self.assertEqual(response.json['errors'], [
+            {u'description': [u'value should be posted for each lot of bid'], u'location': u'body', u'name': u'value'}
+        ])
+
         response = self.app.post_json(request_path, {'data': {'tenderers': test_tender_data["procuringEntity"], 'lotValues': [{"value": {"amount": 500}, 'relatedLot': self.initial_lots[0]['id']}]}}, status=422)
         self.assertEqual(response.status, '422 Unprocessable Entity')
         self.assertEqual(response.content_type, 'application/json')
