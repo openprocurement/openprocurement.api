@@ -84,7 +84,7 @@ class TenderAwardResource(object):
         """
         return {'data': [i.serialize("view") for i in self.request.validated['tender'].awards]}
 
-    @view(content_type="application/json", permission='edit_tender', validators=(validate_award_data,), renderer='json')
+    @view(content_type="application/json", permission='create_award', validators=(validate_award_data,), renderer='json')
     def collection_post(self):
         """Accept or reject bidder application
 
