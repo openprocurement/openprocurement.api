@@ -354,7 +354,7 @@ class TenderSameValueAuctionResourceTest(BaseTenderWebTest):
                     "date": (now - timedelta(seconds=i)).isoformat(),
                     "value": b['value']
                 }
-                for i, b  in enumerate(self.initial_bids)
+                for i, b in enumerate(self.initial_bids)
             ]
         }
 

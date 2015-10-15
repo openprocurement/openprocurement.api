@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from logging import getLogger
 from cornice.resource import resource, view
-from openprocurement.api.models import Cancellation, get_now
+from openprocurement.api.models import Cancellation
 from openprocurement.api.utils import (
     apply_patch,
     save_tender,

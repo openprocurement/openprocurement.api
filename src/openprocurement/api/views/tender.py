@@ -1,8 +1,6 @@
 # -*- coding: utf-8 -*-
-from datetime import timedelta
 from logging import getLogger
 from cornice.resource import resource, view
-from iso8601 import parse_date
 from binascii import hexlify, unhexlify
 from Crypto.Cipher import AES
 from openprocurement.api.design import (
@@ -75,6 +73,7 @@ class TenderResource(object):
         self.request = request
         self.server = request.registry.couchdb_server
         self.db = request.registry.db
+        self.server_id = request.registry.server_id
 
     @view(renderer='json', permission='view_tender')
     def collection_get(self):
@@ -192,7 +191,7 @@ class TenderResource(object):
         else:
             params['offset'] = offset
             pparams['offset'] = offset
-        data =  {
+        data = {
             'data': results,
             'next_page': {
                 "offset": params['offset'],
@@ -363,7 +362,7 @@ class TenderResource(object):
         tender.id = tender_id
         if not tender.enquiryPeriod.startDate:
             tender.enquiryPeriod.startDate = get_now()
-        tender.tenderID = generate_tender_id(tender.enquiryPeriod.startDate, self.db)
+        tender.tenderID = generate_tender_id(tender.enquiryPeriod.startDate, self.db, self.server_id)
         if not tender.tenderPeriod.startDate:
             tender.tenderPeriod.startDate = tender.enquiryPeriod.endDate
         set_ownership(tender, self.request)

@@ -566,7 +566,6 @@ class MigrateTest(BaseWebTest):
             ]
         }
         _id, _rev = self.db.save(data)
-        item = self.db.get(_id)
         migrate_data(self.db, 17)
         migrated_item = self.db.get(_id)
         for i in migrated_item['awards']:
