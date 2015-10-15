@@ -316,7 +316,7 @@ class LotValue(Model):
             'edit': whitelist('value', 'relatedLot'),
             'auction_view': whitelist('value', 'date', 'relatedLot', 'participationUrl'),
             'auction_post': whitelist('value', 'date'),
-            'auction_patch': whitelist('value', 'participationUrl'),
+            'auction_patch': whitelist('participationUrl'),
         }
 
     value = ModelType(Value, required=True)
@@ -352,9 +352,9 @@ class Bid(Model):
             'view': view_bid_role,
             'create': whitelist('value', 'tenderers', 'parameters', 'lotValues'),
             'edit': whitelist('value', 'tenderers', 'parameters', 'lotValues'),
-            'auction_view': whitelist('value', 'id', 'date', 'parameters', 'participationUrl'),
-            'auction_post': whitelist('value', 'id', 'date'),
-            'auction_patch': whitelist('id', 'participationUrl'),
+            'auction_view': whitelist('value', 'lotValues', 'id', 'date', 'parameters', 'participationUrl'),
+            'auction_post': whitelist('value', 'lotValues', 'id', 'date'),
+            'auction_patch': whitelist('id', 'lotValues', 'participationUrl'),
             'active.enquiries': whitelist(),
             'active.tendering': whitelist(),
             'active.auction': whitelist(),
@@ -386,6 +386,10 @@ class Bid(Model):
         return [
             (Allow, '{}_{}'.format(self.owner, self.owner_token), 'edit_bid'),
         ]
+
+    def validate_participationUrl(self, data, url):
+        if url and isinstance(data['__parent__'], Model) and get_tender(data['__parent__']).lots:
+            raise ValidationError(u"url should be posted for each lot of bid")
 
     def validate_lotValues(self, data, values):
         if isinstance(data['__parent__'], Model):
@@ -623,6 +627,8 @@ class Lot(Model):
             'embedded': embedded_lot_role,
             'view': default_lot_role,
             'default': schematics_default_role,
+            'auction_view': default_lot_role,
+            'auction_patch': whitelist('auctionUrl'),
         }
 
     id = MD5Type(required=True, default=lambda: uuid4().hex)
@@ -697,9 +703,9 @@ edit_role = (blacklist('lots', 'owner_token', 'owner', '_attachments', 'revision
 cancel_role = whitelist('status')
 view_role = (blacklist('owner', 'owner_token', '_attachments', 'revisions') + schematics_embedded_role)
 listing_role = whitelist('dateModified', 'doc_id')
-auction_view_role = whitelist('tenderID', 'dateModified', 'bids', 'auctionPeriod', 'minimalStep', 'auctionUrl', 'features')
+auction_view_role = whitelist('tenderID', 'dateModified', 'bids', 'auctionPeriod', 'minimalStep', 'auctionUrl', 'features', 'lots')
 auction_post_role = whitelist('bids')
-auction_patch_role = whitelist('auctionUrl', 'bids')
+auction_patch_role = whitelist('auctionUrl', 'bids', 'lots')
 enquiries_role = (blacklist('owner', 'owner_token', '_attachments', 'revisions', 'bids', 'numberOfBids') + schematics_embedded_role)
 auction_role = (blacklist('owner', 'owner_token', '_attachments', 'revisions', 'bids') + schematics_embedded_role)
 chronograph_role = whitelist('status', 'enquiryPeriod', 'tenderPeriod', 'auctionPeriod', 'awardPeriod')
@@ -835,6 +841,10 @@ class Tender(SchematicsDocument, Model):
 
         self._data.update(data)
         return self
+
+    def validate_auctionUrl(self, data, url):
+        if url and data['lots']:
+            raise ValidationError(u"url should be posted for each lot")
 
     def validate_minimalStep(self, data, value):
         if value and value.amount and data.get('value'):

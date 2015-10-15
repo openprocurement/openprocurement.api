@@ -33,7 +33,7 @@ def validate_data(request, model, partial=False):
                 role = 'Administrator'
             elif request.authenticated_role == 'chronograph':
                 role = 'chronograph'
-            elif request.authenticated_role == 'auction':
+            elif request.authenticated_role == 'auction' and isinstance(request.context, Tender):
                 role = 'auction_{}'.format(request.method.lower())
             elif isinstance(request.context, Tender):
                 role = 'edit_{}'.format(request.context.status)
