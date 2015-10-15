@@ -611,13 +611,18 @@ class Feature(Model):
             raise ValidationError(u"relatedItem should be one of lots")
 
 
+default_lot_role = (blacklist('numberOfBids') + schematics_default_role)
+embedded_lot_role = (blacklist('numberOfBids') + schematics_embedded_role)
+
+
 class Lot(Model):
     class Options:
         roles = {
             'create': whitelist('title', 'title_en', 'title_ru', 'description', 'description_en', 'description_ru', 'value', 'minimalStep'),
             'edit': whitelist('title', 'title_en', 'title_ru', 'description', 'description_en', 'description_ru', 'value', 'minimalStep'),
-            'embedded': schematics_embedded_role,
-            'view': schematics_default_role,
+            'embedded': embedded_lot_role,
+            'view': default_lot_role,
+            'default': schematics_default_role,
         }
 
     id = MD5Type(required=True, default=lambda: uuid4().hex)
@@ -632,6 +637,16 @@ class Lot(Model):
     auctionPeriod = ModelType(Period)
     auctionUrl = URLType()
     status = StringType(choices=['active', 'cancelled', 'unsuccessful'], default='active')
+
+    @serializable
+    def numberOfBids(self):
+        """A property that is serialized by schematics exports."""
+        bids = [
+            bid
+            for bid in self.__parent__.bids
+            if self.id in [i.relatedLot for i in bid.lotValues]
+        ]
+        return len(bids)
 
     def validate_auctionPeriod(self, data, auctionPeriod):
         if auctionPeriod and isinstance(data['__parent__'], Model):

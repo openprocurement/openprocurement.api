@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 import unittest
 
-from openprocurement.api.tests.base import BaseTenderWebTest, test_tender_data, test_lots, test_bids
+from openprocurement.api.tests.base import BaseTenderWebTest, test_tender_data, test_lots
 
 
 class TenderLotResourceTest(BaseTenderWebTest):
@@ -613,19 +613,6 @@ class TenderLotFeatureBidderResourceTest(BaseTenderWebTest):
         self.assertEqual(response.status, '403 Forbidden')
         self.assertEqual(response.content_type, 'application/json')
         self.assertEqual(response.json['errors'][0]["description"], "Can't add bid in current (complete) tender status")
-
-
-class TenderLotSwitchResourceTest(BaseTenderWebTest):
-    initial_status = 'active.tendering'
-    initial_lots = test_lots
-    initial_bids = [test_bids[0]]
-
-    def test_switch_to_qualification(self):
-        response = self.set_status('active.qualification', {"auctionPeriod": {"startDate": None}})
-        self.assertEqual(response.status, '200 OK')
-        self.assertEqual(response.content_type, 'application/json')
-        self.assertEqual(response.json['data']["status"], "active.qualification")
-        self.assertEqual(len(response.json['data']["awards"]), 1)
 
 
 def suite():

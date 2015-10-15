@@ -5,6 +5,7 @@ from openprocurement.api.utils import (
     apply_patch,
     save_tender,
     add_next_award,
+    check_tender_status,
     update_journal_handler_params,
     opresource,
     json_view,
@@ -80,19 +81,22 @@ class TenderAwardComplaintResource(object):
             self.request.errors.add('body', 'data', 'Can\'t update complaint in current ({}) status'.format(complaint.status))
             self.request.errors.status = 403
             return
-        apply_patch(self.request, save=False, src=complaint.serialize())
-        if complaint.status == 'cancelled':
+        if self.request.validated['data'].get('status', complaint.status) == 'cancelled':
             self.request.errors.add('body', 'data', 'Can\'t cancel complaint')
             self.request.errors.status = 403
             return
+        apply_patch(self.request, save=False, src=complaint.serialize())
         if complaint.status == 'resolved':
             award = self.request.validated['award']
             if tender.status == 'active.awarded':
                 tender.status = 'active.qualification'
                 tender.awardPeriod.endDate = None
+            now = get_now()
             if award.status == 'unsuccessful':
                 for i in tender.awards[tender.awards.index(award):]:
-                    i.complaintPeriod.endDate = get_now() + STAND_STILL_TIME
+                    if i.lotID != award.lotID:
+                        continue
+                    i.complaintPeriod.endDate = now + STAND_STILL_TIME
                     i.status = 'cancelled'
                     for j in i.complaints:
                         if j.status == 'pending':
@@ -100,36 +104,11 @@ class TenderAwardComplaintResource(object):
             for i in tender.contracts:
                 if award.id == i.awardID:
                     i.status = 'cancelled'
-            award.complaintPeriod.endDate = get_now() + STAND_STILL_TIME
+            award.complaintPeriod.endDate = now + STAND_STILL_TIME
             award.status = 'cancelled'
             add_next_award(self.request)
         elif complaint.status in ['declined', 'invalid'] and tender.status == 'active.awarded':
-            pending_complaints = [
-                i
-                for i in tender.complaints
-                if i.status == 'pending'
-            ]
-            pending_awards_complaints = [
-                i
-                for a in tender.awards
-                for i in a.complaints
-                if i.status == 'pending'
-            ]
-            stand_still_ends = [
-                a.complaintPeriod.endDate
-                for a in tender.awards
-                if a.complaintPeriod.endDate
-            ]
-            stand_still_end = max(stand_still_ends) if stand_still_ends else get_now()
-            stand_still_time_expired = stand_still_end < get_now()
-            if not pending_complaints and not pending_awards_complaints and stand_still_time_expired:
-                active_awards = [
-                    a
-                    for a in tender.awards
-                    if a.status == 'active'
-                ]
-                if not active_awards:
-                    tender.status = 'unsuccessful'
+            check_tender_status(self.request)
         if save_tender(self.request):
             LOGGER.info('Updated tender award complaint {}'.format(self.request.context.id), extra={'MESSAGE_ID': 'tender_award_complaint_patch'})
             return {'data': complaint.serialize("view")}

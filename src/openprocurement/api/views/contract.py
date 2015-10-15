@@ -4,6 +4,7 @@ from openprocurement.api.models import Contract, get_now
 from openprocurement.api.utils import (
     apply_patch,
     save_tender,
+    check_tender_status,
     update_journal_handler_params,
     opresource,
     json_view,
@@ -69,12 +70,8 @@ class TenderAwardContractResource(object):
         data = self.request.validated['data']
         if self.request.context.status != 'active' and 'status' in data and data['status'] == 'active':
             tender = self.request.validated['tender']
-            lotID = [a for a in tender.awards if a.id == self.request.context.awardID][0].lotID
-            stand_still_end = max([
-                a.complaintPeriod.endDate
-                for a in tender.awards
-                if a.lotID == lotID
-            ])
+            award = [a for a in tender.awards if a.id == self.request.context.awardID][0]
+            stand_still_end = award.complaintPeriod.endDate
             if stand_still_end > get_now():
                 self.request.errors.add('body', 'data', 'Can\'t sign contract before stand-still period end ({})'.format(stand_still_end.isoformat()))
                 self.request.errors.status = 403
@@ -88,15 +85,14 @@ class TenderAwardContractResource(object):
                 i
                 for a in tender.awards
                 for i in a.complaints
-                if i.status == 'pending' and a.lotID == lotID
+                if i.status == 'pending' and a.lotID == award.lotID
             ]
             if pending_complaints or pending_awards_complaints:
                 self.request.errors.add('body', 'data', 'Can\'t sign contract before reviewing all complaints')
                 self.request.errors.status = 403
                 return
         apply_patch(self.request, save=False, src=self.request.context.serialize())
-        if self.request.context.status == 'active' and self.request.validated['tender_status'] != 'complete':
-            self.request.validated['tender'].status = 'complete'
+        check_tender_status(self.request)
         if save_tender(self.request):
             LOGGER.info('Updated tender contract {}'.format(self.request.context.id), extra={'MESSAGE_ID': 'tender_contract_patch'})
             return {'data': self.request.context.serialize()}
