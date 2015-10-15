@@ -83,6 +83,7 @@ class TenderComplaintResource(object):
                     i.status = 'cancelled'
             tender.status = 'cancelled'
         elif self.request.context.status in ['declined', 'invalid'] and tender.status == 'active.awarded':
+            now = get_now()
             pending_complaints = [
                 i
                 for i in tender.complaints
@@ -99,16 +100,15 @@ class TenderComplaintResource(object):
                 for a in tender.awards
                 if a.complaintPeriod.endDate
             ]
-            stand_still_end = max(stand_still_ends) if stand_still_ends else get_now()
-            stand_still_time_expired = stand_still_end < get_now()
+            stand_still_end = max(stand_still_ends) if stand_still_ends else now
+            stand_still_time_expired = stand_still_end < now
+            active_awards = [
+                a
+                for a in tender.awards
+                if a.status == 'active'
+            ]
             if not pending_complaints and not pending_awards_complaints and stand_still_time_expired:
-                active_awards = [
-                    a
-                    for a in tender.awards
-                    if a.status == 'active'
-                ]
-                if not active_awards:
-                    tender.status = 'unsuccessful'
+                tender.status = 'unsuccessful'
         if save_tender(self.request):
             LOGGER.info('Updated tender complaint {}'.format(self.request.context.id), extra={'MESSAGE_ID': 'tender_complaint_patch'})
             return {'data': self.request.context.serialize("view")}

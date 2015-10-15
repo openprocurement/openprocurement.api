@@ -90,19 +90,21 @@ class TenderAwardComplaintResource(object):
             if tender.status == 'active.awarded':
                 tender.status = 'active.qualification'
                 tender.awardPeriod.endDate = None
+            now = get_now()
             if award.status == 'unsuccessful':
                 for i in tender.awards[tender.awards.index(award):]:
-                    i.complaintPeriod.endDate = get_now() + STAND_STILL_TIME
+                    i.complaintPeriod.endDate = now + STAND_STILL_TIME
                     i.status = 'cancelled'
                     for j in i.complaints:
                         if j.status == 'pending':
                             j.status = 'cancelled'
             for i in award.contracts:
                 i.status = 'cancelled'
-            award.complaintPeriod.endDate = get_now() + STAND_STILL_TIME
+            award.complaintPeriod.endDate = now + STAND_STILL_TIME
             award.status = 'cancelled'
             add_next_award(self.request)
         elif complaint.status in ['declined', 'invalid'] and tender.status == 'active.awarded':
+            now = get_now()
             pending_complaints = [
                 i
                 for i in tender.complaints
@@ -119,16 +121,15 @@ class TenderAwardComplaintResource(object):
                 for a in tender.awards
                 if a.complaintPeriod.endDate
             ]
-            stand_still_end = max(stand_still_ends) if stand_still_ends else get_now()
-            stand_still_time_expired = stand_still_end < get_now()
-            if not pending_complaints and not pending_awards_complaints and stand_still_time_expired:
-                active_awards = [
-                    a
-                    for a in tender.awards
-                    if a.status == 'active'
-                ]
-                if not active_awards:
-                    tender.status = 'unsuccessful'
+            stand_still_end = max(stand_still_ends) if stand_still_ends else now
+            stand_still_time_expired = stand_still_end < now
+            active_awards = [
+                a
+                for a in tender.awards
+                if a.status == 'active'
+            ]
+            if not active_awards and not pending_complaints and not pending_awards_complaints and stand_still_time_expired:
+                tender.status = 'unsuccessful'
         if save_tender(self.request):
             LOGGER.info('Updated tender award complaint {}'.format(self.request.context.id), extra={'MESSAGE_ID': 'tender_award_complaint_patch'})
             return {'data': complaint.serialize("view")}
