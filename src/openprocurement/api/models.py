@@ -315,8 +315,8 @@ class LotValue(Model):
             'create': whitelist('value', 'relatedLot'),
             'edit': whitelist('value', 'relatedLot'),
             'auction_view': whitelist('value', 'date', 'relatedLot', 'participationUrl'),
-            'auction_post': whitelist('value', 'date'),
-            'auction_patch': whitelist('participationUrl'),
+            'auction_post': whitelist('value', 'date', 'relatedLot'),
+            'auction_patch': whitelist('participationUrl', 'relatedLot'),
         }
 
     value = ModelType(Value, required=True)
@@ -630,7 +630,7 @@ class Lot(Model):
             'view': default_lot_role,
             'default': schematics_default_role,
             'auction_view': default_lot_role,
-            'auction_patch': whitelist('auctionUrl'),
+            'auction_patch': whitelist('id', 'auctionUrl'),
         }
 
     id = MD5Type(required=True, default=lambda: uuid4().hex)

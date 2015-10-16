@@ -84,24 +84,39 @@ def validate_tender_auction_data(request):
             request.errors.status = 403
             return
         bids = data.get('bids', [])
-        #if not bids:
-            #request.errors.add('body', 'data', "Bids data not available")
-            #request.errors.status = 422
-            #return
         tender_bids_ids = [i.id for i in tender.bids]
         if len(bids) != len(tender.bids):
             request.errors.add('body', 'bids', "Number of auction results did not match the number of tender bids")
             request.errors.status = 422
             return
-        #elif not all(['id' in i for i in bids]):
-            #request.errors.add('body', 'bids', "Results of auction bids should contains id of bid")
-            #request.errors.status = 422
-            #return
-        elif set([i['id'] for i in bids]) != set(tender_bids_ids):
+        if set([i['id'] for i in bids]) != set(tender_bids_ids):
             request.errors.add('body', 'bids', "Auction bids should be identical to the tender bids")
             request.errors.status = 422
             return
         data['bids'] = [x for (y, x) in sorted(zip([tender_bids_ids.index(i['id']) for i in bids], bids))]
+        if data.get('lots'):
+            tender_lots_ids = [i.id for i in tender.lots]
+            if len(data.get('lots', [])) != len(tender.lots):
+                request.errors.add('body', 'lots', "Number of lots did not match the number of tender lots")
+                request.errors.status = 422
+                return
+            if set([i['id'] for i in data.get('lots', [])]) != set([i.id for i in tender.lots]):
+                request.errors.add('body', 'lots', "Auction lots should be identical to the tender lots")
+                request.errors.status = 422
+                return
+            data['lots'] = [x for (y, x) in sorted(zip([tender_lots_ids.index(i['id']) for i in data.get('lots', [])], data.get('lots', [])))]
+        tender_bids_lots_ids = dict([(i.id, [j['relatedLot'] for j in i.lotValues]) for i in tender.bids])
+        if tender.lots and any([len(bid['lotValues']) != len(tender_bids_lots_ids.get(bid['id'], [])) for bid in bids]):
+            request.errors.add('body', 'bids', [{u'lotValues': [u'Number of lots of auction results did not match the number of tender lots']}])
+            request.errors.status = 422
+            return
+        if tender.lots and any([set([j['relatedLot'] for j in bid['lotValues']]) != set(tender_bids_lots_ids[bid['id']]) for bid in bids]):
+            request.errors.add('body', 'bids', [{u'lotValues': [{u'relatedLot': ['relatedLot should be one of lots of bid']}]}])
+            request.errors.status = 422
+            return
+        for bid in data['bids']:
+            if 'lotValues' in bid:
+                bid['lotValues'] = [x for (y, x) in sorted(zip([tender_bids_lots_ids[bid['id']].index(i['relatedLot']) for i in bid['lotValues']], bid['lotValues']))]
     else:
         data = {}
     if request.method == 'POST':
