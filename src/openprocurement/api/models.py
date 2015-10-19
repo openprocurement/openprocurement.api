@@ -631,6 +631,7 @@ class Lot(Model):
             'default': schematics_default_role,
             'auction_view': default_lot_role,
             'auction_patch': whitelist('id', 'auctionUrl'),
+            'chronograph': whitelist('id', 'auctionPeriod'),
         }
 
     id = MD5Type(required=True, default=lambda: uuid4().hex)
@@ -644,7 +645,7 @@ class Lot(Model):
     minimalStep = ModelType(Value, required=True)
     auctionPeriod = ModelType(Period)
     auctionUrl = URLType()
-    status = StringType(choices=['active', 'cancelled', 'unsuccessful'], default='active')
+    status = StringType(choices=['active', 'cancelled', 'unsuccessful', 'complete'], default='active')
 
     @serializable
     def numberOfBids(self):
@@ -710,7 +711,7 @@ auction_post_role = whitelist('bids')
 auction_patch_role = whitelist('auctionUrl', 'bids', 'lots')
 enquiries_role = (blacklist('owner', 'owner_token', '_attachments', 'revisions', 'bids', 'numberOfBids') + schematics_embedded_role)
 auction_role = (blacklist('owner', 'owner_token', '_attachments', 'revisions', 'bids') + schematics_embedded_role)
-chronograph_role = whitelist('status', 'enquiryPeriod', 'tenderPeriod', 'auctionPeriod', 'awardPeriod')
+chronograph_role = whitelist('status', 'enquiryPeriod', 'tenderPeriod', 'auctionPeriod', 'awardPeriod', 'lots')
 Administrator_role = whitelist('status', 'mode')
 
 

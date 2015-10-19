@@ -247,6 +247,17 @@ class BaseTenderWebTest(BaseWebTest):
                     "startDate": (now).isoformat()
                 }
             })
+            if self.initial_lots:
+                data.update({
+                    'lots': [
+                        {
+                            "auctionPeriod": {
+                                "startDate": (now).isoformat()
+                            }
+                        }
+                        for i in self.initial_lots
+                    ]
+                })
         elif status == 'active.qualification':
             data.update({
                 "enquiryPeriod": {
@@ -265,6 +276,18 @@ class BaseTenderWebTest(BaseWebTest):
                     "startDate": (now).isoformat()
                 }
             })
+            if self.initial_lots:
+                data.update({
+                    'lots': [
+                        {
+                            "auctionPeriod": {
+                                "startDate": (now - timedelta(days=1)).isoformat(),
+                                "endDate": (now).isoformat()
+                            }
+                        }
+                        for i in self.initial_lots
+                    ]
+                })
         elif status == 'active.awarded':
             data.update({
                 "enquiryPeriod": {
@@ -284,6 +307,18 @@ class BaseTenderWebTest(BaseWebTest):
                     "endDate": (now).isoformat()
                 }
             })
+            if self.initial_lots:
+                data.update({
+                    'lots': [
+                        {
+                            "auctionPeriod": {
+                                "startDate": (now - timedelta(days=1)).isoformat(),
+                                "endDate": (now).isoformat()
+                            }
+                        }
+                        for i in self.initial_lots
+                    ]
+                })
         elif status == 'complete':
             data.update({
                 "enquiryPeriod": {
@@ -303,6 +338,18 @@ class BaseTenderWebTest(BaseWebTest):
                     "endDate": (now - timedelta(days=10)).isoformat()
                 }
             })
+            if self.initial_lots:
+                data.update({
+                    'lots': [
+                        {
+                            "auctionPeriod": {
+                                "startDate": (now - timedelta(days=11)).isoformat(),
+                                "endDate": (now - timedelta(days=10)).isoformat()
+                            }
+                        }
+                        for i in self.initial_lots
+                    ]
+                })
         if extra:
             data.update(extra)
         authorization = self.app.authorization
@@ -327,7 +374,6 @@ class BaseTenderWebTest(BaseWebTest):
                 self.assertEqual(response.status, '201 Created')
                 lots.append(response.json['data'])
             self.initial_lots = lots
-            tender['items']
             response = self.app.patch_json('/tenders/{}'.format(self.tender_id), {"data": {
                 "items": [
                     {

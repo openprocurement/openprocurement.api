@@ -543,14 +543,13 @@ class TenderResource(object):
             self.request.errors.add('body', 'data', 'Can\'t update tender status')
             self.request.errors.status = 403
             return
-        #if self.request.authenticated_role == 'chronograph' and tender.status == 'active.tendering' and data.get('status', tender.status) == 'active.qualification' and tender.numberOfBids == 1:
         if self.request.authenticated_role == 'chronograph' and tender.status == 'active.tendering' and data.get('status', tender.status) == 'active.auction':
             apply_patch(self.request, save=False, src=self.request.validated['tender_src'])
             check_bids(self.request)
             save_tender(self.request)
-        #elif self.request.authenticated_role == 'chronograph' and tender.status in ['active.qualification', 'active.awarded'] and data.get('status', tender.status) == 'complete':
-            #check_tender_status(self.request)
-            #save_tender(self.request)
+        elif self.request.authenticated_role == 'chronograph' and tender.status == 'active.awarded' and data.get('status', tender.status) == 'active.awarded':
+            check_tender_status(self.request)
+            save_tender(self.request)
         else:
             apply_patch(self.request, src=self.request.validated['tender_src'])
         LOGGER.info('Updated tender {}'.format(tender.id), extra={'MESSAGE_ID': 'tender_patch'})

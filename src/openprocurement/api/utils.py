@@ -258,12 +258,11 @@ def check_tender_status(request):
             if not lot_awards:
                 continue
             last_award = lot_awards[-1]
-            pending_awards_complaints = [
-                i
+            pending_awards_complaints = any([
+                i.status == 'pending'
                 for a in lot_awards
                 for i in a.complaints
-                if i.status == 'pending'
-            ]
+            ])
             stand_still_end = max([
                 a.complaintPeriod.endDate or now
                 for a in lot_awards
@@ -288,17 +287,15 @@ def check_tender_status(request):
         elif not statuses.difference(set(['complete', 'unsuccessful', 'cancelled'])):
             tender.status = 'complete'
     else:
-        pending_complaints = [
-            i
+        pending_complaints = any([
+            i.status == 'pending'
             for i in tender.complaints
-            if i.status == 'pending'
-        ]
-        pending_awards_complaints = [
-            i
+        ])
+        pending_awards_complaints = any([
+            i.status == 'pending'
             for a in tender.awards
             for i in a.complaints
-            if i.status == 'pending'
-        ]
+        ])
         stand_still_ends = [
             a.complaintPeriod.endDate
             for a in tender.awards
@@ -306,11 +303,10 @@ def check_tender_status(request):
         ]
         stand_still_end = max(stand_still_ends) if stand_still_ends else now
         stand_still_time_expired = stand_still_end < now
-        active_awards = [
-            a
+        active_awards = any([
+            a.status == 'active'
             for a in tender.awards
-            if a.status == 'active'
-        ]
+        ])
         if not active_awards and not pending_complaints and not pending_awards_complaints and stand_still_time_expired:
             tender.status = 'unsuccessful'
         if tender.contracts and tender.contracts[-1].status == 'active':
