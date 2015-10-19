@@ -77,7 +77,8 @@ def validate_patch_tender_data(request):
 
 def validate_tender_auction_data(request):
     data = validate_patch_tender_data(request)
-    tender = request.context
+    tender = request.validated['tender']
+    lot_id = request.matchdict.get('auction_lot_id')
     if data is not None:
         if tender.status != 'active.auction':
             request.errors.add('body', 'data', 'Can\'t report auction results in current ({}) tender status'.format(tender.status))
@@ -104,7 +105,10 @@ def validate_tender_auction_data(request):
                 request.errors.add('body', 'lots', "Auction lots should be identical to the tender lots")
                 request.errors.status = 422
                 return
-            data['lots'] = [x for (y, x) in sorted(zip([tender_lots_ids.index(i['id']) for i in data.get('lots', [])], data.get('lots', [])))]
+            data['lots'] = [
+                x if x['id'] == lot_id else {}
+                for (y, x) in sorted(zip([tender_lots_ids.index(i['id']) for i in data.get('lots', [])], data.get('lots', [])))
+            ]
         tender_bids_lots_ids = dict([(i.id, [j['relatedLot'] for j in i.lotValues]) for i in tender.bids])
         if tender.lots and any([len(bid['lotValues']) != len(tender_bids_lots_ids.get(bid['id'], [])) for bid in bids]):
             request.errors.add('body', 'bids', [{u'lotValues': [u'Number of lots of auction results did not match the number of tender lots']}])
@@ -116,14 +120,18 @@ def validate_tender_auction_data(request):
             return
         for bid in data['bids']:
             if 'lotValues' in bid:
-                bid['lotValues'] = [x for (y, x) in sorted(zip([tender_bids_lots_ids[bid['id']].index(i['relatedLot']) for i in bid['lotValues']], bid['lotValues']))]
+                bid['lotValues'] = [
+                    x if x['relatedLot'] == lot_id else {}
+                    for (y, x) in sorted(zip([tender_bids_lots_ids[bid['id']].index(i['relatedLot']) for i in bid['lotValues']], bid['lotValues']))
+                ]
     else:
         data = {}
     if request.method == 'POST':
         now = get_now().isoformat()
-        data['auctionPeriod'] = {'endDate': now}
-        data['awardPeriod'] = {'startDate': now}
-        data['status'] = 'active.qualification'
+        if tender.lots:
+            data['lots'] = [{'auctionPeriod': {'endDate': now}} if i.id == lot_id else {} for i in tender.lots]
+        else:
+            data['auctionPeriod'] = {'endDate': now}
     request.validated['data'] = data
 
 

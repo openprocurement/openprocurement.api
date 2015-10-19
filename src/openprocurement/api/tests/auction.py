@@ -423,10 +423,12 @@ class TenderLotAuctionResourceTest(TenderAuctionResourceTest):
 
         patch_data['bids'][1]['id'] = self.initial_bids[0]['id']
 
-        response = self.app.post_json('/tenders/{}/auction'.format(self.tender_id), {'data': patch_data})
-        self.assertEqual(response.status, '200 OK')
-        self.assertEqual(response.content_type, 'application/json')
-        tender = response.json['data']
+        for lot in self.initial_lots:
+            response = self.app.post_json('/tenders/{}/auction/{}'.format(self.tender_id, lot['id']), {'data': patch_data})
+            self.assertEqual(response.status, '200 OK')
+            self.assertEqual(response.content_type, 'application/json')
+            tender = response.json['data']
+
         self.assertNotEqual(tender["bids"][0]['lotValues'][0]['value']['amount'], self.initial_bids[0]['lotValues'][0]['value']['amount'])
         self.assertNotEqual(tender["bids"][1]['lotValues'][0]['value']['amount'], self.initial_bids[1]['lotValues'][0]['value']['amount'])
         self.assertEqual(tender["bids"][0]['lotValues'][0]['value']['amount'], patch_data["bids"][1]['lotValues'][0]['value']['amount'])
@@ -529,7 +531,14 @@ class TenderLotAuctionResourceTest(TenderAuctionResourceTest):
         response = self.app.patch_json('/tenders/{}/auction'.format(self.tender_id), {'data': patch_data})
         self.assertEqual(response.status, '200 OK')
         self.assertEqual(response.content_type, 'application/json')
-        tender = response.json['data']
+        self.assertIsNone(response.json)
+
+        for lot in self.initial_lots:
+            response = self.app.patch_json('/tenders/{}/auction/{}'.format(self.tender_id, lot['id']), {'data': patch_data})
+            self.assertEqual(response.status, '200 OK')
+            self.assertEqual(response.content_type, 'application/json')
+            tender = response.json['data']
+
         self.assertEqual(tender["bids"][0]['lotValues'][0]['participationUrl'], patch_data["bids"][1]['lotValues'][0]['participationUrl'])
         self.assertEqual(tender["bids"][1]['lotValues'][0]['participationUrl'], patch_data["bids"][0]['lotValues'][0]['participationUrl'])
         self.assertEqual(tender["lots"][0]['auctionUrl'], patch_data["lots"][0]['auctionUrl'])
@@ -725,10 +734,12 @@ class TenderMultipleLotAuctionResourceTest(TenderAuctionResourceTest):
 
         patch_data['bids'][0]['lotValues'][1]['relatedLot'] = self.initial_bids[0]['lotValues'][1]['relatedLot']
 
-        response = self.app.post_json('/tenders/{}/auction'.format(self.tender_id), {'data': patch_data})
-        self.assertEqual(response.status, '200 OK')
-        self.assertEqual(response.content_type, 'application/json')
-        tender = response.json['data']
+        for lot in self.initial_lots:
+            response = self.app.post_json('/tenders/{}/auction/{}'.format(self.tender_id, lot['id']), {'data': patch_data})
+            self.assertEqual(response.status, '200 OK')
+            self.assertEqual(response.content_type, 'application/json')
+            tender = response.json['data']
+
         self.assertNotEqual(tender["bids"][0]['lotValues'][0]['value']['amount'], self.initial_bids[0]['lotValues'][0]['value']['amount'])
         self.assertNotEqual(tender["bids"][1]['lotValues'][0]['value']['amount'], self.initial_bids[1]['lotValues'][0]['value']['amount'])
         self.assertEqual(tender["bids"][0]['lotValues'][0]['value']['amount'], patch_data["bids"][1]['lotValues'][0]['value']['amount'])
@@ -863,7 +874,14 @@ class TenderMultipleLotAuctionResourceTest(TenderAuctionResourceTest):
         response = self.app.patch_json('/tenders/{}/auction'.format(self.tender_id), {'data': patch_data})
         self.assertEqual(response.status, '200 OK')
         self.assertEqual(response.content_type, 'application/json')
-        tender = response.json['data']
+        self.assertIsNone(response.json)
+
+        for lot in self.initial_lots:
+            response = self.app.patch_json('/tenders/{}/auction/{}'.format(self.tender_id, lot['id']), {'data': patch_data})
+            self.assertEqual(response.status, '200 OK')
+            self.assertEqual(response.content_type, 'application/json')
+            tender = response.json['data']
+
         self.assertEqual(tender["bids"][0]['lotValues'][0]['participationUrl'], patch_data["bids"][1]['lotValues'][0]['participationUrl'])
         self.assertEqual(tender["bids"][1]['lotValues'][0]['participationUrl'], patch_data["bids"][0]['lotValues'][0]['participationUrl'])
         self.assertEqual(tender["lots"][0]['auctionUrl'], patch_data["lots"][0]['auctionUrl'])
