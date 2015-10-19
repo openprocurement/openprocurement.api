@@ -365,6 +365,7 @@ class TenderLotResourceTest(BaseTenderWebTest):
 
 
 class TenderLotBidderResourceTest(BaseTenderWebTest):
+    initial_status = 'active.tendering'
     initial_lots = test_lots
 
     def test_create_tender_bidder_invalid(self):
@@ -432,6 +433,44 @@ class TenderLotBidderResourceTest(BaseTenderWebTest):
         self.assertEqual(response.json['errors'], [
             {u'description': u"invalid literal for int() with base 10: 'contactPoint'", u'location': u'body', u'name': u'data'},
         ])
+
+    def test_patch_tender_bidder(self):
+        lot_id = self.initial_lots[0]['id']
+        response = self.app.post_json('/tenders/{}/bids'.format(self.tender_id), {'data': {'tenderers': [test_tender_data["procuringEntity"]], 'lotValues': [{"value": {"amount": 500}, 'relatedLot': lot_id}]}})
+        self.assertEqual(response.status, '201 Created')
+        self.assertEqual(response.content_type, 'application/json')
+        bidder = response.json['data']
+        lot = bidder['lotValues'][0]
+
+        response = self.app.patch_json('/tenders/{}/bids/{}'.format(self.tender_id, bidder['id']), {"data": {'tenderers': [{"name": u"Державне управління управлінням справами"}]}})
+        self.assertEqual(response.status, '200 OK')
+        self.assertEqual(response.content_type, 'application/json')
+        self.assertEqual(response.json['data']['lotValues'][0]['date'], lot['date'])
+        self.assertNotEqual(response.json['data']['tenderers'][0]['name'], bidder['tenderers'][0]['name'])
+
+        response = self.app.patch_json('/tenders/{}/bids/{}'.format(self.tender_id, bidder['id']), {"data": {'lotValues': [{"value": {"amount": 500}, 'relatedLot': lot_id}], 'tenderers': [test_tender_data["procuringEntity"]]}})
+        self.assertEqual(response.status, '200 OK')
+        self.assertEqual(response.content_type, 'application/json')
+        self.assertEqual(response.json['data']['lotValues'][0]['date'], lot['date'])
+        self.assertEqual(response.json['data']['tenderers'][0]['name'], bidder['tenderers'][0]['name'])
+
+        response = self.app.patch_json('/tenders/{}/bids/{}'.format(self.tender_id, bidder['id']), {"data": {'lotValues': [{"value": {"amount": 400}, 'relatedLot': lot_id}]}})
+        self.assertEqual(response.status, '200 OK')
+        self.assertEqual(response.content_type, 'application/json')
+        self.assertEqual(response.json['data']['lotValues'][0]["value"]["amount"], 400)
+        self.assertNotEqual(response.json['data']['lotValues'][0]['date'], lot['date'])
+
+        self.set_status('complete')
+
+        response = self.app.get('/tenders/{}/bids/{}'.format(self.tender_id, bidder['id']))
+        self.assertEqual(response.status, '200 OK')
+        self.assertEqual(response.content_type, 'application/json')
+        self.assertEqual(response.json['data']['lotValues'][0]["value"]["amount"], 400)
+
+        response = self.app.patch_json('/tenders/{}/bids/{}'.format(self.tender_id, bidder['id']), {"data": {'lotValues': [{"value": {"amount": 500}, 'relatedLot': lot_id}]}}, status=403)
+        self.assertEqual(response.status, '403 Forbidden')
+        self.assertEqual(response.content_type, 'application/json')
+        self.assertEqual(response.json['errors'][0]["description"], "Can't update bid in current (complete) tender status")
 
 
 class TenderLotFeatureBidderResourceTest(BaseTenderWebTest):

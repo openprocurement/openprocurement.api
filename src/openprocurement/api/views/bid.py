@@ -254,7 +254,7 @@ class TenderBidResource(object):
             self.request.errors.add('body', 'data', 'Can\'t update bid in current ({}) tender status'.format(self.request.validated['tender_status']))
             self.request.errors.status = 403
             return
-        value = self.request.validated['data'].get("value", {}).get("amount")
+        value = self.request.validated['data'].get("value") and self.request.validated['data']["value"].get("amount")
         if value and value != self.request.context.get("value", {}).get("amount"):
             self.request.validated['data']['date'] = get_now().isoformat()
         if self.request.context.lotValues:
