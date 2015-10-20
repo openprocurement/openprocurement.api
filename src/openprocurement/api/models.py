@@ -74,6 +74,42 @@ def get_tender(model):
     return model
 
 
+class ListType(ListType):
+
+    def export_loop(self, list_instance, field_converter,
+                    role=None, print_none=False):
+        """Loops over each item in the model and applies either the field
+        transform or the multitype transform.  Essentially functions the same
+        as `transforms.export_loop`.
+        """
+        data = []
+        for value in list_instance:
+            if hasattr(self.field, 'export_loop'):
+                shaped = self.field.export_loop(value, field_converter,
+                                                role=role,
+                                                print_none=print_none)
+                feels_empty = shaped and len(shaped) == 0
+            else:
+                shaped = field_converter(self.field, value)
+                feels_empty = shaped is None
+
+            # Print if we want empty or found a value
+            if feels_empty and self.field.allow_none():
+                data.append(shaped)
+            elif shaped is not None:
+                data.append(shaped)
+            elif print_none:
+                data.append(shaped)
+
+        # Return data if the list contains anything
+        if len(data) > 0:
+            return data
+        elif len(data) == 0 and self.allow_none():
+            return data
+        elif print_none:
+            return data
+
+
 class Model(SchematicsModel):
     class Options(object):
         """Export options for Document."""
