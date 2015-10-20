@@ -278,9 +278,7 @@ def check_tender_status(request):
         statuses = set([lot.status for lot in tender.lots])
         if [i for i in tender.complaints if i.status == 'pending']:
             statuses.add('pending')
-        if statuses == set(['unsuccessful']):
-            tender.status = 'unsuccessful'
-        elif statuses == set(['cancelled']):
+        if statuses == set(['cancelled']):
             tender.status = 'cancelled'
         elif not statuses.difference(set(['unsuccessful', 'cancelled'])):
             tender.status = 'unsuccessful'

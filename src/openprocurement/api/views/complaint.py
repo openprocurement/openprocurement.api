@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 from logging import getLogger
-from openprocurement.api.models import Complaint, get_now
+from openprocurement.api.models import Complaint
 from openprocurement.api.utils import (
     apply_patch,
     save_tender,
