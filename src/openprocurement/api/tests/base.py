@@ -111,6 +111,69 @@ test_features_tender_data["features"] = [
         ]
     }
 ]
+test_bids = [
+    {
+        "tenderers": [
+            test_tender_data["procuringEntity"]
+        ],
+        "value": {
+            "amount": 469,
+            "currency": "UAH",
+            "valueAddedTaxIncluded": True
+        }
+    },
+    {
+        "tenderers": [
+            test_tender_data["procuringEntity"]
+        ],
+        "value": {
+            "amount": 479,
+            "currency": "UAH",
+            "valueAddedTaxIncluded": True
+        }
+    }
+]
+test_lots = [
+    {
+        'title': 'lot title',
+        'description': 'lot description',
+        'value': test_tender_data['value'],
+        'minimalStep': test_tender_data['minimalStep'],
+    }
+]
+test_features = [
+    {
+        "code": "code_item",
+        "featureOf": "item",
+        "relatedItem": "1",
+        "title": u"item feature",
+        "enum": [
+            {
+                "value": 0.01,
+                "title": u"good"
+            },
+            {
+                "value": 0.02,
+                "title": u"best"
+            }
+        ]
+    },
+    {
+        "code": "code_tenderer",
+        "featureOf": "tenderer",
+        "title": u"tenderer feature",
+        "enum": [
+            {
+                "value": 0.01,
+                "title": u"good"
+            },
+            {
+                "value": 0.02,
+                "title": u"best"
+            }
+        ]
+    }
+]
 
 
 class PrefixedRequestClass(webtest.app.TestRequest):
@@ -144,6 +207,7 @@ class BaseTenderWebTest(BaseWebTest):
     initial_data = test_tender_data
     initial_status = None
     initial_bids = None
+    initial_lots = None
 
     def set_status(self, status, extra=None):
         data = {'status': status}
@@ -183,6 +247,17 @@ class BaseTenderWebTest(BaseWebTest):
                     "startDate": (now).isoformat()
                 }
             })
+            if self.initial_lots:
+                data.update({
+                    'lots': [
+                        {
+                            "auctionPeriod": {
+                                "startDate": (now).isoformat()
+                            }
+                        }
+                        for i in self.initial_lots
+                    ]
+                })
         elif status == 'active.qualification':
             data.update({
                 "enquiryPeriod": {
@@ -201,6 +276,18 @@ class BaseTenderWebTest(BaseWebTest):
                     "startDate": (now).isoformat()
                 }
             })
+            if self.initial_lots:
+                data.update({
+                    'lots': [
+                        {
+                            "auctionPeriod": {
+                                "startDate": (now - timedelta(days=1)).isoformat(),
+                                "endDate": (now).isoformat()
+                            }
+                        }
+                        for i in self.initial_lots
+                    ]
+                })
         elif status == 'active.awarded':
             data.update({
                 "enquiryPeriod": {
@@ -220,6 +307,18 @@ class BaseTenderWebTest(BaseWebTest):
                     "endDate": (now).isoformat()
                 }
             })
+            if self.initial_lots:
+                data.update({
+                    'lots': [
+                        {
+                            "auctionPeriod": {
+                                "startDate": (now - timedelta(days=1)).isoformat(),
+                                "endDate": (now).isoformat()
+                            }
+                        }
+                        for i in self.initial_lots
+                    ]
+                })
         elif status == 'complete':
             data.update({
                 "enquiryPeriod": {
@@ -239,6 +338,18 @@ class BaseTenderWebTest(BaseWebTest):
                     "endDate": (now - timedelta(days=10)).isoformat()
                 }
             })
+            if self.initial_lots:
+                data.update({
+                    'lots': [
+                        {
+                            "auctionPeriod": {
+                                "startDate": (now - timedelta(days=11)).isoformat(),
+                                "endDate": (now - timedelta(days=10)).isoformat()
+                            }
+                        }
+                        for i in self.initial_lots
+                    ]
+                })
         if extra:
             data.update(extra)
         authorization = self.app.authorization
@@ -256,17 +367,42 @@ class BaseTenderWebTest(BaseWebTest):
         tender = response.json['data']
         self.tender_id = tender['id']
         status = tender['status']
+        if self.initial_lots:
+            lots = []
+            for i in self.initial_lots:
+                response = self.app.post_json('/tenders/{}/lots'.format(self.tender_id), {'data': i})
+                self.assertEqual(response.status, '201 Created')
+                lots.append(response.json['data'])
+            self.initial_lots = lots
+            response = self.app.patch_json('/tenders/{}'.format(self.tender_id), {"data": {
+                "items": [
+                    {
+                        'relatedLot': lots[i % len(lots)]['id']
+                    }
+                    for i in xrange(len(tender['items']))
+                ]
+            }})
+            self.assertEqual(response.status, '200 OK')
         if self.initial_bids:
             response = self.set_status('active.tendering')
             status = response.json['data']['status']
             bids = []
             for i in self.initial_bids:
+                if self.initial_lots:
+                    i = i.copy()
+                    value = i.pop('value')
+                    i['lotValues'] = [
+                        {
+                            'value': value,
+                            'relatedLot': lot['id'],
+                        }
+                        for lot in self.initial_lots
+                    ]
                 response = self.app.post_json('/tenders/{}/bids'.format(self.tender_id), {'data': i})
                 self.assertEqual(response.status, '201 Created')
                 bids.append(response.json['data'])
             self.initial_bids = bids
         if self.initial_status != status:
-            self.initial_status
             self.set_status(self.initial_status)
 
     def tearDown(self):

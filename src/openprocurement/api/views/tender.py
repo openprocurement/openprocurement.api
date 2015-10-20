@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
 from logging import getLogger
-from cornice.resource import resource, view
 from binascii import hexlify, unhexlify
 from Crypto.Cipher import AES
 from openprocurement.api.design import (
@@ -20,9 +19,11 @@ from openprocurement.api.utils import (
     set_ownership,
     tender_serialize,
     apply_patch,
-    add_next_award,
-    error_handler,
+    check_bids,
+    check_tender_status,
     update_journal_handler_params,
+    opresource,
+    json_view,
 )
 from openprocurement.api.validation import (
     validate_patch_tender_data,
@@ -62,11 +63,10 @@ def decrypt(uuid, name, key):
     return text
 
 
-@resource(name='Tender',
-          collection_path='/tenders',
-          path='/tenders/{tender_id}',
-          description="Open Contracting compatible data exchange format. See http://ocds.open-contracting.org/standard/r/master/#tender for more info",
-          error_handler=error_handler)
+@opresource(name='Tender',
+            collection_path='/tenders',
+            path='/tenders/{tender_id}',
+            description="Open Contracting compatible data exchange format. See http://ocds.open-contracting.org/standard/r/master/#tender for more info")
 class TenderResource(object):
 
     def __init__(self, request):
@@ -75,7 +75,7 @@ class TenderResource(object):
         self.db = request.registry.db
         self.server_id = request.registry.server_id
 
-    @view(renderer='json', permission='view_tender')
+    @json_view(permission='view_tender')
     def collection_get(self):
         """Tenders List
 
@@ -207,7 +207,7 @@ class TenderResource(object):
             }
         return data
 
-    @view(content_type="application/json", permission='create_tender', validators=(validate_tender_data,), renderer='json')
+    @json_view(content_type="application/json", permission='create_tender', validators=(validate_tender_data,))
     def collection_post(self):
         """This API request is targeted to creating new Tenders by procuring organizations.
 
@@ -359,6 +359,7 @@ class TenderResource(object):
         tender_data = self.request.validated['data']
         tender_id = generate_id()
         tender = Tender(tender_data)
+        tender.__parent__ = self.request.context
         tender.id = tender_id
         if not tender.enquiryPeriod.startDate:
             tender.enquiryPeriod.startDate = get_now()
@@ -381,7 +382,7 @@ class TenderResource(object):
                 }
             }
 
-    @view(renderer='json', permission='view_tender')
+    @json_view(permission='view_tender')
     def get(self):
         """Tender Read
 
@@ -472,7 +473,7 @@ class TenderResource(object):
         tender_data = tender.serialize('view' if self.request.authenticated_role == 'chronograph' else tender.status)
         return {'data': tender_data}
 
-    #@view(content_type="application/json", validators=(validate_tender_data, ), permission='edit_tender', renderer='json')
+    #@json_view(content_type="application/json", validators=(validate_tender_data, ), permission='edit_tender')
     #def put(self):
         #"""Tender Edit (full)"""
         #tender = self.request.validated['tender']
@@ -483,7 +484,7 @@ class TenderResource(object):
         #apply_patch(self.request, src=self.request.validated['tender_src'])
         #return {'data': tender.serialize(tender.status)}
 
-    @view(content_type="application/json", validators=(validate_patch_tender_data, ), permission='edit_tender', renderer='json')
+    @json_view(content_type="application/json", validators=(validate_patch_tender_data, ), permission='edit_tender')
     def patch(self):
         """Tender Edit (partial)
 
@@ -542,9 +543,12 @@ class TenderResource(object):
             self.request.errors.add('body', 'data', 'Can\'t update tender status')
             self.request.errors.status = 403
             return
-        if self.request.authenticated_role == 'chronograph' and tender.status == 'active.tendering' and data.get('status', tender.status) == 'active.qualification' and tender.numberOfBids == 1:
+        if self.request.authenticated_role == 'chronograph' and tender.status == 'active.tendering' and data.get('status', tender.status) == 'active.auction':
             apply_patch(self.request, save=False, src=self.request.validated['tender_src'])
-            add_next_award(self.request)
+            check_bids(self.request)
+            save_tender(self.request)
+        elif self.request.authenticated_role == 'chronograph' and tender.status == 'active.awarded' and data.get('status', tender.status) == 'active.awarded':
+            check_tender_status(self.request)
             save_tender(self.request)
         else:
             apply_patch(self.request, src=self.request.validated['tender_src'])

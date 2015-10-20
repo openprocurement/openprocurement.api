@@ -1,20 +1,22 @@
 # -*- coding: utf-8 -*-
-from pkg_resources import get_distribution
-from logging import getLogger
-from base64 import b64encode
-from jsonpatch import make_patch, apply_patch as _apply_patch
-from openprocurement.api.models import Document, Revision, Award, get_now
-from urllib import quote
-from uuid import uuid4
-from schematics.exceptions import ModelValidationError
-from couchdb.http import ResourceConflict
-from time import sleep
-from cornice.util import json_error
-from json import dumps
-from urlparse import urlparse, parse_qs
-from email.header import decode_header
-from rfc6266 import build_header
 from barbecue import chef
+from base64 import b64encode
+from cornice.resource import resource, view
+from cornice.util import json_error
+from couchdb.http import ResourceConflict
+from email.header import decode_header
+from functools import partial
+from json import dumps
+from jsonpatch import make_patch, apply_patch as _apply_patch
+from logging import getLogger
+from openprocurement.api.models import Document, Revision, Award, Period, get_now
+from pkg_resources import get_distribution
+from rfc6266 import build_header
+from schematics.exceptions import ModelValidationError
+from time import sleep
+from urllib import quote
+from urlparse import urlparse, parse_qs
+from uuid import uuid4
 
 try:
     from systemd.journal import JournalHandler
@@ -25,6 +27,7 @@ except ImportError:  # pragma: no cover
 PKG = get_distribution(__package__)
 LOGGER = getLogger(PKG.project_name)
 VERSION = '{}.{}'.format(int(PKG.parsed_version[0]), int(PKG.parsed_version[1]))
+json_view = partial(view, renderer='json')
 
 
 def generate_id():
@@ -78,6 +81,7 @@ def upload_file(request):
         'title': filename,
         'format': content_type
     })
+    document.__parent__ = request.context
     if 'document_id' in request.validated:
         document.id = request.validated['document_id']
     if first_document:
@@ -226,27 +230,171 @@ def apply_patch(request, data=None, save=True, src=None):
             return save_tender(request)
 
 
+def check_bids(request):
+    tender = request.validated['tender']
+    if tender.lots:
+        [setattr(i, 'status', 'unsuccessful') for i in tender.lots if i.numberOfBids == 0]
+        if max([i.numberOfBids for i in tender.lots]) < 2:
+            #tender.status = 'active.qualification'
+            add_next_award(request)
+        if set([i.status for i in tender.lots]) == set(['unsuccessful']):
+            tender.status = 'unsuccessful'
+    else:
+        if tender.numberOfBids == 0:
+            tender.status = 'unsuccessful'
+        if tender.numberOfBids == 1:
+            #tender.status = 'active.qualification'
+            add_next_award(request)
+
+
+def check_tender_status(request):
+    tender = request.validated['tender']
+    now = get_now()
+    if tender.lots:
+        for lot in tender.lots:
+            if lot.status != 'active':
+                continue
+            lot_awards = [i for i in tender.awards if i.lotID == lot.id]
+            if not lot_awards:
+                continue
+            last_award = lot_awards[-1]
+            pending_awards_complaints = any([
+                i.status == 'pending'
+                for a in lot_awards
+                for i in a.complaints
+            ])
+            stand_still_end = max([
+                a.complaintPeriod.endDate or now
+                for a in lot_awards
+            ])
+            if pending_awards_complaints or not stand_still_end <= now:
+                continue
+            if last_award.status == 'unsuccessful':
+                lot.status = 'unsuccessful'
+                continue
+            signed_contracts = [i for i in tender.contracts if i.status == 'active' and i.awardID == last_award.id]
+            if last_award.status == 'active' and signed_contracts:
+                lot.status = 'complete'
+        statuses = set([lot.status for lot in tender.lots])
+        if [i for i in tender.complaints if i.status == 'pending']:
+            statuses.add('pending')
+        if statuses == set(['cancelled']):
+            tender.status = 'cancelled'
+        elif not statuses.difference(set(['unsuccessful', 'cancelled'])):
+            tender.status = 'unsuccessful'
+        elif not statuses.difference(set(['complete', 'unsuccessful', 'cancelled'])):
+            tender.status = 'complete'
+    else:
+        pending_complaints = any([
+            i.status == 'pending'
+            for i in tender.complaints
+        ])
+        pending_awards_complaints = any([
+            i.status == 'pending'
+            for a in tender.awards
+            for i in a.complaints
+        ])
+        stand_still_ends = [
+            a.complaintPeriod.endDate
+            for a in tender.awards
+            if a.complaintPeriod.endDate
+        ]
+        stand_still_end = max(stand_still_ends) if stand_still_ends else now
+        stand_still_time_expired = stand_still_end < now
+        active_awards = any([
+            a.status == 'active'
+            for a in tender.awards
+        ])
+        if not active_awards and not pending_complaints and not pending_awards_complaints and stand_still_time_expired:
+            tender.status = 'unsuccessful'
+        if tender.contracts and tender.contracts[-1].status == 'active':
+            tender.status = 'complete'
+
+
 def add_next_award(request):
     tender = request.validated['tender']
-    unsuccessful_awards = [i.bid_id for i in tender.awards if i.status == 'unsuccessful']
-    bids = chef(tender.bids, tender.features, unsuccessful_awards)
-    if bids:
-        bid = bids[0].serialize()
-        award_data = {
-            'bid_id': bid['id'],
-            'status': 'pending',
-            'value': bid['value'],
-            'suppliers': bid['tenderers'],
-            'complaintPeriod': {
-                'startDate': get_now().isoformat()
-            }
-        }
-        award = Award(award_data)
-        tender.awards.append(award)
-        request.response.headers['Location'] = request.route_url('Tender Awards', tender_id=tender.id, award_id=award['id'])
+    now = get_now()
+    if not tender.awardPeriod:
+        tender.awardPeriod = Period({})
+    if not tender.awardPeriod.startDate:
+        tender.awardPeriod.startDate = now
+    if tender.lots:
+        statuses = set()
+        for lot in tender.lots:
+            if lot.status != 'active':
+                continue
+            lot_awards = [i for i in tender.awards if i.lotID == lot.id]
+            if lot_awards and lot_awards[-1].status in ['pending', 'active']:
+                statuses.add(lot_awards[-1].status if lot_awards else 'unsuccessful')
+                continue
+            lot_items = [i.id for i in tender.items if i.relatedLot == lot.id]
+            features = [
+                i
+                for i in tender.features
+                if i.featureOf == 'tenderer' or i.featureOf == 'lot' and i.relatedItem == lot.id or i.featureOf == 'item' and i.relatedItem in lot_items
+            ]
+            codes = [i.code for i in features]
+            bids = [
+                {
+                    'id': bid.id,
+                    'value': [i for i in bid.lotValues if lot.id == i.relatedLot][0].value,
+                    'tenderers': bid.tenderers,
+                    'parameters': [i for i in bid.parameters if i.code in codes],
+                    'date': [i for i in bid.lotValues if lot.id == i.relatedLot][0].date
+                }
+                for bid in tender.bids
+                if lot.id in [i.relatedLot for i in bid.lotValues]
+            ]
+            if not bids:
+                lot.status = 'unsuccessful'
+                statuses.add('unsuccessful')
+                continue
+            unsuccessful_awards = [i.bid_id for i in lot_awards if i.status == 'unsuccessful']
+            bids = chef(bids, features, unsuccessful_awards)
+            if bids:
+                bid = bids[0]
+                award = Award({
+                    'bid_id': bid['id'],
+                    'lotID': lot.id,
+                    'status': 'pending',
+                    'value': bid['value'],
+                    'suppliers': bid['tenderers'],
+                    'complaintPeriod': {
+                        'startDate': now.isoformat()
+                    }
+                })
+                tender.awards.append(award)
+                request.response.headers['Location'] = request.route_url('Tender Awards', tender_id=tender.id, award_id=award['id'])
+                statuses.add('pending')
+            else:
+                statuses.add('unsuccessful')
+        if statuses.difference(set(['unsuccessful', 'active'])):
+            tender.awardPeriod.endDate = None
+            tender.status = 'active.qualification'
+        else:
+            tender.awardPeriod.endDate = now
+            tender.status = 'active.awarded'
     else:
-        tender.awardPeriod.endDate = get_now()
-        tender.status = 'active.awarded'
+        unsuccessful_awards = [i.bid_id for i in tender.awards if i.status == 'unsuccessful']
+        bids = chef(tender.bids, tender.features, unsuccessful_awards)
+        if bids:
+            bid = bids[0].serialize()
+            award = Award({
+                'bid_id': bid['id'],
+                'status': 'pending',
+                'value': bid['value'],
+                'suppliers': bid['tenderers'],
+                'complaintPeriod': {
+                    'startDate': get_now().isoformat()
+                }
+            })
+            tender.awards.append(award)
+            request.response.headers['Location'] = request.route_url('Tender Awards', tender_id=tender.id, award_id=award['id'])
+            tender.status = 'active.qualification'
+            tender.awardPeriod.endDate = None
+        else:
+            tender.awardPeriod.endDate = now
+            tender.status = 'active.awarded'
 
 
 def error_handler(errors):
@@ -268,6 +416,9 @@ def error_handler(errors):
     for i in LOGGER.handlers:
         LOGGER.removeHandler(i)
     return json_error(errors)
+
+
+opresource = partial(resource, error_handler=error_handler)
 
 
 def forbidden(request):

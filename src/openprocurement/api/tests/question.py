@@ -102,6 +102,33 @@ class TenderQuestionResourceTest(BaseTenderWebTest):
             {u'description': {u'contactPoint': [u'This field is required.'], u'identifier': {u'scheme': [u'This field is required.'], u'id': [u'This field is required.'], u'uri': [u'Not a well formed URL.']}, u'address': [u'This field is required.']}, u'location': u'body', u'name': u'author'}
         ])
 
+        response = self.app.post_json('/tenders/{}/questions'.format(self.tender_id), {'data': {
+            'title': 'question title',
+            'description': 'question description',
+            'author': test_tender_data["procuringEntity"],
+            "questionOf": "lot"
+        }}, status=422)
+        self.assertEqual(response.status, '422 Unprocessable Entity')
+        self.assertEqual(response.content_type, 'application/json')
+        self.assertEqual(response.json['status'], 'error')
+        self.assertEqual(response.json['errors'], [
+            {u'description': [u'This field is required.'], u'location': u'body', u'name': u'relatedLot'}
+        ])
+
+        response = self.app.post_json('/tenders/{}/questions'.format(self.tender_id), {'data': {
+            'title': 'question title',
+            'description': 'question description',
+            'author': test_tender_data["procuringEntity"],
+            "questionOf": "lot",
+            "relatedLot": '0' * 32
+        }}, status=422)
+        self.assertEqual(response.status, '422 Unprocessable Entity')
+        self.assertEqual(response.content_type, 'application/json')
+        self.assertEqual(response.json['status'], 'error')
+        self.assertEqual(response.json['errors'], [
+            {u'description': [u'relatedLot should be one of lots'], u'location': u'body', u'name': u'relatedLot'}
+        ])
+
     def test_create_tender_question(self):
         response = self.app.post_json('/tenders/{}/questions'.format(
             self.tender_id), {'data': {'title': 'question title', 'description': 'question description', 'author': test_tender_data["procuringEntity"]}})
@@ -172,7 +199,7 @@ class TenderQuestionResourceTest(BaseTenderWebTest):
         response = self.app.get('/tenders/{}/questions/{}'.format(self.tender_id, question['id']))
         self.assertEqual(response.status, '200 OK')
         self.assertEqual(response.content_type, 'application/json')
-        self.assertEqual(set(response.json['data']), set([u'id', u'date', u'title', u'description']))
+        self.assertEqual(set(response.json['data']), set([u'id', u'date', u'title', u'description', u'questionOf']))
 
         self.set_status('active.qualification')
 
@@ -209,7 +236,7 @@ class TenderQuestionResourceTest(BaseTenderWebTest):
         response = self.app.get('/tenders/{}/questions'.format(self.tender_id))
         self.assertEqual(response.status, '200 OK')
         self.assertEqual(response.content_type, 'application/json')
-        self.assertEqual(set(response.json['data'][0]), set([u'id', u'date', u'title', u'description']))
+        self.assertEqual(set(response.json['data'][0]), set([u'id', u'date', u'title', u'description', u'questionOf']))
 
         self.set_status('active.qualification')
 

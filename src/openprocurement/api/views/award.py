@@ -1,13 +1,13 @@
 # -*- coding: utf-8 -*-
 from logging import getLogger
-from cornice.resource import resource, view
 from openprocurement.api.models import Award, Contract, STAND_STILL_TIME, get_now
 from openprocurement.api.utils import (
     apply_patch,
     save_tender,
     add_next_award,
-    error_handler,
     update_journal_handler_params,
+    opresource,
+    json_view,
 )
 from openprocurement.api.validation import (
     validate_award_data,
@@ -18,18 +18,17 @@ from openprocurement.api.validation import (
 LOGGER = getLogger(__name__)
 
 
-@resource(name='Tender Awards',
-          collection_path='/tenders/{tender_id}/awards',
-          path='/tenders/{tender_id}/awards/{award_id}',
-          description="Tender awards",
-          error_handler=error_handler)
+@opresource(name='Tender Awards',
+            collection_path='/tenders/{tender_id}/awards',
+            path='/tenders/{tender_id}/awards/{award_id}',
+            description="Tender awards")
 class TenderAwardResource(object):
 
     def __init__(self, request):
         self.request = request
         self.db = request.registry.db
 
-    @view(renderer='json', permission='view_tender')
+    @json_view(permission='view_tender')
     def collection_get(self):
         """Tender Awards List
 
@@ -84,7 +83,7 @@ class TenderAwardResource(object):
         """
         return {'data': [i.serialize("view") for i in self.request.validated['tender'].awards]}
 
-    @view(content_type="application/json", permission='create_award', validators=(validate_award_data,), renderer='json')
+    @json_view(content_type="application/json", permission='create_award', validators=(validate_award_data,))
     def collection_post(self):
         """Accept or reject bidder application
 
@@ -173,6 +172,7 @@ class TenderAwardResource(object):
         award_data = self.request.validated['data']
         award_data['complaintPeriod'] = {'startDate': get_now().isoformat()}
         award = Award(award_data)
+        award.__parent__ = self.request.context
         tender.awards.append(award)
         if save_tender(self.request):
             update_journal_handler_params({'award_id': award.id})
@@ -181,7 +181,7 @@ class TenderAwardResource(object):
             self.request.response.headers['Location'] = self.request.route_url('Tender Awards', tender_id=tender.id, award_id=award['id'])
             return {'data': award.serialize("view")}
 
-    @view(renderer='json', permission='view_tender')
+    @json_view(permission='view_tender')
     def get(self):
         """Retrieving the award
 
@@ -233,7 +233,7 @@ class TenderAwardResource(object):
         """
         return {'data': self.request.validated['award'].serialize("view")}
 
-    @view(content_type="application/json", permission='edit_tender', validators=(validate_patch_award_data,), renderer='json')
+    @json_view(content_type="application/json", permission='edit_tender', validators=(validate_patch_award_data,))
     def patch(self):
         """Update of award
 
@@ -301,16 +301,15 @@ class TenderAwardResource(object):
         apply_patch(self.request, save=False, src=self.request.context.serialize())
         if award_status == 'pending' and award.status == 'active':
             award.complaintPeriod.endDate = get_now() + STAND_STILL_TIME
-            award.contracts.append(Contract({'awardID': award.id}))
+            tender.contracts.append(Contract({'awardID': award.id}))
             tender.awardPeriod.endDate = get_now()
             tender.status = 'active.awarded'
         elif award_status == 'active' and award.status == 'cancelled':
             award.complaintPeriod.endDate = get_now()
-            for i in award.contracts:
-                i.status = 'cancelled'
+            for i in tender.contracts:
+                if i.awardID == award.id:
+                    i.status = 'cancelled'
             add_next_award(self.request)
-            tender.status = 'active.qualification'
-            tender.awardPeriod.endDate = None
         elif award_status == 'pending' and award.status == 'unsuccessful':
             award.complaintPeriod.endDate = get_now() + STAND_STILL_TIME
             add_next_award(self.request)

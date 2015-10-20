@@ -354,6 +354,14 @@ class TenderResourceTest(BaseWebTest):
             {u'description': {u'endDate': [u"Could not parse invalid_value. Should be ISO8601."]}, u'location': u'body', u'name': u'enquiryPeriod'}
         ])
 
+        response = self.app.post_json(request_path, {'data': {'enquiryPeriod': {'endDate': '9999-12-31T23:59:59.999999'}}}, status=422)
+        self.assertEqual(response.status, '422 Unprocessable Entity')
+        self.assertEqual(response.content_type, 'application/json')
+        self.assertEqual(response.json['status'], 'error')
+        self.assertEqual(response.json['errors'], [
+            {u'description': {u'endDate': [u'date value out of range']}, u'location': u'body', u'name': u'enquiryPeriod'}
+        ])
+
         data = test_tender_data['tenderPeriod']
         test_tender_data['tenderPeriod'] = {'startDate': '2014-10-31T00:00:00', 'endDate': '2014-10-01T00:00:00'}
         response = self.app.post_json(request_path, {'data': test_tender_data}, status=422)
@@ -377,7 +385,6 @@ class TenderResourceTest(BaseWebTest):
         ])
 
         now = get_now()
-
         test_tender_data['auctionPeriod'] = {'startDate': now.isoformat(), 'endDate': now.isoformat()}
         response = self.app.post_json(request_path, {'data': test_tender_data}, status=422)
         del test_tender_data['auctionPeriod']
@@ -560,7 +567,7 @@ class TenderResourceTest(BaseWebTest):
         data['features'] = [
             {
                 "code": "OCDS-123454-AIR-INTAKE",
-                "featureOf": "item",
+                "featureOf": "lot",
                 "title": u"Потужність всмоктування",
                 "enum": [
                     {
@@ -587,8 +594,17 @@ class TenderResourceTest(BaseWebTest):
         self.assertEqual(response.content_type, 'application/json')
         self.assertEqual(response.json['status'], 'error')
         self.assertEqual(response.json['errors'], [
-            {u'description': [u'relatedItem should be one of items'], u'location': u'body', u'name': u'features'}
+            {u'description': [{u'relatedItem': [u'relatedItem should be one of lots']}], u'location': u'body', u'name': u'features'}
         ])
+        data['features'][0]["featureOf"] = "item"
+        response = self.app.post_json('/tenders', {'data': data}, status=422)
+        self.assertEqual(response.status, '422 Unprocessable Entity')
+        self.assertEqual(response.content_type, 'application/json')
+        self.assertEqual(response.json['status'], 'error')
+        self.assertEqual(response.json['errors'], [
+            {u'description': [{u'relatedItem': [u'relatedItem should be one of items']}], u'location': u'body', u'name': u'features'}
+        ])
+        data['features'][0]["relatedItem"] = "1"
         data['features'][0]["enum"][0]["value"] = 0.5
         response = self.app.post_json('/tenders', {'data': data}, status=422)
         self.assertEqual(response.status, '422 Unprocessable Entity')
@@ -922,7 +938,8 @@ class TenderProcessTest(BaseTenderWebTest):
         response = self.app.post_json('/tenders/{}/bids'.format(tender_id),
                                       {'data': {'tenderers': [test_tender_data["procuringEntity"]], "value": {"amount": 500}}})
         # switch to active.qualification
-        response = self.set_status('active.qualification', {"auctionPeriod": {"startDate": None}})
+        #response = self.set_status('active.qualification', {"auctionPeriod": {"startDate": None}})
+        response = self.set_status('active.auction', {"auctionPeriod": {"startDate": None}})
         self.assertNotIn("auctionPeriod", response.json['data'])
         # get awards
         self.app.authorization = ('Basic', ('broker', ''))
@@ -930,9 +947,10 @@ class TenderProcessTest(BaseTenderWebTest):
         # get pending award
         award_id = [i['id'] for i in response.json['data'] if i['status'] == 'pending'][0]
         # set award as active
-        response = self.app.patch_json('/tenders/{}/awards/{}?acc_token={}'.format(tender_id, award_id, owner_token),
-                                       {"data": {"status": "active"}})
-        contract_id = response.json['data']['contracts'][0]['id']
+        self.app.patch_json('/tenders/{}/awards/{}?acc_token={}'.format(tender_id, award_id, owner_token), {"data": {"status": "active"}})
+        # get contract id
+        response = self.app.get('/tenders/{}'.format(tender_id))
+        contract_id = response.json['data']['contracts'][-1]['id']
         # after stand slill period
         self.app.authorization = ('Basic', ('chronograph', ''))
         self.set_status('complete', {'status': 'active.awarded'})
@@ -943,7 +961,7 @@ class TenderProcessTest(BaseTenderWebTest):
         self.db.save(tender)
         # sign contract
         self.app.authorization = ('Basic', ('broker', ''))
-        response = self.app.patch_json('/tenders/{}/awards/{}/contracts/{}?acc_token={}'.format(tender_id, award_id, contract_id, owner_token), {"data": {"status": "active"}})
+        self.app.patch_json('/tenders/{}/contracts/{}?acc_token={}'.format(tender_id, contract_id, owner_token), {"data": {"status": "active"}})
         # check status
         self.app.authorization = ('Basic', ('broker', ''))
         response = self.app.get('/tenders/{}'.format(tender_id))
@@ -966,7 +984,8 @@ class TenderProcessTest(BaseTenderWebTest):
         response = self.app.post_json('/tenders/{}/bids'.format(tender_id),
                                       {'data': {'tenderers': [test_tender_data["procuringEntity"]], "value": {"amount": 500}}})
         # switch to active.qualification
-        self.set_status('active.qualification')
+        #self.set_status('active.qualification')
+        self.set_status('active.auction')
         # get awards
         self.app.authorization = ('Basic', ('broker', ''))
         response = self.app.get('/tenders/{}/awards?acc_token={}'.format(tender_id, owner_token))
@@ -1067,9 +1086,10 @@ class TenderProcessTest(BaseTenderWebTest):
         # get pending award
         award_id = [i['id'] for i in response.json['data'] if i['status'] == 'pending'][0]
         # set award as active
-        response = self.app.patch_json('/tenders/{}/awards/{}?acc_token={}'.format(tender_id, award_id, owner_token),
-                                       {"data": {"status": "active"}})
-        contract_id = response.json['data']['contracts'][0]['id']
+        self.app.patch_json('/tenders/{}/awards/{}?acc_token={}'.format(tender_id, award_id, owner_token), {"data": {"status": "active"}})
+        # get contract id
+        response = self.app.get('/tenders/{}'.format(tender_id))
+        contract_id = response.json['data']['contracts'][-1]['id']
         # after stand slill period
         self.app.authorization = ('Basic', ('chronograph', ''))
         self.set_status('complete', {'status': 'active.awarded'})
@@ -1080,7 +1100,7 @@ class TenderProcessTest(BaseTenderWebTest):
         self.db.save(tender)
         # sign contract
         self.app.authorization = ('Basic', ('broker', ''))
-        response = self.app.patch_json('/tenders/{}/awards/{}/contracts/{}?acc_token={}'.format(tender_id, award_id, contract_id, owner_token), {"data": {"status": "active"}})
+        self.app.patch_json('/tenders/{}/contracts/{}?acc_token={}'.format(tender_id, contract_id, owner_token), {"data": {"status": "active"}})
         # check status
         self.app.authorization = ('Basic', ('broker', ''))
         response = self.app.get('/tenders/{}'.format(tender_id))

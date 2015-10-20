@@ -571,6 +571,29 @@ class MigrateTest(BaseWebTest):
         for i in migrated_item['awards']:
             self.assertIn('complaintPeriod', i)
 
+    def test_migrate_from17to18(self):
+        set_db_schema_version(self.db, 17)
+        data = {
+            'doc_type': 'Tender',
+            "awards": [
+                {
+                    "id": "award_id",
+                    "contracts": [
+                        {
+                            "awardID": "award_id",
+                            "id": "contract_id"
+                        }
+                    ]
+                }
+            ]
+        }
+        _id, _rev = self.db.save(data)
+        migrate_data(self.db, 18)
+        migrated_item = self.db.get(_id)
+        for i in migrated_item['awards']:
+            self.assertNotIn('contracts', i)
+        self.assertIn('contracts', migrated_item)
+
 
 def suite():
     suite = unittest.TestSuite()

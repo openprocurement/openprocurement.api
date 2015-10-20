@@ -1,12 +1,13 @@
 # -*- coding: utf-8 -*-
 from logging import getLogger
-from cornice.resource import resource, view
-from openprocurement.api.models import Complaint, get_now
+from openprocurement.api.models import Complaint
 from openprocurement.api.utils import (
     apply_patch,
     save_tender,
-    error_handler,
+    check_tender_status,
     update_journal_handler_params,
+    opresource,
+    json_view,
 )
 from openprocurement.api.validation import (
     validate_complaint_data,
@@ -17,18 +18,17 @@ from openprocurement.api.validation import (
 LOGGER = getLogger(__name__)
 
 
-@resource(name='Tender Complaints',
-          collection_path='/tenders/{tender_id}/complaints',
-          path='/tenders/{tender_id}/complaints/{complaint_id}',
-          description="Tender complaints",
-          error_handler=error_handler)
+@opresource(name='Tender Complaints',
+            collection_path='/tenders/{tender_id}/complaints',
+            path='/tenders/{tender_id}/complaints/{complaint_id}',
+            description="Tender complaints")
 class TenderComplaintResource(object):
 
     def __init__(self, request):
         self.request = request
         self.db = request.registry.db
 
-    @view(content_type="application/json", validators=(validate_complaint_data,), permission='create_complaint', renderer='json')
+    @json_view(content_type="application/json", validators=(validate_complaint_data,), permission='create_complaint')
     def collection_post(self):
         """Post a complaint
         """
@@ -39,6 +39,7 @@ class TenderComplaintResource(object):
             return
         complaint_data = self.request.validated['data']
         complaint = Complaint(complaint_data)
+        complaint.__parent__ = self.request.context
         tender.complaints.append(complaint)
         if save_tender(self.request):
             update_journal_handler_params({'complaint_id': complaint.id})
@@ -47,19 +48,19 @@ class TenderComplaintResource(object):
             self.request.response.headers['Location'] = self.request.route_url('Tender Complaints', tender_id=tender.id, complaint_id=complaint.id)
             return {'data': complaint.serialize("view")}
 
-    @view(renderer='json', permission='view_tender')
+    @json_view(permission='view_tender')
     def collection_get(self):
         """List complaints
         """
-        return {'data': [i.serialize("view") for i in self.request.validated['tender'].complaints]}
+        return {'data': [i.serialize("view") for i in self.request.context.complaints]}
 
-    @view(renderer='json', permission='view_tender')
+    @json_view(permission='view_tender')
     def get(self):
         """Retrieving the complaint
         """
         return {'data': self.request.validated['complaint'].serialize("view")}
 
-    @view(content_type="application/json", validators=(validate_patch_complaint_data,), permission='review_complaint', renderer='json')
+    @json_view(content_type="application/json", validators=(validate_patch_complaint_data,), permission='review_complaint')
     def patch(self):
         """Post a complaint resolution
         """
@@ -72,43 +73,19 @@ class TenderComplaintResource(object):
             self.request.errors.add('body', 'data', 'Can\'t update complaint in current ({}) status'.format(self.request.context.status))
             self.request.errors.status = 403
             return
-        apply_patch(self.request, save=False, src=self.request.context.serialize())
-        if self.request.context.status == 'cancelled':
+        if self.request.validated['data'].get('status', self.request.context.status) == 'cancelled':
             self.request.errors.add('body', 'data', 'Can\'t cancel complaint')
             self.request.errors.status = 403
             return
+        apply_patch(self.request, save=False, src=self.request.context.serialize())
         if self.request.context.status == 'resolved' and tender.status != 'active.enquiries':
             for i in tender.complaints:
                 if i.status == 'pending':
                     i.status = 'cancelled'
+            [setattr(i, 'status', 'cancelled') for i in tender.lots]
             tender.status = 'cancelled'
         elif self.request.context.status in ['declined', 'invalid'] and tender.status == 'active.awarded':
-            now = get_now()
-            pending_complaints = [
-                i
-                for i in tender.complaints
-                if i.status == 'pending'
-            ]
-            pending_awards_complaints = [
-                i
-                for a in tender.awards
-                for i in a.complaints
-                if i.status == 'pending'
-            ]
-            stand_still_ends = [
-                a.complaintPeriod.endDate
-                for a in tender.awards
-                if a.complaintPeriod.endDate
-            ]
-            stand_still_end = max(stand_still_ends) if stand_still_ends else now
-            stand_still_time_expired = stand_still_end < now
-            active_awards = [
-                a
-                for a in tender.awards
-                if a.status == 'active'
-            ]
-            if not active_awards and not pending_complaints and not pending_awards_complaints and stand_still_time_expired:
-                tender.status = 'unsuccessful'
+            check_tender_status(self.request)
         if save_tender(self.request):
             LOGGER.info('Updated tender complaint {}'.format(self.request.context.id), extra={'MESSAGE_ID': 'tender_complaint_patch'})
             return {'data': self.request.context.serialize("view")}
