@@ -376,7 +376,9 @@ class TenderResourceTest(BaseWebTest):
             {u'description': [u'period should begin after enquiryPeriod'], u'location': u'body', u'name': u'tenderPeriod'}
         ])
 
-        test_tender_data['auctionPeriod'] = {'startDate': '2014-10-31T00:00:00', 'endDate': '2015-10-01T00:00:00'}
+        now = get_now()
+
+        test_tender_data['auctionPeriod'] = {'startDate': now.isoformat(), 'endDate': now.isoformat()}
         response = self.app.post_json(request_path, {'data': test_tender_data}, status=422)
         del test_tender_data['auctionPeriod']
         self.assertEqual(response.status, '422 Unprocessable Entity')
@@ -386,8 +388,18 @@ class TenderResourceTest(BaseWebTest):
             {u'description': [u'period should begin after tenderPeriod'], u'location': u'body', u'name': u'auctionPeriod'}
         ])
 
-        test_tender_data['auctionPeriod'] = {'startDate': '2015-10-31T00:00:00', 'endDate': '2016-10-01T00:00:00'}
-        test_tender_data['awardPeriod'] = {'startDate': '2014-10-31T00:00:00', 'endDate': '2015-10-01T00:00:00'}
+        test_tender_data['awardPeriod'] = {'startDate': now.isoformat(), 'endDate': now.isoformat()}
+        response = self.app.post_json(request_path, {'data': test_tender_data}, status=422)
+        del test_tender_data['awardPeriod']
+        self.assertEqual(response.status, '422 Unprocessable Entity')
+        self.assertEqual(response.content_type, 'application/json')
+        self.assertEqual(response.json['status'], 'error')
+        self.assertEqual(response.json['errors'], [
+            {u'description': [u'period should begin after tenderPeriod'], u'location': u'body', u'name': u'awardPeriod'}
+        ])
+
+        test_tender_data['auctionPeriod'] = {'startDate': (now + timedelta(days=15)).isoformat(), 'endDate': (now + timedelta(days=15)).isoformat()}
+        test_tender_data['awardPeriod'] = {'startDate': (now + timedelta(days=14)).isoformat(), 'endDate': (now + timedelta(days=14)).isoformat()}
         response = self.app.post_json(request_path, {'data': test_tender_data}, status=422)
         del test_tender_data['auctionPeriod']
         del test_tender_data['awardPeriod']
