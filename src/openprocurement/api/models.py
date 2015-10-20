@@ -494,7 +494,7 @@ class Complaint(Model):
 class Cancellation(Model):
     class Options:
         roles = {
-            'create': whitelist('reason', 'status'),
+            'create': whitelist('reason', 'status', 'cancellationOf', 'relatedLot'),
             'edit': whitelist('status'),
             'embedded': schematics_embedded_role,
             'view': schematics_default_role,
