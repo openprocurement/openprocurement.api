@@ -211,8 +211,8 @@ def save_tender(request):
         except Exception, e:  # pragma: no cover
             request.errors.add('body', 'data', str(e))
         else:
-            update_logging_context({'TENDER_REV': tender.rev}, request)
-            LOGGER.info('Saved tender {}: dateModified {} -> {}'.format(tender.id, old_dateModified and old_dateModified.isoformat(), tender.dateModified.isoformat()), extra={'MESSAGE_ID': 'save_tender'})
+            LOGGER.info('Saved tender {}: dateModified {} -> {}'.format(tender.id, old_dateModified and old_dateModified.isoformat(), tender.dateModified.isoformat()),
+                        extra=context_unpack(request, {'MESSAGE_ID': 'save_tender'}, {'TENDER_REV': tender.rev}))
             return True
 
 

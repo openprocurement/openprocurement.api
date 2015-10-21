@@ -54,8 +54,8 @@ class TenderAwardDocumentResource(object):
         document = upload_file(self.request)
         self.request.validated['award'].documents.append(document)
         if save_tender(self.request):
-            update_logging_context({'document_id': document.id}, self.request)
-            LOGGER.info('Created tender award document {}'.format(document.id), extra={'MESSAGE_ID': 'tender_award_document_create'})
+            LOGGER.info('Created tender award document {}'.format(document.id),
+                        extra=context_unpack(self.request, {'MESSAGE_ID': 'tender_award_document_create'}, {'document_id': document.id}))
             self.request.response.status = 201
             document_route = self.request.matched_route.name.replace("collection_", "")
             self.request.response.headers['Location'] = self.request.current_route_url(_route_name=document_route, document_id=document.id, _query={})
@@ -85,7 +85,8 @@ class TenderAwardDocumentResource(object):
         document = upload_file(self.request)
         self.request.validated['award'].documents.append(document)
         if save_tender(self.request):
-            LOGGER.info('Updated tender award document {}'.format(self.request.context.id), extra={'MESSAGE_ID': 'tender_award_document_put'})
+            LOGGER.info('Updated tender award document {}'.format(self.request.context.id),
+                extra=context_unpack(self.request, {'MESSAGE_ID': 'tender_award_document_put'}))
             return {'data': document.serialize("view")}
 
     @json_view(content_type="application/json", validators=(validate_patch_document_data,), permission='edit_tender')
@@ -97,5 +98,6 @@ class TenderAwardDocumentResource(object):
             return
         if apply_patch(self.request, src=self.request.context.serialize()):
             update_file_content_type(self.request)
-            LOGGER.info('Updated tender award document {}'.format(self.request.context.id), extra={'MESSAGE_ID': 'tender_award_document_patch'})
+            LOGGER.info('Updated tender award document {}'.format(self.request.context.id),
+                        extra=context_unpack(self.request, {'MESSAGE_ID': 'tender_award_document_patch'}))
             return {'data': self.request.context.serialize("view")}

@@ -42,8 +42,8 @@ class TenderComplaintResource(object):
         complaint.__parent__ = self.request.context
         tender.complaints.append(complaint)
         if save_tender(self.request):
-            update_logging_context({'complaint_id': complaint.id}, self.request)
-            LOGGER.info('Created tender complaint {}'.format(complaint.id), extra={'MESSAGE_ID': 'tender_complaint_create'})
+            LOGGER.info('Created tender complaint {}'.format(complaint.id),
+                        extra=context_unpack(self.request, {'MESSAGE_ID': 'tender_complaint_create'}, {'complaint_id': complaint.id}))
             self.request.response.status = 201
             self.request.response.headers['Location'] = self.request.route_url('Tender Complaints', tender_id=tender.id, complaint_id=complaint.id)
             return {'data': complaint.serialize("view")}
@@ -87,5 +87,6 @@ class TenderComplaintResource(object):
         elif self.request.context.status in ['declined', 'invalid'] and tender.status == 'active.awarded':
             check_tender_status(self.request)
         if save_tender(self.request):
-            LOGGER.info('Updated tender complaint {}'.format(self.request.context.id), extra={'MESSAGE_ID': 'tender_complaint_patch'})
+            LOGGER.info('Updated tender complaint {}'.format(self.request.context.id),
+                        extra=context_unpack(self.request, {'MESSAGE_ID': 'tender_complaint_patch'}))
             return {'data': self.request.context.serialize("view")}

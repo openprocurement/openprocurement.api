@@ -175,8 +175,8 @@ class TenderAwardResource(object):
         award.__parent__ = self.request.context
         tender.awards.append(award)
         if save_tender(self.request):
-            update_logging_context({'award_id': award.id}, self.request)
-            LOGGER.info('Created tender award {}'.format(award.id), extra={'MESSAGE_ID': 'tender_award_create'})
+            LOGGER.info('Created tender award {}'.format(award.id),
+                extra=context_unpack(self.request, {'MESSAGE_ID': 'tender_award_create'}, {'award_id': award.id}))
             self.request.response.status = 201
             self.request.response.headers['Location'] = self.request.route_url('Tender Awards', tender_id=tender.id, award_id=award['id'])
             return {'data': award.serialize("view")}
@@ -318,5 +318,6 @@ class TenderAwardResource(object):
             self.request.errors.status = 403
             return
         if save_tender(self.request):
-            LOGGER.info('Updated tender award {}'.format(self.request.context.id), extra={'MESSAGE_ID': 'tender_award_patch'})
+            LOGGER.info('Updated tender award {}'.format(self.request.context.id),
+                extra=context_unpack(self.request, {'MESSAGE_ID': 'tender_award_patch'}, {'TENDER_REV': tender.rev}))
             return {'data': award.serialize("view")}

@@ -6,6 +6,7 @@ from openprocurement.api.utils import (
     save_tender,
     opresource,
     json_view,
+    context_unpack,
 )
 from openprocurement.api.validation import (
     validate_lot_data,
@@ -40,8 +41,8 @@ class TenderLotResource(object):
         lot.__parent__ = self.request.context
         tender.lots.append(lot)
         if save_tender(self.request):
-            update_journal_handler_params({'lot_id': lot.id})
-            LOGGER.info('Created tender lot {}'.format(lot.id), extra={'MESSAGE_ID': 'tender_lot_create'})
+            LOGGER.info('Created tender lot {}'.format(lot.id),
+                        extra=context_unpack(self.request, {'MESSAGE_ID': 'tender_lot_create'}, {'lot_id': lot.id}))
             self.request.response.status = 201
             self.request.response.headers['Location'] = self.request.route_url('Tender Lots', tender_id=tender.id, lot_id=lot.id)
             return {'data': lot.serialize("view")}
@@ -68,7 +69,8 @@ class TenderLotResource(object):
             self.request.errors.status = 403
             return
         if apply_patch(self.request, src=self.request.context.serialize()):
-            LOGGER.info('Updated tender lot {}'.format(self.request.context.id), extra={'MESSAGE_ID': 'tender_lot_patch'})
+            LOGGER.info('Updated tender lot {}'.format(self.request.context.id),
+                extra=context_unpack(self.request, {'MESSAGE_ID': 'tender_lot_patch'}))
             return {'data': self.request.context.serialize("view")}
 
     @json_view(permission='edit_tender')
@@ -84,5 +86,6 @@ class TenderLotResource(object):
         res = lot.serialize("view")
         tender.lots.remove(lot)
         if save_tender(self.request):
-            LOGGER.info('Deleted tender lot {}'.format(self.request.context.id), extra={'MESSAGE_ID': 'tender_lot_delete'})
+            LOGGER.info('Deleted tender lot {}'.format(self.request.context.id),
+                        extra=context_unpack(self.request, {'MESSAGE_ID': 'tender_lot_delete'}))
             return {'data': res}
