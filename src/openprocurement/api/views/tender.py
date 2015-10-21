@@ -470,7 +470,7 @@ class TenderResource(object):
 
         """
         tender = self.request.validated['tender']
-        tender_data = tender.serialize('view' if self.request.authenticated_role == 'chronograph' else tender.status)
+        tender_data = tender.serialize('chronograph_view' if self.request.authenticated_role == 'chronograph' else tender.status)
         return {'data': tender_data}
 
     #@json_view(content_type="application/json", validators=(validate_tender_data, ), permission='edit_tender')

@@ -668,6 +668,7 @@ class Lot(Model):
             'auction_view': default_lot_role,
             'auction_patch': whitelist('id', 'auctionUrl'),
             'chronograph': whitelist('id', 'auctionPeriod'),
+            'chronograph_view': whitelist('id', 'auctionPeriod', 'numberOfBids', 'status'),
         }
 
     id = MD5Type(required=True, default=lambda: uuid4().hex)
@@ -748,6 +749,7 @@ auction_patch_role = whitelist('auctionUrl', 'bids', 'lots')
 enquiries_role = (blacklist('owner', 'owner_token', '_attachments', 'revisions', 'bids', 'numberOfBids') + schematics_embedded_role)
 auction_role = (blacklist('owner', 'owner_token', '_attachments', 'revisions', 'bids') + schematics_embedded_role)
 chronograph_role = whitelist('status', 'enquiryPeriod', 'tenderPeriod', 'auctionPeriod', 'awardPeriod', 'lots')
+chronograph_view_role = whitelist('status', 'enquiryPeriod', 'tenderPeriod', 'auctionPeriod', 'awardPeriod', 'awards', 'lots', 'doc_id', 'submissionMethodDetails', 'mode', 'numberOfBids')
 Administrator_role = whitelist('status', 'mode')
 
 
@@ -780,6 +782,7 @@ class Tender(SchematicsDocument, Model):
             'unsuccessful': view_role,
             'cancelled': view_role,
             'chronograph': chronograph_role,
+            'chronograph_view': chronograph_view_role,
             'Administrator': Administrator_role,
             'default': schematics_default_role,
         }
