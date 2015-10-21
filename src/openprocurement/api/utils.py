@@ -472,3 +472,13 @@ def update_logging_context(request, params):
 
     for x, j in params.items():
         request.logging_context[x.upper()] = j
+
+
+def context_unpack(request, msg, params=None):
+    if params:
+        update_logging_context(request, params)
+    logging_context = request.logging_context
+    journal_context = msg
+    for key, value in logging_context.items():
+        journal_context["JOURNAL_" + key] = value
+    return journal_context

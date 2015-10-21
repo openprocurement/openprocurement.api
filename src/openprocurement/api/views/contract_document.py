@@ -5,7 +5,7 @@ from openprocurement.api.utils import (
     save_tender,
     upload_file,
     apply_patch,
-    update_logging_context,
+    update_file_content_type,
     opresource,
     json_view,
 )
