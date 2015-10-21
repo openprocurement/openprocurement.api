@@ -211,7 +211,7 @@ def save_tender(request):
         except Exception, e:  # pragma: no cover
             request.errors.add('body', 'data', str(e))
         else:
-            update_journal_handler_params({'TENDER_REV': tender.rev})
+            update_logging_context({'TENDER_REV': tender.rev}, request)
             LOGGER.info('Saved tender {}: dateModified {} -> {}'.format(tender.id, old_dateModified and old_dateModified.isoformat(), tender.dateModified.isoformat()), extra={'MESSAGE_ID': 'save_tender'})
             return True
 
@@ -472,13 +472,3 @@ def update_logging_context(request, params):
 
     for x, j in params.items():
         request.logging_context[x.upper()] = j
-
-
-def context_unpack(request, msg, params=None):
-    if params:
-        update_logging_context(request, params)
-    logging_context = request.logging_context
-    journal_context = msg
-    for key, value in logging_context.items():
-        journal_context["JOURNAL_" + key] = value
-    return journal_context

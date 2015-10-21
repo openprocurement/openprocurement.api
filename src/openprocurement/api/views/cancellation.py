@@ -5,7 +5,6 @@ from openprocurement.api.utils import (
     apply_patch,
     save_tender,
     check_tender_status,
-    update_journal_handler_params,
     opresource,
     json_view,
 )
@@ -51,7 +50,7 @@ class TenderCancellationResource(object):
             tender.status = 'cancelled'
         tender.cancellations.append(cancellation)
         if save_tender(self.request):
-            update_journal_handler_params({'cancellation_id': cancellation.id})
+            update_logging_context({'cancellation_id': cancellation.id}, self.request)
             LOGGER.info('Created tender cancellation {}'.format(cancellation.id), extra={'MESSAGE_ID': 'tender_cancellation_create'})
             self.request.response.status = 201
             self.request.response.headers['Location'] = self.request.route_url('Tender Cancellations', tender_id=tender.id, cancellation_id=cancellation.id)

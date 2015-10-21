@@ -5,7 +5,6 @@ from openprocurement.api.utils import (
     save_tender,
     set_ownership,
     apply_patch,
-    update_journal_handler_params,
     opresource,
     json_view,
 )
@@ -121,7 +120,7 @@ class TenderBidResource(object):
         set_ownership(bid, self.request)
         tender.bids.append(bid)
         if save_tender(self.request):
-            update_journal_handler_params({'bid_id': bid.id})
+            update_logging_context({'bid_id': bid.id}, self.request)
             LOGGER.info('Created tender bid {}'.format(bid.id), extra={'MESSAGE_ID': 'tender_bid_create'})
             self.request.response.status = 201
             self.request.response.headers['Location'] = self.request.route_url('Tender Bids', tender_id=tender.id, bid_id=bid['id'])

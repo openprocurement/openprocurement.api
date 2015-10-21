@@ -4,7 +4,6 @@ from openprocurement.api.models import Lot
 from openprocurement.api.utils import (
     apply_patch,
     save_tender,
-    update_journal_handler_params,
     opresource,
     json_view,
 )

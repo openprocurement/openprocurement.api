@@ -5,8 +5,7 @@ from openprocurement.api.utils import (
     save_tender,
     upload_file,
     apply_patch,
-    update_journal_handler_params,
-    update_file_content_type,
+    update_logging_context,
     opresource,
     json_view,
 )
@@ -59,7 +58,7 @@ class TenderAwardContractDocumentResource(object):
         document = upload_file(self.request)
         self.request.validated['contract'].documents.append(document)
         if save_tender(self.request):
-            update_journal_handler_params({'document_id': document.id})
+            update_logging_context({'document_id': document.id})
             LOGGER.info('Created tender contract document {}'.format(document.id), extra={'MESSAGE_ID': 'tender_contract_document_create'})
             self.request.response.status = 201
             document_route = self.request.matched_route.name.replace("collection_", "")

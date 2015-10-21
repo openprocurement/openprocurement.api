@@ -5,7 +5,6 @@ from openprocurement.api.utils import (
     apply_patch,
     save_tender,
     add_next_award,
-    update_journal_handler_params,
     opresource,
     json_view,
 )
@@ -175,7 +174,7 @@ class TenderAwardResource(object):
         award.__parent__ = self.request.context
         tender.awards.append(award)
         if save_tender(self.request):
-            update_journal_handler_params({'award_id': award.id})
+            update_logging_context({'award_id': award.id}, self.request)
             LOGGER.info('Created tender award {}'.format(award.id), extra={'MESSAGE_ID': 'tender_award_create'})
             self.request.response.status = 201
             self.request.response.headers['Location'] = self.request.route_url('Tender Awards', tender_id=tender.id, award_id=award['id'])

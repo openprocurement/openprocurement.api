@@ -21,7 +21,6 @@ from openprocurement.api.utils import (
     apply_patch,
     check_bids,
     check_tender_status,
-    update_journal_handler_params,
     opresource,
     json_view,
 )
@@ -370,8 +369,8 @@ class TenderResource(object):
         self.request.validated['tender'] = tender
         self.request.validated['tender_src'] = {}
         if save_tender(self.request):
-            update_journal_handler_params({'tender_id': tender_id, 'tenderID': tender.tenderID})
-            LOGGER.info('Created tender {} ({})'.format(tender_id, tender.tenderID), extra={'MESSAGE_ID': 'tender_create'})
+            update_logging_context({'tender_id': tender_id, 'tenderID': tender.tenderID}, self.request)
+            LOGGER.info('Created tender {} ({})'.format(tender_id, tender.tenderID), extra={'MESSAGE_ID': 'tender_create', 'request': self.request.logging_context})
             self.request.response.status = 201
             self.request.response.headers[
                 'Location'] = self.request.route_url('Tender', tender_id=tender_id)
@@ -552,5 +551,9 @@ class TenderResource(object):
             save_tender(self.request)
         else:
             apply_patch(self.request, src=self.request.validated['tender_src'])
-        LOGGER.info('Updated tender {}'.format(tender.id), extra={'MESSAGE_ID': 'tender_patch'})
+
+        if not self.request.__dict__.get('logging_context'):
+            self.request.logging_context = {}
+
+        LOGGER.info('Updated tender {}'.format(tender.id), extra={'MESSAGE_ID': 'tender_patch', 'request': self.request.logging_context})
         return {'data': tender.serialize(tender.status)}

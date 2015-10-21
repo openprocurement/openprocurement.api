@@ -5,7 +5,6 @@ from openprocurement.api.utils import (
     save_tender,
     upload_file,
     apply_patch,
-    update_journal_handler_params,
     update_file_content_type,
     opresource,
     json_view,
@@ -54,7 +53,7 @@ class TenderCancellationDocumentResource(object):
         document = upload_file(self.request)
         self.request.validated['cancellation'].documents.append(document)
         if save_tender(self.request):
-            update_journal_handler_params({'document_id': document.id})
+            update_logging_context({'document_id': document.id}, self.request)
             LOGGER.info('Created tender cancellation document {}'.format(document.id), extra={'MESSAGE_ID': 'tender_cancellation_document_create'})
             self.request.response.status = 201
             document_route = self.request.matched_route.name.replace("collection_", "")
