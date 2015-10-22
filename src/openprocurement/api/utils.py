@@ -251,6 +251,8 @@ def check_tender_status(request):
     tender = request.validated['tender']
     now = get_now()
     if tender.lots:
+        if any([i.status == 'pending' for i in tender.complaints]):
+            return
         for lot in tender.lots:
             if lot.status != 'active':
                 continue
@@ -269,15 +271,12 @@ def check_tender_status(request):
             ])
             if pending_awards_complaints or not stand_still_end <= now:
                 continue
-            if last_award.status == 'unsuccessful':
+            elif last_award.status == 'unsuccessful':
                 lot.status = 'unsuccessful'
                 continue
-            signed_contracts = [i for i in tender.contracts if i.status == 'active' and i.awardID == last_award.id]
-            if last_award.status == 'active' and signed_contracts:
+            elif last_award.status == 'active' and any([i.status == 'active' and i.awardID == last_award.id for i in tender.contracts]):
                 lot.status = 'complete'
         statuses = set([lot.status for lot in tender.lots])
-        if [i for i in tender.complaints if i.status == 'pending']:
-            statuses.add('pending')
         if statuses == set(['cancelled']):
             tender.status = 'cancelled'
         elif not statuses.difference(set(['unsuccessful', 'cancelled'])):

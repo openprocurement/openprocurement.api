@@ -547,7 +547,7 @@ class TenderResource(object):
             apply_patch(self.request, save=False, src=self.request.validated['tender_src'])
             check_bids(self.request)
             save_tender(self.request)
-        elif self.request.authenticated_role == 'chronograph' and tender.status == 'active.awarded' and data.get('status', tender.status) == 'active.awarded':
+        elif self.request.authenticated_role == 'chronograph' and tender.status in ['active.qualification', 'active.awarded'] and data.get('status', tender.status) == tender.status:
             check_tender_status(self.request)
             save_tender(self.request)
         else:
