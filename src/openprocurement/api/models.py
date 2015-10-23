@@ -664,7 +664,7 @@ class Lot(Model):
             'edit': whitelist('title', 'title_en', 'title_ru', 'description', 'description_en', 'description_ru', 'value', 'minimalStep'),
             'embedded': embedded_lot_role,
             'view': default_lot_role,
-            'default': schematics_default_role,
+            'default': default_lot_role,
             'auction_view': default_lot_role,
             'auction_patch': whitelist('id', 'auctionUrl'),
             'chronograph': whitelist('id', 'auctionPeriod'),
@@ -749,7 +749,7 @@ auction_patch_role = whitelist('auctionUrl', 'bids', 'lots')
 enquiries_role = (blacklist('owner', 'owner_token', '_attachments', 'revisions', 'bids', 'numberOfBids') + schematics_embedded_role)
 auction_role = (blacklist('owner', 'owner_token', '_attachments', 'revisions', 'bids') + schematics_embedded_role)
 chronograph_role = whitelist('status', 'enquiryPeriod', 'tenderPeriod', 'auctionPeriod', 'awardPeriod', 'lots')
-chronograph_view_role = whitelist('status', 'enquiryPeriod', 'tenderPeriod', 'auctionPeriod', 'awardPeriod', 'awards', 'lots', 'doc_id', 'submissionMethodDetails', 'mode', 'numberOfBids')
+chronograph_view_role = whitelist('status', 'enquiryPeriod', 'tenderPeriod', 'auctionPeriod', 'awardPeriod', 'awards', 'lots', 'doc_id', 'submissionMethodDetails', 'mode', 'numberOfBids', 'complaints')
 Administrator_role = whitelist('status', 'mode')
 
 
