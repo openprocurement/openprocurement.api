@@ -170,6 +170,10 @@ class TenderAwardResource(object):
             self.request.errors.status = 403
             return
         award_data = self.request.validated['data']
+        if any([i.status != 'active' for i in tender.lots if i.id == award_data.get('lotID')]):
+            self.request.errors.add('body', 'data', 'Can create award only in active lot status')
+            self.request.errors.status = 403
+            return
         award_data['complaintPeriod'] = {'startDate': get_now().isoformat()}
         award = Award(award_data)
         award.__parent__ = self.request.context
@@ -297,6 +301,10 @@ class TenderAwardResource(object):
             self.request.errors.status = 403
             return
         award = self.request.context
+        if any([i.status != 'active' for i in tender.lots if i.id == award.lotID]):
+            self.request.errors.add('body', 'data', 'Can update award only in active lot status')
+            self.request.errors.status = 403
+            return
         award_status = award.status
         apply_patch(self.request, save=False, src=self.request.context.serialize())
         if award_status == 'pending' and award.status == 'active':

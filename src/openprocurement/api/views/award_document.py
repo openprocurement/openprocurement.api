@@ -51,6 +51,10 @@ class TenderAwardDocumentResource(object):
             self.request.errors.add('body', 'data', 'Can\'t add document in current ({}) tender status'.format(self.request.validated['tender_status']))
             self.request.errors.status = 403
             return
+        if any([i.status != 'active' for i in self.request.validated['tender'].lots if i.id == self.request.context.lotID]):
+            self.request.errors.add('body', 'data', 'Can add document only in active lot status')
+            self.request.errors.status = 403
+            return
         document = upload_file(self.request)
         self.request.validated['award'].documents.append(document)
         if save_tender(self.request):
@@ -82,6 +86,10 @@ class TenderAwardDocumentResource(object):
             self.request.errors.add('body', 'data', 'Can\'t update document in current ({}) tender status'.format(self.request.validated['tender_status']))
             self.request.errors.status = 403
             return
+        if any([i.status != 'active' for i in self.request.validated['tender'].lots if i.id == self.request.validated['award'].lotID]):
+            self.request.errors.add('body', 'data', 'Can update document only in active lot status')
+            self.request.errors.status = 403
+            return
         document = upload_file(self.request)
         self.request.validated['award'].documents.append(document)
         if save_tender(self.request):
@@ -93,6 +101,10 @@ class TenderAwardDocumentResource(object):
         """Tender Award Document Update"""
         if self.request.validated['tender_status'] != 'active.qualification':
             self.request.errors.add('body', 'data', 'Can\'t update document in current ({}) tender status'.format(self.request.validated['tender_status']))
+            self.request.errors.status = 403
+            return
+        if any([i.status != 'active' for i in self.request.validated['tender'].lots if i.id == self.request.validated['award'].lotID]):
+            self.request.errors.add('body', 'data', 'Can update document only in active lot status')
             self.request.errors.status = 403
             return
         if apply_patch(self.request, src=self.request.context.serialize()):

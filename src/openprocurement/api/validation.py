@@ -84,7 +84,7 @@ def validate_tender_auction_data(request):
         return
     lot_id = request.matchdict.get('auction_lot_id')
     if tender.lots and any([i.status != 'active' for i in tender.lots if i.id == lot_id]):
-        request.errors.add('body', 'data', 'Can {} only in active tender lot status'.format('report auction results' if request.method == 'POST' else 'update auction urls'))
+        request.errors.add('body', 'data', 'Can {} only in active lot status'.format('report auction results' if request.method == 'POST' else 'update auction urls'))
         request.errors.status = 403
         return
     if data is not None:

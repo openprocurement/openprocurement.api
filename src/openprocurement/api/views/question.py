@@ -37,6 +37,10 @@ class TenderQuestionResource(object):
             self.request.errors.status = 403
             return
         question_data = self.request.validated['data']
+        if any([i.status != 'active' for i in tender.lots if i.id == question_data.get('relatedLot')]):
+            self.request.errors.add('body', 'data', 'Can add question only in active lot status')
+            self.request.errors.status = 403
+            return
         question = Question(question_data)
         question.__parent__ = self.request.context
         tender.questions.append(question)
@@ -66,6 +70,10 @@ class TenderQuestionResource(object):
         tender = self.request.validated['tender']
         if tender.status != 'active.enquiries':
             self.request.errors.add('body', 'data', 'Can\'t update question in current ({}) tender status'.format(tender.status))
+            self.request.errors.status = 403
+            return
+        if any([i.status != 'active' for i in tender.lots if i.id == self.request.context.relatedLot]):
+            self.request.errors.add('body', 'data', 'Can update question only in active lot status')
             self.request.errors.status = 403
             return
         if apply_patch(self.request, src=self.request.context.serialize()):

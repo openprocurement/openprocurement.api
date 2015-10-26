@@ -38,6 +38,10 @@ class TenderAwardComplaintResource(object):
             self.request.errors.add('body', 'data', 'Can\'t add complaint in current ({}) tender status'.format(tender.status))
             self.request.errors.status = 403
             return
+        if any([i.status != 'active' for i in tender.lots if i.id == self.request.context.lotID]):
+            self.request.errors.add('body', 'data', 'Can add complaint only in active lot status')
+            self.request.errors.status = 403
+            return
         if self.request.context.complaintPeriod and \
            (self.request.context.complaintPeriod.startDate and self.request.context.complaintPeriod.startDate > get_now() or
                 self.request.context.complaintPeriod.endDate and self.request.context.complaintPeriod.endDate < get_now()):
@@ -74,6 +78,10 @@ class TenderAwardComplaintResource(object):
         tender = self.request.validated['tender']
         if tender.status not in ['active.qualification', 'active.awarded']:
             self.request.errors.add('body', 'data', 'Can\'t update complaint in current ({}) tender status'.format(tender.status))
+            self.request.errors.status = 403
+            return
+        if any([i.status != 'active' for i in tender.lots if i.id == self.request.validated['award'].lotID]):
+            self.request.errors.add('body', 'data', 'Can update complaint only in active lot status')
             self.request.errors.status = 403
             return
         complaint = self.request.context
