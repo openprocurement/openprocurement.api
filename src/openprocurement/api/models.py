@@ -727,11 +727,6 @@ def validate_features_uniq(features, *args):
             raise ValidationError(u"Feature code should be uniq for all features")
 
 
-def validate_features_max_value(features, *args):
-    if features and vnmax(features) > 0.3:
-        raise ValidationError(u"Sum of max value of all features should be less then or equal to 30%")
-
-
 def validate_cpv_group(items, *args):
     if items and len(set([i.classification.id[:3] for i in items])) != 1:
         raise ValidationError(u"CPV group of items be identical")
@@ -834,7 +829,7 @@ class Tender(SchematicsDocument, Model):
     auctionUrl = URLType()
     mode = StringType(choices=['test'])
     cancellations = ListType(ModelType(Cancellation), default=list())
-    features = ListType(ModelType(Feature), default=list(), validators=[validate_features_uniq, validate_features_max_value])
+    features = ListType(ModelType(Feature), default=list(), validators=[validate_features_uniq])
     lots = ListType(ModelType(Lot), default=list())
 
     _attachments = DictType(DictType(BaseType), default=dict())  # couchdb attachments
@@ -883,6 +878,19 @@ class Tender(SchematicsDocument, Model):
 
         self._data.update(data)
         return self
+
+    def validate_features(self, data, features):
+        if data['lots'] and any([
+                round(vnmax([
+                    i
+                    for i in features
+                    if i.featureOf == 'tenderer' or i.featureOf == 'lot' and i.relatedItem != lot['id'] or i.featureOf == 'item' and i.relatedItem in [j.id for j in data['items'] if j.relatedLot != lot['id']]
+                ]), 15) > 0.3
+                for lot in data['lots']
+            ]):
+                raise ValidationError(u"Sum of max value of all features for lot should be less then or equal to 30%")
+        elif not data['lots'] and round(vnmax(features), 15) > 0.3:
+                raise ValidationError(u"Sum of max value of all features should be less then or equal to 30%")
 
     def validate_auctionUrl(self, data, url):
         if url and data['lots']:

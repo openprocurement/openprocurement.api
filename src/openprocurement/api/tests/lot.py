@@ -366,6 +366,57 @@ class TenderLotResourceTest(BaseTenderWebTest):
         self.assertEqual(response.json['errors'][0]["description"], "Can't delete lot in current (active.tendering) tender status")
 
 
+class TenderLotFeatureResourceTest(BaseTenderWebTest):
+    initial_lots = 2 * test_lots
+
+    def test_tender_features_invalid(self):
+        request_path = '/tenders/{}'.format(self.tender_id)
+        data = test_tender_data.copy()
+        item = data['items'][0].copy()
+        item['id'] = "1"
+        data['items'] = [item]
+        data['features'] = [
+            {
+                "featureOf": "lot",
+                "relatedItem": self.initial_lots[0]['id'],
+                "title": u"Потужність всмоктування",
+                "enum": [
+                    {
+                        "value": 0.5,
+                        "title": u"До 1000 Вт"
+                    },
+                    {
+                        "value": 0.15,
+                        "title": u"Більше 1000 Вт"
+                    }
+                ]
+            }
+        ]
+        response = self.app.patch_json(request_path, {'data': data}, status=422)
+        self.assertEqual(response.status, '422 Unprocessable Entity')
+        self.assertEqual(response.content_type, 'application/json')
+        self.assertEqual(response.json['status'], 'error')
+        self.assertEqual(response.json['errors'], [
+            {u'description': [{u'enum': [{u'value': [u'Float value should be less than 0.3.']}]}], u'location': u'body', u'name': u'features'}
+        ])
+        data['features'][0]["enum"][0]["value"] = 0.1
+        data['features'].append(data['features'][0].copy())
+        data['features'][1]["enum"][0]["value"] = 0.2
+        response = self.app.patch_json(request_path, {'data': data}, status=422)
+        self.assertEqual(response.status, '422 Unprocessable Entity')
+        self.assertEqual(response.content_type, 'application/json')
+        self.assertEqual(response.json['status'], 'error')
+        self.assertEqual(response.json['errors'], [
+            {u'description': [u'Sum of max value of all features for lot should be less then or equal to 30%'], u'location': u'body', u'name': u'features'}
+        ])
+        data['features'][1]["enum"][0]["value"] = 0.1
+        data['features'].append(data['features'][0].copy())
+        data['features'][2]["relatedItem"] = self.initial_lots[1]['id']
+        data['features'].append(data['features'][2].copy())
+        response = self.app.patch_json(request_path, {'data': data})
+        self.assertEqual(response.status, '200 OK')
+
+
 class TenderLotBidderResourceTest(BaseTenderWebTest):
     initial_status = 'active.tendering'
     initial_lots = test_lots
