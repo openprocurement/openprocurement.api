@@ -491,7 +491,7 @@ def validate_features_uniq(features, *args):
 
 
 def validate_features_max_value(features, *args):
-    if features and vnmax(features) > 0.3:
+    if features and round(vnmax(features), 15) > 0.3:
         raise ValidationError(u"Sum of max value of all features should be less then or equal to 30%")
 
 

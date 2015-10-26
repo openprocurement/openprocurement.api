@@ -639,11 +639,11 @@ class TenderResourceTest(BaseWebTest):
                 "description": u"Ефективна потужність всмоктування пилососа, в ватах (аероватах)",
                 "enum": [
                     {
-                        "value": 0.1,
+                        "value": 0.05,
                         "title": u"До 1000 Вт"
                     },
                     {
-                        "value": 0.15,
+                        "value": 0.1,
                         "title": u"Більше 1000 Вт"
                     }
                 ]
@@ -661,11 +661,24 @@ class TenderResourceTest(BaseWebTest):
                     },
                     {
                         "value": 0.1,
-                        "title": u"Більше 3 років, менше 5 років"
+                        "title": u"Більше 3 років"
+                    }
+                ]
+            },
+            {
+                "code": "OCDS-123454-POSTPONEMENT",
+                "featureOf": "tenderer",
+                "title": u"Відстрочка платежу",
+                "title_en": u"Postponement of payment",
+                "description": u"Термін відстрочки платежу",
+                "enum": [
+                    {
+                        "value": 0.05,
+                        "title": u"До 90 днів"
                     },
                     {
-                        "value": 0.15,
-                        "title": u"Більше 5 років"
+                        "value": 0.1,
+                        "title": u"Більше 90 днів"
                     }
                 ]
             }
