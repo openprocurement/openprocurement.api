@@ -78,12 +78,16 @@ def validate_patch_tender_data(request):
 def validate_tender_auction_data(request):
     data = validate_patch_tender_data(request)
     tender = request.validated['tender']
+    if tender.status != 'active.auction':
+        request.errors.add('body', 'data', 'Can\'t {} in current ({}) tender status'.format('report auction results' if request.method == 'POST' else 'update auction urls', tender.status))
+        request.errors.status = 403
+        return
     lot_id = request.matchdict.get('auction_lot_id')
+    if tender.lots and any([i.status != 'active' for i in tender.lots if i.id == lot_id]):
+        request.errors.add('body', 'data', 'Can {} only in active tender lot status'.format('report auction results' if request.method == 'POST' else 'update auction urls'))
+        request.errors.status = 403
+        return
     if data is not None:
-        if tender.status != 'active.auction':
-            request.errors.add('body', 'data', 'Can\'t report auction results in current ({}) tender status'.format(tender.status))
-            request.errors.status = 403
-            return
         bids = data.get('bids', [])
         tender_bids_ids = [i.id for i in tender.bids]
         if len(bids) != len(tender.bids):
