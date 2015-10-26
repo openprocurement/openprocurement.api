@@ -374,23 +374,25 @@ def add_next_award(request):
             tender.awardPeriod.endDate = now
             tender.status = 'active.awarded'
     else:
-        unsuccessful_awards = [i.bid_id for i in tender.awards if i.status == 'unsuccessful']
-        bids = chef(tender.bids, tender.features, unsuccessful_awards)
-        if bids:
-            bid = bids[0].serialize()
-            award = Award({
-                'bid_id': bid['id'],
-                'status': 'pending',
-                'value': bid['value'],
-                'suppliers': bid['tenderers'],
-                'complaintPeriod': {
-                    'startDate': get_now().isoformat()
-                }
-            })
-            tender.awards.append(award)
-            request.response.headers['Location'] = request.route_url('Tender Awards', tender_id=tender.id, award_id=award['id'])
-            tender.status = 'active.qualification'
+        if not tender.awards or tender.awards[-1].status not in ['pending', 'active']:
+            unsuccessful_awards = [i.bid_id for i in tender.awards if i.status == 'unsuccessful']
+            bids = chef(tender.bids, tender.features, unsuccessful_awards)
+            if bids:
+                bid = bids[0].serialize()
+                award = Award({
+                    'bid_id': bid['id'],
+                    'status': 'pending',
+                    'value': bid['value'],
+                    'suppliers': bid['tenderers'],
+                    'complaintPeriod': {
+                        'startDate': get_now().isoformat()
+                    }
+                })
+                tender.awards.append(award)
+                request.response.headers['Location'] = request.route_url('Tender Awards', tender_id=tender.id, award_id=award['id'])
+        if tender.awards[-1].status == 'pending':
             tender.awardPeriod.endDate = None
+            tender.status = 'active.qualification'
         else:
             tender.awardPeriod.endDate = now
             tender.status = 'active.awarded'

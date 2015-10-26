@@ -302,8 +302,7 @@ class TenderAwardResource(object):
         if award_status == 'pending' and award.status == 'active':
             award.complaintPeriod.endDate = get_now() + STAND_STILL_TIME
             tender.contracts.append(Contract({'awardID': award.id}))
-            tender.awardPeriod.endDate = get_now()
-            tender.status = 'active.awarded'
+            add_next_award(self.request)
         elif award_status == 'active' and award.status == 'cancelled':
             award.complaintPeriod.endDate = get_now()
             for i in tender.contracts:
