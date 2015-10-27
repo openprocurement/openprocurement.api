@@ -78,10 +78,13 @@ Schema
     
 :complaints:
     List of :ref:`Complaint` objects
-:contracts:
-    List of :ref:`Contract` objects
 
 :complaintPeriod:
     :ref:`period`
 
     The timeframe when complaints can be submitted.
+
+:lotID:
+    string
+
+    Id of related :ref:`lot`.

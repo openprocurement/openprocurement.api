@@ -79,6 +79,12 @@ Schema
 
     `deliveryLocation` usually takes precedence over `deliveryAddress` if both are present.
 
+:relatedLot:
+    string
+
+    Id of related :ref:`lot`.
+
+
 Classification
 ==============
 

@@ -22,6 +22,7 @@ Schema
     Possible values are:
 
     * `tenderer`
+    * `lot`
     * `item`
 
 :relatedItem:

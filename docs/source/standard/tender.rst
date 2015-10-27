@@ -91,9 +91,12 @@ Schema
    * `valueAddedTaxIncluded` should either be absent or match `Tender.value.valueAddedTaxIncluded`
 
 :awards:
-   List of :ref:`award` objects
+    List of :ref:`award` objects
 
-   All qualifications (disqualifications and awards).
+    All qualifications (disqualifications and awards).
+
+:contracts:
+    List of :ref:`Contract` objects
 
 :enquiryPeriod:
    :ref:`period`, required
@@ -115,6 +118,11 @@ Schema
    :ref:`period`, read-only
 
    Period when Auction is conducted.
+
+:auctionUrl:
+    url
+
+    A web address for view auction.
 
 :awardPeriod:
    :ref:`period`, read-only
@@ -145,6 +153,11 @@ Schema
        Cancelled tender (cancelled)
 
    Status of the Tender.
+
+:lots:
+   List of :ref:`lot` objects.
+
+   Contains all tender lots.
 
 :cancellations:
    List of :ref:`cancellation` objects.

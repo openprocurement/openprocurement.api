@@ -37,3 +37,16 @@ Schema
     string, :ref:`date`
 
     Cancellation date.
+
+:cancellationOf:
+    string
+
+    Possible values are:
+
+    * `tender`
+    * `lot`
+
+:relatedLot:
+    string
+
+    Id of related :ref:`lot`.
