@@ -631,6 +631,12 @@ class FeatureValue(Model):
     description_ru = StringType()
 
 
+def validate_values_uniq(values, *args):
+    codes = [i.value for i in values]
+    if any([codes.count(i) > 1 for i in set(codes)]):
+        raise ValidationError(u"Feature value should be uniq for feature")
+
+
 class Feature(Model):
 
     code = StringType(required=True, min_length=1, default=lambda: uuid4().hex)
@@ -642,7 +648,7 @@ class Feature(Model):
     description = StringType()
     description_en = StringType()
     description_ru = StringType()
-    enum = ListType(ModelType(FeatureValue), default=list(), min_size=1)
+    enum = ListType(ModelType(FeatureValue), default=list(), min_size=1, validators=[validate_values_uniq])
 
     def validate_relatedItem(self, data, relatedItem):
         if not relatedItem and data.get('featureOf') in ['item', 'lot']:
@@ -723,7 +729,7 @@ class Lot(Model):
 def validate_features_uniq(features, *args):
     if features:
         codes = [i.code for i in features]
-        if [i for i in set(codes) if codes.count(i) > 1]:
+        if any([codes.count(i) > 1 for i in set(codes)]):
             raise ValidationError(u"Feature code should be uniq for all features")
 
 
