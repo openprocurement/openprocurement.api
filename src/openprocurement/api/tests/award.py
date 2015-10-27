@@ -1031,6 +1031,23 @@ class Tender2LotAwardComplaintResourceTest(TenderLotAwardComplaintResourceTest):
         self.assertEqual(response.json['errors'][0]["description"], "Can add complaint only in active lot status")
 
     def test_patch_tender_award_complaint(self):
+        response = self.app.patch_json('/tenders/{}/awards/{}'.format(self.tender_id, self.award_id), {"data": {"status": "unsuccessful"}})
+        self.assertEqual(response.status, '200 OK')
+        self.assertEqual(response.content_type, 'application/json')
+        self.assertEqual(response.json['data']["status"], "unsuccessful")
+
+        response = self.app.post_json('/tenders/{}/awards/{}/complaints'.format(
+            self.tender_id, self.award_id), {'data': {'title': 'complaint title', 'description': 'complaint description', 'author': test_tender_data["procuringEntity"]}})
+        self.assertEqual(response.status, '201 Created')
+        self.assertEqual(response.content_type, 'application/json')
+        complaint = response.json['data']
+
+        response = self.app.patch_json('/tenders/{}/awards/{}/complaints/{}'.format(self.tender_id, self.award_id, complaint['id']), {"data": {"status": "resolved", "resolution": "resolution text"}})
+        self.assertEqual(response.status, '200 OK')
+        self.assertEqual(response.content_type, 'application/json')
+        self.assertEqual(response.json['data']["status"], "resolved")
+        self.assertEqual(response.json['data']["resolution"], "resolution text")
+
         response = self.app.post_json('/tenders/{}/awards/{}/complaints'.format(
             self.tender_id, self.award_id), {'data': {'title': 'complaint title', 'description': 'complaint description', 'author': test_tender_data["procuringEntity"]}})
         self.assertEqual(response.status, '201 Created')
@@ -1049,6 +1066,7 @@ class Tender2LotAwardComplaintResourceTest(TenderLotAwardComplaintResourceTest):
         self.assertEqual(response.status, '403 Forbidden')
         self.assertEqual(response.content_type, 'application/json')
         self.assertEqual(response.json['errors'][0]["description"], "Can update complaint only in active lot status")
+
 
 class TenderAwardComplaintDocumentResourceTest(BaseTenderWebTest):
     initial_status = 'active.qualification'
@@ -1967,6 +1985,7 @@ class Tender2LotAwardDocumentResourceTest(BaseTenderWebTest):
 def suite():
     suite = unittest.TestSuite()
     suite.addTest(unittest.makeSuite(Tender2LotAwardComplaintDocumentResourceTest))
+    suite.addTest(unittest.makeSuite(Tender2LotAwardComplaintResourceTest))
     suite.addTest(unittest.makeSuite(Tender2LotAwardDocumentResourceTest))
     suite.addTest(unittest.makeSuite(Tender2LotAwardResourceTest))
     suite.addTest(unittest.makeSuite(TenderAwardComplaintDocumentResourceTest))
