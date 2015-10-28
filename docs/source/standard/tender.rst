@@ -172,10 +172,12 @@ Schema
 
    Historical changes to Tender object properties.
 
-The Tender dates should be sequential:
+.. important::
 
- * Current time
- * `enquiryPeriod.startDate`
- * `enquiryPeriod.endDate`
- * `tenderPeriod.startDate`
- * `tenderPeriod.endDate`
+    The Tender dates should be sequential:
+
+        * Current time
+        * `enquiryPeriod.startDate`
+        * `enquiryPeriod.endDate`
+        * `tenderPeriod.startDate`
+        * `tenderPeriod.endDate`

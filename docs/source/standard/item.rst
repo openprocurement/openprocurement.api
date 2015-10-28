@@ -85,6 +85,8 @@ Schema
     Id of related :ref:`lot`.
 
 
+.. _Classification:
+
 Classification
 ==============
 
