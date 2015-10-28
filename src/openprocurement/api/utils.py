@@ -18,11 +18,6 @@ from urllib import quote
 from urlparse import urlparse, parse_qs
 from uuid import uuid4
 
-try:
-    from systemd.journal import JournalHandler
-except ImportError:  # pragma: no cover
-    JournalHandler = False
-
 
 PKG = get_distribution(__package__)
 LOGGER = getLogger(PKG.project_name)
@@ -450,9 +445,8 @@ def set_journal_handler(event):
         'REQUEST_ID': request.environ.get('REQUEST_ID', ''),
         'CLIENT_REQUEST_ID': request.headers.get('X-Client-Request-ID', ''),
     }
-    for i in LOGGER.handlers:
-        LOGGER.removeHandler(i)
-    LOGGER.addHandler(JournalHandler(**params))
+
+    request.logging_context = params
 
 
 def update_journal_handler_role(event):

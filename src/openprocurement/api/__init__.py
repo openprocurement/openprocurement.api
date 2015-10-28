@@ -20,11 +20,6 @@ from openprocurement.api.traversal import factory
 from openprocurement.api.utils import forbidden, set_journal_handler, cleanup_journal_handler, update_journal_handler_role
 from pbkdf2 import PBKDF2
 
-try:
-    from systemd.journal import JournalHandler
-except ImportError:  # pragma: no cover
-    JournalHandler = False
-
 LOGGER = getLogger("{}.init".format(__name__))
 #VERSION = int(pkg_resources.get_distribution(__package__).parsed_version[0])
 PKG = get_distribution(__package__)
