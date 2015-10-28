@@ -66,6 +66,15 @@ lot.  The changes in the API are communicated via `Open Procurement API
 Change log
 ----------
 
+0.10
+~~~~
+Released: not released
+
+ New features:
+
+ - :ref:`Multilot tenders <lots>`
+
+
 0.9
 ~~~
 Released: not released

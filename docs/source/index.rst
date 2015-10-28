@@ -33,6 +33,7 @@ Contents:
    procuring
    bidding
    meat
+   lots
    qualification
    questions
    complaints
