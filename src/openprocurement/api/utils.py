@@ -449,20 +449,21 @@ def set_journal_handler(event):
     request.logging_context = params
 
 
-def update_journal_handler_role(event):
+def set_logging_context(event):
     request = event.request
-    for i in LOGGER.handlers:
-        if isinstance(i, JournalHandler):
-            i._extra['ROLE'] = str(request.authenticated_role)
-            if request.params:
-                i._extra['PARAMS'] = str(dict(request.params))
-            if request.matchdict:
-                for x, j in request.matchdict.items():
-                    i._extra[x.upper()] = j
-            if 'tender' in request.validated:
-                i._extra['TENDER_REV'] = request.validated['tender'].rev
-                i._extra['TENDERID'] = request.validated['tender'].tenderID
-                i._extra['TENDER_STATUS'] = request.validated['tender'].status
+
+    params = {}
+    params['ROLE'] = str(request.authenticated_role)
+    if request.params:
+        params['PARAMS'] = str(dict(request.params))
+    if request.matchdict:
+        for x, j in request.matchdict.items():
+            params[x.upper()] = j
+    if 'tender' in request.validated:
+        params['TENDER_REV'] = request.validated['tender'].rev
+        params['TENDERID'] = request.validated['tender'].tenderID
+        params['TENDER_STATUS'] = request.validated['tender'].status
+    update_logging_context(request, params)
 
 
 def update_logging_context(request, params):
