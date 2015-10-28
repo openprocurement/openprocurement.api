@@ -142,9 +142,10 @@ Schema
     Possible values are:
 
     * `tender`
+    * `item`
     * `lot`
 
-:relatedLot:
+:relatedItem:
     string
 
-    Id of related :ref:`lot`.
+    Id of related :ref:`lot` or :ref:`item`.

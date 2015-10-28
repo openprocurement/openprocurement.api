@@ -266,18 +266,29 @@ class TenderDocumentResourceTest(BaseTenderWebTest):
         self.assertEqual(response.content_type, 'application/json')
         self.assertEqual(response.json['status'], 'error')
         self.assertEqual(response.json['errors'], [
-            {u'description': [u'This field is required.'], u'location': u'body', u'name': u'relatedLot'},
+            {u'description': [u'This field is required.'], u'location': u'body', u'name': u'relatedItem'},
         ])
 
         response = self.app.patch_json('/tenders/{}/documents/{}'.format(self.tender_id, doc_id), {"data": {
             "documentOf": "lot",
-            "relatedLot": '0' * 32
+            "relatedItem": '0' * 32
         }}, status=422)
         self.assertEqual(response.status, '422 Unprocessable Entity')
         self.assertEqual(response.content_type, 'application/json')
         self.assertEqual(response.json['status'], 'error')
         self.assertEqual(response.json['errors'], [
-            {u'description': [u'relatedLot should be one of lots'], u'location': u'body', u'name': u'relatedLot'}
+            {u'description': [u'relatedItem should be one of lots'], u'location': u'body', u'name': u'relatedItem'}
+        ])
+
+        response = self.app.patch_json('/tenders/{}/documents/{}'.format(self.tender_id, doc_id), {"data": {
+            "documentOf": "item",
+            "relatedItem": '0' * 32
+        }}, status=422)
+        self.assertEqual(response.status, '422 Unprocessable Entity')
+        self.assertEqual(response.content_type, 'application/json')
+        self.assertEqual(response.json['status'], 'error')
+        self.assertEqual(response.json['errors'], [
+            {u'description': [u'relatedItem should be one of items'], u'location': u'body', u'name': u'relatedItem'}
         ])
 
         response = self.app.patch_json('/tenders/{}/documents/{}'.format(self.tender_id, doc_id), {"data": {"description": "document description"}})

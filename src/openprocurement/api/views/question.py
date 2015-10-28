@@ -37,7 +37,7 @@ class TenderQuestionResource(object):
             self.request.errors.status = 403
             return
         question_data = self.request.validated['data']
-        if any([i.status != 'active' for i in tender.lots if i.id == question_data.get('relatedLot')]):
+        if any([i.status != 'active' for i in tender.lots if i.id == question_data.get('relatedItem')]):
             self.request.errors.add('body', 'data', 'Can add question only in active lot status')
             self.request.errors.status = 403
             return
@@ -72,7 +72,7 @@ class TenderQuestionResource(object):
             self.request.errors.add('body', 'data', 'Can\'t update question in current ({}) tender status'.format(tender.status))
             self.request.errors.status = 403
             return
-        if any([i.status != 'active' for i in tender.lots if i.id == self.request.context.relatedLot]):
+        if any([i.status != 'active' for i in tender.lots if i.id == self.request.context.relatedItem]):
             self.request.errors.add('body', 'data', 'Can update question only in active lot status')
             self.request.errors.status = 403
             return

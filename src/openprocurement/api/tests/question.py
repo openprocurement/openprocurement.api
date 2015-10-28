@@ -112,7 +112,7 @@ class TenderQuestionResourceTest(BaseTenderWebTest):
         self.assertEqual(response.content_type, 'application/json')
         self.assertEqual(response.json['status'], 'error')
         self.assertEqual(response.json['errors'], [
-            {u'description': [u'This field is required.'], u'location': u'body', u'name': u'relatedLot'}
+            {u'description': [u'This field is required.'], u'location': u'body', u'name': u'relatedItem'}
         ])
 
         response = self.app.post_json('/tenders/{}/questions'.format(self.tender_id), {'data': {
@@ -120,13 +120,27 @@ class TenderQuestionResourceTest(BaseTenderWebTest):
             'description': 'question description',
             'author': test_tender_data["procuringEntity"],
             "questionOf": "lot",
-            "relatedLot": '0' * 32
+            "relatedItem": '0' * 32
         }}, status=422)
         self.assertEqual(response.status, '422 Unprocessable Entity')
         self.assertEqual(response.content_type, 'application/json')
         self.assertEqual(response.json['status'], 'error')
         self.assertEqual(response.json['errors'], [
-            {u'description': [u'relatedLot should be one of lots'], u'location': u'body', u'name': u'relatedLot'}
+            {u'description': [u'relatedItem should be one of lots'], u'location': u'body', u'name': u'relatedItem'}
+        ])
+
+        response = self.app.post_json('/tenders/{}/questions'.format(self.tender_id), {'data': {
+            'title': 'question title',
+            'description': 'question description',
+            'author': test_tender_data["procuringEntity"],
+            "questionOf": "item",
+            "relatedItem": '0' * 32
+        }}, status=422)
+        self.assertEqual(response.status, '422 Unprocessable Entity')
+        self.assertEqual(response.content_type, 'application/json')
+        self.assertEqual(response.json['status'], 'error')
+        self.assertEqual(response.json['errors'], [
+            {u'description': [u'relatedItem should be one of items'], u'location': u'body', u'name': u'relatedItem'}
         ])
 
     def test_create_tender_question(self):
@@ -271,7 +285,7 @@ class TenderLotQuestionResourceTest(BaseTenderWebTest):
             'title': 'question title',
             'description': 'question description',
             "questionOf": "lot",
-            "relatedLot": self.initial_lots[0]['id'],
+            "relatedItem": self.initial_lots[0]['id'],
             'author': test_tender_data["procuringEntity"]
         }}, status=403)
         self.assertEqual(response.status, '403 Forbidden')
@@ -282,7 +296,7 @@ class TenderLotQuestionResourceTest(BaseTenderWebTest):
             'title': 'question title',
             'description': 'question description',
             "questionOf": "lot",
-            "relatedLot": self.initial_lots[1]['id'],
+            "relatedItem": self.initial_lots[1]['id'],
             'author': test_tender_data["procuringEntity"]
         }})
         self.assertEqual(response.status, '201 Created')
@@ -297,7 +311,7 @@ class TenderLotQuestionResourceTest(BaseTenderWebTest):
             'title': 'question title',
             'description': 'question description',
             "questionOf": "lot",
-            "relatedLot": self.initial_lots[0]['id'],
+            "relatedItem": self.initial_lots[0]['id'],
             'author': test_tender_data["procuringEntity"]
         }})
         self.assertEqual(response.status, '201 Created')
@@ -321,7 +335,7 @@ class TenderLotQuestionResourceTest(BaseTenderWebTest):
             'title': 'question title',
             'description': 'question description',
             "questionOf": "lot",
-            "relatedLot": self.initial_lots[1]['id'],
+            "relatedItem": self.initial_lots[1]['id'],
             'author': test_tender_data["procuringEntity"]
         }})
         self.assertEqual(response.status, '201 Created')

@@ -565,11 +565,11 @@ class TenderLotAuctionResourceTest(TenderAuctionResourceTest):
         doc_id = response.json["data"]['id']
         key = response.json["data"]["url"].split('?')[-1].split('=')[-1]
 
-        response = self.app.patch_json('/tenders/{}/documents/{}'.format(self.tender_id, doc_id), {'data': {"documentOf": "lot", 'relatedLot': self.initial_lots[0]['id']}})
+        response = self.app.patch_json('/tenders/{}/documents/{}'.format(self.tender_id, doc_id), {'data': {"documentOf": "lot", 'relatedItem': self.initial_lots[0]['id']}})
         self.assertEqual(response.status, '200 OK')
         self.assertEqual(response.content_type, 'application/json')
         self.assertEqual(response.json["data"]["documentOf"], "lot")
-        self.assertEqual(response.json["data"]["relatedLot"], self.initial_lots[0]['id'])
+        self.assertEqual(response.json["data"]["relatedItem"], self.initial_lots[0]['id'])
 
         patch_data = {
             'bids': [
@@ -916,11 +916,11 @@ class TenderMultipleLotAuctionResourceTest(TenderAuctionResourceTest):
         doc_id = response.json["data"]['id']
         key = response.json["data"]["url"].split('?')[-1].split('=')[-1]
 
-        response = self.app.patch_json('/tenders/{}/documents/{}'.format(self.tender_id, doc_id), {'data': {"documentOf": "lot", 'relatedLot': self.initial_lots[0]['id']}})
+        response = self.app.patch_json('/tenders/{}/documents/{}'.format(self.tender_id, doc_id), {'data': {"documentOf": "lot", 'relatedItem': self.initial_lots[0]['id']}})
         self.assertEqual(response.status, '200 OK')
         self.assertEqual(response.content_type, 'application/json')
         self.assertEqual(response.json["data"]["documentOf"], "lot")
-        self.assertEqual(response.json["data"]["relatedLot"], self.initial_lots[0]['id'])
+        self.assertEqual(response.json["data"]["relatedItem"], self.initial_lots[0]['id'])
 
         patch_data = {
             'bids': [
