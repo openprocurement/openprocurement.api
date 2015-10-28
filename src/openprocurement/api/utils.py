@@ -422,7 +422,7 @@ def forbidden(request):
     return error_handler(request.errors)
 
 
-def set_journal_handler(event):
+def add_logging_context(event):
     request = event.request
     params = {
         'TENDERS_API_VERSION': VERSION,
