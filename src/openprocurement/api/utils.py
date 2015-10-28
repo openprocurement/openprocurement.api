@@ -465,13 +465,19 @@ def update_journal_handler_role(event):
                 i._extra['TENDER_STATUS'] = request.validated['tender'].status
 
 
-def cleanup_journal_handler(event):
-    for i in LOGGER.handlers:
-        LOGGER.removeHandler(i)
+def update_logging_context(request, params):
+    if not request.__dict__.get('logging_context'):
+        request.logging_context = {}
+
+    for x, j in params.items():
+        request.logging_context[x.upper()] = j
 
 
-def update_journal_handler_params(params):
-    for i in LOGGER.handlers:
-        if isinstance(i, JournalHandler):
-            for x, j in params.items():
-                i._extra[x.upper()] = j
+def context_unpack(request, msg, params=None):
+    if params:
+        update_logging_context(request, params)
+    logging_context = request.logging_context
+    journal_context = msg
+    for key, value in logging_context.items():
+        journal_context["JOURNAL_" + key] = value
+    return journal_context
