@@ -5,9 +5,9 @@ from openprocurement.api.utils import (
     save_tender,
     set_ownership,
     apply_patch,
-    update_journal_handler_params,
     opresource,
     json_view,
+    context_unpack,
 )
 from openprocurement.api.validation import (
     validate_bid_data,
@@ -121,8 +121,8 @@ class TenderBidResource(object):
         set_ownership(bid, self.request)
         tender.bids.append(bid)
         if save_tender(self.request):
-            update_journal_handler_params({'bid_id': bid.id})
-            LOGGER.info('Created tender bid {}'.format(bid.id), extra={'MESSAGE_ID': 'tender_bid_create'})
+            LOGGER.info('Created tender bid {}'.format(bid.id),
+                extra=context_unpack(self.request, {'MESSAGE_ID': 'tender_bid_create'}, {'bid_id': bid.id}))
             self.request.response.status = 201
             self.request.response.headers['Location'] = self.request.route_url('Tender Bids', tender_id=tender.id, bid_id=bid['id'])
             return {
@@ -263,7 +263,8 @@ class TenderBidResource(object):
                 if lotvalue['relatedLot'] in lotValues and lotvalue.get("value", {}).get("amount") != lotValues[lotvalue['relatedLot']]:
                     lotvalue['date'] = get_now().isoformat()
         if apply_patch(self.request, src=self.request.context.serialize()):
-            LOGGER.info('Updated tender bid {}'.format(self.request.context.id), extra={'MESSAGE_ID': 'tender_bid_patch'})
+            LOGGER.info('Updated tender bid {}'.format(self.request.context.id),
+                        extra=context_unpack(self.request, {'MESSAGE_ID': 'tender_bid_patch'}))
             return {'data': self.request.context.serialize("view")}
 
     @json_view(permission='edit_bid')
@@ -304,5 +305,6 @@ class TenderBidResource(object):
         res = bid.serialize("view")
         self.request.validated['tender'].bids.remove(bid)
         if save_tender(self.request):
-            LOGGER.info('Deleted tender bid {}'.format(self.request.context.id), extra={'MESSAGE_ID': 'tender_bid_delete'})
+            LOGGER.info('Deleted tender bid {}'.format(self.request.context.id),
+                        extra=context_unpack(self.request, {'MESSAGE_ID': 'tender_bid_delete'}))
             return {'data': res}

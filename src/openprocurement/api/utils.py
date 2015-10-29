@@ -18,11 +18,6 @@ from urllib import quote
 from urlparse import urlparse, parse_qs
 from uuid import uuid4
 
-try:
-    from systemd.journal import JournalHandler
-except ImportError:  # pragma: no cover
-    JournalHandler = False
-
 
 PKG = get_distribution(__package__)
 LOGGER = getLogger(PKG.project_name)
@@ -216,8 +211,8 @@ def save_tender(request):
         except Exception, e:  # pragma: no cover
             request.errors.add('body', 'data', str(e))
         else:
-            update_journal_handler_params({'TENDER_REV': tender.rev})
-            LOGGER.info('Saved tender {}: dateModified {} -> {}'.format(tender.id, old_dateModified and old_dateModified.isoformat(), tender.dateModified.isoformat()), extra={'MESSAGE_ID': 'save_tender'})
+            LOGGER.info('Saved tender {}: dateModified {} -> {}'.format(tender.id, old_dateModified and old_dateModified.isoformat(), tender.dateModified.isoformat()),
+                        extra=context_unpack(request, {'MESSAGE_ID': 'save_tender'}, {'TENDER_REV': tender.rev}))
             return True
 
 
@@ -428,7 +423,7 @@ def forbidden(request):
     return error_handler(request.errors)
 
 
-def set_journal_handler(event):
+def add_logging_context(event):
     request = event.request
     params = {
         'TENDERS_API_VERSION': VERSION,
@@ -451,34 +446,40 @@ def set_journal_handler(event):
         'REQUEST_ID': request.environ.get('REQUEST_ID', ''),
         'CLIENT_REQUEST_ID': request.headers.get('X-Client-Request-ID', ''),
     }
-    for i in LOGGER.handlers:
-        LOGGER.removeHandler(i)
-    LOGGER.addHandler(JournalHandler(**params))
+
+    request.logging_context = params
 
 
-def update_journal_handler_role(event):
+def set_logging_context(event):
     request = event.request
-    for i in LOGGER.handlers:
-        if isinstance(i, JournalHandler):
-            i._extra['ROLE'] = str(request.authenticated_role)
-            if request.params:
-                i._extra['PARAMS'] = str(dict(request.params))
-            if request.matchdict:
-                for x, j in request.matchdict.items():
-                    i._extra[x.upper()] = j
-            if 'tender' in request.validated:
-                i._extra['TENDER_REV'] = request.validated['tender'].rev
-                i._extra['TENDERID'] = request.validated['tender'].tenderID
-                i._extra['TENDER_STATUS'] = request.validated['tender'].status
+
+    params = {}
+    params['ROLE'] = str(request.authenticated_role)
+    if request.params:
+        params['PARAMS'] = str(dict(request.params))
+    if request.matchdict:
+        for x, j in request.matchdict.items():
+            params[x.upper()] = j
+    if 'tender' in request.validated:
+        params['TENDER_REV'] = request.validated['tender'].rev
+        params['TENDERID'] = request.validated['tender'].tenderID
+        params['TENDER_STATUS'] = request.validated['tender'].status
+    update_logging_context(request, params)
 
 
-def cleanup_journal_handler(event):
-    for i in LOGGER.handlers:
-        LOGGER.removeHandler(i)
+def update_logging_context(request, params):
+    if not request.__dict__.get('logging_context'):
+        request.logging_context = {}
+
+    for x, j in params.items():
+        request.logging_context[x.upper()] = j
 
 
-def update_journal_handler_params(params):
-    for i in LOGGER.handlers:
-        if isinstance(i, JournalHandler):
-            for x, j in params.items():
-                i._extra[x.upper()] = j
+def context_unpack(request, msg, params=None):
+    if params:
+        update_logging_context(request, params)
+    logging_context = request.logging_context
+    journal_context = msg
+    for key, value in logging_context.items():
+        journal_context["JOURNAL_" + key] = value
+    return journal_context

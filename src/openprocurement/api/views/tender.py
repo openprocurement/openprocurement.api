@@ -21,9 +21,9 @@ from openprocurement.api.utils import (
     apply_patch,
     check_bids,
     check_tender_status,
-    update_journal_handler_params,
     opresource,
     json_view,
+    context_unpack,
 )
 from openprocurement.api.validation import (
     validate_patch_tender_data,
@@ -167,7 +167,10 @@ class TenderResource(object):
                     for x in list_view(self.db, limit=view_limit, startkey=view_offset, descending=descending)
                 ]
             elif fields:
-                LOGGER.info('Used custom fields for tenders list: {}'.format(','.join(sorted(fields))), extra={'MESSAGE_ID': 'tender_list_custom'})
+                if 'logging_context' not in self.request.__dict__:
+                    self.request.logging_context={}
+                LOGGER.info('Used custom fields for tenders list: {}'.format(','.join(sorted(fields))),
+                    extra=context_unpack(self.request, {'MESSAGE_ID': 'tender_list_custom'}))
                 results = [
                     (tender_serialize(Tender(i[u'doc']), view_fields), i.key)
                     for i in list_view(self.db, limit=view_limit, startkey=view_offset, descending=descending, include_docs=True)
@@ -370,8 +373,8 @@ class TenderResource(object):
         self.request.validated['tender'] = tender
         self.request.validated['tender_src'] = {}
         if save_tender(self.request):
-            update_journal_handler_params({'tender_id': tender_id, 'tenderID': tender.tenderID})
-            LOGGER.info('Created tender {} ({})'.format(tender_id, tender.tenderID), extra={'MESSAGE_ID': 'tender_create'})
+            LOGGER.info('Created tender {} ({})'.format(tender_id, tender.tenderID),
+                extra=context_unpack(self.request, {'MESSAGE_ID': 'tender_create'}, {'tender_id': tender_id, 'tenderID': tender.tenderID}))
             self.request.response.status = 201
             self.request.response.headers[
                 'Location'] = self.request.route_url('Tender', tender_id=tender_id)
@@ -552,5 +555,9 @@ class TenderResource(object):
             save_tender(self.request)
         else:
             apply_patch(self.request, src=self.request.validated['tender_src'])
-        LOGGER.info('Updated tender {}'.format(tender.id), extra={'MESSAGE_ID': 'tender_patch'})
+
+        if not self.request.__dict__.get('logging_context'):
+            self.request.logging_context = {}
+        LOGGER.info('Updated tender {}'.format(tender.id),
+            extra=context_unpack(self.request, {'MESSAGE_ID': 'tender_patch'}))
         return {'data': tender.serialize(tender.status)}

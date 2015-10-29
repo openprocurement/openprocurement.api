@@ -5,9 +5,9 @@ from openprocurement.api.utils import (
     apply_patch,
     save_tender,
     check_tender_status,
-    update_journal_handler_params,
     opresource,
     json_view,
+    context_unpack,
 )
 from openprocurement.api.validation import (
     validate_cancellation_data,
@@ -51,8 +51,8 @@ class TenderCancellationResource(object):
             tender.status = 'cancelled'
         tender.cancellations.append(cancellation)
         if save_tender(self.request):
-            update_journal_handler_params({'cancellation_id': cancellation.id})
-            LOGGER.info('Created tender cancellation {}'.format(cancellation.id), extra={'MESSAGE_ID': 'tender_cancellation_create'})
+            LOGGER.info('Created tender cancellation {}'.format(cancellation.id),
+                        extra=context_unpack(self.request, {'MESSAGE_ID': 'tender_cancellation_create'}, {'cancellation_id': cancellation.id}))
             self.request.response.status = 201
             self.request.response.headers['Location'] = self.request.route_url('Tender Cancellations', tender_id=tender.id, cancellation_id=cancellation.id)
             return {'data': cancellation.serialize("view")}
@@ -89,5 +89,6 @@ class TenderCancellationResource(object):
         elif self.request.context.status == 'active':
             tender.status = 'cancelled'
         if save_tender(self.request):
-            LOGGER.info('Updated tender cancellation {}'.format(self.request.context.id), extra={'MESSAGE_ID': 'tender_cancellation_patch'})
+            LOGGER.info('Updated tender cancellation {}'.format(self.request.context.id),
+                        extra=context_unpack(self.request, {'MESSAGE_ID': 'tender_cancellation_patch'}))
             return {'data': self.request.context.serialize("view")}

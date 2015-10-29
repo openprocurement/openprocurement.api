@@ -5,9 +5,9 @@ from openprocurement.api.utils import (
     apply_patch,
     save_tender,
     check_tender_status,
-    update_journal_handler_params,
     opresource,
     json_view,
+    context_unpack,
 )
 from openprocurement.api.validation import (
     validate_contract_data,
@@ -42,8 +42,8 @@ class TenderAwardContractResource(object):
         contract.__parent__ = self.request.context
         tender.contracts.append(contract)
         if save_tender(self.request):
-            update_journal_handler_params({'contract_id': contract.id})
-            LOGGER.info('Created tender contract {}'.format(contract.id), extra={'MESSAGE_ID': 'tender_contract_create'})
+            LOGGER.info('Created tender contract {}'.format(contract.id),
+                        extra=context_unpack(self.request, {'MESSAGE_ID': 'tender_contract_create'}, {'contract_id': contract.id}))
             self.request.response.status = 201
             self.request.response.headers['Location'] = self.request.route_url('Tender Contracts', tender_id=tender.id, contract_id=contract['id'])
             return {'data': contract.serialize()}
@@ -94,5 +94,6 @@ class TenderAwardContractResource(object):
         apply_patch(self.request, save=False, src=self.request.context.serialize())
         check_tender_status(self.request)
         if save_tender(self.request):
-            LOGGER.info('Updated tender contract {}'.format(self.request.context.id), extra={'MESSAGE_ID': 'tender_contract_patch'})
+            LOGGER.info('Updated tender contract {}'.format(self.request.context.id),
+                        extra=context_unpack(self.request, {'MESSAGE_ID': 'tender_contract_patch'}))
             return {'data': self.request.context.serialize()}

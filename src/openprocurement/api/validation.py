@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from openprocurement.api.models import Tender, Bid, Award, Document, Question, Complaint, Contract, Cancellation, Lot, get_now
 from schematics.exceptions import ModelValidationError, ModelConversionError
-from openprocurement.api.utils import apply_data_patch, update_journal_handler_params
+from openprocurement.api.utils import apply_data_patch, update_logging_context
 
 
 def validate_json_data(request):
@@ -67,7 +67,7 @@ def validate_data(request, model, partial=False):
 
 
 def validate_tender_data(request):
-    update_journal_handler_params({'tender_id': '__new__'})
+    update_logging_context(request, {'tender_id': '__new__'})
     return validate_data(request, Tender)
 
 
@@ -140,7 +140,7 @@ def validate_tender_auction_data(request):
 
 
 def validate_bid_data(request):
-    update_journal_handler_params({'bid_id': '__new__'})
+    update_logging_context(request, {'bid_id': '__new__'})
     return validate_data(request, Bid)
 
 
@@ -149,7 +149,7 @@ def validate_patch_bid_data(request):
 
 
 def validate_award_data(request):
-    update_journal_handler_params({'award_id': '__new__'})
+    update_logging_context(request, {'award_id': '__new__'})
     return validate_data(request, Award)
 
 
@@ -162,7 +162,7 @@ def validate_patch_document_data(request):
 
 
 def validate_question_data(request):
-    update_journal_handler_params({'question_id': '__new__'})
+    update_logging_context(request, {'question_id': '__new__'})
     return validate_data(request, Question)
 
 
@@ -171,7 +171,7 @@ def validate_patch_question_data(request):
 
 
 def validate_complaint_data(request):
-    update_journal_handler_params({'complaint_id': '__new__'})
+    update_logging_context(request, {'complaint_id': '__new__'})
     return validate_data(request, Complaint)
 
 
@@ -180,7 +180,7 @@ def validate_patch_complaint_data(request):
 
 
 def validate_cancellation_data(request):
-    update_journal_handler_params({'cancellation_id': '__new__'})
+    update_logging_context(request, {'cancellation_id': '__new__'})
     return validate_data(request, Cancellation)
 
 
@@ -189,7 +189,7 @@ def validate_patch_cancellation_data(request):
 
 
 def validate_contract_data(request):
-    update_journal_handler_params({'contract_id': '__new__'})
+    update_logging_context(request, {'contract_id': '__new__'})
     return validate_data(request, Contract)
 
 
@@ -198,7 +198,7 @@ def validate_patch_contract_data(request):
 
 
 def validate_lot_data(request):
-    update_journal_handler_params({'lot_id': '__new__'})
+    update_logging_context(request, {'lot_id': '__new__'})
     return validate_data(request, Lot)
 
 
@@ -207,7 +207,7 @@ def validate_patch_lot_data(request):
 
 
 def validate_file_upload(request):
-    update_journal_handler_params({'document_id': '__new__'})
+    update_logging_context(request, {'document_id': '__new__'})
     if 'file' not in request.POST or not hasattr(request.POST['file'], 'filename'):
         request.errors.add('body', 'file', 'Not Found')
         request.errors.status = 404

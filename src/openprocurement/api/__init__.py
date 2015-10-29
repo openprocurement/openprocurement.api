@@ -17,13 +17,8 @@ from openprocurement.api.design import sync_design
 from openprocurement.api.migration import migrate_data
 from boto.s3.connection import S3Connection, Location
 from openprocurement.api.traversal import factory
-from openprocurement.api.utils import forbidden, set_journal_handler, cleanup_journal_handler, update_journal_handler_role
+from openprocurement.api.utils import forbidden, add_logging_context, set_logging_context
 from pbkdf2 import PBKDF2
-
-try:
-    from systemd.journal import JournalHandler
-except ImportError:  # pragma: no cover
-    JournalHandler = False
 
 LOGGER = getLogger("{}.init".format(__name__))
 #VERSION = int(pkg_resources.get_distribution(__package__).parsed_version[0])
@@ -143,10 +138,8 @@ def main(global_config, **settings):
     config.add_renderer('prettyjson', JSON(indent=4))
     config.add_renderer('jsonp', JSONP(param_name='opt_jsonp'))
     config.add_renderer('prettyjsonp', JSONP(indent=4, param_name='opt_jsonp'))
-    if JournalHandler:
-        config.add_subscriber(set_journal_handler, NewRequest)
-        config.add_subscriber(update_journal_handler_role, ContextFound)
-        config.add_subscriber(cleanup_journal_handler, BeforeRender)
+    config.add_subscriber(add_logging_context, NewRequest)
+    config.add_subscriber(set_logging_context, ContextFound)
     config.add_subscriber(set_renderer, NewRequest)
     config.add_subscriber(beforerender, BeforeRender)
     config.include('pyramid_exclog')

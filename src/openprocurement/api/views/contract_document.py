@@ -5,10 +5,10 @@ from openprocurement.api.utils import (
     save_tender,
     upload_file,
     apply_patch,
-    update_journal_handler_params,
     update_file_content_type,
     opresource,
     json_view,
+    context_unpack,
 )
 from openprocurement.api.validation import (
     validate_file_update,
@@ -59,8 +59,8 @@ class TenderAwardContractDocumentResource(object):
         document = upload_file(self.request)
         self.request.validated['contract'].documents.append(document)
         if save_tender(self.request):
-            update_journal_handler_params({'document_id': document.id})
-            LOGGER.info('Created tender contract document {}'.format(document.id), extra={'MESSAGE_ID': 'tender_contract_document_create'})
+            LOGGER.info('Created tender contract document {}'.format(document.id),
+                        extra=context_unpack(self.request, {'MESSAGE_ID': 'tender_contract_document_create'}, {'document_id': document.id}))
             self.request.response.status = 201
             document_route = self.request.matched_route.name.replace("collection_", "")
             self.request.response.headers['Location'] = self.request.current_route_url(_route_name=document_route, document_id=document.id, _query={})
@@ -95,7 +95,8 @@ class TenderAwardContractDocumentResource(object):
         document = upload_file(self.request)
         self.request.validated['contract'].documents.append(document)
         if save_tender(self.request):
-            LOGGER.info('Updated tender contract document {}'.format(self.request.context.id), extra={'MESSAGE_ID': 'tender_contract_document_put'})
+            LOGGER.info('Created tender contract document {}'.format(self.request.context.id),
+                        extra=context_unpack(self.request, {'MESSAGE_ID': 'tender_contract_document_put'}))
             return {'data': document.serialize("view")}
 
     @json_view(content_type="application/json", validators=(validate_patch_document_data,), permission='edit_tender')
@@ -111,5 +112,6 @@ class TenderAwardContractDocumentResource(object):
             return
         if apply_patch(self.request, src=self.request.context.serialize()):
             update_file_content_type(self.request)
-            LOGGER.info('Updated tender contract document {}'.format(self.request.context.id), extra={'MESSAGE_ID': 'tender_contract_document_patch'})
+            LOGGER.info('Created tender contract document {}'.format(self.request.context.id),
+                extra=context_unpack(self.request, {'MESSAGE_ID': 'tender_contract_document_patch'}))
             return {'data': self.request.context.serialize("view")}
