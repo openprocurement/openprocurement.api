@@ -408,7 +408,7 @@ def error_handler(errors):
         params['TENDERID'] = errors.request.validated['tender'].tenderID
         params['TENDER_STATUS'] = errors.request.validated['tender'].status
     LOGGER.info('Error on processing request "{}"'.format(dumps(errors, indent=4)),
-                extra=context_unpack(self.request, {'MESSAGE_ID': 'error_handler'}, params))
+                extra=context_unpack(errors.request, {'MESSAGE_ID': 'error_handler'}, params))
     return json_error(errors)
 
 
