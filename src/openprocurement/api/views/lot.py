@@ -70,7 +70,7 @@ class TenderLotResource(object):
             return
         if apply_patch(self.request, src=self.request.context.serialize()):
             LOGGER.info('Updated tender lot {}'.format(self.request.context.id),
-                extra=context_unpack(self.request, {'MESSAGE_ID': 'tender_lot_patch'}))
+                        extra=context_unpack(self.request, {'MESSAGE_ID': 'tender_lot_patch'}))
             return {'data': self.request.context.serialize("view")}
 
     @json_view(permission='edit_tender')

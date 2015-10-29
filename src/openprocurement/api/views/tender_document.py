@@ -87,7 +87,7 @@ class TenderDocumentResource(object):
         self.request.validated['tender'].documents.append(document)
         if save_tender(self.request):
             LOGGER.info('Updated tender document {}'.format(self.request.context.id),
-                extra=context_unpack(self.request, {'MESSAGE_ID': 'tender_document_put'}))
+                        extra=context_unpack(self.request, {'MESSAGE_ID': 'tender_document_put'}))
             return {'data': document.serialize("view")}
 
     @json_view(content_type="application/json", permission='upload_tender_documents', validators=(validate_patch_document_data,))
@@ -101,5 +101,5 @@ class TenderDocumentResource(object):
         if apply_patch(self.request, src=self.request.context.serialize()):
             update_file_content_type(self.request)
             LOGGER.info('Updated tender document {}'.format(self.request.context.id),
-                extra=context_unpack(self.request, {'MESSAGE_ID': 'tender_document_patch'}))
+                        extra=context_unpack(self.request, {'MESSAGE_ID': 'tender_document_patch'}))
             return {'data': self.request.context.serialize("view")}

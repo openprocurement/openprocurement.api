@@ -94,7 +94,7 @@ class TenderAwardComplaintDocumentResource(object):
         self.request.validated['complaint'].documents.append(document)
         if save_tender(self.request):
             LOGGER.info('Updated tender award complaint document {}'.format(self.request.context.id),
-                extra=context_unpack(self.request, {'MESSAGE_ID': 'tender_award_complaint_document_put'}))
+                        extra=context_unpack(self.request, {'MESSAGE_ID': 'tender_award_complaint_document_put'}))
             return {'data': document.serialize("view")}
 
     @json_view(content_type="application/json", validators=(validate_patch_document_data,), permission='review_complaint')

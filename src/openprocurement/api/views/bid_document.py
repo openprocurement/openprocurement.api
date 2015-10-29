@@ -63,7 +63,7 @@ class TenderBidDocumentResource(object):
         self.request.validated['bid'].documents.append(document)
         if save_tender(self.request):
             LOGGER.info('Created tender bid document {}'.format(document.id),
-                extra=context_unpack(self.request, {'MESSAGE_ID': 'tender_bid_document_create'}, {'document_id': document.id}))
+                        extra=context_unpack(self.request, {'MESSAGE_ID': 'tender_bid_document_create'}, {'document_id': document.id}))
             self.request.response.status = 201
             document_route = self.request.matched_route.name.replace("collection_", "")
             self.request.response.headers['Location'] = self.request.current_route_url(_route_name=document_route, document_id=document.id, _query={})

@@ -1548,6 +1548,7 @@ class Tender2LotAwardComplaintDocumentResourceTest(BaseTenderWebTest):
         self.assertEqual(response.content_type, 'application/json')
         self.assertEqual(response.json['errors'][0]["description"], "Can update document only in active lot status")
 
+
 class TenderAwardDocumentResourceTest(BaseTenderWebTest):
     initial_status = 'active.qualification'
     initial_bids = test_bids

@@ -94,7 +94,7 @@ class TenderAwardDocumentResource(object):
         self.request.validated['award'].documents.append(document)
         if save_tender(self.request):
             LOGGER.info('Updated tender award document {}'.format(self.request.context.id),
-                extra=context_unpack(self.request, {'MESSAGE_ID': 'tender_award_document_put'}))
+                        extra=context_unpack(self.request, {'MESSAGE_ID': 'tender_award_document_put'}))
             return {'data': document.serialize("view")}
 
     @json_view(content_type="application/json", validators=(validate_patch_document_data,), permission='edit_tender')

@@ -78,5 +78,5 @@ class TenderQuestionResource(object):
             return
         if apply_patch(self.request, src=self.request.context.serialize()):
             LOGGER.info('Updated tender question {}'.format(self.request.context.id),
-                extra=context_unpack(self.request, {'MESSAGE_ID': 'tender_question_patch'}))
+                        extra=context_unpack(self.request, {'MESSAGE_ID': 'tender_question_patch'}))
             return {'data': self.request.context.serialize(tender.status)}

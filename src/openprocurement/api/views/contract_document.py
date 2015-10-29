@@ -113,5 +113,5 @@ class TenderAwardContractDocumentResource(object):
         if apply_patch(self.request, src=self.request.context.serialize()):
             update_file_content_type(self.request)
             LOGGER.info('Created tender contract document {}'.format(self.request.context.id),
-                extra=context_unpack(self.request, {'MESSAGE_ID': 'tender_contract_document_patch'}))
+                        extra=context_unpack(self.request, {'MESSAGE_ID': 'tender_contract_document_patch'}))
             return {'data': self.request.context.serialize("view")}

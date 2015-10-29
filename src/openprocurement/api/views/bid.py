@@ -122,7 +122,7 @@ class TenderBidResource(object):
         tender.bids.append(bid)
         if save_tender(self.request):
             LOGGER.info('Created tender bid {}'.format(bid.id),
-                extra=context_unpack(self.request, {'MESSAGE_ID': 'tender_bid_create'}, {'bid_id': bid.id}))
+                        extra=context_unpack(self.request, {'MESSAGE_ID': 'tender_bid_create'}, {'bid_id': bid.id}))
             self.request.response.status = 201
             self.request.response.headers['Location'] = self.request.route_url('Tender Bids', tender_id=tender.id, bid_id=bid['id'])
             return {
