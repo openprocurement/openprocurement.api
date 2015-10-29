@@ -1,19 +1,20 @@
 #
+# , 2015.
 msgid ""
 msgstr ""
 "Project-Id-Version: openprocurement.api 0.3\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2014-11-24 18:25+0200\n"
-"PO-Revision-Date: 2015-07-23 12:58+0200\n"
+"PO-Revision-Date: 2015-10-29 15:05+0200\n"
 "Last-Translator: Zoriana Zaiats <sorenabell@quintagroup.com>\n"
+"Language-Team: Ukrainian <kde-i18n-doc@kde.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Generator: Poedit 1.7.6\n"
+"Language: uk\n"
 "Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n"
 "%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
-"Language-Team: \n"
-"Language: uk\n"
+"X-Generator: Poedit 1.8.5\n"
 
 #: ../../source/standard/question.rst:7 ../../source/standard/question.rst:3
 msgid "Question"
@@ -32,6 +33,7 @@ msgid "string, required"
 msgstr "рядок, обов’язковий"
 
 #: ../../source/standard/question.rst:26 ../../source/standard/question.rst:36
+#: ../../source/standard/question.rst:41 ../../source/standard/question.rst:50
 msgid "string"
 msgstr "рядок"
 
@@ -74,6 +76,26 @@ msgstr "Дата публікації."
 #: ../../source/standard/question.rst:38
 msgid "Answer for the question asked."
 msgstr "Відповідь на задане питання."
+
+#: ../../source/standard/question.rst:43
+msgid "Possible values are:"
+msgstr "Можливі значення:"
+
+#: ../../source/standard/question.rst:45
+msgid "`tender`"
+msgstr "`tender`"
+
+#: ../../source/standard/question.rst:46
+msgid "`item`"
+msgstr "`item`"
+
+#: ../../source/standard/question.rst:47
+msgid "`lot`"
+msgstr "`lot`"
+
+#: ../../source/standard/question.rst:52
+msgid "Id of related :ref:`lot` or :ref:`item`."
+msgstr "ID пов’язаних :ref:`lot` або :ref:`item`."
 
 #~ msgid ""
 #~ "who is asking question (contactPoint - person, identification - "

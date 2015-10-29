@@ -3,9 +3,9 @@
 Tenders with multiple Lots
 ==========================
 
-When having tender with separate items that can be proveded by different
+When having tender with separate items that can be supplied by different
 providers it is possible to split the tender into :ref:`Lots <lot>`.  Each
-Lot has own budget (i.e. `Lot.value`).
+Lot has its own budget (i.e. `Lot.value`).
 
 .. sourcecode:: json
 
@@ -75,7 +75,7 @@ even all lots of the tender.
 Each of the :ref:`documents <document>` attached to the :ref:`Bid` can be
 general, lot-specific or item-specific.
 
-Each Lot has has own auction and awarding process.
+Each Lot has its own auction and awarding process.
 
 Each Lot can be cancelled individually, not affecting processes that take
 place in other lots.
@@ -83,7 +83,7 @@ place in other lots.
 Announcing Multilot tender
 --------------------------
 
-One have to create Multilot tender into multiple steps. There should be
+One has to create Multilot tender in several steps. There should be
 tender created with items.
 
 .. sourcecode:: http
@@ -113,7 +113,7 @@ tender created with items.
     ...
   }
 
-Then all lots have to be added to Tender into separate requests.
+Then all lots have to be added to Tender with separate requests.
 
 .. sourcecode:: http
 
@@ -186,14 +186,14 @@ objects.  Each should reference lot the bid is placed against via
   HTTP/1.1 201 Created
   Location: /tenders/64e93250be76435397e8c992ed4214d1/bids/ae836da01ef749e494427dc591d36062
 
-Auction participation URLs are available for each of the lots submited.
+Auction participation URLs are available for each of the submitted lots.
 
 Qualification in Multilot tender
 --------------------------------
 
-After Auctions are over each active lot has own awarding process started.
+After Auctions are over each active lot has its own awarding process started.
 I.e.  there are multiple award objects created in :ref:`Tender` each
-requiring decision (disqualification or accept).
+requiring decision (disqualification or acceptance).
 
 .. sourcecode:: http
 
@@ -224,6 +224,6 @@ requiring decision (disqualification or accept).
 
 
 When all qualification processes end, and all stand still periods end, the
-whole tender switch state to either `complete` or `unsuccessful` (if all
-lots have theur awards `unsuccessful`).
+whole tender switch state to either `complete` or `unsuccessful` (if awads
+for all lots are `unsuccessful`).
 

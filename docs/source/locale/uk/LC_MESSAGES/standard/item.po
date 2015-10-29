@@ -1,27 +1,26 @@
-#
 # Zoriana Zaiats <sorenabell@quintagroup.com>, 2015.
 msgid ""
 msgstr ""
 "Project-Id-Version: openprocurement.api 0.3\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2014-11-24 18:25+0200\n"
-"PO-Revision-Date: 2015-10-12 16:15+0200\n"
+"PO-Revision-Date: 2015-10-29 15:05+0200\n"
 "Last-Translator: Zoriana Zaiats <sorenabell@quintagroup.com>\n"
-"Language-Team: Ukrainian <support@quintagroup.com>\n"
+"Language-Team: Ukrainian <kde-i18n-doc@kde.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Generator: Poedit 1.7.6\n"
 "Language: uk\n"
 "Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n"
 "%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
+"X-Generator: Poedit 1.8.5\n"
 
 #: ../../source/standard/item.rst:9 ../../source/standard/item.rst:4
 msgid "Item"
 msgstr "Item"
 
-#: ../../source/standard/item.rst:12 ../../source/standard/item.rst:86
-#: ../../source/standard/item.rst:123
+#: ../../source/standard/item.rst:12 ../../source/standard/item.rst:94
+#: ../../source/standard/item.rst:131
 msgid "Schema"
 msgstr "Схема"
 
@@ -78,24 +77,25 @@ msgstr "ціле число"
 msgid "|ocdsDescription| The number of units required"
 msgstr "|ocdsDescription| Кількість необхідних одиниць."
 
-#: ../../source/standard/item.rst:83 ../../source/standard/item.rst:4
+#: ../../source/standard/item.rst:91 ../../source/standard/item.rst:4
 msgid "Classification"
 msgstr "Classification"
 
-#: ../../source/standard/item.rst:89 ../../source/standard/item.rst:98
-#: ../../source/standard/item.rst:104 ../../source/standard/item.rst:131
+#: ../../source/standard/item.rst:83 ../../source/standard/item.rst:97
+#: ../../source/standard/item.rst:106 ../../source/standard/item.rst:112
+#: ../../source/standard/item.rst:139
 msgid "string"
 msgstr "рядок"
 
-#: ../../source/standard/item.rst:100
+#: ../../source/standard/item.rst:108
 msgid "|ocdsDescription| The classification code drawn from the selected scheme."
 msgstr "|ocdsDescription| Код класифікації взятий з вибраної схеми."
 
-#: ../../source/standard/item.rst:106
+#: ../../source/standard/item.rst:114
 msgid "|ocdsDescription| A textual description or title for the code."
 msgstr "|ocdsDescription| Текстовий опис або назва коду."
 
-#: ../../source/standard/item.rst:112
+#: ../../source/standard/item.rst:120
 msgid ""
 "|ocdsDescription| A URI to identify the code. In the event individual URIs are "
 "not available for items in the identifier scheme this value should be left "
@@ -104,11 +104,11 @@ msgstr ""
 "|ocdsDescription| URI для ідентифікації коду. Якщо індивідуальні URI не "
 "доступні для елементів у схемі ідентифікації це значення треба залишити пустим."
 
-#: ../../source/standard/item.rst:120 ../../source/standard/item.rst:4
+#: ../../source/standard/item.rst:128 ../../source/standard/item.rst:4
 msgid "Unit"
 msgstr "Unit"
 
-#: ../../source/standard/item.rst:133
+#: ../../source/standard/item.rst:141
 msgid "|ocdsDescription| Name of the unit"
 msgstr "|ocdsDescription| Назва одиниці"
 
@@ -116,7 +116,7 @@ msgstr "|ocdsDescription| Назва одиниці"
 msgid "CPV"
 msgstr "CPV"
 
-#: ../../source/standard/item.rst:91
+#: ../../source/standard/item.rst:99
 msgid ""
 "|ocdsDescription| A classification should be drawn from an existing scheme or "
 "list of codes.  This field is used to indicate the scheme/codelist from which "
@@ -128,7 +128,7 @@ msgstr ""
 "братись класифікація. Для класифікацій лінійних елементів це значення повинно "
 "представляти відому Схему Класифікації Елементів, де це можливо."
 
-#: ../../source/standard/item.rst:110
+#: ../../source/standard/item.rst:118
 msgid "uri"
 msgstr "uri"
 
@@ -153,7 +153,7 @@ msgid "dictionary"
 msgstr "словник"
 
 #: ../../source/standard/item.rst:74 ../../source/standard/item.rst:76
-#: ../../source/standard/item.rst:126
+#: ../../source/standard/item.rst:134
 msgid "string, required"
 msgstr "рядок, обов’язковий"
 
@@ -181,7 +181,7 @@ msgstr ""
 msgid "It is mandatory to have at least one item with `ДКПП` as `scheme`."
 msgstr "Обов’язково мати хоча б один елемент з `ДКПП` у стрічці `scheme`."
 
-#: ../../source/standard/item.rst:128
+#: ../../source/standard/item.rst:136
 msgid "UN/CEFACT Recommendation 20 unit code."
 msgstr "Код одиниці в UN/CEFACT Recommendation 20."
 
@@ -202,6 +202,10 @@ msgstr "рядок, згенерований автоматично"
 #: ../../source/standard/item.rst:4
 msgid "Parameter"
 msgstr "Parameter"
+
+#: ../../source/standard/item.rst:85
+msgid "Id of related :ref:`lot`."
+msgstr "ID пов’язаного :ref:`lot`."
 
 #~ msgid ""
 #~ "Geographical coordinates of delivery location. Element consist of following "
