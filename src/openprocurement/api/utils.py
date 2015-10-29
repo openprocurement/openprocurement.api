@@ -394,23 +394,21 @@ def add_next_award(request):
 
 
 def error_handler(errors):
-    for i in LOGGER.handlers:
-        if isinstance(i, JournalHandler):
-            i._extra['ERROR_STATUS'] = errors.status
-            if 'ROLE' not in i._extra:
-                i._extra['ROLE'] = str(errors.request.authenticated_role)
-            if errors.request.params and 'PARAMS' not in i._extra:
-                i._extra['PARAMS'] = str(dict(errors.request.params))
-            if errors.request.matchdict:
-                for x, j in errors.request.matchdict.items():
-                    i._extra[x.upper()] = j
-            if 'tender' in errors.request.validated:
-                i._extra['TENDER_REV'] = errors.request.validated['tender'].rev
-                i._extra['TENDERID'] = errors.request.validated['tender'].tenderID
-                i._extra['TENDER_STATUS'] = errors.request.validated['tender'].status
-    LOGGER.info('Error on processing request "{}"'.format(dumps(errors, indent=4)), extra={'MESSAGE_ID': 'error_handler'})
-    for i in LOGGER.handlers:
-        LOGGER.removeHandler(i)
+    params = {
+        'ERROR_STATUS': errors.status
+    }
+    params['ROLE'] = str(errors.request.authenticated_role)
+    if errors.request.params:
+        params['PARAMS'] = str(dict(errors.request.params))
+    if errors.request.matchdict:
+        for x, j in errors.request.matchdict.items():
+            params[x.upper()] = j
+    if 'tender' in errors.request.validated:
+        params['TENDER_REV'] = errors.request.validated['tender'].rev
+        params['TENDERID'] = errors.request.validated['tender'].tenderID
+        params['TENDER_STATUS'] = errors.request.validated['tender'].status
+    LOGGER.info('Error on processing request "{}"'.format(dumps(errors, indent=4)),
+                extra=context_unpack(self.request, {'MESSAGE_ID': 'error_handler'}, params))
     return json_error(errors)
 
 
