@@ -57,6 +57,11 @@ Schema
    |ocdsDescription|
    The goods and services to be purchased, broken into line items wherever possible. Items should not be duplicated, but a quantity of 2 specified instead.
 
+:features:
+   list of :ref:`Feature` objects
+
+   Features of tender.
+
 :documents:
    List of :ref:`document` objects
  
