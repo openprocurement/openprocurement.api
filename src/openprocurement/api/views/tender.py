@@ -372,7 +372,7 @@ class TenderResource(object):
         self.request.validated['tender_src'] = {}
         if save_tender(self.request):
             LOGGER.info('Created tender {} ({})'.format(tender_id, tender.tenderID),
-                extra=context_unpack(self.request, {'MESSAGE_ID': 'tender_create'}, {'tender_id': tender_id, 'tenderID': tender.tenderID}))
+                        extra=context_unpack(self.request, {'MESSAGE_ID': 'tender_create'}, {'tender_id': tender_id, 'tenderID': tender.tenderID}))
             self.request.response.status = 201
             self.request.response.headers[
                 'Location'] = self.request.route_url('Tender', tender_id=tender_id)
@@ -554,5 +554,5 @@ class TenderResource(object):
         else:
             apply_patch(self.request, src=self.request.validated['tender_src'])
         LOGGER.info('Updated tender {}'.format(tender.id),
-            extra=context_unpack(self.request, {'MESSAGE_ID': 'tender_patch'}))
+                    extra=context_unpack(self.request, {'MESSAGE_ID': 'tender_patch'}))
         return {'data': tender.serialize(tender.status)}
