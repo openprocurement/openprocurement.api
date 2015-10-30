@@ -1,6 +1,6 @@
 .. . Kicking page rebuild 2014-10-30 17:00:08
 
-.. index:: Bid, bidder, participant, pretendent
+.. index:: Bid, Parameter, LotValue, bidder, participant, pretendent
 
 .. _bid:
 
