@@ -6,11 +6,11 @@ msgstr ""
 "POT-Creation-Date: 2014-10-29 12:11+0200\n"
 "PO-Revision-Date: 2015-07-23 17:13+0200\n"
 "Last-Translator: Zoriana Zaiats <sorenabell@quintagroup.com>\n"
+"Language-Team: Ukrainian <info@quintagroup.com>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "X-Generator: Poedit 1.7.6\n"
-"Language-Team: \n"
 "Language: uk\n"
 
 #: ../../source/tenders.rst:5
