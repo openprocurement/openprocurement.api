@@ -111,7 +111,7 @@ class TenderBidResource(object):
         # See https://github.com/open-contracting/standard/issues/78#issuecomment-59830415
         # for more info upon schema
         tender = self.request.validated['tender']
-        if self.request.validated['tender_status'] != 'active.tendering':
+        if self.request.validated['tender_status'] != 'active.tendering' or tender.tenderPeriod.startDate and get_now() < tender.tenderPeriod.startDate or get_now() > tender.tenderPeriod.endDate:
             self.request.errors.add('body', 'data', 'Can\'t add bid in current ({}) tender status'.format(self.request.validated['tender_status']))
             self.request.errors.status = 403
             return
