@@ -853,8 +853,8 @@ class Tender(SchematicsDocument, Model):
 
     def __acl__(self):
         acl = [
-            (Allow, '{}_{}'.format(i.owner, i.owner_token), 'create_award_complaint')
-            for i in self.bids
+            #(Allow, '{}_{}'.format(i.owner, i.owner_token), 'create_award_complaint')
+            #for i in self.bids
         ]
         acl.extend([
             (Allow, '{}_{}'.format(self.owner, self.owner_token), 'edit_tender'),

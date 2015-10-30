@@ -21,7 +21,7 @@ class Root(object):
         (Deny, 'broker05', 'create_question'),
         (Deny, 'broker05', 'create_tender'),
         (Allow, 'g:brokers', 'create_bid'),
-        (Allow, 'g:brokers', 'create_complaint'),
+        #(Allow, 'g:brokers', 'create_complaint'),
         (Allow, 'g:brokers', 'create_question'),
         (Allow, 'g:brokers', 'create_tender'),
         (Allow, 'g:auction', 'auction'),
