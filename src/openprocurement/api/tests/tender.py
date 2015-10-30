@@ -806,7 +806,7 @@ class TenderProcessTest(BaseTenderWebTest):
         tender_id = self.tender_id = response.json['data']['id']
         owner_token = response.json['access']['token']
         # create compaint
-        self.app.authorization = ('Basic', ('broker', ''))
+        self.app.authorization = ('Basic', ('token', ''))
         response = self.app.post_json('/tenders/{}/complaints'.format(tender_id),
                                       {'data': {'title': 'invalid conditions', 'description': 'description', 'author': test_tender_data["procuringEntity"]}})
         complaint_id = response.json['data']['id']
@@ -971,7 +971,7 @@ class TenderProcessTest(BaseTenderWebTest):
         award2_id = [i['id'] for i in response.json['data'] if i['status'] == 'pending'][0]
         self.assertNotEqual(award_id, award2_id)
         # create first award complaint
-        self.app.authorization = ('Basic', ('broker', ''))
+        self.app.authorization = ('Basic', ('token', ''))
         response = self.app.post_json('/tenders/{}/awards/{}/complaints?acc_token={}'.format(tender_id, award_id, bid_token),
                                       {'data': {'title': 'complaint title', 'description': 'complaint description', 'author': test_tender_data["procuringEntity"]}})
         complaint_id = response.json['data']['id']
