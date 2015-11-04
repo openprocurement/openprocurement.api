@@ -250,7 +250,7 @@ class TenderBidResource(object):
             }
 
         """
-        if self.request.validated['tender_status'] != 'active.tendering':
+        if self.request.authenticated_role != 'Administrator' and self.request.validated['tender_status'] != 'active.tendering':
             self.request.errors.add('body', 'data', 'Can\'t update bid in current ({}) tender status'.format(self.request.validated['tender_status']))
             self.request.errors.status = 403
             return

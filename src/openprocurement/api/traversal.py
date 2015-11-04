@@ -32,6 +32,7 @@ class Root(object):
         (Allow, 'g:auction', 'upload_tender_documents'),
         (Allow, 'g:chronograph', 'edit_tender'),
         (Allow, 'g:Administrator', 'edit_tender'),
+        (Allow, 'g:Administrator', 'edit_bid'),
         (Allow, 'g:admins', ALL_PERMISSIONS),
     ]
 
