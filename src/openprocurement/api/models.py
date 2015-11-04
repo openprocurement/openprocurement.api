@@ -268,12 +268,14 @@ def validate_parameters_uniq(parameters, *args):
 
 
 view_bid_role = (blacklist('owner_token', 'owner') + schematics_default_role)
+Administrator_bid_role = whitelist('tenderers')
 
 
 class Bid(Model):
     class Options:
         serialize_when_none = False
         roles = {
+            'Administrator': Administrator_bid_role,
             'embedded': view_bid_role,
             'view': view_bid_role,
             'create': whitelist('value', 'tenderers', 'parameters'),
@@ -512,7 +514,7 @@ auction_patch_role = whitelist('auctionUrl', 'bids')
 enquiries_role = (blacklist('owner', 'owner_token', '_attachments', 'revisions', 'bids', 'numberOfBids') + schematics_embedded_role)
 auction_role = (blacklist('owner', 'owner_token', '_attachments', 'revisions', 'bids') + schematics_embedded_role)
 chronograph_role = whitelist('status', 'enquiryPeriod', 'tenderPeriod', 'auctionPeriod', 'awardPeriod')
-Administrator_role = whitelist('status', 'mode')
+Administrator_role = whitelist('status', 'mode', 'procuringEntity')
 
 
 class Tender(SchematicsDocument, Model):
