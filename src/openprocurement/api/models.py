@@ -381,11 +381,13 @@ class LotValue(Model):
 
 
 view_bid_role = (blacklist('owner_token', 'owner') + schematics_default_role)
+Administrator_bid_role = whitelist('tenderers')
 
 
 class Bid(Model):
     class Options:
         roles = {
+            'Administrator': Administrator_bid_role,
             'embedded': view_bid_role,
             'view': view_bid_role,
             'create': whitelist('value', 'tenderers', 'parameters', 'lotValues'),
@@ -757,7 +759,7 @@ enquiries_role = (blacklist('owner', 'owner_token', '_attachments', 'revisions',
 auction_role = (blacklist('owner', 'owner_token', '_attachments', 'revisions', 'bids') + schematics_embedded_role)
 chronograph_role = whitelist('status', 'enquiryPeriod', 'tenderPeriod', 'auctionPeriod', 'awardPeriod', 'lots')
 chronograph_view_role = whitelist('status', 'enquiryPeriod', 'tenderPeriod', 'auctionPeriod', 'awardPeriod', 'awards', 'lots', 'doc_id', 'submissionMethodDetails', 'mode', 'numberOfBids', 'complaints')
-Administrator_role = whitelist('status', 'mode')
+Administrator_role = whitelist('status', 'mode', 'procuringEntity')
 
 
 class Tender(SchematicsDocument, Model):

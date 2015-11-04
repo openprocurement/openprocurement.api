@@ -323,6 +323,23 @@ class TenderBidderResourceTest(BaseTenderWebTest):
                 u'url', u'name': u'tender_id'}
         ])
 
+    def test_bid_Administrator_change(self):
+        response = self.app.post_json('/tenders/{}/bids'.format(
+            self.tender_id), {'data': {'tenderers': [test_tender_data["procuringEntity"]], "value": {"amount": 500}}})
+        self.assertEqual(response.status, '201 Created')
+        self.assertEqual(response.content_type, 'application/json')
+        bidder = response.json['data']
+
+        self.app.authorization = ('Basic', ('administrator', ''))
+        response = self.app.patch_json('/tenders/{}/bids/{}'.format(self.tender_id, bidder['id']), {"data": {
+            'tenderers': [{"identifier":{"id": "00000000"}}],
+            "value": {"amount": 400}
+        }})
+        self.assertEqual(response.status, '200 OK')
+        self.assertEqual(response.content_type, 'application/json')
+        self.assertNotEqual(response.json['data']["value"]["amount"], 400)
+        self.assertEqual(response.json['data']["tenderers"][0]["identifier"]["id"], "00000000")
+
 
 class TenderBidderFeaturesResourceTest(BaseTenderWebTest):
     initial_data = test_features_tender_data
