@@ -9,11 +9,14 @@ from pkg_resources import get_distribution
 from pyramid.config import Configurator
 from openprocurement.api.auth import AuthenticationPolicy
 from pyramid.authorization import ACLAuthorizationPolicy as AuthorizationPolicy
+from pyramid.compat import decode_path_info
 from pyramid.renderers import JSON, JSONP
+from pyramid.exceptions import URLDecodeError
 from pyramid.events import NewRequest, BeforeRender, ContextFound
 from couchdb import Server, Session
 from couchdb.http import Unauthorized, extract_credentials
 from openprocurement.api.design import sync_design
+from openprocurement.api.models import Tender
 from openprocurement.api.migration import migrate_data
 from boto.s3.connection import S3Connection, Location
 from openprocurement.api.traversal import factory
@@ -59,6 +62,32 @@ def set_renderer(event):
     if pretty:
         request.override_renderer = 'prettyjson'
         return True
+
+def extract_tender(request):
+    try:
+        # empty if mounted under a path in mod_wsgi, for example
+        path = decode_path_info(request.environ['PATH_INFO'] or '/')
+    except KeyError:
+        path = '/'
+    except UnicodeDecodeError as e:
+        raise URLDecodeError(e.encoding, e.object, e.start, e.end, e.reason)
+
+    tender_id = ""
+    # XXX try to extract tender id
+    parts = path.split('/tenders/')
+    if len(parts) > 1:
+        tender_id = parts[1].split('/')[0]
+    else:
+        return None
+
+    model = Tender  # TODO extract tender adapter
+    tender = model.load(request.registry.db, tender_id)
+    return tender
+
+
+def set_tender(event):
+    request = event.request
+    request.set_property(extract_tender, "_tender", reify=True)
 
 
 def get_local_roles(context):
@@ -141,6 +170,7 @@ def main(global_config, **settings):
     config.add_subscriber(add_logging_context, NewRequest)
     config.add_subscriber(set_logging_context, ContextFound)
     config.add_subscriber(set_renderer, NewRequest)
+    config.add_subscriber(set_tender, NewRequest)
     config.add_subscriber(beforerender, BeforeRender)
     config.include('pyramid_exclog')
     config.include("cornice")
