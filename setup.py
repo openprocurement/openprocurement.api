@@ -20,12 +20,14 @@ requires = [
     'pyramid_exclog',
     'rfc6266',
     'setuptools',
-    'sphinxcontrib-httpdomain',
     'tzlocal',
 ]
 test_requires = requires + [
     'webtest',
     'python-coveralls',
+]
+docs_requires = requires + [
+    'sphinxcontrib-httpdomain',
 ]
 
 entry_points = """\
@@ -57,6 +59,6 @@ setup(name='openprocurement.api',
       zip_safe=False,
       install_requires=requires,
       tests_require=test_requires,
-      extras_require={'test': test_requires},
+      extras_require={'test': test_requires, 'docs': docs_requires},
       test_suite="openprocurement.api.tests.main.suite",
       entry_points = entry_points)
