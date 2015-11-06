@@ -11,7 +11,7 @@ from openprocurement.api.design import (
     tenders_real_by_local_seq_view,
     tenders_test_by_local_seq_view,
 )
-from openprocurement.api.models import Tender, get_now
+from openprocurement.api.models import Tender, TenderEU, get_now
 from openprocurement.api.utils import (
     generate_id,
     generate_tender_id,
@@ -63,9 +63,21 @@ def decrypt(uuid, name, key):
     return text
 
 
+def isTender(info, request):
+    if isinstance(info, Tender):  # happens on view get. Why? TODO
+        return True
+
+    # on route get
+    if isinstance(info, dict) and info.get('match') and 'tender_id' in info['match']:
+        if request._tender is not None:
+            return isinstance(request._tender, Tender)
+    return True  # handle '/tenders'
+
+
 @opresource(name='Tender',
-            collection_path='/tenders',
+            collection_path='/tenders',  # TODO define separate resource to handle GET/POST collections
             path='/tenders/{tender_id}',
+            custom_predicates=(isTender,),
             description="Open Contracting compatible data exchange format. See http://ocds.open-contracting.org/standard/r/master/#tender for more info")
 class TenderResource(object):
 
@@ -359,7 +371,14 @@ class TenderResource(object):
         """
         tender_data = self.request.validated['data']
         tender_id = generate_id()
-        tender = Tender(tender_data)
+
+
+        # TODO use adapters
+        if tender_data.get('subtype', "Tender") == "TenderEU":
+            tender = TenderEU(tender_data)
+        else:
+            tender = Tender(tender_data)
+
         tender.__parent__ = self.request.context
         tender.id = tender_id
         if not tender.enquiryPeriod.startDate:
@@ -556,3 +575,26 @@ class TenderResource(object):
         LOGGER.info('Updated tender {}'.format(tender.id),
                     extra=context_unpack(self.request, {'MESSAGE_ID': 'tender_patch'}))
         return {'data': tender.serialize(tender.status)}
+
+
+def isTenderEU(info, request):
+    if isinstance(info, TenderEU):  # on view get
+        return True
+
+    # on route get
+    if isinstance(info, dict) and info.get('match') and 'tender_id' in info['match']:
+        return isinstance(request._tender, TenderEU)
+
+    return False  # do not handle unknown locations
+
+
+@opresource(name='TenderEU',
+            path='/tenders/{tender_id}',
+            custom_predicates=(isTenderEU,),
+            description="Open Contracting compatible data exchange format. See http://ocds.open-contracting.org/standard/r/master/#tender for more info")
+class TenderEUResource(TenderResource):
+    """ Resource handler for TenderEU """
+
+    @json_view(permission='view_tender')
+    def collection_get(self):
+        1/0  # never happens
