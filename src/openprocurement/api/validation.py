@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from openprocurement.api.models import Tender, Bid, Award, Document, Question, Complaint, Contract, Cancellation, Lot, get_now
+from openprocurement.api.models import Tender, TenderEU, Bid, Award, Document, Question, Complaint, Contract, Cancellation, Lot, get_now
 from schematics.exceptions import ModelValidationError, ModelConversionError
 from openprocurement.api.utils import apply_data_patch, update_logging_context
 
@@ -68,7 +68,17 @@ def validate_data(request, model, partial=False):
 
 def validate_tender_data(request):
     update_logging_context(request, {'tender_id': '__new__'})
-    return validate_data(request, Tender)
+
+    data = validate_json_data(request)
+    if data is None:
+        return
+
+    # TODO use adapters to find appropriate tender model
+    model = Tender
+    if data and data.get('subtype', "Tender") == "TenderEU":
+        model = TenderEU
+
+    return validate_data(request, model)
 
 
 def validate_patch_tender_data(request):
