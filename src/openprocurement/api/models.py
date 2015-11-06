@@ -762,7 +762,7 @@ chronograph_view_role = whitelist('status', 'enquiryPeriod', 'tenderPeriod', 'au
 Administrator_role = whitelist('status', 'mode', 'procuringEntity')
 
 
-class Tender(SchematicsDocument, Model):
+class BaseTender(SchematicsDocument, Model):
     """Data regarding tender process - publicly inviting prospective contractors to submit bids for evaluation and selecting a winner or winners."""
     class Options:
         roles = {
@@ -851,6 +851,8 @@ class Tender(SchematicsDocument, Model):
     owner_token = StringType()
     owner = StringType()
 
+    subtype = StringType()
+
     __name__ = ''
 
     def __acl__(self):
@@ -932,3 +934,33 @@ class Tender(SchematicsDocument, Model):
             raise ValidationError(u"period should begin after auctionPeriod")
         if period and period.startDate and data.get('tenderPeriod') and data.get('tenderPeriod').endDate and period.startDate < data.get('tenderPeriod').endDate:
             raise ValidationError(u"period should begin after tenderPeriod")
+
+    @classmethod
+    def load(self, database, doc_id):
+        doc = database.get(doc_id)
+        if doc is None:
+            return None
+
+        if doc['doc_type'] == "TenderEU":
+            return TenderEU.wrap(doc)
+        elif doc['doc_type'] == "Tender":
+            return Tender.wrap(doc)
+        else:
+            1/0  # XXX
+
+
+class Tender(BaseTender):
+    """Data regarding tender process - publicly inviting prospective contractors to submit bids for evaluation and selecting a winner or winners."""
+
+    __name__ = ''
+
+
+class TenderEU(BaseTender):
+    """Data regarding tender process - publicly inviting prospective contractors to submit bids for evaluation and selecting a winner or winners."""
+
+    __name__ = ''
+
+    magicUnicorns = IntType(required=True)
+
+    def validate_tenderPeriod(self, data, period):
+        return
