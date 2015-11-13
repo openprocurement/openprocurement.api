@@ -36,16 +36,15 @@ def sync_design(db):
     ViewDefinition.sync_many(db, views, callback=add_index_options)
 
 
-# XXX "tenders_all_view" not used ?
 tenders_all_view = ViewDefinition('tenders', 'all', '''function(doc) {
-    if(doc.doc_type == 'Tender') {
+    if(doc.doc_type.indexOf('Tender') == 0) {
         emit(doc.tenderID, null);
     }
 }''')
 
 
 tenders_by_dateModified_view = ViewDefinition('tenders', 'by_dateModified', '''function(doc) {
-    if(['Tender', 'TenderEU'].indexOf(doc.doc_type) > -1) {
+    if(doc.doc_type.indexOf('Tender') == 0) {
         var fields=%s, data={};
         for (var i in fields) {
             if (doc[fields[i]]) {
@@ -57,7 +56,7 @@ tenders_by_dateModified_view = ViewDefinition('tenders', 'by_dateModified', '''f
 }''' % FIELDS)
 
 tenders_real_by_dateModified_view = ViewDefinition('tenders', 'real_by_dateModified', '''function(doc) {
-    if((['Tender', 'TenderEU'].indexOf(doc.doc_type) > -1) && !doc.mode) {
+    if(doc.doc_type.indexOf('Tender') == 0 && !doc.mode) {
         var fields=%s, data={};
         for (var i in fields) {
             if (doc[fields[i]]) {
@@ -69,7 +68,7 @@ tenders_real_by_dateModified_view = ViewDefinition('tenders', 'real_by_dateModif
 }''' % FIELDS)
 
 tenders_test_by_dateModified_view = ViewDefinition('tenders', 'test_by_dateModified', '''function(doc) {
-    if((['Tender', 'TenderEU'].indexOf(doc.doc_type) > -1) && doc.mode == 'test') {
+    if(doc.doc_type.indexOf('Tender') == 0 && doc.mode == 'test') {
         var fields=%s, data={};
         for (var i in fields) {
             if (doc[fields[i]]) {
@@ -81,7 +80,7 @@ tenders_test_by_dateModified_view = ViewDefinition('tenders', 'test_by_dateModif
 }''' % FIELDS)
 
 tenders_by_local_seq_view = ViewDefinition('tenders', 'by_local_seq', '''function(doc) {
-    if(['Tender', 'TenderEU'].indexOf(doc.doc_type) > -1) {
+    if(doc.doc_type.indexOf('Tender') == 0) {
         var fields=%s, data={};
         for (var i in fields) {
             if (doc[fields[i]]) {
@@ -93,7 +92,7 @@ tenders_by_local_seq_view = ViewDefinition('tenders', 'by_local_seq', '''functio
 }''' % CHANGES_FIELDS)
 
 tenders_real_by_local_seq_view = ViewDefinition('tenders', 'real_by_local_seq', '''function(doc) {
-    if((['Tender', 'TenderEU'].indexOf(doc.doc_type) > -1) && !doc.mode) {
+    if(doc.doc_type.indexOf('Tender') == 0 && !doc.mode) {
         var fields=%s, data={};
         for (var i in fields) {
             if (doc[fields[i]]) {
@@ -105,7 +104,7 @@ tenders_real_by_local_seq_view = ViewDefinition('tenders', 'real_by_local_seq', 
 }''' % CHANGES_FIELDS)
 
 tenders_test_by_local_seq_view = ViewDefinition('tenders', 'test_by_local_seq', '''function(doc) {
-    if((['Tender', 'TenderEU'].indexOf(doc.doc_type) > -1) && doc.mode == 'test') {
+    if(doc.doc_type.indexOf('Tender') == 0 && doc.mode == 'test') {
         var fields=%s, data={};
         for (var i in fields) {
             if (doc[fields[i]]) {
