@@ -13,6 +13,8 @@ from schematics.types.compound import ModelType, ListType, DictType
 from schematics.types.serializable import serializable
 from uuid import uuid4
 from barbecue import vnmax
+from zope.interface import implementer
+from openprocurement.api.interfaces import ITender, ITenderEU, IBaseTender
 
 
 STAND_STILL_TIME = timedelta(days=1)
@@ -69,7 +71,7 @@ def set_parent(item, parent):
 
 
 def get_tender(model):
-    while not isinstance(model, Tender):
+    while not IBaseTender.providedBy(model):
         model = model.__parent__
     return model
 
@@ -935,26 +937,15 @@ class BaseTender(SchematicsDocument, Model):
         if period and period.startDate and data.get('tenderPeriod') and data.get('tenderPeriod').endDate and period.startDate < data.get('tenderPeriod').endDate:
             raise ValidationError(u"period should begin after tenderPeriod")
 
-    @classmethod
-    def load(self, database, doc_id):
-        doc = database.get(doc_id)
-        if doc is None:
-            return None
 
-        if doc['doc_type'] == "TenderEU":
-            return TenderEU.wrap(doc)
-        elif doc['doc_type'] == "Tender":
-            return Tender.wrap(doc)
-        else:
-            1/0  # XXX
-
-
+@implementer(ITender)
 class Tender(BaseTender):
     """Data regarding tender process - publicly inviting prospective contractors to submit bids for evaluation and selecting a winner or winners."""
 
     __name__ = ''
 
 
+@implementer(ITenderEU)
 class TenderEU(BaseTender):
     """Data regarding tender process - publicly inviting prospective contractors to submit bids for evaluation and selecting a winner or winners."""
 
