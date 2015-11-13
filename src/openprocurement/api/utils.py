@@ -10,6 +10,7 @@ from json import dumps
 from jsonpatch import make_patch, apply_patch as _apply_patch
 from logging import getLogger
 from openprocurement.api.models import Document, Revision, Award, Period, get_now
+from openprocurement.api.interfaces import ITender, ITenderEU, IBaseTender
 from pkg_resources import get_distribution
 from rfc6266 import build_header
 from schematics.exceptions import ModelValidationError
@@ -174,6 +175,10 @@ def apply_data_patch(item, changes):
 def tender_serialize(tender, fields):
     return dict([(i, j) for i, j in tender.serialize(tender.status).items() if i in fields])
 
+def tender_construct_and_serialize(request, tender_data, fields):
+    adapter = request.registry.queryAdapter(tender_data, IBaseTender, name=tender_data['doc_type'])
+    tender = adapter.tender()
+    return dict([(i, j) for i, j in tender.serialize(tender.status).items() if i in fields])
 
 def get_revision_changes(dst, src):
     return make_patch(dst, src).patch
