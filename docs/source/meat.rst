@@ -88,7 +88,7 @@ Announcing MEAT
 ---------------
 
 Features can be set in :ref:`Tender` pretty the :ref:`same way <procuring>` as Items are: initially with
-POST request and later modified with PATCH requests.
+POST request.
 
 .. sourcecode:: http
 
@@ -104,7 +104,42 @@ POST request and later modified with PATCH requests.
 
   HTTP/1.1 201 Created
   Location: /tenders/64e93250be76435397e8c992ed4214d1
- 
+
+Changing Features
+~~~~~~~~~~~~~~~~~
+
+In the case that Features should be changed one can send PATCH that replaces
+Tender.features with new set:
+
+.. sourcecode:: http
+
+  PATCH /tenders HTTP/1.1
+
+  {"data": {
+    "features": [...]
+  }
+
+.. sourcecode:: http
+
+  HTTP/1.1 200 OK
+
+Removing Features
+~~~~~~~~~~~~~~~~~
+
+In case no Features are needed, they can be removed altogether with following request:
+
+.. sourcecode:: http
+
+  PATCH /tenders HTTP/1.1
+
+  {"data": {
+    "features": []
+  }
+
+.. sourcecode:: http
+
+  HTTP/1.1 200 OK
+
 Bidding in MEAT
 ---------------
 
