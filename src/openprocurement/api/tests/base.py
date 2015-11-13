@@ -64,8 +64,14 @@ test_tender_data = {
     },
     "tenderPeriod": {
         "endDate": (now + timedelta(days=14)).isoformat()
-    }
+    },
+    "subtype": "Tender",
 }
+
+test_tender_eu_data = test_tender_data.copy()
+test_tender_eu_data['subtype'] = "TenderEU"
+test_tender_eu_data['magicUnicorns'] = 15
+
 test_features_tender_data = test_tender_data.copy()
 test_features_item = test_features_tender_data['items'][0].copy()
 test_features_item['id'] = "1"
