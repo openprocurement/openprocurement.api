@@ -12,12 +12,14 @@ from openprocurement.api.design import (
     tenders_test_by_local_seq_view,
 )
 from openprocurement.api.models import Tender, TenderEU, get_now
+from openprocurement.api.interfaces import ITender, ITenderEU, IBaseTender
 from openprocurement.api.utils import (
     generate_id,
     generate_tender_id,
     save_tender,
     set_ownership,
     tender_serialize,
+    tender_construct_and_serialize,
     apply_patch,
     check_bids,
     check_tender_status,
@@ -64,22 +66,22 @@ def decrypt(uuid, name, key):
 
 
 def isTender(info, request):
-    if isinstance(info, Tender):  # happens on view get. Why? TODO
+    if ITender.providedBy(info):  # XXX happens on view get. Why? TODO check with new cornice version
         return True
 
     # on route get
     if isinstance(info, dict) and info.get('match') and 'tender_id' in info['match']:
         if request._tender is not None:
-            return isinstance(request._tender, Tender)
+            return ITender.providedBy(request._tender)
     return True  # handle '/tenders'
 
 
-@opresource(name='Tender',
-            collection_path='/tenders',  # TODO define separate resource to handle GET/POST collections
-            path='/tenders/{tender_id}',
-            custom_predicates=(isTender,),
-            description="Open Contracting compatible data exchange format. See http://ocds.open-contracting.org/standard/r/master/#tender for more info")
-class TenderResource(object):
+#@opresource(name='Root',
+#            path='', # XXX cornice issue
+#            collection_path='/tenders',
+#            custom_predicates=(isTender,),
+#            description="Open Contracting compatible data exchange format. See http://ocds.open-contracting.org/standard/r/master/#tender for more info")
+class RootResource(object):
 
     def __init__(self, request):
         self.request = request
@@ -181,8 +183,10 @@ class TenderResource(object):
             elif fields:
                 LOGGER.info('Used custom fields for tenders list: {}'.format(','.join(sorted(fields))),
                             extra=context_unpack(self.request, {'MESSAGE_ID': 'tender_list_custom'}))
+
+                # XXX
                 results = [
-                    (tender_serialize(Tender(i[u'doc']), view_fields), i.key)
+                    (tender_construct_and_serialize(self.request, i[u'doc'], view_fields), i.key)
                     for i in list_view(self.db, limit=view_limit, startkey=view_offset, descending=descending, include_docs=True)
                 ]
         else:
@@ -208,7 +212,7 @@ class TenderResource(object):
             'data': results,
             'next_page': {
                 "offset": params['offset'],
-                "path": self.request.route_path('collection_Tender', _query=params),
+                "path": self.request.route_path('collection_Tender', _query=params), # XXX check route
                 "uri": self.request.route_url('collection_Tender', _query=params)
             }
         }
@@ -373,11 +377,12 @@ class TenderResource(object):
         tender_id = generate_id()
 
 
-        # TODO use adapters
-        if tender_data.get('subtype', "Tender") == "TenderEU":
-            tender = TenderEU(tender_data)
+        name = tender_data.get('subtype', 'Tender')
+        adapter = self.request.registry.queryAdapter(tender_data, IBaseTender, name=name)
+        if adapter:
+            tender = adapter.tender()
         else:
-            tender = Tender(tender_data)
+            1/0
 
         tender.__parent__ = self.request.context
         tender.id = tender_id
@@ -394,13 +399,21 @@ class TenderResource(object):
                         extra=context_unpack(self.request, {'MESSAGE_ID': 'tender_create'}, {'tender_id': tender_id, 'tenderID': tender.tenderID}))
             self.request.response.status = 201
             self.request.response.headers[
-                'Location'] = self.request.route_url('Tender', tender_id=tender_id)
+                'Location'] = self.request.route_url('Tender', tender_id=tender_id)  # XXX
             return {
                 'data': tender.serialize(tender.status),
                 'access': {
                     'token': tender.owner_token
                 }
             }
+
+
+@opresource(name='Tender',
+            path='/tenders/{tender_id}',
+            collection_path='/tenders',
+            custom_predicates=(isTender,),
+            description="Open Contracting compatible data exchange format. See http://ocds.open-contracting.org/standard/r/master/#tender for more info")
+class TenderResource(RootResource):
 
     @json_view(permission='view_tender')
     def get(self):
@@ -489,7 +502,7 @@ class TenderResource(object):
             }
 
         """
-        tender = self.request.validated['tender']
+        tender = self.request.validated['tender']  # XXX self.request._tender ?
         tender_data = tender.serialize('chronograph_view' if self.request.authenticated_role == 'chronograph' else tender.status)
         return {'data': tender_data}
 
@@ -578,12 +591,12 @@ class TenderResource(object):
 
 
 def isTenderEU(info, request):
-    if isinstance(info, TenderEU):  # on view get
+    if ITenderEU.providedBy(info):  # XXX
         return True
 
     # on route get
     if isinstance(info, dict) and info.get('match') and 'tender_id' in info['match']:
-        return isinstance(request._tender, TenderEU)
+        return ITenderEU.providedBy(request._tender)
 
     return False  # do not handle unknown locations
 
