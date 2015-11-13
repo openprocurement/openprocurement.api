@@ -2,6 +2,7 @@
 from openprocurement.api.models import Tender, TenderEU, Bid, Award, Document, Question, Complaint, Contract, Cancellation, Lot, get_now
 from schematics.exceptions import ModelValidationError, ModelConversionError
 from openprocurement.api.utils import apply_data_patch, update_logging_context
+from openprocurement.api.interfaces import IBaseTender
 
 
 def validate_json_data(request):
@@ -33,9 +34,9 @@ def validate_data(request, model, partial=False):
                 role = 'Administrator'
             elif request.authenticated_role == 'chronograph':
                 role = 'chronograph'
-            elif request.authenticated_role == 'auction' and isinstance(request.context, Tender):
+            elif request.authenticated_role == 'auction' and IBaseTender.providedBy(request.context):
                 role = 'auction_{}'.format(request.method.lower())
-            elif isinstance(request.context, Tender):
+            elif IBaseTender.providedBy(request.context):
                 role = 'edit_{}'.format(request.context.status)
             else:
                 role = 'edit'
@@ -73,16 +74,17 @@ def validate_tender_data(request):
     if data is None:
         return
 
-    # TODO use adapters to find appropriate tender model
-    model = Tender
-    if data and data.get('subtype', "Tender") == "TenderEU":
-        model = TenderEU
+    adapter = request.registry.getAdapter(data, IBaseTender, name=data.get('subtype', "Tender"))
+    model = adapter.model
 
     return validate_data(request, model)
 
 
 def validate_patch_tender_data(request):
-    return validate_data(request, Tender, True)
+    tender_id = request.matchdict.get('tender_id')
+    adapter = request.registry.queryMultiAdapter((request, tender_id), IBaseTender)
+    model = adapter.model
+    return validate_data(request, model, True)
 
 
 def validate_tender_auction_data(request):
