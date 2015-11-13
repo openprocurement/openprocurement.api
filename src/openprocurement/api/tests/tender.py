@@ -4,12 +4,15 @@ from datetime import timedelta
 
 from openprocurement.api import ROUTE_PREFIX
 from openprocurement.api.models import Tender, get_now
+from openprocurement.api.models import TenderEU
 from openprocurement.api.tests.base import test_tender_data, BaseWebTest, BaseTenderWebTest
+from openprocurement.api.tests.base import test_tender_eu_data
 
 
 class TenderTest(BaseWebTest):
 
     def test_simple_add_tender(self):
+
         u = Tender(test_tender_data)
         u.tenderID = "UA-X"
 
@@ -25,6 +28,29 @@ class TenderTest(BaseWebTest):
 
         assert u.tenderID == fromdb['tenderID']
         assert u.doc_type == "Tender"
+
+        u.delete_instance(self.db)
+
+
+class TenderTestEU(BaseWebTest):
+
+    def test_simple_add_tender(self):
+        u = TenderEU(test_tender_eu_data)
+        u.tenderID = "UA-X"
+
+        assert u.id is None
+        assert u.rev is None
+
+        u.store(self.db)
+
+        assert u.id is not None
+        assert u.rev is not None
+
+        fromdb = self.db.get(u.id)
+
+        assert u.tenderID == fromdb['tenderID']
+        assert u.doc_type == "TenderEU"
+        assert u.subtype == "TenderEU"
 
         u.delete_instance(self.db)
 
@@ -494,7 +520,7 @@ class TenderResourceTest(BaseWebTest):
         self.assertEqual(response.status, '201 Created')
         self.assertEqual(response.content_type, 'application/json')
         tender = response.json['data']
-        self.assertEqual(set(tender), set([u'id', u'dateModified', u'tenderID', u'status', u'enquiryPeriod',
+        self.assertEqual(set(tender), set([ u'subtype', u'id', u'dateModified', u'tenderID', u'status', u'enquiryPeriod',
                                            u'tenderPeriod', u'minimalStep', u'items', u'value', u'procuringEntity',
                                            u'procurementMethod', u'awardCriteria', u'submissionMethod', u'title']))
         self.assertNotEqual(data['id'], tender['id'])
