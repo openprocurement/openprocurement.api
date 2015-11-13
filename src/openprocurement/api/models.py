@@ -595,7 +595,7 @@ class Tender(SchematicsDocument, Model):
     auctionUrl = URLType()
     mode = StringType(choices=['test'])
     cancellations = ListType(ModelType(Cancellation), default=list())
-    features = ListType(ModelType(Feature), default=list(), validators=[validate_features_uniq, validate_features_max_value])
+    features = ListType(ModelType(Feature), validators=[validate_features_uniq, validate_features_max_value])
 
     _attachments = DictType(DictType(BaseType), default=dict())  # couchdb attachments
     dateModified = IsoDateTimeType()
@@ -638,7 +638,7 @@ class Tender(SchematicsDocument, Model):
             The data to be imported.
         """
         data = self.convert(raw_data, **kw)
-        del_keys = [k for k in data.keys() if not data[k]]
+        del_keys = [k for k in data.keys() if data[k] == self.__class__.fields[k].default or data[k] == getattr(self, k)]
         for k in del_keys:
             del data[k]
 

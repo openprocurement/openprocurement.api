@@ -229,7 +229,7 @@ def apply_patch(request, data=None, save=True, src=None):
 def add_next_award(request):
     tender = request.validated['tender']
     unsuccessful_awards = [i.bid_id for i in tender.awards if i.status == 'unsuccessful']
-    bids = chef(tender.bids, tender.features, unsuccessful_awards)
+    bids = chef(tender.bids, tender.features or [], unsuccessful_awards)
     if bids:
         bid = bids[0].serialize()
         award_data = {
