@@ -324,7 +324,7 @@ def add_next_award(request):
             lot_items = [i.id for i in tender.items if i.relatedLot == lot.id]
             features = [
                 i
-                for i in tender.features
+                for i in (tender.features or [])
                 if i.featureOf == 'tenderer' or i.featureOf == 'lot' and i.relatedItem == lot.id or i.featureOf == 'item' and i.relatedItem in lot_items
             ]
             codes = [i.code for i in features]
@@ -371,7 +371,7 @@ def add_next_award(request):
     else:
         if not tender.awards or tender.awards[-1].status not in ['pending', 'active']:
             unsuccessful_awards = [i.bid_id for i in tender.awards if i.status == 'unsuccessful']
-            bids = chef(tender.bids, tender.features, unsuccessful_awards)
+            bids = chef(tender.bids, tender.features or [], unsuccessful_awards)
             if bids:
                 bid = bids[0].serialize()
                 award = Award({
