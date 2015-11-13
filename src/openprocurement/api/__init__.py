@@ -17,6 +17,7 @@ from couchdb import Server, Session
 from couchdb.http import Unauthorized, extract_credentials
 from openprocurement.api.design import sync_design
 from openprocurement.api.models import Tender
+from openprocurement.api.interfaces import IBaseTender
 from openprocurement.api.migration import migrate_data
 from boto.s3.connection import S3Connection, Location
 from openprocurement.api.traversal import factory
@@ -80,8 +81,10 @@ def extract_tender(request):
     else:
         return None
 
-    model = Tender  # TODO extract tender adapter
-    tender = model.load(request.registry.db, tender_id)
+    adapter = request.registry.queryMultiAdapter((request, tender_id), IBaseTender)
+    if not adapter:
+        return None
+    tender = adapter.tender()
     return tender
 
 
@@ -175,6 +178,7 @@ def main(global_config, **settings):
     config.include('pyramid_exclog')
     config.include("cornice")
     config.scan("openprocurement.api.views")
+    config.scan("openprocurement.api.adapters")
 
     # CouchDB connection
     db_name = os.environ.get('DB_NAME', settings['couchdb.db_name'])
