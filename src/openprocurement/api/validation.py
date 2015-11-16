@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from openprocurement.api.models import Tender, TenderEU, Bid, Award, Document, Question, Complaint, Contract, Cancellation, Lot, get_now
+from openprocurement.api.models import Bid, Award, Document, Question, Complaint, Contract, Cancellation, Lot, get_now
 from schematics.exceptions import ModelValidationError, ModelConversionError
 from openprocurement.api.utils import apply_data_patch, update_logging_context
 from openprocurement.api.interfaces import IBaseTender

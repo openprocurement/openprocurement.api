@@ -10,7 +10,7 @@ from json import dumps
 from jsonpatch import make_patch, apply_patch as _apply_patch
 from logging import getLogger
 from openprocurement.api.models import Document, Revision, Award, Period, get_now
-from openprocurement.api.interfaces import ITender, ITenderEU, IBaseTender
+from openprocurement.api.interfaces import IBaseTender
 from pkg_resources import get_distribution
 from rfc6266 import build_header
 from schematics.exceptions import ModelValidationError
