@@ -4,9 +4,9 @@ from datetime import timedelta
 
 from openprocurement.api import ROUTE_PREFIX
 from openprocurement.api.models import Tender, get_now
-from openprocurement.api.models import TenderEU
+from openprocurement.api.models import TenderUA
 from openprocurement.api.tests.base import test_tender_data, BaseWebTest, BaseTenderWebTest
-from openprocurement.api.tests.base import test_tender_eu_data
+from openprocurement.api.tests.base import test_tender_ua_data
 
 
 class TenderTest(BaseWebTest):
@@ -32,10 +32,10 @@ class TenderTest(BaseWebTest):
         u.delete_instance(self.db)
 
 
-class TenderTestEU(BaseWebTest):
+class TenderTestUA(BaseWebTest):
 
     def test_simple_add_tender(self):
-        u = TenderEU(test_tender_eu_data)
+        u = TenderUA(test_tender_ua_data)
         u.tenderID = "UA-X"
 
         assert u.id is None
@@ -49,8 +49,8 @@ class TenderTestEU(BaseWebTest):
         fromdb = self.db.get(u.id)
 
         assert u.tenderID == fromdb['tenderID']
-        assert u.doc_type == "TenderEU"
-        assert u.subtype == "TenderEU"
+        assert u.doc_type == "TenderUA"
+        assert u.subtype == "TenderUA"
 
         u.delete_instance(self.db)
 

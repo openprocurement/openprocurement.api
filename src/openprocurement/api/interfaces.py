@@ -9,5 +9,5 @@ class ITender(IBaseTender):
     """ Tender marker interface """
 
 
-class ITenderEU(IBaseTender):
-    """ Tender EU marker interface """
+class ITenderUA(IBaseTender):
+    """ Tender UA marker interface """

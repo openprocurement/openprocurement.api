@@ -11,14 +11,13 @@ from openprocurement.api.design import (
     tenders_real_by_local_seq_view,
     tenders_test_by_local_seq_view,
 )
-from openprocurement.api.models import Tender, TenderEU, get_now
-from openprocurement.api.interfaces import ITender, ITenderEU, IBaseTender
+from openprocurement.api.models import get_now
+from openprocurement.api.interfaces import ITender, ITenderUA, IBaseTender
 from openprocurement.api.utils import (
     generate_id,
     generate_tender_id,
     save_tender,
     set_ownership,
-    tender_serialize,
     tender_construct_and_serialize,
     apply_patch,
     check_bids,
@@ -590,23 +589,23 @@ class TenderResource(RootResource):
         return {'data': tender.serialize(tender.status)}
 
 
-def isTenderEU(info, request):
-    if ITenderEU.providedBy(info):  # XXX
+def isTenderUA(info, request):
+    if ITenderUA.providedBy(info):  # XXX
         return True
 
     # on route get
     if isinstance(info, dict) and info.get('match') and 'tender_id' in info['match']:
-        return ITenderEU.providedBy(request._tender)
+        return ITenderUA.providedBy(request._tender)
 
     return False  # do not handle unknown locations
 
 
-@opresource(name='TenderEU',
+@opresource(name='TenderUA',
             path='/tenders/{tender_id}',
-            custom_predicates=(isTenderEU,),
+            custom_predicates=(isTenderUA,),
             description="Open Contracting compatible data exchange format. See http://ocds.open-contracting.org/standard/r/master/#tender for more info")
-class TenderEUResource(TenderResource):
-    """ Resource handler for TenderEU """
+class TenderUAResource(TenderResource):
+    """ Resource handler for TenderUA """
 
     @json_view(permission='view_tender')
     def collection_get(self):
