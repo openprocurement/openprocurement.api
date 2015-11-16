@@ -363,11 +363,23 @@ class BaseTenderWebTest(BaseWebTest):
     def setUp(self):
         super(BaseTenderWebTest, self).setUp()
         # Create tender
-        response = self.app.post_json('/tenders', {'data': self.initial_data})
+        from copy import deepcopy
+        data = deepcopy(self.initial_data)
+        if True and self.initial_lots:
+            from uuid import uuid4
+            lots = []
+            for i in self.initial_lots:
+                lot = deepcopy(i)
+                lot['id'] = uuid4().hex
+                lots.append(lot)
+            data['lots'] = self.initial_lots = lots
+            for i, item in enumerate(data['items']):
+                item['relatedLot'] = lots[i % len(lots)]['id']
+        response = self.app.post_json('/tenders', {'data': data})
         tender = response.json['data']
         self.tender_id = tender['id']
         status = tender['status']
-        if self.initial_lots:
+        if False and self.initial_lots:
             lots = []
             for i in self.initial_lots:
                 response = self.app.post_json('/tenders/{}/lots'.format(self.tender_id), {'data': i})
