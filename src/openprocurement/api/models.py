@@ -123,6 +123,14 @@ class Model(SchematicsModel):
 
     __parent__ = BaseType()
 
+    def __eq__(self, other):
+        if isinstance(other, self.__class__):
+            for k in self._fields:
+                if k != '__parent__' and self.get(k) != other.get(k):
+                    return False
+            return True
+        return NotImplemented
+
     def convert(self, raw_data, **kw):
         """
         Converts the raw data into richer Python constructs according to the
@@ -329,13 +337,13 @@ class Parameter(Model):
     value = FloatType(required=True)
 
     def validate_code(self, data, code):
-        if isinstance(data['__parent__'], Model) and code not in [i.code for i in get_tender(data['__parent__']).features]:
+        if isinstance(data['__parent__'], Model) and code not in [i.code for i in (get_tender(data['__parent__']).features or [])]:
             raise ValidationError(u"code should be one of feature code.")
 
     def validate_value(self, data, value):
         if isinstance(data['__parent__'], Model):
             tender = get_tender(data['__parent__'])
-            codes = dict([(i.code, [x.value for x in i.enum]) for i in tender.features])
+            codes = dict([(i.code, [x.value for x in i.enum]) for i in (tender.features or [])])
             if data['code'] in codes and value not in codes[data['code']]:
                 raise ValidationError(u"value should be one of feature value.")
 
@@ -465,12 +473,12 @@ class Bid(Model):
                 items = [i.id for i in tender.items if i.relatedLot in lots]
                 codes = dict([
                     (i.code, [x.value for x in i.enum])
-                    for i in tender.features
+                    for i in (tender.features or [])
                     if i.featureOf == 'tenderer' or i.featureOf == 'lot' and i.relatedItem in lots or i.featureOf == 'item' and i.relatedItem in items
                 ])
                 if set([i['code'] for i in parameters]) != set(codes):
                     raise ValidationError(u"All features parameters is required.")
-            elif set([i['code'] for i in parameters]) != set([i.code for i in tender.features]):
+            elif set([i['code'] for i in parameters]) != set([i.code for i in (tender.features or [])]):
                 raise ValidationError(u"All features parameters is required.")
 
 
@@ -845,7 +853,7 @@ class BaseTender(SchematicsDocument, Model):
     auctionUrl = URLType()
     mode = StringType(choices=['test'])
     cancellations = ListType(ModelType(Cancellation), default=list())
-    features = ListType(ModelType(Feature), default=list(), validators=[validate_features_uniq])
+    features = ListType(ModelType(Feature), validators=[validate_features_uniq])
     lots = ListType(ModelType(Lot), default=list())
 
     _attachments = DictType(DictType(BaseType), default=dict())  # couchdb attachments
@@ -890,7 +898,7 @@ class BaseTender(SchematicsDocument, Model):
             The data to be imported.
         """
         data = self.convert(raw_data, **kw)
-        del_keys = [k for k in data.keys() if not data[k]]
+        del_keys = [k for k in data.keys() if data[k] == self.__class__.fields[k].default or data[k] == getattr(self, k)]
         for k in del_keys:
             del data[k]
 
@@ -898,7 +906,7 @@ class BaseTender(SchematicsDocument, Model):
         return self
 
     def validate_features(self, data, features):
-        if data['lots'] and any([
+        if features and data['lots'] and any([
             round(vnmax([
                 i
                 for i in features
@@ -907,7 +915,7 @@ class BaseTender(SchematicsDocument, Model):
             for lot in data['lots']
         ]):
             raise ValidationError(u"Sum of max value of all features for lot should be less then or equal to 30%")
-        elif not data['lots'] and round(vnmax(features), 15) > 0.3:
+        elif features and not data['lots'] and round(vnmax(features), 15) > 0.3:
             raise ValidationError(u"Sum of max value of all features should be less then or equal to 30%")
 
     def validate_auctionUrl(self, data, url):
