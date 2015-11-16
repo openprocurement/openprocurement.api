@@ -886,6 +886,18 @@ class Tender(SchematicsDocument, Model):
         """A property that is serialized by schematics exports."""
         return self._id
 
+    @serializable(serialized_name="value", type=ModelType(Value))
+    def tender_value(self):
+        return Value(dict(amount=sum([i.value.amount for i in self.lots]),
+                          currency=self.value.currency,
+                          valueAddedTaxIncluded=self.value.valueAddedTaxIncluded)) if self.lots else self.value
+
+    @serializable(serialized_name="minimalStep", type=ModelType(Value))
+    def tender_minimalStep(self):
+        return Value(dict(amount=min([i.minimalStep.amount for i in self.lots]),
+                          currency=self.minimalStep.currency,
+                          valueAddedTaxIncluded=self.minimalStep.valueAddedTaxIncluded)) if self.lots else self.minimalStep
+
     def import_data(self, raw_data, **kw):
         """
         Converts and imports the raw data into the instance of the model
