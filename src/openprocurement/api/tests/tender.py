@@ -705,6 +705,14 @@ class TenderResourceTest(BaseWebTest):
         tender = response.json['data']
         self.assertEqual(tender['features'], data['features'])
 
+        response = self.app.patch_json('/tenders/{}'.format(tender['id']), {'data': {'features': [{
+            "featureOf": "tenderer",
+            "relatedItem": None
+        }, {}, {}]}})
+        self.assertEqual(response.status, '200 OK')
+        self.assertIn('features', response.json['data'])
+        self.assertNotIn('relatedItem', response.json['data']['features'][0])
+
         response = self.app.patch_json('/tenders/{}'.format(tender['id']), {'data': {'tenderPeriod': {'startDate': None}}})
         self.assertEqual(response.status, '200 OK')
         self.assertIn('features', response.json['data'])
