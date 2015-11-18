@@ -87,7 +87,7 @@ of required features.  Parameters are linked to features using their codes.
 Announcing MEAT
 ---------------
 
-Features can be set in :ref:`Tender` pretty the :ref:`same way <procuring>` as Items are: initially with
+Features can be set in :ref:`Tender` pretty the :ref:`same way <procuring>` as Items are - with
 POST request.
 
 .. sourcecode:: http
