@@ -2,7 +2,9 @@
 import unittest
 import webtest
 import os
+from copy import deepcopy
 from datetime import datetime, timedelta
+from uuid import uuid4
 
 from openprocurement.api import VERSION
 
@@ -363,26 +365,20 @@ class BaseTenderWebTest(BaseWebTest):
     def setUp(self):
         super(BaseTenderWebTest, self).setUp()
         # Create tender
-        response = self.app.post_json('/tenders', {'data': self.initial_data})
-        tender = response.json['data']
-        self.tender_id = tender['id']
-        status = tender['status']
+        data = deepcopy(self.initial_data)
         if self.initial_lots:
             lots = []
             for i in self.initial_lots:
-                response = self.app.post_json('/tenders/{}/lots'.format(self.tender_id), {'data': i})
-                self.assertEqual(response.status, '201 Created')
-                lots.append(response.json['data'])
-            self.initial_lots = lots
-            response = self.app.patch_json('/tenders/{}'.format(self.tender_id), {"data": {
-                "items": [
-                    {
-                        'relatedLot': lots[i % len(lots)]['id']
-                    }
-                    for i in xrange(len(tender['items']))
-                ]
-            }})
-            self.assertEqual(response.status, '200 OK')
+                lot = deepcopy(i)
+                lot['id'] = uuid4().hex
+                lots.append(lot)
+            data['lots'] = self.initial_lots = lots
+            for i, item in enumerate(data['items']):
+                item['relatedLot'] = lots[i % len(lots)]['id']
+        response = self.app.post_json('/tenders', {'data': data})
+        tender = response.json['data']
+        self.tender_id = tender['id']
+        status = tender['status']
         if self.initial_bids:
             response = self.set_status('active.tendering')
             status = response.json['data']['status']
@@ -394,9 +390,9 @@ class BaseTenderWebTest(BaseWebTest):
                     i['lotValues'] = [
                         {
                             'value': value,
-                            'relatedLot': lot['id'],
+                            'relatedLot': l['id'],
                         }
-                        for lot in self.initial_lots
+                        for l in self.initial_lots
                     ]
                 response = self.app.post_json('/tenders/{}/bids'.format(self.tender_id), {'data': i})
                 self.assertEqual(response.status, '201 Created')

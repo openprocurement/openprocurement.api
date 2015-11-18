@@ -6,6 +6,7 @@ FIELDS = [
     'auctionPeriod',
     'status',
     'tenderID',
+    'lots',
     #'auctionUrl',
     #'awardPeriod',
     #'dateModified',

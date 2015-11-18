@@ -369,6 +369,14 @@ class TenderLotResourceTest(BaseTenderWebTest):
 class TenderLotFeatureResourceTest(BaseTenderWebTest):
     initial_lots = 2 * test_lots
 
+    def test_tender_value(self):
+        request_path = '/tenders/{}'.format(self.tender_id)
+        response = self.app.get(request_path)
+        self.assertEqual(response.status, '200 OK')
+        self.assertEqual(response.content_type, 'application/json')
+        self.assertEqual(response.json['data']['value']['amount'], sum([i['value']['amount'] for i in self.initial_lots]))
+        self.assertEqual(response.json['data']['minimalStep']['amount'], min([i['minimalStep']['amount'] for i in self.initial_lots]))
+
     def test_tender_features_invalid(self):
         request_path = '/tenders/{}'.format(self.tender_id)
         data = test_tender_data.copy()

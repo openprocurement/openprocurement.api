@@ -682,7 +682,7 @@ embedded_lot_role = (blacklist('numberOfBids') + schematics_embedded_role)
 class Lot(Model):
     class Options:
         roles = {
-            'create': whitelist('title', 'title_en', 'title_ru', 'description', 'description_en', 'description_ru', 'value', 'minimalStep'),
+            'create': whitelist('id', 'title', 'title_en', 'title_ru', 'description', 'description_en', 'description_ru', 'value', 'minimalStep'),
             'edit': whitelist('title', 'title_en', 'title_ru', 'description', 'description_en', 'description_ru', 'value', 'minimalStep'),
             'embedded': embedded_lot_role,
             'view': default_lot_role,
@@ -755,7 +755,7 @@ def validate_cpv_group(items, *args):
 
 
 plain_role = (blacklist('_attachments', 'revisions', 'dateModified') + schematics_embedded_role)
-create_role = (blacklist('lots', 'owner_token', 'owner', '_attachments', 'revisions', 'dateModified', 'doc_id', 'tenderID', 'bids', 'documents', 'awards', 'questions', 'complaints', 'auctionUrl', 'status', 'auctionPeriod', 'awardPeriod', 'procurementMethod', 'awardCriteria', 'submissionMethod') + schematics_embedded_role)
+create_role = (blacklist('owner_token', 'owner', '_attachments', 'revisions', 'dateModified', 'doc_id', 'tenderID', 'bids', 'documents', 'awards', 'questions', 'complaints', 'auctionUrl', 'status', 'auctionPeriod', 'awardPeriod', 'procurementMethod', 'awardCriteria', 'submissionMethod') + schematics_embedded_role)
 edit_role = (blacklist('lots', 'owner_token', 'owner', '_attachments', 'revisions', 'dateModified', 'doc_id', 'tenderID', 'bids', 'documents', 'awards', 'questions', 'complaints', 'auctionUrl', 'auctionPeriod', 'awardPeriod', 'procurementMethod', 'awardCriteria', 'submissionMethod', 'mode') + schematics_embedded_role)
 cancel_role = whitelist('status')
 view_role = (blacklist('owner', 'owner_token', '_attachments', 'revisions') + schematics_embedded_role)
@@ -885,6 +885,18 @@ class Tender(SchematicsDocument, Model):
     def doc_id(self):
         """A property that is serialized by schematics exports."""
         return self._id
+
+    @serializable(serialized_name="value", type=ModelType(Value))
+    def tender_value(self):
+        return Value(dict(amount=sum([i.value.amount for i in self.lots]),
+                          currency=self.value.currency,
+                          valueAddedTaxIncluded=self.value.valueAddedTaxIncluded)) if self.lots else self.value
+
+    @serializable(serialized_name="minimalStep", type=ModelType(Value))
+    def tender_minimalStep(self):
+        return Value(dict(amount=min([i.minimalStep.amount for i in self.lots]),
+                          currency=self.minimalStep.currency,
+                          valueAddedTaxIncluded=self.minimalStep.valueAddedTaxIncluded)) if self.lots else self.minimalStep
 
     def import_data(self, raw_data, **kw):
         """
