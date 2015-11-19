@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from openprocurement.api.models import Bid, Award, Document, Question, Complaint, Contract, Cancellation, Lot, get_now
 from schematics.exceptions import ModelValidationError, ModelConversionError
-from openprocurement.api.utils import apply_data_patch, update_logging_context
+from openprocurement.api.utils import apply_data_patch, update_logging_context, extract_tender_adapter
 from openprocurement.api.interfaces import IBaseTender
 
 
@@ -81,8 +81,7 @@ def validate_tender_data(request):
 
 
 def validate_patch_tender_data(request):
-    tender_id = request.matchdict.get('tender_id')
-    adapter = request.registry.queryMultiAdapter((request, tender_id), IBaseTender)
+    adapter = extract_tender_adapter(request, request.matchdict.get('tender_id'))
     model = adapter.model
     return validate_data(request, model, True)
 
