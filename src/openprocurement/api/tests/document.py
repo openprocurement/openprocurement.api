@@ -144,6 +144,18 @@ class TenderDocumentResourceTest(BaseTenderWebTest):
     def test_put_tender_document(self):
         from six import BytesIO
         from urllib import quote
+        body = u'''--BOUNDARY\nContent-Disposition: form-data; name="file"; filename={}\nContent-Type: application/msword\n\ncontent\n'''.format(u'\uff07')
+        environ = self.app._make_environ()
+        environ['CONTENT_TYPE'] = 'multipart/form-data; boundary=BOUNDARY'
+        environ['REQUEST_METHOD'] = 'POST'
+        req = self.app.RequestClass.blank(self.app._remove_fragment('/tenders/{}/documents'.format(self.tender_id)), environ)
+        req.environ['wsgi.input'] = BytesIO(body.encode('utf8'))
+        req.content_length = len(body)
+        response = self.app.do_request(req, status=422)
+        self.assertEqual(response.status, '422 Unprocessable Entity')
+        self.assertEqual(response.content_type, 'application/json')
+        self.assertEqual(response.json['errors'][0]["description"], "could not decode params")
+
         body = u'''--BOUNDARY\nContent-Disposition: form-data; name="file"; filename*=utf-8''{}\nContent-Type: application/msword\n\ncontent\n'''.format(quote('укр.doc'))
         environ = self.app._make_environ()
         environ['CONTENT_TYPE'] = 'multipart/form-data; boundary=BOUNDARY'
