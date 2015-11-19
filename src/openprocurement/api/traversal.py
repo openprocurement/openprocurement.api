@@ -61,10 +61,6 @@ def factory(request):
         return root
     request.validated['tender_id'] = request.matchdict['tender_id']
     tender = request._tender
-    if not tender:
-        request.errors.add('url', 'tender_id', 'Not Found')
-        request.errors.status = 404
-        raise error_handler(request.errors)
 
     # temporary check
     if request.validated['tender_id'] != tender.id:

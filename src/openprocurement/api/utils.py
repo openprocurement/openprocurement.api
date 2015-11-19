@@ -495,7 +495,9 @@ def extract_tender_adapter(request, tid=None):
     db = request.registry.db
     doc = db.get(tid)
     if doc is None:
-        return
+        request.errors.add('url', 'tender_id', 'Not Found')
+        request.errors.status = 404
+        raise error_handler(request.errors)
 
     return request.registry.queryAdapter(doc, IBaseTender,
                                          name=doc.get('subtype', 'Tender'))

@@ -78,7 +78,7 @@ def isTender(info, request):
             if ITender.providedBy(info.__parent__):
                 return True
 
-    return True # XXX handle Not Founds
+    return False  # do not handle unknown locations
 
 
 @opresource(name='TendersRoot',
