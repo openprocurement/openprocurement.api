@@ -486,3 +486,23 @@ def context_unpack(request, msg, params=None):
     for key, value in logging_context.items():
         journal_context["JOURNAL_" + key] = value
     return journal_context
+
+
+def extract_tender_adapter(request, tid=None):
+
+    if tid is None:
+        tid = request.matchdict.get('tender_id')
+    db = request.registry.db
+    doc = db.get(tid)
+    if doc is None:
+        return
+
+    return request.registry.queryAdapter(doc, IBaseTender,
+                                         name=doc.get('subtype', 'Tender'))
+
+
+def extract_tender(request, tid=None):
+    adapter = extract_tender_adapter(request, tid)
+    if not adapter:
+        return None
+    return adapter.tender()
