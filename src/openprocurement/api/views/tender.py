@@ -73,6 +73,11 @@ def isTender(info, request):
         if request._tender is not None:
             return ITender.providedBy(request._tender)
 
+    if hasattr(info, "__parent__"):
+        while hasattr(info, "__parent__") and info.__parent__:
+            if ITender.providedBy(info.__parent__):
+                return True
+
     return True # XXX handle Not Founds
 
 
@@ -600,6 +605,11 @@ def isTenderUA(info, request):
     # on route get
     if isinstance(info, dict) and info.get('match') and 'tender_id' in info['match']:
         return ITenderUA.providedBy(request._tender)
+
+    if hasattr(info, "__parent__"):
+        while hasattr(info, "__parent__") and info.__parent__:
+            if ITenderUA.providedBy(info.__parent__):
+                return True
 
     return False  # do not handle unknown locations
 
