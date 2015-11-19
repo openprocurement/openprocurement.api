@@ -72,14 +72,14 @@ def isTender(info, request):
     if isinstance(info, dict) and info.get('match') and 'tender_id' in info['match']:
         if request._tender is not None:
             return ITender.providedBy(request._tender)
-    return True  # handle '/tenders'
+
+    return True # XXX handle Not Founds
 
 
-#@opresource(name='Root',
-#            path='', # XXX cornice issue
-#            collection_path='/tenders',
+@opresource(name='TendersRoot',
+            path='/tenders',
 #            custom_predicates=(isTender,),
-#            description="Open Contracting compatible data exchange format. See http://ocds.open-contracting.org/standard/r/master/#tender for more info")
+            description="Open Contracting compatible data exchange format. See http://ocds.open-contracting.org/standard/r/master/#tender for more info")
 class RootResource(object):
 
     def __init__(self, request):
@@ -89,7 +89,7 @@ class RootResource(object):
         self.server_id = request.registry.server_id
 
     @json_view(permission='view_tender')
-    def collection_get(self):
+    def get(self):
         """Tenders List
 
         Get Tenders List
@@ -183,7 +183,6 @@ class RootResource(object):
                 LOGGER.info('Used custom fields for tenders list: {}'.format(','.join(sorted(fields))),
                             extra=context_unpack(self.request, {'MESSAGE_ID': 'tender_list_custom'}))
 
-                # XXX
                 results = [
                     (tender_construct_and_serialize(self.request, i[u'doc'], view_fields), i.key)
                     for i in list_view(self.db, limit=view_limit, startkey=view_offset, descending=descending, include_docs=True)
@@ -211,20 +210,20 @@ class RootResource(object):
             'data': results,
             'next_page': {
                 "offset": params['offset'],
-                "path": self.request.route_path('collection_Tender', _query=params), # XXX check route
-                "uri": self.request.route_url('collection_Tender', _query=params)
+                "path": self.request.route_path('TendersRoot', _query=params),
+                "uri": self.request.route_url('TendersRoot', _query=params)
             }
         }
         if descending or offset:
             data['prev_page'] = {
                 "offset": pparams['offset'],
-                "path": self.request.route_path('collection_Tender', _query=pparams),
-                "uri": self.request.route_url('collection_Tender', _query=pparams)
+                "path": self.request.route_path('TendersRoot', _query=pparams),
+                "uri": self.request.route_url('TendersRoot', _query=pparams)
             }
         return data
 
     @json_view(content_type="application/json", permission='create_tender', validators=(validate_tender_data,))
-    def collection_post(self):
+    def post(self):
         """This API request is targeted to creating new Tenders by procuring organizations.
 
         Creating new Tender
@@ -409,10 +408,15 @@ class RootResource(object):
 
 @opresource(name='Tender',
             path='/tenders/{tender_id}',
-            collection_path='/tenders',
             custom_predicates=(isTender,),
             description="Open Contracting compatible data exchange format. See http://ocds.open-contracting.org/standard/r/master/#tender for more info")
-class TenderResource(RootResource):
+class TenderResource(object):
+
+    def __init__(self, request):
+        self.request = request
+        self.server = request.registry.couchdb_server
+        self.db = request.registry.db
+        self.server_id = request.registry.server_id
 
     @json_view(permission='view_tender')
     def get(self):
