@@ -16,12 +16,10 @@ from pyramid.events import NewRequest, BeforeRender, ContextFound
 from couchdb import Server, Session
 from couchdb.http import Unauthorized, extract_credentials
 from openprocurement.api.design import sync_design
-from openprocurement.api.models import Tender
-from openprocurement.api.interfaces import IBaseTender
 from openprocurement.api.migration import migrate_data
 from boto.s3.connection import S3Connection, Location
 from openprocurement.api.traversal import factory
-from openprocurement.api.utils import forbidden, add_logging_context, set_logging_context
+from openprocurement.api.utils import forbidden, add_logging_context, set_logging_context, extract_tender
 from pbkdf2 import PBKDF2
 
 LOGGER = getLogger("{}.init".format(__name__))
@@ -64,7 +62,8 @@ def set_renderer(event):
         request.override_renderer = 'prettyjson'
         return True
 
-def extract_tender(request):
+
+def _tender(request):
     try:
         # empty if mounted under a path in mod_wsgi, for example
         path = decode_path_info(request.environ['PATH_INFO'] or '/')
@@ -81,16 +80,7 @@ def extract_tender(request):
     else:
         return None
 
-    adapter = request.registry.queryMultiAdapter((request, tender_id), IBaseTender)
-    if not adapter:
-        return None
-    tender = adapter.tender()
-    return tender
-
-
-def set_tender(event):
-    request = event.request
-    request.set_property(extract_tender, "_tender", reify=True)
+    return extract_tender(request, tender_id)
 
 
 def get_local_roles(context):
@@ -167,13 +157,13 @@ def main(global_config, **settings):
     )
     config.add_forbidden_view(forbidden)
     config.add_request_method(authenticated_role, reify=True)
+    config.add_request_method(_tender, reify=True)
     config.add_renderer('prettyjson', JSON(indent=4))
     config.add_renderer('jsonp', JSONP(param_name='opt_jsonp'))
     config.add_renderer('prettyjsonp', JSONP(indent=4, param_name='opt_jsonp'))
     config.add_subscriber(add_logging_context, NewRequest)
     config.add_subscriber(set_logging_context, ContextFound)
     config.add_subscriber(set_renderer, NewRequest)
-    config.add_subscriber(set_tender, NewRequest)
     config.add_subscriber(beforerender, BeforeRender)
     config.include('pyramid_exclog')
     config.include("cornice")
