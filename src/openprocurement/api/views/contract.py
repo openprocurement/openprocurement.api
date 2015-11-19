@@ -91,7 +91,12 @@ class TenderAwardContractResource(object):
                 self.request.errors.add('body', 'data', 'Can\'t sign contract before reviewing all complaints')
                 self.request.errors.status = 403
                 return
+        contract_status = self.request.context.status
         apply_patch(self.request, save=False, src=self.request.context.serialize())
+        if contract_status != self.request.context.status and contract_status != 'pending' and self.request.context.status != 'active':
+            self.request.errors.add('body', 'data', 'Can\'t update contract status')
+            self.request.errors.status = 403
+            return
         check_tender_status(self.request)
         if save_tender(self.request):
             LOGGER.info('Updated tender contract {}'.format(self.request.context.id),

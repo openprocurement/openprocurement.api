@@ -706,6 +706,14 @@ class TenderResourceTest(BaseWebTest):
         tender = response.json['data']
         self.assertEqual(tender['features'], data['features'])
 
+        response = self.app.patch_json('/tenders/{}'.format(tender['id']), {'data': {'features': [{
+            "featureOf": "tenderer",
+            "relatedItem": None
+        }, {}, {}]}})
+        self.assertEqual(response.status, '200 OK')
+        self.assertIn('features', response.json['data'])
+        self.assertNotIn('relatedItem', response.json['data']['features'][0])
+
         response = self.app.patch_json('/tenders/{}'.format(tender['id']), {'data': {'tenderPeriod': {'startDate': None}}})
         self.assertEqual(response.status, '200 OK')
         self.assertIn('features', response.json['data'])
@@ -890,7 +898,7 @@ class TenderResourceTest(BaseWebTest):
 
         authorization = self.app.authorization
         self.app.authorization = ('Basic', ('administrator', ''))
-        response = self.app.patch_json('/tenders/{}'.format(tender['id']), {'data': {'mode': u'test', 'procuringEntity': {"identifier":{"id": "00000000"}}}})
+        response = self.app.patch_json('/tenders/{}'.format(tender['id']), {'data': {'mode': u'test', 'procuringEntity': {"identifier": {"id": "00000000"}}}})
         self.assertEqual(response.status, '200 OK')
         self.assertEqual(response.content_type, 'application/json')
         self.assertEqual(response.json['data']['mode'], u'test')

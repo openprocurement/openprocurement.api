@@ -332,7 +332,7 @@ class TenderBidderResourceTest(BaseTenderWebTest):
 
         self.app.authorization = ('Basic', ('administrator', ''))
         response = self.app.patch_json('/tenders/{}/bids/{}'.format(self.tender_id, bidder['id']), {"data": {
-            'tenderers': [{"identifier":{"id": "00000000"}}],
+            'tenderers': [{"identifier": {"id": "00000000"}}],
             "value": {"amount": 400}
         }})
         self.assertEqual(response.status, '200 OK')
