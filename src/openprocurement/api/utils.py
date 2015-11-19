@@ -15,6 +15,7 @@ from urlparse import urlparse, parse_qs
 from email.header import decode_header
 from rfc6266 import build_header
 from barbecue import chef
+from webob.multidict import NestedMultiDict
 
 try:
     from systemd.journal import JournalHandler
@@ -249,14 +250,29 @@ def add_next_award(request):
         tender.status = 'active.awarded'
 
 
-def error_handler(errors):
+def request_params(request):
+    try:
+        params = NestedMultiDict(request.GET, request.POST)
+    except UnicodeDecodeError:
+        request.errors.add('body', 'data', 'could not decode params')
+        request.errors.status = 422
+        raise error_handler(request.errors, False)
+    except:
+        request.errors.add('body', str(e.__class__.__name__), str(e))
+        request.errors.status = 422
+        raise error_handler(request.errors, False)
+    return params
+
+
+def error_handler(errors, request_params=True):
     for i in LOGGER.handlers:
         if isinstance(i, JournalHandler):
             i._extra['ERROR_STATUS'] = errors.status
-            if 'ROLE' not in i._extra:
-                i._extra['ROLE'] = str(errors.request.authenticated_role)
-            if errors.request.params and 'PARAMS' not in i._extra:
-                i._extra['PARAMS'] = str(dict(errors.request.params))
+            if request_params:
+                if 'ROLE' not in i._extra:
+                    i._extra['ROLE'] = str(errors.request.authenticated_role)
+                if errors.request.params and 'PARAMS' not in i._extra:
+                    i._extra['PARAMS'] = str(dict(errors.request.params))
             if errors.request.matchdict:
                 for x, j in errors.request.matchdict.items():
                     i._extra[x.upper()] = j
