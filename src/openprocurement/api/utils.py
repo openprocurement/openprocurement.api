@@ -17,6 +17,7 @@ from time import sleep
 from urllib import quote
 from urlparse import urlparse, parse_qs
 from uuid import uuid4
+from webob.multidict import NestedMultiDict
 
 
 PKG = get_distribution(__package__)
@@ -393,13 +394,28 @@ def add_next_award(request):
             tender.status = 'active.awarded'
 
 
-def error_handler(errors):
+def request_params(request):
+    try:
+        params = NestedMultiDict(request.GET, request.POST)
+    except UnicodeDecodeError:
+        request.errors.add('body', 'data', 'could not decode params')
+        request.errors.status = 422
+        raise error_handler(request.errors, False)
+    except:
+        request.errors.add('body', str(e.__class__.__name__), str(e))
+        request.errors.status = 422
+        raise error_handler(request.errors, False)
+    return params
+
+
+def error_handler(errors, request_params=True):
     params = {
         'ERROR_STATUS': errors.status
     }
-    params['ROLE'] = str(errors.request.authenticated_role)
-    if errors.request.params:
-        params['PARAMS'] = str(dict(errors.request.params))
+    if request_params:
+        params['ROLE'] = str(errors.request.authenticated_role)
+        if errors.request.params:
+            params['PARAMS'] = str(dict(errors.request.params))
     if errors.request.matchdict:
         for x, j in errors.request.matchdict.items():
             params[x.upper()] = j
