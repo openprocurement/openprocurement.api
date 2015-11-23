@@ -7,7 +7,3 @@ class IBaseTender(Interface):
 
 class ITender(IBaseTender):
     """ Tender marker interface """
-
-
-class ITenderUA(IBaseTender):
-    """ Tender UA marker interface """

@@ -12,7 +12,7 @@ from openprocurement.api.design import (
     tenders_test_by_local_seq_view,
 )
 from openprocurement.api.models import get_now
-from openprocurement.api.interfaces import ITender, ITenderUA, IBaseTender
+from openprocurement.api.interfaces import ITender, IBaseTender
 from openprocurement.api.utils import (
     generate_id,
     generate_tender_id,
@@ -596,31 +596,3 @@ class TenderResource(object):
         LOGGER.info('Updated tender {}'.format(tender.id),
                     extra=context_unpack(self.request, {'MESSAGE_ID': 'tender_patch'}))
         return {'data': tender.serialize(tender.status)}
-
-
-def isTenderUA(info, request):
-    if ITenderUA.providedBy(info):  # XXX
-        return True
-
-    # on route get
-    if isinstance(info, dict) and info.get('match') and 'tender_id' in info['match']:
-        return ITenderUA.providedBy(request._tender)
-
-    if hasattr(info, "__parent__"):
-        while hasattr(info, "__parent__") and info.__parent__:
-            if ITenderUA.providedBy(info.__parent__):
-                return True
-
-    return False  # do not handle unknown locations
-
-
-@opresource(name='TenderUA',
-            path='/tenders/{tender_id}',
-            custom_predicates=(isTenderUA,),
-            description="Open Contracting compatible data exchange format. See http://ocds.open-contracting.org/standard/r/master/#tender for more info")
-class TenderUAResource(TenderResource):
-    """ Resource handler for TenderUA """
-
-    @json_view(permission='view_tender')
-    def collection_get(self):
-        1/0  # never happens

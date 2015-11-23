@@ -70,10 +70,6 @@ test_tender_data = {
     "subtype": "Tender",
 }
 
-test_tender_ua_data = test_tender_data.copy()
-test_tender_ua_data['subtype'] = "TenderUA"
-test_tender_ua_data['magicUnicorns'] = 15
-
 test_features_tender_data = test_tender_data.copy()
 test_features_item = test_features_tender_data['items'][0].copy()
 test_features_item['id'] = "1"

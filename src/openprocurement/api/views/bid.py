@@ -17,10 +17,12 @@ from openprocurement.api.validation import (
 
 LOGGER = getLogger(__name__)
 
+from openprocurement.api.views.tender import isTender
 
 @opresource(name='Tender Bids',
             collection_path='/tenders/{tender_id}/bids',
             path='/tenders/{tender_id}/bids/{bid_id}',
+            custom_predicates=(isTender,),
             description="Tender bids")
 class TenderBidResource(object):
 

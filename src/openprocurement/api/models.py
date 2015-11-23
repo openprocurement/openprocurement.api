@@ -14,7 +14,7 @@ from schematics.types.serializable import serializable
 from uuid import uuid4
 from barbecue import vnmax
 from zope.interface import implementer
-from openprocurement.api.interfaces import ITender, ITenderUA, IBaseTender
+from openprocurement.api.interfaces import ITender, IBaseTender
 
 
 STAND_STILL_TIME = timedelta(days=1)
@@ -963,15 +963,3 @@ class Tender(BaseTender):
     """Data regarding tender process - publicly inviting prospective contractors to submit bids for evaluation and selecting a winner or winners."""
 
     __name__ = ''
-
-
-@implementer(ITenderUA)
-class TenderUA(BaseTender):
-    """Data regarding tender process - publicly inviting prospective contractors to submit bids for evaluation and selecting a winner or winners."""
-
-    __name__ = ''
-
-    magicUnicorns = IntType(required=True)
-
-    def validate_tenderPeriod(self, data, period):
-        return
