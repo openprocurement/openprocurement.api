@@ -756,6 +756,13 @@ def validate_items_uniq(items, *args):
             raise ValidationError(u"Item id should be uniq for all items")
 
 
+def validate_lots_uniq(lots, *args):
+    if lots:
+        ids = [i.id for i in lots]
+        if [i for i in set(ids) if ids.count(i) > 1]:
+            raise ValidationError(u"Lot id should be uniq for all lots")
+
+
 def validate_cpv_group(items, *args):
     if items and len(set([i.classification.id[:3] for i in items])) != 1:
         raise ValidationError(u"CPV group of items be identical")
@@ -859,7 +866,7 @@ class Tender(SchematicsDocument, Model):
     mode = StringType(choices=['test'])
     cancellations = ListType(ModelType(Cancellation), default=list())
     features = ListType(ModelType(Feature), validators=[validate_features_uniq])
-    lots = ListType(ModelType(Lot), default=list())
+    lots = ListType(ModelType(Lot), default=list(), validators=[validate_lots_uniq])
 
     _attachments = DictType(DictType(BaseType), default=dict())  # couchdb attachments
     dateModified = IsoDateTimeType()
