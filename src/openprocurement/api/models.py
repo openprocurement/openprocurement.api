@@ -533,6 +533,13 @@ def validate_features_max_value(features, *args):
         raise ValidationError(u"Sum of max value of all features should be less then or equal to 30%")
 
 
+def validate_items_uniq(items, *args):
+    if items:
+        ids = [i.id for i in items]
+        if [i for i in set(ids) if ids.count(i) > 1]:
+            raise ValidationError(u"Item id should be uniq for all items")
+
+
 def validate_cpv_group(items, *args):
     if items and len(set([i.classification.id[:3] for i in items])) != 1:
         raise ValidationError(u"CPV group of items be identical")
@@ -595,7 +602,7 @@ class Tender(SchematicsDocument, Model):
     description_en = StringType()
     description_ru = StringType()
     tenderID = StringType()  # TenderID should always be the same as the OCID. It is included to make the flattened data structure more convenient.
-    items = ListType(ModelType(Item), required=True, min_size=1, validators=[validate_cpv_group])  # The goods and services to be purchased, broken into line items wherever possible. Items should not be duplicated, but a quantity of 2 specified instead.
+    items = ListType(ModelType(Item), required=True, min_size=1, validators=[validate_cpv_group, validate_items_uniq])  # The goods and services to be purchased, broken into line items wherever possible. Items should not be duplicated, but a quantity of 2 specified instead.
     value = ModelType(Value, required=True)  # The total estimated value of the procurement.
     procurementMethod = StringType(choices=['open', 'selective', 'limited'], default='open')  # Specify tendering method as per GPA definitions of Open, Selective, Limited (http://www.wto.org/english/docs_e/legal_e/rev-gpr-94_01_e.htm)
     procurementMethodRationale = StringType()  # Justification of procurement method, especially in the case of Limited tendering.
