@@ -196,6 +196,14 @@ class TenderLotResourceTest(BaseTenderWebTest):
         self.assertIn('id', lot)
         self.assertIn(lot['id'], response.headers['Location'])
 
+        response = self.app.post_json('/tenders/{}/lots'.format(self.tender_id), {'data': lot}, status=422)
+        self.assertEqual(response.status, '422 Unprocessable Entity')
+        self.assertEqual(response.content_type, 'application/json')
+        self.assertEqual(response.json['status'], 'error')
+        self.assertEqual(response.json['errors'], [
+            {u'description': [u'Lot id should be uniq for all lots'], u'location': u'body', u'name': u'lots'}
+        ])
+
         self.set_status('active.tendering')
 
         response = self.app.post_json('/tenders/{}/lots'.format(self.tender_id), {'data': test_lots[0]}, status=403)

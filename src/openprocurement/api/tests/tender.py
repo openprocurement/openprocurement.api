@@ -564,7 +564,15 @@ class TenderResourceTest(BaseWebTest):
         data = test_tender_data.copy()
         item = data['items'][0].copy()
         item['id'] = "1"
-        data['items'] = [item]
+        data['items'] = [item, item.copy()]
+        response = self.app.post_json('/tenders', {'data': data}, status=422)
+        self.assertEqual(response.status, '422 Unprocessable Entity')
+        self.assertEqual(response.content_type, 'application/json')
+        self.assertEqual(response.json['status'], 'error')
+        self.assertEqual(response.json['errors'], [
+            {u'description': [u'Item id should be uniq for all items'], u'location': u'body', u'name': u'items'}
+        ])
+        data['items'][0]["id"] = "0"
         data['features'] = [
             {
                 "code": "OCDS-123454-AIR-INTAKE",

@@ -845,7 +845,7 @@ class TenderMultipleLotAuctionResourceTest(TenderAuctionResourceTest):
         self.assertEqual(response.json['errors'][0]["description"], u'Number of lots did not match the number of tender lots')
 
         patch_data['lots'] = [patch_data['lots'][0].copy() for i in self.initial_lots]
-        patch_data['lots'][1]['id'] = self.initial_lots[0]['id']
+        patch_data['lots'][1]['id'] = "00000000000000000000000000000000"
 
         response = self.app.patch_json('/tenders/{}/auction'.format(self.tender_id), {'data': patch_data}, status=422)
         self.assertEqual(response.status, '422 Unprocessable Entity')

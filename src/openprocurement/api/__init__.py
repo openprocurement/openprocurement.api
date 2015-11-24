@@ -19,7 +19,7 @@ from openprocurement.api.design import sync_design
 from openprocurement.api.migration import migrate_data
 from boto.s3.connection import S3Connection, Location
 from openprocurement.api.traversal import factory
-from openprocurement.api.utils import forbidden, add_logging_context, set_logging_context, extract_tender
+from openprocurement.api.utils import forbidden, add_logging_context, set_logging_context, extract_tender, request_params
 from pbkdf2 import PBKDF2
 
 LOGGER = getLogger("{}.init".format(__name__))
@@ -155,7 +155,10 @@ def main(global_config, **settings):
         authorization_policy=AuthorizationPolicy(),
         route_prefix=ROUTE_PREFIX,
     )
+    config.include('pyramid_exclog')
+    config.include("cornice")
     config.add_forbidden_view(forbidden)
+    config.add_request_method(request_params, 'params', reify=True)
     config.add_request_method(authenticated_role, reify=True)
     config.add_request_method(_tender, reify=True)
     config.add_renderer('prettyjson', JSON(indent=4))
@@ -165,8 +168,6 @@ def main(global_config, **settings):
     config.add_subscriber(set_logging_context, ContextFound)
     config.add_subscriber(set_renderer, NewRequest)
     config.add_subscriber(beforerender, BeforeRender)
-    config.include('pyramid_exclog')
-    config.include("cornice")
     config.scan("openprocurement.api.views")
     config.scan("openprocurement.api.adapters")
 
