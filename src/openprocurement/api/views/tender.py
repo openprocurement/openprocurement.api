@@ -13,12 +13,13 @@ from openprocurement.api.design import (
 )
 from openprocurement.api.models import get_now
 from openprocurement.api.interfaces import ITender, IBaseTender
+from openprocurement.api.models import get_tender
 from openprocurement.api.utils import (
     generate_id,
     generate_tender_id,
     save_tender,
     set_ownership,
-    tender_construct_and_serialize,
+    tender_serialize,
     apply_patch,
     check_bids,
     check_tender_status,
@@ -70,13 +71,12 @@ def isTender(info, request):
 
     # on route get
     if isinstance(info, dict) and info.get('match') and 'tender_id' in info['match']:
-        if request._tender is not None:
-            return ITender.providedBy(request._tender)
+        if request.tender is not None:
+            return ITender.providedBy(request.tender)
 
     if hasattr(info, "__parent__"):
-        while hasattr(info, "__parent__") and info.__parent__:
-            if ITender.providedBy(info.__parent__):
-                return True
+        if ITender.providedBy(get_tender(info)):
+            return True
 
     return False  # do not handle unknown locations
 
@@ -189,7 +189,7 @@ class RootResource(object):
                             extra=context_unpack(self.request, {'MESSAGE_ID': 'tender_list_custom'}))
 
                 results = [
-                    (tender_construct_and_serialize(self.request, i[u'doc'], view_fields), i.key)
+                    (tender_serialize(self.request, i[u'doc'], view_fields), i.key)
                     for i in list_view(self.db, limit=view_limit, startkey=view_offset, descending=descending, include_docs=True)
                 ]
         else:
@@ -379,9 +379,9 @@ class RootResource(object):
         tender_data = self.request.validated['data']
         tender_id = generate_id()
 
-
-        name = tender_data.get('subtype', 'Tender')
-        adapter = self.request.registry.queryAdapter(tender_data, IBaseTender, name=name)
+        adapter = self.request.registry.queryAdapter(tender_data, IBaseTender,
+                                                     tender_data.get('subtype',
+                                                                     'Tender'))
         tender = adapter.tender()
         tender.__parent__ = self.request.context
         tender.id = tender_id
@@ -415,9 +415,7 @@ class TenderResource(object):
 
     def __init__(self, request):
         self.request = request
-        self.server = request.registry.couchdb_server
         self.db = request.registry.db
-        self.server_id = request.registry.server_id
 
     @json_view(permission='view_tender')
     def get(self):
