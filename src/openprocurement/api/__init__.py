@@ -63,26 +63,6 @@ def set_renderer(event):
         return True
 
 
-def _tender(request):
-    try:
-        # empty if mounted under a path in mod_wsgi, for example
-        path = decode_path_info(request.environ['PATH_INFO'] or '/')
-    except KeyError:
-        path = '/'
-    except UnicodeDecodeError as e:
-        raise URLDecodeError(e.encoding, e.object, e.start, e.end, e.reason)
-
-    tender_id = ""
-    # XXX try to extract tender id
-    parts = path.split('/tenders/')
-    if len(parts) > 1:
-        tender_id = parts[1].split('/')[0]
-    else:
-        return None
-
-    return extract_tender(request, tender_id)
-
-
 def get_local_roles(context):
     from pyramid.location import lineage
     roles = {}
@@ -160,7 +140,7 @@ def main(global_config, **settings):
     config.add_forbidden_view(forbidden)
     config.add_request_method(request_params, 'params', reify=True)
     config.add_request_method(authenticated_role, reify=True)
-    config.add_request_method(_tender, reify=True)
+    config.add_request_method(extract_tender, 'tender', reify=True)
     config.add_renderer('prettyjson', JSON(indent=4))
     config.add_renderer('jsonp', JSONP(param_name='opt_jsonp'))
     config.add_renderer('prettyjsonp', JSONP(indent=4, param_name='opt_jsonp'))

@@ -60,7 +60,7 @@ def factory(request):
     if not request.matchdict or not request.matchdict.get('tender_id'):
         return root
     request.validated['tender_id'] = request.matchdict['tender_id']
-    tender = request._tender
+    tender = request.tender
     tender.__parent__ = root
     request.validated['tender'] = tender
     request.validated['tender_status'] = tender.status

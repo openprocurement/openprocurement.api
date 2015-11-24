@@ -19,6 +19,8 @@ from urllib import quote
 from urlparse import urlparse, parse_qs
 from uuid import uuid4
 from webob.multidict import NestedMultiDict
+from pyramid.exceptions import URLDecodeError
+from pyramid.compat import decode_path_info
 
 
 PKG = get_distribution(__package__)
@@ -173,13 +175,11 @@ def apply_data_patch(item, changes):
     return _apply_patch(item, patch_changes)
 
 
-def tender_serialize(tender, fields):
-    return dict([(i, j) for i, j in tender.serialize(tender.status).items() if i in fields])
-
-def tender_construct_and_serialize(request, tender_data, fields):
+def tender_serialize(request, tender_data, fields):
     adapter = request.registry.queryAdapter(tender_data, IBaseTender, name=tender_data['doc_type'])
     tender = adapter.tender()
     return dict([(i, j) for i, j in tender.serialize(tender.status).items() if i in fields])
+
 
 def get_revision_changes(dst, src):
     return make_patch(dst, src).patch
@@ -519,8 +519,23 @@ def extract_tender_adapter(request, tid=None):
                                          name=doc.get('subtype', 'Tender'))
 
 
-def extract_tender(request, tid=None):
-    adapter = extract_tender_adapter(request, tid)
+def extract_tender(request):
+    try:
+        # empty if mounted under a path in mod_wsgi, for example
+        path = decode_path_info(request.environ['PATH_INFO'] or '/')
+    except KeyError:
+        path = '/'
+    except UnicodeDecodeError as e:
+        raise URLDecodeError(e.encoding, e.object, e.start, e.end, e.reason)
+
+    tender_id = ""
+    # extract tender id
+    parts = path.split('/')
+    if len(parts) < 4 or parts[3] != 'tenders':
+        return
+
+    tender_id = parts[4]
+    adapter = extract_tender_adapter(request, tender_id)
     if not adapter:
-        return None
+        return
     return adapter.tender()
