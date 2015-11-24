@@ -366,7 +366,9 @@ class BaseTenderWebTest(BaseWebTest):
 
     def setUp(self):
         super(BaseTenderWebTest, self).setUp()
-        # Create tender
+        self.create_tender()
+
+    def create_tender(self):
         data = deepcopy(self.initial_data)
         if self.initial_lots:
             lots = []
