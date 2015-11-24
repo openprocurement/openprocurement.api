@@ -382,11 +382,7 @@ class RootResource(object):
 
         name = tender_data.get('subtype', 'Tender')
         adapter = self.request.registry.queryAdapter(tender_data, IBaseTender, name=name)
-        if adapter:
-            tender = adapter.tender()
-        else:
-            1/0
-
+        tender = adapter.tender()
         tender.__parent__ = self.request.context
         tender.id = tender_id
         if not tender.enquiryPeriod.startDate:

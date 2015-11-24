@@ -61,11 +61,6 @@ def factory(request):
         return root
     request.validated['tender_id'] = request.matchdict['tender_id']
     tender = request._tender
-
-    # temporary check
-    if request.validated['tender_id'] != tender.id:
-        1/0
-
     tender.__parent__ = root
     request.validated['tender'] = tender
     request.validated['tender_status'] = tender.status
