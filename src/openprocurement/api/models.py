@@ -771,8 +771,8 @@ def validate_cpv_group(items, *args):
 
 
 plain_role = (blacklist('_attachments', 'revisions', 'dateModified') + schematics_embedded_role)
-create_role = (blacklist('owner_token', 'owner', '_attachments', 'revisions', 'dateModified', 'doc_id', 'tenderID', 'bids', 'documents', 'awards', 'questions', 'complaints', 'auctionUrl', 'status', 'auctionPeriod', 'awardPeriod', 'procurementMethod', 'awardCriteria', 'submissionMethod') + schematics_embedded_role)
-edit_role = (blacklist('lots', 'owner_token', 'owner', '_attachments', 'revisions', 'dateModified', 'doc_id', 'tenderID', 'bids', 'documents', 'awards', 'questions', 'complaints', 'auctionUrl', 'auctionPeriod', 'awardPeriod', 'procurementMethod', 'awardCriteria', 'submissionMethod', 'mode') + schematics_embedded_role)
+create_role = (blacklist('subtype', 'owner_token', 'owner', '_attachments', 'revisions', 'dateModified', 'doc_id', 'tenderID', 'bids', 'documents', 'awards', 'questions', 'complaints', 'auctionUrl', 'status', 'auctionPeriod', 'awardPeriod', 'procurementMethod', 'awardCriteria', 'submissionMethod') + schematics_embedded_role)
+edit_role = (blacklist('subtype', 'lots', 'owner_token', 'owner', '_attachments', 'revisions', 'dateModified', 'doc_id', 'tenderID', 'bids', 'documents', 'awards', 'questions', 'complaints', 'auctionUrl', 'auctionPeriod', 'awardPeriod', 'procurementMethod', 'awardCriteria', 'submissionMethod', 'mode') + schematics_embedded_role)
 cancel_role = whitelist('status')
 view_role = (blacklist('owner', 'owner_token', '_attachments', 'revisions') + schematics_embedded_role)
 listing_role = whitelist('dateModified', 'doc_id')
@@ -875,7 +875,7 @@ class BaseTender(SchematicsDocument, Model):
     owner_token = StringType()
     owner = StringType()
 
-    subtype = StringType()
+    subtype = StringType(default="Tender")
 
     __name__ = ''
 
