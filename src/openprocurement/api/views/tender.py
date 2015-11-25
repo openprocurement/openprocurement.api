@@ -13,7 +13,7 @@ from openprocurement.api.design import (
 )
 from openprocurement.api.models import get_now
 from openprocurement.api.interfaces import ITender, IBaseTender
-from openprocurement.api.models import get_tender
+from openprocurement.api.models import get_tender, isTender
 from openprocurement.api.utils import (
     generate_id,
     generate_tender_id,
@@ -63,22 +63,6 @@ def decrypt(uuid, name, key):
     except:
         text = ''
     return text
-
-
-def isTender(info, request):
-    if ITender.providedBy(info):  # XXX happens on view get. Why? TODO check with new cornice version
-        return True
-
-    # on route get
-    if isinstance(info, dict) and info.get('match') and 'tender_id' in info['match']:
-        if request.tender is not None:
-            return ITender.providedBy(request.tender)
-
-    if hasattr(info, "__parent__"):
-        if ITender.providedBy(get_tender(info)):
-            return True
-
-    return False  # do not handle unknown locations
 
 
 @opresource(name='TendersRoot',

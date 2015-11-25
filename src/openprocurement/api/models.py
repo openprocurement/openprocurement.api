@@ -786,6 +786,7 @@ chronograph_view_role = whitelist('status', 'enquiryPeriod', 'tenderPeriod', 'au
 Administrator_role = whitelist('status', 'mode', 'procuringEntity')
 
 
+@implementer(IBaseTender)
 class BaseTender(SchematicsDocument, Model):
     """Data regarding tender process - publicly inviting prospective contractors to submit bids for evaluation and selecting a winner or winners."""
     class Options:
@@ -970,6 +971,22 @@ class BaseTender(SchematicsDocument, Model):
             raise ValidationError(u"period should begin after auctionPeriod")
         if period and period.startDate and data.get('tenderPeriod') and data.get('tenderPeriod').endDate and period.startDate < data.get('tenderPeriod').endDate:
             raise ValidationError(u"period should begin after tenderPeriod")
+
+
+def isTender(info, request):
+    if ITender.providedBy(info):  # XXX happens on view get. Why? TODO check with new cornice version
+        return True
+
+    # on route get
+    if isinstance(info, dict) and info.get('match') and 'tender_id' in info['match']:
+        if request.tender is not None:
+            return ITender.providedBy(request.tender)
+
+    if hasattr(info, "__parent__"):
+        if ITender.providedBy(get_tender(info)):
+            return True
+
+    return False  # do not handle unknown locations
 
 
 @implementer(ITender)
