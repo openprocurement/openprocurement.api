@@ -504,12 +504,9 @@ def context_unpack(request, msg, params=None):
     return journal_context
 
 
-def extract_tender_adapter(request, tid=None):
-
-    if tid is None:
-        tid = request.matchdict.get('tender_id')
+def extract_tender_adapter(request, tender_id):
     db = request.registry.db
-    doc = db.get(tid)
+    doc = db.get(tender_id)
     if doc is None:
         request.errors.add('url', 'tender_id', 'Not Found')
         request.errors.status = 404
