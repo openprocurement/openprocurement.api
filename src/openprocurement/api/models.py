@@ -725,8 +725,6 @@ class Lot(Model):
     def validate_value(self, data, value):
         if value and isinstance(data['__parent__'], Model):
             tender = data['__parent__']
-            if tender.value.amount < value.amount:
-                raise ValidationError(u"value should be less than value of tender")
             if tender.get('value').currency != value.currency:
                 raise ValidationError(u"currency should be identical to currency of value of tender")
             if tender.get('value').valueAddedTaxIncluded != value.valueAddedTaxIncluded:
