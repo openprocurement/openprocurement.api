@@ -10,7 +10,6 @@ from json import dumps
 from jsonpatch import make_patch, apply_patch as _apply_patch
 from logging import getLogger
 from openprocurement.api.models import Document, Revision, Award, Period, get_now
-from openprocurement.api.interfaces import IBaseTender
 from pkg_resources import get_distribution
 from rfc6266 import build_header
 from schematics.exceptions import ModelValidationError
@@ -177,8 +176,9 @@ def apply_data_patch(item, changes):
 
 
 def tender_serialize(request, tender_data, fields):
-    adapter = request.registry.queryAdapter(tender_data, IBaseTender, name=tender_data['subtype'])
-    tender = adapter.tender()
+    tender = request.tender_from_data(tender_data, raise_error=False)
+    if tender is None:
+        return dict([(i, tender_data.get(i, '')) for i in ['subtype', 'dateModified', 'id']])
     return dict([(i, j) for i, j in tender.serialize(tender.status).items() if i in fields])
 
 
@@ -513,8 +513,7 @@ def extract_tender_adapter(request, tender_id):
         request.errors.status = 404
         raise error_handler(request.errors)
 
-    return request.registry.queryAdapter(doc, IBaseTender,
-                                         name=doc.get('subtype', 'Tender'))
+    return request.tender_from_data(doc)
 
 
 def extract_tender(request):
@@ -533,10 +532,7 @@ def extract_tender(request):
         return
 
     tender_id = parts[4]
-    adapter = extract_tender_adapter(request, tender_id)
-    if not adapter:
-        return
-    return adapter.tender()
+    return extract_tender_adapter(request, tender_id)
 
 
 class isTender(object):
@@ -595,3 +591,25 @@ def fix_url(item, app_url):
 def beforerender(event):
     if event.rendering_val and 'data' in event.rendering_val:
         fix_url(event.rendering_val['data'], event['request'].application_url)
+
+
+def register_tender_subtype(config, model):
+    """Register a tender subtype.
+    :param config:
+        The pyramid configuration object that will be populated.
+    :param model:
+        The tender model class
+    """
+    config.registry.tender_subtypes[model.subtype.default] = model
+
+
+def tender_from_data(request, data, raise_error=True, create=True):
+    subtype = data.get('subtype', 'Tender')
+    model = request.registry.tender_subtypes.get(subtype)
+    if model is None and raise_error:
+        request.errors.add('data', 'subtype', 'Not implemented')
+        request.errors.status = 415
+        raise error_handler(request.errors)
+    if model is not None and create:
+        model = model(data)
+    return model

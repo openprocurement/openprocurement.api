@@ -1,8 +1,7 @@
 # -*- coding: utf-8 -*-
-from openprocurement.api.models import Tender, Bid, Award, Document, Question, Complaint, Contract, Cancellation, Lot, get_now
+from openprocurement.api.models import ITender, Tender, Bid, Award, Document, Question, Complaint, Contract, Cancellation, Lot, get_now
 from schematics.exceptions import ModelValidationError, ModelConversionError
 from openprocurement.api.utils import apply_data_patch, update_logging_context
-from openprocurement.api.interfaces import IBaseTender
 
 
 def validate_json_data(request):
@@ -35,9 +34,9 @@ def validate_data(request, model, partial=False, data=None):
                 role = 'Administrator'
             elif request.authenticated_role == 'chronograph':
                 role = 'chronograph'
-            elif request.authenticated_role == 'auction' and IBaseTender.providedBy(request.context):
+            elif request.authenticated_role == 'auction' and ITender.providedBy(request.context):
                 role = 'auction_{}'.format(request.method.lower())
-            elif IBaseTender.providedBy(request.context):
+            elif ITender.providedBy(request.context):
                 role = 'edit_{}'.format(request.context.status)
             else:
                 role = 'edit'
@@ -65,6 +64,10 @@ def validate_data(request, model, partial=False, data=None):
         else:
             data = method(role)
             request.validated['data'] = data
+            if not partial:
+                m = model(data)
+                m.__parent__ = request.context
+                request.validated[model.__name__.lower()] = m
     return data
 
 
@@ -75,9 +78,7 @@ def validate_tender_data(request):
     if data is None:
         return
 
-    adapter = request.registry.getAdapter(data, IBaseTender, name=data.get('subtype', "Tender"))
-    model = adapter.model
-
+    model = request.tender_from_data(data, create=False)
     return validate_data(request, model, data=data)
 
 

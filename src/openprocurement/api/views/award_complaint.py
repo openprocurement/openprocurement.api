@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 from logging import getLogger
-from openprocurement.api.models import Complaint, STAND_STILL_TIME, get_now
+from openprocurement.api.models import STAND_STILL_TIME, get_now
 from openprocurement.api.utils import (
     apply_patch,
     save_tender,
@@ -48,9 +48,7 @@ class TenderAwardComplaintResource(object):
             self.request.errors.add('body', 'data', 'Can add complaint only in complaintPeriod')
             self.request.errors.status = 403
             return
-        complaint_data = self.request.validated['data']
-        complaint = Complaint(complaint_data)
-        complaint.__parent__ = self.request.context
+        complaint = self.request.validated['complaint']
         self.request.context.complaints.append(complaint)
         if save_tender(self.request):
             LOGGER.info('Created tender award complaint {}'.format(complaint.id),

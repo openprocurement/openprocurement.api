@@ -316,6 +316,14 @@ class TenderResourceTest(BaseWebTest):
                 u'location': u'body', u'name': u'data'}
         ])
 
+        response = self.app.post_json(request_path, {'data': {'subtype': 'invalid_value'}}, status=415)
+        self.assertEqual(response.status, '415 Unsupported Media Type')
+        self.assertEqual(response.content_type, 'application/json')
+        self.assertEqual(response.json['status'], 'error')
+        self.assertEqual(response.json['errors'], [
+            {u'description': u'Not implemented', u'location': u'data', u'name': u'subtype'}
+        ])
+
         response = self.app.post_json(request_path, {'data': {
                                       'invalid_field': 'invalid_value'}}, status=422)
         self.assertEqual(response.status, '422 Unprocessable Entity')

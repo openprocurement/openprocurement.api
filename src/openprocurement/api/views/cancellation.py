@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
 from logging import getLogger
-from openprocurement.api.models import Cancellation
 from openprocurement.api.utils import (
     apply_patch,
     save_tender,
@@ -37,13 +36,11 @@ class TenderCancellationResource(object):
             self.request.errors.add('body', 'data', 'Can\'t add cancellation in current ({}) tender status'.format(tender.status))
             self.request.errors.status = 403
             return
-        cancellation_data = self.request.validated['data']
-        if any([i.status != 'active' for i in tender.lots if i.id == cancellation_data.get('relatedLot')]):
+        cancellation = self.request.validated['cancellation']
+        if any([i.status != 'active' for i in tender.lots if i.id == cancellation.relatedLot]):
             self.request.errors.add('body', 'data', 'Can add cancellation only in active lot status')
             self.request.errors.status = 403
             return
-        cancellation = Cancellation(cancellation_data)
-        cancellation.__parent__ = self.request.context
         if cancellation.relatedLot and cancellation.status == 'active':
             [setattr(i, 'status', 'cancelled') for i in tender.lots if i.id == cancellation.relatedLot]
             check_tender_status(self.request)

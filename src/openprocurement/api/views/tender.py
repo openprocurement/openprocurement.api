@@ -12,7 +12,6 @@ from openprocurement.api.design import (
     tenders_test_by_local_seq_view,
 )
 from openprocurement.api.models import get_now
-from openprocurement.api.interfaces import IBaseTender
 from openprocurement.api.utils import (
     generate_id,
     generate_tender_id,
@@ -358,12 +357,8 @@ class TendersResource(object):
             }
 
         """
-        tender_data = self.request.validated['data']
         tender_id = generate_id()
-        subtype = tender_data.get('subtype', 'Tender')
-        adapter = self.request.registry.queryAdapter(tender_data, IBaseTender, subtype)
-        tender = adapter.tender()
-        tender.__parent__ = self.request.context
+        tender = self.request.validated['tender']
         tender.id = tender_id
         if not tender.enquiryPeriod.startDate:
             tender.enquiryPeriod.startDate = get_now()
@@ -378,7 +373,7 @@ class TendersResource(object):
                         extra=context_unpack(self.request, {'MESSAGE_ID': 'tender_create'}, {'tender_id': tender_id, 'tenderID': tender.tenderID}))
             self.request.response.status = 201
             self.request.response.headers[
-                'Location'] = self.request.route_url(subtype, tender_id=tender_id)
+                'Location'] = self.request.route_url(tender.subtype, tender_id=tender_id)
             return {
                 'data': tender.serialize(tender.status),
                 'access': {

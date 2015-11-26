@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 from logging import getLogger
-from openprocurement.api.models import Contract, get_now
+from openprocurement.api.models import get_now
 from openprocurement.api.utils import (
     apply_patch,
     save_tender,
@@ -37,9 +37,7 @@ class TenderAwardContractResource(object):
             self.request.errors.add('body', 'data', 'Can\'t add contract in current ({}) tender status'.format(tender.status))
             self.request.errors.status = 403
             return
-        contract_data = self.request.validated['data']
-        contract = Contract(contract_data)
-        contract.__parent__ = self.request.context
+        contract = self.request.validated['contract']
         tender.contracts.append(contract)
         if save_tender(self.request):
             LOGGER.info('Created tender contract {}'.format(contract.id),

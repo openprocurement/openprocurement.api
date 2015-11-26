@@ -13,8 +13,7 @@ from schematics.types.compound import ModelType, ListType, DictType
 from schematics.types.serializable import serializable
 from uuid import uuid4
 from barbecue import vnmax
-from zope.interface import implementer
-from openprocurement.api.interfaces import ITender, IBaseTender
+from zope.interface import implementer, Interface
 
 
 STAND_STILL_TIME = timedelta(days=1)
@@ -41,6 +40,10 @@ def read_json(name):
 CPV_CODES = read_json('cpv.json')
 #DKPP_CODES = read_json('dkpp.json')
 ORA_CODES = [i['code'] for i in read_json('OrganisationRegistrationAgency.json')['data']]
+
+
+class ITender(Interface):
+    """ Base tender marker interface """
 
 
 class IsoDateTimeType(BaseType):
@@ -71,7 +74,7 @@ def set_parent(item, parent):
 
 
 def get_tender(model):
-    while not IBaseTender.providedBy(model):
+    while not ITender.providedBy(model):
         model = model.__parent__
     return model
 
@@ -770,7 +773,7 @@ def validate_cpv_group(items, *args):
 
 
 plain_role = (blacklist('_attachments', 'revisions', 'dateModified') + schematics_embedded_role)
-create_role = (blacklist('subtype', 'owner_token', 'owner', '_attachments', 'revisions', 'dateModified', 'doc_id', 'tenderID', 'bids', 'documents', 'awards', 'questions', 'complaints', 'auctionUrl', 'status', 'auctionPeriod', 'awardPeriod', 'procurementMethod', 'awardCriteria', 'submissionMethod') + schematics_embedded_role)
+create_role = (blacklist('owner_token', 'owner', '_attachments', 'revisions', 'dateModified', 'doc_id', 'tenderID', 'bids', 'documents', 'awards', 'questions', 'complaints', 'auctionUrl', 'status', 'auctionPeriod', 'awardPeriod', 'procurementMethod', 'awardCriteria', 'submissionMethod') + schematics_embedded_role)
 edit_role = (blacklist('subtype', 'lots', 'owner_token', 'owner', '_attachments', 'revisions', 'dateModified', 'doc_id', 'tenderID', 'bids', 'documents', 'awards', 'questions', 'complaints', 'auctionUrl', 'auctionPeriod', 'awardPeriod', 'procurementMethod', 'awardCriteria', 'submissionMethod', 'mode') + schematics_embedded_role)
 cancel_role = whitelist('status')
 view_role = (blacklist('owner', 'owner_token', '_attachments', 'revisions') + schematics_embedded_role)

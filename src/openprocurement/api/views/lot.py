@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
 from logging import getLogger
-from openprocurement.api.models import Lot
 from openprocurement.api.utils import (
     apply_patch,
     save_tender,
@@ -36,9 +35,7 @@ class TenderLotResource(object):
             self.request.errors.add('body', 'data', 'Can\'t add lot in current ({}) tender status'.format(tender.status))
             self.request.errors.status = 403
             return
-        lot_data = self.request.validated['data']
-        lot = Lot(lot_data)
-        lot.__parent__ = self.request.context
+        lot = self.request.validated['lot']
         tender.lots.append(lot)
         if save_tender(self.request):
             LOGGER.info('Created tender lot {}'.format(lot.id),

@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 from logging import getLogger
-from openprocurement.api.models import Bid, get_now
+from openprocurement.api.models import get_now
 from openprocurement.api.utils import (
     save_tender,
     set_ownership,
@@ -116,9 +116,7 @@ class TenderBidResource(object):
             self.request.errors.add('body', 'data', 'Can\'t add bid in current ({}) tender status'.format(self.request.validated['tender_status']))
             self.request.errors.status = 403
             return
-        bid_data = self.request.validated['data']
-        bid = Bid(bid_data)
-        bid.__parent__ = self.request.context
+        bid = self.request.validated['bid']
         set_ownership(bid, self.request)
         tender.bids.append(bid)
         if save_tender(self.request):
