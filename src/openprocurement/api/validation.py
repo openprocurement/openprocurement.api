@@ -19,8 +19,9 @@ def validate_json_data(request):
     return json['data']
 
 
-def validate_data(request, model, partial=False):
-    data = validate_json_data(request)
+def validate_data(request, model, partial=False, data=None):
+    if data is None:
+        data = validate_json_data(request)
     if data is None:
         return
     try:
@@ -77,7 +78,7 @@ def validate_tender_data(request):
     adapter = request.registry.getAdapter(data, IBaseTender, name=data.get('subtype', "Tender"))
     model = adapter.model
 
-    return validate_data(request, model)
+    return validate_data(request, model, data=data)
 
 
 def validate_patch_tender_data(request):
