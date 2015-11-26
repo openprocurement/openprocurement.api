@@ -21,6 +21,7 @@ LOGGER = getLogger(__name__)
 @opresource(name='Tender Bids',
             collection_path='/tenders/{tender_id}/bids',
             path='/tenders/{tender_id}/bids/{bid_id}',
+            tender="Tender",
             description="Tender bids")
 class TenderBidResource(object):
 

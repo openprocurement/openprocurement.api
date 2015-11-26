@@ -15,9 +15,10 @@ from couchdb import Server, Session
 from couchdb.http import Unauthorized, extract_credentials
 from openprocurement.api.design import sync_design
 from openprocurement.api.migration import migrate_data
+from openprocurement.api.models import isTender
 from boto.s3.connection import S3Connection, Location
 from openprocurement.api.traversal import factory
-from openprocurement.api.utils import forbidden, add_logging_context, set_logging_context, request_params
+from openprocurement.api.utils import forbidden, add_logging_context, set_logging_context, extract_tender, request_params
 from pbkdf2 import PBKDF2
 
 LOGGER = getLogger("{}.init".format(__name__))
@@ -138,6 +139,7 @@ def main(global_config, **settings):
     config.add_forbidden_view(forbidden)
     config.add_request_method(request_params, 'params', reify=True)
     config.add_request_method(authenticated_role, reify=True)
+    config.add_request_method(extract_tender, 'tender', reify=True)
     config.add_renderer('prettyjson', JSON(indent=4))
     config.add_renderer('jsonp', JSONP(param_name='opt_jsonp'))
     config.add_renderer('prettyjsonp', JSONP(indent=4, param_name='opt_jsonp'))
@@ -145,7 +147,9 @@ def main(global_config, **settings):
     config.add_subscriber(set_logging_context, ContextFound)
     config.add_subscriber(set_renderer, NewRequest)
     config.add_subscriber(beforerender, BeforeRender)
+    config.add_route_predicate('tender', isTender)
     config.scan("openprocurement.api.views")
+    config.scan("openprocurement.api.adapters")
 
     # CouchDB connection
     db_name = os.environ.get('DB_NAME', settings['couchdb.db_name'])

@@ -66,8 +66,10 @@ test_tender_data = {
     },
     "tenderPeriod": {
         "endDate": (now + timedelta(days=14)).isoformat()
-    }
+    },
+    "subtype": "Tender",
 }
+
 test_features_tender_data = test_tender_data.copy()
 test_features_item = test_features_tender_data['items'][0].copy()
 test_features_item['id'] = "1"
@@ -364,7 +366,9 @@ class BaseTenderWebTest(BaseWebTest):
 
     def setUp(self):
         super(BaseTenderWebTest, self).setUp()
-        # Create tender
+        self.create_tender()
+
+    def create_tender(self):
         data = deepcopy(self.initial_data)
         if self.initial_lots:
             lots = []

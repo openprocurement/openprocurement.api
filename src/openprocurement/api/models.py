@@ -13,6 +13,8 @@ from schematics.types.compound import ModelType, ListType, DictType
 from schematics.types.serializable import serializable
 from uuid import uuid4
 from barbecue import vnmax
+from zope.interface import implementer
+from openprocurement.api.interfaces import ITender, IBaseTender
 
 
 STAND_STILL_TIME = timedelta(days=1)
@@ -69,7 +71,7 @@ def set_parent(item, parent):
 
 
 def get_tender(model):
-    while not isinstance(model, Tender):
+    while not IBaseTender.providedBy(model):
         model = model.__parent__
     return model
 
@@ -767,8 +769,8 @@ def validate_cpv_group(items, *args):
 
 
 plain_role = (blacklist('_attachments', 'revisions', 'dateModified') + schematics_embedded_role)
-create_role = (blacklist('owner_token', 'owner', '_attachments', 'revisions', 'dateModified', 'doc_id', 'tenderID', 'bids', 'documents', 'awards', 'questions', 'complaints', 'auctionUrl', 'status', 'auctionPeriod', 'awardPeriod', 'procurementMethod', 'awardCriteria', 'submissionMethod') + schematics_embedded_role)
-edit_role = (blacklist('lots', 'owner_token', 'owner', '_attachments', 'revisions', 'dateModified', 'doc_id', 'tenderID', 'bids', 'documents', 'awards', 'questions', 'complaints', 'auctionUrl', 'auctionPeriod', 'awardPeriod', 'procurementMethod', 'awardCriteria', 'submissionMethod', 'mode') + schematics_embedded_role)
+create_role = (blacklist('subtype', 'owner_token', 'owner', '_attachments', 'revisions', 'dateModified', 'doc_id', 'tenderID', 'bids', 'documents', 'awards', 'questions', 'complaints', 'auctionUrl', 'status', 'auctionPeriod', 'awardPeriod', 'procurementMethod', 'awardCriteria', 'submissionMethod') + schematics_embedded_role)
+edit_role = (blacklist('subtype', 'lots', 'owner_token', 'owner', '_attachments', 'revisions', 'dateModified', 'doc_id', 'tenderID', 'bids', 'documents', 'awards', 'questions', 'complaints', 'auctionUrl', 'auctionPeriod', 'awardPeriod', 'procurementMethod', 'awardCriteria', 'submissionMethod', 'mode') + schematics_embedded_role)
 cancel_role = whitelist('status')
 view_role = (blacklist('owner', 'owner_token', '_attachments', 'revisions') + schematics_embedded_role)
 listing_role = whitelist('dateModified', 'doc_id')
@@ -782,7 +784,8 @@ chronograph_view_role = whitelist('status', 'enquiryPeriod', 'tenderPeriod', 'au
 Administrator_role = whitelist('status', 'mode', 'procuringEntity')
 
 
-class Tender(SchematicsDocument, Model):
+@implementer(IBaseTender)
+class BaseTender(SchematicsDocument, Model):
     """Data regarding tender process - publicly inviting prospective contractors to submit bids for evaluation and selecting a winner or winners."""
     class Options:
         roles = {
@@ -870,6 +873,8 @@ class Tender(SchematicsDocument, Model):
     dateModified = IsoDateTimeType()
     owner_token = StringType()
     owner = StringType()
+
+    subtype = StringType(default="Tender")
 
     __name__ = ''
 
@@ -964,3 +969,26 @@ class Tender(SchematicsDocument, Model):
             raise ValidationError(u"period should begin after auctionPeriod")
         if period and period.startDate and data.get('tenderPeriod') and data.get('tenderPeriod').endDate and period.startDate < data.get('tenderPeriod').endDate:
             raise ValidationError(u"period should begin after tenderPeriod")
+
+
+class isTender(object):
+    def __init__(self, val, config):
+        self.val = val
+
+    def text(self):
+        return 'tender = %s' % (self.val,)
+
+    phash = text
+
+    def __call__(self, context, request):
+        if isinstance(context, dict) and context.get('match') and 'tender_id' in context['match']:
+            if request.tender is not None:
+                return getattr(request.tender, 'subtype', None) == self.val
+        return False
+
+
+@implementer(ITender)
+class Tender(BaseTender):
+    """Data regarding tender process - publicly inviting prospective contractors to submit bids for evaluation and selecting a winner or winners."""
+
+    __name__ = ''

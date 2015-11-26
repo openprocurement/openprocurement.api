@@ -10,6 +10,7 @@ from json import dumps
 from jsonpatch import make_patch, apply_patch as _apply_patch
 from logging import getLogger
 from openprocurement.api.models import Document, Revision, Award, Period, get_now
+from openprocurement.api.interfaces import IBaseTender
 from pkg_resources import get_distribution
 from rfc6266 import build_header
 from schematics.exceptions import ModelValidationError
@@ -18,6 +19,8 @@ from urllib import quote
 from urlparse import urlparse, parse_qs
 from uuid import uuid4
 from webob.multidict import NestedMultiDict
+from pyramid.exceptions import URLDecodeError
+from pyramid.compat import decode_path_info
 
 
 PKG = get_distribution(__package__)
@@ -172,7 +175,9 @@ def apply_data_patch(item, changes):
     return _apply_patch(item, patch_changes)
 
 
-def tender_serialize(tender, fields):
+def tender_serialize(request, tender_data, fields):
+    adapter = request.registry.queryAdapter(tender_data, IBaseTender, name=tender_data['doc_type'])
+    tender = adapter.tender()
     return dict([(i, j) for i, j in tender.serialize(tender.status).items() if i in fields])
 
 
@@ -497,3 +502,37 @@ def context_unpack(request, msg, params=None):
     for key, value in logging_context.items():
         journal_context["JOURNAL_" + key] = value
     return journal_context
+
+
+def extract_tender_adapter(request, tender_id):
+    db = request.registry.db
+    doc = db.get(tender_id)
+    if doc is None:
+        request.errors.add('url', 'tender_id', 'Not Found')
+        request.errors.status = 404
+        raise error_handler(request.errors)
+
+    return request.registry.queryAdapter(doc, IBaseTender,
+                                         name=doc.get('subtype', 'Tender'))
+
+
+def extract_tender(request):
+    try:
+        # empty if mounted under a path in mod_wsgi, for example
+        path = decode_path_info(request.environ['PATH_INFO'] or '/')
+    except KeyError:
+        path = '/'
+    except UnicodeDecodeError as e:
+        raise URLDecodeError(e.encoding, e.object, e.start, e.end, e.reason)
+
+    tender_id = ""
+    # extract tender id
+    parts = path.split('/')
+    if len(parts) < 4 or parts[3] != 'tenders':
+        return
+
+    tender_id = parts[4]
+    adapter = extract_tender_adapter(request, tender_id)
+    if not adapter:
+        return
+    return adapter.tender()

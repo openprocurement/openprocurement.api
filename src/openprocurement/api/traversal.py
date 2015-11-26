@@ -60,11 +60,7 @@ def factory(request):
     if not request.matchdict or not request.matchdict.get('tender_id'):
         return root
     request.validated['tender_id'] = request.matchdict['tender_id']
-    tender = Tender.load(root.db, request.matchdict['tender_id'])
-    if not tender:
-        request.errors.add('url', 'tender_id', 'Not Found')
-        request.errors.status = 404
-        raise error_handler(request.errors)
+    tender = request.tender
     tender.__parent__ = root
     request.validated['tender'] = tender
     request.validated['tender_status'] = tender.status
