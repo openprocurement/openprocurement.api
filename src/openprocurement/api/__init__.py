@@ -4,28 +4,23 @@
 import gevent.monkey
 gevent.monkey.patch_all()
 import os
-from logging import getLogger
-from pkg_resources import get_distribution
-from pyramid.config import Configurator
-from openprocurement.api.auth import AuthenticationPolicy
-from pyramid.authorization import ACLAuthorizationPolicy as AuthorizationPolicy
-from pyramid.renderers import JSON, JSONP
-from pyramid.events import NewRequest, BeforeRender, ContextFound
+from boto.s3.connection import S3Connection, Location
 from couchdb import Server, Session
 from couchdb.http import Unauthorized, extract_credentials
+from logging import getLogger
+from openprocurement.api.auth import AuthenticationPolicy, authenticated_role
 from openprocurement.api.design import sync_design
 from openprocurement.api.migration import migrate_data
-from openprocurement.api.models import isTender
-from boto.s3.connection import S3Connection, Location
 from openprocurement.api.traversal import factory
-from openprocurement.api.utils import forbidden, add_logging_context, set_logging_context, extract_tender, request_params
+from openprocurement.api.utils import forbidden, add_logging_context, set_logging_context, extract_tender, request_params, isTender, set_renderer, beforerender, ROUTE_PREFIX
 from pbkdf2 import PBKDF2
+from pkg_resources import get_distribution
+from pyramid.authorization import ACLAuthorizationPolicy as AuthorizationPolicy
+from pyramid.config import Configurator
+from pyramid.events import NewRequest, BeforeRender, ContextFound
+from pyramid.renderers import JSON, JSONP
 
 LOGGER = getLogger("{}.init".format(__name__))
-#VERSION = int(pkg_resources.get_distribution(__package__).parsed_version[0])
-PKG = get_distribution(__package__)
-VERSION = '{}.{}'.format(int(PKG.parsed_version[0]), int(PKG.parsed_version[1]))
-ROUTE_PREFIX = '/api/{}'.format(VERSION)
 SECURITY = {u'admins': {u'names': [], u'roles': ['_admin']}, u'members': {u'names': [], u'roles': ['_admin']}}
 VALIDATE_DOC_ID = '_design/_auth'
 VALIDATE_DOC_UPDATE = """function(newDoc, oldDoc, userCtx){
@@ -41,74 +36,6 @@ VALIDATE_DOC_UPDATE = """function(newDoc, oldDoc, userCtx){
         throw({forbidden: 'Only authorized user may edit the database'});
     }
 }"""
-
-
-def set_renderer(event):
-    request = event.request
-    try:
-        json = request.json_body
-    except ValueError:
-        json = {}
-    pretty = isinstance(json, dict) and json.get('options', {}).get('pretty') or request.params.get('opt_pretty')
-    jsonp = request.params.get('opt_jsonp')
-    if jsonp and pretty:
-        request.override_renderer = 'prettyjsonp'
-        return True
-    if jsonp:
-        request.override_renderer = 'jsonp'
-        return True
-    if pretty:
-        request.override_renderer = 'prettyjson'
-        return True
-
-
-def get_local_roles(context):
-    from pyramid.location import lineage
-    roles = {}
-    for location in lineage(context):
-        try:
-            roles = location.__local_roles__
-        except AttributeError:
-            continue
-        if roles and callable(roles):
-            roles = roles()
-        break
-    return roles
-
-
-def authenticated_role(request):
-    principals = request.effective_principals
-    if hasattr(request, 'context'):
-        roles = get_local_roles(request.context)
-        local_roles = [roles[i] for i in reversed(principals) if i in roles]
-        if local_roles:
-            return local_roles[0]
-    groups = [g for g in reversed(principals) if g.startswith('g:')]
-    return groups[0][2:] if groups else 'anonymous'
-
-
-def fix_url(item, app_url):
-    if isinstance(item, list):
-        [
-            fix_url(i, app_url)
-            for i in item
-            if isinstance(i, dict) or isinstance(i, list)
-        ]
-    elif isinstance(item, dict):
-        if "format" in item and "url" in item and '?download=' in item['url']:
-            path = item["url"] if item["url"].startswith('/tenders') else '/tenders' + item['url'].split('/tenders', 1)[1]
-            item["url"] = app_url + ROUTE_PREFIX + path
-            return
-        [
-            fix_url(item[i], app_url)
-            for i in item
-            if isinstance(item[i], dict) or isinstance(item[i], list)
-        ]
-
-
-def beforerender(event):
-    if event.rendering_val and 'data' in event.rendering_val:
-        fix_url(event.rendering_val['data'], event['request'].application_url)
 
 
 class Server(Server):

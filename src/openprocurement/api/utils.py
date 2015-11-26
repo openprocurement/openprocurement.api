@@ -26,6 +26,7 @@ from pyramid.compat import decode_path_info
 PKG = get_distribution(__package__)
 LOGGER = getLogger(PKG.project_name)
 VERSION = '{}.{}'.format(int(PKG.parsed_version[0]), int(PKG.parsed_version[1]))
+ROUTE_PREFIX = '/api/{}'.format(VERSION)
 json_view = partial(view, renderer='json')
 
 
@@ -536,3 +537,61 @@ def extract_tender(request):
     if not adapter:
         return
     return adapter.tender()
+
+
+class isTender(object):
+    def __init__(self, val, config):
+        self.val = val
+
+    def text(self):
+        return 'tender = %s' % (self.val,)
+
+    phash = text
+
+    def __call__(self, context, request):
+        if request.tender is not None:
+            return getattr(request.tender, 'subtype', None) == self.val
+        return False
+
+
+def set_renderer(event):
+    request = event.request
+    try:
+        json = request.json_body
+    except ValueError:
+        json = {}
+    pretty = isinstance(json, dict) and json.get('options', {}).get('pretty') or request.params.get('opt_pretty')
+    jsonp = request.params.get('opt_jsonp')
+    if jsonp and pretty:
+        request.override_renderer = 'prettyjsonp'
+        return True
+    if jsonp:
+        request.override_renderer = 'jsonp'
+        return True
+    if pretty:
+        request.override_renderer = 'prettyjson'
+        return True
+
+
+def fix_url(item, app_url):
+    if isinstance(item, list):
+        [
+            fix_url(i, app_url)
+            for i in item
+            if isinstance(i, dict) or isinstance(i, list)
+        ]
+    elif isinstance(item, dict):
+        if "format" in item and "url" in item and '?download=' in item['url']:
+            path = item["url"] if item["url"].startswith('/tenders') else '/tenders' + item['url'].split('/tenders', 1)[1]
+            item["url"] = app_url + ROUTE_PREFIX + path
+            return
+        [
+            fix_url(item[i], app_url)
+            for i in item
+            if isinstance(item[i], dict) or isinstance(item[i], list)
+        ]
+
+
+def beforerender(event):
+    if event.rendering_val and 'data' in event.rendering_val:
+        fix_url(event.rendering_val['data'], event['request'].application_url)

@@ -80,3 +80,28 @@ class AuthenticationPolicy(BasicAuthAuthenticationPolicy):
         except ValueError:  # not enough values to unpack
             return None
         return username
+
+
+def get_local_roles(context):
+    from pyramid.location import lineage
+    roles = {}
+    for location in lineage(context):
+        try:
+            roles = location.__local_roles__
+        except AttributeError:
+            continue
+        if roles and callable(roles):
+            roles = roles()
+        break
+    return roles
+
+
+def authenticated_role(request):
+    principals = request.effective_principals
+    if hasattr(request, 'context'):
+        roles = get_local_roles(request.context)
+        local_roles = [roles[i] for i in reversed(principals) if i in roles]
+        if local_roles:
+            return local_roles[0]
+    groups = [g for g in reversed(principals) if g.startswith('g:')]
+    return groups[0][2:] if groups else 'anonymous'

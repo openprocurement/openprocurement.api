@@ -6,7 +6,7 @@ from copy import deepcopy
 from datetime import datetime, timedelta
 from uuid import uuid4
 
-from openprocurement.api import VERSION
+from openprocurement.api.utils import VERSION
 
 
 now = datetime.now()

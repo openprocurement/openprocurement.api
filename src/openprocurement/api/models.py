@@ -784,8 +784,8 @@ chronograph_view_role = whitelist('status', 'enquiryPeriod', 'tenderPeriod', 'au
 Administrator_role = whitelist('status', 'mode', 'procuringEntity')
 
 
-@implementer(IBaseTender)
-class BaseTender(SchematicsDocument, Model):
+@implementer(ITender)
+class Tender(SchematicsDocument, Model):
     """Data regarding tender process - publicly inviting prospective contractors to submit bids for evaluation and selecting a winner or winners."""
     class Options:
         roles = {
@@ -969,26 +969,3 @@ class BaseTender(SchematicsDocument, Model):
             raise ValidationError(u"period should begin after auctionPeriod")
         if period and period.startDate and data.get('tenderPeriod') and data.get('tenderPeriod').endDate and period.startDate < data.get('tenderPeriod').endDate:
             raise ValidationError(u"period should begin after tenderPeriod")
-
-
-class isTender(object):
-    def __init__(self, val, config):
-        self.val = val
-
-    def text(self):
-        return 'tender = %s' % (self.val,)
-
-    phash = text
-
-    def __call__(self, context, request):
-        if isinstance(context, dict) and context.get('match') and 'tender_id' in context['match']:
-            if request.tender is not None:
-                return getattr(request.tender, 'subtype', None) == self.val
-        return False
-
-
-@implementer(ITender)
-class Tender(BaseTender):
-    """Data regarding tender process - publicly inviting prospective contractors to submit bids for evaluation and selecting a winner or winners."""
-
-    __name__ = ''
