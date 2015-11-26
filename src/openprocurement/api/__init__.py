@@ -14,7 +14,7 @@ from openprocurement.api.migration import migrate_data
 from openprocurement.api.traversal import factory
 from openprocurement.api.utils import forbidden, add_logging_context, set_logging_context, extract_tender, request_params, isTender, set_renderer, beforerender, ROUTE_PREFIX
 from pbkdf2 import PBKDF2
-from pkg_resources import get_distribution
+from pkg_resources import iter_entry_points
 from pyramid.authorization import ACLAuthorizationPolicy as AuthorizationPolicy
 from pyramid.config import Configurator
 from pyramid.events import NewRequest, BeforeRender, ContextFound
@@ -75,8 +75,13 @@ def main(global_config, **settings):
     config.add_subscriber(set_renderer, NewRequest)
     config.add_subscriber(beforerender, BeforeRender)
     config.add_route_predicate('tender', isTender)
-    config.scan("openprocurement.api.views")
-    config.scan("openprocurement.api.adapters")
+
+    # search for plugins
+    plugins = settings.get('plugins') and settings['plugins'].split(',')
+    for entry_point in iter_entry_points('openprocurement.api.plugins'):
+        if not plugins or entry_point.name in plugins:
+            plugin = entry_point.load()
+            plugin(config)
 
     # CouchDB connection
     db_name = os.environ.get('DB_NAME', settings['couchdb.db_name'])
@@ -154,3 +159,8 @@ def main(global_config, **settings):
         config.registry.bucket_name = bucket_name
     config.registry.server_id = settings.get('id', '')
     return config.make_wsgi_app()
+
+
+def includeme(config):
+    config.scan("openprocurement.api.views")
+    config.scan("openprocurement.api.adapters")

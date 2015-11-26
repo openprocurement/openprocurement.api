@@ -2,7 +2,6 @@ from openprocurement.api.models import Tender
 from openprocurement.api.interfaces import ITender
 from pyramid.events import subscriber
 from pyramid.events import ApplicationCreated
-from pyramid.request import Request
 
 
 class makeBaseTender(object):

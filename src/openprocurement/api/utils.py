@@ -407,7 +407,7 @@ def request_params(request):
         request.errors.add('body', 'data', 'could not decode params')
         request.errors.status = 422
         raise error_handler(request.errors, False)
-    except:
+    except Exception, e:
         request.errors.add('body', str(e.__class__.__name__), str(e))
         request.errors.status = 422
         raise error_handler(request.errors, False)

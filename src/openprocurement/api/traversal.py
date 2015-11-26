@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
 
-from openprocurement.api.models import Tender
 from pyramid.security import (
     ALL_PERMISSIONS,
     Allow,

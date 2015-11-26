@@ -13,7 +13,6 @@ from openprocurement.api.design import (
 )
 from openprocurement.api.models import get_now
 from openprocurement.api.interfaces import IBaseTender
-from openprocurement.api.models import get_tender
 from openprocurement.api.utils import (
     generate_id,
     generate_tender_id,

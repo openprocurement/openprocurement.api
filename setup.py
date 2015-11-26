@@ -30,10 +30,14 @@ docs_requires = requires + [
     'sphinxcontrib-httpdomain',
 ]
 
-entry_points = """\
-[paste.app_factory]
-main = openprocurement.api:main
-"""
+entry_points = {
+    'paste.app_factory': [
+        'main = openprocurement.api:main'
+    ],
+    'openprocurement.api.plugins': [
+        'Tender = openprocurement.api:includeme'
+    ]
+}
 
 setup(name='openprocurement.api',
       version='0.11a1',
@@ -51,14 +55,14 @@ setup(name='openprocurement.api',
       author_email='info@quintagroup.com',
       license='Apache License 2.0',
       url='https://github.com/openprocurement/openprocurement.api',
-      package_dir = {'': 'src'},
+      package_dir={'': 'src'},
       py_modules=['cgi'],
       packages=find_packages('src'),
-      namespace_packages = ['openprocurement'],
+      namespace_packages=['openprocurement'],
       include_package_data=True,
       zip_safe=False,
       install_requires=requires,
       tests_require=test_requires,
       extras_require={'test': test_requires, 'docs': docs_requires},
       test_suite="openprocurement.api.tests.main.suite",
-      entry_points = entry_points)
+      entry_points=entry_points)
