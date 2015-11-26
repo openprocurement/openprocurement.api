@@ -13,7 +13,7 @@ from openprocurement.api.design import sync_design
 from openprocurement.api.migration import migrate_data
 from openprocurement.api.models import Tender
 from openprocurement.api.traversal import factory
-from openprocurement.api.utils import forbidden, add_logging_context, set_logging_context, extract_tender, request_params, isTender, set_renderer, beforerender, register_tender_subtype, tender_from_data, ROUTE_PREFIX
+from openprocurement.api.utils import forbidden, add_logging_context, set_logging_context, extract_tender, request_params, isTender, set_renderer, beforerender, register_tender_procurementMethodType, tender_from_data, ROUTE_PREFIX
 from pbkdf2 import PBKDF2
 from pkg_resources import iter_entry_points
 from pyramid.authorization import ACLAuthorizationPolicy as AuthorizationPolicy
@@ -75,10 +75,12 @@ def main(global_config, **settings):
     config.add_subscriber(set_logging_context, ContextFound)
     config.add_subscriber(set_renderer, NewRequest)
     config.add_subscriber(beforerender, BeforeRender)
-    config.add_route_predicate('tender', isTender)
-    config.registry.tender_subtypes = {}
+
+    # tender procurementMethodType plugins support
+    config.add_route_predicate('procurementMethodType', isTender)
+    config.registry.tender_procurementMethodTypes = {}
     config.add_request_method(tender_from_data)
-    config.add_directive('add_tender_subtype', register_tender_subtype)
+    config.add_directive('add_tender_procurementMethodType', register_tender_procurementMethodType)
 
     # search for plugins
     plugins = settings.get('plugins') and settings['plugins'].split(',')
@@ -166,5 +168,5 @@ def main(global_config, **settings):
 
 
 def includeme(config):
-    config.add_tender_subtype(Tender)
+    config.add_tender_procurementMethodType(Tender)
     config.scan("openprocurement.api.views")

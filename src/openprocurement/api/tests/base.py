@@ -67,7 +67,7 @@ test_tender_data = {
     "tenderPeriod": {
         "endDate": (now + timedelta(days=14)).isoformat()
     },
-    "subtype": "Tender",
+    "procurementMethodType": "belowThreshold",
 }
 
 test_features_tender_data = test_tender_data.copy()

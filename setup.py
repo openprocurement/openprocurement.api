@@ -35,7 +35,7 @@ entry_points = {
         'main = openprocurement.api:main'
     ],
     'openprocurement.api.plugins': [
-        'Tender = openprocurement.api:includeme'
+        'belowThreshold = openprocurement.api:includeme'
     ]
 }
 

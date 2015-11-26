@@ -373,7 +373,7 @@ class TendersResource(object):
                         extra=context_unpack(self.request, {'MESSAGE_ID': 'tender_create'}, {'tender_id': tender_id, 'tenderID': tender.tenderID}))
             self.request.response.status = 201
             self.request.response.headers[
-                'Location'] = self.request.route_url(tender.subtype, tender_id=tender_id)
+                'Location'] = self.request.route_url('Tender', tender_id=tender_id)
             return {
                 'data': tender.serialize(tender.status),
                 'access': {
@@ -384,7 +384,7 @@ class TendersResource(object):
 
 @opresource(name='Tender',
             path='/tenders/{tender_id}',
-            tender='Tender',
+            procurementMethodType='belowThreshold',
             description="Open Contracting compatible data exchange format. See http://ocds.open-contracting.org/standard/r/master/#tender for more info")
 class TenderResource(object):
 

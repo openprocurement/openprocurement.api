@@ -178,7 +178,7 @@ def apply_data_patch(item, changes):
 def tender_serialize(request, tender_data, fields):
     tender = request.tender_from_data(tender_data, raise_error=False)
     if tender is None:
-        return dict([(i, tender_data.get(i, '')) for i in ['subtype', 'dateModified', 'id']])
+        return dict([(i, tender_data.get(i, '')) for i in ['procurementMethodType', 'dateModified', 'id']])
     return dict([(i, j) for i, j in tender.serialize(tender.status).items() if i in fields])
 
 
@@ -540,13 +540,13 @@ class isTender(object):
         self.val = val
 
     def text(self):
-        return 'tender = %s' % (self.val,)
+        return 'procurementMethodType = %s' % (self.val,)
 
     phash = text
 
     def __call__(self, context, request):
         if request.tender is not None:
-            return getattr(request.tender, 'subtype', None) == self.val
+            return getattr(request.tender, 'procurementMethodType', None) == self.val
         return False
 
 
@@ -593,21 +593,21 @@ def beforerender(event):
         fix_url(event.rendering_val['data'], event['request'].application_url)
 
 
-def register_tender_subtype(config, model):
-    """Register a tender subtype.
+def register_tender_procurementMethodType(config, model):
+    """Register a tender procurementMethodType.
     :param config:
         The pyramid configuration object that will be populated.
     :param model:
         The tender model class
     """
-    config.registry.tender_subtypes[model.subtype.default] = model
+    config.registry.tender_procurementMethodTypes[model.procurementMethodType.default] = model
 
 
 def tender_from_data(request, data, raise_error=True, create=True):
-    subtype = data.get('subtype', 'Tender')
-    model = request.registry.tender_subtypes.get(subtype)
+    procurementMethodType = data.get('procurementMethodType', 'belowThreshold')
+    model = request.registry.tender_procurementMethodTypes.get(procurementMethodType)
     if model is None and raise_error:
-        request.errors.add('data', 'subtype', 'Not implemented')
+        request.errors.add('data', 'procurementMethodType', 'Not implemented')
         request.errors.status = 415
         raise error_handler(request.errors)
     if model is not None and create:
