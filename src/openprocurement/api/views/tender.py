@@ -65,10 +65,10 @@ def decrypt(uuid, name, key):
     return text
 
 
-@opresource(name='TendersRoot',
+@opresource(name='Tenders',
             path='/tenders',
             description="Open Contracting compatible data exchange format. See http://ocds.open-contracting.org/standard/r/master/#tender for more info")
-class RootResource(object):
+class TendersResource(object):
 
     def __init__(self, request):
         self.request = request
@@ -198,15 +198,15 @@ class RootResource(object):
             'data': results,
             'next_page': {
                 "offset": params['offset'],
-                "path": self.request.route_path('TendersRoot', _query=params),
-                "uri": self.request.route_url('TendersRoot', _query=params)
+                "path": self.request.route_path('Tenders', _query=params),
+                "uri": self.request.route_url('Tenders', _query=params)
             }
         }
         if descending or offset:
             data['prev_page'] = {
                 "offset": pparams['offset'],
-                "path": self.request.route_path('TendersRoot', _query=pparams),
-                "uri": self.request.route_url('TendersRoot', _query=pparams)
+                "path": self.request.route_path('Tenders', _query=pparams),
+                "uri": self.request.route_url('Tenders', _query=pparams)
             }
         return data
 
@@ -361,10 +361,8 @@ class RootResource(object):
         """
         tender_data = self.request.validated['data']
         tender_id = generate_id()
-
-        adapter = self.request.registry.queryAdapter(tender_data, IBaseTender,
-                                                     tender_data.get('subtype',
-                                                                     'Tender'))
+        subtype = tender_data.get('subtype', 'Tender')
+        adapter = self.request.registry.queryAdapter(tender_data, IBaseTender, subtype)
         tender = adapter.tender()
         tender.__parent__ = self.request.context
         tender.id = tender_id
@@ -381,7 +379,7 @@ class RootResource(object):
                         extra=context_unpack(self.request, {'MESSAGE_ID': 'tender_create'}, {'tender_id': tender_id, 'tenderID': tender.tenderID}))
             self.request.response.status = 201
             self.request.response.headers[
-                'Location'] = self.request.route_url('Tender', tender_id=tender_id)  # XXX
+                'Location'] = self.request.route_url(subtype, tender_id=tender_id)
             return {
                 'data': tender.serialize(tender.status),
                 'access': {
@@ -487,7 +485,7 @@ class TenderResource(object):
             }
 
         """
-        tender = self.request.validated['tender']  # XXX self.request._tender ?
+        tender = self.request.validated['tender']
         tender_data = tender.serialize('chronograph_view' if self.request.authenticated_role == 'chronograph' else tender.status)
         return {'data': tender_data}
 

@@ -176,7 +176,7 @@ def apply_data_patch(item, changes):
 
 
 def tender_serialize(request, tender_data, fields):
-    adapter = request.registry.queryAdapter(tender_data, IBaseTender, name=tender_data['doc_type'])
+    adapter = request.registry.queryAdapter(tender_data, IBaseTender, name=tender_data['subtype'])
     tender = adapter.tender()
     return dict([(i, j) for i, j in tender.serialize(tender.status).items() if i in fields])
 
