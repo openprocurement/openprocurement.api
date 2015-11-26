@@ -255,6 +255,7 @@ class Document(Model):
 
     id = MD5Type(required=True, default=lambda: uuid4().hex)
     documentType = StringType(choices=[
+        'tenderNotice', 'awardNotice', 'contractNotice',
         'notice', 'biddingDocuments', 'technicalSpecifications',
         'evaluationCriteria', 'clarifications', 'shortlistedFirms',
         'riskProvisions', 'billOfQuantity', 'bidders', 'conflictOfInterest',
