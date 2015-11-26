@@ -12,8 +12,8 @@ from openprocurement.api.design import (
     tenders_test_by_local_seq_view,
 )
 from openprocurement.api.models import get_now
-from openprocurement.api.interfaces import ITender, IBaseTender
-from openprocurement.api.models import get_tender, isTender
+from openprocurement.api.interfaces import IBaseTender
+from openprocurement.api.models import get_tender
 from openprocurement.api.utils import (
     generate_id,
     generate_tender_id,
@@ -67,7 +67,6 @@ def decrypt(uuid, name, key):
 
 @opresource(name='TendersRoot',
             path='/tenders',
-#            custom_predicates=(isTender,),
             description="Open Contracting compatible data exchange format. See http://ocds.open-contracting.org/standard/r/master/#tender for more info")
 class RootResource(object):
 
@@ -393,7 +392,7 @@ class RootResource(object):
 
 @opresource(name='Tender',
             path='/tenders/{tender_id}',
-            custom_predicates=(isTender,),
+            tender='Tender',
             description="Open Contracting compatible data exchange format. See http://ocds.open-contracting.org/standard/r/master/#tender for more info")
 class TenderResource(object):
 

@@ -973,20 +973,20 @@ class BaseTender(SchematicsDocument, Model):
             raise ValidationError(u"period should begin after tenderPeriod")
 
 
-def isTender(info, request):
-    if ITender.providedBy(info):  # XXX happens on view get. Why? TODO check with new cornice version
-        return True
+class isTender(object):
+    def __init__(self, val, config):
+        self.val = val
 
-    # on route get
-    if isinstance(info, dict) and info.get('match') and 'tender_id' in info['match']:
-        if request.tender is not None:
-            return ITender.providedBy(request.tender)
+    def text(self):
+        return 'tender = %s' % (self.val,)
 
-    if hasattr(info, "__parent__"):
-        if ITender.providedBy(get_tender(info)):
-            return True
+    phash = text
 
-    return False  # do not handle unknown locations
+    def __call__(self, context, request):
+        if isinstance(context, dict) and context.get('match') and 'tender_id' in context['match']:
+            if request.tender is not None:
+                return getattr(request.tender, 'subtype', None) == self.val
+        return False
 
 
 @implementer(ITender)

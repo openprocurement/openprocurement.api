@@ -9,14 +9,13 @@ from pkg_resources import get_distribution
 from pyramid.config import Configurator
 from openprocurement.api.auth import AuthenticationPolicy
 from pyramid.authorization import ACLAuthorizationPolicy as AuthorizationPolicy
-from pyramid.compat import decode_path_info
 from pyramid.renderers import JSON, JSONP
-from pyramid.exceptions import URLDecodeError
 from pyramid.events import NewRequest, BeforeRender, ContextFound
 from couchdb import Server, Session
 from couchdb.http import Unauthorized, extract_credentials
 from openprocurement.api.design import sync_design
 from openprocurement.api.migration import migrate_data
+from openprocurement.api.models import isTender
 from boto.s3.connection import S3Connection, Location
 from openprocurement.api.traversal import factory
 from openprocurement.api.utils import forbidden, add_logging_context, set_logging_context, extract_tender, request_params
@@ -148,6 +147,7 @@ def main(global_config, **settings):
     config.add_subscriber(set_logging_context, ContextFound)
     config.add_subscriber(set_renderer, NewRequest)
     config.add_subscriber(beforerender, BeforeRender)
+    config.add_route_predicate('tender', isTender)
     config.scan("openprocurement.api.views")
     config.scan("openprocurement.api.adapters")
 

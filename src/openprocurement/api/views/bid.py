@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 from logging import getLogger
-from openprocurement.api.models import Bid, get_now, isTender
+from openprocurement.api.models import Bid, get_now
 from openprocurement.api.utils import (
     save_tender,
     set_ownership,
@@ -21,7 +21,7 @@ LOGGER = getLogger(__name__)
 @opresource(name='Tender Bids',
             collection_path='/tenders/{tender_id}/bids',
             path='/tenders/{tender_id}/bids/{bid_id}',
-            custom_predicates=(isTender,),
+            tender="Tender",
             description="Tender bids")
 class TenderBidResource(object):
 
