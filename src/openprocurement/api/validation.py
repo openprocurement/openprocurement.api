@@ -83,7 +83,7 @@ def validate_tender_data(request):
 
 
 def validate_patch_tender_data(request):
-    return validate_data(request, Tender, True)
+    return validate_data(request, request.tender.__class__, True)
 
 
 def validate_tender_auction_data(request):
@@ -152,11 +152,13 @@ def validate_tender_auction_data(request):
 
 def validate_bid_data(request):
     update_logging_context(request, {'bid_id': '__new__'})
-    return validate_data(request, Bid)
+    model = request.tender.__class__.bids.model_class
+    return validate_data(request, model)
 
 
 def validate_patch_bid_data(request):
-    return validate_data(request, Bid, True)
+    model = request.tender.__class__.bids.model_class
+    return validate_data(request, model, True)
 
 
 def validate_award_data(request):
