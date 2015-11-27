@@ -427,17 +427,6 @@ class AuctionResourceTest(BaseWebTest):
         ])
 
         data = test_auction_data['minimalStep']
-        test_auction_data['minimalStep'] = {'amount': '1000.0'}
-        response = self.app.post_json(request_path, {'data': test_auction_data}, status=422)
-        test_auction_data['minimalStep'] = data
-        self.assertEqual(response.status, '422 Unprocessable Entity')
-        self.assertEqual(response.content_type, 'application/json')
-        self.assertEqual(response.json['status'], 'error')
-        self.assertEqual(response.json['errors'], [
-            {u'description': [u'value should be less than value of auction'], u'location': u'body', u'name': u'minimalStep'}
-        ])
-
-        data = test_auction_data['minimalStep']
         test_auction_data['minimalStep'] = {'amount': '100.0', 'valueAddedTaxIncluded': False}
         response = self.app.post_json(request_path, {'data': test_auction_data}, status=422)
         test_auction_data['minimalStep'] = data

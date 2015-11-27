@@ -382,8 +382,8 @@ class LotValue(Model):
             if not lots:
                 return
             lot = lots[0]
-            if lot.value.amount < value.amount:
-                raise ValidationError(u"value of bid should be less than value of lot")
+            if lot.value.amount > value.amount:
+                raise ValidationError(u"value of bid should be greater than value of lot")
             if lot.get('value').currency != value.currency:
                 raise ValidationError(u"currency of bid should be identical to currency of value of lot")
             if lot.get('value').valueAddedTaxIncluded != value.valueAddedTaxIncluded:
@@ -460,8 +460,8 @@ class Bid(Model):
             else:
                 if not value:
                     raise ValidationError(u'This field is required.')
-                if auction.value.amount < value.amount:
-                    raise ValidationError(u"value of bid should be less than value of auction")
+                if auction.value.amount > value.amount:
+                    raise ValidationError(u"value of bid should be greater than value of auction")
                 if auction.get('value').currency != value.currency:
                     raise ValidationError(u"currency of bid should be identical to currency of value of auction")
                 if auction.get('value').valueAddedTaxIncluded != value.valueAddedTaxIncluded:
@@ -738,8 +738,6 @@ class Lot(Model):
 
     def validate_minimalStep(self, data, value):
         if value and value.amount and data.get('value'):
-            if data.get('value').amount < value.amount:
-                raise ValidationError(u"value should be less than value of lot")
             if data.get('value').currency != value.currency:
                 raise ValidationError(u"currency should be identical to currency of value of lot")
             if data.get('value').valueAddedTaxIncluded != value.valueAddedTaxIncluded:
@@ -953,8 +951,6 @@ class Auction(SchematicsDocument, Model):
 
     def validate_minimalStep(self, data, value):
         if value and value.amount and data.get('value'):
-            if data.get('value').amount < value.amount:
-                raise ValidationError(u"value should be less than value of auction")
             if data.get('value').currency != value.currency:
                 raise ValidationError(u"currency should be identical to currency of value of auction")
             if data.get('value').valueAddedTaxIncluded != value.valueAddedTaxIncluded:

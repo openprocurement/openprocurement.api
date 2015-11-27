@@ -32,7 +32,7 @@ test_auction_data = {
         }
     },
     "value": {
-        "amount": 500,
+        "amount": 100,
         "currency": u"UAH"
     },
     "minimalStep": {

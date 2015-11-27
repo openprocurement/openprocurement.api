@@ -351,7 +351,7 @@ def add_next_award(request):
                 statuses.add('unsuccessful')
                 continue
             unsuccessful_awards = [i.bid_id for i in lot_awards if i.status == 'unsuccessful']
-            bids = chef(bids, features, unsuccessful_awards)
+            bids = chef(bids, features, unsuccessful_awards, True)
             if bids:
                 bid = bids[0]
                 award = Award({
@@ -378,7 +378,7 @@ def add_next_award(request):
     else:
         if not auction.awards or auction.awards[-1].status not in ['pending', 'active']:
             unsuccessful_awards = [i.bid_id for i in auction.awards if i.status == 'unsuccessful']
-            bids = chef(auction.bids, auction.features or [], unsuccessful_awards)
+            bids = chef(auction.bids, auction.features or [], unsuccessful_awards, True)
             if bids:
                 bid = bids[0].serialize()
                 award = Award({

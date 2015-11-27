@@ -21,7 +21,6 @@ LOGGER = getLogger(__name__)
 @opresource(name='Auction Bids',
             collection_path='/auctions/{auction_id}/bids',
             path='/auctions/{auction_id}/bids/{bid_id}',
-            procurementMethodType='belowThreshold',
             description="Auction bids")
 class AuctionBidResource(object):
 

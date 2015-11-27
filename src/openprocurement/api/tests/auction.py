@@ -98,7 +98,7 @@ class AuctionAuctionResourceTest(BaseAuctionWebTest):
                 {
                     "id": self.initial_bids[1]['id'],
                     "value": {
-                        "amount": 409,
+                        "amount": 419,
                         "currency": "UAH",
                         "valueAddedTaxIncluded": True
                     }
@@ -113,7 +113,7 @@ class AuctionAuctionResourceTest(BaseAuctionWebTest):
 
         patch_data['bids'].append({
             "value": {
-                "amount": 419,
+                "amount": 409,
                 "currency": "UAH",
                 "valueAddedTaxIncluded": True
             }
@@ -241,7 +241,7 @@ class AuctionAuctionResourceTest(BaseAuctionWebTest):
                 {
                     "id": self.initial_bids[1]['id'],
                     "value": {
-                        "amount": 409,
+                        "amount": 419,
                         "currency": "UAH",
                         "valueAddedTaxIncluded": True
                     }
@@ -249,7 +249,7 @@ class AuctionAuctionResourceTest(BaseAuctionWebTest):
                 {
                     'id': self.initial_bids[0]['id'],
                     "value": {
-                        "amount": 419,
+                        "amount": 409,
                         "currency": "UAH",
                         "valueAddedTaxIncluded": True
                     }
@@ -380,7 +380,7 @@ class AuctionLotAuctionResourceTest(AuctionAuctionResourceTest):
                     'lotValues': [
                         {
                             "value": {
-                                "amount": 409,
+                                "amount": 419,
                                 "currency": "UAH",
                                 "valueAddedTaxIncluded": True
                             }
@@ -399,7 +399,7 @@ class AuctionLotAuctionResourceTest(AuctionAuctionResourceTest):
             'lotValues': [
                 {
                     "value": {
-                        "amount": 419,
+                        "amount": 409,
                         "currency": "UAH",
                         "valueAddedTaxIncluded": True
                     }
@@ -674,7 +674,7 @@ class AuctionMultipleLotAuctionResourceTest(AuctionAuctionResourceTest):
                     'lotValues': [
                         {
                             "value": {
-                                "amount": 409,
+                                "amount": 419,
                                 "currency": "UAH",
                                 "valueAddedTaxIncluded": True
                             }
@@ -693,7 +693,7 @@ class AuctionMultipleLotAuctionResourceTest(AuctionAuctionResourceTest):
             'lotValues': [
                 {
                     "value": {
-                        "amount": 419,
+                        "amount": 409,
                         "currency": "UAH",
                         "valueAddedTaxIncluded": True
                     }

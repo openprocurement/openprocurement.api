@@ -152,12 +152,12 @@ class AuctionBidderResourceTest(BaseAuctionWebTest):
         self.assertEqual(response.content_type, 'application/json')
         bidder = response.json['data']
 
-        response = self.app.patch_json('/auctions/{}/bids/{}'.format(self.auction_id, bidder['id']), {"data": {"value": {"amount": 600}}}, status=422)
+        response = self.app.patch_json('/auctions/{}/bids/{}'.format(self.auction_id, bidder['id']), {"data": {"value": {"amount": 60}}}, status=422)
         self.assertEqual(response.status, '422 Unprocessable Entity')
         self.assertEqual(response.content_type, 'application/json')
         self.assertEqual(response.json['status'], 'error')
         self.assertEqual(response.json['errors'], [
-            {u'description': [u'value of bid should be less than value of auction'], u'location': u'body', u'name': u'value'}
+            {u'description': [u'value of bid should be greater than value of auction'], u'location': u'body', u'name': u'value'}
         ])
 
         response = self.app.patch_json('/auctions/{}/bids/{}'.format(self.auction_id, bidder['id']), {"data": {'tenderers': [{"name": u"Державне управління управлінням справами"}]}})
