@@ -42,8 +42,8 @@ CPV_CODES = read_json('cpv.json')
 ORA_CODES = [i['code'] for i in read_json('OrganisationRegistrationAgency.json')['data']]
 
 
-class ITender(Interface):
-    """ Base tender marker interface """
+class IAuction(Interface):
+    """ Base auction marker interface """
 
 
 class IsoDateTimeType(BaseType):
@@ -73,8 +73,8 @@ def set_parent(item, parent):
         item.__parent__ = parent
 
 
-def get_tender(model):
-    while not ITender.providedBy(model):
+def get_auction(model):
+    while not IAuction.providedBy(model):
         model = model.__parent__
     return model
 
@@ -166,7 +166,7 @@ class Value(Model):
 
 
 class Period(Model):
-    """The period when the tender is open for submissions. The end date is the closing date for tender submissions."""
+    """The period when the auction is open for submissions. The end date is the closing date for auction submissions."""
 
     startDate = IsoDateTimeType()  # The state date for the period.
     endDate = IsoDateTimeType()  # The end date for the period.
@@ -260,7 +260,7 @@ class Document(Model):
 
     id = MD5Type(required=True, default=lambda: uuid4().hex)
     documentType = StringType(choices=[
-        'tenderNotice', 'awardNotice', 'contractNotice',
+        'auctionNotice', 'awardNotice', 'contractNotice',
         'notice', 'biddingDocuments', 'technicalSpecifications',
         'evaluationCriteria', 'clarifications', 'shortlistedFirms',
         'riskProvisions', 'billOfQuantity', 'bidders', 'conflictOfInterest',
@@ -279,17 +279,17 @@ class Document(Model):
     datePublished = IsoDateTimeType(default=get_now)
     dateModified = IsoDateTimeType(default=get_now)  # Date that the document was last dateModified
     language = StringType()
-    documentOf = StringType(required=True, choices=['tender', 'item', 'lot'], default='tender')
+    documentOf = StringType(required=True, choices=['auction', 'item', 'lot'], default='auction')
     relatedItem = MD5Type()
 
     def validate_relatedItem(self, data, relatedItem):
         if not relatedItem and data.get('documentOf') in ['item', 'lot']:
             raise ValidationError(u'This field is required.')
         if relatedItem and isinstance(data['__parent__'], Model):
-            tender = get_tender(data['__parent__'])
-            if data.get('documentOf') == 'lot' and relatedItem not in [i.id for i in tender.lots]:
+            auction = get_auction(data['__parent__'])
+            if data.get('documentOf') == 'lot' and relatedItem not in [i.id for i in auction.lots]:
                 raise ValidationError(u"relatedItem should be one of lots")
-            if data.get('documentOf') == 'item' and relatedItem not in [i.id for i in tender.items]:
+            if data.get('documentOf') == 'item' and relatedItem not in [i.id for i in auction.items]:
                 raise ValidationError(u"relatedItem should be one of items")
 
 
@@ -341,13 +341,13 @@ class Parameter(Model):
     value = FloatType(required=True)
 
     def validate_code(self, data, code):
-        if isinstance(data['__parent__'], Model) and code not in [i.code for i in (get_tender(data['__parent__']).features or [])]:
+        if isinstance(data['__parent__'], Model) and code not in [i.code for i in (get_auction(data['__parent__']).features or [])]:
             raise ValidationError(u"code should be one of feature code.")
 
     def validate_value(self, data, value):
         if isinstance(data['__parent__'], Model):
-            tender = get_tender(data['__parent__'])
-            codes = dict([(i.code, [x.value for x in i.enum]) for i in (tender.features or [])])
+            auction = get_auction(data['__parent__'])
+            codes = dict([(i.code, [x.value for x in i.enum]) for i in (auction.features or [])])
             if data['code'] in codes and value not in codes[data['code']]:
                 raise ValidationError(u"value should be one of feature value.")
 
@@ -378,7 +378,7 @@ class LotValue(Model):
 
     def validate_value(self, data, value):
         if value and isinstance(data['__parent__'], Model) and data['relatedLot']:
-            lots = [i for i in get_tender(data['__parent__']).lots if i.id == data['relatedLot']]
+            lots = [i for i in get_auction(data['__parent__']).lots if i.id == data['relatedLot']]
             if not lots:
                 return
             lot = lots[0]
@@ -390,7 +390,7 @@ class LotValue(Model):
                 raise ValidationError(u"valueAddedTaxIncluded of bid should be identical to valueAddedTaxIncluded of value of lot")
 
     def validate_relatedLot(self, data, relatedLot):
-        if isinstance(data['__parent__'], Model) and relatedLot not in [i.id for i in get_tender(data['__parent__']).lots]:
+        if isinstance(data['__parent__'], Model) and relatedLot not in [i.id for i in get_auction(data['__parent__']).lots]:
             raise ValidationError(u"relatedLot should be one of lots")
 
 
@@ -442,47 +442,47 @@ class Bid(Model):
         ]
 
     def validate_participationUrl(self, data, url):
-        if url and isinstance(data['__parent__'], Model) and get_tender(data['__parent__']).lots:
+        if url and isinstance(data['__parent__'], Model) and get_auction(data['__parent__']).lots:
             raise ValidationError(u"url should be posted for each lot of bid")
 
     def validate_lotValues(self, data, values):
         if isinstance(data['__parent__'], Model):
-            tender = data['__parent__']
-            if tender.lots and not values:
+            auction = data['__parent__']
+            if auction.lots and not values:
                 raise ValidationError(u'This field is required.')
 
     def validate_value(self, data, value):
         if isinstance(data['__parent__'], Model):
-            tender = data['__parent__']
-            if tender.lots:
+            auction = data['__parent__']
+            if auction.lots:
                 if value:
                     raise ValidationError(u"value should be posted for each lot of bid")
             else:
                 if not value:
                     raise ValidationError(u'This field is required.')
-                if tender.value.amount < value.amount:
-                    raise ValidationError(u"value of bid should be less than value of tender")
-                if tender.get('value').currency != value.currency:
-                    raise ValidationError(u"currency of bid should be identical to currency of value of tender")
-                if tender.get('value').valueAddedTaxIncluded != value.valueAddedTaxIncluded:
-                    raise ValidationError(u"valueAddedTaxIncluded of bid should be identical to valueAddedTaxIncluded of value of tender")
+                if auction.value.amount < value.amount:
+                    raise ValidationError(u"value of bid should be less than value of auction")
+                if auction.get('value').currency != value.currency:
+                    raise ValidationError(u"currency of bid should be identical to currency of value of auction")
+                if auction.get('value').valueAddedTaxIncluded != value.valueAddedTaxIncluded:
+                    raise ValidationError(u"valueAddedTaxIncluded of bid should be identical to valueAddedTaxIncluded of value of auction")
 
     def validate_parameters(self, data, parameters):
         if isinstance(data['__parent__'], Model):
-            tender = data['__parent__']
-            if not parameters and tender.features:
+            auction = data['__parent__']
+            if not parameters and auction.features:
                 raise ValidationError(u'This field is required.')
-            if tender.lots:
+            if auction.lots:
                 lots = [i.relatedLot for i in data['lotValues']]
-                items = [i.id for i in tender.items if i.relatedLot in lots]
+                items = [i.id for i in auction.items if i.relatedLot in lots]
                 codes = dict([
                     (i.code, [x.value for x in i.enum])
-                    for i in (tender.features or [])
-                    if i.featureOf == 'tenderer' or i.featureOf == 'lot' and i.relatedItem in lots or i.featureOf == 'item' and i.relatedItem in items
+                    for i in (auction.features or [])
+                    if i.featureOf == 'auctioner' or i.featureOf == 'lot' and i.relatedItem in lots or i.featureOf == 'item' and i.relatedItem in items
                 ])
                 if set([i['code'] for i in parameters]) != set(codes):
                     raise ValidationError(u"All features parameters is required.")
-            elif set([i['code'] for i in parameters]) != set([i.code for i in (tender.features or [])]):
+            elif set([i['code'] for i in parameters]) != set([i.code for i in (auction.features or [])]):
                 raise ValidationError(u"All features parameters is required.")
 
 
@@ -515,18 +515,18 @@ class Question(Model):
     title = StringType(required=True)  # title of the question
     description = StringType()  # description of the question
     date = IsoDateTimeType(default=get_now)  # autogenerated date of posting
-    answer = StringType()  # only tender owner can post answer
-    questionOf = StringType(required=True, choices=['tender', 'item', 'lot'], default='tender')
+    answer = StringType()  # only auction owner can post answer
+    questionOf = StringType(required=True, choices=['auction', 'item', 'lot'], default='auction')
     relatedItem = MD5Type()
 
     def validate_relatedItem(self, data, relatedItem):
         if not relatedItem and data.get('questionOf') in ['item', 'lot']:
             raise ValidationError(u'This field is required.')
         if relatedItem and isinstance(data['__parent__'], Model):
-            tender = get_tender(data['__parent__'])
-            if data.get('questionOf') == 'lot' and relatedItem not in [i.id for i in tender.lots]:
+            auction = get_auction(data['__parent__'])
+            if data.get('questionOf') == 'lot' and relatedItem not in [i.id for i in auction.lots]:
                 raise ValidationError(u"relatedItem should be one of lots")
-            if data.get('questionOf') == 'item' and relatedItem not in [i.id for i in tender.items]:
+            if data.get('questionOf') == 'item' and relatedItem not in [i.id for i in auction.items]:
                 raise ValidationError(u"relatedItem should be one of items")
 
 
@@ -545,7 +545,7 @@ class Complaint(Model):
     description = StringType()  # description of the question
     date = IsoDateTimeType(default=get_now)  # autogenerated date of posting
     status = StringType(choices=['pending', 'invalid', 'resolved', 'declined', 'cancelled'], default='pending')
-    resolution = StringType()  # only tender
+    resolution = StringType()  # only auction
     documents = ListType(ModelType(Document), default=list())
 
 
@@ -565,7 +565,7 @@ class Cancellation(Model):
     date = IsoDateTimeType(default=get_now)
     status = StringType(choices=['pending', 'active'], default='pending')
     documents = ListType(ModelType(Document), default=list())
-    cancellationOf = StringType(required=True, choices=['tender', 'lot'], default='tender')
+    cancellationOf = StringType(required=True, choices=['auction', 'lot'], default='auction')
     relatedLot = MD5Type()
 
     def validate_relatedLot(self, data, relatedLot):
@@ -662,7 +662,7 @@ def validate_values_uniq(values, *args):
 class Feature(Model):
 
     code = StringType(required=True, min_length=1, default=lambda: uuid4().hex)
-    featureOf = StringType(required=True, choices=['tenderer', 'lot', 'item'], default='tenderer')
+    featureOf = StringType(required=True, choices=['auctioner', 'lot', 'item'], default='auctioner')
     relatedItem = StringType(min_length=1)
     title = StringType(required=True, min_length=1)
     title_en = StringType()
@@ -724,17 +724,17 @@ class Lot(Model):
 
     def validate_auctionPeriod(self, data, auctionPeriod):
         if auctionPeriod and isinstance(data['__parent__'], Model):
-            tender = data['__parent__']
-            if auctionPeriod.startDate and tender.tenderPeriod and tender.tenderPeriod.endDate and auctionPeriod.startDate < tender.tenderPeriod.endDate:
+            auction = data['__parent__']
+            if auctionPeriod.startDate and auction.tenderPeriod and auction.tenderPeriod.endDate and auctionPeriod.startDate < auction.tenderPeriod.endDate:
                 raise ValidationError(u"period should begin after tenderPeriod")
 
     def validate_value(self, data, value):
         if value and isinstance(data['__parent__'], Model):
-            tender = data['__parent__']
-            if tender.get('value').currency != value.currency:
-                raise ValidationError(u"currency should be identical to currency of value of tender")
-            if tender.get('value').valueAddedTaxIncluded != value.valueAddedTaxIncluded:
-                raise ValidationError(u"valueAddedTaxIncluded should be identical to valueAddedTaxIncluded of value of tender")
+            auction = data['__parent__']
+            if auction.get('value').currency != value.currency:
+                raise ValidationError(u"currency should be identical to currency of value of auction")
+            if auction.get('value').valueAddedTaxIncluded != value.valueAddedTaxIncluded:
+                raise ValidationError(u"valueAddedTaxIncluded should be identical to valueAddedTaxIncluded of value of auction")
 
     def validate_minimalStep(self, data, value):
         if value and value.amount and data.get('value'):
@@ -773,12 +773,12 @@ def validate_cpv_group(items, *args):
 
 
 plain_role = (blacklist('_attachments', 'revisions', 'dateModified') + schematics_embedded_role)
-create_role = (blacklist('owner_token', 'owner', '_attachments', 'revisions', 'dateModified', 'doc_id', 'tenderID', 'bids', 'documents', 'awards', 'questions', 'complaints', 'auctionUrl', 'status', 'auctionPeriod', 'awardPeriod', 'procurementMethod', 'awardCriteria', 'submissionMethod') + schematics_embedded_role)
-edit_role = (blacklist('procurementMethodType', 'lots', 'owner_token', 'owner', '_attachments', 'revisions', 'dateModified', 'doc_id', 'tenderID', 'bids', 'documents', 'awards', 'questions', 'complaints', 'auctionUrl', 'auctionPeriod', 'awardPeriod', 'procurementMethod', 'awardCriteria', 'submissionMethod', 'mode') + schematics_embedded_role)
+create_role = (blacklist('owner_token', 'owner', '_attachments', 'revisions', 'dateModified', 'doc_id', 'auctionID', 'bids', 'documents', 'awards', 'questions', 'complaints', 'auctionUrl', 'status', 'auctionPeriod', 'awardPeriod', 'procurementMethod', 'awardCriteria', 'submissionMethod') + schematics_embedded_role)
+edit_role = (blacklist('procurementMethodType', 'lots', 'owner_token', 'owner', '_attachments', 'revisions', 'dateModified', 'doc_id', 'auctionID', 'bids', 'documents', 'awards', 'questions', 'complaints', 'auctionUrl', 'auctionPeriod', 'awardPeriod', 'procurementMethod', 'awardCriteria', 'submissionMethod', 'mode') + schematics_embedded_role)
 cancel_role = whitelist('status')
 view_role = (blacklist('owner', 'owner_token', '_attachments', 'revisions') + schematics_embedded_role)
 listing_role = whitelist('dateModified', 'doc_id')
-auction_view_role = whitelist('tenderID', 'dateModified', 'bids', 'auctionPeriod', 'minimalStep', 'auctionUrl', 'features', 'lots')
+auction_view_role = whitelist('auctionID', 'dateModified', 'bids', 'auctionPeriod', 'minimalStep', 'auctionUrl', 'features', 'lots')
 auction_post_role = whitelist('bids')
 auction_patch_role = whitelist('auctionUrl', 'bids', 'lots')
 enquiries_role = (blacklist('owner', 'owner_token', '_attachments', 'revisions', 'bids', 'numberOfBids') + schematics_embedded_role)
@@ -788,9 +788,9 @@ chronograph_view_role = whitelist('status', 'enquiryPeriod', 'tenderPeriod', 'au
 Administrator_role = whitelist('status', 'mode', 'procuringEntity')
 
 
-@implementer(ITender)
-class Tender(SchematicsDocument, Model):
-    """Data regarding tender process - publicly inviting prospective contractors to submit bids for evaluation and selecting a winner or winners."""
+@implementer(IAuction)
+class Auction(SchematicsDocument, Model):
+    """Data regarding auction process - publicly inviting prospective contractors to submit bids for evaluation and selecting a winner or winners."""
     class Options:
         roles = {
             'plain': plain_role,
@@ -824,7 +824,7 @@ class Tender(SchematicsDocument, Model):
         }
 
     def __local_roles__(self):
-        return dict([('{}_{}'.format(self.owner, self.owner_token), 'tender_owner')])
+        return dict([('{}_{}'.format(self.owner, self.owner_token), 'auction_owner')])
 
     title = StringType(required=True)
     title_en = StringType()
@@ -832,11 +832,11 @@ class Tender(SchematicsDocument, Model):
     description = StringType()
     description_en = StringType()
     description_ru = StringType()
-    tenderID = StringType()  # TenderID should always be the same as the OCID. It is included to make the flattened data structure more convenient.
+    auctionID = StringType()  # AuctionID should always be the same as the OCID. It is included to make the flattened data structure more convenient.
     items = ListType(ModelType(Item), required=True, min_size=1, validators=[validate_cpv_group, validate_items_uniq])  # The goods and services to be purchased, broken into line items wherever possible. Items should not be duplicated, but a quantity of 2 specified instead.
     value = ModelType(Value, required=True)  # The total estimated value of the procurement.
-    procurementMethod = StringType(choices=['open', 'selective', 'limited'], default='open')  # Specify tendering method as per GPA definitions of Open, Selective, Limited (http://www.wto.org/english/docs_e/legal_e/rev-gpr-94_01_e.htm)
-    procurementMethodRationale = StringType()  # Justification of procurement method, especially in the case of Limited tendering.
+    procurementMethod = StringType(choices=['open', 'selective', 'limited'], default='open')  # Specify auctioning method as per GPA definitions of Open, Selective, Limited (http://www.wto.org/english/docs_e/legal_e/rev-gpr-94_01_e.htm)
+    procurementMethodRationale = StringType()  # Justification of procurement method, especially in the case of Limited auctioning.
     procurementMethodRationale_en = StringType()
     procurementMethodRationale_ru = StringType()
     awardCriteria = StringType(choices=['lowestCost', 'bestProposal', 'bestValueToGovernment', 'singleBidOnly'], default='lowestCost')  # Specify the selection criteria, by lowest cost,
@@ -848,17 +848,17 @@ class Tender(SchematicsDocument, Model):
     submissionMethodDetails_en = StringType()
     submissionMethodDetails_ru = StringType()
     enquiryPeriod = ModelType(PeriodEndRequired, required=True)  # The period during which enquiries may be made and will be answered.
-    tenderPeriod = ModelType(PeriodEndRequired, required=True)  # The period when the tender is open for submissions. The end date is the closing date for tender submissions.
-    hasEnquiries = BooleanType()  # A Yes/No field as to whether enquiries were part of tender process.
+    tenderPeriod = ModelType(PeriodEndRequired, required=True)  # The period when the auction is open for submissions. The end date is the closing date for auction submissions.
+    hasEnquiries = BooleanType()  # A Yes/No field as to whether enquiries were part of auction process.
     eligibilityCriteria = StringType()  # A description of any eligibility criteria for potential suppliers.
     eligibilityCriteria_en = StringType()
     eligibilityCriteria_ru = StringType()
     awardPeriod = ModelType(Period)  # The date or period on which an award is anticipated to be made.
-    numberOfBidders = IntType()  # The number of unique tenderers who participated in the tender
-    #numberOfBids = IntType()  # The number of bids or submissions to the tender. In the case of an auction, the number of bids may differ from the numberOfBidders.
-    bids = ListType(ModelType(Bid), default=list())  # A list of all the companies who entered submissions for the tender.
+    numberOfBidders = IntType()  # The number of unique tenderers who participated in the auction
+    #numberOfBids = IntType()  # The number of bids or submissions to the auction. In the case of an auction, the number of bids may differ from the numberOfBidders.
+    bids = ListType(ModelType(Bid), default=list())  # A list of all the companies who entered submissions for the auction.
     procuringEntity = ModelType(Organization, required=True)  # The entity managing the procurement, which may be different from the buyer who is paying / using the items being procured.
-    documents = ListType(ModelType(Document), default=list())  # All documents and attachments related to the tender.
+    documents = ListType(ModelType(Document), default=list())  # All documents and attachments related to the auction.
     awards = ListType(ModelType(Award), default=list())
     contracts = ListType(ModelType(Contract), default=list())
     revisions = ListType(ModelType(Revision), default=list())
@@ -888,8 +888,8 @@ class Tender(SchematicsDocument, Model):
             #for i in self.bids
         ]
         acl.extend([
-            (Allow, '{}_{}'.format(self.owner, self.owner_token), 'edit_tender'),
-            (Allow, '{}_{}'.format(self.owner, self.owner_token), 'upload_tender_documents'),
+            (Allow, '{}_{}'.format(self.owner, self.owner_token), 'edit_auction'),
+            (Allow, '{}_{}'.format(self.owner, self.owner_token), 'upload_auction_documents'),
             (Allow, '{}_{}'.format(self.owner, self.owner_token), 'review_complaint'),
         ])
         return acl
@@ -908,13 +908,13 @@ class Tender(SchematicsDocument, Model):
         return self._id
 
     @serializable(serialized_name="value", type=ModelType(Value))
-    def tender_value(self):
+    def auction_value(self):
         return Value(dict(amount=sum([i.value.amount for i in self.lots]),
                           currency=self.value.currency,
                           valueAddedTaxIncluded=self.value.valueAddedTaxIncluded)) if self.lots else self.value
 
     @serializable(serialized_name="minimalStep", type=ModelType(Value))
-    def tender_minimalStep(self):
+    def auction_minimalStep(self):
         return Value(dict(amount=min([i.minimalStep.amount for i in self.lots]),
                           currency=self.minimalStep.currency,
                           valueAddedTaxIncluded=self.minimalStep.valueAddedTaxIncluded)) if self.lots else self.minimalStep
@@ -939,7 +939,7 @@ class Tender(SchematicsDocument, Model):
             round(vnmax([
                 i
                 for i in features
-                if i.featureOf == 'tenderer' or i.featureOf == 'lot' and i.relatedItem != lot['id'] or i.featureOf == 'item' and i.relatedItem in [j.id for j in data['items'] if j.relatedLot != lot['id']]
+                if i.featureOf == 'auctioner' or i.featureOf == 'lot' and i.relatedItem != lot['id'] or i.featureOf == 'item' and i.relatedItem in [j.id for j in data['items'] if j.relatedLot != lot['id']]
             ]), 15) > 0.3
             for lot in data['lots']
         ]):
@@ -954,11 +954,11 @@ class Tender(SchematicsDocument, Model):
     def validate_minimalStep(self, data, value):
         if value and value.amount and data.get('value'):
             if data.get('value').amount < value.amount:
-                raise ValidationError(u"value should be less than value of tender")
+                raise ValidationError(u"value should be less than value of auction")
             if data.get('value').currency != value.currency:
-                raise ValidationError(u"currency should be identical to currency of value of tender")
+                raise ValidationError(u"currency should be identical to currency of value of auction")
             if data.get('value').valueAddedTaxIncluded != value.valueAddedTaxIncluded:
-                raise ValidationError(u"valueAddedTaxIncluded should be identical to valueAddedTaxIncluded of value of tender")
+                raise ValidationError(u"valueAddedTaxIncluded should be identical to valueAddedTaxIncluded of value of auction")
 
     def validate_tenderPeriod(self, data, period):
         if period and period.startDate and data.get('enquiryPeriod') and data.get('enquiryPeriod').endDate and period.startDate < data.get('enquiryPeriod').endDate:

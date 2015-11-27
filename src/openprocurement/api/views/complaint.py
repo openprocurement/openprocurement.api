@@ -2,8 +2,8 @@
 from logging import getLogger
 from openprocurement.api.utils import (
     apply_patch,
-    save_tender,
-    check_tender_status,
+    save_auction,
+    check_auction_status,
     opresource,
     json_view,
     context_unpack,
@@ -17,11 +17,11 @@ from openprocurement.api.validation import (
 LOGGER = getLogger(__name__)
 
 
-@opresource(name='Tender Complaints',
-            collection_path='/tenders/{tender_id}/complaints',
-            path='/tenders/{tender_id}/complaints/{complaint_id}',
-            description="Tender complaints")
-class TenderComplaintResource(object):
+@opresource(name='Auction Complaints',
+            collection_path='/auctions/{auction_id}/complaints',
+            path='/auctions/{auction_id}/complaints/{complaint_id}',
+            description="Auction complaints")
+class AuctionComplaintResource(object):
 
     def __init__(self, request):
         self.request = request
@@ -31,27 +31,27 @@ class TenderComplaintResource(object):
     def collection_post(self):
         """Post a complaint
         """
-        tender = self.request.validated['tender']
-        if tender.status not in ['active.enquiries', 'active.tendering']:
-            self.request.errors.add('body', 'data', 'Can\'t add complaint in current ({}) tender status'.format(tender.status))
+        auction = self.request.validated['auction']
+        if auction.status not in ['active.enquiries', 'active.tendering']:
+            self.request.errors.add('body', 'data', 'Can\'t add complaint in current ({}) auction status'.format(auction.status))
             self.request.errors.status = 403
             return
         complaint = self.request.validated['complaint']
-        tender.complaints.append(complaint)
-        if save_tender(self.request):
-            LOGGER.info('Created tender complaint {}'.format(complaint.id),
-                        extra=context_unpack(self.request, {'MESSAGE_ID': 'tender_complaint_create'}, {'complaint_id': complaint.id}))
+        auction.complaints.append(complaint)
+        if save_auction(self.request):
+            LOGGER.info('Created auction complaint {}'.format(complaint.id),
+                        extra=context_unpack(self.request, {'MESSAGE_ID': 'auction_complaint_create'}, {'complaint_id': complaint.id}))
             self.request.response.status = 201
-            self.request.response.headers['Location'] = self.request.route_url('Tender Complaints', tender_id=tender.id, complaint_id=complaint.id)
+            self.request.response.headers['Location'] = self.request.route_url('Auction Complaints', auction_id=auction.id, complaint_id=complaint.id)
             return {'data': complaint.serialize("view")}
 
-    @json_view(permission='view_tender')
+    @json_view(permission='view_auction')
     def collection_get(self):
         """List complaints
         """
         return {'data': [i.serialize("view") for i in self.request.context.complaints]}
 
-    @json_view(permission='view_tender')
+    @json_view(permission='view_auction')
     def get(self):
         """Retrieving the complaint
         """
@@ -61,9 +61,9 @@ class TenderComplaintResource(object):
     def patch(self):
         """Post a complaint resolution
         """
-        tender = self.request.validated['tender']
-        if tender.status not in ['active.enquiries', 'active.tendering', 'active.auction', 'active.qualification', 'active.awarded']:
-            self.request.errors.add('body', 'data', 'Can\'t update complaint in current ({}) tender status'.format(tender.status))
+        auction = self.request.validated['auction']
+        if auction.status not in ['active.enquiries', 'active.tendering', 'active.auction', 'active.qualification', 'active.awarded']:
+            self.request.errors.add('body', 'data', 'Can\'t update complaint in current ({}) auction status'.format(auction.status))
             self.request.errors.status = 403
             return
         if self.request.context.status != 'pending':
@@ -75,15 +75,15 @@ class TenderComplaintResource(object):
             self.request.errors.status = 403
             return
         apply_patch(self.request, save=False, src=self.request.context.serialize())
-        if self.request.context.status == 'resolved' and tender.status != 'active.enquiries':
-            for i in tender.complaints:
+        if self.request.context.status == 'resolved' and auction.status != 'active.enquiries':
+            for i in auction.complaints:
                 if i.status == 'pending':
                     i.status = 'cancelled'
-            [setattr(i, 'status', 'cancelled') for i in tender.lots]
-            tender.status = 'cancelled'
-        elif self.request.context.status in ['declined', 'invalid'] and tender.status == 'active.awarded':
-            check_tender_status(self.request)
-        if save_tender(self.request):
-            LOGGER.info('Updated tender complaint {}'.format(self.request.context.id),
-                        extra=context_unpack(self.request, {'MESSAGE_ID': 'tender_complaint_patch'}))
+            [setattr(i, 'status', 'cancelled') for i in auction.lots]
+            auction.status = 'cancelled'
+        elif self.request.context.status in ['declined', 'invalid'] and auction.status == 'active.awarded':
+            check_auction_status(self.request)
+        if save_auction(self.request):
+            LOGGER.info('Updated auction complaint {}'.format(self.request.context.id),
+                        extra=context_unpack(self.request, {'MESSAGE_ID': 'auction_complaint_patch'}))
             return {'data': self.request.context.serialize("view")}

@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from logging import getLogger
 from openprocurement.api.utils import (
-    save_tender,
+    save_auction,
     apply_patch,
     add_next_award,
     opresource,
@@ -9,18 +9,18 @@ from openprocurement.api.utils import (
     context_unpack,
 )
 from openprocurement.api.validation import (
-    validate_tender_auction_data,
+    validate_auction_auction_data,
 )
 
 
 LOGGER = getLogger(__name__)
 
 
-@opresource(name='Tender Auction',
-            collection_path='/tenders/{tender_id}/auction',
-            path='/tenders/{tender_id}/auction/{auction_lot_id}',
-            description="Tender auction data")
-class TenderAuctionResource(object):
+@opresource(name='Auction Auction',
+            collection_path='/auctions/{auction_id}/auction',
+            path='/auctions/{auction_id}/auction/{auction_lot_id}',
+            description="Auction auction data")
+class AuctionAuctionResource(object):
 
     def __init__(self, request):
         self.request = request
@@ -30,14 +30,14 @@ class TenderAuctionResource(object):
     def collection_get(self):
         """Get auction info.
 
-        Get tender auction info
+        Get auction auction info
         -----------------------
 
-        Example request to get tender auction information:
+        Example request to get auction auction information:
 
         .. sourcecode:: http
 
-            GET /tenders/4879d3f8ee2443169b5fbbc9f89fa607/auction HTTP/1.1
+            GET /auctions/4879d3f8ee2443169b5fbbc9f89fa607/auction HTTP/1.1
             Host: example.com
             Accept: application/json
 
@@ -78,21 +78,21 @@ class TenderAuctionResource(object):
             }
 
         """
-        if self.request.validated['tender_status'] != 'active.auction':
-            self.request.errors.add('body', 'data', 'Can\'t get auction info in current ({}) tender status'.format(self.request.validated['tender_status']))
+        if self.request.validated['auction_status'] != 'active.auction':
+            self.request.errors.add('body', 'data', 'Can\'t get auction info in current ({}) auction status'.format(self.request.validated['auction_status']))
             self.request.errors.status = 403
             return
-        return {'data': self.request.validated['tender'].serialize("auction_view")}
+        return {'data': self.request.validated['auction'].serialize("auction_view")}
 
-    @json_view(content_type="application/json", permission='auction', validators=(validate_tender_auction_data))
+    @json_view(content_type="application/json", permission='auction', validators=(validate_auction_auction_data))
     def collection_patch(self):
         """Set urls for access to auction.
         """
-        if apply_patch(self.request, src=self.request.validated['tender_src']):
-            LOGGER.info('Updated auction urls', extra=context_unpack(self.request, {'MESSAGE_ID': 'tender_auction_patch'}))
-            return {'data': self.request.validated['tender'].serialize("auction_view")}
+        if apply_patch(self.request, src=self.request.validated['auction_src']):
+            LOGGER.info('Updated auction urls', extra=context_unpack(self.request, {'MESSAGE_ID': 'auction_auction_patch'}))
+            return {'data': self.request.validated['auction'].serialize("auction_view")}
 
-    @json_view(content_type="application/json", permission='auction', validators=(validate_tender_auction_data))
+    @json_view(content_type="application/json", permission='auction', validators=(validate_auction_auction_data))
     def collection_post(self):
         """Report auction results.
 
@@ -103,7 +103,7 @@ class TenderAuctionResource(object):
 
         .. sourcecode:: http
 
-            POST /tenders/4879d3f8ee2443169b5fbbc9f89fa607/auction HTTP/1.1
+            POST /auctions/4879d3f8ee2443169b5fbbc9f89fa607/auction HTTP/1.1
             Host: example.com
             Accept: application/json
 
@@ -164,28 +164,28 @@ class TenderAuctionResource(object):
             }
 
         """
-        apply_patch(self.request, save=False, src=self.request.validated['tender_src'])
-        if all([i.auctionPeriod and i.auctionPeriod.endDate for i in self.request.validated['tender'].lots if i.numberOfBids > 1]):
+        apply_patch(self.request, save=False, src=self.request.validated['auction_src'])
+        if all([i.auctionPeriod and i.auctionPeriod.endDate for i in self.request.validated['auction'].lots if i.numberOfBids > 1]):
             add_next_award(self.request)
-        if save_tender(self.request):
-            LOGGER.info('Report auction results', extra=context_unpack(self.request, {'MESSAGE_ID': 'tender_auction_post'}))
-            return {'data': self.request.validated['tender'].serialize(self.request.validated['tender'].status)}
+        if save_auction(self.request):
+            LOGGER.info('Report auction results', extra=context_unpack(self.request, {'MESSAGE_ID': 'auction_auction_post'}))
+            return {'data': self.request.validated['auction'].serialize(self.request.validated['auction'].status)}
 
-    @json_view(content_type="application/json", permission='auction', validators=(validate_tender_auction_data))
+    @json_view(content_type="application/json", permission='auction', validators=(validate_auction_auction_data))
     def patch(self):
         """Set urls for access to auction for lot.
         """
-        if apply_patch(self.request, src=self.request.validated['tender_src']):
-            LOGGER.info('Updated auction urls', extra=context_unpack(self.request, {'MESSAGE_ID': 'tender_lot_auction_patch'}))
-            return {'data': self.request.validated['tender'].serialize("auction_view")}
+        if apply_patch(self.request, src=self.request.validated['auction_src']):
+            LOGGER.info('Updated auction urls', extra=context_unpack(self.request, {'MESSAGE_ID': 'auction_lot_auction_patch'}))
+            return {'data': self.request.validated['auction'].serialize("auction_view")}
 
-    @json_view(content_type="application/json", permission='auction', validators=(validate_tender_auction_data))
+    @json_view(content_type="application/json", permission='auction', validators=(validate_auction_auction_data))
     def post(self):
         """Report auction results for lot.
         """
-        apply_patch(self.request, save=False, src=self.request.validated['tender_src'])
-        if all([i.auctionPeriod and i.auctionPeriod.endDate for i in self.request.validated['tender'].lots if i.numberOfBids > 1]):
+        apply_patch(self.request, save=False, src=self.request.validated['auction_src'])
+        if all([i.auctionPeriod and i.auctionPeriod.endDate for i in self.request.validated['auction'].lots if i.numberOfBids > 1]):
             add_next_award(self.request)
-        if save_tender(self.request):
-            LOGGER.info('Report auction results', extra=context_unpack(self.request, {'MESSAGE_ID': 'tender_lot_auction_post'}))
-            return {'data': self.request.validated['tender'].serialize(self.request.validated['tender'].status)}
+        if save_auction(self.request):
+            LOGGER.info('Report auction results', extra=context_unpack(self.request, {'MESSAGE_ID': 'auction_lot_auction_post'}))
+            return {'data': self.request.validated['auction'].serialize(self.request.validated['auction'].status)}

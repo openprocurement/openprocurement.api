@@ -2,7 +2,7 @@
 import unittest
 
 from openprocurement.api.migration import migrate_data, get_db_schema_version, set_db_schema_version, SCHEMA_VERSION
-from openprocurement.api.tests.base import BaseWebTest, test_tender_data
+from openprocurement.api.tests.base import BaseWebTest, test_auction_data
 from email.header import Header
 
 
@@ -15,7 +15,7 @@ class MigrateTest(BaseWebTest):
 
     def test_migrate_from0to1(self):
         set_db_schema_version(self.db, 0)
-        data = {'doc_type': 'Tender',
+        data = {'doc_type': 'Auction',
                 'modifiedAt': '2014-10-15T00:00:00.000000'}
         _id, _rev = self.db.save(data)
         item = self.db.get(_id)
@@ -37,7 +37,7 @@ class MigrateTest(BaseWebTest):
                     "street-address": "вул. Банкова, 11, корпус 1"
                 },
             },
-            'doc_type': 'Tender',
+            'doc_type': 'Auction',
             'bidders': [{
                 "address": {
                     "country-name": "Україна",
@@ -66,7 +66,7 @@ class MigrateTest(BaseWebTest):
     def test_migrate_from2to3(self):
         set_db_schema_version(self.db, 2)
         data = {
-            'doc_type': 'Tender',
+            'doc_type': 'Auction',
             'bidders': [{
                 "_id": "UUID",
                 "id": {
@@ -90,7 +90,7 @@ class MigrateTest(BaseWebTest):
     def test_migrate_from3to4(self):
         set_db_schema_version(self.db, 3)
         data = {
-            'doc_type': 'Tender',
+            'doc_type': 'Auction',
             "itemsToBeProcured": [{
                 "description": "футляри до державних нагород",
                 "classificationScheme": "Other",
@@ -112,7 +112,7 @@ class MigrateTest(BaseWebTest):
     def test_migrate_from4to5(self):
         set_db_schema_version(self.db, 4)
         data = {
-            'doc_type': 'Tender',
+            'doc_type': 'Auction',
             "clarificationPeriod": {
                 "endDate": "2014-10-31T00:00:00"
             },
@@ -132,7 +132,7 @@ class MigrateTest(BaseWebTest):
     def test_migrate_from5to6(self):
         set_db_schema_version(self.db, 5)
         data = {
-            'doc_type': 'Tender',
+            'doc_type': 'Auction',
             "attachments": [
                 {
                     'id': 'id',
@@ -173,7 +173,7 @@ class MigrateTest(BaseWebTest):
     def test_migrate_from10to11(self):
         set_db_schema_version(self.db, 10)
         data = {
-            'doc_type': 'Tender',
+            'doc_type': 'Auction',
             "procuringEntity": {
                 "identifier": {
                     "scheme": "scheme"
@@ -254,7 +254,7 @@ class MigrateTest(BaseWebTest):
         data = [
             {
                 "status": "active.enquiries",
-                "doc_type": "Tender",
+                "doc_type": "Auction",
                 "enquiryPeriod": {
                     "startDate": "2014-11-30T21:51:28.008729+02:00"
                 },
@@ -274,13 +274,13 @@ class MigrateTest(BaseWebTest):
                 ],
                 "awards": [{}],
                 "owner_token": "d9d24edba7bd4eaead5d68f47d7f288e",
-                "tenderID": "UA-0d0d5850b0aa4ef5988f4a20925672d2",
+                "auctionID": "UA-0d0d5850b0aa4ef5988f4a20925672d2",
                 "dateModified": "2014-11-30T21:51:28.008729+02:00",
                 "owner": "test"
             },
             {
                 "status": "active.tendering",
-                "doc_type": "Tender",
+                "doc_type": "Auction",
                 "enquiryPeriod": {
                     "startDate": "2014-11-30T21:51:28.008729+02:00"
                 },
@@ -323,13 +323,13 @@ class MigrateTest(BaseWebTest):
                     u'address': {},
                 },
                 "owner_token": "d9d24edba7bd4eaead5d68f47d7f288e",
-                "tenderID": "UA-0d0d5850b0aa4ef5988f4a20925672d2",
+                "auctionID": "UA-0d0d5850b0aa4ef5988f4a20925672d2",
                 "dateModified": "2014-11-30T21:51:28.008729+02:00",
                 "owner": "test"
             },
             {
                 "status": "active.auction",
-                "doc_type": "Tender",
+                "doc_type": "Auction",
                 "enquiryPeriod": {
                     "startDate": "2014-11-30T21:51:28.008729+02:00"
                 },
@@ -347,12 +347,12 @@ class MigrateTest(BaseWebTest):
                     u'name': u'Name',
                     u'contactPoint': {},
                 },
-                "tenderID": "UA-0d0d5850b0aa4ef5988f4a20925672d2",
+                "auctionID": "UA-0d0d5850b0aa4ef5988f4a20925672d2",
                 "dateModified": "2014-11-30T21:51:28.008729+02:00",
             },
             {
                 "status": "active.qualification",
-                "doc_type": "Tender",
+                "doc_type": "Auction",
                 "enquiryPeriod": {
                     "startDate": "2014-11-30T21:51:28.008729+02:00"
                 },
@@ -387,12 +387,12 @@ class MigrateTest(BaseWebTest):
                         "suppliers": [{"name": "name"}, {"name": "name"}]
                     }
                 ],
-                "tenderID": "UA-0d0d5850b0aa4ef5988f4a20925672d2",
+                "auctionID": "UA-0d0d5850b0aa4ef5988f4a20925672d2",
                 "dateModified": "2014-11-30T21:51:28.008729+02:00",
             },
             {
                 "status": "active.awarded",
-                "doc_type": "Tender",
+                "doc_type": "Auction",
                 "enquiryPeriod": {
                     "startDate": "2014-11-30T21:51:28.008729+02:00"
                 },
@@ -427,12 +427,12 @@ class MigrateTest(BaseWebTest):
                         "suppliers": [{"name": "name"}, {"name": "name"}]
                     }
                 ],
-                "tenderID": "UA-0d0d5850b0aa4ef5988f4a20925672d2",
+                "auctionID": "UA-0d0d5850b0aa4ef5988f4a20925672d2",
                 "dateModified": "2014-11-30T21:51:28.008729+02:00",
             },
             {
                 "status": "complete",
-                "doc_type": "Tender",
+                "doc_type": "Auction",
                 "enquiryPeriod": {
                     "startDate": "2014-11-30T21:51:28.008729+02:00"
                 },
@@ -456,7 +456,7 @@ class MigrateTest(BaseWebTest):
                         "value": {},
                     }
                 ],
-                "tenderID": "UA-0d0d5850b0aa4ef5988f4a20925672d2",
+                "auctionID": "UA-0d0d5850b0aa4ef5988f4a20925672d2",
                 "dateModified": "2014-11-30T21:51:28.008729+02:00",
             },
         ]
@@ -469,12 +469,12 @@ class MigrateTest(BaseWebTest):
             migrated_item = self.db.get(item['_id'])
             self.assertNotEqual(item, migrated_item)
         self.app.authorization = ('Basic', ('broker05', ''))
-        self.app.post_json('/tenders', {'data': test_tender_data}, status=403)
+        self.app.post_json('/auctions', {'data': test_auction_data}, status=403)
 
     def test_migrate_from12to13(self):
         set_db_schema_version(self.db, 12)
         data = {
-            'doc_type': 'Tender',
+            'doc_type': 'Auction',
             'procurementMethod': 'Open',
             'awardCriteria': 'Lowest Cost',
             'submissionMethod': 'Electronic Auction',
@@ -490,7 +490,7 @@ class MigrateTest(BaseWebTest):
         set_db_schema_version(self.db, 13)
         filename = u'файл.doc'
         data = {
-            'doc_type': 'Tender',
+            'doc_type': 'Auction',
             "awards": [{
                 "documents": [{'title': str(Header(filename))}],
                 "contracts": [{
@@ -516,7 +516,7 @@ class MigrateTest(BaseWebTest):
     def test_migrate_from14to15(self):
         set_db_schema_version(self.db, 14)
         data = {
-            'doc_type': 'Tender',
+            'doc_type': 'Auction',
             'items': [
                 {
                     "description": u"футляри до державних нагород",
@@ -539,7 +539,7 @@ class MigrateTest(BaseWebTest):
     def test_migrate_from15to16(self):
         set_db_schema_version(self.db, 15)
         data = {
-            'doc_type': 'Tender',
+            'doc_type': 'Auction',
             "items": [{
                 "deliveryLocation": {
                     'latitude': 49,
@@ -556,7 +556,7 @@ class MigrateTest(BaseWebTest):
     def test_migrate_from16to17(self):
         set_db_schema_version(self.db, 16)
         data = {
-            'doc_type': 'Tender',
+            'doc_type': 'Auction',
             "awards": [
                 {"date": '2015-03-01T00:00:00+02:00', "status": 'pending', 'complaintPeriod': {'startDate': '2015-03-01T00:00:00+02:00'}},
                 {"date": '2015-03-01T00:00:00+02:00', "status": 'pending'},
@@ -574,7 +574,7 @@ class MigrateTest(BaseWebTest):
     def test_migrate_from17to18(self):
         set_db_schema_version(self.db, 17)
         data = {
-            'doc_type': 'Tender',
+            'doc_type': 'Auction',
             "awards": [
                 {
                     "id": "award_id",

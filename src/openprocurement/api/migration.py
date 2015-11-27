@@ -35,7 +35,7 @@ def migrate_data(db, destination=None):
 
 
 def from0to1(db):
-    results = db.view('tenders/all', include_docs=True)
+    results = db.view('auctions/all', include_docs=True)
     for i in results:
         doc = i.doc
         if 'modifiedAt' in doc and 'modified' not in doc:
@@ -44,7 +44,7 @@ def from0to1(db):
 
 
 def from1to2(db):
-    results = db.view('tenders/all', include_docs=True)
+    results = db.view('auctions/all', include_docs=True)
     for i in results:
         doc = i.doc
         if 'bidders' in doc or 'procuringEntity' in doc:
@@ -70,7 +70,7 @@ def from1to2(db):
 
 
 def from2to3(db):
-    results = db.view('tenders/all', include_docs=True)
+    results = db.view('auctions/all', include_docs=True)
     for i in results:
         doc = i.doc
         if 'bidders' in doc:
@@ -84,7 +84,7 @@ def from2to3(db):
 
 
 def from3to4(db):
-    results = db.view('tenders/all', include_docs=True)
+    results = db.view('auctions/all', include_docs=True)
     for i in results:
         doc = i.doc
         if 'itemsToBeProcured' in doc:
@@ -103,7 +103,7 @@ def from3to4(db):
 
 
 def from4to5(db):
-    results = db.view('tenders/all', include_docs=True)
+    results = db.view('auctions/all', include_docs=True)
     for i in results:
         doc = i.doc
         changed = False
@@ -118,7 +118,7 @@ def from4to5(db):
 
 
 def from5to6(db):
-    results = db.view('tenders/all', include_docs=True)
+    results = db.view('auctions/all', include_docs=True)
     for i in results:
         doc = i.doc
         changed = False
@@ -153,7 +153,7 @@ def from5to6(db):
 
 
 def from10to11(db):
-    results = db.view('tenders/all', include_docs=True)
+    results = db.view('auctions/all', include_docs=True)
     for i in results:
         doc = i.doc
         changed = False
@@ -238,7 +238,7 @@ def fix_value(item, value, changed):
 
 
 def from11to12(db):
-    results = db.view('tenders/all', include_docs=True)
+    results = db.view('auctions/all', include_docs=True)
     for i in results:
         doc = i.doc
         changed = False
@@ -464,7 +464,7 @@ def from11to12(db):
 
 
 def from12to13(db):
-    results = db.view('tenders/all', include_docs=True)
+    results = db.view('auctions/all', include_docs=True)
     for i in results:
         doc = i.doc
         doc['procurementMethod'] = 'open'
@@ -492,7 +492,7 @@ def fix_rfc2047(item, changed):
 
 
 def from13to14(db):
-    results = db.view('tenders/all', include_docs=True)
+    results = db.view('auctions/all', include_docs=True)
     for i in results:
         doc = i.doc
         changed = False
@@ -519,7 +519,7 @@ def from13to14(db):
 
 
 def from14to15(db):
-    results = db.view('tenders/all', include_docs=True)
+    results = db.view('auctions/all', include_docs=True)
     for i in results:
         doc = i.doc
         changed = False
@@ -549,7 +549,7 @@ def from14to15(db):
 
 
 def from15to16(db):
-    results = db.view('tenders/all', include_docs=True)
+    results = db.view('auctions/all', include_docs=True)
     for i in results:
         doc = i.doc
         changed = False
@@ -563,7 +563,7 @@ def from15to16(db):
 
 
 def from16to17(db):
-    results = db.view('tenders/all', include_docs=True)
+    results = db.view('auctions/all', include_docs=True)
     for i in results:
         doc = i.doc
         changed = False
@@ -583,7 +583,7 @@ def from16to17(db):
 
 
 def from17to18(db):
-    results = db.view('tenders/all', include_docs=True)
+    results = db.view('auctions/all', include_docs=True)
     for i in results:
         doc = i.doc
         contracts = []

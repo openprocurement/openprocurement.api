@@ -10,7 +10,7 @@ from openprocurement.api.utils import VERSION
 
 
 now = datetime.now()
-test_tender_data = {
+test_auction_data = {
     "title": u"футляри до державних нагород",
     "procuringEntity": {
         "name": u"Державне управління справами",
@@ -70,11 +70,11 @@ test_tender_data = {
     "procurementMethodType": "belowThreshold",
 }
 
-test_features_tender_data = test_tender_data.copy()
-test_features_item = test_features_tender_data['items'][0].copy()
+test_features_auction_data = test_auction_data.copy()
+test_features_item = test_features_auction_data['items'][0].copy()
 test_features_item['id'] = "1"
-test_features_tender_data['items'] = [test_features_item]
-test_features_tender_data["features"] = [
+test_features_auction_data['items'] = [test_features_item]
+test_features_auction_data["features"] = [
     {
         "code": "OCDS-123454-AIR-INTAKE",
         "featureOf": "item",
@@ -95,7 +95,7 @@ test_features_tender_data["features"] = [
     },
     {
         "code": "OCDS-123454-YEARS",
-        "featureOf": "tenderer",
+        "featureOf": "auctioner",
         "title": u"Років на ринку",
         "title_en": "Years trading",
         "description": u"Кількість років, які організація учасник працює на ринку",
@@ -118,7 +118,7 @@ test_features_tender_data["features"] = [
 test_bids = [
     {
         "tenderers": [
-            test_tender_data["procuringEntity"]
+            test_auction_data["procuringEntity"]
         ],
         "value": {
             "amount": 469,
@@ -128,7 +128,7 @@ test_bids = [
     },
     {
         "tenderers": [
-            test_tender_data["procuringEntity"]
+            test_auction_data["procuringEntity"]
         ],
         "value": {
             "amount": 479,
@@ -141,8 +141,8 @@ test_lots = [
     {
         'title': 'lot title',
         'description': 'lot description',
-        'value': test_tender_data['value'],
-        'minimalStep': test_tender_data['minimalStep'],
+        'value': test_auction_data['value'],
+        'minimalStep': test_auction_data['minimalStep'],
     }
 ]
 test_features = [
@@ -163,9 +163,9 @@ test_features = [
         ]
     },
     {
-        "code": "code_tenderer",
-        "featureOf": "tenderer",
-        "title": u"tenderer feature",
+        "code": "code_auctioner",
+        "featureOf": "auctioner",
+        "title": u"auctioner feature",
         "enum": [
             {
                 "value": 0.01,
@@ -207,8 +207,8 @@ class BaseWebTest(unittest.TestCase):
         del self.couchdb_server[self.db.name]
 
 
-class BaseTenderWebTest(BaseWebTest):
-    initial_data = test_tender_data
+class BaseAuctionWebTest(BaseWebTest):
+    initial_data = test_auction_data
     initial_status = None
     initial_bids = None
     initial_lots = None
@@ -358,17 +358,17 @@ class BaseTenderWebTest(BaseWebTest):
             data.update(extra)
         authorization = self.app.authorization
         self.app.authorization = ('Basic', ('chronograph', ''))
-        response = self.app.patch_json('/tenders/{}'.format(self.tender_id), {'data': data})
+        response = self.app.patch_json('/auctions/{}'.format(self.auction_id), {'data': data})
         self.app.authorization = authorization
         self.assertEqual(response.status, '200 OK')
         self.assertEqual(response.content_type, 'application/json')
         return response
 
     def setUp(self):
-        super(BaseTenderWebTest, self).setUp()
-        self.create_tender()
+        super(BaseAuctionWebTest, self).setUp()
+        self.create_auction()
 
-    def create_tender(self):
+    def create_auction(self):
         data = deepcopy(self.initial_data)
         if self.initial_lots:
             lots = []
@@ -379,10 +379,10 @@ class BaseTenderWebTest(BaseWebTest):
             data['lots'] = self.initial_lots = lots
             for i, item in enumerate(data['items']):
                 item['relatedLot'] = lots[i % len(lots)]['id']
-        response = self.app.post_json('/tenders', {'data': data})
-        tender = response.json['data']
-        self.tender_id = tender['id']
-        status = tender['status']
+        response = self.app.post_json('/auctions', {'data': data})
+        auction = response.json['data']
+        self.auction_id = auction['id']
+        status = auction['status']
         if self.initial_bids:
             response = self.set_status('active.tendering')
             status = response.json['data']['status']
@@ -398,7 +398,7 @@ class BaseTenderWebTest(BaseWebTest):
                         }
                         for l in self.initial_lots
                     ]
-                response = self.app.post_json('/tenders/{}/bids'.format(self.tender_id), {'data': i})
+                response = self.app.post_json('/auctions/{}/bids'.format(self.auction_id), {'data': i})
                 self.assertEqual(response.status, '201 Created')
                 bids.append(response.json['data'])
             self.initial_bids = bids
@@ -406,5 +406,5 @@ class BaseTenderWebTest(BaseWebTest):
             self.set_status(self.initial_status)
 
     def tearDown(self):
-        del self.db[self.tender_id]
-        super(BaseTenderWebTest, self).tearDown()
+        del self.db[self.auction_id]
+        super(BaseAuctionWebTest, self).tearDown()

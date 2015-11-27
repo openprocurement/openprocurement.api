@@ -2,7 +2,7 @@
 from logging import getLogger
 from openprocurement.api.models import get_now
 from openprocurement.api.utils import (
-    save_tender,
+    save_auction,
     set_ownership,
     apply_patch,
     opresource,
@@ -18,12 +18,12 @@ from openprocurement.api.validation import (
 LOGGER = getLogger(__name__)
 
 
-@opresource(name='Tender Bids',
-            collection_path='/tenders/{tender_id}/bids',
-            path='/tenders/{tender_id}/bids/{bid_id}',
+@opresource(name='Auction Bids',
+            collection_path='/auctions/{auction_id}/bids',
+            path='/auctions/{auction_id}/bids/{bid_id}',
             procurementMethodType='belowThreshold',
-            description="Tender bids")
-class TenderBidResource(object):
+            description="Auction bids")
+class AuctionBidResource(object):
 
     def __init__(self, request):
         self.request = request
@@ -40,7 +40,7 @@ class TenderBidResource(object):
 
         .. sourcecode:: http
 
-            POST /tenders/4879d3f8ee2443169b5fbbc9f89fa607/bids HTTP/1.1
+            POST /auctions/4879d3f8ee2443169b5fbbc9f89fa607/bids HTTP/1.1
             Host: example.com
             Accept: application/json
 
@@ -111,19 +111,19 @@ class TenderBidResource(object):
         """
         # See https://github.com/open-contracting/standard/issues/78#issuecomment-59830415
         # for more info upon schema
-        tender = self.request.validated['tender']
-        if self.request.validated['tender_status'] != 'active.tendering' or tender.tenderPeriod.startDate and get_now() < tender.tenderPeriod.startDate or get_now() > tender.tenderPeriod.endDate:
-            self.request.errors.add('body', 'data', 'Can\'t add bid in current ({}) tender status'.format(self.request.validated['tender_status']))
+        auction = self.request.validated['auction']
+        if self.request.validated['auction_status'] != 'active.tendering' or auction.tenderPeriod.startDate and get_now() < auction.tenderPeriod.startDate or get_now() > auction.tenderPeriod.endDate:
+            self.request.errors.add('body', 'data', 'Can\'t add bid in current ({}) auction status'.format(self.request.validated['auction_status']))
             self.request.errors.status = 403
             return
         bid = self.request.validated['bid']
         set_ownership(bid, self.request)
-        tender.bids.append(bid)
-        if save_tender(self.request):
-            LOGGER.info('Created tender bid {}'.format(bid.id),
-                        extra=context_unpack(self.request, {'MESSAGE_ID': 'tender_bid_create'}, {'bid_id': bid.id}))
+        auction.bids.append(bid)
+        if save_auction(self.request):
+            LOGGER.info('Created auction bid {}'.format(bid.id),
+                        extra=context_unpack(self.request, {'MESSAGE_ID': 'auction_bid_create'}, {'bid_id': bid.id}))
             self.request.response.status = 201
-            self.request.response.headers['Location'] = self.request.route_url('Tender Bids', tender_id=tender.id, bid_id=bid['id'])
+            self.request.response.headers['Location'] = self.request.route_url('Auction Bids', auction_id=auction.id, bid_id=bid['id'])
             return {
                 'data': bid.serialize('view'),
                 'access': {
@@ -131,7 +131,7 @@ class TenderBidResource(object):
                 }
             }
 
-    @json_view(permission='view_tender')
+    @json_view(permission='view_auction')
     def collection_get(self):
         """Bids Listing
 
@@ -142,7 +142,7 @@ class TenderBidResource(object):
 
         .. sourcecode:: http
 
-            GET /tenders/4879d3f8ee2443169b5fbbc9f89fa607/bids HTTP/1.1
+            GET /auctions/4879d3f8ee2443169b5fbbc9f89fa607/bids HTTP/1.1
             Host: example.com
             Accept: application/json
 
@@ -166,14 +166,14 @@ class TenderBidResource(object):
             }
 
         """
-        tender = self.request.validated['tender']
-        if self.request.validated['tender_status'] in ['active.tendering', 'active.auction']:
-            self.request.errors.add('body', 'data', 'Can\'t view bids in current ({}) tender status'.format(self.request.validated['tender_status']))
+        auction = self.request.validated['auction']
+        if self.request.validated['auction_status'] in ['active.tendering', 'active.auction']:
+            self.request.errors.add('body', 'data', 'Can\'t view bids in current ({}) auction status'.format(self.request.validated['auction_status']))
             self.request.errors.status = 403
             return
-        return {'data': [i.serialize(self.request.validated['tender_status']) for i in tender.bids]}
+        return {'data': [i.serialize(self.request.validated['auction_status']) for i in auction.bids]}
 
-    @json_view(permission='view_tender')
+    @json_view(permission='view_auction')
     def get(self):
         """Retrieving the proposal
 
@@ -181,7 +181,7 @@ class TenderBidResource(object):
 
         .. sourcecode:: http
 
-            GET /tenders/4879d3f8ee2443169b5fbbc9f89fa607/bids/71b6c23ed8944d688e92a31ec8c3f61a HTTP/1.1
+            GET /auctions/4879d3f8ee2443169b5fbbc9f89fa607/bids/71b6c23ed8944d688e92a31ec8c3f61a HTTP/1.1
             Host: example.com
             Accept: application/json
 
@@ -205,11 +205,11 @@ class TenderBidResource(object):
         """
         if self.request.authenticated_role == 'bid_owner':
             return {'data': self.request.context.serialize('view')}
-        if self.request.validated['tender_status'] in ['active.tendering', 'active.auction']:
-            self.request.errors.add('body', 'data', 'Can\'t view bid in current ({}) tender status'.format(self.request.validated['tender_status']))
+        if self.request.validated['auction_status'] in ['active.tendering', 'active.auction']:
+            self.request.errors.add('body', 'data', 'Can\'t view bid in current ({}) auction status'.format(self.request.validated['auction_status']))
             self.request.errors.status = 403
             return
-        return {'data': self.request.context.serialize(self.request.validated['tender_status'])}
+        return {'data': self.request.context.serialize(self.request.validated['auction_status'])}
 
     @json_view(content_type="application/json", permission='edit_bid', validators=(validate_patch_bid_data,))
     def patch(self):
@@ -219,7 +219,7 @@ class TenderBidResource(object):
 
         .. sourcecode:: http
 
-            PATCH /tenders/4879d3f8ee2443169b5fbbc9f89fa607/bids/71b6c23ed8944d688e92a31ec8c3f61a HTTP/1.1
+            PATCH /auctions/4879d3f8ee2443169b5fbbc9f89fa607/bids/71b6c23ed8944d688e92a31ec8c3f61a HTTP/1.1
             Host: example.com
             Accept: application/json
 
@@ -249,8 +249,8 @@ class TenderBidResource(object):
             }
 
         """
-        if self.request.authenticated_role != 'Administrator' and self.request.validated['tender_status'] != 'active.tendering':
-            self.request.errors.add('body', 'data', 'Can\'t update bid in current ({}) tender status'.format(self.request.validated['tender_status']))
+        if self.request.authenticated_role != 'Administrator' and self.request.validated['auction_status'] != 'active.tendering':
+            self.request.errors.add('body', 'data', 'Can\'t update bid in current ({}) auction status'.format(self.request.validated['auction_status']))
             self.request.errors.status = 403
             return
         value = self.request.validated['data'].get("value") and self.request.validated['data']["value"].get("amount")
@@ -262,8 +262,8 @@ class TenderBidResource(object):
                 if lotvalue['relatedLot'] in lotValues and lotvalue.get("value", {}).get("amount") != lotValues[lotvalue['relatedLot']]:
                     lotvalue['date'] = get_now().isoformat()
         if apply_patch(self.request, src=self.request.context.serialize()):
-            LOGGER.info('Updated tender bid {}'.format(self.request.context.id),
-                        extra=context_unpack(self.request, {'MESSAGE_ID': 'tender_bid_patch'}))
+            LOGGER.info('Updated auction bid {}'.format(self.request.context.id),
+                        extra=context_unpack(self.request, {'MESSAGE_ID': 'auction_bid_patch'}))
             return {'data': self.request.context.serialize("view")}
 
     @json_view(permission='edit_bid')
@@ -274,7 +274,7 @@ class TenderBidResource(object):
 
         .. sourcecode:: http
 
-            DELETE /tenders/4879d3f8ee2443169b5fbbc9f89fa607/bids/71b6c23ed8944d688e92a31ec8c3f61a HTTP/1.1
+            DELETE /auctions/4879d3f8ee2443169b5fbbc9f89fa607/bids/71b6c23ed8944d688e92a31ec8c3f61a HTTP/1.1
             Host: example.com
             Accept: application/json
 
@@ -297,13 +297,13 @@ class TenderBidResource(object):
 
         """
         bid = self.request.context
-        if self.request.validated['tender_status'] != 'active.tendering':
-            self.request.errors.add('body', 'data', 'Can\'t delete bid in current ({}) tender status'.format(self.request.validated['tender_status']))
+        if self.request.validated['auction_status'] != 'active.tendering':
+            self.request.errors.add('body', 'data', 'Can\'t delete bid in current ({}) auction status'.format(self.request.validated['auction_status']))
             self.request.errors.status = 403
             return
         res = bid.serialize("view")
-        self.request.validated['tender'].bids.remove(bid)
-        if save_tender(self.request):
-            LOGGER.info('Deleted tender bid {}'.format(self.request.context.id),
-                        extra=context_unpack(self.request, {'MESSAGE_ID': 'tender_bid_delete'}))
+        self.request.validated['auction'].bids.remove(bid)
+        if save_auction(self.request):
+            LOGGER.info('Deleted auction bid {}'.format(self.request.context.id),
+                        extra=context_unpack(self.request, {'MESSAGE_ID': 'auction_bid_delete'}))
             return {'data': res}

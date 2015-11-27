@@ -4,43 +4,43 @@ from binascii import hexlify, unhexlify
 from Crypto.Cipher import AES
 from openprocurement.api.design import (
     FIELDS,
-    tenders_by_dateModified_view,
-    tenders_real_by_dateModified_view,
-    tenders_test_by_dateModified_view,
-    tenders_by_local_seq_view,
-    tenders_real_by_local_seq_view,
-    tenders_test_by_local_seq_view,
+    auctions_by_dateModified_view,
+    auctions_real_by_dateModified_view,
+    auctions_test_by_dateModified_view,
+    auctions_by_local_seq_view,
+    auctions_real_by_local_seq_view,
+    auctions_test_by_local_seq_view,
 )
 from openprocurement.api.models import get_now
 from openprocurement.api.utils import (
     generate_id,
-    generate_tender_id,
-    save_tender,
+    generate_auction_id,
+    save_auction,
     set_ownership,
-    tender_serialize,
+    auction_serialize,
     apply_patch,
     check_bids,
-    check_tender_status,
+    check_auction_status,
     opresource,
     json_view,
     context_unpack,
 )
 from openprocurement.api.validation import (
-    validate_patch_tender_data,
-    validate_tender_data,
+    validate_patch_auction_data,
+    validate_auction_data,
 )
 
 
 LOGGER = getLogger(__name__)
 VIEW_MAP = {
-    u'': tenders_real_by_dateModified_view,
-    u'test': tenders_test_by_dateModified_view,
-    u'_all_': tenders_by_dateModified_view,
+    u'': auctions_real_by_dateModified_view,
+    u'test': auctions_test_by_dateModified_view,
+    u'_all_': auctions_by_dateModified_view,
 }
 CHANGES_VIEW_MAP = {
-    u'': tenders_real_by_local_seq_view,
-    u'test': tenders_test_by_local_seq_view,
-    u'_all_': tenders_by_local_seq_view,
+    u'': auctions_real_by_local_seq_view,
+    u'test': auctions_test_by_local_seq_view,
+    u'_all_': auctions_by_local_seq_view,
 }
 FEED = {
     u'dateModified': VIEW_MAP,
@@ -63,10 +63,10 @@ def decrypt(uuid, name, key):
     return text
 
 
-@opresource(name='Tenders',
-            path='/tenders',
-            description="Open Contracting compatible data exchange format. See http://ocds.open-contracting.org/standard/r/master/#tender for more info")
-class TendersResource(object):
+@opresource(name='Auctions',
+            path='/auctions',
+            description="Open Contracting compatible data exchange format. See http://ocds.open-contracting.org/standard/r/master/#auction for more info")
+class AuctionsResource(object):
 
     def __init__(self, request):
         self.request = request
@@ -74,18 +74,18 @@ class TendersResource(object):
         self.db = request.registry.db
         self.server_id = request.registry.server_id
 
-    @json_view(permission='view_tender')
+    @json_view(permission='view_auction')
     def get(self):
-        """Tenders List
+        """Auctions List
 
-        Get Tenders List
+        Get Auctions List
         ----------------
 
-        Example request to get tenders list:
+        Example request to get auctions list:
 
         .. sourcecode:: http
 
-            GET /tenders HTTP/1.1
+            GET /auctions HTTP/1.1
             Host: example.com
             Accept: application/json
 
@@ -166,11 +166,11 @@ class TendersResource(object):
                     for x in list_view(self.db, limit=view_limit, startkey=view_offset, descending=descending)
                 ]
             elif fields:
-                LOGGER.info('Used custom fields for tenders list: {}'.format(','.join(sorted(fields))),
-                            extra=context_unpack(self.request, {'MESSAGE_ID': 'tender_list_custom'}))
+                LOGGER.info('Used custom fields for auctions list: {}'.format(','.join(sorted(fields))),
+                            extra=context_unpack(self.request, {'MESSAGE_ID': 'auction_list_custom'}))
 
                 results = [
-                    (tender_serialize(self.request, i[u'doc'], view_fields), i.key)
+                    (auction_serialize(self.request, i[u'doc'], view_fields), i.key)
                     for i in list_view(self.db, limit=view_limit, startkey=view_offset, descending=descending, include_docs=True)
                 ]
         else:
@@ -196,30 +196,30 @@ class TendersResource(object):
             'data': results,
             'next_page': {
                 "offset": params['offset'],
-                "path": self.request.route_path('Tenders', _query=params),
-                "uri": self.request.route_url('Tenders', _query=params)
+                "path": self.request.route_path('Auctions', _query=params),
+                "uri": self.request.route_url('Auctions', _query=params)
             }
         }
         if descending or offset:
             data['prev_page'] = {
                 "offset": pparams['offset'],
-                "path": self.request.route_path('Tenders', _query=pparams),
-                "uri": self.request.route_url('Tenders', _query=pparams)
+                "path": self.request.route_path('Auctions', _query=pparams),
+                "uri": self.request.route_url('Auctions', _query=pparams)
             }
         return data
 
-    @json_view(content_type="application/json", permission='create_tender', validators=(validate_tender_data,))
+    @json_view(content_type="application/json", permission='create_auction', validators=(validate_auction_data,))
     def post(self):
-        """This API request is targeted to creating new Tenders by procuring organizations.
+        """This API request is targeted to creating new Auctions by procuring organizations.
 
-        Creating new Tender
+        Creating new Auction
         -------------------
 
-        Example request to create tender:
+        Example request to create auction:
 
         .. sourcecode:: http
 
-            POST /tenders HTTP/1.1
+            POST /auctions HTTP/1.1
             Host: example.com
             Accept: application/json
 
@@ -289,13 +289,13 @@ class TendersResource(object):
         .. sourcecode:: http
 
             HTTP/1.1 201 Created
-            Location: http://localhost/api/0.1/tenders/64e93250be76435397e8c992ed4214d1
+            Location: http://localhost/api/0.1/auctions/64e93250be76435397e8c992ed4214d1
             Content-Type: application/json
 
             {
                 "data": {
                     "id": "64e93250be76435397e8c992ed4214d1",
-                    "tenderID": "UA-64e93250be76435397e8c992ed4214d1",
+                    "auctionID": "UA-64e93250be76435397e8c992ed4214d1",
                     "dateModified": "2014-10-27T08:06:58.158Z",
                     "procuringEntity": {
                         "id": {
@@ -357,53 +357,53 @@ class TendersResource(object):
             }
 
         """
-        tender_id = generate_id()
-        tender = self.request.validated['tender']
-        tender.id = tender_id
-        if not tender.enquiryPeriod.startDate:
-            tender.enquiryPeriod.startDate = get_now()
-        tender.tenderID = generate_tender_id(tender.enquiryPeriod.startDate, self.db, self.server_id)
-        if not tender.tenderPeriod.startDate:
-            tender.tenderPeriod.startDate = tender.enquiryPeriod.endDate
-        set_ownership(tender, self.request)
-        self.request.validated['tender'] = tender
-        self.request.validated['tender_src'] = {}
-        if save_tender(self.request):
-            LOGGER.info('Created tender {} ({})'.format(tender_id, tender.tenderID),
-                        extra=context_unpack(self.request, {'MESSAGE_ID': 'tender_create'}, {'tender_id': tender_id, 'tenderID': tender.tenderID}))
+        auction_id = generate_id()
+        auction = self.request.validated['auction']
+        auction.id = auction_id
+        if not auction.enquiryPeriod.startDate:
+            auction.enquiryPeriod.startDate = get_now()
+        auction.auctionID = generate_auction_id(auction.enquiryPeriod.startDate, self.db, self.server_id)
+        if not auction.tenderPeriod.startDate:
+            auction.tenderPeriod.startDate = auction.enquiryPeriod.endDate
+        set_ownership(auction, self.request)
+        self.request.validated['auction'] = auction
+        self.request.validated['auction_src'] = {}
+        if save_auction(self.request):
+            LOGGER.info('Created auction {} ({})'.format(auction_id, auction.auctionID),
+                        extra=context_unpack(self.request, {'MESSAGE_ID': 'auction_create'}, {'auction_id': auction_id, 'auctionID': auction.auctionID}))
             self.request.response.status = 201
             self.request.response.headers[
-                'Location'] = self.request.route_url('Tender', tender_id=tender_id)
+                'Location'] = self.request.route_url('Auction', auction_id=auction_id)
             return {
-                'data': tender.serialize(tender.status),
+                'data': auction.serialize(auction.status),
                 'access': {
-                    'token': tender.owner_token
+                    'token': auction.owner_token
                 }
             }
 
 
-@opresource(name='Tender',
-            path='/tenders/{tender_id}',
+@opresource(name='Auction',
+            path='/auctions/{auction_id}',
             procurementMethodType='belowThreshold',
-            description="Open Contracting compatible data exchange format. See http://ocds.open-contracting.org/standard/r/master/#tender for more info")
-class TenderResource(object):
+            description="Open Contracting compatible data exchange format. See http://ocds.open-contracting.org/standard/r/master/#auction for more info")
+class AuctionResource(object):
 
     def __init__(self, request):
         self.request = request
         self.db = request.registry.db
 
-    @json_view(permission='view_tender')
+    @json_view(permission='view_auction')
     def get(self):
-        """Tender Read
+        """Auction Read
 
-        Get Tender
+        Get Auction
         ----------
 
-        Example request to get tender:
+        Example request to get auction:
 
         .. sourcecode:: http
 
-            GET /tenders/64e93250be76435397e8c992ed4214d1 HTTP/1.1
+            GET /auctions/64e93250be76435397e8c992ed4214d1 HTTP/1.1
             Host: example.com
             Accept: application/json
 
@@ -417,7 +417,7 @@ class TenderResource(object):
             {
                 "data": {
                     "id": "64e93250be76435397e8c992ed4214d1",
-                    "tenderID": "UA-64e93250be76435397e8c992ed4214d1",
+                    "auctionID": "UA-64e93250be76435397e8c992ed4214d1",
                     "dateModified": "2014-10-27T08:06:58.158Z",
                     "procuringEntity": {
                         "id": {
@@ -479,30 +479,30 @@ class TenderResource(object):
             }
 
         """
-        tender = self.request.validated['tender']
-        tender_data = tender.serialize('chronograph_view' if self.request.authenticated_role == 'chronograph' else tender.status)
-        return {'data': tender_data}
+        auction = self.request.validated['auction']
+        auction_data = auction.serialize('chronograph_view' if self.request.authenticated_role == 'chronograph' else auction.status)
+        return {'data': auction_data}
 
-    #@json_view(content_type="application/json", validators=(validate_tender_data, ), permission='edit_tender')
+    #@json_view(content_type="application/json", validators=(validate_auction_data, ), permission='edit_auction')
     #def put(self):
-        #"""Tender Edit (full)"""
-        #tender = self.request.validated['tender']
-        #if tender.status in ['complete', 'unsuccessful', 'cancelled']:
-            #self.request.errors.add('body', 'data', 'Can\'t update tender in current ({}) status'.format(tender.status))
+        #"""Auction Edit (full)"""
+        #auction = self.request.validated['auction']
+        #if auction.status in ['complete', 'unsuccessful', 'cancelled']:
+            #self.request.errors.add('body', 'data', 'Can\'t update auction in current ({}) status'.format(auction.status))
             #self.request.errors.status = 403
             #return
-        #apply_patch(self.request, src=self.request.validated['tender_src'])
-        #return {'data': tender.serialize(tender.status)}
+        #apply_patch(self.request, src=self.request.validated['auction_src'])
+        #return {'data': auction.serialize(auction.status)}
 
-    @json_view(content_type="application/json", validators=(validate_patch_tender_data, ), permission='edit_tender')
+    @json_view(content_type="application/json", validators=(validate_patch_auction_data, ), permission='edit_auction')
     def patch(self):
-        """Tender Edit (partial)
+        """Auction Edit (partial)
 
-        For example here is how procuring entity can change number of items to be procured and total Value of a tender:
+        For example here is how procuring entity can change number of items to be procured and total Value of a auction:
 
         .. sourcecode:: http
 
-            PATCH /tenders/4879d3f8ee2443169b5fbbc9f89fa607 HTTP/1.1
+            PATCH /auctions/4879d3f8ee2443169b5fbbc9f89fa607 HTTP/1.1
             Host: example.com
             Accept: application/json
 
@@ -529,7 +529,7 @@ class TenderResource(object):
             {
                 "data": {
                     "id": "4879d3f8ee2443169b5fbbc9f89fa607",
-                    "tenderID": "UA-64e93250be76435397e8c992ed4214d1",
+                    "auctionID": "UA-64e93250be76435397e8c992ed4214d1",
                     "dateModified": "2014-10-27T08:12:34.956Z",
                     "value": {
                         "amount": 600
@@ -543,25 +543,25 @@ class TenderResource(object):
             }
 
         """
-        tender = self.request.validated['tender']
-        if self.request.authenticated_role != 'Administrator' and tender.status in ['complete', 'unsuccessful', 'cancelled']:
-            self.request.errors.add('body', 'data', 'Can\'t update tender in current ({}) status'.format(tender.status))
+        auction = self.request.validated['auction']
+        if self.request.authenticated_role != 'Administrator' and auction.status in ['complete', 'unsuccessful', 'cancelled']:
+            self.request.errors.add('body', 'data', 'Can\'t update auction in current ({}) status'.format(auction.status))
             self.request.errors.status = 403
             return
         data = self.request.validated['data']
-        if self.request.authenticated_role == 'tender_owner' and 'status' in data and data['status'] not in ['cancelled', tender.status]:
-            self.request.errors.add('body', 'data', 'Can\'t update tender status')
+        if self.request.authenticated_role == 'auction_owner' and 'status' in data and data['status'] not in ['cancelled', auction.status]:
+            self.request.errors.add('body', 'data', 'Can\'t update auction status')
             self.request.errors.status = 403
             return
-        if self.request.authenticated_role == 'chronograph' and tender.status == 'active.tendering' and data.get('status', tender.status) == 'active.auction':
-            apply_patch(self.request, save=False, src=self.request.validated['tender_src'])
+        if self.request.authenticated_role == 'chronograph' and auction.status == 'active.tendering' and data.get('status', auction.status) == 'active.auction':
+            apply_patch(self.request, save=False, src=self.request.validated['auction_src'])
             check_bids(self.request)
-            save_tender(self.request)
-        elif self.request.authenticated_role == 'chronograph' and tender.status in ['active.qualification', 'active.awarded'] and data.get('status', tender.status) == tender.status:
-            check_tender_status(self.request)
-            save_tender(self.request)
+            save_auction(self.request)
+        elif self.request.authenticated_role == 'chronograph' and auction.status in ['active.qualification', 'active.awarded'] and data.get('status', auction.status) == auction.status:
+            check_auction_status(self.request)
+            save_auction(self.request)
         else:
-            apply_patch(self.request, src=self.request.validated['tender_src'])
-        LOGGER.info('Updated tender {}'.format(tender.id),
-                    extra=context_unpack(self.request, {'MESSAGE_ID': 'tender_patch'}))
-        return {'data': tender.serialize(tender.status)}
+            apply_patch(self.request, src=self.request.validated['auction_src'])
+        LOGGER.info('Updated auction {}'.format(auction.id),
+                    extra=context_unpack(self.request, {'MESSAGE_ID': 'auction_patch'}))
+        return {'data': auction.serialize(auction.status)}

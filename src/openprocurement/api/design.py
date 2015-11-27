@@ -5,7 +5,7 @@ from couchdb.design import ViewDefinition
 FIELDS = [
     'auctionPeriod',
     'status',
-    'tenderID',
+    'auctionID',
     'lots',
     'procurementMethodType',
     #'auctionUrl',
@@ -38,15 +38,15 @@ def sync_design(db):
     ViewDefinition.sync_many(db, views, callback=add_index_options)
 
 
-tenders_all_view = ViewDefinition('tenders', 'all', '''function(doc) {
-    if(doc.doc_type == 'Tender') {
-        emit(doc.tenderID, null);
+auctions_all_view = ViewDefinition('auctions', 'all', '''function(doc) {
+    if(doc.doc_type == 'Auction') {
+        emit(doc.auctionID, null);
     }
 }''')
 
 
-tenders_by_dateModified_view = ViewDefinition('tenders', 'by_dateModified', '''function(doc) {
-    if(doc.doc_type == 'Tender') {
+auctions_by_dateModified_view = ViewDefinition('auctions', 'by_dateModified', '''function(doc) {
+    if(doc.doc_type == 'Auction') {
         var fields=%s, data={};
         for (var i in fields) {
             if (doc[fields[i]]) {
@@ -57,8 +57,8 @@ tenders_by_dateModified_view = ViewDefinition('tenders', 'by_dateModified', '''f
     }
 }''' % FIELDS)
 
-tenders_real_by_dateModified_view = ViewDefinition('tenders', 'real_by_dateModified', '''function(doc) {
-    if(doc.doc_type == 'Tender' && !doc.mode) {
+auctions_real_by_dateModified_view = ViewDefinition('auctions', 'real_by_dateModified', '''function(doc) {
+    if(doc.doc_type == 'Auction' && !doc.mode) {
         var fields=%s, data={};
         for (var i in fields) {
             if (doc[fields[i]]) {
@@ -69,8 +69,8 @@ tenders_real_by_dateModified_view = ViewDefinition('tenders', 'real_by_dateModif
     }
 }''' % FIELDS)
 
-tenders_test_by_dateModified_view = ViewDefinition('tenders', 'test_by_dateModified', '''function(doc) {
-    if(doc.doc_type == 'Tender' && doc.mode == 'test') {
+auctions_test_by_dateModified_view = ViewDefinition('auctions', 'test_by_dateModified', '''function(doc) {
+    if(doc.doc_type == 'Auction' && doc.mode == 'test') {
         var fields=%s, data={};
         for (var i in fields) {
             if (doc[fields[i]]) {
@@ -81,8 +81,8 @@ tenders_test_by_dateModified_view = ViewDefinition('tenders', 'test_by_dateModif
     }
 }''' % FIELDS)
 
-tenders_by_local_seq_view = ViewDefinition('tenders', 'by_local_seq', '''function(doc) {
-    if(doc.doc_type == 'Tender') {
+auctions_by_local_seq_view = ViewDefinition('auctions', 'by_local_seq', '''function(doc) {
+    if(doc.doc_type == 'Auction') {
         var fields=%s, data={};
         for (var i in fields) {
             if (doc[fields[i]]) {
@@ -93,8 +93,8 @@ tenders_by_local_seq_view = ViewDefinition('tenders', 'by_local_seq', '''functio
     }
 }''' % CHANGES_FIELDS)
 
-tenders_real_by_local_seq_view = ViewDefinition('tenders', 'real_by_local_seq', '''function(doc) {
-    if(doc.doc_type == 'Tender' && !doc.mode) {
+auctions_real_by_local_seq_view = ViewDefinition('auctions', 'real_by_local_seq', '''function(doc) {
+    if(doc.doc_type == 'Auction' && !doc.mode) {
         var fields=%s, data={};
         for (var i in fields) {
             if (doc[fields[i]]) {
@@ -105,8 +105,8 @@ tenders_real_by_local_seq_view = ViewDefinition('tenders', 'real_by_local_seq', 
     }
 }''' % CHANGES_FIELDS)
 
-tenders_test_by_local_seq_view = ViewDefinition('tenders', 'test_by_local_seq', '''function(doc) {
-    if(doc.doc_type == 'Tender' && doc.mode == 'test') {
+auctions_test_by_local_seq_view = ViewDefinition('auctions', 'test_by_local_seq', '''function(doc) {
+    if(doc.doc_type == 'Auction' && doc.mode == 'test') {
         var fields=%s, data={};
         for (var i in fields) {
             if (doc[fields[i]]) {

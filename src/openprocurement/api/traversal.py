@@ -14,19 +14,19 @@ class Root(object):
     __parent__ = None
     __acl__ = [
         # (Allow, Everyone, ALL_PERMISSIONS),
-        (Allow, Everyone, 'view_tender'),
+        (Allow, Everyone, 'view_auction'),
         (Deny, 'broker05', 'create_bid'),
         (Deny, 'broker05', 'create_complaint'),
         (Deny, 'broker05', 'create_question'),
-        (Deny, 'broker05', 'create_tender'),
+        (Deny, 'broker05', 'create_auction'),
         (Allow, 'g:brokers', 'create_bid'),
         #(Allow, 'g:brokers', 'create_complaint'),
         (Allow, 'g:brokers', 'create_question'),
-        (Allow, 'g:brokers', 'create_tender'),
+        (Allow, 'g:brokers', 'create_auction'),
         (Allow, 'g:auction', 'auction'),
-        (Allow, 'g:auction', 'upload_tender_documents'),
-        (Allow, 'g:chronograph', 'edit_tender'),
-        (Allow, 'g:Administrator', 'edit_tender'),
+        (Allow, 'g:auction', 'upload_auction_documents'),
+        (Allow, 'g:chronograph', 'edit_auction'),
+        (Allow, 'g:Administrator', 'edit_auction'),
         (Allow, 'g:Administrator', 'edit_bid'),
         (Allow, 'g:admins', ALL_PERMISSIONS),
     ]
@@ -54,19 +54,19 @@ def get_item(parent, key, request, root):
 
 
 def factory(request):
-    request.validated['tender_src'] = {}
+    request.validated['auction_src'] = {}
     root = Root(request)
-    if not request.matchdict or not request.matchdict.get('tender_id'):
+    if not request.matchdict or not request.matchdict.get('auction_id'):
         return root
-    request.validated['tender_id'] = request.matchdict['tender_id']
-    tender = request.tender
-    tender.__parent__ = root
-    request.validated['tender'] = tender
-    request.validated['tender_status'] = tender.status
+    request.validated['auction_id'] = request.matchdict['auction_id']
+    auction = request.auction
+    auction.__parent__ = root
+    request.validated['auction'] = auction
+    request.validated['auction_status'] = auction.status
     if request.method != 'GET':
-        request.validated['tender_src'] = tender.serialize('plain')
+        request.validated['auction_src'] = auction.serialize('plain')
     if request.matchdict.get('award_id'):
-        award = get_item(tender, 'award', request, root)
+        award = get_item(auction, 'award', request, root)
         if request.matchdict.get('complaint_id'):
             complaint = get_item(award, 'complaint', request, root)
             if request.matchdict.get('document_id'):
@@ -78,34 +78,34 @@ def factory(request):
         else:
             return award
     elif request.matchdict.get('contract_id'):
-        contract = get_item(tender, 'contract', request, root)
+        contract = get_item(auction, 'contract', request, root)
         if request.matchdict.get('document_id'):
             return get_item(contract, 'document', request, root)
         else:
             return contract
     elif request.matchdict.get('bid_id'):
-        bid = get_item(tender, 'bid', request, root)
+        bid = get_item(auction, 'bid', request, root)
         if request.matchdict.get('document_id'):
             return get_item(bid, 'document', request, root)
         else:
             return bid
     elif request.matchdict.get('complaint_id'):
-        complaint = get_item(tender, 'complaint', request, root)
+        complaint = get_item(auction, 'complaint', request, root)
         if request.matchdict.get('document_id'):
             return get_item(complaint, 'document', request, root)
         else:
             return complaint
     elif request.matchdict.get('cancellation_id'):
-        cancellation = get_item(tender, 'cancellation', request, root)
+        cancellation = get_item(auction, 'cancellation', request, root)
         if request.matchdict.get('document_id'):
             return get_item(cancellation, 'document', request, root)
         else:
             return cancellation
     elif request.matchdict.get('document_id'):
-        return get_item(tender, 'document', request, root)
+        return get_item(auction, 'document', request, root)
     elif request.matchdict.get('question_id'):
-        return get_item(tender, 'question', request, root)
+        return get_item(auction, 'question', request, root)
     elif request.matchdict.get('lot_id'):
-        return get_item(tender, 'lot', request, root)
-    request.validated['id'] = request.matchdict['tender_id']
-    return tender
+        return get_item(auction, 'lot', request, root)
+    request.validated['id'] = request.matchdict['auction_id']
+    return auction

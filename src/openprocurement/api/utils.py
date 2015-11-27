@@ -33,15 +33,15 @@ def generate_id():
     return uuid4().hex
 
 
-def generate_tender_id(ctime, db, server_id=''):
+def generate_auction_id(ctime, db, server_id=''):
     key = ctime.date().isoformat()
-    tenderIDdoc = 'tenderID_' + server_id if server_id else 'tenderID'
+    auctionIDdoc = 'auctionID_' + server_id if server_id else 'auctionID'
     while True:
         try:
-            tenderID = db.get(tenderIDdoc, {'_id': tenderIDdoc})
-            index = tenderID.get(key, 1)
-            tenderID[key] = index + 1
-            db.save(tenderID)
+            auctionID = db.get(auctionIDdoc, {'_id': auctionIDdoc})
+            index = auctionID.get(key, 1)
+            auctionID[key] = index + 1
+            db.save(auctionID)
         except ResourceConflict:  # pragma: no cover
             pass
         except Exception:  # pragma: no cover
@@ -88,11 +88,11 @@ def upload_file(request):
     key = generate_id()
     document_route = request.matched_route.name.replace("collection_", "")
     document_path = request.current_route_path(_route_name=document_route, document_id=document.id, _query={'download': key})
-    document.url = '/tenders' + document_path.split('/tenders', 1)[1]
+    document.url = '/auctions' + document_path.split('/auctions', 1)[1]
     conn = getattr(request.registry, 's3_connection', None)
     if conn:
         bucket = conn.get_bucket(request.registry.bucket_name)
-        filename = "{}/{}/{}".format(request.validated['tender_id'], document.id, key)
+        filename = "{}/{}/{}".format(request.validated['auction_id'], document.id, key)
         key = bucket.new_key(filename)
         key.set_metadata('Content-Type', document.format)
         key.set_metadata("Content-Disposition", build_header(document.title, filename_compat=quote(document.title.encode('utf-8'))))
@@ -100,7 +100,7 @@ def upload_file(request):
         key.set_acl('private')
     else:
         filename = "{}_{}".format(document.id, key)
-        request.validated['tender']['_attachments'][filename] = {
+        request.validated['auction']['_attachments'][filename] = {
             "content_type": document.format,
             "data": b64encode(in_file.read())
         }
@@ -113,20 +113,20 @@ def update_file_content_type(request):
         document = request.validated['document']
         key = parse_qs(urlparse(document.url).query).get('download').pop()
         bucket = conn.get_bucket(request.registry.bucket_name)
-        filename = "{}/{}/{}".format(request.validated['tender_id'], document.id, key)
+        filename = "{}/{}/{}".format(request.validated['auction_id'], document.id, key)
         key = bucket.get_key(filename)
         key.set_metadata('Content-Type', document.format)
         key.copy(key.bucket.name, key.name, key.metadata, preserve_acl=True)
 
 
 def get_file(request):
-    tender_id = request.validated['tender_id']
+    auction_id = request.validated['auction_id']
     document = request.validated['document']
     key = request.params.get('download')
     conn = getattr(request.registry, 's3_connection', None)
     filename = "{}_{}".format(document.id, key)
-    if conn and filename not in request.validated['tender']['_attachments']:
-        filename = "{}/{}/{}".format(tender_id, document.id, key)
+    if conn and filename not in request.validated['auction']['_attachments']:
+        filename = "{}/{}/{}".format(auction_id, document.id, key)
         url = conn.generate_url(method='GET', bucket=request.registry.bucket_name, key=filename, expires_in=300)
         request.response.content_type = document.format.encode('utf-8')
         request.response.content_disposition = build_header(document.title, filename_compat=quote(document.title.encode('utf-8')))
@@ -135,7 +135,7 @@ def get_file(request):
         return url
     else:
         filename = "{}_{}".format(document.id, key)
-        data = request.registry.db.get_attachment(tender_id, filename)
+        data = request.registry.db.get_attachment(auction_id, filename)
         if data:
             request.response.content_type = document.format.encode('utf-8')
             request.response.content_disposition = build_header(document.title, filename_compat=quote(document.title.encode('utf-8')))
@@ -175,11 +175,11 @@ def apply_data_patch(item, changes):
     return _apply_patch(item, patch_changes)
 
 
-def tender_serialize(request, tender_data, fields):
-    tender = request.tender_from_data(tender_data, raise_error=False)
-    if tender is None:
-        return dict([(i, tender_data.get(i, '')) for i in ['procurementMethodType', 'dateModified', 'id']])
-    return dict([(i, j) for i, j in tender.serialize(tender.status).items() if i in fields])
+def auction_serialize(request, auction_data, fields):
+    auction = request.auction_from_data(auction_data, raise_error=False)
+    if auction is None:
+        return dict([(i, auction_data.get(i, '')) for i in ['procurementMethodType', 'dateModified', 'id']])
+    return dict([(i, j) for i, j in auction.serialize(auction.status).items() if i in fields])
 
 
 def get_revision_changes(dst, src):
@@ -191,26 +191,26 @@ def set_ownership(item, request):
     item.owner_token = generate_id()
 
 
-def set_modetest_titles(tender):
-    if not tender.title or u'[ТЕСТУВАННЯ]' not in tender.title:
-        tender.title = u'[ТЕСТУВАННЯ] {}'.format(tender.title or u'')
-    if not tender.title_en or u'[TESTING]' not in tender.title_en:
-        tender.title_en = u'[TESTING] {}'.format(tender.title_en or u'')
-    if not tender.title_ru or u'[ТЕСТИРОВАНИЕ]' not in tender.title_ru:
-        tender.title_ru = u'[ТЕСТИРОВАНИЕ] {}'.format(tender.title_ru or u'')
+def set_modetest_titles(auction):
+    if not auction.title or u'[ТЕСТУВАННЯ]' not in auction.title:
+        auction.title = u'[ТЕСТУВАННЯ] {}'.format(auction.title or u'')
+    if not auction.title_en or u'[TESTING]' not in auction.title_en:
+        auction.title_en = u'[TESTING] {}'.format(auction.title_en or u'')
+    if not auction.title_ru or u'[ТЕСТИРОВАНИЕ]' not in auction.title_ru:
+        auction.title_ru = u'[ТЕСТИРОВАНИЕ] {}'.format(auction.title_ru or u'')
 
 
-def save_tender(request):
-    tender = request.validated['tender']
-    if tender.mode == u'test':
-        set_modetest_titles(tender)
-    patch = get_revision_changes(tender.serialize("plain"), request.validated['tender_src'])
+def save_auction(request):
+    auction = request.validated['auction']
+    if auction.mode == u'test':
+        set_modetest_titles(auction)
+    patch = get_revision_changes(auction.serialize("plain"), request.validated['auction_src'])
     if patch:
-        tender.revisions.append(Revision({'author': request.authenticated_userid, 'changes': patch, 'rev': tender.rev}))
-        old_dateModified = tender.dateModified
-        tender.dateModified = get_now()
+        auction.revisions.append(Revision({'author': request.authenticated_userid, 'changes': patch, 'rev': auction.rev}))
+        old_dateModified = auction.dateModified
+        auction.dateModified = get_now()
         try:
-            tender.store(request.registry.db)
+            auction.store(request.registry.db)
         except ModelValidationError, e:
             for i in e.message:
                 request.errors.add('body', i, e.message[i])
@@ -218,8 +218,8 @@ def save_tender(request):
         except Exception, e:  # pragma: no cover
             request.errors.add('body', 'data', str(e))
         else:
-            LOGGER.info('Saved tender {}: dateModified {} -> {}'.format(tender.id, old_dateModified and old_dateModified.isoformat(), tender.dateModified.isoformat()),
-                        extra=context_unpack(request, {'MESSAGE_ID': 'save_tender'}, {'TENDER_REV': tender.rev}))
+            LOGGER.info('Saved auction {}: dateModified {} -> {}'.format(auction.id, old_dateModified and old_dateModified.isoformat(), auction.dateModified.isoformat()),
+                        extra=context_unpack(request, {'MESSAGE_ID': 'save_auction'}, {'TENDER_REV': auction.rev}))
             return True
 
 
@@ -229,36 +229,36 @@ def apply_patch(request, data=None, save=True, src=None):
     if patch:
         request.context.import_data(patch)
         if save:
-            return save_tender(request)
+            return save_auction(request)
 
 
 def check_bids(request):
-    tender = request.validated['tender']
-    if tender.lots:
-        [setattr(i, 'status', 'unsuccessful') for i in tender.lots if i.numberOfBids == 0]
-        if max([i.numberOfBids for i in tender.lots]) < 2:
-            #tender.status = 'active.qualification'
+    auction = request.validated['auction']
+    if auction.lots:
+        [setattr(i, 'status', 'unsuccessful') for i in auction.lots if i.numberOfBids == 0]
+        if max([i.numberOfBids for i in auction.lots]) < 2:
+            #auction.status = 'active.qualification'
             add_next_award(request)
-        if set([i.status for i in tender.lots]) == set(['unsuccessful']):
-            tender.status = 'unsuccessful'
+        if set([i.status for i in auction.lots]) == set(['unsuccessful']):
+            auction.status = 'unsuccessful'
     else:
-        if tender.numberOfBids == 0:
-            tender.status = 'unsuccessful'
-        if tender.numberOfBids == 1:
-            #tender.status = 'active.qualification'
+        if auction.numberOfBids == 0:
+            auction.status = 'unsuccessful'
+        if auction.numberOfBids == 1:
+            #auction.status = 'active.qualification'
             add_next_award(request)
 
 
-def check_tender_status(request):
-    tender = request.validated['tender']
+def check_auction_status(request):
+    auction = request.validated['auction']
     now = get_now()
-    if tender.lots:
-        if any([i.status == 'pending' for i in tender.complaints]):
+    if auction.lots:
+        if any([i.status == 'pending' for i in auction.complaints]):
             return
-        for lot in tender.lots:
+        for lot in auction.lots:
             if lot.status != 'active':
                 continue
-            lot_awards = [i for i in tender.awards if i.lotID == lot.id]
+            lot_awards = [i for i in auction.awards if i.lotID == lot.id]
             if not lot_awards:
                 continue
             last_award = lot_awards[-1]
@@ -276,63 +276,63 @@ def check_tender_status(request):
             elif last_award.status == 'unsuccessful':
                 lot.status = 'unsuccessful'
                 continue
-            elif last_award.status == 'active' and any([i.status == 'active' and i.awardID == last_award.id for i in tender.contracts]):
+            elif last_award.status == 'active' and any([i.status == 'active' and i.awardID == last_award.id for i in auction.contracts]):
                 lot.status = 'complete'
-        statuses = set([lot.status for lot in tender.lots])
+        statuses = set([lot.status for lot in auction.lots])
         if statuses == set(['cancelled']):
-            tender.status = 'cancelled'
+            auction.status = 'cancelled'
         elif not statuses.difference(set(['unsuccessful', 'cancelled'])):
-            tender.status = 'unsuccessful'
+            auction.status = 'unsuccessful'
         elif not statuses.difference(set(['complete', 'unsuccessful', 'cancelled'])):
-            tender.status = 'complete'
+            auction.status = 'complete'
     else:
         pending_complaints = any([
             i.status == 'pending'
-            for i in tender.complaints
+            for i in auction.complaints
         ])
         pending_awards_complaints = any([
             i.status == 'pending'
-            for a in tender.awards
+            for a in auction.awards
             for i in a.complaints
         ])
         stand_still_ends = [
             a.complaintPeriod.endDate
-            for a in tender.awards
+            for a in auction.awards
             if a.complaintPeriod.endDate
         ]
         stand_still_end = max(stand_still_ends) if stand_still_ends else now
         stand_still_time_expired = stand_still_end < now
         active_awards = any([
             a.status == 'active'
-            for a in tender.awards
+            for a in auction.awards
         ])
         if not active_awards and not pending_complaints and not pending_awards_complaints and stand_still_time_expired:
-            tender.status = 'unsuccessful'
-        if tender.contracts and tender.contracts[-1].status == 'active':
-            tender.status = 'complete'
+            auction.status = 'unsuccessful'
+        if auction.contracts and auction.contracts[-1].status == 'active':
+            auction.status = 'complete'
 
 
 def add_next_award(request):
-    tender = request.validated['tender']
+    auction = request.validated['auction']
     now = get_now()
-    if not tender.awardPeriod:
-        tender.awardPeriod = Period({})
-    if not tender.awardPeriod.startDate:
-        tender.awardPeriod.startDate = now
-    if tender.lots:
+    if not auction.awardPeriod:
+        auction.awardPeriod = Period({})
+    if not auction.awardPeriod.startDate:
+        auction.awardPeriod.startDate = now
+    if auction.lots:
         statuses = set()
-        for lot in tender.lots:
+        for lot in auction.lots:
             if lot.status != 'active':
                 continue
-            lot_awards = [i for i in tender.awards if i.lotID == lot.id]
+            lot_awards = [i for i in auction.awards if i.lotID == lot.id]
             if lot_awards and lot_awards[-1].status in ['pending', 'active']:
                 statuses.add(lot_awards[-1].status if lot_awards else 'unsuccessful')
                 continue
-            lot_items = [i.id for i in tender.items if i.relatedLot == lot.id]
+            lot_items = [i.id for i in auction.items if i.relatedLot == lot.id]
             features = [
                 i
-                for i in (tender.features or [])
-                if i.featureOf == 'tenderer' or i.featureOf == 'lot' and i.relatedItem == lot.id or i.featureOf == 'item' and i.relatedItem in lot_items
+                for i in (auction.features or [])
+                if i.featureOf == 'auctioner' or i.featureOf == 'lot' and i.relatedItem == lot.id or i.featureOf == 'item' and i.relatedItem in lot_items
             ]
             codes = [i.code for i in features]
             bids = [
@@ -343,7 +343,7 @@ def add_next_award(request):
                     'parameters': [i for i in bid.parameters if i.code in codes],
                     'date': [i for i in bid.lotValues if lot.id == i.relatedLot][0].date
                 }
-                for bid in tender.bids
+                for bid in auction.bids
                 if lot.id in [i.relatedLot for i in bid.lotValues]
             ]
             if not bids:
@@ -364,21 +364,21 @@ def add_next_award(request):
                         'startDate': now.isoformat()
                     }
                 })
-                tender.awards.append(award)
-                request.response.headers['Location'] = request.route_url('Tender Awards', tender_id=tender.id, award_id=award['id'])
+                auction.awards.append(award)
+                request.response.headers['Location'] = request.route_url('Auction Awards', auction_id=auction.id, award_id=award['id'])
                 statuses.add('pending')
             else:
                 statuses.add('unsuccessful')
         if statuses.difference(set(['unsuccessful', 'active'])):
-            tender.awardPeriod.endDate = None
-            tender.status = 'active.qualification'
+            auction.awardPeriod.endDate = None
+            auction.status = 'active.qualification'
         else:
-            tender.awardPeriod.endDate = now
-            tender.status = 'active.awarded'
+            auction.awardPeriod.endDate = now
+            auction.status = 'active.awarded'
     else:
-        if not tender.awards or tender.awards[-1].status not in ['pending', 'active']:
-            unsuccessful_awards = [i.bid_id for i in tender.awards if i.status == 'unsuccessful']
-            bids = chef(tender.bids, tender.features or [], unsuccessful_awards)
+        if not auction.awards or auction.awards[-1].status not in ['pending', 'active']:
+            unsuccessful_awards = [i.bid_id for i in auction.awards if i.status == 'unsuccessful']
+            bids = chef(auction.bids, auction.features or [], unsuccessful_awards)
             if bids:
                 bid = bids[0].serialize()
                 award = Award({
@@ -390,14 +390,14 @@ def add_next_award(request):
                         'startDate': get_now().isoformat()
                     }
                 })
-                tender.awards.append(award)
-                request.response.headers['Location'] = request.route_url('Tender Awards', tender_id=tender.id, award_id=award['id'])
-        if tender.awards[-1].status == 'pending':
-            tender.awardPeriod.endDate = None
-            tender.status = 'active.qualification'
+                auction.awards.append(award)
+                request.response.headers['Location'] = request.route_url('Auction Awards', auction_id=auction.id, award_id=award['id'])
+        if auction.awards[-1].status == 'pending':
+            auction.awardPeriod.endDate = None
+            auction.status = 'active.qualification'
         else:
-            tender.awardPeriod.endDate = now
-            tender.status = 'active.awarded'
+            auction.awardPeriod.endDate = now
+            auction.status = 'active.awarded'
 
 
 def request_params(request):
@@ -425,10 +425,10 @@ def error_handler(errors, request_params=True):
     if errors.request.matchdict:
         for x, j in errors.request.matchdict.items():
             params[x.upper()] = j
-    if 'tender' in errors.request.validated:
-        params['TENDER_REV'] = errors.request.validated['tender'].rev
-        params['TENDERID'] = errors.request.validated['tender'].tenderID
-        params['TENDER_STATUS'] = errors.request.validated['tender'].status
+    if 'auction' in errors.request.validated:
+        params['TENDER_REV'] = errors.request.validated['auction'].rev
+        params['TENDERID'] = errors.request.validated['auction'].auctionID
+        params['TENDER_STATUS'] = errors.request.validated['auction'].status
     LOGGER.info('Error on processing request "{}"'.format(dumps(errors, indent=4)),
                 extra=context_unpack(errors.request, {'MESSAGE_ID': 'error_handler'}, params))
     return json_error(errors)
@@ -480,10 +480,10 @@ def set_logging_context(event):
     if request.matchdict:
         for x, j in request.matchdict.items():
             params[x.upper()] = j
-    if 'tender' in request.validated:
-        params['TENDER_REV'] = request.validated['tender'].rev
-        params['TENDERID'] = request.validated['tender'].tenderID
-        params['TENDER_STATUS'] = request.validated['tender'].status
+    if 'auction' in request.validated:
+        params['TENDER_REV'] = request.validated['auction'].rev
+        params['TENDERID'] = request.validated['auction'].auctionID
+        params['TENDER_STATUS'] = request.validated['auction'].status
     update_logging_context(request, params)
 
 
@@ -505,18 +505,18 @@ def context_unpack(request, msg, params=None):
     return journal_context
 
 
-def extract_tender_adapter(request, tender_id):
+def extract_auction_adapter(request, auction_id):
     db = request.registry.db
-    doc = db.get(tender_id)
+    doc = db.get(auction_id)
     if doc is None:
-        request.errors.add('url', 'tender_id', 'Not Found')
+        request.errors.add('url', 'auction_id', 'Not Found')
         request.errors.status = 404
         raise error_handler(request.errors)
 
-    return request.tender_from_data(doc)
+    return request.auction_from_data(doc)
 
 
-def extract_tender(request):
+def extract_auction(request):
     try:
         # empty if mounted under a path in mod_wsgi, for example
         path = decode_path_info(request.environ['PATH_INFO'] or '/')
@@ -525,17 +525,17 @@ def extract_tender(request):
     except UnicodeDecodeError as e:
         raise URLDecodeError(e.encoding, e.object, e.start, e.end, e.reason)
 
-    tender_id = ""
-    # extract tender id
+    auction_id = ""
+    # extract auction id
     parts = path.split('/')
-    if len(parts) < 4 or parts[3] != 'tenders':
+    if len(parts) < 4 or parts[3] != 'auctions':
         return
 
-    tender_id = parts[4]
-    return extract_tender_adapter(request, tender_id)
+    auction_id = parts[4]
+    return extract_auction_adapter(request, auction_id)
 
 
-class isTender(object):
+class isAuction(object):
     def __init__(self, val, config):
         self.val = val
 
@@ -545,8 +545,8 @@ class isTender(object):
     phash = text
 
     def __call__(self, context, request):
-        if request.tender is not None:
-            return getattr(request.tender, 'procurementMethodType', None) == self.val
+        if request.auction is not None:
+            return getattr(request.auction, 'procurementMethodType', None) == self.val
         return False
 
 
@@ -578,7 +578,7 @@ def fix_url(item, app_url):
         ]
     elif isinstance(item, dict):
         if "format" in item and "url" in item and '?download=' in item['url']:
-            path = item["url"] if item["url"].startswith('/tenders') else '/tenders' + item['url'].split('/tenders', 1)[1]
+            path = item["url"] if item["url"].startswith('/auctions') else '/auctions' + item['url'].split('/auctions', 1)[1]
             item["url"] = app_url + ROUTE_PREFIX + path
             return
         [
@@ -593,19 +593,19 @@ def beforerender(event):
         fix_url(event.rendering_val['data'], event['request'].application_url)
 
 
-def register_tender_procurementMethodType(config, model):
-    """Register a tender procurementMethodType.
+def register_auction_procurementMethodType(config, model):
+    """Register a auction procurementMethodType.
     :param config:
         The pyramid configuration object that will be populated.
     :param model:
-        The tender model class
+        The auction model class
     """
-    config.registry.tender_procurementMethodTypes[model.procurementMethodType.default] = model
+    config.registry.auction_procurementMethodTypes[model.procurementMethodType.default] = model
 
 
-def tender_from_data(request, data, raise_error=True, create=True):
+def auction_from_data(request, data, raise_error=True, create=True):
     procurementMethodType = data.get('procurementMethodType', 'belowThreshold')
-    model = request.registry.tender_procurementMethodTypes.get(procurementMethodType)
+    model = request.registry.auction_procurementMethodTypes.get(procurementMethodType)
     if model is None and raise_error:
         request.errors.add('data', 'procurementMethodType', 'Not implemented')
         request.errors.status = 415

@@ -11,9 +11,9 @@ from logging import getLogger
 from openprocurement.api.auth import AuthenticationPolicy, authenticated_role
 from openprocurement.api.design import sync_design
 from openprocurement.api.migration import migrate_data
-from openprocurement.api.models import Tender
+from openprocurement.api.models import Auction
 from openprocurement.api.traversal import factory
-from openprocurement.api.utils import forbidden, add_logging_context, set_logging_context, extract_tender, request_params, isTender, set_renderer, beforerender, register_tender_procurementMethodType, tender_from_data, ROUTE_PREFIX
+from openprocurement.api.utils import forbidden, add_logging_context, set_logging_context, extract_auction, request_params, isAuction, set_renderer, beforerender, register_auction_procurementMethodType, auction_from_data, ROUTE_PREFIX
 from pbkdf2 import PBKDF2
 from pkg_resources import iter_entry_points
 from pyramid.authorization import ACLAuthorizationPolicy as AuthorizationPolicy
@@ -25,7 +25,7 @@ LOGGER = getLogger("{}.init".format(__name__))
 SECURITY = {u'admins': {u'names': [], u'roles': ['_admin']}, u'members': {u'names': [], u'roles': ['_admin']}}
 VALIDATE_DOC_ID = '_design/_auth'
 VALIDATE_DOC_UPDATE = """function(newDoc, oldDoc, userCtx){
-    if(newDoc._deleted && newDoc.tenderID) {
+    if(newDoc._deleted && newDoc.auctionID) {
         throw({forbidden: 'Not authorized to delete this document'});
     }
     if(userCtx.roles.indexOf('_admin') !== -1 && newDoc._id.indexOf('_design/') === 0) {
@@ -67,7 +67,7 @@ def main(global_config, **settings):
     config.add_forbidden_view(forbidden)
     config.add_request_method(request_params, 'params', reify=True)
     config.add_request_method(authenticated_role, reify=True)
-    config.add_request_method(extract_tender, 'tender', reify=True)
+    config.add_request_method(extract_auction, 'auction', reify=True)
     config.add_renderer('prettyjson', JSON(indent=4))
     config.add_renderer('jsonp', JSONP(param_name='opt_jsonp'))
     config.add_renderer('prettyjsonp', JSONP(indent=4, param_name='opt_jsonp'))
@@ -76,11 +76,11 @@ def main(global_config, **settings):
     config.add_subscriber(set_renderer, NewRequest)
     config.add_subscriber(beforerender, BeforeRender)
 
-    # tender procurementMethodType plugins support
-    config.add_route_predicate('procurementMethodType', isTender)
-    config.registry.tender_procurementMethodTypes = {}
-    config.add_request_method(tender_from_data)
-    config.add_directive('add_tender_procurementMethodType', register_tender_procurementMethodType)
+    # auction procurementMethodType plugins support
+    config.add_route_predicate('procurementMethodType', isAuction)
+    config.registry.auction_procurementMethodTypes = {}
+    config.add_request_method(auction_from_data)
+    config.add_directive('add_auction_procurementMethodType', register_auction_procurementMethodType)
 
     # search for plugins
     plugins = settings.get('plugins') and settings['plugins'].split(',')
@@ -168,5 +168,5 @@ def main(global_config, **settings):
 
 
 def includeme(config):
-    config.add_tender_procurementMethodType(Tender)
+    config.add_auction_procurementMethodType(Auction)
     config.scan("openprocurement.api.views")
