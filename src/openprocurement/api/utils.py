@@ -219,7 +219,7 @@ def save_auction(request):
             request.errors.add('body', 'data', str(e))
         else:
             LOGGER.info('Saved auction {}: dateModified {} -> {}'.format(auction.id, old_dateModified and old_dateModified.isoformat(), auction.dateModified.isoformat()),
-                        extra=context_unpack(request, {'MESSAGE_ID': 'save_auction'}, {'TENDER_REV': auction.rev}))
+                        extra=context_unpack(request, {'MESSAGE_ID': 'save_auction'}, {'AUCTION_REV': auction.rev}))
             return True
 
 
@@ -426,9 +426,9 @@ def error_handler(errors, request_params=True):
         for x, j in errors.request.matchdict.items():
             params[x.upper()] = j
     if 'auction' in errors.request.validated:
-        params['TENDER_REV'] = errors.request.validated['auction'].rev
-        params['TENDERID'] = errors.request.validated['auction'].auctionID
-        params['TENDER_STATUS'] = errors.request.validated['auction'].status
+        params['AUCTION_REV'] = errors.request.validated['auction'].rev
+        params['AUCTIONID'] = errors.request.validated['auction'].auctionID
+        params['AUCTION_STATUS'] = errors.request.validated['auction'].status
     LOGGER.info('Error on processing request "{}"'.format(dumps(errors, indent=4)),
                 extra=context_unpack(errors.request, {'MESSAGE_ID': 'error_handler'}, params))
     return json_error(errors)
@@ -446,7 +446,7 @@ def forbidden(request):
 def add_logging_context(event):
     request = event.request
     params = {
-        'TENDERS_API_VERSION': VERSION,
+        'AUCTIONS_API_VERSION': VERSION,
         'TAGS': 'python,api',
         'USER': str(request.authenticated_userid or ''),
         #'ROLE': str(request.authenticated_role),
@@ -461,7 +461,7 @@ def add_logging_context(event):
         'CONTRACT_ID': '',
         'DOCUMENT_ID': '',
         'QUESTION_ID': '',
-        'TENDER_ID': '',
+        'AUCTION_ID': '',
         'TIMESTAMP': get_now().isoformat(),
         'REQUEST_ID': request.environ.get('REQUEST_ID', ''),
         'CLIENT_REQUEST_ID': request.headers.get('X-Client-Request-ID', ''),
@@ -481,9 +481,9 @@ def set_logging_context(event):
         for x, j in request.matchdict.items():
             params[x.upper()] = j
     if 'auction' in request.validated:
-        params['TENDER_REV'] = request.validated['auction'].rev
-        params['TENDERID'] = request.validated['auction'].auctionID
-        params['TENDER_STATUS'] = request.validated['auction'].status
+        params['AUCTION_REV'] = request.validated['auction'].rev
+        params['AUCTIONID'] = request.validated['auction'].auctionID
+        params['AUCTION_STATUS'] = request.validated['auction'].status
     update_logging_context(request, params)
 
 

@@ -324,5 +324,5 @@ class AuctionAwardResource(object):
             return
         if save_auction(self.request):
             LOGGER.info('Updated auction award {}'.format(self.request.context.id),
-                        extra=context_unpack(self.request, {'MESSAGE_ID': 'auction_award_patch'}, {'TENDER_REV': auction.rev}))
+                        extra=context_unpack(self.request, {'MESSAGE_ID': 'auction_award_patch'}, {'AUCTION_REV': auction.rev}))
             return {'data': award.serialize("view")}
