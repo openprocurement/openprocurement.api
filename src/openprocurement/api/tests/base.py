@@ -95,7 +95,7 @@ test_features_auction_data["features"] = [
     },
     {
         "code": "OCDS-123454-YEARS",
-        "featureOf": "auctioner",
+        "featureOf": "tenderer",
         "title": u"Років на ринку",
         "title_en": "Years trading",
         "description": u"Кількість років, які організація учасник працює на ринку",
@@ -163,9 +163,9 @@ test_features = [
         ]
     },
     {
-        "code": "code_auctioner",
-        "featureOf": "auctioner",
-        "title": u"auctioner feature",
+        "code": "code_tenderer",
+        "featureOf": "tenderer",
+        "title": u"tenderer feature",
         "enum": [
             {
                 "value": 0.01,

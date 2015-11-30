@@ -332,7 +332,7 @@ def add_next_award(request):
             features = [
                 i
                 for i in (auction.features or [])
-                if i.featureOf == 'auctioner' or i.featureOf == 'lot' and i.relatedItem == lot.id or i.featureOf == 'item' and i.relatedItem in lot_items
+                if i.featureOf == 'tenderer' or i.featureOf == 'lot' and i.relatedItem == lot.id or i.featureOf == 'item' and i.relatedItem in lot_items
             ]
             codes = [i.code for i in features]
             bids = [

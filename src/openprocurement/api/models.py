@@ -478,7 +478,7 @@ class Bid(Model):
                 codes = dict([
                     (i.code, [x.value for x in i.enum])
                     for i in (auction.features or [])
-                    if i.featureOf == 'auctioner' or i.featureOf == 'lot' and i.relatedItem in lots or i.featureOf == 'item' and i.relatedItem in items
+                    if i.featureOf == 'tenderer' or i.featureOf == 'lot' and i.relatedItem in lots or i.featureOf == 'item' and i.relatedItem in items
                 ])
                 if set([i['code'] for i in parameters]) != set(codes):
                     raise ValidationError(u"All features parameters is required.")
@@ -662,7 +662,7 @@ def validate_values_uniq(values, *args):
 class Feature(Model):
 
     code = StringType(required=True, min_length=1, default=lambda: uuid4().hex)
-    featureOf = StringType(required=True, choices=['auctioner', 'lot', 'item'], default='auctioner')
+    featureOf = StringType(required=True, choices=['tenderer', 'lot', 'item'], default='tenderer')
     relatedItem = StringType(min_length=1)
     title = StringType(required=True, min_length=1)
     title_en = StringType()
@@ -937,7 +937,7 @@ class Auction(SchematicsDocument, Model):
             round(vnmax([
                 i
                 for i in features
-                if i.featureOf == 'auctioner' or i.featureOf == 'lot' and i.relatedItem != lot['id'] or i.featureOf == 'item' and i.relatedItem in [j.id for j in data['items'] if j.relatedLot != lot['id']]
+                if i.featureOf == 'tenderer' or i.featureOf == 'lot' and i.relatedItem != lot['id'] or i.featureOf == 'item' and i.relatedItem in [j.id for j in data['items'] if j.relatedLot != lot['id']]
             ]), 15) > 0.3
             for lot in data['lots']
         ]):

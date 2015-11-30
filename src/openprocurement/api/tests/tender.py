@@ -672,7 +672,7 @@ class AuctionResourceTest(BaseWebTest):
             },
             {
                 "code": "OCDS-123454-YEARS",
-                "featureOf": "auctioner",
+                "featureOf": "tenderer",
                 "title": u"Років на ринку",
                 "title_en": u"Years trading",
                 "description": u"Кількість років, які організація учасник працює на ринку",
@@ -689,7 +689,7 @@ class AuctionResourceTest(BaseWebTest):
             },
             {
                 "code": "OCDS-123454-POSTPONEMENT",
-                "featureOf": "auctioner",
+                "featureOf": "tenderer",
                 "title": u"Відстрочка платежу",
                 "title_en": u"Postponement of payment",
                 "description": u"Термін відстрочки платежу",
@@ -712,7 +712,7 @@ class AuctionResourceTest(BaseWebTest):
         self.assertEqual(auction['features'], data['features'])
 
         response = self.app.patch_json('/auctions/{}'.format(auction['id']), {'data': {'features': [{
-            "featureOf": "auctioner",
+            "featureOf": "tenderer",
             "relatedItem": None
         }, {}, {}]}})
         self.assertEqual(response.status, '200 OK')

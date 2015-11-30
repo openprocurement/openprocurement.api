@@ -563,9 +563,9 @@ class AuctionLotFeatureBidderResourceTest(BaseAuctionWebTest):
                     ]
                 },
                 {
-                    "code": "code_auctioner",
-                    "featureOf": "auctioner",
-                    "title": u"auctioner feature",
+                    "code": "code_tenderer",
+                    "featureOf": "tenderer",
+                    "title": u"tenderer feature",
                     "enum": [
                         {
                             "value": 0.01,
@@ -669,7 +669,7 @@ class AuctionLotFeatureBidderResourceTest(BaseAuctionWebTest):
 
         response = self.app.post_json(request_path, {'data': {'tenderers': [test_auction_data["procuringEntity"]], 'lotValues': [{"value": {"amount": 500}, 'relatedLot': self.lot_id}], 'parameters': [
             {"code": "code_item", "value": 0.01},
-            {"code": "code_auctioner", "value": 0},
+            {"code": "code_tenderer", "value": 0},
             {"code": "code_lot", "value": 0.01},
         ]}}, status=422)
         self.assertEqual(response.status, '422 Unprocessable Entity')
@@ -683,7 +683,7 @@ class AuctionLotFeatureBidderResourceTest(BaseAuctionWebTest):
         request_path = '/auctions/{}/bids'.format(self.auction_id)
         response = self.app.post_json(request_path, {'data': {'tenderers': [test_auction_data["procuringEntity"]], 'lotValues': [{"value": {"amount": 500}, 'relatedLot': self.lot_id}], 'parameters': [
             {"code": "code_item", "value": 0.01},
-            {"code": "code_auctioner", "value": 0.01},
+            {"code": "code_tenderer", "value": 0.01},
             {"code": "code_lot", "value": 0.01},
         ]}})
         self.assertEqual(response.status, '201 Created')
@@ -697,7 +697,7 @@ class AuctionLotFeatureBidderResourceTest(BaseAuctionWebTest):
 
         response = self.app.post_json(request_path, {'data': {'tenderers': [test_auction_data["procuringEntity"]], 'lotValues': [{"value": {"amount": 500}, 'relatedLot': self.lot_id}], 'parameters': [
             {"code": "code_item", "value": 0.01},
-            {"code": "code_auctioner", "value": 0.01},
+            {"code": "code_tenderer", "value": 0.01},
             {"code": "code_lot", "value": 0.01},
         ]}}, status=403)
         self.assertEqual(response.status, '403 Forbidden')
