@@ -10,6 +10,7 @@ from json import dumps
 from jsonpatch import make_patch, apply_patch as _apply_patch
 from logging import getLogger
 from openprocurement.api.models import Document, Revision, Award, Period, get_now
+from openprocurement.api.traversal import factory
 from pkg_resources import get_distribution
 from rfc6266 import build_header
 from schematics.exceptions import ModelValidationError
@@ -20,6 +21,8 @@ from uuid import uuid4
 from webob.multidict import NestedMultiDict
 from pyramid.exceptions import URLDecodeError
 from pyramid.compat import decode_path_info
+from binascii import hexlify, unhexlify
+from Crypto.Cipher import AES
 
 
 PKG = get_distribution(__package__)
@@ -434,7 +437,7 @@ def error_handler(errors, request_params=True):
     return json_error(errors)
 
 
-opresource = partial(resource, error_handler=error_handler)
+opresource = partial(resource, error_handler=error_handler, factory=factory)
 
 
 def forbidden(request):
@@ -446,7 +449,7 @@ def forbidden(request):
 def add_logging_context(event):
     request = event.request
     params = {
-        'TENDERS_API_VERSION': VERSION,
+        'API_VERSION': VERSION,
         'TAGS': 'python,api',
         'USER': str(request.authenticated_userid or ''),
         #'ROLE': str(request.authenticated_role),
@@ -455,13 +458,6 @@ def add_logging_context(event):
         'REMOTE_ADDR': request.remote_addr or '',
         'USER_AGENT': request.user_agent or '',
         'REQUEST_METHOD': request.method,
-        'AWARD_ID': '',
-        'BID_ID': '',
-        'COMPLAINT_ID': '',
-        'CONTRACT_ID': '',
-        'DOCUMENT_ID': '',
-        'QUESTION_ID': '',
-        'TENDER_ID': '',
         'TIMESTAMP': get_now().isoformat(),
         'REQUEST_ID': request.environ.get('REQUEST_ID', ''),
         'CLIENT_REQUEST_ID': request.headers.get('X-Client-Request-ID', ''),
@@ -613,3 +609,18 @@ def tender_from_data(request, data, raise_error=True, create=True):
     if model is not None and create:
         model = model(data)
     return model
+
+
+def encrypt(uuid, name, key):
+    iv = "{:^{}.{}}".format(name, AES.block_size, AES.block_size)
+    text = "{:^{}}".format(key, AES.block_size)
+    return hexlify(AES.new(uuid, AES.MODE_CBC, iv).encrypt(text))
+
+
+def decrypt(uuid, name, key):
+    iv = "{:^{}.{}}".format(name, AES.block_size, AES.block_size)
+    try:
+        text = AES.new(uuid, AES.MODE_CBC, iv).decrypt(unhexlify(key)).strip()
+    except:
+        text = ''
+    return text

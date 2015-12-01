@@ -1,7 +1,5 @@
 # -*- coding: utf-8 -*-
 from logging import getLogger
-from binascii import hexlify, unhexlify
-from Crypto.Cipher import AES
 from openprocurement.api.design import (
     FIELDS,
     tenders_by_dateModified_view,
@@ -24,6 +22,8 @@ from openprocurement.api.utils import (
     opresource,
     json_view,
     context_unpack,
+    encrypt,
+    decrypt,
 )
 from openprocurement.api.validation import (
     validate_patch_tender_data,
@@ -48,27 +48,12 @@ FEED = {
 }
 
 
-def encrypt(uuid, name, key):
-    iv = "{:^{}.{}}".format(name, AES.block_size, AES.block_size)
-    text = "{:^{}}".format(key, AES.block_size)
-    return hexlify(AES.new(uuid, AES.MODE_CBC, iv).encrypt(text))
-
-
-def decrypt(uuid, name, key):
-    iv = "{:^{}.{}}".format(name, AES.block_size, AES.block_size)
-    try:
-        text = AES.new(uuid, AES.MODE_CBC, iv).decrypt(unhexlify(key)).strip()
-    except:
-        text = ''
-    return text
-
-
 @opresource(name='Tenders',
             path='/tenders',
             description="Open Contracting compatible data exchange format. See http://ocds.open-contracting.org/standard/r/master/#tender for more info")
 class TendersResource(object):
 
-    def __init__(self, request):
+    def __init__(self, request, context):
         self.request = request
         self.server = request.registry.couchdb_server
         self.db = request.registry.db
@@ -388,7 +373,7 @@ class TendersResource(object):
             description="Open Contracting compatible data exchange format. See http://ocds.open-contracting.org/standard/r/master/#tender for more info")
 class TenderResource(object):
 
-    def __init__(self, request):
+    def __init__(self, request, context):
         self.request = request
         self.db = request.registry.db
 
