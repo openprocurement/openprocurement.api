@@ -12,7 +12,6 @@ from openprocurement.api.auth import AuthenticationPolicy, authenticated_role
 from openprocurement.api.design import sync_design
 from openprocurement.api.migration import migrate_data
 from openprocurement.api.models import Tender
-from openprocurement.api.traversal import factory
 from openprocurement.api.utils import forbidden, add_logging_context, set_logging_context, extract_tender, request_params, isTender, set_renderer, beforerender, register_tender_procurementMethodType, tender_from_data, ROUTE_PREFIX
 from pbkdf2 import PBKDF2
 from pkg_resources import iter_entry_points
@@ -57,7 +56,6 @@ class Server(Server):
 def main(global_config, **settings):
     config = Configurator(
         settings=settings,
-        root_factory=factory,
         authentication_policy=AuthenticationPolicy(settings['auth.file'], __name__),
         authorization_policy=AuthorizationPolicy(),
         route_prefix=ROUTE_PREFIX,
