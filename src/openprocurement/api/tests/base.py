@@ -381,6 +381,7 @@ class BaseTenderWebTest(BaseWebTest):
                 item['relatedLot'] = lots[i % len(lots)]['id']
         response = self.app.post_json('/tenders', {'data': data})
         tender = response.json['data']
+        self.tender_token = response.json['access']['token']
         self.tender_id = tender['id']
         status = tender['status']
         if self.initial_bids:
