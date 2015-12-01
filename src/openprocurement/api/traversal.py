@@ -7,7 +7,6 @@ from pyramid.security import (
     Deny,
     Everyone,
 )
-from openprocurement.api.utils import error_handler
 
 
 class Root(object):
@@ -41,6 +40,7 @@ def get_item(parent, key, request, root):
     request.validated['{}_id'.format(key)] = request.matchdict['{}_id'.format(key)]
     items = [i for i in getattr(parent, '{}s'.format(key), []) if i.id == request.matchdict['{}_id'.format(key)]]
     if not items:
+        from openprocurement.api.utils import error_handler
         request.errors.add('url', '{}_id'.format(key), 'Not Found')
         request.errors.status = 404
         raise error_handler(request.errors)
@@ -62,6 +62,7 @@ def factory(request):
     request.validated['tender_id'] = request.matchdict['tender_id']
     tender = Tender.load(root.db, request.matchdict['tender_id'])
     if not tender:
+        from openprocurement.api.utils import error_handler
         request.errors.add('url', 'tender_id', 'Not Found')
         request.errors.status = 404
         raise error_handler(request.errors)

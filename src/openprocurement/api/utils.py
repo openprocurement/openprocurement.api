@@ -10,6 +10,7 @@ from json import dumps
 from jsonpatch import make_patch, apply_patch as _apply_patch
 from logging import getLogger
 from openprocurement.api.models import Document, Revision, Award, get_now
+from openprocurement.api.traversal import factory
 from pkg_resources import get_distribution
 from rfc6266 import build_header
 from schematics.exceptions import ModelValidationError
@@ -289,7 +290,7 @@ def error_handler(errors, request_params=True):
     return json_error(errors)
 
 
-opresource = partial(resource, error_handler=error_handler)
+opresource = partial(resource, error_handler=error_handler, factory=factory)
 
 
 def forbidden(request):

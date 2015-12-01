@@ -24,7 +24,7 @@ LOGGER = getLogger(__name__)
             description="Tender award complaints")
 class TenderAwardComplaintResource(object):
 
-    def __init__(self, request):
+    def __init__(self, request, context):
         self.request = request
         self.db = request.registry.db
 

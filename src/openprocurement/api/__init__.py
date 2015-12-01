@@ -133,7 +133,6 @@ class Server(Server):
 def main(global_config, **settings):
     config = Configurator(
         settings=settings,
-        root_factory=factory,
         authentication_policy=AuthenticationPolicy(settings['auth.file'], __name__),
         authorization_policy=AuthorizationPolicy(),
         route_prefix=ROUTE_PREFIX,

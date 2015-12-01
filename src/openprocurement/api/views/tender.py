@@ -68,7 +68,7 @@ def decrypt(uuid, name, key):
             description="Open Contracting compatible data exchange format. See http://ocds.open-contracting.org/standard/r/master/#tender for more info")
 class TenderResource(object):
 
-    def __init__(self, request):
+    def __init__(self, request, context):
         self.request = request
         self.server = request.registry.couchdb_server
         self.db = request.registry.db
