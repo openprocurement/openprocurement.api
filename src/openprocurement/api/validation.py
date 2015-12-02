@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from openprocurement.api.models import ITender, Tender, Bid, Award, Document, Question, Complaint, Contract, Cancellation, Lot, get_now
+from openprocurement.api.models import Award, Document, Question, Complaint, Contract, Cancellation, Lot, get_now
 from schematics.exceptions import ModelValidationError, ModelConversionError
 from openprocurement.api.utils import apply_data_patch, update_logging_context
 
@@ -30,16 +30,7 @@ def validate_data(request, model, partial=False, data=None):
             m.import_data(new_patch, strict=True)
             m.__parent__ = request.context.__parent__
             m.validate()
-            if request.authenticated_role == 'Administrator':
-                role = 'Administrator'
-            elif request.authenticated_role == 'chronograph':
-                role = 'chronograph'
-            elif request.authenticated_role == 'auction' and ITender.providedBy(request.context):
-                role = 'auction_{}'.format(request.method.lower())
-            elif ITender.providedBy(request.context):
-                role = 'edit_{}'.format(request.context.status)
-            else:
-                role = 'edit'
+            role = m.get_role()
             method = m.to_patch
         else:
             m = model(data)

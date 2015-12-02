@@ -157,6 +157,13 @@ class Model(SchematicsModel):
         data = export_loop(self.__class__, self, field_converter, role=role, raise_error_on_role=True, print_none=True)
         return data
 
+    def get_role(self):
+        root = self.__parent__
+        while root.__parent__ is not None:
+            root = root.__parent__
+        request = root.request
+        return 'Administrator' if request.authenticated_role == 'Administrator' else 'edit'
+
 
 class Value(Model):
 
@@ -881,6 +888,19 @@ class Tender(SchematicsDocument, Model):
     procurementMethodType = StringType(default="belowThreshold")
 
     __name__ = ''
+
+    def get_role(self):
+        root = self.__parent__
+        request = root.request
+        if request.authenticated_role == 'Administrator':
+            role = 'Administrator'
+        elif request.authenticated_role == 'chronograph':
+            role = 'chronograph'
+        elif request.authenticated_role == 'auction':
+            role = 'auction_{}'.format(request.method.lower())
+        else:
+            role = 'edit_{}'.format(request.context.status)
+        return role
 
     def __acl__(self):
         acl = [
