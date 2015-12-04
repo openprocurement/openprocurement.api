@@ -73,6 +73,7 @@ def main(global_config, **settings):
     config.add_subscriber(set_logging_context, ContextFound)
     config.add_subscriber(set_renderer, NewRequest)
     config.add_subscriber(beforerender, BeforeRender)
+    config.scan("openprocurement.api.views.spore")
 
     # tender procurementMethodType plugins support
     config.add_route_predicate('procurementMethodType', isTender)
