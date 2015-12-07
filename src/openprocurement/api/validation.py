@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from openprocurement.api.models import Tender, Bid, Award, Document, Question, Complaint, Contract, Cancellation, Lot, get_now
+from openprocurement.api.models import Award, Document, Question, Complaint, Contract, Cancellation, Lot, get_now
 from schematics.exceptions import ModelValidationError, ModelConversionError
 from openprocurement.api.utils import apply_data_patch, update_logging_context
 
@@ -18,27 +18,20 @@ def validate_json_data(request):
     return json['data']
 
 
-def validate_data(request, model, partial=False):
-    data = validate_json_data(request)
+def validate_data(request, model, partial=False, data=None):
+    if data is None:
+        data = validate_json_data(request)
     if data is None:
         return
     try:
         if partial and isinstance(request.context, model):
-            new_patch = apply_data_patch(request.context.serialize(), data)
-            m = model(request.context.serialize())
-            m.import_data(new_patch, strict=True)
+            initial_data = request.context.serialize()
+            m = model(initial_data)
+            new_patch = apply_data_patch(initial_data, data)
+            m.import_data(new_patch, partial=True, strict=True)
             m.__parent__ = request.context.__parent__
             m.validate()
-            if request.authenticated_role == 'Administrator':
-                role = 'Administrator'
-            elif request.authenticated_role == 'chronograph':
-                role = 'chronograph'
-            elif request.authenticated_role == 'auction' and isinstance(request.context, Tender):
-                role = 'auction_{}'.format(request.method.lower())
-            elif isinstance(request.context, Tender):
-                role = 'edit_{}'.format(request.context.status)
-            else:
-                role = 'edit'
+            role = m.get_role()
             method = m.to_patch
         else:
             m = model(data)
@@ -63,16 +56,26 @@ def validate_data(request, model, partial=False):
         else:
             data = method(role)
             request.validated['data'] = data
+            if not partial:
+                m = model(data)
+                m.__parent__ = request.context
+                request.validated[model.__name__.lower()] = m
     return data
 
 
 def validate_tender_data(request):
     update_logging_context(request, {'tender_id': '__new__'})
-    return validate_data(request, Tender)
+
+    data = validate_json_data(request)
+    if data is None:
+        return
+
+    model = request.tender_from_data(data, create=False)
+    return validate_data(request, model, data=data)
 
 
 def validate_patch_tender_data(request):
-    return validate_data(request, Tender, True)
+    return validate_data(request, request.tender.__class__, True)
 
 
 def validate_tender_auction_data(request):
@@ -141,11 +144,13 @@ def validate_tender_auction_data(request):
 
 def validate_bid_data(request):
     update_logging_context(request, {'bid_id': '__new__'})
-    return validate_data(request, Bid)
+    model = request.tender.__class__.bids.model_class
+    return validate_data(request, model)
 
 
 def validate_patch_bid_data(request):
-    return validate_data(request, Bid, True)
+    model = request.tender.__class__.bids.model_class
+    return validate_data(request, model, True)
 
 
 def validate_award_data(request):

@@ -1,7 +1,5 @@
 # -*- coding: utf-8 -*-
 from logging import getLogger
-from binascii import hexlify, unhexlify
-from Crypto.Cipher import AES
 from openprocurement.api.design import (
     FIELDS,
     tenders_by_dateModified_view,
@@ -11,7 +9,7 @@ from openprocurement.api.design import (
     tenders_real_by_local_seq_view,
     tenders_test_by_local_seq_view,
 )
-from openprocurement.api.models import Tender, get_now
+from openprocurement.api.models import get_now
 from openprocurement.api.utils import (
     generate_id,
     generate_tender_id,
@@ -24,6 +22,8 @@ from openprocurement.api.utils import (
     opresource,
     json_view,
     context_unpack,
+    encrypt,
+    decrypt,
 )
 from openprocurement.api.validation import (
     validate_patch_tender_data,
@@ -48,35 +48,19 @@ FEED = {
 }
 
 
-def encrypt(uuid, name, key):
-    iv = "{:^{}.{}}".format(name, AES.block_size, AES.block_size)
-    text = "{:^{}}".format(key, AES.block_size)
-    return hexlify(AES.new(uuid, AES.MODE_CBC, iv).encrypt(text))
-
-
-def decrypt(uuid, name, key):
-    iv = "{:^{}.{}}".format(name, AES.block_size, AES.block_size)
-    try:
-        text = AES.new(uuid, AES.MODE_CBC, iv).decrypt(unhexlify(key)).strip()
-    except:
-        text = ''
-    return text
-
-
-@opresource(name='Tender',
-            collection_path='/tenders',
-            path='/tenders/{tender_id}',
+@opresource(name='Tenders',
+            path='/tenders',
             description="Open Contracting compatible data exchange format. See http://ocds.open-contracting.org/standard/r/master/#tender for more info")
-class TenderResource(object):
+class TendersResource(object):
 
-    def __init__(self, request):
+    def __init__(self, request, context):
         self.request = request
         self.server = request.registry.couchdb_server
         self.db = request.registry.db
         self.server_id = request.registry.server_id
 
     @json_view(permission='view_tender')
-    def collection_get(self):
+    def get(self):
         """Tenders List
 
         Get Tenders List
@@ -169,8 +153,9 @@ class TenderResource(object):
             elif fields:
                 LOGGER.info('Used custom fields for tenders list: {}'.format(','.join(sorted(fields))),
                             extra=context_unpack(self.request, {'MESSAGE_ID': 'tender_list_custom'}))
+
                 results = [
-                    (tender_serialize(Tender(i[u'doc']), view_fields), i.key)
+                    (tender_serialize(self.request, i[u'doc'], view_fields), i.key)
                     for i in list_view(self.db, limit=view_limit, startkey=view_offset, descending=descending, include_docs=True)
                 ]
         else:
@@ -196,20 +181,20 @@ class TenderResource(object):
             'data': results,
             'next_page': {
                 "offset": params['offset'],
-                "path": self.request.route_path('collection_Tender', _query=params),
-                "uri": self.request.route_url('collection_Tender', _query=params)
+                "path": self.request.route_path('Tenders', _query=params),
+                "uri": self.request.route_url('Tenders', _query=params)
             }
         }
         if descending or offset:
             data['prev_page'] = {
                 "offset": pparams['offset'],
-                "path": self.request.route_path('collection_Tender', _query=pparams),
-                "uri": self.request.route_url('collection_Tender', _query=pparams)
+                "path": self.request.route_path('Tenders', _query=pparams),
+                "uri": self.request.route_url('Tenders', _query=pparams)
             }
         return data
 
     @json_view(content_type="application/json", permission='create_tender', validators=(validate_tender_data,))
-    def collection_post(self):
+    def post(self):
         """This API request is targeted to creating new Tenders by procuring organizations.
 
         Creating new Tender
@@ -357,10 +342,8 @@ class TenderResource(object):
             }
 
         """
-        tender_data = self.request.validated['data']
         tender_id = generate_id()
-        tender = Tender(tender_data)
-        tender.__parent__ = self.request.context
+        tender = self.request.validated['tender']
         tender.id = tender_id
         if not tender.enquiryPeriod.startDate:
             tender.enquiryPeriod.startDate = get_now()
@@ -382,6 +365,17 @@ class TenderResource(object):
                     'token': tender.owner_token
                 }
             }
+
+
+@opresource(name='Tender',
+            path='/tenders/{tender_id}',
+            procurementMethodType='belowThreshold',
+            description="Open Contracting compatible data exchange format. See http://ocds.open-contracting.org/standard/r/master/#tender for more info")
+class TenderResource(object):
+
+    def __init__(self, request, context):
+        self.request = request
+        self.db = request.registry.db
 
     @json_view(permission='view_tender')
     def get(self):

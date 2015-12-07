@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 from logging import getLogger
-from openprocurement.api.models import Award, Contract, STAND_STILL_TIME, get_now
+from openprocurement.api.models import Contract, STAND_STILL_TIME, get_now
 from openprocurement.api.utils import (
     apply_patch,
     save_tender,
@@ -24,7 +24,7 @@ LOGGER = getLogger(__name__)
             description="Tender awards")
 class TenderAwardResource(object):
 
-    def __init__(self, request):
+    def __init__(self, request, context):
         self.request = request
         self.db = request.registry.db
 
@@ -169,14 +169,12 @@ class TenderAwardResource(object):
             self.request.errors.add('body', 'data', 'Can\'t create award in current ({}) tender status'.format(tender.status))
             self.request.errors.status = 403
             return
-        award_data = self.request.validated['data']
-        if any([i.status != 'active' for i in tender.lots if i.id == award_data.get('lotID')]):
+        award = self.request.validated['award']
+        if any([i.status != 'active' for i in tender.lots if i.id == award.lotID]):
             self.request.errors.add('body', 'data', 'Can create award only in active lot status')
             self.request.errors.status = 403
             return
-        award_data['complaintPeriod'] = {'startDate': get_now().isoformat()}
-        award = Award(award_data)
-        award.__parent__ = self.request.context
+        award.complaintPeriod = {'startDate': get_now().isoformat()}
         tender.awards.append(award)
         if save_tender(self.request):
             LOGGER.info('Created tender award {}'.format(award.id),

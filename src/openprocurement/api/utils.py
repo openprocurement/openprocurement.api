@@ -10,6 +10,7 @@ from json import dumps
 from jsonpatch import make_patch, apply_patch as _apply_patch
 from logging import getLogger
 from openprocurement.api.models import Document, Revision, Award, Period, get_now
+from openprocurement.api.traversal import factory
 from pkg_resources import get_distribution
 from rfc6266 import build_header
 from schematics.exceptions import ModelValidationError
@@ -18,11 +19,16 @@ from urllib import quote
 from urlparse import urlparse, parse_qs
 from uuid import uuid4
 from webob.multidict import NestedMultiDict
+from pyramid.exceptions import URLDecodeError
+from pyramid.compat import decode_path_info
+from binascii import hexlify, unhexlify
+from Crypto.Cipher import AES
 
 
 PKG = get_distribution(__package__)
 LOGGER = getLogger(PKG.project_name)
 VERSION = '{}.{}'.format(int(PKG.parsed_version[0]), int(PKG.parsed_version[1]))
+ROUTE_PREFIX = '/api/{}'.format(VERSION)
 json_view = partial(view, renderer='json')
 
 
@@ -85,7 +91,7 @@ def upload_file(request):
     key = generate_id()
     document_route = request.matched_route.name.replace("collection_", "")
     document_path = request.current_route_path(_route_name=document_route, document_id=document.id, _query={'download': key})
-    document.url = '/tenders' + document_path.split('/tenders', 1)[1]
+    document.url = '/' + '/'.join(document_path.split('/')[3:])
     conn = getattr(request.registry, 's3_connection', None)
     if conn:
         bucket = conn.get_bucket(request.registry.bucket_name)
@@ -172,7 +178,10 @@ def apply_data_patch(item, changes):
     return _apply_patch(item, patch_changes)
 
 
-def tender_serialize(tender, fields):
+def tender_serialize(request, tender_data, fields):
+    tender = request.tender_from_data(tender_data, raise_error=False)
+    if tender is None:
+        return dict([(i, tender_data.get(i, '')) for i in ['procurementMethodType', 'dateModified', 'id']])
     return dict([(i, j) for i, j in tender.serialize(tender.status).items() if i in fields])
 
 
@@ -401,7 +410,7 @@ def request_params(request):
         request.errors.add('body', 'data', 'could not decode params')
         request.errors.status = 422
         raise error_handler(request.errors, False)
-    except:
+    except Exception, e:
         request.errors.add('body', str(e.__class__.__name__), str(e))
         request.errors.status = 422
         raise error_handler(request.errors, False)
@@ -428,7 +437,7 @@ def error_handler(errors, request_params=True):
     return json_error(errors)
 
 
-opresource = partial(resource, error_handler=error_handler)
+opresource = partial(resource, error_handler=error_handler, factory=factory)
 
 
 def forbidden(request):
@@ -440,7 +449,7 @@ def forbidden(request):
 def add_logging_context(event):
     request = event.request
     params = {
-        'TENDERS_API_VERSION': VERSION,
+        'API_VERSION': VERSION,
         'TAGS': 'python,api',
         'USER': str(request.authenticated_userid or ''),
         #'ROLE': str(request.authenticated_role),
@@ -449,13 +458,6 @@ def add_logging_context(event):
         'REMOTE_ADDR': request.remote_addr or '',
         'USER_AGENT': request.user_agent or '',
         'REQUEST_METHOD': request.method,
-        'AWARD_ID': '',
-        'BID_ID': '',
-        'COMPLAINT_ID': '',
-        'CONTRACT_ID': '',
-        'DOCUMENT_ID': '',
-        'QUESTION_ID': '',
-        'TENDER_ID': '',
         'TIMESTAMP': get_now().isoformat(),
         'REQUEST_ID': request.environ.get('REQUEST_ID', ''),
         'CLIENT_REQUEST_ID': request.headers.get('X-Client-Request-ID', ''),
@@ -497,3 +499,128 @@ def context_unpack(request, msg, params=None):
     for key, value in logging_context.items():
         journal_context["JOURNAL_" + key] = value
     return journal_context
+
+
+def extract_tender_adapter(request, tender_id):
+    db = request.registry.db
+    doc = db.get(tender_id)
+    if doc is None:
+        request.errors.add('url', 'tender_id', 'Not Found')
+        request.errors.status = 404
+        raise error_handler(request.errors)
+
+    return request.tender_from_data(doc)
+
+
+def extract_tender(request):
+    try:
+        # empty if mounted under a path in mod_wsgi, for example
+        path = decode_path_info(request.environ['PATH_INFO'] or '/')
+    except KeyError:
+        path = '/'
+    except UnicodeDecodeError as e:
+        raise URLDecodeError(e.encoding, e.object, e.start, e.end, e.reason)
+
+    tender_id = ""
+    # extract tender id
+    parts = path.split('/')
+    if len(parts) < 4 or parts[3] != 'tenders':
+        return
+
+    tender_id = parts[4]
+    return extract_tender_adapter(request, tender_id)
+
+
+class isTender(object):
+    def __init__(self, val, config):
+        self.val = val
+
+    def text(self):
+        return 'procurementMethodType = %s' % (self.val,)
+
+    phash = text
+
+    def __call__(self, context, request):
+        if request.tender is not None:
+            return getattr(request.tender, 'procurementMethodType', None) == self.val
+        return False
+
+
+def set_renderer(event):
+    request = event.request
+    try:
+        json = request.json_body
+    except ValueError:
+        json = {}
+    pretty = isinstance(json, dict) and json.get('options', {}).get('pretty') or request.params.get('opt_pretty')
+    jsonp = request.params.get('opt_jsonp')
+    if jsonp and pretty:
+        request.override_renderer = 'prettyjsonp'
+        return True
+    if jsonp:
+        request.override_renderer = 'jsonp'
+        return True
+    if pretty:
+        request.override_renderer = 'prettyjson'
+        return True
+
+
+def fix_url(item, app_url):
+    if isinstance(item, list):
+        [
+            fix_url(i, app_url)
+            for i in item
+            if isinstance(i, dict) or isinstance(i, list)
+        ]
+    elif isinstance(item, dict):
+        if "format" in item and "url" in item and '?download=' in item['url']:
+            path = item["url"] if item["url"].startswith('/') else '/' + '/'.join(item['url'].split('/')[5:])
+            item["url"] = app_url + ROUTE_PREFIX + path
+            return
+        [
+            fix_url(item[i], app_url)
+            for i in item
+            if isinstance(item[i], dict) or isinstance(item[i], list)
+        ]
+
+
+def beforerender(event):
+    if event.rendering_val and 'data' in event.rendering_val:
+        fix_url(event.rendering_val['data'], event['request'].application_url)
+
+
+def register_tender_procurementMethodType(config, model):
+    """Register a tender procurementMethodType.
+    :param config:
+        The pyramid configuration object that will be populated.
+    :param model:
+        The tender model class
+    """
+    config.registry.tender_procurementMethodTypes[model.procurementMethodType.default] = model
+
+
+def tender_from_data(request, data, raise_error=True, create=True):
+    procurementMethodType = data.get('procurementMethodType', 'belowThreshold')
+    model = request.registry.tender_procurementMethodTypes.get(procurementMethodType)
+    if model is None and raise_error:
+        request.errors.add('data', 'procurementMethodType', 'Not implemented')
+        request.errors.status = 415
+        raise error_handler(request.errors)
+    if model is not None and create:
+        model = model(data)
+    return model
+
+
+def encrypt(uuid, name, key):
+    iv = "{:^{}.{}}".format(name, AES.block_size, AES.block_size)
+    text = "{:^{}}".format(key, AES.block_size)
+    return hexlify(AES.new(uuid, AES.MODE_CBC, iv).encrypt(text))
+
+
+def decrypt(uuid, name, key):
+    iv = "{:^{}.{}}".format(name, AES.block_size, AES.block_size)
+    try:
+        text = AES.new(uuid, AES.MODE_CBC, iv).decrypt(unhexlify(key)).strip()
+    except:
+        text = ''
+    return text

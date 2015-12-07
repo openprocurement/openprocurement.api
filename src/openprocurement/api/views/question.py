@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 from logging import getLogger
-from openprocurement.api.models import Question, get_now
+from openprocurement.api.models import get_now
 from openprocurement.api.utils import (
     apply_patch,
     save_tender,
@@ -23,7 +23,7 @@ LOGGER = getLogger(__name__)
             description="Tender questions")
 class TenderQuestionResource(object):
 
-    def __init__(self, request):
+    def __init__(self, request, context):
         self.request = request
         self.db = request.registry.db
 
@@ -36,13 +36,11 @@ class TenderQuestionResource(object):
             self.request.errors.add('body', 'data', 'Can add question only in enquiryPeriod')
             self.request.errors.status = 403
             return
-        question_data = self.request.validated['data']
-        if any([i.status != 'active' for i in tender.lots if i.id == question_data.get('relatedItem')]):
+        question = self.request.validated['question']
+        if any([i.status != 'active' for i in tender.lots if i.id == question.relatedItem]):
             self.request.errors.add('body', 'data', 'Can add question only in active lot status')
             self.request.errors.status = 403
             return
-        question = Question(question_data)
-        question.__parent__ = self.request.context
         tender.questions.append(question)
         if save_tender(self.request):
             LOGGER.info('Created tender question {}'.format(question.id),

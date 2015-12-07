@@ -10,6 +10,7 @@ from openprocurement.api.tests.base import test_tender_data, BaseWebTest, BaseTe
 class TenderTest(BaseWebTest):
 
     def test_simple_add_tender(self):
+
         u = Tender(test_tender_data)
         u.tenderID = "UA-X"
 
@@ -315,6 +316,14 @@ class TenderResourceTest(BaseWebTest):
                 u'location': u'body', u'name': u'data'}
         ])
 
+        response = self.app.post_json(request_path, {'data': {'procurementMethodType': 'invalid_value'}}, status=415)
+        self.assertEqual(response.status, '415 Unsupported Media Type')
+        self.assertEqual(response.content_type, 'application/json')
+        self.assertEqual(response.json['status'], 'error')
+        self.assertEqual(response.json['errors'], [
+            {u'description': u'Not implemented', u'location': u'data', u'name': u'procurementMethodType'}
+        ])
+
         response = self.app.post_json(request_path, {'data': {
                                       'invalid_field': 'invalid_value'}}, status=422)
         self.assertEqual(response.status, '422 Unprocessable Entity')
@@ -494,7 +503,7 @@ class TenderResourceTest(BaseWebTest):
         self.assertEqual(response.status, '201 Created')
         self.assertEqual(response.content_type, 'application/json')
         tender = response.json['data']
-        self.assertEqual(set(tender), set([u'id', u'dateModified', u'tenderID', u'status', u'enquiryPeriod',
+        self.assertEqual(set(tender), set([u'procurementMethodType', u'id', u'dateModified', u'tenderID', u'status', u'enquiryPeriod',
                                            u'tenderPeriod', u'minimalStep', u'items', u'value', u'procuringEntity',
                                            u'procurementMethod', u'awardCriteria', u'submissionMethod', u'title']))
         self.assertNotEqual(data['id'], tender['id'])

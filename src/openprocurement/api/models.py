@@ -13,6 +13,7 @@ from schematics.types.compound import ModelType, ListType, DictType
 from schematics.types.serializable import serializable
 from uuid import uuid4
 from barbecue import vnmax
+from zope.interface import implementer, Interface
 
 
 STAND_STILL_TIME = timedelta(days=1)
@@ -39,6 +40,10 @@ def read_json(name):
 CPV_CODES = read_json('cpv.json')
 #DKPP_CODES = read_json('dkpp.json')
 ORA_CODES = [i['code'] for i in read_json('OrganisationRegistrationAgency.json')['data']]
+
+
+class ITender(Interface):
+    """ Base tender marker interface """
 
 
 class IsoDateTimeType(BaseType):
@@ -69,7 +74,7 @@ def set_parent(item, parent):
 
 
 def get_tender(model):
-    while not isinstance(model, Tender):
+    while not ITender.providedBy(model):
         model = model.__parent__
     return model
 
@@ -151,6 +156,13 @@ class Model(SchematicsModel):
         field_converter = lambda field, value: field.to_primitive(value)
         data = export_loop(self.__class__, self, field_converter, role=role, raise_error_on_role=True, print_none=True)
         return data
+
+    def get_role(self):
+        root = self.__parent__
+        while root.__parent__ is not None:
+            root = root.__parent__
+        request = root.request
+        return 'Administrator' if request.authenticated_role == 'Administrator' else 'edit'
 
 
 class Value(Model):
@@ -255,6 +267,7 @@ class Document(Model):
 
     id = MD5Type(required=True, default=lambda: uuid4().hex)
     documentType = StringType(choices=[
+        'tenderNotice', 'awardNotice', 'contractNotice',
         'notice', 'biddingDocuments', 'technicalSpecifications',
         'evaluationCriteria', 'clarifications', 'shortlistedFirms',
         'riskProvisions', 'billOfQuantity', 'bidders', 'conflictOfInterest',
@@ -748,8 +761,6 @@ class Lot(Model):
     def validate_value(self, data, value):
         if value and isinstance(data['__parent__'], Model):
             tender = data['__parent__']
-            if tender.value.amount < value.amount:
-                raise ValidationError(u"value should be less than value of tender")
             if tender.get('value').currency != value.currency:
                 raise ValidationError(u"currency should be identical to currency of value of tender")
             if tender.get('value').valueAddedTaxIncluded != value.valueAddedTaxIncluded:
@@ -793,7 +804,7 @@ def validate_cpv_group(items, *args):
 
 plain_role = (blacklist('_attachments', 'revisions', 'dateModified') + schematics_embedded_role)
 create_role = (blacklist('owner_token', 'owner', '_attachments', 'revisions', 'dateModified', 'doc_id', 'tenderID', 'bids', 'documents', 'awards', 'questions', 'complaints', 'auctionUrl', 'status', 'auctionPeriod', 'awardPeriod', 'procurementMethod', 'awardCriteria', 'submissionMethod') + schematics_embedded_role)
-edit_role = (blacklist('lots', 'owner_token', 'owner', '_attachments', 'revisions', 'dateModified', 'doc_id', 'tenderID', 'bids', 'documents', 'awards', 'questions', 'complaints', 'auctionUrl', 'auctionPeriod', 'awardPeriod', 'procurementMethod', 'awardCriteria', 'submissionMethod', 'mode') + schematics_embedded_role)
+edit_role = (blacklist('procurementMethodType', 'lots', 'owner_token', 'owner', '_attachments', 'revisions', 'dateModified', 'doc_id', 'tenderID', 'bids', 'documents', 'awards', 'questions', 'complaints', 'auctionUrl', 'auctionPeriod', 'awardPeriod', 'procurementMethod', 'awardCriteria', 'submissionMethod', 'mode') + schematics_embedded_role)
 cancel_role = whitelist('status')
 view_role = (blacklist('owner', 'owner_token', '_attachments', 'revisions') + schematics_embedded_role)
 listing_role = whitelist('dateModified', 'doc_id')
@@ -807,6 +818,7 @@ chronograph_view_role = whitelist('status', 'enquiryPeriod', 'tenderPeriod', 'au
 Administrator_role = whitelist('status', 'mode', 'procuringEntity')
 
 
+@implementer(ITender)
 class Tender(SchematicsDocument, Model):
     """Data regarding tender process - publicly inviting prospective contractors to submit bids for evaluation and selecting a winner or winners."""
     class Options:
@@ -896,7 +908,22 @@ class Tender(SchematicsDocument, Model):
     owner_token = StringType()
     owner = StringType()
 
+    procurementMethodType = StringType(default="belowThreshold")
+
     __name__ = ''
+
+    def get_role(self):
+        root = self.__parent__
+        request = root.request
+        if request.authenticated_role == 'Administrator':
+            role = 'Administrator'
+        elif request.authenticated_role == 'chronograph':
+            role = 'chronograph'
+        elif request.authenticated_role == 'auction':
+            role = 'auction_{}'.format(request.method.lower())
+        else:
+            role = 'edit_{}'.format(request.context.status)
+        return role
 
     def __acl__(self):
         acl = [

@@ -4,27 +4,23 @@
 import gevent.monkey
 gevent.monkey.patch_all()
 import os
-from logging import getLogger
-from pkg_resources import get_distribution
-from pyramid.config import Configurator
-from openprocurement.api.auth import AuthenticationPolicy
-from pyramid.authorization import ACLAuthorizationPolicy as AuthorizationPolicy
-from pyramid.renderers import JSON, JSONP
-from pyramid.events import NewRequest, BeforeRender, ContextFound
+from boto.s3.connection import S3Connection, Location
 from couchdb import Server, Session
 from couchdb.http import Unauthorized, extract_credentials
+from logging import getLogger
+from openprocurement.api.auth import AuthenticationPolicy, authenticated_role
 from openprocurement.api.design import sync_design
 from openprocurement.api.migration import migrate_data
-from boto.s3.connection import S3Connection, Location
-from openprocurement.api.traversal import factory
-from openprocurement.api.utils import forbidden, add_logging_context, set_logging_context, request_params
+from openprocurement.api.models import Tender
+from openprocurement.api.utils import forbidden, add_logging_context, set_logging_context, extract_tender, request_params, isTender, set_renderer, beforerender, register_tender_procurementMethodType, tender_from_data, ROUTE_PREFIX
 from pbkdf2 import PBKDF2
+from pkg_resources import iter_entry_points
+from pyramid.authorization import ACLAuthorizationPolicy as AuthorizationPolicy
+from pyramid.config import Configurator
+from pyramid.events import NewRequest, BeforeRender, ContextFound
+from pyramid.renderers import JSON, JSONP
 
 LOGGER = getLogger("{}.init".format(__name__))
-#VERSION = int(pkg_resources.get_distribution(__package__).parsed_version[0])
-PKG = get_distribution(__package__)
-VERSION = '{}.{}'.format(int(PKG.parsed_version[0]), int(PKG.parsed_version[1]))
-ROUTE_PREFIX = '/api/{}'.format(VERSION)
 SECURITY = {u'admins': {u'names': [], u'roles': ['_admin']}, u'members': {u'names': [], u'roles': ['_admin']}}
 VALIDATE_DOC_ID = '_design/_auth'
 VALIDATE_DOC_UPDATE = """function(newDoc, oldDoc, userCtx){
@@ -40,74 +36,6 @@ VALIDATE_DOC_UPDATE = """function(newDoc, oldDoc, userCtx){
         throw({forbidden: 'Only authorized user may edit the database'});
     }
 }"""
-
-
-def set_renderer(event):
-    request = event.request
-    try:
-        json = request.json_body
-    except ValueError:
-        json = {}
-    pretty = isinstance(json, dict) and json.get('options', {}).get('pretty') or request.params.get('opt_pretty')
-    jsonp = request.params.get('opt_jsonp')
-    if jsonp and pretty:
-        request.override_renderer = 'prettyjsonp'
-        return True
-    if jsonp:
-        request.override_renderer = 'jsonp'
-        return True
-    if pretty:
-        request.override_renderer = 'prettyjson'
-        return True
-
-
-def get_local_roles(context):
-    from pyramid.location import lineage
-    roles = {}
-    for location in lineage(context):
-        try:
-            roles = location.__local_roles__
-        except AttributeError:
-            continue
-        if roles and callable(roles):
-            roles = roles()
-        break
-    return roles
-
-
-def authenticated_role(request):
-    principals = request.effective_principals
-    if hasattr(request, 'context'):
-        roles = get_local_roles(request.context)
-        local_roles = [roles[i] for i in reversed(principals) if i in roles]
-        if local_roles:
-            return local_roles[0]
-    groups = [g for g in reversed(principals) if g.startswith('g:')]
-    return groups[0][2:] if groups else 'anonymous'
-
-
-def fix_url(item, app_url):
-    if isinstance(item, list):
-        [
-            fix_url(i, app_url)
-            for i in item
-            if isinstance(i, dict) or isinstance(i, list)
-        ]
-    elif isinstance(item, dict):
-        if "format" in item and "url" in item and '?download=' in item['url']:
-            path = item["url"] if item["url"].startswith('/tenders') else '/tenders' + item['url'].split('/tenders', 1)[1]
-            item["url"] = app_url + ROUTE_PREFIX + path
-            return
-        [
-            fix_url(item[i], app_url)
-            for i in item
-            if isinstance(item[i], dict) or isinstance(item[i], list)
-        ]
-
-
-def beforerender(event):
-    if event.rendering_val and 'data' in event.rendering_val:
-        fix_url(event.rendering_val['data'], event['request'].application_url)
 
 
 class Server(Server):
@@ -128,7 +56,6 @@ class Server(Server):
 def main(global_config, **settings):
     config = Configurator(
         settings=settings,
-        root_factory=factory,
         authentication_policy=AuthenticationPolicy(settings['auth.file'], __name__),
         authorization_policy=AuthorizationPolicy(),
         route_prefix=ROUTE_PREFIX,
@@ -138,6 +65,7 @@ def main(global_config, **settings):
     config.add_forbidden_view(forbidden)
     config.add_request_method(request_params, 'params', reify=True)
     config.add_request_method(authenticated_role, reify=True)
+    config.add_request_method(extract_tender, 'tender', reify=True)
     config.add_renderer('prettyjson', JSON(indent=4))
     config.add_renderer('jsonp', JSONP(param_name='opt_jsonp'))
     config.add_renderer('prettyjsonp', JSONP(indent=4, param_name='opt_jsonp'))
@@ -145,7 +73,20 @@ def main(global_config, **settings):
     config.add_subscriber(set_logging_context, ContextFound)
     config.add_subscriber(set_renderer, NewRequest)
     config.add_subscriber(beforerender, BeforeRender)
-    config.scan("openprocurement.api.views")
+    config.scan("openprocurement.api.views.spore")
+
+    # tender procurementMethodType plugins support
+    config.add_route_predicate('procurementMethodType', isTender)
+    config.registry.tender_procurementMethodTypes = {}
+    config.add_request_method(tender_from_data)
+    config.add_directive('add_tender_procurementMethodType', register_tender_procurementMethodType)
+
+    # search for plugins
+    plugins = settings.get('plugins') and settings['plugins'].split(',')
+    for entry_point in iter_entry_points('openprocurement.api.plugins'):
+        if not plugins or entry_point.name in plugins:
+            plugin = entry_point.load()
+            plugin(config)
 
     # CouchDB connection
     db_name = os.environ.get('DB_NAME', settings['couchdb.db_name'])
@@ -223,3 +164,8 @@ def main(global_config, **settings):
         config.registry.bucket_name = bucket_name
     config.registry.server_id = settings.get('id', '')
     return config.make_wsgi_app()
+
+
+def includeme(config):
+    config.add_tender_procurementMethodType(Tender)
+    config.scan("openprocurement.api.views")
