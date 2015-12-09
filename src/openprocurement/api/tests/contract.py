@@ -142,7 +142,12 @@ class TenderContractResourceTest(BaseTenderWebTest):
         self.assertEqual(response.content_type, 'application/json')
         self.assertEqual(response.json['errors'][0]["description"], "Can't sign contract before reviewing all complaints")
 
-        response = self.app.patch_json('/tenders/{}/awards/{}/complaints/{}'.format(self.tender_id, self.award_id, complaint['id']), {"data": {"status": "invalid", "resolution": "spam"}})
+
+        response = self.app.patch_json('/tenders/{}/awards/{}/complaints/{}'.format(self.tender_id, self.award_id, complaint['id']), {"data": {
+            "status": "invalid",
+            "resolution": False,
+            "answer": "spam"
+        }})
         self.assertEqual(response.status, '200 OK')
 
         response = self.app.patch_json('/tenders/{}/contracts/{}'.format(self.tender_id, contract['id']), {"data": {"status": "active"}})

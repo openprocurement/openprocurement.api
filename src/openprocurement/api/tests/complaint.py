@@ -125,11 +125,16 @@ class TenderComplaintResourceTest(BaseTenderWebTest):
         self.assertEqual(response.content_type, 'application/json')
         self.assertEqual(response.json['errors'][0]["description"], "Can't cancel complaint")
 
-        response = self.app.patch_json('/tenders/{}/complaints/{}'.format(self.tender_id, complaint['id']), {"data": {"status": "invalid", "resolution": "resolution text"}})
+        response = self.app.patch_json('/tenders/{}/complaints/{}'.format(self.tender_id, complaint['id']), {"data": {
+            "status": "invalid",
+            "resolution": False,
+            "answer": "spam"
+        }})
         self.assertEqual(response.status, '200 OK')
         self.assertEqual(response.content_type, 'application/json')
         self.assertEqual(response.json['data']["status"], "invalid")
-        self.assertEqual(response.json['data']["resolution"], "resolution text")
+        self.assertEqual(response.json['data']["resolution"], False)
+        self.assertEqual(response.json['data']["answer"], "spam")
 
         response = self.app.get('/tenders/{}'.format(self.tender_id))
         self.assertEqual(response.status, '200 OK')
@@ -151,11 +156,16 @@ class TenderComplaintResourceTest(BaseTenderWebTest):
         self.assertEqual(response.content_type, 'application/json')
         complaint = response.json['data']
 
-        response = self.app.patch_json('/tenders/{}/complaints/{}'.format(self.tender_id, complaint['id']), {"data": {"status": "resolved", "resolution": "resolution text"}})
+        response = self.app.patch_json('/tenders/{}/complaints/{}'.format(self.tender_id, complaint['id']), {"data": {
+            "status": "resolved",
+            "resolution": True,
+            "answer": "resolution text"
+        }})
         self.assertEqual(response.status, '200 OK')
         self.assertEqual(response.content_type, 'application/json')
         self.assertEqual(response.json['data']["status"], "resolved")
-        self.assertEqual(response.json['data']["resolution"], "resolution text")
+        self.assertEqual(response.json['data']["resolution"], True)
+        self.assertEqual(response.json['data']["answer"], "resolution text")
 
         response = self.app.patch_json('/tenders/{}/complaints/{}'.format(self.tender_id, complaint['id']), {"data": {"status": "pending"}}, status=403)
         self.assertEqual(response.status, '403 Forbidden')
@@ -184,11 +194,16 @@ class TenderComplaintResourceTest(BaseTenderWebTest):
         self.assertEqual(response.status, '200 OK')
         self.assertEqual(response.content_type, 'application/json')
         self.assertEqual(response.json['data']["status"], "resolved")
-        self.assertEqual(response.json['data']["resolution"], "resolution text")
+        self.assertEqual(response.json['data']["resolution"], True)
+        self.assertEqual(response.json['data']["answer"], "resolution text")
 
         self.set_status('complete')
 
-        response = self.app.patch_json('/tenders/{}/complaints/{}'.format(self.tender_id, complaint['id']), {"data": {"status": "resolved", "resolution": "resolution text"}}, status=403)
+        response = self.app.patch_json('/tenders/{}/complaints/{}'.format(self.tender_id, complaint['id']), {"data": {
+            "status": "resolved",
+            "resolution": True,
+            "answer": "resolution text"
+        }}, status=403)
         self.assertEqual(response.status, '403 Forbidden')
         self.assertEqual(response.content_type, 'application/json')
         self.assertEqual(response.json['errors'][0]["description"], "Can't update complaint in current (complete) tender status")

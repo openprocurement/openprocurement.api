@@ -541,7 +541,7 @@ class Complaint(Model):
     class Options:
         roles = {
             'create': whitelist('author', 'title', 'description'),
-            'edit': whitelist('status', 'resolution'),
+            'edit': whitelist('status', 'resolution', 'answer'),
             'embedded': schematics_embedded_role,
             'view': schematics_default_role,
         }
@@ -806,13 +806,13 @@ plain_role = (blacklist('_attachments', 'revisions', 'dateModified') + schematic
 create_role = (blacklist('owner_token', 'owner', '_attachments', 'revisions', 'dateModified', 'doc_id', 'tenderID', 'bids', 'documents', 'awards', 'questions', 'complaints', 'auctionUrl', 'status', 'auctionPeriod', 'awardPeriod', 'procurementMethod', 'awardCriteria', 'submissionMethod') + schematics_embedded_role)
 edit_role = (blacklist('procurementMethodType', 'lots', 'owner_token', 'owner', '_attachments', 'revisions', 'dateModified', 'doc_id', 'tenderID', 'bids', 'documents', 'awards', 'questions', 'complaints', 'auctionUrl', 'auctionPeriod', 'awardPeriod', 'procurementMethod', 'awardCriteria', 'submissionMethod', 'mode') + schematics_embedded_role)
 cancel_role = whitelist('status')
-view_role = (blacklist('owner', 'owner_token', '_attachments', 'revisions') + schematics_embedded_role)
+view_role = (blacklist('owner', 'owner_token', '_attachments', 'revisions', 'next_check') + schematics_embedded_role)
 listing_role = whitelist('dateModified', 'doc_id')
 auction_view_role = whitelist('tenderID', 'dateModified', 'bids', 'auctionPeriod', 'minimalStep', 'auctionUrl', 'features', 'lots')
 auction_post_role = whitelist('bids')
 auction_patch_role = whitelist('auctionUrl', 'bids', 'lots')
-enquiries_role = (blacklist('owner', 'owner_token', '_attachments', 'revisions', 'bids', 'numberOfBids') + schematics_embedded_role)
-auction_role = (blacklist('owner', 'owner_token', '_attachments', 'revisions', 'bids') + schematics_embedded_role)
+enquiries_role = (blacklist('owner', 'owner_token', '_attachments', 'revisions', 'bids', 'numberOfBids', 'next_check') + schematics_embedded_role)
+auction_role = (blacklist('owner', 'owner_token', '_attachments', 'revisions', 'bids', 'next_check') + schematics_embedded_role)
 chronograph_role = whitelist('status', 'enquiryPeriod', 'tenderPeriod', 'auctionPeriod', 'awardPeriod', 'lots')
 chronograph_view_role = whitelist('status', 'enquiryPeriod', 'tenderPeriod', 'auctionPeriod', 'awardPeriod', 'awards', 'lots', 'doc_id', 'submissionMethodDetails', 'mode', 'numberOfBids', 'complaints')
 Administrator_role = whitelist('status', 'mode', 'procuringEntity')
@@ -927,8 +927,8 @@ class Tender(SchematicsDocument, Model):
 
     def __acl__(self):
         acl = [
-            #(Allow, '{}_{}'.format(i.owner, i.owner_token), 'create_award_complaint')
-            #for i in self.bids
+            (Allow, '{}_{}'.format(i.owner, i.owner_token), 'create_award_complaint')
+            for i in self.bids
         ]
         acl.extend([
             (Allow, '{}_{}'.format(self.owner, self.owner_token), 'edit_tender'),
@@ -939,6 +939,140 @@ class Tender(SchematicsDocument, Model):
 
     def __repr__(self):
         return '<%s:%r@%r>' % (type(self).__name__, self.id, self.rev)
+
+    def check_status(self):
+        enquiryPeriodEnd = self.enquiryPeriod.endDate and self.enquiryPeriod.endDate.astimezone(TZ)
+        tenderPeriodStart = self.tenderPeriod.startDate and self.tenderPeriod.startDate.astimezone(TZ)
+        tenderPeriodEnd = self.tenderPeriod.endDate and self.tenderPeriod.endDate.astimezone(TZ)
+        now = get_now()
+        if self.status == 'active.enquiries' and not self.tenderPeriod.startDate and self.enquiryPeriod.endDate and self.enquiryPeriod.endDate.astimezone(TZ) <= now:
+            LOGGER.info('Switched tender {} to {}'.format(self.id, 'active.tendering'),
+                        extra=context_unpack(request, {'MESSAGE_ID': 'switched_tender_active.tendering'}))
+            self.status = 'active.tendering'
+            return
+        elif self.status == 'active.enquiries' and self.tenderPeriod.startDate and self.tenderPeriod.startDate.astimezone(TZ) <= now:
+            LOGGER.info('Switched tender {} to {}'.format(self.id, 'active.tendering'),
+                        extra=context_unpack(request, {'MESSAGE_ID': 'switched_tender_active.tendering'}))
+            self.status = 'active.tendering'
+            return
+        elif not self.lots and self.status == 'active.awarded':
+            standStillEnds = [
+                parse_date(a['complaintPeriod']['endDate'], TZ).astimezone(TZ)
+                for a in tender.get('awards', [])
+                if a.get('complaintPeriod', {}).get('endDate')
+            ]
+            if not standStillEnds:
+                return
+            standStillEnd = max(standStillEnds)
+            if standStillEnd <= now:
+                pending_complaints = any([
+                    i['status'] == 'pending'
+                    for i in tender.get('complaints', [])
+                ])
+                pending_awards_complaints = any([
+                    i['status'] == 'pending'
+                    for a in tender.get('awards', [])
+                    for i in a.get('complaints', [])
+                ])
+                awarded = any([
+                    i['status'] == 'active'
+                    for i in tender.get('awards', [])
+                ])
+                if not pending_complaints and not pending_awards_complaints and not awarded:
+                    LOGGER.info('Switched tender {} to {}'.format(self.id, 'unsuccessful'),
+                                extra=context_unpack(request, {'MESSAGE_ID': 'switched_tender_unsuccessful'}))
+                    # TODO check_tender_status
+                    return
+            elif standStillEnd > now:
+                return None, standStillEnd
+        elif self.lots and self.status in ['active.qualification', 'active.awarded']:
+            pending_complaints = any([
+                i['status'] == 'pending'
+                for i in tender.get('complaints', [])
+            ])
+            if pending_complaints:
+                return
+            lots_ends = []
+            for lot in tender.get('lots', []):
+                if lot['status'] != 'active':
+                    continue
+                lot_awards = [i for i in self.awards if i.get('lotID') == lot['id']]
+                standStillEnds = [
+                    parse_date(a['complaintPeriod']['endDate'], TZ).astimezone(TZ)
+                    for a in lot_awards
+                    if a.get('complaintPeriod', {}).get('endDate')
+                ]
+                if not standStillEnds:
+                    continue
+                standStillEnd = max(standStillEnds)
+                if standStillEnd <= now:
+                    pending_awards_complaints = any([
+                        i['status'] == 'pending'
+                        for a in lot_awards
+                        for i in a.get('complaints', [])
+                    ])
+                    awarded = any([
+                        i['status'] == 'active'
+                        for i in lot_awards
+                    ])
+                    if not pending_complaints and not pending_awards_complaints and not awarded:
+                        LOGGER.info('Switched lot {} of tender {} to {}'.format(lot['id'], self.id, 'unsuccessful'),
+                                    extra=context_unpack(request, {'MESSAGE_ID': 'switched_lot_unsuccessful'}, {'LOT_ID': lot['id']}))
+                        # TODO check_tender_status
+                        return
+                elif standStillEnd > now:
+                    lots_ends.append(standStillEnd)
+            if lots_ends:
+                return
+
+    @serializable
+    def next_check(self):
+        enquiryPeriodEnd = self.enquiryPeriod.endDate and self.enquiryPeriod.endDate.astimezone(TZ)
+        tenderPeriodStart = self.tenderPeriod.startDate and self.tenderPeriod.startDate.astimezone(TZ)
+        tenderPeriodEnd = self.tenderPeriod.endDate and self.tenderPeriod.endDate.astimezone(TZ)
+        now = get_now()
+        if self.enquiryPeriod.endDate > now:
+            return self.enquiryPeriod.endDate.isoformat()
+        elif self.tenderPeriod.startDate and self.tenderPeriod.startDate > now:
+            return self.tenderPeriod.startDate.isoformat()
+        elif self.tenderPeriod.endDate and self.tenderPeriod.endDate > now:
+            return self.tenderPeriod.endDate.isoformat()
+        elif not self.lots and self.status == 'active.awarded':
+            standStillEnds = [
+                a.complaintPeriod.endDate.astimezone(TZ)
+                for a in self.awards
+                if a.complaintPeriod.endDate
+            ]
+            if not standStillEnds:
+                return None
+            standStillEnd = max(standStillEnds)
+            if standStillEnd > now:
+                return standStillEnd.isoformat()
+        elif self.lots and self.status in ['active.qualification', 'active.awarded']:
+            pending_complaints = any([
+                i['status'] == 'pending'
+                for i in self.complaints
+            ])
+            if pending_complaints:
+                return None
+            lots_ends = []
+            for lot in self.lots:
+                if lot['status'] != 'active':
+                    continue
+                lot_awards = [i for i in self.awards if i.get('lotID') == lot['id']]
+                standStillEnds = [
+                    a.complaintPeriod.endDate.astimezone(TZ)
+                    for a in lot_awards
+                    if a.complaintPeriod.endDate
+                ]
+                if not standStillEnds:
+                    continue
+                standStillEnd = max(standStillEnds)
+                if standStillEnd > now:
+                    lots_ends.append(standStillEnd)
+            if lots_ends:
+                return min(lots_ends).isoformat()
+        return None
 
     @serializable
     def numberOfBids(self):
