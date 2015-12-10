@@ -8,6 +8,7 @@ FIELDS = [
     'tenderID',
     'lots',
     'procurementMethodType',
+    'next_check',
     #'auctionUrl',
     #'awardPeriod',
     #'dateModified',

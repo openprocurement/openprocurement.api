@@ -940,96 +940,8 @@ class Tender(SchematicsDocument, Model):
     def __repr__(self):
         return '<%s:%r@%r>' % (type(self).__name__, self.id, self.rev)
 
-    def check_status(self):
-        enquiryPeriodEnd = self.enquiryPeriod.endDate and self.enquiryPeriod.endDate.astimezone(TZ)
-        tenderPeriodStart = self.tenderPeriod.startDate and self.tenderPeriod.startDate.astimezone(TZ)
-        tenderPeriodEnd = self.tenderPeriod.endDate and self.tenderPeriod.endDate.astimezone(TZ)
-        now = get_now()
-        if self.status == 'active.enquiries' and not self.tenderPeriod.startDate and self.enquiryPeriod.endDate and self.enquiryPeriod.endDate.astimezone(TZ) <= now:
-            LOGGER.info('Switched tender {} to {}'.format(self.id, 'active.tendering'),
-                        extra=context_unpack(request, {'MESSAGE_ID': 'switched_tender_active.tendering'}))
-            self.status = 'active.tendering'
-            return
-        elif self.status == 'active.enquiries' and self.tenderPeriod.startDate and self.tenderPeriod.startDate.astimezone(TZ) <= now:
-            LOGGER.info('Switched tender {} to {}'.format(self.id, 'active.tendering'),
-                        extra=context_unpack(request, {'MESSAGE_ID': 'switched_tender_active.tendering'}))
-            self.status = 'active.tendering'
-            return
-        elif not self.lots and self.status == 'active.awarded':
-            standStillEnds = [
-                parse_date(a['complaintPeriod']['endDate'], TZ).astimezone(TZ)
-                for a in tender.get('awards', [])
-                if a.get('complaintPeriod', {}).get('endDate')
-            ]
-            if not standStillEnds:
-                return
-            standStillEnd = max(standStillEnds)
-            if standStillEnd <= now:
-                pending_complaints = any([
-                    i['status'] == 'pending'
-                    for i in tender.get('complaints', [])
-                ])
-                pending_awards_complaints = any([
-                    i['status'] == 'pending'
-                    for a in tender.get('awards', [])
-                    for i in a.get('complaints', [])
-                ])
-                awarded = any([
-                    i['status'] == 'active'
-                    for i in tender.get('awards', [])
-                ])
-                if not pending_complaints and not pending_awards_complaints and not awarded:
-                    LOGGER.info('Switched tender {} to {}'.format(self.id, 'unsuccessful'),
-                                extra=context_unpack(request, {'MESSAGE_ID': 'switched_tender_unsuccessful'}))
-                    # TODO check_tender_status
-                    return
-            elif standStillEnd > now:
-                return None, standStillEnd
-        elif self.lots and self.status in ['active.qualification', 'active.awarded']:
-            pending_complaints = any([
-                i['status'] == 'pending'
-                for i in tender.get('complaints', [])
-            ])
-            if pending_complaints:
-                return
-            lots_ends = []
-            for lot in tender.get('lots', []):
-                if lot['status'] != 'active':
-                    continue
-                lot_awards = [i for i in self.awards if i.get('lotID') == lot['id']]
-                standStillEnds = [
-                    parse_date(a['complaintPeriod']['endDate'], TZ).astimezone(TZ)
-                    for a in lot_awards
-                    if a.get('complaintPeriod', {}).get('endDate')
-                ]
-                if not standStillEnds:
-                    continue
-                standStillEnd = max(standStillEnds)
-                if standStillEnd <= now:
-                    pending_awards_complaints = any([
-                        i['status'] == 'pending'
-                        for a in lot_awards
-                        for i in a.get('complaints', [])
-                    ])
-                    awarded = any([
-                        i['status'] == 'active'
-                        for i in lot_awards
-                    ])
-                    if not pending_complaints and not pending_awards_complaints and not awarded:
-                        LOGGER.info('Switched lot {} of tender {} to {}'.format(lot['id'], self.id, 'unsuccessful'),
-                                    extra=context_unpack(request, {'MESSAGE_ID': 'switched_lot_unsuccessful'}, {'LOT_ID': lot['id']}))
-                        # TODO check_tender_status
-                        return
-                elif standStillEnd > now:
-                    lots_ends.append(standStillEnd)
-            if lots_ends:
-                return
-
     @serializable
     def next_check(self):
-        enquiryPeriodEnd = self.enquiryPeriod.endDate and self.enquiryPeriod.endDate.astimezone(TZ)
-        tenderPeriodStart = self.tenderPeriod.startDate and self.tenderPeriod.startDate.astimezone(TZ)
-        tenderPeriodEnd = self.tenderPeriod.endDate and self.tenderPeriod.endDate.astimezone(TZ)
         now = get_now()
         if self.enquiryPeriod.endDate > now:
             return self.enquiryPeriod.endDate.isoformat()
@@ -1059,7 +971,7 @@ class Tender(SchematicsDocument, Model):
             for lot in self.lots:
                 if lot['status'] != 'active':
                     continue
-                lot_awards = [i for i in self.awards if i.get('lotID') == lot['id']]
+                lot_awards = [i for i in self.awards if i.lotID == lot.id]
                 standStillEnds = [
                     a.complaintPeriod.endDate.astimezone(TZ)
                     for a in lot_awards

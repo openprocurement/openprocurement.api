@@ -17,6 +17,7 @@ from openprocurement.api.utils import (
     set_ownership,
     tender_serialize,
     apply_patch,
+    check_status,
     check_bids,
     check_tender_status,
     opresource,
@@ -538,13 +539,17 @@ class TenderResource(object):
             self.request.errors.add('body', 'data', 'Can\'t update tender status')
             self.request.errors.status = 403
             return
-        if self.request.authenticated_role == 'chronograph' and tender.status == 'active.tendering' and data.get('status', tender.status) == 'active.auction':
+        if self.request.authenticated_role == 'chronograph':
             apply_patch(self.request, save=False, src=self.request.validated['tender_src'])
-            check_bids(self.request)
+            check_status(self.request)
             save_tender(self.request)
-        elif self.request.authenticated_role == 'chronograph' and tender.status in ['active.qualification', 'active.awarded'] and data.get('status', tender.status) == tender.status:
-            check_tender_status(self.request)
-            save_tender(self.request)
+        #if self.request.authenticated_role == 'chronograph' and tender.status == 'active.tendering' and data.get('status', tender.status) == 'active.auction':
+            #apply_patch(self.request, save=False, src=self.request.validated['tender_src'])
+            #check_bids(self.request)
+            #save_tender(self.request)
+        #elif self.request.authenticated_role == 'chronograph' and tender.status in ['active.qualification', 'active.awarded'] and data.get('status', tender.status) == tender.status:
+            #check_tender_status(self.request)
+            #save_tender(self.request)
         else:
             apply_patch(self.request, src=self.request.validated['tender_src'])
         LOGGER.info('Updated tender {}'.format(tender.id),
