@@ -738,7 +738,9 @@ class TenderLotProcessTest(BaseTenderWebTest):
         response = self.set_status('active.tendering', {"lots": [{"auctionPeriod": {"startDate": (get_now() + timedelta(days=10)).isoformat()}}]})
         self.assertIn("auctionPeriod", response.json['data']['lots'][0])
         # switch to unsuccessful
-        response = self.set_status('active.auction', {"lots": [{"auctionPeriod": {"startDate": None}}]})
+        response = self.set_status('active.auction', {"lots": [{"auctionPeriod": {"startDate": None}}], 'status': 'active.tendering'})
+        self.app.authorization = ('Basic', ('chronograph', ''))
+        response = self.app.patch_json('/tenders/{}'.format(tender_id), {"data": {"id": tender_id}})
         self.assertEqual(response.json['data']["lots"][0]['status'], 'unsuccessful')
         self.assertEqual(response.json['data']['status'], 'unsuccessful')
 
@@ -763,8 +765,9 @@ class TenderLotProcessTest(BaseTenderWebTest):
         response = self.app.post_json('/tenders/{}/bids'.format(tender_id),
                                       {'data': {'tenderers': [test_tender_data["procuringEntity"]], 'lotValues': [{"value": {"amount": 500}, 'relatedLot': lot_id}]}})
         # switch to active.qualification
-        response = self.set_status('active.auction', {"lots": [{"auctionPeriod": {"startDate": None}}]})
-        #self.assertNotIn("auctionPeriod", response.json['data']['lots'][0])
+        response = self.set_status('active.auction', {"lots": [{"auctionPeriod": {"startDate": None}}], 'status': 'active.tendering'})
+        self.app.authorization = ('Basic', ('chronograph', ''))
+        response = self.app.patch_json('/tenders/{}'.format(tender_id), {"data": {"id": tender_id}})
         # get awards
         self.app.authorization = ('Basic', ('broker', ''))
         response = self.app.get('/tenders/{}/awards?acc_token={}'.format(tender_id, owner_token))
@@ -906,10 +909,14 @@ class TenderLotProcessTest(BaseTenderWebTest):
         ]})
         self.assertTrue(all(["auctionPeriod" in i for i in response.json['data']['lots']]))
         # switch to unsuccessful
-        response = self.set_status('active.auction', {"lots": [
-            {"auctionPeriod": {"startDate": None}}
-            for i in lots
-        ]})
+        response = self.set_status('active.auction', {
+            "lots": [
+                {"auctionPeriod": {"startDate": None}}
+                for i in lots
+            ],
+            'status': 'active.tendering'})
+        self.app.authorization = ('Basic', ('chronograph', ''))
+        response = self.app.patch_json('/tenders/{}'.format(tender_id), {"data": {"id": tender_id}})
         self.assertTrue(all([i['status'] == 'unsuccessful' for i in response.json['data']['lots']]))
         self.assertEqual(response.json['data']['status'], 'unsuccessful')
 
@@ -977,13 +984,18 @@ class TenderLotProcessTest(BaseTenderWebTest):
             for lot_id in lots
         ]}})
         # switch to active.qualification
-        response = self.set_status('active.auction', {"lots": [
-            {"auctionPeriod": {"startDate": None}}
-            for i in lots
-        ]})
+        response = self.set_status('active.auction', {
+            "lots": [
+                {"auctionPeriod": {"startDate": None}}
+                for i in lots
+            ],
+            'status': 'active.tendering'})
+        self.app.authorization = ('Basic', ('chronograph', ''))
+        response = self.app.patch_json('/tenders/{}'.format(tender_id), {"data": {"id": tender_id}})
         # for first lot
         lot_id = lots[0]
         # cancel lot
+        self.app.authorization = ('Basic', ('broker', ''))
         response = self.app.post_json('/tenders/{}/cancellations?acc_token={}'.format(tender_id, owner_token), {'data': {
             'reason': 'cancellation reason',
             'status': 'active',
@@ -1007,7 +1019,8 @@ class TenderLotProcessTest(BaseTenderWebTest):
             i['complaintPeriod']['endDate'] = i['complaintPeriod']['startDate']
         self.db.save(tender)
         # check tender status
-        response = self.set_status('complete', {'status': 'active.awarded'})
+        self.app.authorization = ('Basic', ('chronograph', ''))
+        response = self.app.patch_json('/tenders/{}'.format(tender_id), {"data": {"id": tender_id}})
         # check status
         self.app.authorization = ('Basic', ('broker', ''))
         response = self.app.get('/tenders/{}'.format(tender_id))
@@ -1043,10 +1056,14 @@ class TenderLotProcessTest(BaseTenderWebTest):
             for lot_id in lots
         ]}})
         # switch to active.qualification
-        response = self.set_status('active.auction', {"lots": [
-            {"auctionPeriod": {"startDate": None}}
-            for i in lots
-        ]})
+        response = self.set_status('active.auction', {
+            "lots": [
+                {"auctionPeriod": {"startDate": None}}
+                for i in lots
+            ],
+            'status': 'active.tendering'})
+        self.app.authorization = ('Basic', ('chronograph', ''))
+        response = self.app.patch_json('/tenders/{}'.format(tender_id), {"data": {"id": tender_id}})
         for lot_id in lots:
             # get awards
             self.app.authorization = ('Basic', ('broker', ''))
@@ -1103,10 +1120,14 @@ class TenderLotProcessTest(BaseTenderWebTest):
             for lot_id in lots
         ]}})
         # switch to active.qualification
-        response = self.set_status('active.auction', {"lots": [
-            {"auctionPeriod": {"startDate": None}}
-            for i in lots
-        ]})
+        response = self.set_status('active.auction', {
+            "lots": [
+                {"auctionPeriod": {"startDate": None}}
+                for i in lots
+            ],
+            'status': 'active.tendering'})
+        self.app.authorization = ('Basic', ('chronograph', ''))
+        response = self.app.patch_json('/tenders/{}'.format(tender_id), {"data": {"id": tender_id}})
         # for every lot
         for lot_id in lots:
             # get awards
@@ -1125,6 +1146,8 @@ class TenderLotProcessTest(BaseTenderWebTest):
             self.db.save(tender)
         # check tender status
         self.set_status('complete', {'status': 'active.awarded'})
+        self.app.authorization = ('Basic', ('chronograph', ''))
+        response = self.app.patch_json('/tenders/{}'.format(tender_id), {"data": {"id": tender_id}})
         # check status
         self.app.authorization = ('Basic', ('broker', ''))
         response = self.app.get('/tenders/{}'.format(tender_id))
@@ -1160,10 +1183,14 @@ class TenderLotProcessTest(BaseTenderWebTest):
             for lot_id in lots
         ]}})
         # switch to active.qualification
-        response = self.set_status('active.auction', {"lots": [
-            {"auctionPeriod": {"startDate": None}}
-            for i in lots
-        ]})
+        response = self.set_status('active.auction', {
+            "lots": [
+                {"auctionPeriod": {"startDate": None}}
+                for i in lots
+            ],
+            'status': 'active.tendering'})
+        self.app.authorization = ('Basic', ('chronograph', ''))
+        response = self.app.patch_json('/tenders/{}'.format(tender_id), {"data": {"id": tender_id}})
         # for first lot
         lot_id = lots[0]
         # get awards
@@ -1203,7 +1230,8 @@ class TenderLotProcessTest(BaseTenderWebTest):
             i['complaintPeriod']['endDate'] = i['complaintPeriod']['startDate']
         self.db.save(tender)
         # check tender status
-        self.set_status('complete', {'status': 'active.awarded'})
+        self.app.authorization = ('Basic', ('chronograph', ''))
+        response = self.app.patch_json('/tenders/{}'.format(tender_id), {"data": {"id": tender_id}})
         # check status
         self.app.authorization = ('Basic', ('broker', ''))
         response = self.app.get('/tenders/{}'.format(tender_id))

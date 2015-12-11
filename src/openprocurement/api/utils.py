@@ -255,7 +255,7 @@ def check_bids(request):
 def check_status(request):
     tender = request.validated['tender']
     now = get_now()
-    if tender.status == 'active.enquiries' and not tender.tenderPeriod.startDate and tender.enquiryPeriod.endDate and tender.enquiryPeriod.endDate.astimezone(TZ) <= now:
+    if tender.status == 'active.enquiries' and not tender.tenderPeriod.startDate and tender.enquiryPeriod.endDate.astimezone(TZ) <= now:
         LOGGER.info('Switched tender {} to {}'.format(tender.id, 'active.tendering'),
                     extra=context_unpack(request, {'MESSAGE_ID': 'switched_tender_active.tendering'}))
         tender.status = 'active.tendering'
@@ -265,9 +265,29 @@ def check_status(request):
                     extra=context_unpack(request, {'MESSAGE_ID': 'switched_tender_active.tendering'}))
         tender.status = 'active.tendering'
         return
-    elif tender.status == 'active.auction':
+    elif not tender.lots and tender.status == 'active.tendering' and tender.tenderPeriod.endDate <= now:
+        LOGGER.info('Switched tender {} to {}'.format(tender['id'], 'active.auction'),
+                    extra=context_unpack(request, {'MESSAGE_ID': 'switched_tender_active.auction'}))
+        tender.status = 'active.auction'
         check_bids(request)
         return
+        #return {
+            #'status': 'active.auction',
+            #'auctionPeriod': {'startDate': None} if tender.get('numberOfBids', 0) < 2 else {}
+        #}, now
+    elif tender.lots and tender.status == 'active.tendering' and tender.tenderPeriod.endDate <= now:
+        LOGGER.info('Switched tender {} to {}'.format(tender['id'], 'active.auction'),
+                    extra=context_unpack(request, {'MESSAGE_ID': 'switched_tender_active.auction'}))
+        tender.status = 'active.auction'
+        check_bids(request)
+        return
+        #return {
+            #'status': 'active.auction',
+            #'lots': [
+                #{'auctionPeriod': {'startDate': None}} if i.get('numberOfBids', 0) < 2 else {}
+                #for i in tender.get('lots', [])
+            #]
+        #}, now
     elif not tender.lots and tender.status == 'active.awarded':
         standStillEnds = [
             a.complaintPeriod.endDate.astimezone(TZ)

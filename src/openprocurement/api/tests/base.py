@@ -6,7 +6,7 @@ from copy import deepcopy
 from datetime import datetime, timedelta
 from uuid import uuid4
 
-from openprocurement.api.utils import VERSION
+from openprocurement.api.utils import VERSION, apply_data_patch
 
 
 now = datetime.now()
@@ -356,9 +356,15 @@ class BaseTenderWebTest(BaseWebTest):
                 })
         if extra:
             data.update(extra)
+
+        tender = self.db.get(self.tender_id)
+        tender.update(apply_data_patch(tender, data))
+        self.db.save(tender)
+
         authorization = self.app.authorization
         self.app.authorization = ('Basic', ('chronograph', ''))
-        response = self.app.patch_json('/tenders/{}'.format(self.tender_id), {'data': data})
+        #response = self.app.patch_json('/tenders/{}'.format(self.tender_id), {'data': {'id': self.tender_id}})
+        response = self.app.get('/tenders/{}'.format(self.tender_id))
         self.app.authorization = authorization
         self.assertEqual(response.status, '200 OK')
         self.assertEqual(response.content_type, 'application/json')

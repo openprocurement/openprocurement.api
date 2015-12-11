@@ -813,7 +813,8 @@ auction_post_role = whitelist('bids')
 auction_patch_role = whitelist('auctionUrl', 'bids', 'lots')
 enquiries_role = (blacklist('owner', 'owner_token', '_attachments', 'revisions', 'bids', 'numberOfBids', 'next_check') + schematics_embedded_role)
 auction_role = (blacklist('owner', 'owner_token', '_attachments', 'revisions', 'bids', 'next_check') + schematics_embedded_role)
-chronograph_role = whitelist('status', 'enquiryPeriod', 'tenderPeriod', 'auctionPeriod', 'awardPeriod', 'lots')
+#chronograph_role = whitelist('status', 'enquiryPeriod', 'tenderPeriod', 'auctionPeriod', 'awardPeriod', 'lots')
+chronograph_role = whitelist('auctionPeriod', 'lots')
 chronograph_view_role = whitelist('status', 'enquiryPeriod', 'tenderPeriod', 'auctionPeriod', 'awardPeriod', 'awards', 'lots', 'doc_id', 'submissionMethodDetails', 'mode', 'numberOfBids', 'complaints')
 Administrator_role = whitelist('status', 'mode', 'procuringEntity')
 
@@ -943,11 +944,11 @@ class Tender(SchematicsDocument, Model):
     @serializable
     def next_check(self):
         now = get_now()
-        if self.enquiryPeriod.endDate > now:
-            return self.enquiryPeriod.endDate.isoformat()
-        elif self.tenderPeriod.startDate and self.tenderPeriod.startDate > now:
+        if self.status == 'active.enquiries' and self.tenderPeriod.startDate and self.tenderPeriod.startDate > now:
             return self.tenderPeriod.startDate.isoformat()
-        elif self.tenderPeriod.endDate and self.tenderPeriod.endDate > now:
+        elif self.status == 'active.enquiries' and self.enquiryPeriod.endDate > now:
+            return self.enquiryPeriod.endDate.isoformat()
+        elif self.status == 'active.tendering' and self.tenderPeriod.endDate and self.tenderPeriod.endDate > now:
             return self.tenderPeriod.endDate.isoformat()
         elif not self.lots and self.status == 'active.awarded':
             standStillEnds = [

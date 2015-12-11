@@ -113,12 +113,10 @@ class TenderComplaintResourceTest(BaseTenderWebTest):
         self.assertIn('id', complaint)
         self.assertIn(complaint['id'], response.headers['Location'])
 
-        authorization = self.app.authorization
-        self.app.authorization = ('Basic', ('chronograph', ''))
-        response = self.app.patch_json('/tenders/{}'.format(self.tender_id), {'data': {'status': 'active.awarded', 'awardPeriod': {'endDate': '2014-01-01'}}})
-        self.app.authorization = authorization
-        self.assertEqual(response.status, '200 OK')
-        self.assertEqual(response.content_type, 'application/json')
+        tender = self.db.get(self.tender_id)
+        tender['status'] = 'active.awarded'
+        tender['awardPeriod'] = {'endDate': '2014-01-01'}
+        self.db.save(tender)
 
         response = self.app.patch_json('/tenders/{}/complaints/{}'.format(self.tender_id, complaint['id']), {"data": {"status": "cancelled"}}, status=403)
         self.assertEqual(response.status, '403 Forbidden')

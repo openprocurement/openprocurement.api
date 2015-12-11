@@ -993,8 +993,9 @@ class TenderProcessTest(BaseTenderWebTest):
         response = self.app.post_json('/tenders/{}/bids'.format(tender_id),
                                       {'data': {'tenderers': [test_tender_data["procuringEntity"]], "value": {"amount": 500}}})
         # switch to active.qualification
-        #response = self.set_status('active.qualification', {"auctionPeriod": {"startDate": None}})
-        response = self.set_status('active.auction', {"auctionPeriod": {"startDate": None}})
+        self.set_status('active.auction', {"auctionPeriod": {"startDate": None}, 'status': 'active.tendering'})
+        self.app.authorization = ('Basic', ('chronograph', ''))
+        response = self.app.patch_json('/tenders/{}'.format(tender_id), {"data": {"id": tender_id}})
         self.assertNotIn("auctionPeriod", response.json['data'])
         # get awards
         self.app.authorization = ('Basic', ('broker', ''))
@@ -1039,8 +1040,9 @@ class TenderProcessTest(BaseTenderWebTest):
         response = self.app.post_json('/tenders/{}/bids'.format(tender_id),
                                       {'data': {'tenderers': [test_tender_data["procuringEntity"]], "value": {"amount": 500}}})
         # switch to active.qualification
-        #self.set_status('active.qualification')
-        self.set_status('active.auction')
+        self.set_status('active.auction', {"auctionPeriod": {"startDate": None}, 'status': 'active.tendering'})
+        self.app.authorization = ('Basic', ('chronograph', ''))
+        response = self.app.patch_json('/tenders/{}'.format(tender_id), {"data": {"id": tender_id}})
         # get awards
         self.app.authorization = ('Basic', ('broker', ''))
         response = self.app.get('/tenders/{}/awards?acc_token={}'.format(tender_id, owner_token))
@@ -1049,10 +1051,14 @@ class TenderProcessTest(BaseTenderWebTest):
         # set award as unsuccessful
         response = self.app.patch_json('/tenders/{}/awards/{}?acc_token={}'.format(tender_id, award_id, owner_token),
                                        {"data": {"status": "unsuccessful"}})
+        # time travel
+        tender = self.db.get(tender_id)
+        for i in tender.get('awards', []):
+            i['complaintPeriod']['endDate'] = i['complaintPeriod']['startDate']
+        self.db.save(tender)
         # set tender status after stand slill period
         self.app.authorization = ('Basic', ('chronograph', ''))
-        response = self.app.patch_json('/tenders/{}'.format(tender_id),
-                                       {'data': {'status': 'unsuccessful'}})
+        response = self.app.patch_json('/tenders/{}'.format(tender_id), {"data": {"id": tender_id}})
         # check status
         self.app.authorization = ('Basic', ('broker', ''))
         response = self.app.get('/tenders/{}'.format(tender_id))
