@@ -270,24 +270,16 @@ def check_status(request):
                     extra=context_unpack(request, {'MESSAGE_ID': 'switched_tender_active.auction'}))
         tender.status = 'active.auction'
         check_bids(request)
+        if tender.numberOfBids < 2 and tender.auctionPeriod:
+            tender.auctionPeriod.startDate = None
         return
-        #return {
-            #'status': 'active.auction',
-            #'auctionPeriod': {'startDate': None} if tender.get('numberOfBids', 0) < 2 else {}
-        #}, now
     elif tender.lots and tender.status == 'active.tendering' and tender.tenderPeriod.endDate <= now:
         LOGGER.info('Switched tender {} to {}'.format(tender['id'], 'active.auction'),
                     extra=context_unpack(request, {'MESSAGE_ID': 'switched_tender_active.auction'}))
         tender.status = 'active.auction'
         check_bids(request)
+        [setattr(i.auctionPeriod, 'startDate', None) for i in tender.lots if i.numberOfBids < 2 and i.auctionPeriod]
         return
-        #return {
-            #'status': 'active.auction',
-            #'lots': [
-                #{'auctionPeriod': {'startDate': None}} if i.get('numberOfBids', 0) < 2 else {}
-                #for i in tender.get('lots', [])
-            #]
-        #}, now
     elif not tender.lots and tender.status == 'active.awarded':
         standStillEnds = [
             a.complaintPeriod.endDate.astimezone(TZ)
