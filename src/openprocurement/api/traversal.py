@@ -35,7 +35,7 @@ class Root(object):
         self.db = request.registry.db
 
 
-def get_item(parent, key, request, root):
+def get_item(parent, key, request):
     request.validated['{}_id'.format(key)] = request.matchdict['{}_id'.format(key)]
     items = [i for i in getattr(parent, '{}s'.format(key), []) if i.id == request.matchdict['{}_id'.format(key)]]
     if not items:
@@ -66,46 +66,46 @@ def factory(request):
     if request.method != 'GET':
         request.validated['tender_src'] = tender.serialize('plain')
     if request.matchdict.get('award_id'):
-        award = get_item(tender, 'award', request, root)
+        award = get_item(tender, 'award', request)
         if request.matchdict.get('complaint_id'):
-            complaint = get_item(award, 'complaint', request, root)
+            complaint = get_item(award, 'complaint', request)
             if request.matchdict.get('document_id'):
-                return get_item(complaint, 'document', request, root)
+                return get_item(complaint, 'document', request)
             else:
                 return complaint
         elif request.matchdict.get('document_id'):
-            return get_item(award, 'document', request, root)
+            return get_item(award, 'document', request)
         else:
             return award
     elif request.matchdict.get('contract_id'):
-        contract = get_item(tender, 'contract', request, root)
+        contract = get_item(tender, 'contract', request)
         if request.matchdict.get('document_id'):
-            return get_item(contract, 'document', request, root)
+            return get_item(contract, 'document', request)
         else:
             return contract
     elif request.matchdict.get('bid_id'):
-        bid = get_item(tender, 'bid', request, root)
+        bid = get_item(tender, 'bid', request)
         if request.matchdict.get('document_id'):
-            return get_item(bid, 'document', request, root)
+            return get_item(bid, 'document', request)
         else:
             return bid
     elif request.matchdict.get('complaint_id'):
-        complaint = get_item(tender, 'complaint', request, root)
+        complaint = get_item(tender, 'complaint', request)
         if request.matchdict.get('document_id'):
-            return get_item(complaint, 'document', request, root)
+            return get_item(complaint, 'document', request)
         else:
             return complaint
     elif request.matchdict.get('cancellation_id'):
-        cancellation = get_item(tender, 'cancellation', request, root)
+        cancellation = get_item(tender, 'cancellation', request)
         if request.matchdict.get('document_id'):
-            return get_item(cancellation, 'document', request, root)
+            return get_item(cancellation, 'document', request)
         else:
             return cancellation
     elif request.matchdict.get('document_id'):
-        return get_item(tender, 'document', request, root)
+        return get_item(tender, 'document', request)
     elif request.matchdict.get('question_id'):
-        return get_item(tender, 'question', request, root)
+        return get_item(tender, 'question', request)
     elif request.matchdict.get('lot_id'):
-        return get_item(tender, 'lot', request, root)
+        return get_item(tender, 'lot', request)
     request.validated['id'] = request.matchdict['tender_id']
     return tender

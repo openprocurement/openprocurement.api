@@ -5,7 +5,7 @@ import gevent.monkey
 gevent.monkey.patch_all()
 import os
 from boto.s3.connection import S3Connection, Location
-from couchdb import Server, Session
+from couchdb import Server as CouchdbServer, Session
 from couchdb.http import Unauthorized, extract_credentials
 from logging import getLogger
 from openprocurement.api.auth import AuthenticationPolicy, authenticated_role
@@ -38,7 +38,7 @@ VALIDATE_DOC_UPDATE = """function(newDoc, oldDoc, userCtx){
 }"""
 
 
-class Server(Server):
+class Server(CouchdbServer):
     _uuid = None
 
     @property

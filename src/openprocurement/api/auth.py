@@ -76,7 +76,7 @@ class AuthenticationPolicy(BasicAuthAuthenticationPolicy):
             auth = authbytes.decode('latin-1')
 
         try:
-            username, password = auth.split(':', 1)
+            username, _ = auth.split(':', 1)
         except ValueError:  # not enough values to unpack
             return None
         return username

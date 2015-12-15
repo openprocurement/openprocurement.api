@@ -11,20 +11,18 @@ from openprocurement.api.design import (
 )
 from openprocurement.api.models import get_now
 from openprocurement.api.utils import (
+    apply_patch,
+    check_status,
+    context_unpack,
+    decrypt,
+    encrypt,
     generate_id,
     generate_tender_id,
+    json_view,
+    opresource,
     save_tender,
     set_ownership,
     tender_serialize,
-    apply_patch,
-    check_status,
-    check_bids,
-    check_tender_status,
-    opresource,
-    json_view,
-    context_unpack,
-    encrypt,
-    decrypt,
 )
 from openprocurement.api.validation import (
     validate_patch_tender_data,
@@ -377,6 +375,7 @@ class TenderResource(object):
     def __init__(self, request, context):
         self.request = request
         self.db = request.registry.db
+        self.context = context
 
     @json_view(permission='view_tender')
     def get(self):
@@ -465,8 +464,10 @@ class TenderResource(object):
             }
 
         """
-        tender = self.request.validated['tender']
-        tender_data = tender.serialize('chronograph_view' if self.request.authenticated_role == 'chronograph' else tender.status)
+        if self.request.authenticated_role == 'chronograph':
+            tender_data = self.context.serialize('chronograph_view')
+        else:
+            tender_data = self.context.serialize(self.context.status)
         return {'data': tender_data}
 
     #@json_view(content_type="application/json", validators=(validate_tender_data, ), permission='edit_tender')
@@ -529,7 +530,7 @@ class TenderResource(object):
             }
 
         """
-        tender = self.request.validated['tender']
+        tender = self.context
         if self.request.authenticated_role != 'Administrator' and tender.status in ['complete', 'unsuccessful', 'cancelled']:
             self.request.errors.add('body', 'data', 'Can\'t update tender in current ({}) status'.format(tender.status))
             self.request.errors.status = 403
@@ -543,13 +544,6 @@ class TenderResource(object):
             apply_patch(self.request, save=False, src=self.request.validated['tender_src'])
             check_status(self.request)
             save_tender(self.request)
-        #if self.request.authenticated_role == 'chronograph' and tender.status == 'active.tendering' and data.get('status', tender.status) == 'active.auction':
-            #apply_patch(self.request, save=False, src=self.request.validated['tender_src'])
-            #check_bids(self.request)
-            #save_tender(self.request)
-        #elif self.request.authenticated_role == 'chronograph' and tender.status in ['active.qualification', 'active.awarded'] and data.get('status', tender.status) == tender.status:
-            #check_tender_status(self.request)
-            #save_tender(self.request)
         else:
             apply_patch(self.request, src=self.request.validated['tender_src'])
         LOGGER.info('Updated tender {}'.format(tender.id),
