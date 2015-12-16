@@ -383,6 +383,7 @@ class TenderBidderFeaturesResourceTest(BaseTenderWebTest):
             bid = response.json['data']
             bid.pop(u'date')
             bid.pop(u'id')
+            bid.pop(u'owner')
             self.assertEqual(bid, i)
 
     def test_features_bidder_invalid(self):
