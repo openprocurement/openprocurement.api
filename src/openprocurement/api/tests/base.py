@@ -66,6 +66,51 @@ test_tender_data = {
         "endDate": (now + timedelta(days=14)).isoformat()
     }
 }
+test_features_tender_data = test_tender_data.copy()
+test_features_item = test_features_tender_data['items'][0].copy()
+test_features_item['id'] = "1"
+test_features_tender_data['items'] = [test_features_item]
+test_features_tender_data["features"] = [
+    {
+        "code": "OCDS-123454-AIR-INTAKE",
+        "featureOf": "item",
+        "relatedItem": "1",
+        "title": u"Потужність всмоктування",
+        "title_en": "Air Intake",
+        "description": u"Ефективна потужність всмоктування пилососа, в ватах (аероватах)",
+        "enum": [
+            {
+                "value": 0.1,
+                "title": u"До 1000 Вт"
+            },
+            {
+                "value": 0.15,
+                "title": u"Більше 1000 Вт"
+            }
+        ]
+    },
+    {
+        "code": "OCDS-123454-YEARS",
+        "featureOf": "tenderer",
+        "title": u"Років на ринку",
+        "title_en": "Years trading",
+        "description": u"Кількість років, які організація учасник працює на ринку",
+        "enum": [
+            {
+                "value": 0.05,
+                "title": u"До 3 років"
+            },
+            {
+                "value": 0.1,
+                "title": u"Більше 3 років, менше 5 років"
+            },
+            {
+                "value": 0.15,
+                "title": u"Більше 5 років"
+            }
+        ]
+    }
+]
 
 
 class PrefixedRequestClass(webtest.app.TestRequest):

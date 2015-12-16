@@ -451,7 +451,7 @@ class TenderResourceTest(BaseWebTest):
         self.assertEqual(response.content_type, 'application/json')
         self.assertEqual(response.json['status'], 'error')
         self.assertEqual(response.json['errors'], [
-            {u'description': [u'additionalClassifications'], u'location': u'body', u'name': u'items'}
+            {u'description': [{u'additionalClassifications': [u"One of additional classifications should be '\u0414\u041a\u041f\u041f'"]}], u'location': u'body', u'name': u'items'}
         ])
 
         data = test_tender_data["procuringEntity"]["contactPoint"]["telephone"]
@@ -489,7 +489,7 @@ class TenderResourceTest(BaseWebTest):
         tender = response.json['data']
         self.assertEqual(set(tender), set([u'id', u'dateModified', u'tenderID', u'status', u'enquiryPeriod',
                                            u'tenderPeriod', u'minimalStep', u'items', u'value', u'procuringEntity',
-                                           u'procurementMethod', u'awardCriteria', u'submissionMethod', u'title']))
+                                           u'procurementMethod', u'awardCriteria', u'submissionMethod', u'title', u'owner']))
         self.assertNotEqual(data['id'], tender['id'])
         self.assertNotEqual(data['doc_id'], tender['id'])
         self.assertNotEqual(data['tenderID'], tender['tenderID'])
@@ -504,7 +504,7 @@ class TenderResourceTest(BaseWebTest):
         self.assertEqual(response.content_type, 'application/json')
         tender = response.json['data']
         self.assertEqual(set(tender) - set(test_tender_data), set(
-            [u'id', u'dateModified', u'tenderID', u'status', u'procurementMethod', u'awardCriteria', u'submissionMethod']))
+            [u'id', u'dateModified', u'tenderID', u'status', u'procurementMethod', u'awardCriteria', u'submissionMethod', u'owner']))
         self.assertIn(tender['id'], response.headers['Location'])
 
         response = self.app.get('/tenders/{}'.format(tender['id']))
@@ -552,35 +552,166 @@ class TenderResourceTest(BaseWebTest):
         self.assertEqual(response.content_type, 'application/json')
         self.assertIn('{\n    "data": {\n        "', response.body)
 
-    #def test_put_tender(self):
-        #response = self.app.get('/tenders')
-        #self.assertEqual(response.status, '200 OK')
-        #self.assertEqual(len(response.json['data']), 0)
+    def test_tender_features_invalid(self):
+        data = test_tender_data.copy()
+        item = data['items'][0].copy()
+        item['id'] = "1"
+        data['items'] = [item, item.copy()]
+        response = self.app.post_json('/tenders', {'data': data}, status=422)
+        self.assertEqual(response.status, '422 Unprocessable Entity')
+        self.assertEqual(response.content_type, 'application/json')
+        self.assertEqual(response.json['status'], 'error')
+        self.assertEqual(response.json['errors'], [
+            {u'description': [u'Item id should be uniq for all items'], u'location': u'body', u'name': u'items'}
+        ])
+        data['items'][0]["id"] = "0"
+        data['features'] = [
+            {
+                "code": "OCDS-123454-AIR-INTAKE",
+                "featureOf": "item",
+                "title": u"Потужність всмоктування",
+                "enum": [
+                    {
+                        "value": 0.1,
+                        "title": u"До 1000 Вт"
+                    },
+                    {
+                        "value": 0.15,
+                        "title": u"Більше 1000 Вт"
+                    }
+                ]
+            }
+        ]
+        response = self.app.post_json('/tenders', {'data': data}, status=422)
+        self.assertEqual(response.status, '422 Unprocessable Entity')
+        self.assertEqual(response.content_type, 'application/json')
+        self.assertEqual(response.json['status'], 'error')
+        self.assertEqual(response.json['errors'], [
+            {u'description': [{u'relatedItem': [u'This field is required.']}], u'location': u'body', u'name': u'features'}
+        ])
+        data['features'][0]["relatedItem"] = "2"
+        response = self.app.post_json('/tenders', {'data': data}, status=422)
+        self.assertEqual(response.status, '422 Unprocessable Entity')
+        self.assertEqual(response.content_type, 'application/json')
+        self.assertEqual(response.json['status'], 'error')
+        self.assertEqual(response.json['errors'], [
+            {u'description': [u'relatedItem should be one of items'], u'location': u'body', u'name': u'features'}
+        ])
+        data['features'][0]["enum"][0]["value"] = 0.5
+        response = self.app.post_json('/tenders', {'data': data}, status=422)
+        self.assertEqual(response.status, '422 Unprocessable Entity')
+        self.assertEqual(response.content_type, 'application/json')
+        self.assertEqual(response.json['status'], 'error')
+        self.assertEqual(response.json['errors'], [
+            {u'description': [{u'enum': [{u'value': [u'Float value should be less than 0.3.']}]}], u'location': u'body', u'name': u'features'}
+        ])
+        data['features'][0]["enum"][0]["value"] = 0.15
+        response = self.app.post_json('/tenders', {'data': data}, status=422)
+        self.assertEqual(response.status, '422 Unprocessable Entity')
+        self.assertEqual(response.content_type, 'application/json')
+        self.assertEqual(response.json['status'], 'error')
+        self.assertEqual(response.json['errors'], [
+            {u'description': [{u'enum': [u'Feature value should be uniq for feature']}], u'location': u'body', u'name': u'features'}
+        ])
+        data['features'][0]["enum"][0]["value"] = 0.1
+        data['features'].append(data['features'][0].copy())
+        response = self.app.post_json('/tenders', {'data': data}, status=422)
+        self.assertEqual(response.status, '422 Unprocessable Entity')
+        self.assertEqual(response.content_type, 'application/json')
+        self.assertEqual(response.json['status'], 'error')
+        self.assertEqual(response.json['errors'], [
+            {u'description': [u'Feature code should be uniq for all features'], u'location': u'body', u'name': u'features'}
+        ])
+        data['features'][1]["code"] = u"OCDS-123454-YEARS"
+        data['features'][1]["enum"][0]["value"] = 0.2
+        response = self.app.post_json('/tenders', {'data': data}, status=422)
+        self.assertEqual(response.status, '422 Unprocessable Entity')
+        self.assertEqual(response.content_type, 'application/json')
+        self.assertEqual(response.json['status'], 'error')
+        self.assertEqual(response.json['errors'], [
+            {u'description': [u'Sum of max value of all features should be less then or equal to 30%'], u'location': u'body', u'name': u'features'}
+        ])
 
-        #response = self.app.post_json('/tenders', {'data': test_tender_data})
-        #self.assertEqual(response.status, '201 Created')
-        #tender = response.json['data']
-        #tender['procurementMethod'] = 'Open'
-        #dateModified = tender.pop('dateModified')
+    def test_tender_features(self):
+        data = test_tender_data.copy()
+        item = data['items'][0].copy()
+        item['id'] = "1"
+        data['items'] = [item]
+        data['features'] = [
+            {
+                "code": "OCDS-123454-AIR-INTAKE",
+                "featureOf": "item",
+                "relatedItem": "1",
+                "title": u"Потужність всмоктування",
+                "title_en": u"Air Intake",
+                "description": u"Ефективна потужність всмоктування пилососа, в ватах (аероватах)",
+                "enum": [
+                    {
+                        "value": 0.05,
+                        "title": u"До 1000 Вт"
+                    },
+                    {
+                        "value": 0.1,
+                        "title": u"Більше 1000 Вт"
+                    }
+                ]
+            },
+            {
+                "code": "OCDS-123454-YEARS",
+                "featureOf": "tenderer",
+                "title": u"Років на ринку",
+                "title_en": u"Years trading",
+                "description": u"Кількість років, які організація учасник працює на ринку",
+                "enum": [
+                    {
+                        "value": 0.05,
+                        "title": u"До 3 років"
+                    },
+                    {
+                        "value": 0.1,
+                        "title": u"Більше 3 років"
+                    }
+                ]
+            },
+            {
+                "code": "OCDS-123454-POSTPONEMENT",
+                "featureOf": "tenderer",
+                "title": u"Відстрочка платежу",
+                "title_en": u"Postponement of payment",
+                "description": u"Термін відстрочки платежу",
+                "enum": [
+                    {
+                        "value": 0.05,
+                        "title": u"До 90 днів"
+                    },
+                    {
+                        "value": 0.1,
+                        "title": u"Більше 90 днів"
+                    }
+                ]
+            }
+        ]
+        response = self.app.post_json('/tenders', {'data': data})
+        self.assertEqual(response.status, '201 Created')
+        self.assertEqual(response.content_type, 'application/json')
+        tender = response.json['data']
+        self.assertEqual(tender['features'], data['features'])
 
-        #response = self.app.put_json('/tenders/{}'.format(
-            #tender['id']), {'data': tender})
-        #self.assertEqual(response.status, '200 OK')
-        #self.assertEqual(response.content_type, 'application/json')
-        #new_tender = response.json['data']
-        #new_dateModified = new_tender.pop('dateModified')
-        #self.assertEqual(tender, new_tender)
-        #self.assertNotEqual(dateModified, new_dateModified)
+        response = self.app.patch_json('/tenders/{}'.format(tender['id']), {'data': {'features': [{
+            "featureOf": "tenderer",
+            "relatedItem": None
+        }, {}, {}]}})
+        self.assertEqual(response.status, '200 OK')
+        self.assertIn('features', response.json['data'])
+        self.assertNotIn('relatedItem', response.json['data']['features'][0])
 
-        #response = self.app.patch_json('/tenders/{}'.format(tender['id']), {'data': {'status': 'complete'}})
-        #self.assertEqual(response.status, '200 OK')
-        #self.assertEqual(response.content_type, 'application/json')
+        response = self.app.patch_json('/tenders/{}'.format(tender['id']), {'data': {'tenderPeriod': {'startDate': None}}})
+        self.assertEqual(response.status, '200 OK')
+        self.assertIn('features', response.json['data'])
 
-        #response = self.app.put_json('/tenders/{}'.format(
-            #tender['id']), {'data': tender}, status=403)
-        #self.assertEqual(response.status, '403 Forbidden')
-        #self.assertEqual(response.content_type, 'application/json')
-        #self.assertEqual(response.json['errors'][0]["description"], "Can't update tender in current (complete) status")
+        response = self.app.patch_json('/tenders/{}'.format(tender['id']), {'data': {'features': []}})
+        self.assertEqual(response.status, '200 OK')
+        self.assertNotIn('features', response.json['data'])
 
     def test_patch_tender(self):
         response = self.app.get('/tenders')
@@ -637,7 +768,10 @@ class TenderResourceTest(BaseWebTest):
             tender['id']), {'data': {'items': [{}, test_tender_data['items'][0]]}})
         self.assertEqual(response.status, '200 OK')
         self.assertEqual(response.content_type, 'application/json')
-        self.assertEqual(response.json['data']['items'][0], response.json['data']['items'][1])
+        item0 = response.json['data']['items'][0]
+        item1 = response.json['data']['items'][1]
+        self.assertNotEqual(item0.pop('id'), item1.pop('id'))
+        self.assertEqual(item0, item1)
 
         response = self.app.patch_json('/tenders/{}'.format(
             tender['id']), {'data': {'items': [{}]}})
@@ -733,15 +867,6 @@ class TenderResourceTest(BaseWebTest):
         self.assertEqual(response.json['errors'], [
             {u'description': u'Not Found', u'location': u'url', u'name': u'tender_id'}
         ])
-
-        #response = self.app.put_json(
-            #'/tenders/some_id', {'data': test_tender_data}, status=404)
-        #self.assertEqual(response.status, '404 Not Found')
-        #self.assertEqual(response.content_type, 'application/json')
-        #self.assertEqual(response.json['status'], 'error')
-        #self.assertEqual(response.json['errors'], [
-            #{u'description': u'Not Found', u'location': u'url', u'name': u'tender_id'}
-        #])
 
         response = self.app.patch_json(
             '/tenders/some_id', {'data': {}}, status=404)

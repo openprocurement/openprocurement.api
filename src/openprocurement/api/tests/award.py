@@ -100,7 +100,7 @@ class TenderAwardResourceTest(BaseTenderWebTest):
         self.assertEqual(response.content_type, 'application/json')
         self.assertEqual(response.json['status'], 'error')
         self.assertEqual(response.json['errors'], [
-            {u'description': [u'contactPoint', u'identifier', u'name', u'address'], u'location': u'body', u'name': u'suppliers'},
+            {u'description': [{u'contactPoint': [u'This field is required.'], u'identifier': {u'scheme': [u'This field is required.']}, u'name': [u'This field is required.'], u'address': [u'This field is required.']}], u'location': u'body', u'name': u'suppliers'},
             {u'description': [u'This field is required.'], u'location': u'body', u'name': u'bid_id'}
         ])
 
@@ -110,7 +110,7 @@ class TenderAwardResourceTest(BaseTenderWebTest):
         self.assertEqual(response.content_type, 'application/json')
         self.assertEqual(response.json['status'], 'error')
         self.assertEqual(response.json['errors'], [
-            {u'description': [u'contactPoint', u'identifier', u'address'], u'location': u'body', u'name': u'suppliers'},
+            {u'description': [{u'contactPoint': [u'This field is required.'], u'identifier': {u'scheme': [u'This field is required.'], u'id': [u'This field is required.'], u'uri': [u'Not a well formed URL.']}, u'address': [u'This field is required.']}], u'location': u'body', u'name': u'suppliers'},
             {u'description': [u'This field is required.'], u'location': u'body', u'name': u'bid_id'}
         ])
 
@@ -980,6 +980,11 @@ class TenderAwardContractResourceTest(BaseTenderWebTest):
         self.assertEqual(response.status, '200 OK')
         self.assertEqual(response.content_type, 'application/json')
         self.assertEqual(response.json['data']["status"], "active")
+
+        response = self.app.patch_json('/tenders/{}/awards/{}/contracts/{}'.format(self.tender_id, self.award_id, contract['id']), {"data": {"status": "active"}}, status=403)
+        self.assertEqual(response.status, '403 Forbidden')
+        self.assertEqual(response.content_type, 'application/json')
+        self.assertEqual(response.json['errors'][0]["description"], "Can't update contract status")
 
         response = self.app.patch_json('/tenders/{}/awards/{}/contracts/some_id'.format(self.tender_id, self.award_id), {"data": {"status": "active"}}, status=404)
         self.assertEqual(response.status, '404 Not Found')

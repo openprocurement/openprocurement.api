@@ -7,20 +7,21 @@ with open(os.path.join(here, 'README.rst')) as f:
     README = f.read()
 
 requires = [
-    'setuptools',
-    'cornice',
-    'chaussette',
-    'gevent',
-    'couchdb-schematics',
-    'sphinxcontrib-httpdomain',
-    'jsonpatch',
+    'barbecue',
     'boto',
+    'chaussette',
+    'cornice',
+    'couchdb-schematics',
+    'gevent',
     'iso8601',
-    'tzlocal',
-    'pyramid_exclog',
-    'rfc6266',
+    'jsonpatch',
     'pbkdf2',
     'pycrypto',
+    'pyramid_exclog',
+    'rfc6266',
+    'setuptools',
+    'sphinxcontrib-httpdomain',
+    'tzlocal',
 ]
 test_requires = requires + [
     'webtest',
@@ -33,7 +34,7 @@ main = openprocurement.api:main
 """
 
 setup(name='openprocurement.api',
-      version='0.8.7',
+      version='0.9',
       description='openprocurement.api',
       long_description=README,
       classifiers=[

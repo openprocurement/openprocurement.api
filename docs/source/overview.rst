@@ -72,6 +72,8 @@ Released: not released
 
  New features:
 
+ - :ref:`MEAT tenders <meat>`
+
 
 0.8
 ~~~

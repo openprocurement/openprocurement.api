@@ -12,6 +12,7 @@ from schematics.types import StringType, FloatType, IntType, URLType, BooleanTyp
 from schematics.types.compound import ModelType, ListType, DictType
 from schematics.types.serializable import serializable
 from uuid import uuid4
+from barbecue import vnmax
 
 
 STAND_STILL_TIME = timedelta(days=1)
@@ -60,6 +61,42 @@ class IsoDateTimeType(BaseType):
 
     def to_primitive(self, value, context=None):
         return value.isoformat()
+
+
+class ListType(ListType):
+
+    def export_loop(self, list_instance, field_converter,
+                    role=None, print_none=False):
+        """Loops over each item in the model and applies either the field
+        transform or the multitype transform.  Essentially functions the same
+        as `transforms.export_loop`.
+        """
+        data = []
+        for value in list_instance:
+            if hasattr(self.field, 'export_loop'):
+                shaped = self.field.export_loop(value, field_converter,
+                                                role=role,
+                                                print_none=print_none)
+                feels_empty = shaped and len(shaped) == 0
+            else:
+                shaped = field_converter(self.field, value)
+                feels_empty = shaped is None
+
+            # Print if we want empty or found a value
+            if feels_empty and self.field.allow_none():
+                data.append(shaped)
+            elif shaped is not None:
+                data.append(shaped)
+            elif print_none:
+                data.append(shaped)
+
+        # Return data if the list contains anything
+        if len(data) > 0:
+            return data
+        elif len(data) == 0 and self.allow_none():
+            return data
+        elif print_none:
+            return data
 
 
 class Model(SchematicsModel):
@@ -159,6 +196,7 @@ class Item(Model):
     class Options:
         serialize_when_none = False
 
+    id = StringType(required=True, min_length=1, default=lambda: uuid4().hex)
     description = StringType(required=True)  # A description of the goods, services to be provided.
     description_en = StringType()
     description_ru = StringType()
@@ -183,6 +221,7 @@ class Document(Model):
 
     id = MD5Type(required=True, default=lambda: uuid4().hex)
     documentType = StringType(choices=[
+        'tenderNotice', 'awardNotice', 'contractNotice',
         'notice', 'biddingDocuments', 'technicalSpecifications',
         'evaluationCriteria', 'clarifications', 'shortlistedFirms',
         'riskProvisions', 'billOfQuantity', 'bidders', 'conflictOfInterest',
@@ -250,7 +289,22 @@ class Organization(Model):
     contactPoint = ModelType(ContactPoint, required=True)
 
 
-view_bid_role = (blacklist('owner_token', 'owner') + schematics_default_role)
+class Parameter(Model):
+    class Options:
+        serialize_when_none = False
+
+    code = StringType(required=True)
+    value = FloatType(required=True)
+
+
+def validate_parameters_uniq(parameters, *args):
+    if parameters:
+        codes = [i.code for i in parameters]
+        if [i for i in set(codes) if codes.count(i) > 1]:
+            raise ValidationError(u"Parameter code should be uniq for all parameters")
+
+
+view_bid_role = (blacklist('owner_token') + schematics_default_role)
 Administrator_bid_role = whitelist('tenderers')
 
 
@@ -261,9 +315,9 @@ class Bid(Model):
             'Administrator': Administrator_bid_role,
             'embedded': view_bid_role,
             'view': view_bid_role,
-            'create': whitelist('value', 'tenderers'),
-            'edit': whitelist('value', 'tenderers'),
-            'auction_view': whitelist('value', 'id', 'date', 'participationUrl'),
+            'create': whitelist('value', 'tenderers', 'parameters'),
+            'edit': whitelist('value', 'tenderers', 'parameters'),
+            'auction_view': whitelist('value', 'id', 'date', 'parameters', 'participationUrl'),
             'auction_post': whitelist('value', 'id', 'date'),
             'auction_patch': whitelist('id', 'participationUrl'),
             'active.enquiries': whitelist(),
@@ -280,6 +334,7 @@ class Bid(Model):
         return dict([('{}_{}'.format(self.owner, self.owner_token), 'bid_owner')])
 
     tenderers = ListType(ModelType(Organization), required=True, min_size=1, max_size=1)
+    parameters = ListType(ModelType(Parameter), default=list(), validators=[validate_parameters_uniq])
     date = IsoDateTimeType(default=get_now)
     id = MD5Type(required=True, default=lambda: uuid4().hex)
     status = StringType(choices=['registration', 'validBid', 'invalidBid'])
@@ -428,6 +483,64 @@ class Award(Model):
     complaintPeriod = ModelType(Period)
 
 
+class FeatureValue(Model):
+    class Options:
+        serialize_when_none = False
+
+    value = FloatType(required=True, min_value=0.0, max_value=0.3)
+    title = StringType(required=True, min_length=1)
+    title_en = StringType()
+    title_ru = StringType()
+    description = StringType()
+    description_en = StringType()
+    description_ru = StringType()
+
+
+def validate_values_uniq(values, *args):
+    codes = [i.value for i in values]
+    if any([codes.count(i) > 1 for i in set(codes)]):
+        raise ValidationError(u"Feature value should be uniq for feature")
+
+
+class Feature(Model):
+    class Options:
+        serialize_when_none = False
+
+    code = StringType(required=True, min_length=1, default=lambda: uuid4().hex)
+    featureOf = StringType(required=True, choices=['tenderer', 'item'], default='tenderer')
+    relatedItem = StringType(min_length=1)
+    title = StringType(required=True, min_length=1)
+    title_en = StringType()
+    title_ru = StringType()
+    description = StringType()
+    description_en = StringType()
+    description_ru = StringType()
+    enum = ListType(ModelType(FeatureValue), default=list(), min_size=1, validators=[validate_values_uniq])
+
+    def validate_relatedItem(self, data, relatedItem):
+        if not relatedItem and data.get('featureOf') == 'item':
+            raise ValidationError(u'This field is required.')
+
+
+def validate_features_uniq(features, *args):
+    if features:
+        codes = [i.code for i in features]
+        if any([codes.count(i) > 1 for i in set(codes)]):
+            raise ValidationError(u"Feature code should be uniq for all features")
+
+
+def validate_features_max_value(features, *args):
+    if features and round(vnmax(features), 15) > 0.3:
+        raise ValidationError(u"Sum of max value of all features should be less then or equal to 30%")
+
+
+def validate_items_uniq(items, *args):
+    if items:
+        ids = [i.id for i in items]
+        if [i for i in set(ids) if ids.count(i) > 1]:
+            raise ValidationError(u"Item id should be uniq for all items")
+
+
 def validate_cpv_group(items, *args):
     if items and len(set([i.classification.id[:3] for i in items])) != 1:
         raise ValidationError(u"CPV group of items be identical")
@@ -437,13 +550,13 @@ plain_role = (blacklist('_attachments', 'revisions', 'dateModified') + schematic
 create_role = (blacklist('owner_token', 'owner', '_attachments', 'revisions', 'dateModified', 'doc_id', 'tenderID', 'bids', 'documents', 'awards', 'questions', 'complaints', 'auctionUrl', 'status', 'auctionPeriod', 'awardPeriod', 'procurementMethod', 'awardCriteria', 'submissionMethod') + schematics_embedded_role)
 edit_role = (blacklist('owner_token', 'owner', '_attachments', 'revisions', 'dateModified', 'doc_id', 'tenderID', 'bids', 'documents', 'awards', 'questions', 'complaints', 'auctionUrl', 'auctionPeriod', 'awardPeriod', 'procurementMethod', 'awardCriteria', 'submissionMethod', 'mode') + schematics_embedded_role)
 cancel_role = whitelist('status')
-view_role = (blacklist('owner', 'owner_token', '_attachments', 'revisions') + schematics_embedded_role)
+view_role = (blacklist('owner_token', '_attachments', 'revisions') + schematics_embedded_role)
 listing_role = whitelist('dateModified', 'doc_id')
-auction_view_role = whitelist('tenderID', 'dateModified', 'bids', 'auctionPeriod', 'minimalStep', 'auctionUrl')
+auction_view_role = whitelist('tenderID', 'dateModified', 'bids', 'auctionPeriod', 'minimalStep', 'auctionUrl', 'features')
 auction_post_role = whitelist('bids')
 auction_patch_role = whitelist('auctionUrl', 'bids')
-enquiries_role = (blacklist('owner', 'owner_token', '_attachments', 'revisions', 'bids', 'numberOfBids') + schematics_embedded_role)
-auction_role = (blacklist('owner', 'owner_token', '_attachments', 'revisions', 'bids') + schematics_embedded_role)
+enquiries_role = (blacklist('owner_token', '_attachments', 'revisions', 'bids', 'numberOfBids') + schematics_embedded_role)
+auction_role = (blacklist('owner_token', '_attachments', 'revisions', 'bids') + schematics_embedded_role)
 chronograph_role = whitelist('status', 'enquiryPeriod', 'tenderPeriod', 'auctionPeriod', 'awardPeriod')
 Administrator_role = whitelist('status', 'mode', 'procuringEntity')
 
@@ -490,7 +603,7 @@ class Tender(SchematicsDocument, Model):
     description_en = StringType()
     description_ru = StringType()
     tenderID = StringType()  # TenderID should always be the same as the OCID. It is included to make the flattened data structure more convenient.
-    items = ListType(ModelType(Item), required=True, min_size=1, validators=[validate_cpv_group])  # The goods and services to be purchased, broken into line items wherever possible. Items should not be duplicated, but a quantity of 2 specified instead.
+    items = ListType(ModelType(Item), required=True, min_size=1, validators=[validate_cpv_group, validate_items_uniq])  # The goods and services to be purchased, broken into line items wherever possible. Items should not be duplicated, but a quantity of 2 specified instead.
     value = ModelType(Value, required=True)  # The total estimated value of the procurement.
     procurementMethod = StringType(choices=['open', 'selective', 'limited'], default='open')  # Specify tendering method as per GPA definitions of Open, Selective, Limited (http://www.wto.org/english/docs_e/legal_e/rev-gpr-94_01_e.htm)
     procurementMethodRationale = StringType()  # Justification of procurement method, especially in the case of Limited tendering.
@@ -526,6 +639,7 @@ class Tender(SchematicsDocument, Model):
     auctionUrl = URLType()
     mode = StringType(choices=['test'])
     cancellations = ListType(ModelType(Cancellation), default=list())
+    features = ListType(ModelType(Feature), validators=[validate_features_uniq, validate_features_max_value])
 
     _attachments = DictType(DictType(BaseType), default=dict())  # couchdb attachments
     dateModified = IsoDateTimeType()
@@ -568,7 +682,7 @@ class Tender(SchematicsDocument, Model):
             The data to be imported.
         """
         data = self.convert(raw_data, **kw)
-        del_keys = [k for k in data.keys() if not data[k]]
+        del_keys = [k for k in data.keys() if data[k] == self.__class__.fields[k].default or data[k] == getattr(self, k)]
         for k in del_keys:
             del data[k]
 
@@ -592,6 +706,13 @@ class Tender(SchematicsDocument, Model):
                 raise ValidationError(u"currency of bid should be identical to currency of value of tender")
             if not all([i.value.valueAddedTaxIncluded == data.get('value').valueAddedTaxIncluded for i in bids]):
                 raise ValidationError(u"valueAddedTaxIncluded of bid should be identical to valueAddedTaxIncluded of value of tender")
+        if bids and data.get('features'):
+            codes = dict([(i.code, [x.value for x in i.enum]) for i in data.get('features')])
+            for bid in bids:
+                if set([i['code'] for i in bid.parameters]) != set(codes):
+                    raise ValidationError(u"All features parameters is required.")
+                if [i for i in bid.parameters if i.value not in codes[i.code]]:
+                    raise ValidationError(u"Parameter value should be one of feature values.")
 
     def validate_tenderPeriod(self, data, period):
         if period and period.startDate and data.get('enquiryPeriod') and data.get('enquiryPeriod').endDate and period.startDate < data.get('enquiryPeriod').endDate:
@@ -606,3 +727,7 @@ class Tender(SchematicsDocument, Model):
             raise ValidationError(u"period should begin after auctionPeriod")
         if period and period.startDate and data.get('tenderPeriod') and data.get('tenderPeriod').endDate and period.startDate < data.get('tenderPeriod').endDate:
             raise ValidationError(u"period should begin after tenderPeriod")
+
+    def validate_features(self, data, features):
+        if features and not set([i.relatedItem for i in features if i.relatedItem]).issubset(set([i.id for i in data['items']])):
+            raise ValidationError(u"relatedItem should be one of items")
