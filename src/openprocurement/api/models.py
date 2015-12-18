@@ -17,6 +17,7 @@ from zope.interface import implementer, Interface
 
 
 STAND_STILL_TIME = timedelta(days=1)
+COMPLAINT_STAND_STILL_TIME = timedelta(days=3)
 schematics_embedded_role = SchematicsDocument.Options.roles['embedded'] + blacklist("__parent__")
 schematics_default_role = SchematicsDocument.Options.roles['default'] + blacklist("__parent__")
 
@@ -541,9 +542,13 @@ class Complaint(Model):
     class Options:
         roles = {
             'create': whitelist('author', 'title', 'description'),
-            'edit': whitelist('status', 'resolution', 'answer'),
-            'embedded': schematics_embedded_role,
-            'view': schematics_default_role,
+            'draft': whitelist('author', 'title', 'description', 'status'),
+            'cancellation': whitelist('cancellationReason', 'status'),
+            'satisfy': whitelist('satisfied', 'status'),
+            'answer': whitelist('answer', 'resolution', 'status'),
+            'review': whitelist('decision', 'status'),
+            'embedded': (blacklist('owner_token') + schematics_embedded_role),
+            'view': (blacklist('owner_token') + schematics_default_role),
         }
     # system
     id = MD5Type(required=True, default=lambda: uuid4().hex)
@@ -571,6 +576,27 @@ class Complaint(Model):
     # complainant
     cancellationReason = StringType()
     dateCanceled = IsoDateTimeType()
+
+    def get_role(self):
+        root = self.__parent__
+        while root.__parent__ is not None:
+            root = root.__parent__
+        request = root.request
+        data = request.json_body['data']
+        print request.authenticated_role, self.status
+        if request.authenticated_role == 'complaint_owner' and data.get('cancellationReason'):
+            role = 'cancellation'
+        elif request.authenticated_role == 'complaint_owner' and self.status == 'draft':
+            role = 'draft'
+        elif request.authenticated_role == 'tender_owner' and self.status == 'claim':
+            role = 'answer'
+        elif request.authenticated_role == 'complaint_owner' and self.status == 'answered':
+            role = 'satisfy'
+        elif request.authenticated_role == 'reviewers' and self.status == 'pending':
+            role = 'review'
+        else:
+            role = 'invalid'
+        return role
 
     def __local_roles__(self):
         return dict([('{}_{}'.format(self.owner, self.owner_token), 'complaint_owner')])
@@ -937,7 +963,7 @@ class Tender(SchematicsDocument, Model):
         acl.extend([
             (Allow, '{}_{}'.format(self.owner, self.owner_token), 'edit_tender'),
             (Allow, '{}_{}'.format(self.owner, self.owner_token), 'upload_tender_documents'),
-            (Allow, '{}_{}'.format(self.owner, self.owner_token), 'review_complaint'),
+            (Allow, '{}_{}'.format(self.owner, self.owner_token), 'edit_complaint'),
         ])
         return acl
 
@@ -947,30 +973,24 @@ class Tender(SchematicsDocument, Model):
     @serializable
     def next_check(self):
         now = get_now()
+        checks = []
         if self.status == 'active.enquiries' and self.tenderPeriod.startDate:
-            return self.tenderPeriod.startDate.isoformat()
-        elif self.status == 'active.enquiries':
-            return self.enquiryPeriod.endDate.isoformat()
+            checks.append(self.tenderPeriod.startDate.astimezone(TZ))
+        elif self.status == 'active.enquiries' and self.enquiryPeriod.endDate:
+            checks.append(self.enquiryPeriod.endDate.astimezone(TZ))
         elif self.status == 'active.tendering' and self.tenderPeriod.endDate:
-            return self.tenderPeriod.endDate.isoformat()
+            checks.append(self.tenderPeriod.endDate.astimezone(TZ))
         elif not self.lots and self.status == 'active.awarded':
             standStillEnds = [
                 a.complaintPeriod.endDate.astimezone(TZ)
                 for a in self.awards
                 if a.complaintPeriod.endDate
             ]
-            if not standStillEnds:
-                return None
-            standStillEnd = max(standStillEnds)
-            if standStillEnd > now:
-                return standStillEnd.isoformat()
+            if standStillEnds:
+                standStillEnd = max(standStillEnds)
+                if standStillEnd > now:
+                    checks.append(standStillEnd)
         elif self.lots and self.status in ['active.qualification', 'active.awarded']:
-            pending_complaints = any([
-                i['status'] == 'pending'
-                for i in self.complaints
-            ])
-            if pending_complaints:
-                return None
             lots_ends = []
             for lot in self.lots:
                 if lot['status'] != 'active':
@@ -987,8 +1007,19 @@ class Tender(SchematicsDocument, Model):
                 if standStillEnd > now:
                     lots_ends.append(standStillEnd)
             if lots_ends:
-                return min(lots_ends).isoformat()
-        return None
+                checks.append(min(lots_ends))
+        for complaint in self.complaints:
+            if complaint.status == 'claim' and complaint.dateSubmitted:
+                checks.append(complaint.dateSubmitted + COMPLAINT_STAND_STILL_TIME)
+            elif complaint.status == 'answered' and complaint.dateResolved:
+                checks.append(complaint.dateResolved + COMPLAINT_STAND_STILL_TIME)
+        for award in self.awards:
+            for complaint in award.complaints:
+                if complaint.status == 'claim' and complaint.dateSubmitted:
+                    checks.append(complaint.dateSubmitted + COMPLAINT_STAND_STILL_TIME)
+                elif complaint.status == 'answered' and complaint.dateResolved:
+                    checks.append(complaint.dateResolved + COMPLAINT_STAND_STILL_TIME)
+        return sorted(checks)[0].isoformat() if checks else None
 
     @serializable
     def numberOfBids(self):

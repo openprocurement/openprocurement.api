@@ -43,7 +43,7 @@ class TenderAwardComplaintDocumentResource(object):
             ]).values(), key=lambda i: i['dateModified'])
         return {'data': collection_data}
 
-    @json_view(permission='review_complaint', validators=(validate_file_upload,))
+    @json_view(permission='edit_complaint', validators=(validate_file_upload,))
     def collection_post(self):
         """Tender Award Complaint Document Upload
         """
@@ -79,7 +79,7 @@ class TenderAwardComplaintDocumentResource(object):
         ]
         return {'data': document_data}
 
-    @json_view(validators=(validate_file_update,), permission='review_complaint')
+    @json_view(validators=(validate_file_update,), permission='edit_complaint')
     def put(self):
         """Tender Award Complaint Document Update"""
         if self.request.validated['tender_status'] not in ['active.qualification', 'active.awarded']:
@@ -97,7 +97,7 @@ class TenderAwardComplaintDocumentResource(object):
                         extra=context_unpack(self.request, {'MESSAGE_ID': 'tender_award_complaint_document_put'}))
             return {'data': document.serialize("view")}
 
-    @json_view(content_type="application/json", validators=(validate_patch_document_data,), permission='review_complaint')
+    @json_view(content_type="application/json", validators=(validate_patch_document_data,), permission='edit_complaint')
     def patch(self):
         """Tender Award Complaint Document Update"""
         if self.request.validated['tender_status'] not in ['active.qualification', 'active.awarded']:

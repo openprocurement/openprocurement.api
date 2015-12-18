@@ -78,7 +78,7 @@ class TenderAwardComplaintResource(object):
         """
         return {'data': self.context.serialize("view")}
 
-    @json_view(content_type="application/json", permission='review_complaint', validators=(validate_patch_complaint_data,))
+    @json_view(content_type="application/json", permission='edit_complaint', validators=(validate_patch_complaint_data,))
     def patch(self):
         """Post a complaint resolution for award
         """
