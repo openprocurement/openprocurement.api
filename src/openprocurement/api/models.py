@@ -401,7 +401,7 @@ class LotValue(Model):
             raise ValidationError(u"relatedLot should be one of lots")
 
 
-view_bid_role = (blacklist('owner_token') + schematics_default_role)
+view_bid_role = (blacklist('owner_token', 'owner') + schematics_default_role)
 Administrator_bid_role = whitelist('tenderers')
 
 
