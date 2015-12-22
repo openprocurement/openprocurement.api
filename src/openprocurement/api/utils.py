@@ -828,7 +828,7 @@ def get_listing_data(request, server, db, field_collection, model, model_seriali
     else:
         params['offset'] = offset
         pparams['offset'] = offset
-    # attach name of objex
+    # attach name of model object (Tenders, Plans, Auctions etc)
     route_collection = '{}s'.format(model.__name__)
     data = {
         'data': results,
