@@ -738,6 +738,7 @@ def get_listing_data(request, server, db, field_collection, model_serializer, fe
     :return: json object data
     """
     # http://wiki.apache.org/couchdb/HTTP_view_API#Querying_Options
+    model_name = request.matched_route.name  # Tenders, Plans, Auctions, etc
     params = {}
     pparams = {}
     # list of additional columns in result json, separated by comma - `?opt_fields=comma,separated,field,list`
@@ -800,8 +801,8 @@ def get_listing_data(request, server, db, field_collection, model_serializer, fe
                     for x in list_view(db, limit=view_limit, startkey=view_offset, descending=descending)
                     ]
         else:
-            LOGGER.info('Used custom fields for {} list: {}'.format(request.matched_route.name.lower(), ','.join(sorted(fields))),
-                        extra=context_unpack(request, {'MESSAGE_ID': '{}_list_custom'.format(request.matched_route.name.lower())}))
+            LOGGER.info('Used custom fields for {} list: {}'.format(model_name.lower(), ','.join(sorted(fields))),
+                        extra=context_unpack(request, {'MESSAGE_ID': '{}_list_custom'.format(model_name.lower())}))
 
             results = [
                 (model_serializer(request, i[u'doc'], view_fields), i.key)
@@ -832,14 +833,14 @@ def get_listing_data(request, server, db, field_collection, model_serializer, fe
         'data': results,
         'next_page': {
             "offset": params['offset'],
-            "path": request.route_path(request.matched_route.name, _query=params),
-            "uri": request.route_url(request.matched_route.name, _query=params)
+            "path": request.route_path(model_name, _query=params),
+            "uri": request.route_url(model_name, _query=params)
         }
     }
     if descending or offset:
         data['prev_page'] = {
             "offset": pparams['offset'],
-            "path": request.route_path(request.matched_route.name, _query=pparams),
-            "uri": request.route_url(request.matched_route.name, _query=pparams)
+            "path": request.route_path(model_name, _query=pparams),
+            "uri": request.route_url(model_name, _query=pparams)
         }
     return data
