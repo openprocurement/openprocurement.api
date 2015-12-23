@@ -723,7 +723,7 @@ def decrypt(uuid, name, key):
     return text
 
 
-def get_listing_data(request, server, db, field_collection, model_name, model_serialize_func, feed_collection,
+def get_listing_data(request, server, db, field_collection, model_name, model_serializer, feed_collection,
                      view_map_collection, change_view_map_collection):
     """ Common func for retrieving data from view
 
@@ -732,7 +732,7 @@ def get_listing_data(request, server, db, field_collection, model_name, model_se
     :param db: couchdb database
     :param field_collection: FIELDS from design.py
     :param model_name: object type model name (Tender, Plan, Auction etc)
-    :param model_serialize_func: function for serialization of object 'model'
+    :param model_serializer: callable for serialization of object 'model'
     :param feed_collection:
     :param view_map_collection:
     :param change_view_map_collection:
@@ -787,24 +787,25 @@ def get_listing_data(request, server, db, field_collection, model_name, model_se
         else:
             view_offset = '9' if descending else ''
     list_view = view_map.get(mode, view_map[u''])  # result view
+    is_fields_subset = set(fields).issubset(set(field_collection))
     if fields:
-        if not changes and set(fields).issubset(set(field_collection)):
+        if not changes and is_fields_subset:
             results = [
                 (dict([(i, j) for i, j in x.value.items() + [('id', x.id), ('dateModified', x.key)] if
                        i in view_fields]), x.key)
                 for x in list_view(db, limit=view_limit, startkey=view_offset, descending=descending)
                 ]
-        elif changes and set(fields).issubset(set(field_collection)):
+        elif changes and is_fields_subset:
             results = [
                 (dict([(i, j) for i, j in x.value.items() + [('id', x.id)] if i in view_fields]), x.key)
                 for x in list_view(db, limit=view_limit, startkey=view_offset, descending=descending)
                 ]
-        elif fields:
+        else:
             LOGGER.info('Used custom fields for {}s list: {}'.format(model_name.lower(), ','.join(sorted(fields))),
                         extra=context_unpack(request, {'MESSAGE_ID': '{}_list_custom'.format(model_name.lower())}))
 
             results = [
-                (model_serialize_func(request, i[u'doc'], view_fields), i.key)
+                (model_serializer(request, i[u'doc'], view_fields), i.key)
                 for i in
                 list_view(db, limit=view_limit, startkey=view_offset, descending=descending, include_docs=True)
                 ]

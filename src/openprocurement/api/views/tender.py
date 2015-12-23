@@ -9,13 +9,11 @@ from openprocurement.api.design import (
     tenders_real_by_local_seq_view,
     tenders_test_by_local_seq_view,
 )
-from openprocurement.api.models import get_now, Tender
+from openprocurement.api.models import get_now
 from openprocurement.api.utils import (
     apply_patch,
     check_status,
     context_unpack,
-    decrypt,
-    encrypt,
     generate_id,
     generate_tender_id,
     json_view,
