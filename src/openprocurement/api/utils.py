@@ -723,7 +723,7 @@ def decrypt(uuid, name, key):
     return text
 
 
-def get_listing_data(request, server, db, field_collection, model_name, model_serializer, feed_collection,
+def get_listing_data(request, server, db, field_collection, model_serializer, feed_collection,
                      view_map_collection, change_view_map_collection):
     """ Common func for retrieving data from view
 
@@ -731,7 +731,6 @@ def get_listing_data(request, server, db, field_collection, model_name, model_se
     :param server: couchdb server (request.registry.couchdb_server)
     :param db: couchdb database
     :param field_collection: FIELDS from design.py
-    :param model_name: object type model name (Tender, Plan, Auction etc)
     :param model_serializer: callable for serialization of object 'model'
     :param feed_collection:
     :param view_map_collection:
@@ -801,8 +800,8 @@ def get_listing_data(request, server, db, field_collection, model_name, model_se
                 for x in list_view(db, limit=view_limit, startkey=view_offset, descending=descending)
                 ]
         else:
-            LOGGER.info('Used custom fields for {}s list: {}'.format(model_name.lower(), ','.join(sorted(fields))),
-                        extra=context_unpack(request, {'MESSAGE_ID': '{}_list_custom'.format(model_name.lower())}))
+            LOGGER.info('Used custom fields for {} list: {}'.format(request.matched_route.name.lower(), ','.join(sorted(fields))),
+                        extra=context_unpack(request, {'MESSAGE_ID': '{}_list_custom'.format(request.matched_route.name.lower())}))
 
             results = [
                 (model_serializer(request, i[u'doc'], view_fields), i.key)
@@ -829,20 +828,18 @@ def get_listing_data(request, server, db, field_collection, model_name, model_se
     else:
         params['offset'] = offset
         pparams['offset'] = offset
-    # attach name of model object (Tenders, Plans, Auctions etc)
-    route_collection = '{}s'.format(model_name)
     data = {
         'data': results,
         'next_page': {
             "offset": params['offset'],
-            "path": request.route_path(route_collection, _query=params),
-            "uri": request.route_url(route_collection, _query=params)
+            "path": request.route_path(request.matched_route.name, _query=params),
+            "uri": request.route_url(request.matched_route.name, _query=params)
         }
     }
     if descending or offset:
         data['prev_page'] = {
             "offset": pparams['offset'],
-            "path": request.route_path(route_collection, _query=pparams),
-            "uri": request.route_url(route_collection, _query=pparams)
+            "path": request.route_path(request.matched_route.name, _query=pparams),
+            "uri": request.route_url(request.matched_route.name, _query=pparams)
         }
     return data

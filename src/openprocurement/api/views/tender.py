@@ -90,7 +90,7 @@ class TendersResource(object):
 
         """
         # http://wiki.apache.org/couchdb/HTTP_view_API#Querying_Options
-        data = get_listing_data(self.request, self.server, self.db,  FIELDS, 'Tender', tender_serialize, FEED, VIEW_MAP, CHANGES_VIEW_MAP)
+        data = get_listing_data(self.request, self.server, self.db,  FIELDS, tender_serialize, FEED, VIEW_MAP, CHANGES_VIEW_MAP)
         return data
 
     @json_view(content_type="application/json", permission='create_tender', validators=(validate_tender_data,))
