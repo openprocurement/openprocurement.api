@@ -723,7 +723,7 @@ def decrypt(uuid, name, key):
     return text
 
 
-def get_listing_data(request, server, db, field_collection, model, model_serialize_func, feed_collection,
+def get_listing_data(request, server, db, field_collection, model_name, model_serialize_func, feed_collection,
                      view_map_collection, change_view_map_collection):
     """ Common func for retrieving data from view
 
@@ -731,7 +731,7 @@ def get_listing_data(request, server, db, field_collection, model, model_seriali
     :param server: couchdb server (request.registry.couchdb_server)
     :param db: couchdb database
     :param field_collection: FIELDS from design.py
-    :param model: object type model (Tender, Plan etc)
+    :param model_name: object type model name (Tender, Plan, Auction etc)
     :param model_serialize_func: function for serialization of object 'model'
     :param feed_collection:
     :param view_map_collection:
@@ -800,8 +800,8 @@ def get_listing_data(request, server, db, field_collection, model, model_seriali
                 for x in list_view(db, limit=view_limit, startkey=view_offset, descending=descending)
                 ]
         elif fields:
-            LOGGER.info('Used custom fields for {}s list: {}'.format(model.__name__.lower(), ','.join(sorted(fields))),
-                        extra=context_unpack(request, {'MESSAGE_ID': '{}_list_custom'.format(model.__name__.lower())}))
+            LOGGER.info('Used custom fields for {}s list: {}'.format(model_name.lower(), ','.join(sorted(fields))),
+                        extra=context_unpack(request, {'MESSAGE_ID': '{}_list_custom'.format(model_name.lower())}))
 
             results = [
                 (model_serialize_func(request, i[u'doc'], view_fields), i.key)
@@ -829,7 +829,7 @@ def get_listing_data(request, server, db, field_collection, model, model_seriali
         params['offset'] = offset
         pparams['offset'] = offset
     # attach name of model object (Tenders, Plans, Auctions etc)
-    route_collection = '{}s'.format(model.__name__)
+    route_collection = '{}s'.format(model_name)
     data = {
         'data': results,
         'next_page': {
