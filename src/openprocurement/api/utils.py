@@ -786,19 +786,19 @@ def get_listing_data(request, server, db, field_collection, model_serializer, fe
         else:
             view_offset = '9' if descending else ''
     list_view = view_map.get(mode, view_map[u''])  # result view
-    is_fields_subset = set(fields).issubset(set(field_collection))
     if fields:
-        if not changes and is_fields_subset:
-            results = [
-                (dict([(i, j) for i, j in x.value.items() + [('id', x.id), ('dateModified', x.key)] if
-                       i in view_fields]), x.key)
-                for x in list_view(db, limit=view_limit, startkey=view_offset, descending=descending)
-                ]
-        elif changes and is_fields_subset:
-            results = [
-                (dict([(i, j) for i, j in x.value.items() + [('id', x.id)] if i in view_fields]), x.key)
-                for x in list_view(db, limit=view_limit, startkey=view_offset, descending=descending)
-                ]
+        if set(fields).issubset(set(field_collection)):
+            if not changes:
+                results = [
+                    (dict([(i, j) for i, j in x.value.items() + [('id', x.id), ('dateModified', x.key)] if
+                           i in view_fields]), x.key)
+                    for x in list_view(db, limit=view_limit, startkey=view_offset, descending=descending)
+                    ]
+            else:
+                results = [
+                    (dict([(i, j) for i, j in x.value.items() + [('id', x.id)] if i in view_fields]), x.key)
+                    for x in list_view(db, limit=view_limit, startkey=view_offset, descending=descending)
+                    ]
         else:
             LOGGER.info('Used custom fields for {} list: {}'.format(request.matched_route.name.lower(), ','.join(sorted(fields))),
                         extra=context_unpack(request, {'MESSAGE_ID': '{}_list_custom'.format(request.matched_route.name.lower())}))
