@@ -81,13 +81,6 @@ def main(global_config, **settings):
     config.add_request_method(tender_from_data)
     config.add_directive('add_tender_procurementMethodType', register_tender_procurementMethodType)
 
-    # search for plugins
-    plugins = settings.get('plugins') and settings['plugins'].split(',')
-    for entry_point in iter_entry_points('openprocurement.api.plugins'):
-        if not plugins or entry_point.name in plugins:
-            plugin = entry_point.load()
-            plugin(config)
-
     # CouchDB connection
     db_name = os.environ.get('DB_NAME', settings['couchdb.db_name'])
     server = Server(settings.get('couchdb.url'), session=Session(retry_delays=range(10)))
@@ -97,6 +90,15 @@ def main(global_config, **settings):
         except Unauthorized:
             server = Server(extract_credentials(settings.get('couchdb.url'))[0])
     config.registry.couchdb_server = server
+    config.registry.db_name = db_name
+
+    # search for plugins
+    plugins = settings.get('plugins') and settings['plugins'].split(',')
+    for entry_point in iter_entry_points('openprocurement.api.plugins'):
+        if not plugins or entry_point.name in plugins:
+            plugin = entry_point.load()
+            plugin(config)
+
     if 'couchdb.admin_url' in settings and server.resource.credentials:
         aserver = Server(settings.get('couchdb.admin_url'), session=Session(retry_delays=range(10)))
         users_db = aserver['_users']
