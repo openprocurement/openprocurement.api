@@ -601,16 +601,20 @@ def from18to19(db):
         for document in item.get('documents', []):
             if document.get('documentType') == 'contractAnnexes':
                 document['documentType'] = 'contractAnnexe'
+                return 'changed'
 
+    changed = False
     results = db.view('tenders/all', include_docs=True)
     for i in results:
         doc = i.doc
-        update_documents_type(doc)
+        changed = update_documents_type(doc) or changed
         for item in ('bids', 'complaints', 'cancellations', 'contracts',
                      'awards'):
             for item_val in doc.get(item, []):
-                update_documents_type(item_val)
+                changed = update_documents_type(item_val) or changed
                 if item == 'awards':
                     for complaint in item_val.get('complaints', []):
-                        update_documents_type(complaint)
+                        changed = update_documents_type(complaint) or changed
+    if changed:
+        doc['dateModified'] = get_now().isoformat()
         db.save(doc)
