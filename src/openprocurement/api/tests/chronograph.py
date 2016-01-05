@@ -11,7 +11,7 @@ class TenderSwitchTenderingResourceTest(BaseTenderWebTest):
         response = self.app.patch_json('/tenders/{}'.format(self.tender_id), {'data': {'id': self.tender_id}})
         self.assertEqual(response.status, '200 OK')
         self.assertNotEqual(response.json['data']["status"], "active.tendering")
-        self.set_status('active.tendering', {'status': 'active.enquiries'})
+        self.set_status('active.tendering', {'status': 'active.enquiries', "tenderPeriod": {"startDate": None}})
         response = self.app.patch_json('/tenders/{}'.format(self.tender_id), {'data': {'id': self.tender_id}})
         self.assertEqual(response.status, '200 OK')
         self.assertEqual(response.json['data']["status"], "active.tendering")
@@ -139,14 +139,164 @@ class TenderLotAuctionPeriodResourceTest(BaseTenderWebTest):
         self.assertNotIn('auctionPeriod', response.json['data']["lots"][0])
 
 
+class TenderComplaintSwitchResourceTest(BaseTenderWebTest):
+
+    def test_switch_to_pending(self):
+        response = self.app.post_json('/tenders/{}/complaints'.format(self.tender_id), {'data': {
+            'title': 'complaint title',
+            'description': 'complaint description',
+            'author': self.initial_data["procuringEntity"],
+            'status': 'claim'
+        }})
+        self.assertEqual(response.status, '201 Created')
+        self.assertEqual(response.json['data']['status'], 'claim')
+
+        tender = self.db.get(self.tender_id)
+        tender['complaints'][0]['dateSubmitted'] = '2014-01-01'
+        self.db.save(tender)
+
+        self.app.authorization = ('Basic', ('chronograph', ''))
+        response = self.app.patch_json('/tenders/{}'.format(self.tender_id), {'data': {'id': self.tender_id}})
+        self.assertEqual(response.status, '200 OK')
+        self.assertEqual(response.json['data']["complaints"][0]['status'], 'pending')
+
+    def test_switch_to_complaint(self):
+        for status in ['invalid', 'resolved', 'declined']:
+            self.app.authorization = ('Basic', ('token', ''))
+            response = self.app.post_json('/tenders/{}/complaints'.format(self.tender_id), {'data': {
+                'title': 'complaint title',
+                'description': 'complaint description',
+                'author': self.initial_data["procuringEntity"],
+                'status': 'claim'
+            }})
+            self.assertEqual(response.status, '201 Created')
+            self.assertEqual(response.json['data']['status'], 'claim')
+            complaint = response.json['data']
+
+            response = self.app.patch_json('/tenders/{}/complaints/{}?acc_token={}'.format(self.tender_id, complaint['id'], self.tender_token), {"data": {
+                "status": "answered",
+                "resolutionType": status
+            }})
+            self.assertEqual(response.status, '200 OK')
+            self.assertEqual(response.content_type, 'application/json')
+            self.assertEqual(response.json['data']["status"], "answered")
+            self.assertEqual(response.json['data']["resolutionType"], status)
+
+            tender = self.db.get(self.tender_id)
+            tender['complaints'][-1]['dateAnswered'] = '2014-01-01'
+            self.db.save(tender)
+
+            self.app.authorization = ('Basic', ('chronograph', ''))
+            response = self.app.patch_json('/tenders/{}'.format(self.tender_id), {'data': {'id': self.tender_id}})
+            self.assertEqual(response.status, '200 OK')
+            self.assertEqual(response.json['data']["complaints"][-1]['status'], status)
+
+
+class TenderLotComplaintSwitchResourceTest(TenderComplaintSwitchResourceTest):
+    initial_lots = test_lots
+
+
+class TenderAwardComplaintSwitchResourceTest(BaseTenderWebTest):
+    initial_status = 'active.qualification'
+    initial_bids = test_bids
+
+    def setUp(self):
+        super(TenderAwardComplaintSwitchResourceTest, self).setUp()
+        # Create award
+        response = self.app.post_json('/tenders/{}/awards'.format(
+            self.tender_id), {'data': {'suppliers': [self.initial_data["procuringEntity"]], 'status': 'pending', 'bid_id': self.initial_bids[0]['id']}})
+        award = response.json['data']
+        self.award_id = award['id']
+
+    def test_switch_to_pending(self):
+        response = self.app.post_json('/tenders/{}/awards/{}/complaints'.format(self.tender_id, self.award_id), {'data': {
+            'title': 'complaint title',
+            'description': 'complaint description',
+            'author': self.initial_data["procuringEntity"],
+            'status': 'claim'
+        }})
+        self.assertEqual(response.status, '201 Created')
+        self.assertEqual(response.json['data']['status'], 'claim')
+
+        response = self.app.patch_json('/tenders/{}/awards/{}'.format(self.tender_id, self.award_id), {"data": {"status": "active"}})
+        self.assertEqual(response.status, '200 OK')
+        self.assertEqual(response.content_type, 'application/json')
+        self.assertEqual(response.json['data']["status"], "active")
+
+        tender = self.db.get(self.tender_id)
+        tender['awards'][0]['complaints'][0]['dateSubmitted'] = '2014-01-01'
+        self.db.save(tender)
+
+        self.app.authorization = ('Basic', ('chronograph', ''))
+        response = self.app.patch_json('/tenders/{}'.format(self.tender_id), {'data': {'id': self.tender_id}})
+        self.assertEqual(response.status, '200 OK')
+        self.assertEqual(response.json['data']['awards'][0]["complaints"][0]['status'], 'pending')
+
+    def test_switch_to_complaint(self):
+        response = self.app.patch_json('/tenders/{}/awards/{}'.format(self.tender_id, self.award_id), {"data": {"status": "active"}})
+        self.assertEqual(response.status, '200 OK')
+        self.assertEqual(response.content_type, 'application/json')
+        self.assertEqual(response.json['data']["status"], "active")
+
+        for status in ['invalid', 'resolved', 'declined']:
+            self.app.authorization = ('Basic', ('token', ''))
+            response = self.app.post_json('/tenders/{}/awards/{}/complaints'.format(self.tender_id, self.award_id), {'data': {
+                'title': 'complaint title',
+                'description': 'complaint description',
+                'author': self.initial_data["procuringEntity"],
+                'status': 'claim'
+            }})
+            self.assertEqual(response.status, '201 Created')
+            self.assertEqual(response.json['data']['status'], 'claim')
+            complaint = response.json['data']
+
+            response = self.app.patch_json('/tenders/{}/awards/{}/complaints/{}?acc_token={}'.format(self.tender_id, self.award_id, complaint['id'], self.tender_token), {"data": {
+                "status": "answered",
+                "resolutionType": status
+            }})
+            self.assertEqual(response.status, '200 OK')
+            self.assertEqual(response.content_type, 'application/json')
+            self.assertEqual(response.json['data']["status"], "answered")
+            self.assertEqual(response.json['data']["resolutionType"], status)
+
+            tender = self.db.get(self.tender_id)
+            tender['awards'][0]['complaints'][-1]['dateAnswered'] = '2014-01-01'
+            self.db.save(tender)
+
+            self.app.authorization = ('Basic', ('chronograph', ''))
+            response = self.app.patch_json('/tenders/{}'.format(self.tender_id), {'data': {'id': self.tender_id}})
+            self.assertEqual(response.status, '200 OK')
+            self.assertEqual(response.json['data']['awards'][0]["complaints"][-1]['status'], status)
+
+
+class TenderLotAwardComplaintSwitchResourceTest(TenderAwardComplaintSwitchResourceTest):
+    initial_lots = test_lots
+
+    def setUp(self):
+        super(TenderAwardComplaintSwitchResourceTest, self).setUp()
+        # Create award
+        response = self.app.post_json('/tenders/{}/awards'.format(self.tender_id), {'data': {
+            'suppliers': [self.initial_data["procuringEntity"]],
+            'status': 'pending',
+            'bid_id': self.initial_bids[0]['id'],
+            'lotID': self.initial_bids[0]['lotValues'][0]['relatedLot']
+        }})
+        award = response.json['data']
+        self.award_id = award['id']
+
+
 def suite():
     suite = unittest.TestSuite()
-    suite.addTest(unittest.makeSuite(TenderSwitchQualificationResourceTest))
-    suite.addTest(unittest.makeSuite(TenderSwitchAuctionResourceTest))
-    suite.addTest(unittest.makeSuite(TenderSwitchUnsuccessfulResourceTest))
-    suite.addTest(unittest.makeSuite(TenderLotSwitchQualificationResourceTest))
+    suite.addTest(unittest.makeSuite(TenderAwardComplaintSwitchResourceTest))
+    suite.addTest(unittest.makeSuite(TenderComplaintSwitchResourceTest))
+    suite.addTest(unittest.makeSuite(TenderLotAwardComplaintSwitchResourceTest))
+    suite.addTest(unittest.makeSuite(TenderLotComplaintSwitchResourceTest))
     suite.addTest(unittest.makeSuite(TenderLotSwitchAuctionResourceTest))
+    suite.addTest(unittest.makeSuite(TenderLotSwitchQualificationResourceTest))
     suite.addTest(unittest.makeSuite(TenderLotSwitchUnsuccessfulResourceTest))
+    suite.addTest(unittest.makeSuite(TenderSwitchAuctionResourceTest))
+    suite.addTest(unittest.makeSuite(TenderSwitchQualificationResourceTest))
+    suite.addTest(unittest.makeSuite(TenderSwitchUnsuccessfulResourceTest))
     return suite
 
 

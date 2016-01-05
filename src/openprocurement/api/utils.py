@@ -255,11 +255,11 @@ def check_bids(request):
 def check_complaint_status(request, complaint, now=None):
     if not now:
         now = get_now()
-    if complaint.status == 'claim' and complaint.dateSubmitted + COMPLAINT_STAND_STILL_TIME > now:
+    if complaint.status == 'claim' and complaint.dateSubmitted + COMPLAINT_STAND_STILL_TIME < now:
         complaint.status = 'pending'
         complaint.type = 'complaint'
-    elif complaint.status == 'answered' and complaint.dateResolved + COMPLAINT_STAND_STILL_TIME > now:
-        complaint.status = 'resolved' if complaint.resolution else 'invalid'
+    elif complaint.status == 'answered' and complaint.dateAnswered + COMPLAINT_STAND_STILL_TIME < now:
+        complaint.status = complaint.resolutionType
 
 
 def check_status(request):
