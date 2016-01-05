@@ -52,6 +52,10 @@ class TenderAwardComplaintResource(object):
             self.request.errors.status = 403
             return
         complaint = self.request.validated['complaint']
+        if complaint.status == 'claim':
+            complaint.dateSubmitted = get_now()
+        else:
+            complaint.status == 'draft'
         set_ownership(complaint, self.request)
         self.context.complaints.append(complaint)
         if save_tender(self.request):
@@ -91,40 +95,44 @@ class TenderAwardComplaintResource(object):
             self.request.errors.add('body', 'data', 'Can update complaint only in active lot status')
             self.request.errors.status = 403
             return
-        complaint = self.context
-        if complaint.status != 'draft':
-            self.request.errors.add('body', 'data', 'Can\'t update complaint in current ({}) status'.format(complaint.status))
+        if self.context.status not in ['draft', 'claim', 'answered', 'pending']:
+            self.request.errors.add('body', 'data', 'Can\'t update complaint in current ({}) status'.format(self.context.status))
             self.request.errors.status = 403
             return
-        if self.request.validated['data'].get('status', complaint.status) == 'cancelled':
-            self.request.errors.add('body', 'data', 'Can\'t cancel complaint')
+        data = self.request.validated['data']
+        complaintPeriod = self.request.validated['award'].complaintPeriod
+        is_complaintPeriod = complaintPeriod and complaintPeriod.startDate and complaintPeriod.startDate < get_now()
+        is_complaintPeriod = is_complaintPeriod and complaintPeriod and complaintPeriod.endDate and complaintPeriod.endDate > get_now()
+        # complaint_owner
+        if self.request.authenticated_role == 'complaint_owner' and self.context.status in ['draft', 'claim', 'answered', 'pending'] and data.get('cancellationReason') and data.get('status', self.context.status) == 'cancelled':
+            apply_patch(self.request, save=False, src=self.context.serialize())
+            self.context.dateCanceled = get_now()
+        elif self.request.authenticated_role == 'complaint_owner' and is_complaintPeriod and self.context.status == 'draft' and data.get('status', self.context.status) == self.context.status:
+            apply_patch(self.request, save=False, src=self.context.serialize())
+        elif self.request.authenticated_role == 'complaint_owner' and is_complaintPeriod and self.context.status == 'draft' and data.get('status', self.context.status) == 'claim':
+            apply_patch(self.request, save=False, src=self.context.serialize())
+            self.context.dateSubmitted = get_now()
+        elif self.request.authenticated_role == 'complaint_owner' and self.context.status == 'answered' and data.get('status', self.context.status) == self.context.status:
+            apply_patch(self.request, save=False, src=self.context.serialize())
+        elif self.request.authenticated_role == 'complaint_owner' and self.context.status == 'answered' and data.get('status', self.context.status) == 'resolved':
+            apply_patch(self.request, save=False, src=self.context.serialize())
+        elif self.request.authenticated_role == 'complaint_owner' and self.context.status == 'answered' and data.get('status', self.context.status) == 'pending':
+            apply_patch(self.request, save=False, src=self.context.serialize())
+            self.context.dateEscalated = get_now()
+        # tender_owner
+        elif self.request.authenticated_role == 'tender_owner' and self.context.status == 'claim' and 'resolution' in data and data.get('status', self.context.status) == 'answered':
+            apply_patch(self.request, save=False, src=self.context.serialize())
+            self.context.dateAnswered = get_now()
+        # reviewers
+        elif self.request.authenticated_role == 'reviewers' and self.context.status == 'pending' and data.get('status', self.context.status) in ['pending', 'resolved', 'invalid', 'declined']:
+            apply_patch(self.request, save=False, src=self.context.serialize())
+        else:
+            self.request.errors.add('body', 'data', 'Can\'t update complaint')
             self.request.errors.status = 403
             return
-        apply_patch(self.request, save=False, src=complaint.serialize())
-        if complaint.status == 'resolved':
-            award = self.request.validated['award']
-            if tender.status == 'active.awarded':
-                tender.status = 'active.qualification'
-                tender.awardPeriod.endDate = None
-            now = get_now()
-            if award.status == 'unsuccessful':
-                for i in tender.awards[tender.awards.index(award):]:
-                    if i.lotID != award.lotID:
-                        continue
-                    i.complaintPeriod.endDate = now + STAND_STILL_TIME
-                    i.status = 'cancelled'
-                    for j in i.complaints:
-                        if j.status == 'draft':
-                            j.status = 'cancelled'
-            for i in tender.contracts:
-                if award.id == i.awardID:
-                    i.status = 'cancelled'
-            award.complaintPeriod.endDate = now + STAND_STILL_TIME
-            award.status = 'cancelled'
-            add_next_award(self.request)
-        elif complaint.status in ['declined', 'invalid'] and tender.status == 'active.awarded':
+        if self.context.status not in ['draft', 'claim', 'answered', 'pending'] and tender.status == 'active.awarded':
             check_tender_status(self.request)
         if save_tender(self.request):
             LOGGER.info('Updated tender award complaint {}'.format(self.context.id),
                         extra=context_unpack(self.request, {'MESSAGE_ID': 'tender_award_complaint_patch'}))
-            return {'data': complaint.serialize("view")}
+            return {'data': self.context.serialize("view")}

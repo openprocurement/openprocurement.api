@@ -956,21 +956,28 @@ class TenderProcessTest(BaseTenderWebTest):
                                       {"data": test_tender_data})
         tender_id = self.tender_id = response.json['data']['id']
         owner_token = response.json['access']['token']
-        # create compaint
-        self.app.authorization = ('Basic', ('broker', ''))
-        response = self.app.post_json('/tenders/{}/complaints'.format(tender_id),
-                                      {'data': {'title': 'invalid conditions', 'description': 'description', 'author': test_tender_data["procuringEntity"]}})
-        complaint_id = response.json['data']['id']
-        # create second compaint
-        response = self.app.post_json('/tenders/{}/complaints'.format(tender_id),
-                                      {'data': {'title': 'invalid conditions', 'description': 'description', 'author': test_tender_data["procuringEntity"]}})
         # switch to active.tendering
         self.set_status('active.tendering')
-        # satisfying tender conditions complaint
-        # XXX correct auth
-        self.app.authorization = ('Basic', ('broker', ''))
-        response = self.app.patch_json('/tenders/{}/complaints/{}?acc_token={}'.format(tender_id, complaint_id, owner_token),
-                                       {"data": {"status": "resolved", "resolution": True, "answer": "resolution text"}})
+        # create compaint
+        response = self.app.post_json('/tenders/{}/complaints'.format(tender_id),
+                                      {'data': {'title': 'invalid conditions', 'description': 'description', 'author': test_tender_data["procuringEntity"], 'status': 'claim'}})
+        complaint_id = response.json['data']['id']
+        complaint_owner_token = response.json['access']['token']
+        # answering claim
+        self.app.patch_json('/tenders/{}/complaints/{}?acc_token={}'.format(tender_id, complaint_id, owner_token), {"data": {
+            "status": "answered",
+            "resolutionType": "resolved",
+            "resolution": "I will cancel the tender"
+        }})
+        # satisfying resolution
+        self.app.patch_json('/tenders/{}/complaints/{}?acc_token={}'.format(tender_id, complaint_id, complaint_owner_token), {"data": {
+            "status": "resolved"
+        }})
+        # cancellation
+        self.app.post_json('/tenders/{}/cancellations?acc_token={}'.format(tender_id, owner_token), {'data': {
+            'reason': 'invalid conditions',
+            'status': 'active'
+        }})
         # check status
         response = self.app.get('/tenders/{}'.format(tender_id))
         self.assertEqual(response.json['data']['status'], 'cancelled')
@@ -1133,14 +1140,22 @@ class TenderProcessTest(BaseTenderWebTest):
         # create first award complaint
         self.app.authorization = ('Basic', ('broker', ''))
         response = self.app.post_json('/tenders/{}/awards/{}/complaints?acc_token={}'.format(tender_id, award_id, bid_token),
-                                      {'data': {'title': 'complaint title', 'description': 'complaint description', 'author': test_tender_data["procuringEntity"]}})
+                                      {'data': {'title': 'complaint title', 'description': 'complaint description', 'author': test_tender_data["procuringEntity"], 'status': 'claim'}})
         complaint_id = response.json['data']['id']
+        complaint_owner_token = response.json['access']['token']
         # create first award complaint #2
         response = self.app.post_json('/tenders/{}/awards/{}/complaints?acc_token={}'.format(tender_id, award_id, bid_token),
                                       {'data': {'title': 'complaint title', 'description': 'complaint description', 'author': test_tender_data["procuringEntity"]}})
-        # satisfying award complaint
-        response = self.app.patch_json('/tenders/{}/awards/{}/complaints/{}?acc_token={}'.format(tender_id, award_id, complaint_id, owner_token),
-                                       {"data": {"status": "resolved", "resolution": True, "answer": "resolution text"}})
+        # answering claim
+        self.app.patch_json('/tenders/{}/awards/{}/complaints/{}?acc_token={}'.format(tender_id, award_id, complaint_id, owner_token), {"data": {
+            "status": "answered",
+            "resolutionType": "resolved",
+            "resolution": "resolution text"
+        }})
+        # satisfying resolution
+        self.app.patch_json('/tenders/{}/awards/{}/complaints/{}?acc_token={}'.format(tender_id, award_id, complaint_id, complaint_owner_token), {"data": {
+            "status": "resolved"
+        }})
         # get awards
         self.app.authorization = ('Basic', ('broker', ''))
         response = self.app.get('/tenders/{}/awards?acc_token={}'.format(tender_id, owner_token))

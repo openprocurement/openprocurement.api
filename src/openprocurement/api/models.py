@@ -541,11 +541,11 @@ class Question(Model):
 class Complaint(Model):
     class Options:
         roles = {
-            'create': whitelist('author', 'title', 'description'),
+            'create': whitelist('author', 'title', 'description', 'status'),
             'draft': whitelist('author', 'title', 'description', 'status'),
             'cancellation': whitelist('cancellationReason', 'status'),
             'satisfy': whitelist('satisfied', 'status'),
-            'answer': whitelist('answer', 'resolution', 'status'),
+            'answer': whitelist('resolution', 'resolutionType', 'status'),
             'review': whitelist('decision', 'status'),
             'embedded': (blacklist('owner_token') + schematics_embedded_role),
             'view': (blacklist('owner_token') + schematics_default_role),
@@ -564,9 +564,9 @@ class Complaint(Model):
     description = StringType()  # description of the claim
     dateSubmitted = IsoDateTimeType()
     # tender owner
-    answer = StringType()
-    resolution = BooleanType()
-    dateResolved = IsoDateTimeType()
+    resolution = StringType()
+    resolutionType = StringType(choices=['invalid', 'resolved', 'declined'])
+    dateAnswered = IsoDateTimeType()
     # complainant
     satisfied = BooleanType()
     dateEscalated = IsoDateTimeType()
@@ -583,7 +583,6 @@ class Complaint(Model):
             root = root.__parent__
         request = root.request
         data = request.json_body['data']
-        print request.authenticated_role, self.status
         if request.authenticated_role == 'complaint_owner' and data.get('cancellationReason'):
             role = 'cancellation'
         elif request.authenticated_role == 'complaint_owner' and self.status == 'draft':
@@ -1011,14 +1010,14 @@ class Tender(SchematicsDocument, Model):
         for complaint in self.complaints:
             if complaint.status == 'claim' and complaint.dateSubmitted:
                 checks.append(complaint.dateSubmitted + COMPLAINT_STAND_STILL_TIME)
-            elif complaint.status == 'answered' and complaint.dateResolved:
-                checks.append(complaint.dateResolved + COMPLAINT_STAND_STILL_TIME)
+            elif complaint.status == 'answered' and complaint.dateAnswered:
+                checks.append(complaint.dateAnswered + COMPLAINT_STAND_STILL_TIME)
         for award in self.awards:
             for complaint in award.complaints:
                 if complaint.status == 'claim' and complaint.dateSubmitted:
                     checks.append(complaint.dateSubmitted + COMPLAINT_STAND_STILL_TIME)
-                elif complaint.status == 'answered' and complaint.dateResolved:
-                    checks.append(complaint.dateResolved + COMPLAINT_STAND_STILL_TIME)
+                elif complaint.status == 'answered' and complaint.dateAnswered:
+                    checks.append(complaint.dateAnswered + COMPLAINT_STAND_STILL_TIME)
         return sorted(checks)[0].isoformat() if checks else None
 
     @serializable
