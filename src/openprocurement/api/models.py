@@ -583,7 +583,7 @@ class Complaint(Model):
             root = root.__parent__
         request = root.request
         data = request.json_body['data']
-        if request.authenticated_role == 'complaint_owner' and data.get('cancellationReason'):
+        if request.authenticated_role == 'complaint_owner' and data.get('status', self.status) == 'cancelled':
             role = 'cancellation'
         elif request.authenticated_role == 'complaint_owner' and self.status == 'draft':
             role = 'draft'
@@ -605,6 +605,14 @@ class Complaint(Model):
             (Allow, '{}_{}'.format(self.owner, self.owner_token), 'edit_complaint'),
             (Allow, '{}_{}'.format(self.owner, self.owner_token), 'upload_complaint_documents'),
         ]
+
+    def validate_resolutionType(self, data, resolutionType):
+        if not resolutionType and data.get('status') == 'answered':
+            raise ValidationError(u'This field is required.')
+
+    def validate_cancellationReason(self, data, cancellationReason):
+        if not cancellationReason and data.get('status') == 'cancelled':
+            raise ValidationError(u'This field is required.')
 
 
 class Cancellation(Model):

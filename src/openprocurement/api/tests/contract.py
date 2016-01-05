@@ -159,7 +159,8 @@ class TenderContractResourceTest(BaseTenderWebTest):
         self.assertEqual(response.json['data']["resolution"], "resolution text")
 
         response = self.app.patch_json('/tenders/{}/awards/{}/complaints/{}?acc_token={}'.format(self.tender_id, self.award_id, complaint['id'], owner_token), {"data": {
-            "status": "resolved",
+            "satisfied": True,
+            "status": "resolved"
         }})
         self.assertEqual(response.status, '200 OK')
         self.assertEqual(response.content_type, 'application/json')

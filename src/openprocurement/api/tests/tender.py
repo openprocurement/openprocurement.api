@@ -971,6 +971,7 @@ class TenderProcessTest(BaseTenderWebTest):
         }})
         # satisfying resolution
         self.app.patch_json('/tenders/{}/complaints/{}?acc_token={}'.format(tender_id, complaint_id, complaint_owner_token), {"data": {
+            "satisfied": True,
             "status": "resolved"
         }})
         # cancellation
@@ -1154,6 +1155,7 @@ class TenderProcessTest(BaseTenderWebTest):
         }})
         # satisfying resolution
         self.app.patch_json('/tenders/{}/awards/{}/complaints/{}?acc_token={}'.format(tender_id, award_id, complaint_id, complaint_owner_token), {"data": {
+            "satisfied": True,
             "status": "resolved"
         }})
         # get awards
