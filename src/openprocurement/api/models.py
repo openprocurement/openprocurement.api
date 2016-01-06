@@ -734,12 +734,6 @@ class Lot(Model):
             if auctionPeriod.startDate and tender.tenderPeriod and tender.tenderPeriod.endDate and auctionPeriod.startDate < tender.tenderPeriod.endDate:
                 raise ValidationError(u"period should begin after tenderPeriod")
 
-    def validate_value(self, data, value):
-        if value and isinstance(data['__parent__'], Model):
-            tender = data['__parent__']
-            if tender.value.amount < value.amount:
-                raise ValidationError(u"value should be less than value of tender")
-
     def validate_minimalStep(self, data, value):
         if value and value.amount and data.get('value'):
             if data.get('value').amount < value.amount:
