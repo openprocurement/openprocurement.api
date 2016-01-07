@@ -18,8 +18,9 @@ def validate_json_data(request):
     return json['data']
 
 
-def validate_data(request, model, partial=False):
-    data = validate_json_data(request)
+def validate_data(request, model, partial=False, data=None):
+    if data is None:
+        data = validate_json_data(request)
     if data is None:
         return
     try:

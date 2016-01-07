@@ -28,10 +28,14 @@ test_requires = requires + [
     'python-coveralls',
 ]
 
-entry_points = """\
-[paste.app_factory]
-main = openprocurement.api:main
-"""
+entry_points = {
+    'paste.app_factory': [
+        'main = openprocurement.api:main'
+    ],
+    'openprocurement.api.plugins': [
+        'belowThreshold = openprocurement.api:includeme'
+    ]
+}
 
 setup(name='openprocurement.api',
       version='0.9.1',

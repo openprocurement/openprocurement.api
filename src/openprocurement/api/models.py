@@ -731,3 +731,47 @@ class Tender(SchematicsDocument, Model):
     def validate_features(self, data, features):
         if features and not set([i.relatedItem for i in features if i.relatedItem]).issubset(set([i.id for i in data['items']])):
             raise ValidationError(u"relatedItem should be one of items")
+
+
+schematics_embedded_role = SchematicsDocument.Options.roles['embedded'] + blacklist("__parent__")
+schematics_default_role = SchematicsDocument.Options.roles['default'] + blacklist("__parent__")
+
+
+def set_parent(item, parent):
+    if hasattr(item, '__parent__') and item.__parent__ is None:
+        item.__parent__ = parent
+
+
+class Model(Model):
+    class Options(object):
+        """Export options for Document."""
+        serialize_when_none = False
+        roles = {
+            "default": blacklist("__parent__"),
+            "embedded": blacklist("__parent__"),
+        }
+
+    __parent__ = BaseType()
+
+    def __eq__(self, other):
+        if isinstance(other, self.__class__):
+            for k in self._fields:
+                if k != '__parent__' and self.get(k) != other.get(k):
+                    return False
+            return True
+        return NotImplemented
+
+    def convert(self, raw_data, **kw):
+        """
+        Converts the raw data into richer Python constructs according to the
+        fields on the model
+        """
+        from schematics.transforms import convert
+        value = convert(self.__class__, raw_data, **kw)
+        for i, j in value.items():
+            if isinstance(j, list):
+                for x in j:
+                    set_parent(x, self)
+            else:
+                set_parent(j, self)
+        return value

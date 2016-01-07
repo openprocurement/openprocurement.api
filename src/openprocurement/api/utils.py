@@ -346,3 +346,14 @@ def update_journal_handler_params(params):
         if isinstance(i, JournalHandler):
             for x, j in params.items():
                 i._extra[x.upper()] = j
+
+
+def update_logging_context(*args, **kwargs):
+    pass
+
+
+def context_unpack(*args, **kwargs):
+    pass
+
+
+from openprocurement.api.views.tender import decrypt, encrypt

@@ -5,7 +5,7 @@ import gevent.monkey
 gevent.monkey.patch_all()
 import os
 from logging import getLogger
-from pkg_resources import get_distribution
+from pkg_resources import get_distribution, iter_entry_points
 from pyramid.config import Configurator
 from openprocurement.api.auth import AuthenticationPolicy
 from pyramid.authorization import ACLAuthorizationPolicy as AuthorizationPolicy
@@ -152,7 +152,13 @@ def main(global_config, **settings):
         config.add_subscriber(cleanup_journal_handler, BeforeRender)
     config.add_subscriber(set_renderer, NewRequest)
     config.add_subscriber(beforerender, BeforeRender)
-    config.scan("openprocurement.api.views")
+
+    # search for plugins
+    plugins = settings.get('plugins') and settings['plugins'].split(',')
+    for entry_point in iter_entry_points('openprocurement.api.plugins'):
+        if not plugins or entry_point.name in plugins:
+            plugin = entry_point.load()
+            plugin(config)
 
     # CouchDB connection
     db_name = os.environ.get('DB_NAME', settings['couchdb.db_name'])
@@ -230,3 +236,7 @@ def main(global_config, **settings):
         config.registry.bucket_name = bucket_name
     config.registry.server_id = settings.get('id', '')
     return config.make_wsgi_app()
+
+
+def includeme(config):
+    config.scan("openprocurement.api.views")
