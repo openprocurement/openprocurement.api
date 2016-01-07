@@ -62,6 +62,10 @@ def validate_data(request, model, partial=False, data=None):
         else:
             data = method(role)
             request.validated['data'] = data
+            if not partial:
+                m = model(data)
+                m.__parent__ = request.context
+                request.validated[model.__name__.lower()] = m
     return data
 
 
