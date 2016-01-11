@@ -404,6 +404,7 @@ class TenderComplaintDocumentResourceTest(BaseTenderWebTest):
             self.tender_id), {'data': {'title': 'complaint title', 'description': 'complaint description', 'author': test_tender_data["procuringEntity"]}})
         complaint = response.json['data']
         self.complaint_id = complaint['id']
+        self.complaint_owner_token = response.json['access']['token']
 
     def test_not_found(self):
         response = self.app.post('/tenders/some_id/complaints/some_id/documents', status=404, upload_files=[
@@ -511,7 +512,13 @@ class TenderComplaintDocumentResourceTest(BaseTenderWebTest):
 
     def test_create_tender_complaint_document(self):
         response = self.app.post('/tenders/{}/complaints/{}/documents'.format(
-            self.tender_id, self.complaint_id), upload_files=[('file', 'name.doc', 'content')])
+            self.tender_id, self.complaint_id), upload_files=[('file', 'name.doc', 'content')], status=403)
+        self.assertEqual(response.status, '403 Forbidden')
+        self.assertEqual(response.content_type, 'application/json')
+        self.assertEqual(response.json['errors'][0]["description"], "Can't add document in current (draft) complaint status")
+
+        response = self.app.post('/tenders/{}/complaints/{}/documents?acc_token={}'.format(
+            self.tender_id, self.complaint_id, self.complaint_owner_token), upload_files=[('file', 'name.doc', 'content')])
         self.assertEqual(response.status, '201 Created')
         self.assertEqual(response.content_type, 'application/json')
         doc_id = response.json["data"]['id']
@@ -563,8 +570,8 @@ class TenderComplaintDocumentResourceTest(BaseTenderWebTest):
         self.assertEqual(response.json['errors'][0]["description"], "Can't add document in current (complete) tender status")
 
     def test_put_tender_complaint_document(self):
-        response = self.app.post('/tenders/{}/complaints/{}/documents'.format(
-            self.tender_id, self.complaint_id), upload_files=[('file', 'name.doc', 'content')])
+        response = self.app.post('/tenders/{}/complaints/{}/documents?acc_token={}'.format(
+            self.tender_id, self.complaint_id, self.complaint_owner_token), upload_files=[('file', 'name.doc', 'content')])
         self.assertEqual(response.status, '201 Created')
         self.assertEqual(response.content_type, 'application/json')
         doc_id = response.json["data"]['id']
@@ -582,7 +589,13 @@ class TenderComplaintDocumentResourceTest(BaseTenderWebTest):
         ])
 
         response = self.app.put('/tenders/{}/complaints/{}/documents/{}'.format(
-            self.tender_id, self.complaint_id, doc_id), upload_files=[('file', 'name.doc', 'content2')])
+            self.tender_id, self.complaint_id, doc_id), upload_files=[('file', 'name.doc', 'content2')], status=403)
+        self.assertEqual(response.status, '403 Forbidden')
+        self.assertEqual(response.content_type, 'application/json')
+        self.assertEqual(response.json['errors'][0]["description"], "Can update document only author")
+
+        response = self.app.put('/tenders/{}/complaints/{}/documents/{}?acc_token={}'.format(
+            self.tender_id, self.complaint_id, doc_id, self.complaint_owner_token), upload_files=[('file', 'name.doc', 'content2')])
         self.assertEqual(response.status, '200 OK')
         self.assertEqual(response.content_type, 'application/json')
         self.assertEqual(doc_id, response.json["data"]["id"])
@@ -602,8 +615,8 @@ class TenderComplaintDocumentResourceTest(BaseTenderWebTest):
         self.assertEqual(doc_id, response.json["data"]["id"])
         self.assertEqual('name.doc', response.json["data"]["title"])
 
-        response = self.app.put('/tenders/{}/complaints/{}/documents/{}'.format(
-            self.tender_id, self.complaint_id, doc_id), 'content3', content_type='application/msword')
+        response = self.app.put('/tenders/{}/complaints/{}/documents/{}?acc_token={}'.format(
+            self.tender_id, self.complaint_id, doc_id, self.complaint_owner_token), 'content3', content_type='application/msword')
         self.assertEqual(response.status, '200 OK')
         self.assertEqual(response.content_type, 'application/json')
         self.assertEqual(doc_id, response.json["data"]["id"])
@@ -616,23 +629,39 @@ class TenderComplaintDocumentResourceTest(BaseTenderWebTest):
         self.assertEqual(response.content_length, 8)
         self.assertEqual(response.body, 'content3')
 
+        response = self.app.patch_json('/tenders/{}/complaints/{}?acc_token={}'.format(self.tender_id, self.complaint_id, self.complaint_owner_token), {"data": {
+            "status": "claim",
+        }})
+        self.assertEqual(response.status, '200 OK')
+        self.assertEqual(response.json['data']["status"], "claim")
+
+        response = self.app.put('/tenders/{}/complaints/{}/documents/{}?acc_token={}'.format(self.tender_id, self.complaint_id, doc_id, self.complaint_owner_token), 'content', content_type='application/msword', status=403)
+        self.assertEqual(response.status, '403 Forbidden')
+        self.assertEqual(response.content_type, 'application/json')
+        self.assertEqual(response.json['errors'][0]["description"], "Can't update document in current (claim) complaint status")
+
         self.set_status('complete')
 
-        response = self.app.put('/tenders/{}/complaints/{}/documents/{}'.format(
-            self.tender_id, self.complaint_id, doc_id), upload_files=[('file', 'name.doc', 'content3')], status=403)
+        response = self.app.put('/tenders/{}/complaints/{}/documents/{}?acc_token={}'.format(
+            self.tender_id, self.complaint_id, doc_id, self.complaint_owner_token), upload_files=[('file', 'name.doc', 'content3')], status=403)
         self.assertEqual(response.status, '403 Forbidden')
         self.assertEqual(response.content_type, 'application/json')
         self.assertEqual(response.json['errors'][0]["description"], "Can't update document in current (complete) tender status")
 
     def test_patch_tender_complaint_document(self):
-        response = self.app.post('/tenders/{}/complaints/{}/documents'.format(
-            self.tender_id, self.complaint_id), upload_files=[('file', 'name.doc', 'content')])
+        response = self.app.post('/tenders/{}/complaints/{}/documents?acc_token={}'.format(
+            self.tender_id, self.complaint_id, self.complaint_owner_token), upload_files=[('file', 'name.doc', 'content')])
         self.assertEqual(response.status, '201 Created')
         self.assertEqual(response.content_type, 'application/json')
         doc_id = response.json["data"]['id']
         self.assertIn(doc_id, response.headers['Location'])
 
-        response = self.app.patch_json('/tenders/{}/complaints/{}/documents/{}'.format(self.tender_id, self.complaint_id, doc_id), {"data": {"description": "document description"}})
+        response = self.app.patch_json('/tenders/{}/complaints/{}/documents/{}'.format(self.tender_id, self.complaint_id, doc_id), {"data": {"description": "document description"}}, status=403)
+        self.assertEqual(response.status, '403 Forbidden')
+        self.assertEqual(response.content_type, 'application/json')
+        self.assertEqual(response.json['errors'][0]["description"], "Can update document only author")
+
+        response = self.app.patch_json('/tenders/{}/complaints/{}/documents/{}?acc_token={}'.format(self.tender_id, self.complaint_id, doc_id, self.complaint_owner_token), {"data": {"description": "document description"}})
         self.assertEqual(response.status, '200 OK')
         self.assertEqual(response.content_type, 'application/json')
         self.assertEqual(doc_id, response.json["data"]["id"])
@@ -644,9 +673,20 @@ class TenderComplaintDocumentResourceTest(BaseTenderWebTest):
         self.assertEqual(doc_id, response.json["data"]["id"])
         self.assertEqual('document description', response.json["data"]["description"])
 
+        response = self.app.patch_json('/tenders/{}/complaints/{}?acc_token={}'.format(self.tender_id, self.complaint_id, self.complaint_owner_token), {"data": {
+            "status": "claim",
+        }})
+        self.assertEqual(response.status, '200 OK')
+        self.assertEqual(response.json['data']["status"], "claim")
+
+        response = self.app.patch_json('/tenders/{}/complaints/{}/documents/{}?acc_token={}'.format(self.tender_id, self.complaint_id, doc_id, self.complaint_owner_token), {"data": {"description": "document description"}}, status=403)
+        self.assertEqual(response.status, '403 Forbidden')
+        self.assertEqual(response.content_type, 'application/json')
+        self.assertEqual(response.json['errors'][0]["description"], "Can't update document in current (claim) complaint status")
+
         self.set_status('complete')
 
-        response = self.app.patch_json('/tenders/{}/complaints/{}/documents/{}'.format(self.tender_id, self.complaint_id, doc_id), {"data": {"description": "document description"}}, status=403)
+        response = self.app.patch_json('/tenders/{}/complaints/{}/documents/{}?acc_token={}'.format(self.tender_id, self.complaint_id, doc_id, self.complaint_owner_token), {"data": {"description": "document description"}}, status=403)
         self.assertEqual(response.status, '403 Forbidden')
         self.assertEqual(response.content_type, 'application/json')
         self.assertEqual(response.json['errors'][0]["description"], "Can't update document in current (complete) tender status")

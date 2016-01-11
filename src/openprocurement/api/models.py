@@ -260,7 +260,7 @@ class Item(Model):
 class Document(Model):
     class Options:
         roles = {
-            'edit': blacklist('id', 'url', 'datePublished', 'dateModified'),
+            'edit': blacklist('id', 'url', 'datePublished', 'dateModified', ''),
             'embedded': schematics_embedded_role,
             'view': (blacklist('revisions') + schematics_default_role),
             'revisions': whitelist('url', 'dateModified'),
@@ -289,6 +289,7 @@ class Document(Model):
     language = StringType()
     documentOf = StringType(required=True, choices=['tender', 'item', 'lot'], default='tender')
     relatedItem = MD5Type()
+    author = StringType()
 
     def validate_relatedItem(self, data, relatedItem):
         if not relatedItem and data.get('documentOf') in ['item', 'lot']:

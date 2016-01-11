@@ -101,8 +101,7 @@ class TenderAwardComplaintResource(object):
             return
         data = self.request.validated['data']
         complaintPeriod = self.request.validated['award'].complaintPeriod
-        is_complaintPeriod = complaintPeriod and complaintPeriod.startDate and complaintPeriod.startDate < get_now()
-        is_complaintPeriod = is_complaintPeriod and complaintPeriod.endDate and complaintPeriod.endDate > get_now()
+        is_complaintPeriod = complaintPeriod.startDate < get_now() and complaintPeriod.endDate > get_now() if complaintPeriod.endDate else complaintPeriod.startDate < get_now()
         # complaint_owner
         if self.request.authenticated_role == 'complaint_owner' and self.context.status in ['draft', 'claim', 'answered', 'pending'] and data.get('status', self.context.status) == 'cancelled':
             apply_patch(self.request, save=False, src=self.context.serialize())

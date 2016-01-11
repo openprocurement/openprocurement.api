@@ -27,19 +27,19 @@ LOGGER = getLogger(__name__)
 class TenderAwardDocumentResource(object):
 
     def __init__(self, request, context):
+        self.context = context
         self.request = request
         self.db = request.registry.db
 
     @json_view(permission='view_tender')
     def collection_get(self):
         """Tender Award Documents List"""
-        award = self.request.validated['award']
         if self.request.params.get('all', ''):
-            collection_data = [i.serialize("view") for i in award['documents']]
+            collection_data = [i.serialize("view") for i in self.context.documents]
         else:
             collection_data = sorted(dict([
                 (i.id, i.serialize("view"))
-                for i in award['documents']
+                for i in self.context.documents
             ]).values(), key=lambda i: i['dateModified'])
         return {'data': collection_data}
 
@@ -56,7 +56,7 @@ class TenderAwardDocumentResource(object):
             self.request.errors.status = 403
             return
         document = upload_file(self.request)
-        self.request.validated['award'].documents.append(document)
+        self.context.documents.append(document)
         if save_tender(self.request):
             LOGGER.info('Created tender award document {}'.format(document.id),
                         extra=context_unpack(self.request, {'MESSAGE_ID': 'tender_award_document_create'}, {'document_id': document.id}))
