@@ -755,28 +755,28 @@ class Lot(Model):
         ]
         return len(bids)
 
+    @serializable(serialized_name="value", type=ModelType(Value))
+    def lot_value(self):
+        return Value(dict(amount=self.value.amount,
+                          currency=self.__parent__.value.currency,
+                          valueAddedTaxIncluded=self.__parent__.value.valueAddedTaxIncluded))
+
+    @serializable(serialized_name="minimalStep", type=ModelType(Value))
+    def lot_minimalStep(self):
+        return Value(dict(amount=self.minimalStep.amount,
+                          currency=self.__parent__.minimalStep.currency,
+                          valueAddedTaxIncluded=self.__parent__.minimalStep.valueAddedTaxIncluded))
+
     def validate_auctionPeriod(self, data, auctionPeriod):
         if auctionPeriod and isinstance(data['__parent__'], Model):
             tender = data['__parent__']
             if auctionPeriod.startDate and tender.tenderPeriod and tender.tenderPeriod.endDate and auctionPeriod.startDate < tender.tenderPeriod.endDate:
                 raise ValidationError(u"period should begin after tenderPeriod")
 
-    def validate_value(self, data, value):
-        if value and isinstance(data['__parent__'], Model):
-            tender = data['__parent__']
-            if tender.get('value').currency != value.currency:
-                raise ValidationError(u"currency should be identical to currency of value of tender")
-            if tender.get('value').valueAddedTaxIncluded != value.valueAddedTaxIncluded:
-                raise ValidationError(u"valueAddedTaxIncluded should be identical to valueAddedTaxIncluded of value of tender")
-
     def validate_minimalStep(self, data, value):
         if value and value.amount and data.get('value'):
             if data.get('value').amount < value.amount:
                 raise ValidationError(u"value should be less than value of lot")
-            if data.get('value').currency != value.currency:
-                raise ValidationError(u"currency should be identical to currency of value of lot")
-            if data.get('value').valueAddedTaxIncluded != value.valueAddedTaxIncluded:
-                raise ValidationError(u"valueAddedTaxIncluded should be identical to valueAddedTaxIncluded of value of lot")
 
 
 def validate_features_uniq(features, *args):
@@ -1052,6 +1052,7 @@ class Tender(SchematicsDocument, Model):
                 raise ValidationError(u"currency should be identical to currency of value of tender")
             if data.get('value').valueAddedTaxIncluded != value.valueAddedTaxIncluded:
                 raise ValidationError(u"valueAddedTaxIncluded should be identical to valueAddedTaxIncluded of value of tender")
+
 
     def validate_tenderPeriod(self, data, period):
         if period and period.startDate and data.get('enquiryPeriod') and data.get('enquiryPeriod').endDate and period.startDate < data.get('enquiryPeriod').endDate:
