@@ -19,6 +19,8 @@ from urllib import quote
 from urlparse import urlparse, parse_qs
 from webob.multidict import NestedMultiDict
 from uuid import uuid4
+from binascii import hexlify, unhexlify
+from Crypto.Cipher import AES
 
 try:
     from systemd.journal import JournalHandler
@@ -355,12 +357,34 @@ def update_journal_handler_params(params):
                 i._extra[x.upper()] = j
 
 
-def update_logging_context(*args, **kwargs):
-    pass
+def update_logging_context(request, params):
+    if not request.__dict__.get('logging_context'):
+        request.logging_context = {}
+
+    for x, j in params.items():
+        request.logging_context[x.upper()] = j
 
 
-def context_unpack(*args, **kwargs):
-    pass
+def context_unpack(request, msg, params=None):
+    if params:
+        update_logging_context(request, params)
+    logging_context = request.logging_context
+    journal_context = msg
+    for key, value in logging_context.items():
+        journal_context["JOURNAL_" + key] = value
+    return journal_context
 
 
-from openprocurement.api.views.tender import decrypt, encrypt
+def encrypt(uuid, name, key):
+    iv = "{:^{}.{}}".format(name, AES.block_size, AES.block_size)
+    text = "{:^{}}".format(key, AES.block_size)
+    return hexlify(AES.new(uuid, AES.MODE_CBC, iv).encrypt(text))
+
+
+def decrypt(uuid, name, key):
+    iv = "{:^{}.{}}".format(name, AES.block_size, AES.block_size)
+    try:
+        text = AES.new(uuid, AES.MODE_CBC, iv).decrypt(unhexlify(key)).strip()
+    except:
+        text = ''
+    return text

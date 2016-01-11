@@ -16,7 +16,6 @@ from couchdb.http import Unauthorized, extract_credentials
 from openprocurement.api.design import sync_design
 from openprocurement.api.migration import migrate_data
 from boto.s3.connection import S3Connection, Location
-from openprocurement.api.traversal import factory
 from openprocurement.api.utils import forbidden, set_journal_handler, cleanup_journal_handler, update_journal_handler_role, request_params
 from pbkdf2 import PBKDF2
 
