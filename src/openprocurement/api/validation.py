@@ -155,7 +155,8 @@ def validate_patch_bid_data(request):
 
 def validate_award_data(request):
     update_logging_context(request, {'award_id': '__new__'})
-    return validate_data(request, Award)
+    model = request.tender.__class__.awards.model_class
+    return validate_data(request, model)
 
 
 def validate_patch_award_data(request):
@@ -186,11 +187,13 @@ def validate_patch_complaint_data(request):
 
 def validate_cancellation_data(request):
     update_logging_context(request, {'cancellation_id': '__new__'})
-    return validate_data(request, Cancellation)
+    model = request.tender.__class__.cancellations.model_class
+    return validate_data(request, model)
 
 
 def validate_patch_cancellation_data(request):
-    return validate_data(request, Cancellation, True)
+    model = request.tender.__class__.cancellations.model_class
+    return validate_data(request, model, True)
 
 
 def validate_contract_data(request):
