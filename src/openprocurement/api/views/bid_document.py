@@ -27,6 +27,7 @@ LOGGER = getLogger(__name__)
 class TenderBidDocumentResource(object):
 
     def __init__(self, request, context):
+        self.context = context
         self.request = request
         self.db = request.registry.db
 
@@ -37,13 +38,12 @@ class TenderBidDocumentResource(object):
             self.request.errors.add('body', 'data', 'Can\'t view bid documents in current ({}) tender status'.format(self.request.validated['tender_status']))
             self.request.errors.status = 403
             return
-        bid = self.request.validated['bid']
         if self.request.params.get('all', ''):
-            collection_data = [i.serialize("view") for i in bid['documents']]
+            collection_data = [i.serialize("view") for i in self.context.documents]
         else:
             collection_data = sorted(dict([
                 (i.id, i.serialize("view"))
-                for i in bid['documents']
+                for i in self.context.documents
             ]).values(), key=lambda i: i['dateModified'])
         return {'data': collection_data}
 
@@ -60,7 +60,7 @@ class TenderBidDocumentResource(object):
             self.request.errors.status = 403
             return
         document = upload_file(self.request)
-        self.request.validated['bid'].documents.append(document)
+        self.context.documents.append(document)
         if save_tender(self.request):
             LOGGER.info('Created tender bid document {}'.format(document.id),
                         extra=context_unpack(self.request, {'MESSAGE_ID': 'tender_bid_document_create'}, {'document_id': document.id}))

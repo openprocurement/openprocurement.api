@@ -31,7 +31,7 @@ def validate_data(request, model, partial=False, data=None):
             m.import_data(new_patch, partial=True, strict=True)
             m.__parent__ = request.context.__parent__
             m.validate()
-            role = m.get_role()
+            role = request.context.get_role()
             method = m.to_patch
         else:
             m = model(data)
