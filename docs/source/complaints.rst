@@ -10,6 +10,8 @@
 Complaint Workflow
 ==================
 
+For more detailed information read `Non-price criteria <http://openprocurement.org/en/nonprice-criteria.html>`_.
+
 Workflow
 --------
 
