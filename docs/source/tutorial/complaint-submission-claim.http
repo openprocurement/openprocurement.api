@@ -25,6 +25,7 @@ Content-Type: application/json; charset=utf-8
             }, 
             "name": "ДКП «Школяр»"
         }, 
+        "status": "claim",
         "description": "Умови виставлені замовником не містять достатньо інформації, щоб заявка мала сенс.", 
         "title": "Недостатньо інформації"
     }
@@ -61,9 +62,10 @@ Location: http://api-sandbox.openprocurement.org/api/0/tenders/c0c01003785344829
             "name": "ДКП «Школяр»"
         }, 
         "date": "2014-12-02T22:35:25.198141+02:00", 
+        "dateSubmitted": "2014-12-02T22:35:25.198141+02:00", 
         "description": "Умови виставлені замовником не містять достатньо інформації, щоб заявка мала сенс.", 
         "id": "8e17d36ac7a049b6889ed2e01687db88", 
-        "status": "draft", 
+        "status": "claim", 
         "title": "Недостатньо інформації"
     }
 }
