@@ -211,9 +211,7 @@ class TenderLotResourceTest(BaseTenderWebTest):
         self.assertEqual(lot['value']['currency'], "UAH")
 
         # update tender currency without mimimalStep currency change
-        response = self.app.patch_json('/tenders/{}'.format(self.tender_id), {"data":
-                                                                              {"value": {"currency": "GBP"}}
-                                                                              }, status = 422)
+        response = self.app.patch_json('/tenders/{}'.format(self.tender_id), {"data": {"value": {"currency": "GBP"}}}, status=422)
         self.assertEqual(response.status, '422 Unprocessable Entity')
         self.assertEqual(response.content_type, 'application/json')
         self.assertEqual(response.json['status'], 'error')
@@ -223,10 +221,10 @@ class TenderLotResourceTest(BaseTenderWebTest):
         ])
 
         # update tender currency
-        response = self.app.patch_json('/tenders/{}'.format(self.tender_id), {"data":
-                                                                              {"value": {"currency": "GBP"},
-                                                                               "minimalStep": {"currency": "GBP"}}
-                                                                              })
+        response = self.app.patch_json('/tenders/{}'.format(self.tender_id), {"data": {
+            "value": {"currency": "GBP"},
+            "minimalStep": {"currency": "GBP"}
+        }})
         self.assertEqual(response.status, '200 OK')
         # log currency is updated too
         response = self.app.get('/tenders/{}/lots/{}'.format(self.tender_id, lot['id']))
@@ -254,7 +252,6 @@ class TenderLotResourceTest(BaseTenderWebTest):
         self.assertEqual(response.content_type, 'application/json')
         lot = response.json['data']
         self.assertEqual(lot['minimalStep']['currency'], "GBP")
-
 
         # try to update lot minimalStep currency and lot value currency in single request
         response = self.app.patch_json('/tenders/{}/lots/{}'.format(self.tender_id, lot['id']), {"data": {"value": {"currency": "USD"},
@@ -312,7 +309,6 @@ class TenderLotResourceTest(BaseTenderWebTest):
         self.assertEqual(response.content_type, 'application/json')
         lot = response.json['data']
         self.assertFalse(lot['minimalStep']['valueAddedTaxIncluded'])
-
 
         # try to update minimalStep VAT and value VAT in single request
         response = self.app.patch_json('/tenders/{}/lots/{}'.format(self.tender_id, lot['id']), {"data": {"value": {"valueAddedTaxIncluded": True},

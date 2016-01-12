@@ -326,7 +326,6 @@ class TenderComplaintResourceTest(BaseTenderWebTest):
             self.assertEqual(response.content_type, 'application/json')
             self.assertEqual(response.json['data']["status"], "pending")
 
-        authorization = self.app.authorization
         self.app.authorization = ('Basic', ('reviewer', ''))
         for complaint, status in zip(complaints, ['invalid', 'resolved', 'declined']):
             response = self.app.patch_json('/tenders/{}/complaints/{}'.format(self.tender_id, complaint['id']), {"data": {

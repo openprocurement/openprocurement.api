@@ -1,8 +1,7 @@
 # -*- coding: utf-8 -*-
 from logging import getLogger
-from openprocurement.api.models import STAND_STILL_TIME, get_now
+from openprocurement.api.models import get_now
 from openprocurement.api.utils import (
-    add_next_award,
     apply_patch,
     check_tender_status,
     context_unpack,

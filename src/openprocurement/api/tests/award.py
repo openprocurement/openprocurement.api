@@ -657,7 +657,6 @@ class TenderAwardComplaintResourceTest(BaseTenderWebTest):
         self.assertEqual(response.status, '201 Created')
         self.assertEqual(response.content_type, 'application/json')
         complaint = response.json['data']
-        owner_token = response.json['access']['token']
         self.assertEqual(complaint['author']['name'], test_tender_data["procuringEntity"]['name'])
         self.assertIn('id', complaint)
         self.assertIn(complaint['id'], response.headers['Location'])
@@ -862,7 +861,6 @@ class TenderAwardComplaintResourceTest(BaseTenderWebTest):
             self.assertEqual(response.content_type, 'application/json')
             self.assertEqual(response.json['data']["status"], "pending")
 
-        authorization = self.app.authorization
         self.app.authorization = ('Basic', ('reviewer', ''))
         for complaint, status in zip(complaints, ['invalid', 'resolved', 'declined']):
             response = self.app.patch_json('/tenders/{}/awards/{}/complaints/{}'.format(self.tender_id, self.award_id, complaint['id']), {"data": {
@@ -1166,7 +1164,6 @@ class Tender2LotAwardComplaintResourceTest(TenderLotAwardComplaintResourceTest):
         self.assertEqual(response.status, '201 Created')
         self.assertEqual(response.content_type, 'application/json')
         complaint = response.json['data']
-        owner_token = response.json['access']['token']
         self.assertEqual(complaint['author']['name'], test_tender_data["procuringEntity"]['name'])
         self.assertIn('id', complaint)
         self.assertIn(complaint['id'], response.headers['Location'])
