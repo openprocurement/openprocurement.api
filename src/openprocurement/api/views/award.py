@@ -21,7 +21,8 @@ LOGGER = getLogger(__name__)
 @opresource(name='Tender Awards',
             collection_path='/tenders/{tender_id}/awards',
             path='/tenders/{tender_id}/awards/{award_id}',
-            description="Tender awards")
+            description="Tender awards",
+            procurementMethodType='belowThreshold')
 class TenderAwardResource(object):
 
     def __init__(self, request, context):
