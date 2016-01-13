@@ -10,7 +10,7 @@
 Complaint Workflow
 ==================
 
-For more detailed information read `Non-price criteria <http://openprocurement.org/en/nonprice-criteria.html>`_.
+For more detailed information read `Complaints <http://openprocurement.org/en/complaints.html>`_.
 
 Workflow
 --------
@@ -24,7 +24,7 @@ Roles
 :Complainant:
     dashed
 
-:Tender owner:
+:Procuring entity:
     plain
 
 :Reviewer:
@@ -37,17 +37,17 @@ Statuses
 --------
 
 :draft:
-    initial status
+    Initial status
 
-    Complainant can cancel claim, upload documents and submit claim.
+    Complainant can submit claim, upload documents, cancel claim, and re-submit it.
 
 :claim:
-    Tender owner can upload documents and answer to claim.
+    Procuring entity can upload documents and answer to claim.
 
     Complainant can cancel claim.
 
 :answered:
-    Complainant can cancel claim, upload documents, admit solution or escalate claim to complaint.
+    Complainant can cancel claim, upload documents, accept solution or escalate claim to complaint.
 
 :pending:
     Reviewer can upload documents and review complaint.
@@ -55,58 +55,64 @@ Statuses
     Complainant can cancel claim.
 
 :invalid:
-    terminal status
+    Terminal status
 
     Complaint recognized as invalid.
 
 :declined:
-    terminal status
+    Terminal status
 
     Complaint recognized as declined.
 
 :resolved:
-    terminal status
+    Terminal status
 
     Complaint recognized as resolved.
 
 :cancelled:
-    terminal status
+    Terminal status
 
     Complaint cancelled by complainant.
 
 
-Claims Submission
+Claim Submission
 =================
 
-If tender conditions are favoriting only one provider, or in any other viable case, one can submit Tender Conditions Complaint.
+If tender conditions are favoriting only one provider, or in any other viable case, one can submit Tender Conditions Claim.
 
-Tender Conditions Claim Submission with documents
--------------------------------------------------
+Tender Conditions Claim Submission (with documents)
+---------------------------------------------------
+
+At first create a claim:
 
 .. include:: tutorial/complaint-submission.http
    :code:
 
+Then upload necessary documents:
+   
 .. include:: tutorial/complaint-submission-upload.http
    :code:
 
+Submit tender conditions claim:
+   
 .. include:: tutorial/complaint-claim.http
    :code:
 
-Tender Conditions Claim Submission without documents
-----------------------------------------------------
+Tender Conditions Claim Submission (without documents)
+------------------------------------------------------
 
 .. include:: tutorial/complaint-submission-claim.http
    :code:
 
-Tender Conditions Complaint Retrieval
+Tender Conditions Claim/Complaint Retrieval
 -------------------------------------
 
-You can list all Tender Conditions Complaints:
+You can list all Tender Conditions Claims/Complaints:
 
 .. include:: tutorial/complaints-list.http
    :code:
 
-And check individual complaint:
+And check individual complaint or claim:
 
 .. include:: tutorial/complaint.http
    :code:
@@ -132,8 +138,8 @@ And check individual complaint:
     :code:
 
 
-Claims Answer
-=============
+Claim's Answer
+==============
 
 Answer to resolved claim
 ------------------------
@@ -142,8 +148,8 @@ Answer to resolved claim
    :code:
 
 
-Claims Satisfy
-==============
+Satisfied Claim
+===============
 
 Satisfying resolution
 ---------------------
@@ -159,8 +165,8 @@ Escalate claim to complaint
    :code:
 
 
-Complaints Resolution
-=====================
+Complaint Resolution
+====================
 
 Rejecting Tender Conditions Complaint
 -------------------------------------
