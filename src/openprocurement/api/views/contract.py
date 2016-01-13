@@ -33,7 +33,7 @@ class TenderAwardContractResource(object):
         """Post a contract for award
         """
         tender = self.request.validated['tender']
-        if tender.status not in ['active.awarded', 'complete']:
+        if tender.status not in ['active.qualification', 'active.awarded', 'complete']:
             self.request.errors.add('body', 'data', 'Can\'t add contract in current ({}) tender status'.format(tender.status))
             self.request.errors.status = 403
             return
@@ -62,12 +62,17 @@ class TenderAwardContractResource(object):
     def patch(self):
         """Update of contract
         """
-        if self.request.validated['tender_status'] not in ['active.awarded', 'complete']:
+        if self.request.validated['tender_status'] not in ['active.qualification', 'active.awarded', 'complete']:
             self.request.errors.add('body', 'data', 'Can\'t update contract in current ({}) tender status'.format(self.request.validated['tender_status']))
             self.request.errors.status = 403
+            return
+        tender = self.request.validated['tender']
+        if any([i.status != 'active' for i in tender.lots if i.id in [a.lotID for a in tender.awards if a.id == self.request.context.awardID]]):
+            self.request.errors.add('body', 'data', 'Can update contract only in active lot status')
+            self.request.errors.status = 403
+            return
         data = self.request.validated['data']
         if self.request.context.status != 'active' and 'status' in data and data['status'] == 'active':
-            tender = self.request.validated['tender']
             award = [a for a in tender.awards if a.id == self.request.context.awardID][0]
             stand_still_end = award.complaintPeriod.endDate
             if stand_still_end > get_now():
@@ -91,7 +96,7 @@ class TenderAwardContractResource(object):
                 return
         contract_status = self.request.context.status
         apply_patch(self.request, save=False, src=self.request.context.serialize())
-        if contract_status != self.request.context.status and contract_status != 'pending' and self.request.context.status != 'active':
+        if contract_status != self.request.context.status and (contract_status != 'pending' or self.request.context.status != 'active'):
             self.request.errors.add('body', 'data', 'Can\'t update contract status')
             self.request.errors.status = 403
             return
