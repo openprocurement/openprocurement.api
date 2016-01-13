@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 import unittest
 
-from openprocurement.api.tests.base import BaseTenderWebTest, test_tender_data, test_bids
+from openprocurement.api.tests.base import BaseTenderWebTest, test_tender_data, test_bids, test_lots
 
 
 class TenderContractResourceTest(BaseTenderWebTest):
@@ -95,10 +95,9 @@ class TenderContractResourceTest(BaseTenderWebTest):
         self.assertIn('id', contract)
         self.assertIn(contract['id'], response.headers['Location'])
 
-        response = self.app.patch_json('/tenders/{}/contracts/{}'.format(self.tender_id, contract['id']), {"data": {"status": "terminated"}})
-        self.assertEqual(response.status, '200 OK')
-        self.assertEqual(response.content_type, 'application/json')
-        self.assertEqual(response.json['data']["status"], "terminated")
+        tender = self.db.get(self.tender_id)
+        tender['contracts'][-1]["status"] = "terminated"
+        self.db.save(tender)
 
         self.set_status('unsuccessful')
 
@@ -228,6 +227,51 @@ class TenderContractResourceTest(BaseTenderWebTest):
             {u'description': u'Not Found', u'location':
                 u'url', u'name': u'tender_id'}
         ])
+
+
+class Tender2LotContractResourceTest(BaseTenderWebTest):
+    initial_status = 'active.qualification'
+    initial_bids = test_bids
+    initial_lots = 2 * test_lots
+
+    def setUp(self):
+        super(Tender2LotContractResourceTest, self).setUp()
+        # Create award
+        response = self.app.post_json('/tenders/{}/awards'.format(self.tender_id), {'data': {
+            'suppliers': [test_tender_data["procuringEntity"]],
+            'status': 'pending',
+            'bid_id': self.initial_bids[0]['id'],
+            'lotID': self.initial_lots[0]['id']
+        }})
+        award = response.json['data']
+        self.award_id = award['id']
+        self.app.patch_json('/tenders/{}/awards/{}'.format(self.tender_id, self.award_id), {"data": {"status": "active"}})
+
+    def test_patch_tender_contract(self):
+        response = self.app.post_json('/tenders/{}/contracts'.format(
+            self.tender_id), {'data': {'title': 'contract title', 'description': 'contract description', 'awardID': self.award_id}})
+        self.assertEqual(response.status, '201 Created')
+        self.assertEqual(response.content_type, 'application/json')
+        contract = response.json['data']
+
+        response = self.app.patch_json('/tenders/{}/contracts/{}'.format(self.tender_id, contract['id']), {"data": {"status": "active"}}, status=403)
+        self.assertEqual(response.status, '403 Forbidden')
+        self.assertEqual(response.content_type, 'application/json')
+        self.assertIn("Can't sign contract before stand-still period end (", response.json['errors'][0]["description"])
+
+        self.set_status('complete', {'status': 'active.awarded'})
+
+        response = self.app.post_json('/tenders/{}/cancellations'.format(self.tender_id), {'data': {
+            'reason': 'cancellation reason',
+            'status': 'active',
+            "cancellationOf": "lot",
+            "relatedLot": self.initial_lots[0]['id']
+        }})
+
+        response = self.app.patch_json('/tenders/{}/contracts/{}'.format(self.tender_id, contract['id']), {"data": {"status": "active"}}, status=403)
+        self.assertEqual(response.status, '403 Forbidden')
+        self.assertEqual(response.content_type, 'application/json')
+        self.assertEqual(response.json['errors'][0]["description"], "Can update contract only in active lot status")
 
 
 class TenderContractDocumentResourceTest(BaseTenderWebTest):
@@ -397,8 +441,9 @@ class TenderContractDocumentResourceTest(BaseTenderWebTest):
         self.assertEqual(doc_id, response.json["data"]["id"])
         self.assertEqual('name.doc', response.json["data"]["title"])
 
-        response = self.app.patch_json('/tenders/{}/contracts/{}'.format(self.tender_id, self.contract_id), {"data": {"status": "cancelled"}})
-        self.assertEqual(response.json['data']["status"], "cancelled")
+        tender = self.db.get(self.tender_id)
+        tender['contracts'][-1]["status"] = "cancelled"
+        self.db.save(tender)
 
         response = self.app.post('/tenders/{}/contracts/{}/documents'.format(
             self.tender_id, self.contract_id), upload_files=[('file', 'name.doc', 'content')], status=403)
@@ -468,8 +513,9 @@ class TenderContractDocumentResourceTest(BaseTenderWebTest):
         self.assertEqual(response.content_length, 8)
         self.assertEqual(response.body, 'content3')
 
-        response = self.app.patch_json('/tenders/{}/contracts/{}'.format(self.tender_id, self.contract_id), {"data": {"status": "cancelled"}})
-        self.assertEqual(response.json['data']["status"], "cancelled")
+        tender = self.db.get(self.tender_id)
+        tender['contracts'][-1]["status"] = "cancelled"
+        self.db.save(tender)
 
         response = self.app.put('/tenders/{}/contracts/{}/documents/{}'.format(
             self.tender_id, self.contract_id, doc_id), upload_files=[('file', 'name.doc', 'content3')], status=403)
@@ -505,8 +551,9 @@ class TenderContractDocumentResourceTest(BaseTenderWebTest):
         self.assertEqual(doc_id, response.json["data"]["id"])
         self.assertEqual('document description', response.json["data"]["description"])
 
-        response = self.app.patch_json('/tenders/{}/contracts/{}'.format(self.tender_id, self.contract_id), {"data": {"status": "cancelled"}})
-        self.assertEqual(response.json['data']["status"], "cancelled")
+        tender = self.db.get(self.tender_id)
+        tender['contracts'][-1]["status"] = "cancelled"
+        self.db.save(tender)
 
         response = self.app.patch_json('/tenders/{}/contracts/{}/documents/{}'.format(self.tender_id, self.contract_id, doc_id), {"data": {"description": "document description"}}, status=403)
         self.assertEqual(response.status, '403 Forbidden')
