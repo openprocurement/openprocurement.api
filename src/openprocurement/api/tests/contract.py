@@ -589,6 +589,117 @@ class TenderContractDocumentResourceTest(BaseTenderWebTest):
         self.assertEqual(response.json['errors'][0]["description"], "Can't update document in current (unsuccessful) tender status")
 
 
+class Tender2LotContractDocumentResourceTest(BaseTenderWebTest):
+    initial_status = 'active.qualification'
+    initial_bids = test_bids
+    initial_lots = 2 * test_lots
+
+    def setUp(self):
+        super(Tender2LotContractDocumentResourceTest, self).setUp()
+        # Create award
+        response = self.app.post_json('/tenders/{}/awards'.format(self.tender_id), {'data': {
+            'suppliers': [test_tender_data["procuringEntity"]],
+            'status': 'pending',
+            'bid_id': self.initial_bids[0]['id'],
+            'lotID': self.initial_lots[0]['id']
+        }})
+        award = response.json['data']
+        self.award_id = award['id']
+        self.app.patch_json('/tenders/{}/awards/{}'.format(self.tender_id, self.award_id), {"data": {"status": "active"}})
+        # Create contract for award
+        response = self.app.post_json('/tenders/{}/contracts'.format(self.tender_id), {'data': {'title': 'contract title', 'description': 'contract description', 'awardID': self.award_id}})
+        contract = response.json['data']
+        self.contract_id = contract['id']
+
+    def test_create_tender_contract_document(self):
+        response = self.app.post('/tenders/{}/contracts/{}/documents'.format(
+            self.tender_id, self.contract_id), upload_files=[('file', 'name.doc', 'content')])
+        self.assertEqual(response.status, '201 Created')
+        self.assertEqual(response.content_type, 'application/json')
+        doc_id = response.json["data"]['id']
+        self.assertIn(doc_id, response.headers['Location'])
+        self.assertEqual('name.doc', response.json["data"]["title"])
+        key = response.json["data"]["url"].split('?')[-1]
+
+        response = self.app.post_json('/tenders/{}/cancellations'.format(self.tender_id), {'data': {
+            'reason': 'cancellation reason',
+            'status': 'active',
+            "cancellationOf": "lot",
+            "relatedLot": self.initial_lots[0]['id']
+        }})
+
+        response = self.app.post('/tenders/{}/contracts/{}/documents'.format(
+            self.tender_id, self.contract_id), upload_files=[('file', 'name.doc', 'content')], status=403)
+        self.assertEqual(response.status, '403 Forbidden')
+        self.assertEqual(response.content_type, 'application/json')
+        self.assertEqual(response.json['errors'][0]["description"], "Can add document only in active lot status")
+
+    def test_put_tender_contract_document(self):
+        response = self.app.post('/tenders/{}/contracts/{}/documents'.format(
+            self.tender_id, self.contract_id), upload_files=[('file', 'name.doc', 'content')])
+        self.assertEqual(response.status, '201 Created')
+        self.assertEqual(response.content_type, 'application/json')
+        doc_id = response.json["data"]['id']
+        self.assertIn(doc_id, response.headers['Location'])
+
+        response = self.app.put('/tenders/{}/contracts/{}/documents/{}'.format(self.tender_id, self.contract_id, doc_id),
+                                status=404,
+                                upload_files=[('invalid_name', 'name.doc', 'content')])
+        self.assertEqual(response.status, '404 Not Found')
+        self.assertEqual(response.content_type, 'application/json')
+        self.assertEqual(response.json['status'], 'error')
+        self.assertEqual(response.json['errors'], [
+            {u'description': u'Not Found', u'location':
+                u'body', u'name': u'file'}
+        ])
+
+        response = self.app.put('/tenders/{}/contracts/{}/documents/{}'.format(
+            self.tender_id, self.contract_id, doc_id), upload_files=[('file', 'name.doc', 'content2')])
+        self.assertEqual(response.status, '200 OK')
+        self.assertEqual(response.content_type, 'application/json')
+        self.assertEqual(doc_id, response.json["data"]["id"])
+        key = response.json["data"]["url"].split('?')[-1]
+
+        response = self.app.post_json('/tenders/{}/cancellations'.format(self.tender_id), {'data': {
+            'reason': 'cancellation reason',
+            'status': 'active',
+            "cancellationOf": "lot",
+            "relatedLot": self.initial_lots[0]['id']
+        }})
+
+        response = self.app.put('/tenders/{}/contracts/{}/documents/{}'.format(
+            self.tender_id, self.contract_id, doc_id), upload_files=[('file', 'name.doc', 'content3')], status=403)
+        self.assertEqual(response.status, '403 Forbidden')
+        self.assertEqual(response.content_type, 'application/json')
+        self.assertEqual(response.json['errors'][0]["description"], "Can update document only in active lot status")
+
+    def test_patch_tender_contract_document(self):
+        response = self.app.post('/tenders/{}/contracts/{}/documents'.format(
+            self.tender_id, self.contract_id), upload_files=[('file', 'name.doc', 'content')])
+        self.assertEqual(response.status, '201 Created')
+        self.assertEqual(response.content_type, 'application/json')
+        doc_id = response.json["data"]['id']
+        self.assertIn(doc_id, response.headers['Location'])
+
+        response = self.app.patch_json('/tenders/{}/contracts/{}/documents/{}'.format(self.tender_id, self.contract_id, doc_id), {"data": {"description": "document description"}})
+        self.assertEqual(response.status, '200 OK')
+        self.assertEqual(response.content_type, 'application/json')
+        self.assertEqual(doc_id, response.json["data"]["id"])
+
+        response = self.app.post_json('/tenders/{}/cancellations'.format(self.tender_id), {'data': {
+            'reason': 'cancellation reason',
+            'status': 'active',
+            "cancellationOf": "lot",
+            "relatedLot": self.initial_lots[0]['id']
+        }})
+
+        response = self.app.patch_json('/tenders/{}/contracts/{}/documents/{}'.format(self.tender_id, self.contract_id, doc_id), {"data": {"description": "new document description"}}, status=403)
+        self.assertEqual(response.status, '403 Forbidden')
+        self.assertEqual(response.content_type, 'application/json')
+        self.assertEqual(response.json['errors'][0]["description"], "Can update document only in active lot status")
+
+
+
 def suite():
     suite = unittest.TestSuite()
     suite.addTest(unittest.makeSuite(TenderContractResourceTest))
