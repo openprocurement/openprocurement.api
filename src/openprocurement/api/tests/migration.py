@@ -605,6 +605,9 @@ class MigrateTest(BaseWebTest):
                 {"title": "title2.doc",
                     "id": "tender_document2_id",
                     "documentType": "tenderNotice"},
+                {"title": "title3.doc",
+                    "id": "tender_document3_id",
+                    "documentType": "contractAnnexes"},
             ],
             "bids": [
                 {
@@ -663,6 +666,9 @@ class MigrateTest(BaseWebTest):
                              {"title": "title2.doc",
                               "id": "award_complaint_document2_id",
                               "documentType": "contractGuarantees"},
+                             {"title": "title3.doc",
+                              "id": "award_complaint_document3_id",
+                              "documentType": "contractAnnexes"},
                          ]
                          }
                     ]
@@ -675,6 +681,7 @@ class MigrateTest(BaseWebTest):
         tender_docs = migrated_item['documents']
         self.assertEqual('contractAnnexe', tender_docs[0]['documentType'])
         self.assertEqual('tenderNotice', tender_docs[1]['documentType'])
+        self.assertEqual('contractAnnexe', tender_docs[2]['documentType'])
         for e in ('bids', 'complaints', 'cancellations', 'contracts', 'awards'):
             for i in migrated_item[e]:
                 document = i['documents'][0]
@@ -682,6 +689,7 @@ class MigrateTest(BaseWebTest):
         award_compl_docs = migrated_item['awards'][0]['complaints'][0]['documents']
         self.assertEqual('contractAnnexe', award_compl_docs[0]['documentType'])
         self.assertEqual('contractGuarantees', award_compl_docs[1]['documentType'])
+        self.assertEqual('contractAnnexe', award_compl_docs[2]['documentType'])
 
 
 def suite():

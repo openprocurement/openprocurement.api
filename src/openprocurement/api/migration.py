@@ -598,10 +598,12 @@ def from17to18(db):
 def from18to19(db):
 
     def update_documents_type(item):
+        changed = False
         for document in item.get('documents', []):
             if document.get('documentType') == 'contractAnnexes':
                 document['documentType'] = 'contractAnnexe'
-                return 'changed'
+                changed = True
+        return changed
 
     changed = False
     results = db.view('tenders/all', include_docs=True)
