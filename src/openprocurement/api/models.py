@@ -978,6 +978,12 @@ class Tender(SchematicsDocument, Model):
     def __repr__(self):
         return '<%s:%r@%r>' % (type(self).__name__, self.id, self.rev)
 
+    def initialize(self):
+        if not self.enquiryPeriod.startDate:
+            self.enquiryPeriod.startDate = get_now()
+        if not self.tenderPeriod.startDate:
+            self.tenderPeriod.startDate = self.enquiryPeriod.endDate
+
     @serializable
     def next_check(self):
         now = get_now()

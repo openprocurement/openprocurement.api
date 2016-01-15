@@ -344,15 +344,9 @@ class TendersResource(object):
         tender_id = generate_id()
         tender = self.request.validated['tender']
         tender.id = tender_id
-        if hasattr(tender, "tenderPeriod"):
-            if not tender.enquiryPeriod.startDate:
-                tender.enquiryPeriod.startDate = get_now()
-            tender.tenderID = generate_tender_id(tender.enquiryPeriod.startDate, self.db, self.server_id)
-            if not tender.tenderPeriod.startDate:
-                tender.tenderPeriod.startDate = tender.enquiryPeriod.endDate
-        else:
-            tender.tenderID = generate_tender_id(get_now(), self.db, self.server_id)
-
+        tender.tenderID = generate_tender_id(get_now(), self.db, self.server_id)
+        if hasattr(tender, "initialize"):
+            tender.initialize()
         set_ownership(tender, self.request)
         self.request.validated['tender'] = tender
         self.request.validated['tender_src'] = {}
