@@ -274,7 +274,7 @@ class Document(Model):
         'riskProvisions', 'billOfQuantity', 'bidders', 'conflictOfInterest',
         'debarments', 'evaluationReports', 'winningBid', 'complaints',
         'contractSigned', 'contractArrangements', 'contractSchedule',
-        'contractAnnexes', 'contractGuarantees', 'subContract'
+        'contractAnnexe', 'contractGuarantees', 'subContract'
     ])
     title = StringType()  # A title of the document.
     title_en = StringType()
