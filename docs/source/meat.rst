@@ -12,6 +12,8 @@ value that defines level of its importance compared to price.  Bidders are
 doing self evaluation and provide the Parameters of their proposal (the
 actual value of each feature) along with financial part of a bid.
 
+For more information read `Non-price criteria <http://openprocurement.org/en/nonprice-criteria.html>`_.
+
 The :ref:`Feature` is a data structure, part of the :ref:`Tender`. Tender can
 have multiple features associated. Feature can be associated with tenderer,
 lot or individual Item being procured. Features are identified with code,

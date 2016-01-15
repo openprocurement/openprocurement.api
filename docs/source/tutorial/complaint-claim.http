@@ -1,8 +1,12 @@
-$ http -j https://api-sandbox.openprocurement.org/api/0/tenders/c0c01003785344829136c3890ddf8192/complaints/8e17d36ac7a049b6889ed2e01687db88
-GET /api/0/tenders/c0c01003785344829136c3890ddf8192/complaints/8e17d36ac7a049b6889ed2e01687db88 HTTP/1.1
+$ http -j PATCH https://api-sandbox.openprocurement.org/api/0/tenders/c0c01003785344829136c3890ddf8192/complaints/8e17d36ac7a049b6889ed2e01687db88?acc_token=981981131c94413faf532e0af13a8cc5 data:={"status":"claim"}
+PATCH /api/0/tenders/c0c01003785344829136c3890ddf8192/complaints/8e17d36ac7a049b6889ed2e01687db88 HTTP/1.1
 Content-Type: application/json; charset=utf-8
 
-
+{
+    "data": {
+        "status": "claim"
+    }
+}
 
 HTTP/1.1 200 OK
 Content-Type: application/json; charset=UTF-8

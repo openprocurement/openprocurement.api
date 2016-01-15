@@ -1,95 +1,92 @@
 .. Kicking page rebuild 2014-10-30 17:00:08
 .. _complaints:
 
-Complaints Submission
-=====================
 
-If tender conditions are favoriting only one provider, or in any other viable case, one can submit Tender Conditions Complaint.
+..
+    contents:: Table of Contents
+   :depth: 2
+   :local:
 
-Tender Conditions Complaint Submission
---------------------------------------
+Complaint Workflow
+==================
 
-.. include:: tutorial/complaint-submission.http
-   :code:
+For more detailed information read `Complaints <http://openprocurement.org/en/complaints.html>`_.
 
-Tender Conditions Complaint Retrieval
--------------------------------------
+Tender Conditions Claims/Complaints
+-----------------------------------
 
-You can list all Tender Conditions Complaints:
+.. toctree::
+    :maxdepth: 1
 
-.. include:: tutorial/complaints-list.http
-   :code:
+    complaints-tender
 
-And check individual complaint:
+Tender Award Claims/Complaints
+------------------------------
 
-.. include:: tutorial/complaint.http
-   :code:
+.. toctree::
+    :maxdepth: 1
 
-
-Tender Award Complaint Submission
----------------------------------
-
-.. include:: tutorial/award-complaint-submission.http
-   :code:
-
-Tender Award Complaint Retrieval
---------------------------------
-
-You can list all complaints:
-
-.. include:: tutorial/award-complaints-list.http
-   :code:
-
-And check individual complaint:
-
-.. include:: tutorial/award-complaint.http
-   :code:
+    complaints-award
 
 
-Complaints Resolution
-=====================
+Workflow
+--------
 
-Rejecting Tender Conditions Complaint
--------------------------------------
+.. image:: complaint_w.png
+   :alt: Complaint workflow
 
-.. include:: tutorial/complaint-reject.http
-   :code:
+Roles
+-----
 
+:Complainant:
+    dashed
 
-Submitting Tender Conditions Complaint Resolution
--------------------------------------------------
+:Procuring entity:
+    plain
 
-The Complaint Review Body uploads the resolution document:
+:Reviewer:
+    bold
 
-.. include:: tutorial/complaint-resolution-upload.http
-   :code:
+:Chronograph:
+    dotted
 
-And either resolves complaint:
+Statuses
+--------
 
-.. include:: tutorial/complaint-resolve.http
-   :code:
+:draft:
+    Initial status
 
-Or declines it:
+    Complainant can submit claim, upload documents, cancel claim, and re-submit it.
 
-.. include:: tutorial/complaint-decline.http
-   :code:
+:claim:
+    Procuring entity can upload documents and answer to claim.
 
+    Complainant can cancel claim.
 
-Rejecting Tender Award Complaint
---------------------------------
+:answered:
+    Complainant can cancel claim, upload documents, accept solution or escalate claim to complaint.
 
-.. include:: tutorial/award-complaint-reject.http
-   :code:
+:pending:
+    Reviewer can upload documents and review complaint.
 
-Submitting Tender Award Complaint Resolution
---------------------------------------------
- 
-.. include:: tutorial/award-complaint-resolution-upload.http
-   :code:
+    Complainant can cancel claim.
 
-.. include:: tutorial/award-complaint-resolve.http
-   :code:
+:invalid:
+    Terminal status
 
-.. include:: tutorial/award-complaint-decline.http
-   :code:
- 
+    Complaint recognized as invalid.
+
+:declined:
+    Terminal status
+
+    Complaint recognized as declined.
+
+:resolved:
+    Terminal status
+
+    Complaint recognized as resolved.
+
+:cancelled:
+    Terminal status
+
+    Complaint cancelled by complainant.

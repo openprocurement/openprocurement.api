@@ -46,15 +46,18 @@ Project status
 
 The project has pre alpha status.
 
-The source repository for this project is on GitHub:
-
-https://github.com/openprocurement/openprocurement.api
+The source repository for this project is on GitHub: https://github.com/openprocurement/openprocurement.api
 
 You can leave feedback by raising a new issue on the `issue tracker
 <https://github.com/openprocurement/openprocurement.api/issues>`_ (GitHub
-registration necessary).  For general discussion use `Open Procurement
+registration necessary).  
+
+For general discussion use `Open Procurement
 General <https://groups.google.com/group/open-procurement-general>`_
 maillist.
+
+General information, roadmap, and technical specifications for the 
+Open Procurement project can be found at `openprocurement.org <http://openprocurement.org/en>`_.
 
 API stability
 -------------
