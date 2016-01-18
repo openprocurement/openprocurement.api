@@ -20,6 +20,7 @@ LOGGER = getLogger(__name__)
 @opresource(name='Tender Questions',
             collection_path='/tenders/{tender_id}/questions',
             path='/tenders/{tender_id}/questions/{question_id}',
+            procurementMethodType='belowThreshold',
             description="Tender questions")
 class TenderQuestionResource(object):
 
