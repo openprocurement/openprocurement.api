@@ -160,7 +160,8 @@ def validate_award_data(request):
 
 
 def validate_patch_award_data(request):
-    return validate_data(request, Award, True)
+    model = request.tender.__class__.awards.model_class
+    return validate_data(request, model, True)
 
 
 def validate_patch_document_data(request):
@@ -169,20 +170,24 @@ def validate_patch_document_data(request):
 
 def validate_question_data(request):
     update_logging_context(request, {'question_id': '__new__'})
-    return validate_data(request, Question)
+    model = request.tender.__class__.questions.model_class
+    return validate_data(request, model)
 
 
 def validate_patch_question_data(request):
-    return validate_data(request, Question, True)
+    model = request.tender.__class__.questions.model_class
+    return validate_data(request, model, True)
 
 
 def validate_complaint_data(request):
     update_logging_context(request, {'complaint_id': '__new__'})
-    return validate_data(request, Complaint)
+    model = request.tender.__class__.complaints.model_class
+    return validate_data(request, model)
 
 
 def validate_patch_complaint_data(request):
-    return validate_data(request, Complaint, True)
+    model = request.tender.__class__.complaints.model_class
+    return validate_data(request, model, True)
 
 
 def validate_cancellation_data(request):
@@ -198,20 +203,24 @@ def validate_patch_cancellation_data(request):
 
 def validate_contract_data(request):
     update_logging_context(request, {'contract_id': '__new__'})
-    return validate_data(request, Contract)
+    model = request.tender.__class__.contracts.model_class
+    return validate_data(request, model)
 
 
 def validate_patch_contract_data(request):
-    return validate_data(request, Contract, True)
+    model = request.tender.__class__.contracts.model_class
+    return validate_data(request, model, True)
 
 
 def validate_lot_data(request):
     update_logging_context(request, {'lot_id': '__new__'})
-    return validate_data(request, Lot)
+    model = request.tender.__class__.lots.model_class
+    return validate_data(request, model)
 
 
 def validate_patch_lot_data(request):
-    return validate_data(request, Lot, True)
+    model = request.tender.__class__.lots.model_class
+    return validate_data(request, model, True)
 
 
 def validate_file_upload(request):

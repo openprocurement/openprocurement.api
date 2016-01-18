@@ -465,7 +465,7 @@ def add_next_award(request):
             bids = chef(bids, features, unsuccessful_awards)
             if bids:
                 bid = bids[0]
-                award = Award({
+                award = tender.__class__.awards.model_class({
                     'bid_id': bid['id'],
                     'lotID': lot.id,
                     'status': 'pending',
@@ -492,7 +492,7 @@ def add_next_award(request):
             bids = chef(tender.bids, tender.features or [], unsuccessful_awards)
             if bids:
                 bid = bids[0].serialize()
-                award = Award({
+                award = tender.__class__.awards.model_class({
                     'bid_id': bid['id'],
                     'status': 'pending',
                     'value': bid['value'],
