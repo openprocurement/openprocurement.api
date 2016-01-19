@@ -548,8 +548,8 @@ class Complaint(Model):
             'satisfy': whitelist('satisfied', 'status'),
             'answer': whitelist('resolution', 'resolutionType', 'status'),
             'review': whitelist('decision', 'status'),
-            'embedded': (blacklist('owner_token') + schematics_embedded_role),
-            'view': (blacklist('owner_token') + schematics_default_role),
+            'embedded': (blacklist('owner_token', 'owner') + schematics_embedded_role),
+            'view': (blacklist('owner_token', 'owner') + schematics_default_role),
         }
     # system
     id = MD5Type(required=True, default=lambda: uuid4().hex)
