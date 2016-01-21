@@ -110,3 +110,8 @@ Schema
 
 :documents:
     List of :ref:`Document` objects
+
+:relatedLot:
+    string
+
+    Id of related :ref:`lot`.

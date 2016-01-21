@@ -542,7 +542,7 @@ class Question(Model):
 class Complaint(Model):
     class Options:
         roles = {
-            'create': whitelist('author', 'title', 'description', 'status'),
+            'create': whitelist('author', 'title', 'description', 'status', 'relatedLot'),
             'draft': whitelist('author', 'title', 'description', 'status'),
             'cancellation': whitelist('cancellationReason', 'status'),
             'satisfy': whitelist('satisfied', 'status'),
@@ -559,6 +559,7 @@ class Complaint(Model):
     type = StringType(choices=['claim', 'complaint'], default='claim')  # 'complaint' if status in ['pending'] or 'claim' if status in ['draft', 'claim', 'answered']
     owner_token = StringType()
     owner = StringType()
+    relatedLot = MD5Type()
     # complainant
     author = ModelType(Organization, required=True)  # author of claim
     title = StringType(required=True)  # title of the claim
@@ -614,6 +615,10 @@ class Complaint(Model):
     def validate_cancellationReason(self, data, cancellationReason):
         if not cancellationReason and data.get('status') == 'cancelled':
             raise ValidationError(u'This field is required.')
+
+    def validate_relatedLot(self, data, relatedLot):
+        if relatedLot and isinstance(data['__parent__'], Model) and relatedLot not in [i.id for i in get_tender(data['__parent__']).lots]:
+            raise ValidationError(u"relatedLot should be one of lots")
 
 
 class Cancellation(Model):

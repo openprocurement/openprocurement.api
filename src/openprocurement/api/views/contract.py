@@ -83,7 +83,7 @@ class TenderAwardContractResource(object):
             pending_complaints = [
                 i
                 for i in tender.complaints
-                if i.status in ['claim', 'answered', 'pending']
+                if i.status in ['claim', 'answered', 'pending'] and i.relatedLot in [None, award.lotID]
             ]
             pending_awards_complaints = [
                 i

@@ -51,6 +51,7 @@ class TenderAwardComplaintResource(object):
             self.request.errors.status = 403
             return
         complaint = self.request.validated['complaint']
+        complaint.relatedLot = self.context.lotID
         if complaint.status == 'claim':
             complaint.dateSubmitted = get_now()
         else:
