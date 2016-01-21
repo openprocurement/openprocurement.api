@@ -319,6 +319,28 @@ class TenderAwardResource(object):
         elif award_status == 'pending' and award.status == 'unsuccessful':
             award.complaintPeriod.endDate = get_now() + STAND_STILL_TIME
             add_next_award(self.request)
+        elif award_status == 'unsuccessful' and award.status == 'cancelled' and any([i.status in ['claim', 'answered', 'pending', 'resolved'] for i in award.complaints]):
+            if tender.status == 'active.awarded':
+                tender.status = 'active.qualification'
+                tender.awardPeriod.endDate = None
+            now = get_now()
+            award.complaintPeriod.endDate = now
+            cancelled_awards = []
+            for i in tender.awards[tender.awards.index(award):]:
+                if i.lotID != award.lotID:
+                    continue
+                i.complaintPeriod.endDate = now
+                i.status = 'cancelled'
+                for j in i.complaints:
+                    if j.status != ['invalid', 'resolved', 'declined']:
+                        j.status = 'cancelled'
+                        j.cancellationReason = 'cancelled'
+                        j.dateCanceled = now
+                cancelled_awards.append(i.id)
+            for i in tender.contracts:
+                if i.awardID in cancelled_awards:
+                    i.status = 'cancelled'
+            add_next_award(self.request)
         else:
             self.request.errors.add('body', 'data', 'Can\'t update award in current ({}) status'.format(award_status))
             self.request.errors.status = 403
