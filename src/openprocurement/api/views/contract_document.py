@@ -48,7 +48,7 @@ class TenderAwardContractDocumentResource(object):
     def collection_post(self):
         """Tender Contract Document Upload
         """
-        if self.request.validated['tender_status'] not in ['active.qualification', 'active.awarded', 'complete']:
+        if self.request.validated['tender_status'] not in ['active.qualification', 'active.awarded']:
             self.request.errors.add('body', 'data', 'Can\'t add document in current ({}) tender status'.format(self.request.validated['tender_status']))
             self.request.errors.status = 403
             return
