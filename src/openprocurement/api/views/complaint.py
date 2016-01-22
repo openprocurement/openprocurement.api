@@ -44,7 +44,7 @@ class TenderComplaintResource(object):
         if complaint.status == 'claim':
             complaint.dateSubmitted = get_now()
         else:
-            complaint.status == 'draft'
+            complaint.status = 'draft'
         set_ownership(complaint, self.request)
         tender.complaints.append(complaint)
         if save_tender(self.request):
