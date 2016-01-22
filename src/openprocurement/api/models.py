@@ -9,7 +9,7 @@ from schematics.exceptions import ConversionError, ValidationError
 from schematics.models import Model as SchematicsModel
 from schematics.transforms import whitelist, blacklist, export_loop, convert
 from schematics.types import StringType, FloatType, IntType, URLType, BooleanType, BaseType, EmailType, MD5Type
-from schematics.types.compound import ModelType, ListType, DictType
+from schematics.types.compound import ModelType, DictType, ListType as BaseListType
 from schematics.types.serializable import serializable
 from uuid import uuid4
 from barbecue import vnmax
@@ -80,7 +80,7 @@ def get_tender(model):
     return model
 
 
-class ListType(ListType):
+class ListType(BaseListType):
 
     def export_loop(self, list_instance, field_converter,
                     role=None, print_none=False):
