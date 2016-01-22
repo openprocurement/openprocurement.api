@@ -127,7 +127,7 @@ class TenderAwardComplaintResource(object):
         # reviewers
         elif self.request.authenticated_role == 'reviewers' and self.context.status == 'pending' and data.get('status', self.context.status) == self.context.status:
             apply_patch(self.request, save=False, src=self.context.serialize())
-        elif self.request.authenticated_role == 'reviewers' and self.context.status == 'pending' and data.get('status', self.context.status) in ['pending', 'resolved', 'invalid', 'declined']:
+        elif self.request.authenticated_role == 'reviewers' and self.context.status == 'pending' and data.get('status', self.context.status) in ['resolved', 'invalid', 'declined']:
             apply_patch(self.request, save=False, src=self.context.serialize())
             self.context.dateDecision = get_now()
         else:
