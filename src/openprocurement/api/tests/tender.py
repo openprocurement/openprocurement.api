@@ -1187,7 +1187,7 @@ class TenderProcessTest(BaseTenderWebTest):
         response = self.app.post('/tenders/{}/contracts/{}/documents?acc_token={}'.format(tender_id, contract_id, owner_token), upload_files=[('file', 'name.doc', 'content')], status=403)
         self.assertEqual(response.status, '403 Forbidden')
         self.assertEqual(response.content_type, 'application/json')
-        self.assertEqual(response.json['errors'][0]["description"], "Can't add document in current tender status")
+        self.assertEqual(response.json['errors'][0]["description"], "Can't add document in current (complete) tender status")
 
 def suite():
     suite = unittest.TestSuite()
