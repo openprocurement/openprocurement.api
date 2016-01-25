@@ -242,7 +242,7 @@ def check_bids(request):
         if max([i.numberOfBids for i in tender.lots]) < 2:
             #tender.status = 'active.qualification'
             add_next_award(request)
-        if set([i.status for i in tender.lots]) == set(['unsuccessful']):
+        if not set([i.status for i in tender.lots]).difference(set(['unsuccessful', 'cancelled'])):
             tender.status = 'unsuccessful'
     else:
         if tender.numberOfBids == 0:

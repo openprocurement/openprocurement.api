@@ -134,7 +134,7 @@ class TenderAwardComplaintResource(object):
             self.request.errors.add('body', 'data', 'Can\'t update complaint')
             self.request.errors.status = 403
             return
-        if self.context.status not in ['draft', 'claim', 'answered', 'pending'] and tender.status == 'active.awarded':
+        if self.context.status not in ['draft', 'claim', 'answered', 'pending'] and tender.status in ['active.qualification', 'active.awarded']:
             check_tender_status(self.request)
         if save_tender(self.request):
             LOGGER.info('Updated tender award complaint {}'.format(self.context.id),
