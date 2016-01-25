@@ -332,7 +332,7 @@ class TenderAwardResource(object):
                 i.complaintPeriod.endDate = now
                 i.status = 'cancelled'
                 for j in i.complaints:
-                    if j.status != ['invalid', 'resolved', 'declined']:
+                    if j.status not in ['invalid', 'resolved', 'declined']:
                         j.status = 'cancelled'
                         j.cancellationReason = 'cancelled'
                         j.dateCanceled = now
