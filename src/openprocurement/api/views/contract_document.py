@@ -83,7 +83,7 @@ class TenderAwardContractDocumentResource(object):
     @json_view(validators=(validate_file_update,), permission='edit_tender')
     def put(self):
         """Tender Contract Document Update"""
-        if self.request.validated['tender_status'] not in ['active.awarded', 'complete']:
+        if self.request.validated['tender_status'] not in ['active.qualification', 'active.awarded']:
             self.request.errors.add('body', 'data', 'Can\'t update document in current ({}) tender status'.format(self.request.validated['tender_status']))
             self.request.errors.status = 403
             return
@@ -102,7 +102,11 @@ class TenderAwardContractDocumentResource(object):
     @json_view(content_type="application/json", validators=(validate_patch_document_data,), permission='edit_tender')
     def patch(self):
         """Tender Contract Document Update"""
+<<<<<<< HEAD
         if self.request.validated['tender_status'] not in ['active.awarded', 'complete']:
+=======
+        if self.request.validated['tender_status'] not in ['active.qualification', 'active.awarded']:
+>>>>>>> 4f2873e... update document in tender status complete
             self.request.errors.add('body', 'data', 'Can\'t update document in current ({}) tender status'.format(self.request.validated['tender_status']))
             self.request.errors.status = 403
             return
