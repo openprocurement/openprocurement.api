@@ -1168,6 +1168,12 @@ class TenderProcessTest(BaseTenderWebTest):
         # get contract id
         response = self.app.get('/tenders/{}'.format(tender_id))
         contract_id = response.json['data']['contracts'][-1]['id']
+        # create tender contract document for test
+        response = self.app.post('/tenders/{}/contracts/{}/documents?acc_token={}'.format(tender_id, contract_id, owner_token), upload_files=[('file', 'name.doc', 'content')], status=201)
+        self.assertEqual(response.status, '201 Created')
+        self.assertEqual(response.content_type, 'application/json')
+        doc_id = response.json["data"]['id']
+        self.assertIn(doc_id, response.headers['Location'])
         # after stand slill period
         self.app.authorization = ('Basic', ('chronograph', ''))
         self.set_status('complete', {'status': 'active.awarded'})
