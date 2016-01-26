@@ -108,7 +108,7 @@ class TenderComplaintResource(object):
         elif self.request.authenticated_role == 'tender_owner' and self.context.status == 'claim' and data.get('resolutionType', self.context.resolutionType) and data.get('status', self.context.status) == 'answered':
             apply_patch(self.request, save=False, src=self.context.serialize())
             self.context.dateAnswered = get_now()
-        elif self.request.authenticated_role == 'tender_owner' and self.context.status == 'pending' and data.get('tendererAction'):
+        elif self.request.authenticated_role == 'tender_owner' and self.context.status == 'pending':
             apply_patch(self.request, save=False, src=self.context.serialize())
         # reviewers
         elif self.request.authenticated_role == 'reviewers' and self.context.status == 'pending' and data.get('status', self.context.status) == self.context.status:
