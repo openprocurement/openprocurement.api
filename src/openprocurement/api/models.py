@@ -546,7 +546,8 @@ class Complaint(Model):
             'draft': whitelist('author', 'title', 'description', 'status'),
             'cancellation': whitelist('cancellationReason', 'status'),
             'satisfy': whitelist('satisfied', 'status'),
-            'answer': whitelist('resolution', 'resolutionType', 'status'),
+            'answer': whitelist('resolution', 'resolutionType', 'status', 'tendererAction'),
+            'action': whitelist('tendererAction'),
             'review': whitelist('decision', 'status'),
             'embedded': (blacklist('owner_token', 'owner') + schematics_embedded_role),
             'view': (blacklist('owner_token', 'owner') + schematics_default_role),
@@ -569,6 +570,8 @@ class Complaint(Model):
     resolution = StringType()
     resolutionType = StringType(choices=['invalid', 'resolved', 'declined'])
     dateAnswered = IsoDateTimeType()
+    tendererAction = StringType()
+    tendererActionDate = IsoDateTimeType()
     # complainant
     satisfied = BooleanType()
     dateEscalated = IsoDateTimeType()
@@ -591,6 +594,8 @@ class Complaint(Model):
             role = 'draft'
         elif request.authenticated_role == 'tender_owner' and self.status == 'claim':
             role = 'answer'
+        elif request.authenticated_role == 'tender_owner' and self.status == 'pending':
+            role = 'action'
         elif request.authenticated_role == 'complaint_owner' and self.status == 'answered':
             role = 'satisfy'
         elif request.authenticated_role == 'reviewers' and self.status == 'pending':

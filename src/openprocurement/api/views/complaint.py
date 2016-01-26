@@ -108,6 +108,8 @@ class TenderComplaintResource(object):
         elif self.request.authenticated_role == 'tender_owner' and self.context.status == 'claim' and data.get('resolutionType', self.context.resolutionType) and data.get('status', self.context.status) == 'answered':
             apply_patch(self.request, save=False, src=self.context.serialize())
             self.context.dateAnswered = get_now()
+        elif self.request.authenticated_role == 'tender_owner' and self.context.status == 'pending' and data.get('tendererAction'):
+            apply_patch(self.request, save=False, src=self.context.serialize())
         # reviewers
         elif self.request.authenticated_role == 'reviewers' and self.context.status == 'pending' and data.get('status', self.context.status) == self.context.status:
             apply_patch(self.request, save=False, src=self.context.serialize())
@@ -118,6 +120,8 @@ class TenderComplaintResource(object):
             self.request.errors.add('body', 'data', 'Can\'t update complaint')
             self.request.errors.status = 403
             return
+        if self.context.tendererAction and not self.context.tendererActionDate:
+            self.context.tendererActionDate = get_now()
         if self.context.status not in ['draft', 'claim', 'answered', 'pending'] and tender.status in ['active.qualification', 'active.awarded']:
             check_tender_status(self.request)
         if save_tender(self.request):
