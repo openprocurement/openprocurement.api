@@ -143,7 +143,7 @@ When tender is in `active.enquiry` status, interested parties can ask questions:
 .. include:: tutorial/ask-question.http
    :code:
 
-Bidder is answering them:
+Procuring entity can answer them:
 
 .. include:: tutorial/answer-question.http
    :code:

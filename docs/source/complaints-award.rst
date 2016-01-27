@@ -3,7 +3,7 @@
 Claim Submission
 ================
 
-If tender conditions are favoriting only one provider, or in any other viable case, one can submit Tender Award Claim.
+If tender conditions are favoriting only one supplier, or in any other viable case, one can submit Tender Award Claim.
 
 Tender Award Claim Submission (with documents)
 ---------------------------------------------------
@@ -25,6 +25,8 @@ Submit tender conditions claim:
 
 Tender Award Claim Submission (without documents)
 ------------------------------------------------------
+
+You can submit claim that does not need additional documents:
 
 .. include:: tutorial/award-complaint-submission-claim.http
    :code:
