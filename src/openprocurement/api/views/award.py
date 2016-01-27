@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 from logging import getLogger
-from openprocurement.api.models import Contract, STAND_STILL_TIME, get_now
+from openprocurement.api.models import STAND_STILL_TIME, get_now
 from openprocurement.api.utils import (
     apply_patch,
     save_tender,
@@ -308,7 +308,7 @@ class TenderAwardResource(object):
         apply_patch(self.request, save=False, src=self.request.context.serialize())
         if award_status == 'pending' and award.status == 'active':
             award.complaintPeriod.endDate = get_now() + STAND_STILL_TIME
-            tender.contracts.append(Contract({'awardID': award.id}))
+            tender.contracts.append(type(tender).contracts.model_class({'awardID': award.id}))
             add_next_award(self.request)
         elif award_status == 'active' and award.status == 'cancelled':
             award.complaintPeriod.endDate = get_now()

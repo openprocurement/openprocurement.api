@@ -9,7 +9,7 @@ from functools import partial
 from json import dumps
 from jsonpatch import make_patch, apply_patch as _apply_patch
 from logging import getLogger
-from openprocurement.api.models import Document, Revision, Award, Period, get_now, TZ, COMPLAINT_STAND_STILL_TIME
+from openprocurement.api.models import get_now, TZ, COMPLAINT_STAND_STILL_TIME
 from openprocurement.api.traversal import factory
 from pkg_resources import get_distribution
 from rfc6266 import build_header
@@ -79,7 +79,7 @@ def upload_file(request):
         filename = first_document.title
         content_type = request.content_type
         in_file = request.body_file
-    document = Document({
+    document = type(request.tender).documents.model_class({
         'title': filename,
         'format': content_type
     })
@@ -209,7 +209,7 @@ def save_tender(request):
         set_modetest_titles(tender)
     patch = get_revision_changes(tender.serialize("plain"), request.validated['tender_src'])
     if patch:
-        tender.revisions.append(Revision({'author': request.authenticated_userid, 'changes': patch, 'rev': tender.rev}))
+        tender.revisions.append(type(tender).revisions.model_class({'author': request.authenticated_userid, 'changes': patch, 'rev': tender.rev}))
         old_dateModified = tender.dateModified
         tender.dateModified = get_now()
         try:
@@ -435,7 +435,7 @@ def add_next_award(request):
     tender = request.validated['tender']
     now = get_now()
     if not tender.awardPeriod:
-        tender.awardPeriod = Period({})
+        tender.awardPeriod = type(tender).awardPeriod({})
     if not tender.awardPeriod.startDate:
         tender.awardPeriod.startDate = now
     if tender.lots:
@@ -473,7 +473,7 @@ def add_next_award(request):
             bids = chef(bids, features, unsuccessful_awards)
             if bids:
                 bid = bids[0]
-                award = tender.__class__.awards.model_class({
+                award = type(tender).awards.model_class({
                     'bid_id': bid['id'],
                     'lotID': lot.id,
                     'status': 'pending',
@@ -500,7 +500,7 @@ def add_next_award(request):
             bids = chef(tender.bids, tender.features or [], unsuccessful_awards)
             if bids:
                 bid = bids[0].serialize()
-                award = tender.__class__.awards.model_class({
+                award = type(tender).awards.model_class({
                     'bid_id': bid['id'],
                     'status': 'pending',
                     'value': bid['value'],
