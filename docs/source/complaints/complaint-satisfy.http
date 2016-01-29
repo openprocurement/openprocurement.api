@@ -1,0 +1,64 @@
+PATCH /api/0.12/tenders/33b72c5a46744bd9976f507a1414253f/complaints/3b94c4b323dc46848b8ad590218b200c?acc_token=0b60f7f5c4784cabb8a4c5914802a7a8 HTTP/1.0
+Authorization: Basic YnJva2VyOg==
+Content-Length: 51
+Content-Type: application/json
+Host: api-sandbox.openprocurement.org
+
+{
+  "data": {
+    "status": "resolved", 
+    "satisfied": true
+  }
+}
+
+
+200 OK
+Content-Type: application/json; charset=UTF-8
+
+{
+  "data": {
+    "status": "resolved", 
+    "documents": [
+      {
+        "author": "complaint_owner", 
+        "title": "Complaint_Attachement.pdf", 
+        "url": "http://api-sandbox.openprocurement.org/api/0.12/tenders/33b72c5a46744bd9976f507a1414253f/complaints/3b94c4b323dc46848b8ad590218b200c/documents/b963c70be5954730959d4e3ab3aa9fd5?download=379b798f6afe44caae7ed6b640e54c69", 
+        "format": "application/pdf", 
+        "documentOf": "tender", 
+        "datePublished": "2016-02-01T14:20:33.165996+02:00", 
+        "id": "b963c70be5954730959d4e3ab3aa9fd5", 
+        "dateModified": "2016-02-01T14:20:33.166033+02:00"
+      }
+    ], 
+    "description": "complaint description", 
+    "author": {
+      "contactPoint": {
+        "name": "Державне управління справами", 
+        "telephone": "0440000000"
+      }, 
+      "identifier": {
+        "scheme": "UA-EDR", 
+        "id": "00037256", 
+        "uri": "http://www.dus.gov.ua/"
+      }, 
+      "name": "Державне управління справами", 
+      "address": {
+        "postalCode": "01220", 
+        "countryName": "Україна", 
+        "streetAddress": "вул. Банкова, 11, корпус 1", 
+        "region": "м. Київ", 
+        "locality": "м. Київ"
+      }
+    }, 
+    "resolutionType": "resolved", 
+    "type": "claim", 
+    "title": "complaint title", 
+    "satisfied": true, 
+    "dateAnswered": "2016-02-01T14:20:33.733693+02:00", 
+    "dateSubmitted": "2016-02-01T14:20:33.315912+02:00", 
+    "date": "2016-02-01T14:20:32.933708+02:00", 
+    "resolution": "Виправлено", 
+    "id": "3b94c4b323dc46848b8ad590218b200c"
+  }
+}
+

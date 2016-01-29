@@ -1,0 +1,72 @@
+POST /api/0.12/tenders/4c3073e871e148c693dd8f2c3a884f28/awards/73ab87b42933476283469fe51708883d/complaints?acc_token=8bbea754326a46c7a82b25e71567ea78 HTTP/1.0
+Authorization: Basic YnJva2VyOg==
+Content-Length: 899
+Content-Type: application/json
+Host: api-sandbox.openprocurement.org
+
+{
+  "data": {
+    "status": "claim", 
+    "title": "complaint title", 
+    "description": "complaint description", 
+    "author": {
+      "contactPoint": {
+        "name": "Державне управління справами", 
+        "telephone": "0440000000"
+      }, 
+      "identifier": {
+        "scheme": "UA-EDR", 
+        "id": "00037256", 
+        "uri": "http://www.dus.gov.ua/"
+      }, 
+      "name": "Державне управління справами", 
+      "address": {
+        "countryName": "Україна", 
+        "postalCode": "01220", 
+        "region": "м. Київ", 
+        "streetAddress": "вул. Банкова, 11, корпус 1", 
+        "locality": "м. Київ"
+      }
+    }
+  }
+}
+
+
+201 Created
+Content-Type: application/json; charset=UTF-8
+Location: http://api-sandbox.openprocurement.org/api/0.12/tenders/4c3073e871e148c693dd8f2c3a884f28/awards/73ab87b42933476283469fe51708883d/complaints/4c850f26244f47b285bbad8373fbe45b
+
+{
+  "access": {
+    "token": "1347c37eabd34b14b60ac787714e320d"
+  }, 
+  "data": {
+    "status": "claim", 
+    "description": "complaint description", 
+    "author": {
+      "contactPoint": {
+        "name": "Державне управління справами", 
+        "telephone": "0440000000"
+      }, 
+      "identifier": {
+        "scheme": "UA-EDR", 
+        "id": "00037256", 
+        "uri": "http://www.dus.gov.ua/"
+      }, 
+      "name": "Державне управління справами", 
+      "address": {
+        "postalCode": "01220", 
+        "countryName": "Україна", 
+        "streetAddress": "вул. Банкова, 11, корпус 1", 
+        "region": "м. Київ", 
+        "locality": "м. Київ"
+      }
+    }, 
+    "title": "complaint title", 
+    "dateSubmitted": "2016-02-01T14:20:37.156898+02:00", 
+    "date": "2016-02-01T14:20:37.155578+02:00", 
+    "type": "claim", 
+    "id": "4c850f26244f47b285bbad8373fbe45b"
+  }
+}
+
