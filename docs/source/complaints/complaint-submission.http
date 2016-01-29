@@ -1,0 +1,68 @@
+POST /api/0.12/tenders/c5c08ef04358468997711f7353b03572/complaints HTTP/1.0
+Authorization: Basic dG9rZW46
+Content-Length: 880
+Content-Type: application/json
+Host: api-sandbox.openprocurement.org
+DATA:
+{
+  "data": {
+    "title": "complaint title", 
+    "description": "complaint description", 
+    "author": {
+      "contactPoint": {
+        "name": "Державне управління справами", 
+        "telephone": "0440000000"
+      }, 
+      "identifier": {
+        "scheme": "UA-EDR", 
+        "id": "00037256", 
+        "uri": "http://www.dus.gov.ua/"
+      }, 
+      "name": "Державне управління справами", 
+      "address": {
+        "countryName": "Україна", 
+        "postalCode": "01220", 
+        "region": "м. Київ", 
+        "streetAddress": "вул. Банкова, 11, корпус 1", 
+        "locality": "м. Київ"
+      }
+    }
+  }
+}
+
+Response: 201 Created
+Content-Type: application/json; charset=UTF-8
+Location: http://api-sandbox.openprocurement.org/api/0.12/tenders/c5c08ef04358468997711f7353b03572/complaints/d855575355fd4d26bfc1cdf2c7371423
+{
+  "access": {
+    "token": "e8f54d6c65aa49cfbb24d326f61ad7dd"
+  }, 
+  "data": {
+    "status": "draft", 
+    "description": "complaint description", 
+    "author": {
+      "contactPoint": {
+        "name": "Державне управління справами", 
+        "telephone": "0440000000"
+      }, 
+      "identifier": {
+        "scheme": "UA-EDR", 
+        "id": "00037256", 
+        "uri": "http://www.dus.gov.ua/"
+      }, 
+      "name": "Державне управління справами", 
+      "address": {
+        "postalCode": "01220", 
+        "countryName": "Україна", 
+        "streetAddress": "вул. Банкова, 11, корпус 1", 
+        "region": "м. Київ", 
+        "locality": "м. Київ"
+      }
+    }, 
+    "title": "complaint title", 
+    "date": "2016-01-29T16:28:26.477312+02:00", 
+    "type": "claim", 
+    "id": "d855575355fd4d26bfc1cdf2c7371423"
+  }
+}
+
