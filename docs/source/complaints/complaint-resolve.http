@@ -1,0 +1,63 @@
+PATCH /api/0.12/tenders/c5c08ef04358468997711f7353b03572/complaints/f4aaa02f51614208a74bd4792eedea1b HTTP/1.0
+Authorization: Basic cmV2aWV3ZXI6
+Content-Length: 32
+Content-Type: application/json
+Host: api-sandbox.openprocurement.org
+DATA:
+{
+  "data": {
+    "status": "resolved"
+  }
+}
+
+Response: 200 OK
+Content-Type: application/json; charset=UTF-8
+{
+  "data": {
+    "status": "resolved", 
+    "dateDecision": "2016-01-29T16:28:29.060155+02:00", 
+    "documents": [
+      {
+        "author": "reviewers", 
+        "title": "ComplaintResolution.pdf", 
+        "url": "http://api-sandbox.openprocurement.org/api/0.12/tenders/c5c08ef04358468997711f7353b03572/complaints/f4aaa02f51614208a74bd4792eedea1b/documents/371a396a47f9431687b7678377357886?download=6097c4e73a3c4dea919327bba84a185b", 
+        "format": "application/pdf", 
+        "documentOf": "tender", 
+        "datePublished": "2016-01-29T16:28:28.910222+02:00", 
+        "id": "371a396a47f9431687b7678377357886", 
+        "dateModified": "2016-01-29T16:28:28.910267+02:00"
+      }
+    ], 
+    "description": "complaint description", 
+    "author": {
+      "contactPoint": {
+        "name": "Державне управління справами", 
+        "telephone": "0440000000"
+      }, 
+      "identifier": {
+        "scheme": "UA-EDR", 
+        "id": "00037256", 
+        "uri": "http://www.dus.gov.ua/"
+      }, 
+      "name": "Державне управління справами", 
+      "address": {
+        "postalCode": "01220", 
+        "countryName": "Україна", 
+        "streetAddress": "вул. Банкова, 11, корпус 1", 
+        "region": "м. Київ", 
+        "locality": "м. Київ"
+      }
+    }, 
+    "resolutionType": "resolved", 
+    "type": "complaint", 
+    "title": "complaint title", 
+    "satisfied": false, 
+    "dateEscalated": "2016-01-29T16:28:28.293880+02:00", 
+    "dateAnswered": "2016-01-29T16:28:28.162824+02:00", 
+    "dateSubmitted": "2016-01-29T16:28:27.981502+02:00", 
+    "date": "2016-01-29T16:28:27.980192+02:00", 
+    "resolution": "Виправлено", 
+    "id": "f4aaa02f51614208a74bd4792eedea1b"
+  }
+}
+
