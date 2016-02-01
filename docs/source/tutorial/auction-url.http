@@ -1,167 +1,126 @@
-$ http -j https://api-sandbox.openprocurement.org/api/0/tenders/e9ecf1e8f5da47c68d47f8d2c1499946
-GET /api/0/tenders/e9ecf1e8f5da47c68d47f8d2c1499946 HTTP/1.1
-Content-Type: application/json; charset=utf-8
+GET /api/0.12/tenders/967afe7b23914929a9be803df29381ef HTTP/1.0
+Authorization: Basic YnJva2VyOg==
+Host: api-sandbox.openprocurement.org
 
-
-
-HTTP/1.1 200 OK
+Response: 200 OK
 Content-Type: application/json; charset=UTF-8
-
 {
-    "data": {
-        "auctionPeriod": {
-            "startDate": "2014-12-04T00:00:00+02:02"
+  "data": {
+    "procurementMethod": "open", 
+    "status": "active.auction", 
+    "auctionUrl": "http://auction-sandbox.openprocurement.org/tenders/967afe7b23914929a9be803df29381ef", 
+    "enquiryPeriod": {
+      "startDate": "2016-01-18T12:18:00.883826+02:00", 
+      "endDate": "2016-01-25T12:18:00.883826+02:00"
+    }, 
+    "submissionMethod": "electronicAuction", 
+    "next_check": null, 
+    "awardCriteria": "lowestCost", 
+    "questions": [
+      {
+        "description": "Просимо додати таблицю потрібної калорійності харчування", 
+        "title": "Калорійність", 
+        "date": "2016-02-01T12:18:04.307041+02:00", 
+        "answer": "Таблицю додано в файлі \"Kalorijnist.xslx\"", 
+        "id": "0795db1f29df431285b80f6d7e2bbdaf", 
+        "questionOf": "tender"
+      }
+    ], 
+    "owner": "broker", 
+    "id": "967afe7b23914929a9be803df29381ef", 
+    "documents": [
+      {
+        "title": "Notice.pdf", 
+        "url": "http://api-sandbox.openprocurement.org/api/0.12/tenders/967afe7b23914929a9be803df29381ef/documents/29f3c1a2b049462d9be4ec8a9bcee6fe?download=f70e2d4f5eff4b6f990f2e91073acc58", 
+        "format": "application/pdf", 
+        "documentOf": "tender", 
+        "datePublished": "2016-02-01T12:18:03.767900+02:00", 
+        "id": "29f3c1a2b049462d9be4ec8a9bcee6fe", 
+        "dateModified": "2016-02-01T12:18:03.767943+02:00"
+      }, 
+      {
+        "title": "AwardCriteria.pdf", 
+        "url": "http://api-sandbox.openprocurement.org/api/0.12/tenders/967afe7b23914929a9be803df29381ef/documents/f6e58f2698ec4c04a5b8cec403fac1cb?download=c441c0857bc847ee89eb861e378e77f4", 
+        "format": "application/pdf", 
+        "documentOf": "tender", 
+        "datePublished": "2016-02-01T12:18:03.937206+02:00", 
+        "id": "f6e58f2698ec4c04a5b8cec403fac1cb", 
+        "dateModified": "2016-02-01T12:18:03.937237+02:00"
+      }, 
+      {
+        "title": "AwardCriteria-2.pdf", 
+        "url": "http://api-sandbox.openprocurement.org/api/0.12/tenders/967afe7b23914929a9be803df29381ef/documents/f6e58f2698ec4c04a5b8cec403fac1cb?download=f5627131e862443e87626c9159a3a515", 
+        "format": "application/pdf", 
+        "documentOf": "tender", 
+        "datePublished": "2016-02-01T12:18:03.937206+02:00", 
+        "id": "f6e58f2698ec4c04a5b8cec403fac1cb", 
+        "dateModified": "2016-02-01T12:18:04.109589+02:00"
+      }
+    ], 
+    "title": "футляри до державних нагород", 
+    "tenderID": "UA-2016-02-01-000001", 
+    "dateModified": "2016-02-01T12:18:05.576397+02:00", 
+    "numberOfBids": 2, 
+    "tenderPeriod": {
+      "startDate": "2016-01-25T12:18:00.883826+02:00", 
+      "endDate": "2016-02-01T12:18:00.883826+02:00"
+    }, 
+    "auctionPeriod": {
+      "startDate": "2016-02-01T12:18:00.883826+02:00"
+    }, 
+    "procurementMethodType": "belowThreshold", 
+    "minimalStep": {
+      "currency": "UAH", 
+      "amount": 35.0, 
+      "valueAddedTaxIncluded": true
+    }, 
+    "items": [
+      {
+        "description": "футляри до державних нагород", 
+        "classification": {
+          "scheme": "CPV", 
+          "description": "Cartons", 
+          "id": "44617100-9"
         }, 
-        "auctionUrl": "http://auction-sandbox.openprocurement.org/tenders/e9ecf1e8f5da47c68d47f8d2c1499946", 
-        "bids": [
-            {
-                "value": {
-                    "amount": 475000.0, 
-                    "currency": "UAH", 
-                    "valueAddedTaxIncluded": true
-                }
-            }, 
-            {
-                "value": {
-                    "amount": 480000.0, 
-                    "currency": "UAH", 
-                    "valueAddedTaxIncluded": true
-                }
-            }
+        "additionalClassifications": [
+          {
+            "scheme": "ДКПП", 
+            "id": "17.21.1", 
+            "description": "папір і картон гофровані, паперова й картонна тара"
+          }
         ], 
-        "complaints": [
-            {
-                "author": {
-                    "address": {
-                        "countryName": "Україна", 
-                        "locality": "м. Вінниця", 
-                        "postalCode": "21100", 
-                        "region": "м. Вінниця", 
-                        "streetAddress": "вул. Островського, 33"
-                    }, 
-                    "contactPoint": {
-                        "email": "soleksuk@gmail.com", 
-                        "name": "Сергій Олексюк", 
-                        "telephone": "+380 (432) 21-69-30"
-                    }, 
-                    "identifier": {
-                        "id": "13313462", 
-                        "legalName": "Державне комунальне підприємство громадського харчування «Школяр»", 
-                        "scheme": "https://ns.openprocurement.org/ua/edrpou", 
-                        "uri": "http://sch10.edu.vn.ua/"
-                    }, 
-                    "name": "ДКП «Школяр»"
-                }, 
-                "date": "2014-12-03T22:59:57.858006+02:00", 
-                "description": "Умови виставлені замовником не містять достатньо інформації, щоб заявка мала сенс.", 
-                "documents": [
-                    {
-                        "dateModified": "2014-12-03T23:00:02.929901+02:00", 
-                        "datePublished": "2014-12-03T23:00:02.929858+02:00", 
-                        "format": "text/plain", 
-                        "id": "af38e9210b0d43aab68491fcf726b8e9", 
-                        "title": "ComplaintResolution.pdf", 
-                        "url": "http://api-sandbox.openprocurement.org/api/0/tenders/e9ecf1e8f5da47c68d47f8d2c1499946/complaints/8c7e05c5bd1a4fca927298677d6e5399/documents/af38e9210b0d43aab68491fcf726b8e9?download=578e4f998b9e444d9c78fd9fd13b3fe3"
-                    }
-                ], 
-                "id": "8c7e05c5bd1a4fca927298677d6e5399", 
-                "status": "declined", 
-                "title": "Недостатньо інформації"
-            }
-        ], 
-        "dateModified": "2014-12-03T23:00:27.392833+02:00", 
-        "documents": [
-            {
-                "dateModified": "2014-12-03T23:00:06.170772+02:00", 
-                "datePublished": "2014-12-03T23:00:06.170728+02:00", 
-                "format": "text/plain", 
-                "id": "357a3f75f58e4519a548e2bff502a066", 
-                "title": "Notice.pdf", 
-                "url": "http://api-sandbox.openprocurement.org/api/0/tenders/e9ecf1e8f5da47c68d47f8d2c1499946/documents/357a3f75f58e4519a548e2bff502a066?download=b35eb8140f62471d8cdb4f0658fb30c2"
-            }, 
-            {
-                "dateModified": "2014-12-03T23:00:09.292528+02:00", 
-                "datePublished": "2014-12-03T23:00:09.292481+02:00", 
-                "format": "text/plain", 
-                "id": "ac4306402dba448996c5fe7151cd01ca", 
-                "title": "AwardCriteria.pdf", 
-                "url": "http://api-sandbox.openprocurement.org/api/0/tenders/e9ecf1e8f5da47c68d47f8d2c1499946/documents/ac4306402dba448996c5fe7151cd01ca?download=7471f23ba2c346b2a539aa96a9bcca04"
-            }, 
-            {
-                "dateModified": "2014-12-03T23:00:12.252334+02:00", 
-                "datePublished": "2014-12-03T23:00:09.292481+02:00", 
-                "format": "text/plain", 
-                "id": "ac4306402dba448996c5fe7151cd01ca", 
-                "title": "AwardCriteria-v2.pdf", 
-                "url": "http://api-sandbox.openprocurement.org/api/0/tenders/e9ecf1e8f5da47c68d47f8d2c1499946/documents/ac4306402dba448996c5fe7151cd01ca?download=6181d1e5014d438f8b71e55c0ae8dd7b"
-            }
-        ], 
-        "enquiryPeriod": {
-            "endDate": "2015-05-29T00:00:00+02:02", 
-            "startDate": "2014-12-03T22:59:53.557296+02:00"
+        "id": "73df38e3f39e46c9ac2e4e84387bae74", 
+        "unit": {
+          "code": "44617100-9", 
+          "name": "item"
         }, 
-        "id": "e9ecf1e8f5da47c68d47f8d2c1499946", 
-        "items": [
-            {
-                "additionalClassifications": [
-                    {
-                        "description": "Послуги шкільних їдалень", 
-                        "id": "55.51.10.300", 
-                        "scheme": "ДКПП"
-                    }
-                ], 
-                "classification": {
-                    "description": "Послуги з харчування у школах", 
-                    "id": "55523100-3", 
-                    "scheme": "CPV"
-                }, 
-                "description": "Послуги шкільних їдалень", 
-                "quantity": 5, 
-                "unit": {
-                    "name": "item"
-                }
-            }
-        ], 
-        "minimalStep": {
-            "amount": 35000.0, 
-            "currency": "UAH", 
-            "valueAddedTaxIncluded": true
-        }, 
-        "procuringEntity": {
-            "address": {
-                "countryName": "Україна", 
-                "locality": "м. Вінниця", 
-                "postalCode": "21027", 
-                "region": "м. Вінниця", 
-                "streetAddress": "вул. Стахурського. 22"
-            }, 
-            "identifier": {
-                "id": "21725150", 
-                "legalName": "Заклад \"Загальноосвітня школа І-ІІІ ступенів № 10 Вінницької міської ради\"", 
-                "scheme": "https://ns.openprocurement.org/ua/edrpou", 
-                "uri": "http://sch10.edu.vn.ua/"
-            }, 
-            "name": "ЗОСШ #10 м.Вінниці"
-        }, 
-        "questions": [
-            {
-                "answer": "Таблицю додано в файлі \"Kalorijnist.xslx\"", 
-                "date": "2014-12-03T23:00:14.683574+02:00", 
-                "description": "Просимо додати таблицю потрібної калорійності харчування по місяцях", 
-                "id": "e0c46b4e52bd4b05bbc9f41a657da1f0", 
-                "title": "Калорійність по місяцях"
-            }
-        ], 
-        "status": "active.auction", 
-        "tenderID": "UA-e9ecf1e8f5da47c68d47f8d2c1499946", 
-        "tenderPeriod": {
-            "endDate": "2015-06-07T10:00:00+02:02", 
-            "startDate": "2014-11-03T00:00:00+02:02"
-        }, 
-        "value": {
-            "amount": 500000.0, 
-            "currency": "UAH", 
-            "valueAddedTaxIncluded": true
-        }
+        "quantity": 5
+      }
+    ], 
+    "value": {
+      "currency": "UAH", 
+      "amount": 500.0, 
+      "valueAddedTaxIncluded": true
+    }, 
+    "procuringEntity": {
+      "contactPoint": {
+        "name": "Державне управління справами", 
+        "telephone": "0440000000"
+      }, 
+      "identifier": {
+        "scheme": "UA-EDR", 
+        "id": "00037256", 
+        "uri": "http://www.dus.gov.ua/"
+      }, 
+      "name": "Державне управління справами", 
+      "address": {
+        "postalCode": "01220", 
+        "countryName": "Україна", 
+        "streetAddress": "вул. Банкова, 11, корпус 1", 
+        "region": "м. Київ", 
+        "locality": "м. Київ"
+      }
     }
+  }
 }
+

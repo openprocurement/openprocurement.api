@@ -1,18 +1,19 @@
-$ http POST https://api-sandbox.openprocurement.org/api/0/tenders
-POST /api/0/tenders HTTP/1.1
+POST /api/0.12/tenders?opt_pretty=1 HTTP/1.0
+Authorization: Basic YnJva2VyOg==
+Content-Length: 4
+Content-Type: application/x-www-form-urlencoded
+Host: api-sandbox.openprocurement.org
 
-
-
-HTTP/1.1 415 Unsupported Media Type
+Response: 415 Unsupported Media Type
 Content-Type: application/json; charset=UTF-8
-
 {
-    "errors": [
-        {
-            "description": "Content-Type header should be one of ['application/json']", 
-            "location": "header", 
-            "name": "Content-Type"
-        }
-    ], 
-    "status": "error"
+  "status": "error", 
+  "errors": [
+    {
+      "description": "Content-Type header should be one of ['application/json']", 
+      "location": "header", 
+      "name": "Content-Type"
+    }
+  ]
 }
+
