@@ -1,19 +1,41 @@
-$ http -j https://api-sandbox.openprocurement.org/api/0/tenders/e9ecf1e8f5da47c68d47f8d2c1499946/bids/5f040175aed54468b424aefd4780a2b7
-GET /api/0/tenders/e9ecf1e8f5da47c68d47f8d2c1499946/bids/5f040175aed54468b424aefd4780a2b7 HTTP/1.1
-Content-Type: application/json; charset=utf-8
+GET /api/0.12/tenders/967afe7b23914929a9be803df29381ef/bids/08ac279574db4b089a09be3962832b49?acc_token=e8a08baabfcc44429c8071dbd9a6c0b2 HTTP/1.0
+Authorization: Basic YnJva2VyOg==
+Host: api-sandbox.openprocurement.org
 
-
-
-HTTP/1.1 200 OK
+Response: 200 OK
 Content-Type: application/json; charset=UTF-8
-
 {
-    "data": {
-        "participationUrl": "http://auction-sandbox.openprocurement.org/tenders/e9ecf1e8f5da47c68d47f8d2c1499946?bidder_id=5f040175aed54468b424aefd4780a2b7", 
-        "value": {
-            "amount": 480000.0, 
-            "currency": "UAH", 
-            "valueAddedTaxIncluded": true
+  "data": {
+    "date": "2016-02-01T12:18:05.184126+02:00", 
+    "value": {
+      "currency": "UAH", 
+      "amount": 499.0, 
+      "valueAddedTaxIncluded": true
+    }, 
+    "id": "08ac279574db4b089a09be3962832b49", 
+    "participationUrl": "http://auction-sandbox.openprocurement.org/tenders/967afe7b23914929a9be803df29381ef?key_for_bid=08ac279574db4b089a09be3962832b49", 
+    "tenderers": [
+      {
+        "contactPoint": {
+          "email": "aagt@gmail.com", 
+          "telephone": "+380 (322) 91-69-30", 
+          "name": "Андрій Олексюк"
+        }, 
+        "identifier": {
+          "scheme": "UA-EDR", 
+          "id": "00137226", 
+          "uri": "http://www.sc.gov.ua/"
+        }, 
+        "name": "ДКП «Книга»", 
+        "address": {
+          "postalCode": "79013", 
+          "countryName": "Україна", 
+          "streetAddress": "вул. Островського, 34", 
+          "region": "м. Львів", 
+          "locality": "м. Львів"
         }
-    }
+      }
+    ]
+  }
 }
+

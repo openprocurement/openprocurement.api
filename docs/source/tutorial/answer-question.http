@@ -1,23 +1,25 @@
-$ http --auth broker: -j PATCH https://api-sandbox.openprocurement.org/api/0/tenders/9b791af414c64892bb9b1f41e91a84af/questions/3dfbb32cc2f44f75bfe5b44a3a0c287c?acc_token=7face74d65fe4d37ba752aac8f409a0c data:=@./answer.json
-PATCH /api/0/tenders/9b791af414c64892bb9b1f41e91a84af/questions/3dfbb32cc2f44f75bfe5b44a3a0c287c?acc_token=7face74d65fe4d37ba752aac8f409a0c HTTP/1.1
+PATCH /api/0.12/tenders/967afe7b23914929a9be803df29381ef/questions/0795db1f29df431285b80f6d7e2bbdaf?acc_token=b92b7e7e349a4a7a8a1cc5fb1a39d54b HTTP/1.0
 Authorization: Basic YnJva2VyOg==
-Content-Type: application/json; charset=utf-8
-
+Content-Length: 162
+Content-Type: application/json
+Host: api-sandbox.openprocurement.org
+DATA:
 {
-    "data": {
-        "answer": "Таблицю додано в файлі \"Kalorijnist.xslx\""
-    }
+  "data": {
+    "answer": "Таблицю додано в файлі \"Kalorijnist.xslx\""
+  }
 }
 
-HTTP/1.1 200 OK
+Response: 200 OK
 Content-Type: application/json; charset=UTF-8
-
 {
-    "data": {
-        "answer": "Таблицю додано в файлі \"Kalorijnist.xslx\"", 
-        "date": "2014-12-26T23:43:08.277770+02:00", 
-        "description": "Просимо додати таблицю потрібної калорійності харчування по місяцях", 
-        "id": "3dfbb32cc2f44f75bfe5b44a3a0c287c", 
-        "title": "Калорійність по місяцях"
-    }
+  "data": {
+    "description": "Просимо додати таблицю потрібної калорійності харчування", 
+    "title": "Калорійність", 
+    "date": "2016-02-01T12:18:04.307041+02:00", 
+    "answer": "Таблицю додано в файлі \"Kalorijnist.xslx\"", 
+    "id": "0795db1f29df431285b80f6d7e2bbdaf", 
+    "questionOf": "tender"
+  }
 }
+
