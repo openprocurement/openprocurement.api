@@ -33,7 +33,7 @@ Error states that no `data` has been found in JSON body.
 Creating tender
 ---------------
 
-Let's provide the data attribute in the body submitted:
+Let's create tender with the minimal (only required) data set:
 
 .. include:: tutorial/tender-post-attempt-json-data.http
    :code:
@@ -43,7 +43,8 @@ and `Location` response header reports the location of the created object.  The
 body of response reveals the information about the created tender: its internal
 `id` (that matches the `Location` segment), its official `tenderID` and
 `dateModified` datestamp stating the moment in time when tender was last
-modified.  Note that tender is created with `active.enquiries` status.
+modified. Pay attention to the `procurementMethodType`. Note that tender is 
+created with `active.enquiries` status. 
 
 Let's access the URL of the created object (the `Location` header of the response):
 
@@ -61,7 +62,8 @@ Let's see what listing of tenders reveals us:
 
 We do see the internal `id` of a tender (that can be used to construct full URL by prepending `http://api-sandbox.openprocurement.org/api/0/tenders/`) and its `dateModified` datestamp.
 
-Let's try creating tender with more data, passing the `procuringEntity` of a tender:
+The previous tender contained only required fields. Let's try creating tender with more data 
+(tender has status `created`):
 
 .. include:: tutorial/create-tender-procuringEntity.http
    :code:
