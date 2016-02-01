@@ -6,6 +6,7 @@ Response: 200 OK
 Content-Type: application/json; charset=UTF-8
 {
   "data": {
+    "date": "2016-02-01T12:18:04.829937+02:00", 
     "documents": [
       {
         "title": "Proposal.pdf", 
@@ -17,6 +18,7 @@ Content-Type: application/json; charset=UTF-8
         "dateModified": "2016-02-01T12:18:04.945991+02:00"
       }
     ], 
+    "id": "d60d4e2df9cb4c16b6832b4a8510b18e", 
     "value": {
       "currency": "UAH", 
       "amount": 500.0, 
@@ -43,10 +45,7 @@ Content-Type: application/json; charset=UTF-8
           "locality": "м. Вінниця"
         }
       }
-    ], 
-    "date": "2016-02-01T12:18:04.829937+02:00", 
-    "id": "d60d4e2df9cb4c16b6832b4a8510b18e", 
-    "participationUrl": "http://auction-sandbox.openprocurement.org/tenders/967afe7b23914929a9be803df29381ef?key_for_bid=d60d4e2df9cb4c16b6832b4a8510b18e"
+    ]
   }
 }
 
