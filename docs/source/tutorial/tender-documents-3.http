@@ -1,28 +1,29 @@
-$ http https://api-sandbox.openprocurement.org/api/0/tenders/327c00d16cff4c37be5bd4915cdff8a3/documents
-GET /api/0/tenders/327c00d16cff4c37be5bd4915cdff8a3/documents HTTP/1.1
+GET /api/0.12/tenders/967afe7b23914929a9be803df29381ef/documents HTTP/1.0
+Authorization: Basic YnJva2VyOg==
+Host: api-sandbox.openprocurement.org
 
-
-
-HTTP/1.1 200 OK
+Response: 200 OK
 Content-Type: application/json; charset=UTF-8
-
 {
-    "data": [
-        {
-            "dateModified": "2014-12-01T17:39:29.001262+02:00", 
-            "datePublished": "2014-12-01T17:39:29.001218+02:00", 
-            "format": "text/plain", 
-            "id": "86b33019f2174f37b5d715c924ae6cd4", 
-            "title": "Notice.pdf", 
-            "url": "http://api-sandbox.openprocurement.org/api/0/tenders/327c00d16cff4c37be5bd4915cdff8a3/documents/86b33019f2174f37b5d715c924ae6cd4?download=d0267f352f384acca5081a04347fd64d"
-        }, 
-        {
-            "dateModified": "2014-12-01T17:39:33.717002+02:00", 
-            "datePublished": "2014-12-01T17:39:31.443089+02:00", 
-            "format": "text/plain", 
-            "id": "4b65c046be264da4a430823d4376a757", 
-            "title": "AwardCriteria-v2.pdf", 
-            "url": "http://api-sandbox.openprocurement.org/api/0/tenders/327c00d16cff4c37be5bd4915cdff8a3/documents/4b65c046be264da4a430823d4376a757?download=e8300d4763ff4968aef4c71b4e15a297"
-        }
-    ]
+  "data": [
+    {
+      "title": "Notice.pdf", 
+      "url": "http://api-sandbox.openprocurement.org/api/0.12/tenders/967afe7b23914929a9be803df29381ef/documents/29f3c1a2b049462d9be4ec8a9bcee6fe?download=f70e2d4f5eff4b6f990f2e91073acc58", 
+      "format": "application/pdf", 
+      "documentOf": "tender", 
+      "datePublished": "2016-02-01T12:18:03.767900+02:00", 
+      "id": "29f3c1a2b049462d9be4ec8a9bcee6fe", 
+      "dateModified": "2016-02-01T12:18:03.767943+02:00"
+    }, 
+    {
+      "title": "AwardCriteria-2.pdf", 
+      "url": "http://api-sandbox.openprocurement.org/api/0.12/tenders/967afe7b23914929a9be803df29381ef/documents/f6e58f2698ec4c04a5b8cec403fac1cb?download=f5627131e862443e87626c9159a3a515", 
+      "format": "application/pdf", 
+      "documentOf": "tender", 
+      "datePublished": "2016-02-01T12:18:03.937206+02:00", 
+      "id": "f6e58f2698ec4c04a5b8cec403fac1cb", 
+      "dateModified": "2016-02-01T12:18:04.109589+02:00"
+    }
+  ]
 }
+
