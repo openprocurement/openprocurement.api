@@ -4,8 +4,10 @@ Content-Length: 4
 Content-Type: application/json
 Host: api-sandbox.openprocurement.org
 
-Response: 422 Unprocessable Entity
+
+422 Unprocessable Entity
 Content-Type: application/json; charset=UTF-8
+
 {
   "status": "error", 
   "errors": [

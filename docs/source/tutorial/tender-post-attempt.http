@@ -4,8 +4,10 @@ Content-Length: 4
 Content-Type: application/x-www-form-urlencoded
 Host: api-sandbox.openprocurement.org
 
-Response: 415 Unsupported Media Type
+
+415 Unsupported Media Type
 Content-Type: application/json; charset=UTF-8
+
 {
   "status": "error", 
   "errors": [
