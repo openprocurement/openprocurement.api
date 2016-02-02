@@ -96,6 +96,8 @@ class TenderAwardContractResource(object):
         apply_patch(self.request, save=False, src=self.request.context.serialize())
         if self.request.context.status == 'active' and self.request.validated['tender_status'] != 'complete':
             self.request.validated['tender'].status = 'complete'
+        if self.request.context.status == 'active' and not self.request.context.dateSigned:
+            self.request.context.dateSigned = get_now()
         if save_tender(self.request):
             LOGGER.info('Updated tender award contract {}'.format(self.request.context.id), extra={'MESSAGE_ID': 'tender_award_contract_patch'})
             return {'data': self.request.context.serialize()}

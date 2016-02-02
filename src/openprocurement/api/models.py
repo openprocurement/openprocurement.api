@@ -391,7 +391,7 @@ class Contract(Model):
         serialize_when_none = False
         roles = {
             'create': blacklist('id', 'status', 'documents', 'dateSigned'),
-            'edit': blacklist('id', 'documents'),
+            'edit': blacklist('id', 'documents', 'dateSigned'),
             'embedded': schematics_embedded_role,
             'view': schematics_default_role,
         }
