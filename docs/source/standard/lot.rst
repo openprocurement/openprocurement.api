@@ -52,9 +52,9 @@ Schema
    string
 
    :`active`:
-       Enquiries period (enquiries)
+       Active tender lot (active)
    :`unsuccessful`:
-       Unsuccessful tender (unsuccessful)
+       Unsuccessful tender lot (unsuccessful)
    :`complete`:
        Complete tender lot (complete)
    :`cancelled`:

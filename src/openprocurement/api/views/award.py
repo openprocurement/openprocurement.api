@@ -347,5 +347,5 @@ class TenderAwardResource(object):
             return
         if save_tender(self.request):
             LOGGER.info('Updated tender award {}'.format(self.request.context.id),
-                        extra=context_unpack(self.request, {'MESSAGE_ID': 'tender_award_patch'}, {'TENDER_REV': tender.rev}))
+                        extra=context_unpack(self.request, {'MESSAGE_ID': 'tender_award_patch'}))
             return {'data': award.serialize("view")}
