@@ -48,7 +48,7 @@ class TenderAwardContractDocumentResource(object):
     def collection_post(self):
         """Tender Award Contract Document Upload
         """
-        if self.request.validated['tender_status'] not in ['active.awarded', 'complete']:
+        if self.request.validated['tender_status'] not in ['active.awarded']:
             self.request.errors.add('body', 'data', 'Can\'t add document in current ({}) tender status'.format(self.request.validated['tender_status']))
             self.request.errors.status = 403
             return
@@ -84,7 +84,7 @@ class TenderAwardContractDocumentResource(object):
     @view(renderer='json', validators=(validate_file_update,), permission='edit_tender')
     def put(self):
         """Tender Award Contract Document Update"""
-        if self.request.validated['tender_status'] not in ['active.awarded', 'complete']:
+        if self.request.validated['tender_status'] not in ['active.awarded']:
             self.request.errors.add('body', 'data', 'Can\'t update document in current ({}) tender status'.format(self.request.validated['tender_status']))
             self.request.errors.status = 403
             return
@@ -102,7 +102,7 @@ class TenderAwardContractDocumentResource(object):
     @view(content_type="application/json", renderer='json', validators=(validate_patch_document_data,), permission='edit_tender')
     def patch(self):
         """Tender Award Contract Document Update"""
-        if self.request.validated['tender_status'] not in ['active.awarded', 'complete']:
+        if self.request.validated['tender_status'] not in ['active.awarded']:
             self.request.errors.add('body', 'data', 'Can\'t update document in current ({}) tender status'.format(self.request.validated['tender_status']))
             self.request.errors.status = 403
             return
