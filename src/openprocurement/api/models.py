@@ -586,7 +586,7 @@ class Contract(Model):
     class Options:
         roles = {
             'create': blacklist('id', 'status', 'documents', 'dateSigned'),
-            'edit': blacklist('id', 'documents'),
+            'edit': blacklist('id', 'documents', 'dateSigned'),
             'embedded': schematics_embedded_role,
             'view': schematics_default_role,
         }
