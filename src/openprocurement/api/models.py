@@ -184,6 +184,17 @@ class Period(Model):
             raise ValidationError(u"period should begin before its end")
 
 
+class AuctionPeriod(Period):
+    """The auction period."""
+
+    @serializable
+    def shouldBeginAfter(self):
+        if not self.endDate:
+            tender = get_tender(self)
+            if tender.status in ['active.tendering', 'active.auction']:
+                return tender.tenderPeriod.endDate.isoformat()
+
+
 class PeriodEndRequired(Period):
     endDate = IsoDateTimeType(required=True)  # The end date for the period.
 
@@ -785,7 +796,7 @@ class Lot(Model):
     description_ru = StringType()
     value = ModelType(Value, required=True)
     minimalStep = ModelType(Value, required=True)
-    auctionPeriod = ModelType(Period)
+    auctionPeriod = ModelType(AuctionPeriod)
     auctionUrl = URLType()
     status = StringType(choices=['active', 'cancelled', 'unsuccessful', 'complete'], default='active')
 
@@ -940,7 +951,7 @@ class Tender(SchematicsDocument, Model):
     awards = ListType(ModelType(Award), default=list())
     contracts = ListType(ModelType(Contract), default=list())
     revisions = ListType(ModelType(Revision), default=list())
-    auctionPeriod = ModelType(Period)
+    auctionPeriod = ModelType(AuctionPeriod)
     minimalStep = ModelType(Value, required=True)
     status = StringType(choices=['active.enquiries', 'active.tendering', 'active.auction', 'active.qualification', 'active.awarded', 'complete', 'cancelled', 'unsuccessful'], default='active.enquiries')
     questions = ListType(ModelType(Question), default=list())

@@ -121,7 +121,7 @@ class TenderAuctionPeriodResourceTest(BaseTenderWebTest):
 
         response = self.app.patch_json('/tenders/{}'.format(self.tender_id), {'data': {"auctionPeriod": {"startDate": None}}})
         self.assertEqual(response.status, '200 OK')
-        self.assertNotIn('auctionPeriod', response.json['data'])
+        self.assertNotIn('startDate', response.json['data']['auctionPeriod'])
 
 
 class TenderLotAuctionPeriodResourceTest(BaseTenderWebTest):
@@ -136,7 +136,7 @@ class TenderLotAuctionPeriodResourceTest(BaseTenderWebTest):
 
         response = self.app.patch_json('/tenders/{}'.format(self.tender_id), {'data': {"lots": [{"auctionPeriod": {"startDate": None}}]}})
         self.assertEqual(response.status, '200 OK')
-        self.assertNotIn('auctionPeriod', response.json['data']["lots"][0])
+        self.assertNotIn('startDate', response.json['data']["lots"][0]['auctionPeriod'])
 
 
 class TenderComplaintSwitchResourceTest(BaseTenderWebTest):
