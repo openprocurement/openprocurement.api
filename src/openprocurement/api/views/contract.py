@@ -33,7 +33,7 @@ class TenderAwardContractResource(object):
         """Post a contract for award
         """
         tender = self.request.validated['tender']
-        if tender.status not in ['active.qualification', 'active.awarded', 'complete']:
+        if tender.status not in ['active.qualification', 'active.awarded']:
             self.request.errors.add('body', 'data', 'Can\'t add contract in current ({}) tender status'.format(tender.status))
             self.request.errors.status = 403
             return
@@ -62,7 +62,7 @@ class TenderAwardContractResource(object):
     def patch(self):
         """Update of contract
         """
-        if self.request.validated['tender_status'] not in ['active.qualification', 'active.awarded', 'complete']:
+        if self.request.validated['tender_status'] not in ['active.qualification', 'active.awarded']:
             self.request.errors.add('body', 'data', 'Can\'t update contract in current ({}) tender status'.format(self.request.validated['tender_status']))
             self.request.errors.status = 403
             return
@@ -100,6 +100,8 @@ class TenderAwardContractResource(object):
             self.request.errors.add('body', 'data', 'Can\'t update contract status')
             self.request.errors.status = 403
             return
+        if self.request.context.status == 'active' and not self.request.context.dateSigned:
+            self.request.context.dateSigned = get_now()
         check_tender_status(self.request)
         if save_tender(self.request):
             LOGGER.info('Updated tender contract {}'.format(self.request.context.id),
