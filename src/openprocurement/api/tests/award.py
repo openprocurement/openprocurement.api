@@ -944,6 +944,33 @@ class TenderAwardContractResourceTest(BaseTenderWebTest):
         self.assertEqual(response.content_type, 'application/json')
         self.assertEqual(response.json['errors'][0]["description"], "Can't update contract in current (unsuccessful) tender status")
 
+    def test_create_tender_award_contract_in_complete_status(self):
+        response = self.app.post_json('/tenders/{}/awards/{}/contracts'.format(
+            self.tender_id, self.award_id), {'data': {'title': 'contract title', 'description': 'contract description', 'awardID': self.award_id}})
+        self.assertEqual(response.status, '201 Created')
+        self.assertEqual(response.content_type, 'application/json')
+        contract = response.json['data']
+        self.assertIn('id', contract)
+        self.assertIn(contract['id'], response.headers['Location'])
+
+        response = self.app.patch_json('/tenders/{}/awards/{}/contracts/{}'.format(self.tender_id, self.award_id, contract['id']), {"data": {"status": "terminated"}})
+        self.assertEqual(response.status, '200 OK')
+        self.assertEqual(response.content_type, 'application/json')
+        self.assertEqual(response.json['data']["status"], "terminated")
+
+        self.set_status('complete')
+
+        response = self.app.post_json('/tenders/{}/awards/{}/contracts'.format(
+            self.tender_id, self.award_id), {'data': {'title': 'contract title', 'description': 'contract description', 'awardID': self.award_id}}, status=403)
+        self.assertEqual(response.status, '403 Forbidden')
+        self.assertEqual(response.content_type, 'application/json')
+        self.assertEqual(response.json['errors'][0]["description"], "Can't add contract in current (complete) tender status")
+
+        response = self.app.patch_json('/tenders/{}/awards/{}/contracts/{}'.format(self.tender_id, self.award_id, contract['id']), {"data": {"status": "active"}}, status=403)
+        self.assertEqual(response.status, '403 Forbidden')
+        self.assertEqual(response.content_type, 'application/json')
+        self.assertEqual(response.json['errors'][0]["description"], "Can't update contract in current (complete) tender status")
+
     def test_patch_tender_award_contract(self):
         response = self.app.post_json('/tenders/{}/awards/{}/contracts'.format(
             self.tender_id, self.award_id), {'data': {'title': 'contract title', 'description': 'contract description', 'awardID': self.award_id}})
@@ -984,7 +1011,7 @@ class TenderAwardContractResourceTest(BaseTenderWebTest):
         response = self.app.patch_json('/tenders/{}/awards/{}/contracts/{}'.format(self.tender_id, self.award_id, contract['id']), {"data": {"status": "active"}}, status=403)
         self.assertEqual(response.status, '403 Forbidden')
         self.assertEqual(response.content_type, 'application/json')
-        self.assertEqual(response.json['errors'][0]["description"], "Can't update contract status")
+        self.assertEqual(response.json['errors'][0]["description"], "Can't update contract in current (complete) tender status")
 
         response = self.app.patch_json('/tenders/{}/awards/{}/contracts/some_id'.format(self.tender_id, self.award_id), {"data": {"status": "active"}}, status=404)
         self.assertEqual(response.status, '404 Not Found')
