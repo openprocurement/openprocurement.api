@@ -18,6 +18,8 @@ from zope.interface import implementer, Interface
 
 STAND_STILL_TIME = timedelta(days=1)
 COMPLAINT_STAND_STILL_TIME = timedelta(days=3)
+BIDDER_TIME = timedelta(minutes=6)
+SERVICE_TIME = timedelta(minutes=9)
 schematics_embedded_role = SchematicsDocument.Options.roles['embedded'] + blacklist("__parent__")
 schematics_default_role = SchematicsDocument.Options.roles['default'] + blacklist("__parent__")
 
@@ -189,10 +191,15 @@ class AuctionPeriod(Period):
 
     @serializable
     def shouldBeginAfter(self):
-        if not self.endDate:
-            tender = get_tender(self)
-            if tender.status in ['active.tendering', 'active.auction']:
-                return tender.tenderPeriod.endDate.isoformat()
+        if self.endDate:
+            return
+        tender = get_tender(self)
+        if tender.status not in ['active.tendering', 'active.auction']:
+            return
+        if self.startDate and get_now() > self.startDate + self.__parent__.numberOfBids * BIDDER_TIME + SERVICE_TIME + timedelta(minutes=15):
+            return (self.startDate + self.__parent__.numberOfBids * BIDDER_TIME + SERVICE_TIME + timedelta(minutes=15)).isoformat()
+        else:
+            return tender.tenderPeriod.endDate.isoformat()
 
 
 class PeriodEndRequired(Period):
@@ -1015,6 +1022,21 @@ class Tender(SchematicsDocument, Model):
             checks.append(self.enquiryPeriod.endDate.astimezone(TZ))
         elif self.status == 'active.tendering' and self.tenderPeriod.endDate:
             checks.append(self.tenderPeriod.endDate.astimezone(TZ))
+        elif not self.lots and self.status == 'active.auction':
+            if now < self.auctionPeriod.startDate:
+                checks.append(self.auctionPeriod.startDate.astimezone(TZ))
+            else:
+                end = self.auctionPeriod.startDate + self.numberOfBids * BIDDER_TIME + SERVICE_TIME + timedelta(minutes=15)
+                checks.append(end.astimezone(TZ))
+        elif self.lots and self.status == 'active.auction':
+            for lot in self.lots:
+                if lot.status != 'active':
+                    continue
+                if now < lot.auctionPeriod.startDate:
+                    checks.append(lot.auctionPeriod.startDate.astimezone(TZ))
+                else:
+                    end = lot.auctionPeriod.startDate + lot.numberOfBids * BIDDER_TIME + SERVICE_TIME + timedelta(minutes=15)
+                    checks.append(end.astimezone(TZ))
         elif not self.lots and self.status == 'active.awarded':
             standStillEnds = [
                 a.complaintPeriod.endDate.astimezone(TZ)
