@@ -1022,7 +1022,7 @@ class Tender(SchematicsDocument, Model):
             checks.append(self.enquiryPeriod.endDate.astimezone(TZ))
         elif self.status == 'active.tendering' and self.tenderPeriod.endDate:
             checks.append(self.tenderPeriod.endDate.astimezone(TZ))
-        elif not self.lots and self.status == 'active.auction':
+        elif not self.lots and self.status == 'active.auction' and self.auctionPeriod and self.auctionPeriod.startDate:
             if now < self.auctionPeriod.startDate:
                 checks.append(self.auctionPeriod.startDate.astimezone(TZ))
             else:
@@ -1030,7 +1030,7 @@ class Tender(SchematicsDocument, Model):
                 checks.append(end.astimezone(TZ))
         elif self.lots and self.status == 'active.auction':
             for lot in self.lots:
-                if lot.status != 'active':
+                if lot.status != 'active' or not lot.auctionPeriod or not lot.auctionPeriod.startDate:
                     continue
                 if now < lot.auctionPeriod.startDate:
                     checks.append(lot.auctionPeriod.startDate.astimezone(TZ))
