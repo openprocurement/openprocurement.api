@@ -1,4 +1,4 @@
-PATCH /api/0.12/tenders/4c3073e871e148c693dd8f2c3a884f28/awards/73ab87b42933476283469fe51708883d/complaints/8073c1842a46459685a59651d51713b1 HTTP/1.0
+PATCH /api/0.12/tenders/19f8441bc1a947358ef9ef597b99b843/awards/d297a0e7595f4ff48f4ead1ffbba68bb/complaints/1579ce14764642e1aa8a643e207ff296 HTTP/1.0
 Authorization: Basic cmV2aWV3ZXI6
 Content-Length: 32
 Content-Type: application/json
@@ -17,7 +17,7 @@ Content-Type: application/json; charset=UTF-8
 {
   "data": {
     "status": "declined", 
-    "dateDecision": "2016-02-01T14:20:39.881794+02:00", 
+    "dateDecision": "2016-02-04T16:00:49.871490+02:00", 
     "description": "complaint description", 
     "title": "complaint title", 
     "resolutionType": "resolved", 
@@ -42,12 +42,12 @@ Content-Type: application/json; charset=UTF-8
       }
     }, 
     "satisfied": false, 
-    "dateEscalated": "2016-02-01T14:20:39.271523+02:00", 
-    "dateAnswered": "2016-02-01T14:20:39.110599+02:00", 
-    "dateSubmitted": "2016-02-01T14:20:38.945824+02:00", 
-    "date": "2016-02-01T14:20:38.944464+02:00", 
+    "dateEscalated": "2016-02-04T16:00:49.308947+02:00", 
+    "dateAnswered": "2016-02-04T16:00:49.115760+02:00", 
+    "dateSubmitted": "2016-02-04T16:00:48.924390+02:00", 
+    "date": "2016-02-04T16:00:48.919807+02:00", 
     "resolution": "Виправлено", 
-    "id": "8073c1842a46459685a59651d51713b1"
+    "id": "1579ce14764642e1aa8a643e207ff296"
   }
 }
 
