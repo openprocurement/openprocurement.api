@@ -370,6 +370,16 @@ class TenderResourceTest(BaseTenderWebTest):
                 self.tender_id, doc_id))
             self.assertEqual(response.status, '200 OK')
 
+        with open('docs/source/tutorial/tender-document-add-documentType.http', 'w') as self.app.file_obj:
+            response = self.app.patch_json('/tenders/{}/documents/{}?acc_token={}'.format(
+                self.tender_id, doc_id, owner_token), {"data": {"documentType": "technicalSpecifications"}})
+            self.assertEqual(response.status, '200 OK')
+
+        with open('docs/source/tutorial/tender-document-edit-docType-desc.http', 'w') as self.app.file_obj:
+            response = self.app.patch_json('/tenders/{}/documents/{}?acc_token={}'.format(
+                self.tender_id, doc_id, owner_token), {"data": {"description": "document description modified"}})
+            self.assertEqual(response.status, '200 OK')
+
         with open('docs/source/tutorial/upload-award-criteria.http', 'w') as self.app.file_obj:
             response = self.app.post('/tenders/{}/documents?acc_token={}'.format(
                 self.tender_id, owner_token), upload_files=[('file', u'AwardCriteria.pdf', 'content')])
