@@ -1004,7 +1004,7 @@ class TenderProcessTest(BaseTenderWebTest):
         self.set_status('active.auction', {"auctionPeriod": {"startDate": None}, 'status': 'active.tendering'})
         self.app.authorization = ('Basic', ('chronograph', ''))
         response = self.app.patch_json('/tenders/{}'.format(tender_id), {"data": {"id": tender_id}})
-        self.assertNotIn('startDate', response.json['data']['auctionPeriod'])
+        self.assertNotIn("auctionPeriod", response.json['data'])
         # get awards
         self.app.authorization = ('Basic', ('broker', ''))
         response = self.app.get('/tenders/{}/awards?acc_token={}'.format(tender_id, owner_token))
