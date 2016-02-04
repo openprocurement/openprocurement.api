@@ -152,7 +152,8 @@ def main(global_config, **settings):
     config.registry.db = db
 
     # migrate data
-    migrate_data(config.registry.db)
+    if not os.environ.get('MIGRATION_SKIP'):
+        migrate_data(config.registry.db)
 
     # S3 connection
     if 'aws.access_key' in settings and 'aws.secret_key' in settings and 'aws.s3_bucket' in settings:
