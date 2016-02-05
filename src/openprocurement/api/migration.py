@@ -597,26 +597,24 @@ def from17to18(db):
 
 def from18to19(db):
 
-    def update_documents_type(item):
-        changed = False
+    def update_documents_type(item, changed):
         for document in item.get('documents', []):
             if document.get('documentType') == 'contractAnnexes':
                 document['documentType'] = 'contractAnnexe'
                 changed = True
         return changed
 
-    changed = False
-    results = db.view('tenders/all', include_docs=True)
+    results = db.iterview('tenders/all', 2**10, include_docs=True)
     for i in results:
         doc = i.doc
-        changed = update_documents_type(doc) or changed
+        changed = update_documents_type(doc, False)
         for item in ('bids', 'complaints', 'cancellations', 'contracts',
                      'awards'):
             for item_val in doc.get(item, []):
-                changed = update_documents_type(item_val) or changed
+                changed = update_documents_type(item_val, changed)
                 if item == 'awards':
                     for complaint in item_val.get('complaints', []):
-                        changed = update_documents_type(complaint) or changed
-    if changed:
-        doc['dateModified'] = get_now().isoformat()
-        db.save(doc)
+                        changed = update_documents_type(complaint, changed)
+        if changed:
+            doc['dateModified'] = get_now().isoformat()
+            db.save(doc)
