@@ -79,10 +79,14 @@ def upload_file(request):
         filename = first_document.title
         content_type = request.content_type
         in_file = request.body_file
-    document = type(request.tender).documents.model_class({
-        'title': filename,
-        'format': content_type
-    })
+
+    if hasattr(request.context, "documents"):
+        # upload new document
+        model = type(request.context).documents.model_class
+    else:
+        # update document
+        model = type(request.context)
+    document = model({'title': filename, 'format': content_type})
     document.__parent__ = request.context
     if 'document_id' in request.validated:
         document.id = request.validated['document_id']
