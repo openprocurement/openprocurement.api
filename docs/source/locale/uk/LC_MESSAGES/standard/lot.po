@@ -92,12 +92,12 @@ msgid "string"
 msgstr "рядок"
 
 #: ../../source/standard/lot.rst:55
-msgid "Enquiries period (enquiries)"
-msgstr "Період уточнень (уточнення)"
+msgid "Active tender lot (active)"
+msgstr "Активний лот закупівлі (активний)"
 
 #: ../../source/standard/lot.rst:57
-msgid "Unsuccessful tender (unsuccessful)"
-msgstr "Неуспішна закупівля (не відбулась)"
+msgid "Unsuccessful tender lot (unsuccessful)"
+msgstr "Неуспішний лот закупівлі (не відбувся)"
 
 #: ../../source/standard/lot.rst:59
 msgid "Complete tender lot (complete)"

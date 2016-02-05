@@ -1,0 +1,24 @@
+POST /api/0.12/tenders/081046e7e46a421696e00567725c24cc/complaints/0b102ca9562b47f6b25cd9655b187d77/documents HTTP/1.0
+Authorization: Basic cmV2aWV3ZXI6
+Content-Length: 199
+Content-Type: multipart/form-data; boundary=----------a_BoUnDaRy199421521799$
+Host: api-sandbox.openprocurement.org
+
+
+201 Created
+Content-Type: application/json; charset=UTF-8
+Location: http://api-sandbox.openprocurement.org/api/0.12/tenders/081046e7e46a421696e00567725c24cc/complaints/0b102ca9562b47f6b25cd9655b187d77/documents/58426ddf13b845ff9cbc8d1eac062004
+
+{
+  "data": {
+    "author": "reviewers", 
+    "title": "ComplaintResolution.pdf", 
+    "url": "http://api-sandbox.openprocurement.org/api/0.12/tenders/081046e7e46a421696e00567725c24cc/complaints/0b102ca9562b47f6b25cd9655b187d77/documents/58426ddf13b845ff9cbc8d1eac062004?download=a23b276261394a44bcc850a0c59e1da7", 
+    "format": "application/pdf", 
+    "documentOf": "tender", 
+    "datePublished": "2016-02-04T16:00:44.992301+02:00", 
+    "id": "58426ddf13b845ff9cbc8d1eac062004", 
+    "dateModified": "2016-02-04T16:00:44.992335+02:00"
+  }
+}
+

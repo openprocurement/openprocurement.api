@@ -1,0 +1,23 @@
+POST /api/0.12/tenders/524bbb240f56473d8fab351c739af804/cancellations/2bfdb528afad4dfbab484c50135ace0a/documents?acc_token=7ef98d7212014590bd1182a055c70209 HTTP/1.0
+Authorization: Basic dG9rZW46
+Content-Length: 186
+Content-Type: multipart/form-data; boundary=----------a_BoUnDaRy413045315684$
+Host: api-sandbox.openprocurement.org
+
+
+201 Created
+Content-Type: application/json; charset=UTF-8
+Location: http://api-sandbox.openprocurement.org/api/0.12/tenders/524bbb240f56473d8fab351c739af804/cancellations/2bfdb528afad4dfbab484c50135ace0a/documents/649336c0e9a74199946c8a4758d7b880
+
+{
+  "data": {
+    "title": "Notice.pdf", 
+    "url": "http://api-sandbox.openprocurement.org/api/0.12/tenders/524bbb240f56473d8fab351c739af804/cancellations/2bfdb528afad4dfbab484c50135ace0a/documents/649336c0e9a74199946c8a4758d7b880?download=6216b4a74ed94a7ca6f3f82d57c1b52a", 
+    "format": "application/pdf", 
+    "documentOf": "tender", 
+    "datePublished": "2016-02-04T16:00:54.785748+02:00", 
+    "id": "649336c0e9a74199946c8a4758d7b880", 
+    "dateModified": "2016-02-04T16:00:54.785782+02:00"
+  }
+}
+

@@ -1,73 +1,78 @@
-$ http -j POST https://api-sandbox.openprocurement.org/api/0/tenders/327c00d16cff4c37be5bd4915cdff8a3/bids data:=@./catering2-bid.json
-POST /api/0/tenders/327c00d16cff4c37be5bd4915cdff8a3/bids HTTP/1.1
-Content-Type: application/json; charset=utf-8
+POST /api/0.12/tenders/524bbb240f56473d8fab351c739af804/bids HTTP/1.0
+Authorization: Basic YnJva2VyOg==
+Content-Length: 704
+Content-Type: application/json
+Host: api-sandbox.openprocurement.org
 
 {
-    "data": {
-        "tenderers": [
-            {
-                "address": {
-                    "countryName": "Україна", 
-                    "locality": "м. Вінниця", 
-                    "postalCode": "21018", 
-                    "region": "м. Вінниця", 
-                    "streetAddress": "вул. Юності, 30"
-                }, 
-                "contactPoint": {
-                    "email": "alla.myhailova@i.ua", 
-                    "name": "Алла Михайлова", 
-                    "telephone": "+380 (432) 460-665"
-                }, 
-                "identifier": {
-                    "id": "13306232", 
-                    "legalName": "Державне комунальне підприємство громадського харчування «Меридіан»", 
-                    "scheme": "https://ns.openprocurement.org/ua/edrpou", 
-                    "uri": "http://sch10.edu.vn.ua/"
-                }, 
-                "name": "ДКП «Меридіан»"
-            }
-        ], 
-        "value": {
-            "amount": 480000
+  "data": {
+    "value": {
+      "amount": 499
+    }, 
+    "tenderers": [
+      {
+        "contactPoint": {
+          "telephone": "+380 (322) 91-69-30", 
+          "name": "Андрій Олексюк", 
+          "email": "aagt@gmail.com"
+        }, 
+        "identifier": {
+          "scheme": "UA-EDR", 
+          "id": "00137226", 
+          "uri": "http://www.sc.gov.ua/"
+        }, 
+        "name": "ДКП «Книга»", 
+        "address": {
+          "countryName": "Україна", 
+          "postalCode": "79013", 
+          "region": "м. Львів", 
+          "streetAddress": "вул. Островського, 34", 
+          "locality": "м. Львів"
         }
-    }
+      }
+    ]
+  }
 }
 
-HTTP/1.1 201 Created
+
+201 Created
 Content-Type: application/json; charset=UTF-8
-Location: http://api-sandbox.openprocurement.org/api/0/tenders/327c00d16cff4c37be5bd4915cdff8a3/bids/007f0144404c47829ba5b0a5eb9b9f17
+Location: http://api-sandbox.openprocurement.org/api/0.12/tenders/524bbb240f56473d8fab351c739af804/bids/a376908096044a7395edb5c9fc043c9d
 
 {
-    "data": {
-        "date": "2014-12-01T17:39:42.828066+02:00", 
-        "id": "007f0144404c47829ba5b0a5eb9b9f17", 
-        "tenderers": [
-            {
-                "address": {
-                    "countryName": "Україна", 
-                    "locality": "м. Вінниця", 
-                    "postalCode": "21018", 
-                    "region": "м. Вінниця", 
-                    "streetAddress": "вул. Юності, 30"
-                }, 
-                "contactPoint": {
-                    "email": "alla.myhailova@i.ua", 
-                    "name": "Алла Михайлова", 
-                    "telephone": "+380 (432) 460-665"
-                }, 
-                "identifier": {
-                    "id": "13306232", 
-                    "legalName": "Державне комунальне підприємство громадського харчування «Меридіан»", 
-                    "scheme": "https://ns.openprocurement.org/ua/edrpou", 
-                    "uri": "http://sch10.edu.vn.ua/"
-                }, 
-                "name": "ДКП «Меридіан»"
-            }
-        ], 
-        "value": {
-            "amount": 480000.0, 
-            "currency": "UAH", 
-            "valueAddedTaxIncluded": true
+  "access": {
+    "token": "db936364bbd4404fa8c39099c5d5da92"
+  }, 
+  "data": {
+    "date": "2016-02-04T16:00:53.505735+02:00", 
+    "id": "a376908096044a7395edb5c9fc043c9d", 
+    "value": {
+      "currency": "UAH", 
+      "amount": 499.0, 
+      "valueAddedTaxIncluded": true
+    }, 
+    "tenderers": [
+      {
+        "contactPoint": {
+          "email": "aagt@gmail.com", 
+          "telephone": "+380 (322) 91-69-30", 
+          "name": "Андрій Олексюк"
+        }, 
+        "identifier": {
+          "scheme": "UA-EDR", 
+          "id": "00137226", 
+          "uri": "http://www.sc.gov.ua/"
+        }, 
+        "name": "ДКП «Книга»", 
+        "address": {
+          "postalCode": "79013", 
+          "countryName": "Україна", 
+          "streetAddress": "вул. Островського, 34", 
+          "region": "м. Львів", 
+          "locality": "м. Львів"
         }
-    }
+      }
+    ]
+  }
 }
+

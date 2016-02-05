@@ -59,6 +59,10 @@ maillist.
 General information, roadmap, and technical specifications for the 
 Open Procurement project can be found at `openprocurement.org <http://openprocurement.org/en>`_.
 
+Information on work with Negotiation procurement procedure is in this `tutorial <http://limited.api-docs.openprocurement.org/en/latest/>`_.
+
+Instructions for the Open Procurement Open UA procedure can be found in this `documentation <http://openua.api-docs.openprocurement.org/en/latest/overview.html>`_.
+
 API stability
 -------------
 API is highly unstable, and while API endpoints are expected to remain

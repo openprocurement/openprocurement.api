@@ -1,0 +1,64 @@
+PATCH /api/0.12/tenders/081046e7e46a421696e00567725c24cc/complaints/564cb8507b3a417caa095cffead8e3e0?acc_token=dd0f9edf6cf5485ba1548d9aae000c4a HTTP/1.0
+Authorization: Basic YnJva2VyOg==
+Content-Length: 140
+Content-Type: application/json
+Host: api-sandbox.openprocurement.org
+
+{
+  "data": {
+    "status": "answered", 
+    "resolutionType": "resolved", 
+    "resolution": "Виправлено"
+  }
+}
+
+
+200 OK
+Content-Type: application/json; charset=UTF-8
+
+{
+  "data": {
+    "status": "answered", 
+    "documents": [
+      {
+        "author": "complaint_owner", 
+        "title": "Complaint_Attachement.pdf", 
+        "url": "http://api-sandbox.openprocurement.org/api/0.12/tenders/081046e7e46a421696e00567725c24cc/complaints/564cb8507b3a417caa095cffead8e3e0/documents/7296af5a82c34e3e9e196ed2582907ef?download=db7cc44a43c94816ad92a4ecf5a50277", 
+        "format": "application/pdf", 
+        "documentOf": "tender", 
+        "datePublished": "2016-02-04T16:00:42.841327+02:00", 
+        "id": "7296af5a82c34e3e9e196ed2582907ef", 
+        "dateModified": "2016-02-04T16:00:42.841367+02:00"
+      }
+    ], 
+    "description": "complaint description", 
+    "author": {
+      "contactPoint": {
+        "name": "Державне управління справами", 
+        "telephone": "0440000000"
+      }, 
+      "identifier": {
+        "scheme": "UA-EDR", 
+        "id": "00037256", 
+        "uri": "http://www.dus.gov.ua/"
+      }, 
+      "name": "Державне управління справами", 
+      "address": {
+        "postalCode": "01220", 
+        "countryName": "Україна", 
+        "streetAddress": "вул. Банкова, 11, корпус 1", 
+        "region": "м. Київ", 
+        "locality": "м. Київ"
+      }
+    }, 
+    "resolutionType": "resolved", 
+    "type": "claim", 
+    "title": "complaint title", 
+    "dateAnswered": "2016-02-04T16:00:43.281744+02:00", 
+    "dateSubmitted": "2016-02-04T16:00:42.968008+02:00", 
+    "date": "2016-02-04T16:00:42.570101+02:00", 
+    "resolution": "Виправлено", 
+    "id": "564cb8507b3a417caa095cffead8e3e0"
+  }
+}
+

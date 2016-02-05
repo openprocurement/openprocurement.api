@@ -1,0 +1,70 @@
+POST /api/0.12/tenders/19f8441bc1a947358ef9ef597b99b843/awards/d297a0e7595f4ff48f4ead1ffbba68bb/complaints?acc_token=c9dd38c9a7ce49239a5700b080c7e099 HTTP/1.0
+Authorization: Basic YnJva2VyOg==
+Content-Length: 880
+Content-Type: application/json
+Host: api-sandbox.openprocurement.org
+
+{
+  "data": {
+    "title": "complaint title", 
+    "description": "complaint description", 
+    "author": {
+      "contactPoint": {
+        "name": "Державне управління справами", 
+        "telephone": "0440000000"
+      }, 
+      "identifier": {
+        "scheme": "UA-EDR", 
+        "id": "00037256", 
+        "uri": "http://www.dus.gov.ua/"
+      }, 
+      "name": "Державне управління справами", 
+      "address": {
+        "countryName": "Україна", 
+        "postalCode": "01220", 
+        "region": "м. Київ", 
+        "streetAddress": "вул. Банкова, 11, корпус 1", 
+        "locality": "м. Київ"
+      }
+    }
+  }
+}
+
+
+201 Created
+Content-Type: application/json; charset=UTF-8
+Location: http://api-sandbox.openprocurement.org/api/0.12/tenders/19f8441bc1a947358ef9ef597b99b843/awards/d297a0e7595f4ff48f4ead1ffbba68bb/complaints/6712ac1209164772b061646c2a6d2f07
+
+{
+  "access": {
+    "token": "19cd570793dc42d78b1c23152e56850e"
+  }, 
+  "data": {
+    "status": "draft", 
+    "description": "complaint description", 
+    "author": {
+      "contactPoint": {
+        "name": "Державне управління справами", 
+        "telephone": "0440000000"
+      }, 
+      "identifier": {
+        "scheme": "UA-EDR", 
+        "id": "00037256", 
+        "uri": "http://www.dus.gov.ua/"
+      }, 
+      "name": "Державне управління справами", 
+      "address": {
+        "postalCode": "01220", 
+        "countryName": "Україна", 
+        "streetAddress": "вул. Банкова, 11, корпус 1", 
+        "region": "м. Київ", 
+        "locality": "м. Київ"
+      }
+    }, 
+    "title": "complaint title", 
+    "date": "2016-02-04T16:00:46.918522+02:00", 
+    "type": "claim", 
+    "id": "6712ac1209164772b061646c2a6d2f07"
+  }
+}
+

@@ -1,0 +1,65 @@
+PATCH /api/0.12/tenders/19f8441bc1a947358ef9ef597b99b843/awards/d297a0e7595f4ff48f4ead1ffbba68bb/complaints/aa7d979fde7a4214aa35983153598fa7 HTTP/1.0
+Authorization: Basic cmV2aWV3ZXI6
+Content-Length: 32
+Content-Type: application/json
+Host: api-sandbox.openprocurement.org
+
+{
+  "data": {
+    "status": "resolved"
+  }
+}
+
+
+200 OK
+Content-Type: application/json; charset=UTF-8
+
+{
+  "data": {
+    "status": "resolved", 
+    "dateDecision": "2016-02-04T16:00:49.676256+02:00", 
+    "documents": [
+      {
+        "author": "reviewers", 
+        "title": "ComplaintResolution.pdf", 
+        "url": "http://api-sandbox.openprocurement.org/api/0.12/tenders/19f8441bc1a947358ef9ef597b99b843/awards/d297a0e7595f4ff48f4ead1ffbba68bb/complaints/aa7d979fde7a4214aa35983153598fa7/documents/b60e69d49ce34dfb99d9677663bb22f4?download=d0a7876afa4246f2904b5e0b812dc534", 
+        "format": "application/pdf", 
+        "documentOf": "tender", 
+        "datePublished": "2016-02-04T16:00:49.483284+02:00", 
+        "id": "b60e69d49ce34dfb99d9677663bb22f4", 
+        "dateModified": "2016-02-04T16:00:49.483321+02:00"
+      }
+    ], 
+    "description": "complaint description", 
+    "author": {
+      "contactPoint": {
+        "name": "Державне управління справами", 
+        "telephone": "0440000000"
+      }, 
+      "identifier": {
+        "scheme": "UA-EDR", 
+        "id": "00037256", 
+        "uri": "http://www.dus.gov.ua/"
+      }, 
+      "name": "Державне управління справами", 
+      "address": {
+        "postalCode": "01220", 
+        "countryName": "Україна", 
+        "streetAddress": "вул. Банкова, 11, корпус 1", 
+        "region": "м. Київ", 
+        "locality": "м. Київ"
+      }
+    }, 
+    "resolutionType": "resolved", 
+    "type": "claim", 
+    "title": "complaint title", 
+    "satisfied": false, 
+    "dateEscalated": "2016-02-04T16:00:48.761851+02:00", 
+    "dateAnswered": "2016-02-04T16:00:48.596220+02:00", 
+    "dateSubmitted": "2016-02-04T16:00:48.437319+02:00", 
+    "date": "2016-02-04T16:00:48.435907+02:00", 
+    "resolution": "Виправлено", 
+    "id": "aa7d979fde7a4214aa35983153598fa7"
+  }
+}
+

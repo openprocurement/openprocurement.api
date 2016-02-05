@@ -3,30 +3,32 @@
 Claim Submission
 ================
 
-If tender conditions are favoriting only one provider, or in any other viable case, one can submit Tender Award Claim.
+If tender conditions are favoriting only one supplier, or in any other viable case, one can submit Tender Award Claim.
 
 Tender Award Claim Submission (with documents)
 ---------------------------------------------------
 
-At first create a claim:
+At first create a complaint. Send POST request with bidder's access token.
 
-.. include:: tutorial/award-complaint-submission.http
+.. include:: complaints/award-complaint-submission.http
    :code:
 
 Then upload necessary documents:
-   
-.. include:: tutorial/award-complaint-submission-upload.http
+
+.. include:: complaints/award-complaint-submission-upload.http
    :code:
 
 Submit tender conditions claim:
-   
-.. include:: tutorial/award-complaint-claim.http
+
+.. include:: complaints/award-complaint-claim.http
    :code:
 
 Tender Award Claim Submission (without documents)
 ------------------------------------------------------
 
-.. include:: tutorial/award-complaint-submission-claim.http
+You can submit claim that does not need additional documents:
+
+.. include:: complaints/award-complaint-submission-claim.http
    :code:
 
 Tender Award Claim/Complaint Retrieval
@@ -34,12 +36,12 @@ Tender Award Claim/Complaint Retrieval
 
 You can list all Tender Award Claims/Complaints:
 
-.. include:: tutorial/award-complaints-list.http
+.. include:: complaints/award-complaints-list.http
    :code:
 
 And check individual complaint or claim:
 
-.. include:: tutorial/award-complaint.http
+.. include:: complaints/award-complaint.http
    :code:
 
 
@@ -49,7 +51,7 @@ Claim's Answer
 Answer to resolved claim
 ------------------------
 
-.. include:: tutorial/award-complaint-answer.http
+.. include:: complaints/award-complaint-answer.http
    :code:
 
 
@@ -59,14 +61,14 @@ Satisfied Claim
 Satisfying resolution
 ---------------------
 
-.. include:: tutorial/award-complaint-satisfy.http
+.. include:: complaints/award-complaint-satisfy.http
    :code:
 
 
 Escalate claim to complaint
 ---------------------------
 
-.. include:: tutorial/award-complaint-escalate.http
+.. include:: complaints/award-complaint-escalate.http
    :code:
 
 
@@ -76,7 +78,7 @@ Complaint Resolution
 Rejecting Tender Award Complaint
 -------------------------------------
 
-.. include:: tutorial/award-complaint-reject.http
+.. include:: complaints/award-complaint-reject.http
    :code:
 
 
@@ -85,16 +87,15 @@ Submitting Tender Award Complaint Resolution
 
 The Complaint Review Body uploads the resolution document:
 
-.. include:: tutorial/award-complaint-resolution-upload.http
+.. include:: complaints/award-complaint-resolution-upload.http
    :code:
 
 And either resolves complaint:
 
-.. include:: tutorial/award-complaint-resolve.http
+.. include:: complaints/award-complaint-resolve.http
    :code:
 
 Or declines it:
 
-.. include:: tutorial/award-complaint-decline.http
+.. include:: complaints/award-complaint-decline.http
    :code:
- 
