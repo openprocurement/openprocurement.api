@@ -1,4 +1,4 @@
-POST /api/0.12/tenders/1e095893c07a48b3a3ec49d4d12510ad/bids HTTP/1.0
+POST /api/0.12/tenders/524bbb240f56473d8fab351c739af804/bids HTTP/1.0
 Authorization: Basic YnJva2VyOg==
 Content-Length: 738
 Content-Type: application/json
@@ -37,15 +37,15 @@ Host: api-sandbox.openprocurement.org
 
 201 Created
 Content-Type: application/json; charset=UTF-8
-Location: http://api-sandbox.openprocurement.org/api/0.12/tenders/1e095893c07a48b3a3ec49d4d12510ad/bids/eff32062a78a4b898bc8b1a3e03fa043
+Location: http://api-sandbox.openprocurement.org/api/0.12/tenders/524bbb240f56473d8fab351c739af804/bids/7052e702c8de4c47be6914fd08c37890
 
 {
   "access": {
-    "token": "f679d168c42342809cbffd98e57467e9"
+    "token": "a70017d8f8d547d995743608e02598cf"
   }, 
   "data": {
-    "date": "2016-02-01T14:21:37.332676+02:00", 
-    "id": "eff32062a78a4b898bc8b1a3e03fa043", 
+    "date": "2016-02-04T16:00:53.126788+02:00", 
+    "id": "7052e702c8de4c47be6914fd08c37890", 
     "value": {
       "currency": "UAH", 
       "amount": 500.0, 

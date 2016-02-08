@@ -165,7 +165,7 @@ def validate_patch_award_data(request):
 
 
 def validate_patch_document_data(request):
-    model = type(request.tender).documents.model_class
+    model = type(request.context)
     return validate_data(request, model, True)
 
 

@@ -124,6 +124,20 @@ And again we can confirm that there are two documents uploaded.
 .. include:: tutorial/tender-documents-2.http
    :code:
 
+Let’s add new `documentType` field with `technicalSpecifications` parameter to the previously uploaded document:
+
+.. include:: tutorial/tender-document-add-documentType.http
+   :code:
+
+Success! Response code is `200 OK` and it confirms that `documentType` field with `technicalSpecifications` parameter was added .
+
+Now let’s try to modify any field in our document. For example, `description`:
+
+.. include:: tutorial/tender-document-edit-docType-desc.http
+   :code:
+
+`200 OK` response was returned. The description was modified successfully.
+
 In case we made an error, we can reupload the document over the older version:
 
 .. include:: tutorial/update-award-criteria.http

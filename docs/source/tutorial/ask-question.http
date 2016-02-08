@@ -1,4 +1,4 @@
-POST /api/0.12/tenders/1e095893c07a48b3a3ec49d4d12510ad/questions HTTP/1.0
+POST /api/0.12/tenders/524bbb240f56473d8fab351c739af804/questions HTTP/1.0
 Authorization: Basic YnJva2VyOg==
 Content-Length: 1506
 Content-Type: application/json
@@ -35,7 +35,7 @@ Host: api-sandbox.openprocurement.org
 
 201 Created
 Content-Type: application/json; charset=UTF-8
-Location: http://api-sandbox.openprocurement.org/api/0.12/tenders/1e095893c07a48b3a3ec49d4d12510ad/questions/0be4ccae2086465abbba6003361ce9d2
+Location: http://api-sandbox.openprocurement.org/api/0.12/tenders/524bbb240f56473d8fab351c739af804/questions/4dcfcf9a098e4cd3a98a1653b9159687
 
 {
   "data": {
@@ -62,8 +62,8 @@ Location: http://api-sandbox.openprocurement.org/api/0.12/tenders/1e095893c07a48
       }
     }, 
     "title": "Калорійність", 
-    "date": "2016-02-01T14:21:36.914656+02:00", 
-    "id": "0be4ccae2086465abbba6003361ce9d2", 
+    "date": "2016-02-04T16:00:52.685558+02:00", 
+    "id": "4dcfcf9a098e4cd3a98a1653b9159687", 
     "questionOf": "tender"
   }
 }

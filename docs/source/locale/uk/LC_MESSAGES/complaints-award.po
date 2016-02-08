@@ -4,7 +4,7 @@ msgstr ""
 "Project-Id-Version: openprocurement.api 0.4\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2014-12-04 10:19+0200\n"
-"PO-Revision-Date: 2016-01-27 16:49+0200\n"
+"PO-Revision-Date: 2016-02-05 15:32+0200\n"
 "Last-Translator: Zoriana Zaiats <sorenabell@quintagroup.com>\n"
 "Language-Team: Ukrainian <info@quintagroup.com>\n"
 "MIME-Version: 1.0\n"
@@ -46,10 +46,6 @@ msgstr "Рішення про задоволення вимоги"
 #: ../../source/complaints-award.rst:69
 msgid "Escalate claim to complaint"
 msgstr "Перетворення вимоги в скаргу"
-
-#: ../../source/complaints-award.rst:11
-msgid "At first create a claim:"
-msgstr "Спочатку створимо вимогу:"
 
 #: ../../source/complaints-award.rst:16
 msgid "Then upload necessary documents:"
@@ -107,6 +103,16 @@ msgstr ""
 #: ../../source/complaints-award.rst:29
 msgid "You can submit claim that does not need additional documents:"
 msgstr "Ви можете подати скаргу, що не потребує додаткових документів:"
+
+#: ../../source/complaints-award.rst:11
+msgid ""
+"At first create a complaint. Send POST request with bidder's access token."
+msgstr ""
+"Спочатку створимо вимогу. В запиті потрібно передати токен доступу одного з "
+"учасників, який вже подав пропозицію."
+
+#~ msgid "At first create a claim:"
+#~ msgstr "Спочатку створимо вимогу:"
 
 #~ msgid ""
 #~ "If tender conditions are favoriting only one provider, or in any other "

@@ -1,4 +1,4 @@
-PATCH /api/0.12/tenders/4c3073e871e148c693dd8f2c3a884f28/awards/73ab87b42933476283469fe51708883d/complaints/a89c8395f9f94edf9792c21742d698da HTTP/1.0
+PATCH /api/0.12/tenders/19f8441bc1a947358ef9ef597b99b843/awards/d297a0e7595f4ff48f4ead1ffbba68bb/complaints/aa7d979fde7a4214aa35983153598fa7 HTTP/1.0
 Authorization: Basic cmV2aWV3ZXI6
 Content-Length: 32
 Content-Type: application/json
@@ -17,17 +17,17 @@ Content-Type: application/json; charset=UTF-8
 {
   "data": {
     "status": "resolved", 
-    "dateDecision": "2016-02-01T14:20:39.669461+02:00", 
+    "dateDecision": "2016-02-04T16:00:49.676256+02:00", 
     "documents": [
       {
         "author": "reviewers", 
         "title": "ComplaintResolution.pdf", 
-        "url": "http://api-sandbox.openprocurement.org/api/0.12/tenders/4c3073e871e148c693dd8f2c3a884f28/awards/73ab87b42933476283469fe51708883d/complaints/a89c8395f9f94edf9792c21742d698da/documents/2f7bbb5ecc9c4c0aa669da1751775442?download=d996cab8d83c43da87b2522ec244fd2f", 
+        "url": "http://api-sandbox.openprocurement.org/api/0.12/tenders/19f8441bc1a947358ef9ef597b99b843/awards/d297a0e7595f4ff48f4ead1ffbba68bb/complaints/aa7d979fde7a4214aa35983153598fa7/documents/b60e69d49ce34dfb99d9677663bb22f4?download=d0a7876afa4246f2904b5e0b812dc534", 
         "format": "application/pdf", 
         "documentOf": "tender", 
-        "datePublished": "2016-02-01T14:20:39.438054+02:00", 
-        "id": "2f7bbb5ecc9c4c0aa669da1751775442", 
-        "dateModified": "2016-02-01T14:20:39.438103+02:00"
+        "datePublished": "2016-02-04T16:00:49.483284+02:00", 
+        "id": "b60e69d49ce34dfb99d9677663bb22f4", 
+        "dateModified": "2016-02-04T16:00:49.483321+02:00"
       }
     ], 
     "description": "complaint description", 
@@ -54,12 +54,12 @@ Content-Type: application/json; charset=UTF-8
     "type": "claim", 
     "title": "complaint title", 
     "satisfied": false, 
-    "dateEscalated": "2016-02-01T14:20:38.793681+02:00", 
-    "dateAnswered": "2016-02-01T14:20:38.645034+02:00", 
-    "dateSubmitted": "2016-02-01T14:20:38.477869+02:00", 
-    "date": "2016-02-01T14:20:38.476102+02:00", 
+    "dateEscalated": "2016-02-04T16:00:48.761851+02:00", 
+    "dateAnswered": "2016-02-04T16:00:48.596220+02:00", 
+    "dateSubmitted": "2016-02-04T16:00:48.437319+02:00", 
+    "date": "2016-02-04T16:00:48.435907+02:00", 
     "resolution": "Виправлено", 
-    "id": "a89c8395f9f94edf9792c21742d698da"
+    "id": "aa7d979fde7a4214aa35983153598fa7"
   }
 }
 
