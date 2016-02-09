@@ -111,10 +111,17 @@ class TenderLotSwitchUnsuccessfulResourceTest(BaseTenderWebTest):
 
 
 class TenderAuctionPeriodResourceTest(BaseTenderWebTest):
-    initial_status = 'active.tendering'
 
     def test_set_auction_period(self):
+        self.set_status('active.tendering', {'status': 'active.enquiries'})
         self.app.authorization = ('Basic', ('chronograph', ''))
+        response = self.app.patch_json('/tenders/{}'.format(self.tender_id), {'data': {'id': self.tender_id}})
+        self.assertEqual(response.status, '200 OK')
+        self.assertEqual(response.content_type, 'application/json')
+        self.assertEqual(response.json['data']["status"], 'active.tendering')
+        self.assertIn('auctionPeriod', response.json['data'])
+        self.assertIn('shouldBeginAfter', response.json['data']['auctionPeriod'])
+
         response = self.app.patch_json('/tenders/{}'.format(self.tender_id), {'data': {"auctionPeriod": {"startDate": "9999-01-01T00:00:00+00:00"}}})
         self.assertEqual(response.status, '200 OK')
         self.assertEqual(response.json['data']['auctionPeriod']['startDate'], '9999-01-01T00:00:00+00:00')
@@ -125,10 +132,18 @@ class TenderAuctionPeriodResourceTest(BaseTenderWebTest):
 
 
 class TenderLotAuctionPeriodResourceTest(BaseTenderWebTest):
-    initial_status = 'active.tendering'
     initial_lots = test_lots
 
     def test_set_auction_period(self):
+        self.set_status('active.tendering', {'status': 'active.enquiries'})
+        self.app.authorization = ('Basic', ('chronograph', ''))
+        response = self.app.patch_json('/tenders/{}'.format(self.tender_id), {'data': {'id': self.tender_id}})
+        self.assertEqual(response.status, '200 OK')
+        self.assertEqual(response.content_type, 'application/json')
+        self.assertEqual(response.json['data']["status"], 'active.tendering')
+        self.assertIn('auctionPeriod', response.json['data']["lots"][0])
+        self.assertIn('shouldBeginAfter', response.json['data']["lots"][0]['auctionPeriod'])
+
         self.app.authorization = ('Basic', ('chronograph', ''))
         response = self.app.patch_json('/tenders/{}'.format(self.tender_id), {'data': {"lots": [{"auctionPeriod": {"startDate": "9999-01-01T00:00:00+00:00"}}]}})
         self.assertEqual(response.status, '200 OK')

@@ -200,7 +200,7 @@ class TenderAuctionPeriod(Period):
         if self.endDate:
             return
         tender = self.__parent__
-        if tender.status not in ['active.tendering', 'active.auction']:
+        if tender.lots or tender.status not in ['active.tendering', 'active.auction']:
             return
         if self.startDate and get_now() > calc_auction_end_time(tender.numberOfBids, self.startDate):
             return calc_auction_end_time(tender.numberOfBids, self.startDate).isoformat()
@@ -826,7 +826,7 @@ class Lot(Model):
     description_ru = StringType()
     value = ModelType(Value, required=True)
     minimalStep = ModelType(Value, required=True)
-    auctionPeriod = ModelType(LotAuctionPeriod)
+    auctionPeriod = ModelType(LotAuctionPeriod, default={})
     auctionUrl = URLType()
     status = StringType(choices=['active', 'cancelled', 'unsuccessful', 'complete'], default='active')
 
@@ -981,7 +981,7 @@ class Tender(SchematicsDocument, Model):
     awards = ListType(ModelType(Award), default=list())
     contracts = ListType(ModelType(Contract), default=list())
     revisions = ListType(ModelType(Revision), default=list())
-    auctionPeriod = ModelType(TenderAuctionPeriod)
+    auctionPeriod = ModelType(TenderAuctionPeriod, default={})
     minimalStep = ModelType(Value, required=True)
     status = StringType(choices=['active.enquiries', 'active.tendering', 'active.auction', 'active.qualification', 'active.awarded', 'complete', 'cancelled', 'unsuccessful'], default='active.enquiries')
     questions = ListType(ModelType(Question), default=list())
