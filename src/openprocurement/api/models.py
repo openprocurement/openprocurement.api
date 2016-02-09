@@ -196,7 +196,7 @@ class TenderAuctionPeriod(Period):
     """The auction period."""
 
     @serializable(serialize_when_none=False)
-    def shouldBeginAfter(self):
+    def shouldStartAfter(self):
         if self.endDate:
             return
         tender = self.__parent__
@@ -212,7 +212,7 @@ class LotAuctionPeriod(Period):
     """The auction period."""
 
     @serializable(serialize_when_none=False)
-    def shouldBeginAfter(self):
+    def shouldStartAfter(self):
         if self.endDate:
             return
         tender = get_tender(self)

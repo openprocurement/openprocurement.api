@@ -120,7 +120,7 @@ class TenderAuctionPeriodResourceTest(BaseTenderWebTest):
         self.assertEqual(response.content_type, 'application/json')
         self.assertEqual(response.json['data']["status"], 'active.tendering')
         self.assertIn('auctionPeriod', response.json['data'])
-        self.assertIn('shouldBeginAfter', response.json['data']['auctionPeriod'])
+        self.assertIn('shouldStartAfter', response.json['data']['auctionPeriod'])
 
         response = self.app.patch_json('/tenders/{}'.format(self.tender_id), {'data': {"auctionPeriod": {"startDate": "9999-01-01T00:00:00+00:00"}}})
         self.assertEqual(response.status, '200 OK')
@@ -142,7 +142,7 @@ class TenderLotAuctionPeriodResourceTest(BaseTenderWebTest):
         self.assertEqual(response.content_type, 'application/json')
         self.assertEqual(response.json['data']["status"], 'active.tendering')
         self.assertIn('auctionPeriod', response.json['data']["lots"][0])
-        self.assertIn('shouldBeginAfter', response.json['data']["lots"][0]['auctionPeriod'])
+        self.assertIn('shouldStartAfter', response.json['data']["lots"][0]['auctionPeriod'])
 
         self.app.authorization = ('Basic', ('chronograph', ''))
         response = self.app.patch_json('/tenders/{}'.format(self.tender_id), {'data': {"lots": [{"auctionPeriod": {"startDate": "9999-01-01T00:00:00+00:00"}}]}})
