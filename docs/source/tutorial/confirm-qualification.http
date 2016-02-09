@@ -1,72 +1,56 @@
-POST /api/0.12/tenders/524bbb240f56473d8fab351c739af804/awards?acc_token=7ef98d7212014590bd1182a055c70209 HTTP/1.0
-Authorization: Basic dG9rZW46
-Content-Length: 884
+PATCH /api/0.12/tenders/c5cc24b1753140aebf0dfe98297fdd08/awards/6cb10b935678433ebef2feacaee286c4?acc_token=92fa8b316fe8471e8c5298ad285d9702 HTTP/1.0
+Authorization: Basic YnJva2VyOg==
+Content-Length: 30
 Content-Type: application/json
 Host: api-sandbox.openprocurement.org
 
 {
   "data": {
-    "status": "pending", 
-    "suppliers": [
-      {
-        "contactPoint": {
-          "name": "Державне управління справами", 
-          "telephone": "0440000000"
-        }, 
-        "identifier": {
-          "scheme": "UA-EDR", 
-          "id": "00037256", 
-          "uri": "http://www.dus.gov.ua/"
-        }, 
-        "name": "Державне управління справами", 
-        "address": {
-          "postalCode": "01220", 
-          "countryName": "Україна", 
-          "streetAddress": "вул. Банкова, 11, корпус 1", 
-          "region": "м. Київ", 
-          "locality": "м. Київ"
-        }
-      }
-    ], 
-    "bid_id": "7052e702c8de4c47be6914fd08c37890"
+    "status": "active"
   }
 }
 
 
-201 Created
+200 OK
 Content-Type: application/json; charset=UTF-8
-Location: http://api-sandbox.openprocurement.org/api/0.12/tenders/524bbb240f56473d8fab351c739af804/awards/a12fa0b3382f48f4b5907f8e56c9650f
 
 {
   "data": {
-    "status": "pending", 
+    "status": "active", 
     "complaintPeriod": {
-      "startDate": "2016-02-04T16:00:54.487075+02:00"
+      "startDate": "2016-02-09T18:44:12.280136+02:00", 
+      "endDate": "2016-02-10T18:44:12.571352+02:00"
     }, 
     "suppliers": [
       {
         "contactPoint": {
-          "name": "Державне управління справами", 
-          "telephone": "0440000000"
+          "email": "aagt@gmail.com", 
+          "telephone": "+380 (322) 91-69-30", 
+          "name": "Андрій Олексюк"
         }, 
         "identifier": {
           "scheme": "UA-EDR", 
-          "id": "00037256", 
-          "uri": "http://www.dus.gov.ua/"
+          "id": "00137226", 
+          "uri": "http://www.sc.gov.ua/"
         }, 
-        "name": "Державне управління справами", 
+        "name": "ДКП «Книга»", 
         "address": {
-          "postalCode": "01220", 
+          "postalCode": "79013", 
           "countryName": "Україна", 
-          "streetAddress": "вул. Банкова, 11, корпус 1", 
-          "region": "м. Київ", 
-          "locality": "м. Київ"
+          "streetAddress": "вул. Островського, 34", 
+          "region": "м. Львів", 
+          "locality": "м. Львів"
         }
       }
     ], 
-    "bid_id": "7052e702c8de4c47be6914fd08c37890", 
-    "date": "2016-02-04T16:00:54.485704+02:00", 
-    "id": "a12fa0b3382f48f4b5907f8e56c9650f"
+    "bid_id": "25606420a60a4188a7c74b4f727c98d6", 
+    "value": {
+      "currency": "UAH", 
+      "amount": 499.0, 
+      "valueAddedTaxIncluded": true
+    }, 
+    "date": "2016-02-09T18:44:12.280455+02:00", 
+    "id": "6cb10b935678433ebef2feacaee286c4"
   }
 }
 
