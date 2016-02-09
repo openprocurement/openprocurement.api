@@ -1,4 +1,4 @@
-PATCH /api/0.12/tenders/19f8441bc1a947358ef9ef597b99b843/awards/d297a0e7595f4ff48f4ead1ffbba68bb/complaints/61cdf8e60f1c45e0b94c03332e5a90e5?acc_token=ad728b0c8aea440aa047c2c281b49705 HTTP/1.0
+PATCH /api/0.12/tenders/2b0d0c4f88664ff2b3bf18a54cc08aba/awards/77edffd80f9642269a378264c7400206/complaints/7fa267f10c0f47ba886a2a1ab547187c?acc_token=7bf76063c0ba499482de959084b13f48 HTTP/1.0
 Authorization: Basic YnJva2VyOg==
 Content-Length: 51
 Content-Type: application/json
@@ -42,12 +42,12 @@ Content-Type: application/json; charset=UTF-8
     "type": "claim", 
     "title": "complaint title", 
     "satisfied": false, 
-    "dateEscalated": "2016-02-04T16:00:48.123329+02:00", 
-    "dateAnswered": "2016-02-04T16:00:47.966772+02:00", 
-    "dateSubmitted": "2016-02-04T16:00:47.333831+02:00", 
-    "date": "2016-02-04T16:00:47.332450+02:00", 
+    "dateEscalated": "2016-02-09T18:44:03.594828+02:00", 
+    "dateAnswered": "2016-02-09T18:44:03.387576+02:00", 
+    "dateSubmitted": "2016-02-09T18:44:02.556004+02:00", 
+    "date": "2016-02-09T18:44:02.554565+02:00", 
     "resolution": "Виправлено", 
-    "id": "61cdf8e60f1c45e0b94c03332e5a90e5"
+    "id": "7fa267f10c0f47ba886a2a1ab547187c"
   }
 }
 

@@ -1,4 +1,4 @@
-GET /api/0.12/tenders/524bbb240f56473d8fab351c739af804/documents HTTP/1.0
+GET /api/0.12/tenders/c5cc24b1753140aebf0dfe98297fdd08/documents HTTP/1.0
 Authorization: Basic YnJva2VyOg==
 Host: api-sandbox.openprocurement.org
 
@@ -11,22 +11,22 @@ Content-Type: application/json; charset=UTF-8
     {
       "description": "document description modified", 
       "title": "Notice.pdf", 
-      "url": "http://api-sandbox.openprocurement.org/api/0.12/tenders/524bbb240f56473d8fab351c739af804/documents/a5be1e1c48314e2ab6a69d5ecf0989e3?download=1b9c2ec88d3b4d379b573d501a48035d", 
+      "url": "http://api-sandbox.openprocurement.org/api/0.12/tenders/c5cc24b1753140aebf0dfe98297fdd08/documents/3b7eff544d07446ba39c9e7fbd468b53?download=62e61a23260141b4bd9c5293bafee8bb", 
       "format": "application/pdf", 
       "documentOf": "tender", 
-      "datePublished": "2016-02-04T16:00:51.868956+02:00", 
+      "datePublished": "2016-02-09T18:44:08.940034+02:00", 
       "documentType": "technicalSpecifications", 
-      "id": "a5be1e1c48314e2ab6a69d5ecf0989e3", 
-      "dateModified": "2016-02-04T16:00:51.868989+02:00"
+      "id": "3b7eff544d07446ba39c9e7fbd468b53", 
+      "dateModified": "2016-02-09T18:44:08.940078+02:00"
     }, 
     {
       "title": "AwardCriteria.pdf", 
-      "url": "http://api-sandbox.openprocurement.org/api/0.12/tenders/524bbb240f56473d8fab351c739af804/documents/d5c8f05ac38f4692a6bddcbfccfa0b32?download=2ed623813b5c47abb9c19854b429758a", 
+      "url": "http://api-sandbox.openprocurement.org/api/0.12/tenders/c5cc24b1753140aebf0dfe98297fdd08/documents/2a7d1d35694b465a9f94185b6ae66f95?download=7f6ee94ae3d14d7bac27f57ca1f949ba", 
       "format": "application/pdf", 
       "documentOf": "tender", 
-      "datePublished": "2016-02-04T16:00:52.334078+02:00", 
-      "id": "d5c8f05ac38f4692a6bddcbfccfa0b32", 
-      "dateModified": "2016-02-04T16:00:52.334109+02:00"
+      "datePublished": "2016-02-09T18:44:09.542358+02:00", 
+      "id": "2a7d1d35694b465a9f94185b6ae66f95", 
+      "dateModified": "2016-02-09T18:44:09.542392+02:00"
     }
   ]
 }

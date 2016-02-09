@@ -1,3 +1,4 @@
+
 # -*- coding: utf-8 -*-
 import json
 import os
@@ -511,13 +512,22 @@ class TenderResourceTest(BaseTenderWebTest):
         # Confirming qualification
         #
 
-        self.app.authorization = ('Basic', ('token', ''))
-        self.set_status('active.qualification')
+        self.app.authorization = ('Basic', ('auction', ''))
+        response = self.app.get('/tenders/{}/auction'.format(self.tender_id))
+        auction_bids_data = response.json['data']['bids']
+        response = self.app.post_json('/tenders/{}/auction'.format(self.tender_id),
+                                      {'data': {'bids': auction_bids_data}})
+
+        self.app.authorization = ('Basic', ('broker', ''))
+
+        response = self.app.get('/tenders/{}/awards?acc_token={}'.format(self.tender_id, owner_token))
+        # get pending award
+        award_id = [i['id'] for i in response.json['data'] if i['status'] == 'pending'][0]
 
         with open('docs/source/tutorial/confirm-qualification.http', 'w') as self.app.file_obj:
-            response = self.app.post_json('/tenders/{}/awards?acc_token={}'.format(
-                self.tender_id, owner_token), {'data': {'suppliers': [tender["procuringEntity"]], 'status': 'pending', 'bid_id': bid1_id}})
-            self.assertEqual(response.status, '201 Created')
+            self.app.patch_json('/tenders/{}/awards/{}?acc_token={}'.format(self.tender_id, award_id, owner_token), {"data": {"status": "active"}})
+            self.assertEqual(response.status, '200 OK')
+
 
         # Preparing the cancellation request
         #
