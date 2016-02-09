@@ -20,6 +20,8 @@ STAND_STILL_TIME = timedelta(days=1)
 COMPLAINT_STAND_STILL_TIME = timedelta(days=3)
 BIDDER_TIME = timedelta(minutes=6)
 SERVICE_TIME = timedelta(minutes=9)
+AUCTION_STAND_STILL_TIME = timedelta(minutes=15)
+
 schematics_embedded_role = SchematicsDocument.Options.roles['embedded'] + blacklist("__parent__")
 schematics_default_role = SchematicsDocument.Options.roles['default'] + blacklist("__parent__")
 
@@ -186,18 +188,39 @@ class Period(Model):
             raise ValidationError(u"period should begin before its end")
 
 
-class AuctionPeriod(Period):
+def calc_auction_end_time(bids, start):
+    return start + bids * BIDDER_TIME + SERVICE_TIME + AUCTION_STAND_STILL_TIME
+
+
+class TenderAuctionPeriod(Period):
     """The auction period."""
 
-    @serializable
+    @serializable(serialize_when_none=False)
+    def shouldBeginAfter(self):
+        if self.endDate:
+            return
+        tender = self.__parent__
+        if tender.status not in ['active.tendering', 'active.auction']:
+            return
+        if self.startDate and get_now() > calc_auction_end_time(tender.numberOfBids, self.startDate):
+            return calc_auction_end_time(tender.numberOfBids, self.startDate).isoformat()
+        else:
+            return tender.tenderPeriod.endDate.isoformat()
+
+
+class LotAuctionPeriod(Period):
+    """The auction period."""
+
+    @serializable(serialize_when_none=False)
     def shouldBeginAfter(self):
         if self.endDate:
             return
         tender = get_tender(self)
-        if tender.status not in ['active.tendering', 'active.auction']:
+        lot = self.__parent__
+        if tender.status not in ['active.tendering', 'active.auction'] or lot.status != 'active':
             return
-        if self.startDate and get_now() > self.startDate + self.__parent__.numberOfBids * BIDDER_TIME + SERVICE_TIME + timedelta(minutes=15):
-            return (self.startDate + self.__parent__.numberOfBids * BIDDER_TIME + SERVICE_TIME + timedelta(minutes=15)).isoformat()
+        if self.startDate and get_now() > calc_auction_end_time(lot.numberOfBids, self.startDate):
+            return calc_auction_end_time(lot.numberOfBids, self.startDate).isoformat()
         else:
             return tender.tenderPeriod.endDate.isoformat()
 
@@ -803,7 +826,7 @@ class Lot(Model):
     description_ru = StringType()
     value = ModelType(Value, required=True)
     minimalStep = ModelType(Value, required=True)
-    auctionPeriod = ModelType(AuctionPeriod)
+    auctionPeriod = ModelType(LotAuctionPeriod)
     auctionUrl = URLType()
     status = StringType(choices=['active', 'cancelled', 'unsuccessful', 'complete'], default='active')
 
@@ -958,7 +981,7 @@ class Tender(SchematicsDocument, Model):
     awards = ListType(ModelType(Award), default=list())
     contracts = ListType(ModelType(Contract), default=list())
     revisions = ListType(ModelType(Revision), default=list())
-    auctionPeriod = ModelType(AuctionPeriod)
+    auctionPeriod = ModelType(TenderAuctionPeriod)
     minimalStep = ModelType(Value, required=True)
     status = StringType(choices=['active.enquiries', 'active.tendering', 'active.auction', 'active.qualification', 'active.awarded', 'complete', 'cancelled', 'unsuccessful'], default='active.enquiries')
     questions = ListType(ModelType(Question), default=list())
