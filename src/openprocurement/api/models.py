@@ -1045,21 +1045,19 @@ class Tender(SchematicsDocument, Model):
             checks.append(self.enquiryPeriod.endDate.astimezone(TZ))
         elif self.status == 'active.tendering' and self.tenderPeriod.endDate:
             checks.append(self.tenderPeriod.endDate.astimezone(TZ))
-        elif not self.lots and self.status == 'active.auction' and self.auctionPeriod and self.auctionPeriod.startDate:
+        elif not self.lots and self.status == 'active.auction' and self.auctionPeriod and self.auctionPeriod.startDate and not self.auctionPeriod.endDate:
             if now < self.auctionPeriod.startDate:
                 checks.append(self.auctionPeriod.startDate.astimezone(TZ))
-            else:
-                end = self.auctionPeriod.startDate + self.numberOfBids * BIDDER_TIME + SERVICE_TIME + timedelta(minutes=15)
-                checks.append(end.astimezone(TZ))
+            elif now < calc_auction_end_time(self.numberOfBids, self.auctionPeriod.startDate).astimezone(TZ):
+                checks.append(calc_auction_end_time(self.numberOfBids, self.auctionPeriod.startDate).astimezone(TZ))
         elif self.lots and self.status == 'active.auction':
             for lot in self.lots:
-                if lot.status != 'active' or not lot.auctionPeriod or not lot.auctionPeriod.startDate:
+                if lot.status != 'active' or not lot.auctionPeriod or not lot.auctionPeriod.startDate or lot.auctionPeriod.endDate:
                     continue
                 if now < lot.auctionPeriod.startDate:
                     checks.append(lot.auctionPeriod.startDate.astimezone(TZ))
-                else:
-                    end = lot.auctionPeriod.startDate + lot.numberOfBids * BIDDER_TIME + SERVICE_TIME + timedelta(minutes=15)
-                    checks.append(end.astimezone(TZ))
+                elif now < calc_auction_end_time(lot.numberOfBids, lot.auctionPeriod.startDate).astimezone(TZ):
+                    checks.append(calc_auction_end_time(lot.numberOfBids, lot.auctionPeriod.startDate).astimezone(TZ))
         elif not self.lots and self.status == 'active.awarded':
             standStillEnds = [
                 a.complaintPeriod.endDate.astimezone(TZ)
