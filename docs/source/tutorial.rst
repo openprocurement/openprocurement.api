@@ -231,6 +231,39 @@ Qualification comission registers its decision via the following call:
 .. include:: tutorial/confirm-qualification.http
    :code:
 
+Uploading contract documentation
+--------------------------------
+
+You can upload contract documents. Let's add contract document:
+
+.. include:: tutorial/tender-contract-upload-document.http
+   :code:
+
+`201 Created` response code and `Location` header confirm document added.
+
+Let's see the list of contract documents:
+
+.. include:: tutorial/tender-contract-get-documents.http
+   :code:
+
+We can add another contract document:
+
+.. include:: tutorial/tender-contract-upload-second-document.http
+   :code:
+
+`201 Created` response code and `Location` header confirm second document added.
+
+Let's see the list of all uploaded contract documents:
+
+.. include:: tutorial/tender-contract-get-documents-again.http
+   :code:
+
+Contract signing
+----------------
+
+.. include:: tutorial/tender-contract-sign.http
+   :code:
+
 Cancelling tender
 -----------------
 
