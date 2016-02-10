@@ -1,4 +1,4 @@
-POST /api/0.12/tenders/2b0d0c4f88664ff2b3bf18a54cc08aba/awards/77edffd80f9642269a378264c7400206/complaints?acc_token=053e29c8ba4a43d7b9a8a9343f3027a7 HTTP/1.0
+POST /api/0.12/tenders/ac4ba1add9f045f4bc5439ad00bf56f5/awards/6fa179377bde44649af27bc5dfcfbaf4/complaints?acc_token=82e7f8840c1e429191bc235b71b2da5d HTTP/1.0
 Authorization: Basic YnJva2VyOg==
 Content-Length: 880
 Content-Type: application/json
@@ -33,11 +33,11 @@ Host: api-sandbox.openprocurement.org
 
 201 Created
 Content-Type: application/json; charset=UTF-8
-Location: http://api-sandbox.openprocurement.org/api/0.12/tenders/2b0d0c4f88664ff2b3bf18a54cc08aba/awards/77edffd80f9642269a378264c7400206/complaints/08b46af1c1474cc8b2cb8596604053a8
+Location: http://api-sandbox.openprocurement.org/api/0.12/tenders/ac4ba1add9f045f4bc5439ad00bf56f5/awards/6fa179377bde44649af27bc5dfcfbaf4/complaints/12a0a233326242dd955c0d2c461d2540
 
 {
   "access": {
-    "token": "81d667f8573947b18536da37583a90f2"
+    "token": "1edf6a8eb84d420db3f5c49fa307ec9b"
   }, 
   "data": {
     "status": "draft", 
@@ -62,9 +62,9 @@ Location: http://api-sandbox.openprocurement.org/api/0.12/tenders/2b0d0c4f88664f
       }
     }, 
     "title": "complaint title", 
-    "date": "2016-02-09T18:44:01.991859+02:00", 
+    "date": "2016-02-10T12:41:52.897233+02:00", 
     "type": "claim", 
-    "id": "08b46af1c1474cc8b2cb8596604053a8"
+    "id": "12a0a233326242dd955c0d2c461d2540"
   }
 }
 
