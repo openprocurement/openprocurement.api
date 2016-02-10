@@ -234,12 +234,12 @@ Qualification comission registers its decision via the following call:
 Uploading contract documentation
 --------------------------------
 
-You can upload contract documents. Let's add contract document:
+You can upload contract documents. Let's upload contract document:
 
 .. include:: tutorial/tender-contract-upload-document.http
    :code:
 
-`201 Created` response code and `Location` header confirm document added.
+`201 Created` response code and `Location` header confirm document was added.
 
 Let's see the list of contract documents:
 
@@ -251,9 +251,9 @@ We can add another contract document:
 .. include:: tutorial/tender-contract-upload-second-document.http
    :code:
 
-`201 Created` response code and `Location` header confirm second document added.
+`201 Created` response code and `Location` header confirm second document was uploaded.
 
-Let's see the list of all uploaded contract documents:
+Let's see the list of all added contract documents:
 
 .. include:: tutorial/tender-contract-get-documents-again.http
    :code:
@@ -267,7 +267,9 @@ Contract signing
 Cancelling tender
 -----------------
 
-Tender creator can cancel tender anytime. The following steps should be applied:
+Tender creator can cancel tender anytime (except when tender has terminal status e.g. `usuccesfull`, `canceled`, `complete`). 
+
+The following steps should be applied:
 
 1. Prepare cancellation request
 2. Fill it with the protocol describing the cancellation reasons 
