@@ -43,8 +43,8 @@ containing additional information.
   exist.
 
 429
-  Rate Limit Enforced.
-
+  Rate Limit Enforced. See `Rate control <http://api-docs.openprocurement.org/en/latest/performance.html>`_.
+  
 500
   Server error. There was a problem on OpenProcurement's end.
 

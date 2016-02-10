@@ -37,6 +37,7 @@ Contents:
    qualification
    questions
    complaints
+   performance
    reference
 
 Indices and tables
