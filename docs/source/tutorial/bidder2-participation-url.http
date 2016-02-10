@@ -1,4 +1,4 @@
-GET /api/0.12/tenders/c5cc24b1753140aebf0dfe98297fdd08/bids/25606420a60a4188a7c74b4f727c98d6?acc_token=b054e527658c4570bd2054f63ea5396c HTTP/1.0
+GET /api/0.12/tenders/e98e2eb727c645d4b04ff7a56fef272f/bids/682960c330a046e88183251b91d126ba?acc_token=8b1ffebfafc24b3d95e4b442e0b47693 HTTP/1.0
 Authorization: Basic YnJva2VyOg==
 Host: api-sandbox.openprocurement.org
 
@@ -8,14 +8,14 @@ Content-Type: application/json; charset=UTF-8
 
 {
   "data": {
-    "date": "2016-02-09T18:44:11.178678+02:00", 
+    "date": "2016-02-10T12:42:02.085338+02:00", 
     "value": {
       "currency": "UAH", 
       "amount": 499.0, 
       "valueAddedTaxIncluded": true
     }, 
-    "id": "25606420a60a4188a7c74b4f727c98d6", 
-    "participationUrl": "http://auction-sandbox.openprocurement.org/tenders/c5cc24b1753140aebf0dfe98297fdd08?key_for_bid=25606420a60a4188a7c74b4f727c98d6", 
+    "id": "682960c330a046e88183251b91d126ba", 
+    "participationUrl": "http://auction-sandbox.openprocurement.org/tenders/e98e2eb727c645d4b04ff7a56fef272f?key_for_bid=682960c330a046e88183251b91d126ba", 
     "tenderers": [
       {
         "contactPoint": {

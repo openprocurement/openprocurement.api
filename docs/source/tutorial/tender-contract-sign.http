@@ -1,0 +1,45 @@
+PATCH /api/0.12/tenders/e98e2eb727c645d4b04ff7a56fef272f/contracts/bdf9f8b4196742acad088ea613814132?acc_token=fb616747193c4f9bba0aee4e40c29121 HTTP/1.0
+Authorization: Basic YnJva2VyOg==
+Content-Length: 30
+Content-Type: application/json
+Host: api-sandbox.openprocurement.org
+
+{
+  "data": {
+    "status": "active"
+  }
+}
+
+
+200 OK
+Content-Type: application/json; charset=UTF-8
+
+{
+  "data": {
+    "status": "active", 
+    "documents": [
+      {
+        "title": "contract_first_document.doc", 
+        "url": "http://api-sandbox.openprocurement.org/api/0.12/tenders/e98e2eb727c645d4b04ff7a56fef272f/contracts/bdf9f8b4196742acad088ea613814132/documents/cd0553efea8a45139cd92facdd1b6e8f?download=9f03f96863e24ce7b9c40faa031ded1a", 
+        "format": "application/msword", 
+        "documentOf": "tender", 
+        "datePublished": "2016-02-10T12:42:03.797576+02:00", 
+        "id": "cd0553efea8a45139cd92facdd1b6e8f", 
+        "dateModified": "2016-02-10T12:42:03.797610+02:00"
+      }, 
+      {
+        "title": "contract_second_document.doc", 
+        "url": "http://api-sandbox.openprocurement.org/api/0.12/tenders/e98e2eb727c645d4b04ff7a56fef272f/contracts/bdf9f8b4196742acad088ea613814132/documents/aadf1300cfcf4cb59d62b7074b46fc89?download=8e6b3f44fe83441283ced55b477087bf", 
+        "format": "application/msword", 
+        "documentOf": "tender", 
+        "datePublished": "2016-02-10T12:42:04.124533+02:00", 
+        "id": "aadf1300cfcf4cb59d62b7074b46fc89", 
+        "dateModified": "2016-02-10T12:42:04.124566+02:00"
+      }
+    ], 
+    "id": "bdf9f8b4196742acad088ea613814132", 
+    "dateSigned": "2016-02-10T12:42:04.615451+02:00", 
+    "awardID": "674406f202054bf4a49f743716e24300"
+  }
+}
+
