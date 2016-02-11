@@ -191,7 +191,7 @@ class TenderAuctionPeriodResourceTest(BaseTenderWebTest):
         else:
             item = response.json['data']
         self.assertGreater(item['auctionPeriod']['shouldStartAfter'], response.json['data']['tenderPeriod']['endDate'])
-        self.assertEqual(response.json['data']['next_check'], None)
+        self.assertNotIn('next_check', response.json['data'])
         shouldStartAfter = item['auctionPeriod']['shouldStartAfter']
 
         response = self.app.patch_json('/tenders/{}'.format(self.tender_id), {'data': {'id': self.tender_id}})
@@ -200,7 +200,7 @@ class TenderAuctionPeriodResourceTest(BaseTenderWebTest):
         else:
             item = response.json['data']
         self.assertEqual(item['auctionPeriod']['shouldStartAfter'], shouldStartAfter)
-        self.assertEqual(response.json['data']['next_check'], None)
+        self.assertNotIn('next_check', response.json['data'])
 
         if self.initial_lots:
             response = self.app.patch_json('/tenders/{}'.format(self.tender_id), {'data': {"lots": [{"auctionPeriod": {"startDate": "9999-01-01T00:00:00"}}]}})
