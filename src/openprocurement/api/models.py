@@ -1035,7 +1035,7 @@ class Tender(SchematicsDocument, Model):
         if not self.tenderPeriod.startDate:
             self.tenderPeriod.startDate = self.enquiryPeriod.endDate
 
-    @serializable
+    @serializable(serialize_when_none=False)
     def next_check(self):
         now = get_now()
         checks = []
@@ -1097,7 +1097,7 @@ class Tender(SchematicsDocument, Model):
                     checks.append(complaint.dateSubmitted + COMPLAINT_STAND_STILL_TIME)
                 elif complaint.status == 'answered' and complaint.dateAnswered:
                     checks.append(complaint.dateAnswered + COMPLAINT_STAND_STILL_TIME)
-        return sorted(checks)[0].isoformat() if checks else None
+        return min(checks).isoformat() if checks else None
 
     @serializable
     def numberOfBids(self):
