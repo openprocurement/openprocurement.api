@@ -38,6 +38,7 @@ Contents:
    questions
    complaints
    performance
+   cluster
    reference
 
 Indices and tables
