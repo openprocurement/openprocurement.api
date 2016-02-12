@@ -18,6 +18,10 @@ from zope.interface import implementer, Interface
 
 STAND_STILL_TIME = timedelta(days=1)
 COMPLAINT_STAND_STILL_TIME = timedelta(days=3)
+BIDDER_TIME = timedelta(minutes=6)
+SERVICE_TIME = timedelta(minutes=9)
+AUCTION_STAND_STILL_TIME = timedelta(minutes=15)
+
 schematics_embedded_role = SchematicsDocument.Options.roles['embedded'] + blacklist("__parent__")
 schematics_default_role = SchematicsDocument.Options.roles['default'] + blacklist("__parent__")
 
@@ -182,6 +186,43 @@ class Period(Model):
     def validate_startDate(self, data, value):
         if value and data.get('endDate') and data.get('endDate') < value:
             raise ValidationError(u"period should begin before its end")
+
+
+def calc_auction_end_time(bids, start):
+    return start + bids * BIDDER_TIME + SERVICE_TIME + AUCTION_STAND_STILL_TIME
+
+
+class TenderAuctionPeriod(Period):
+    """The auction period."""
+
+    @serializable(serialize_when_none=False)
+    def shouldStartAfter(self):
+        if self.endDate:
+            return
+        tender = self.__parent__
+        if tender.lots or tender.status not in ['active.tendering', 'active.auction']:
+            return
+        if self.startDate and get_now() > calc_auction_end_time(tender.numberOfBids, self.startDate):
+            return calc_auction_end_time(tender.numberOfBids, self.startDate).isoformat()
+        else:
+            return tender.tenderPeriod.endDate.isoformat()
+
+
+class LotAuctionPeriod(Period):
+    """The auction period."""
+
+    @serializable(serialize_when_none=False)
+    def shouldStartAfter(self):
+        if self.endDate:
+            return
+        tender = get_tender(self)
+        lot = self.__parent__
+        if tender.status not in ['active.tendering', 'active.auction'] or lot.status != 'active':
+            return
+        if self.startDate and get_now() > calc_auction_end_time(lot.numberOfBids, self.startDate):
+            return calc_auction_end_time(lot.numberOfBids, self.startDate).isoformat()
+        else:
+            return tender.tenderPeriod.endDate.isoformat()
 
 
 class PeriodEndRequired(Period):
@@ -785,7 +826,7 @@ class Lot(Model):
     description_ru = StringType()
     value = ModelType(Value, required=True)
     minimalStep = ModelType(Value, required=True)
-    auctionPeriod = ModelType(Period)
+    auctionPeriod = ModelType(LotAuctionPeriod, default={})
     auctionUrl = URLType()
     status = StringType(choices=['active', 'cancelled', 'unsuccessful', 'complete'], default='active')
 
@@ -940,7 +981,7 @@ class Tender(SchematicsDocument, Model):
     awards = ListType(ModelType(Award), default=list())
     contracts = ListType(ModelType(Contract), default=list())
     revisions = ListType(ModelType(Revision), default=list())
-    auctionPeriod = ModelType(Period)
+    auctionPeriod = ModelType(TenderAuctionPeriod, default={})
     minimalStep = ModelType(Value, required=True)
     status = StringType(choices=['active.enquiries', 'active.tendering', 'active.auction', 'active.qualification', 'active.awarded', 'complete', 'cancelled', 'unsuccessful'], default='active.enquiries')
     questions = ListType(ModelType(Question), default=list())
@@ -994,7 +1035,7 @@ class Tender(SchematicsDocument, Model):
         if not self.tenderPeriod.startDate:
             self.tenderPeriod.startDate = self.enquiryPeriod.endDate
 
-    @serializable
+    @serializable(serialize_when_none=False)
     def next_check(self):
         now = get_now()
         checks = []
@@ -1004,6 +1045,19 @@ class Tender(SchematicsDocument, Model):
             checks.append(self.enquiryPeriod.endDate.astimezone(TZ))
         elif self.status == 'active.tendering' and self.tenderPeriod.endDate:
             checks.append(self.tenderPeriod.endDate.astimezone(TZ))
+        elif not self.lots and self.status == 'active.auction' and self.auctionPeriod and self.auctionPeriod.startDate and not self.auctionPeriod.endDate:
+            if now < self.auctionPeriod.startDate:
+                checks.append(self.auctionPeriod.startDate.astimezone(TZ))
+            elif now < calc_auction_end_time(self.numberOfBids, self.auctionPeriod.startDate).astimezone(TZ):
+                checks.append(calc_auction_end_time(self.numberOfBids, self.auctionPeriod.startDate).astimezone(TZ))
+        elif self.lots and self.status == 'active.auction':
+            for lot in self.lots:
+                if lot.status != 'active' or not lot.auctionPeriod or not lot.auctionPeriod.startDate or lot.auctionPeriod.endDate:
+                    continue
+                if now < lot.auctionPeriod.startDate:
+                    checks.append(lot.auctionPeriod.startDate.astimezone(TZ))
+                elif now < calc_auction_end_time(lot.numberOfBids, lot.auctionPeriod.startDate).astimezone(TZ):
+                    checks.append(calc_auction_end_time(lot.numberOfBids, lot.auctionPeriod.startDate).astimezone(TZ))
         elif not self.lots and self.status == 'active.awarded':
             standStillEnds = [
                 a.complaintPeriod.endDate.astimezone(TZ)
@@ -1043,7 +1097,7 @@ class Tender(SchematicsDocument, Model):
                     checks.append(complaint.dateSubmitted + COMPLAINT_STAND_STILL_TIME)
                 elif complaint.status == 'answered' and complaint.dateAnswered:
                     checks.append(complaint.dateAnswered + COMPLAINT_STAND_STILL_TIME)
-        return sorted(checks)[0].isoformat() if checks else None
+        return min(checks).isoformat() if checks else None
 
     @serializable
     def numberOfBids(self):

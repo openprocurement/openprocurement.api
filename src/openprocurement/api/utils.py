@@ -242,6 +242,7 @@ def apply_patch(request, data=None, save=True, src=None):
 def check_bids(request):
     tender = request.validated['tender']
     if tender.lots:
+        [setattr(i.auctionPeriod, 'startDate', None) for i in tender.lots if i.numberOfBids < 2 and i.auctionPeriod and i.auctionPeriod.startDate]
         [setattr(i, 'status', 'unsuccessful') for i in tender.lots if i.numberOfBids == 0]
         if max([i.numberOfBids for i in tender.lots]) < 2:
             #tender.status = 'active.qualification'
@@ -249,6 +250,8 @@ def check_bids(request):
         if not set([i.status for i in tender.lots]).difference(set(['unsuccessful', 'cancelled'])):
             tender.status = 'unsuccessful'
     else:
+        if tender.numberOfBids < 2 and tender.auctionPeriod and tender.auctionPeriod.startDate:
+            tender.auctionPeriod.startDate = None
         if tender.numberOfBids == 0:
             tender.status = 'unsuccessful'
         if tender.numberOfBids == 1:
