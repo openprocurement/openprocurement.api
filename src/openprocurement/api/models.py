@@ -1086,17 +1086,18 @@ class Tender(SchematicsDocument, Model):
                     lots_ends.append(standStillEnd)
             if lots_ends:
                 checks.append(min(lots_ends))
-        for complaint in self.complaints:
-            if complaint.status == 'claim' and complaint.dateSubmitted:
-                checks.append(complaint.dateSubmitted + COMPLAINT_STAND_STILL_TIME)
-            elif complaint.status == 'answered' and complaint.dateAnswered:
-                checks.append(complaint.dateAnswered + COMPLAINT_STAND_STILL_TIME)
-        for award in self.awards:
-            for complaint in award.complaints:
+        if self.status.startswith('active'):
+            for complaint in self.complaints:
                 if complaint.status == 'claim' and complaint.dateSubmitted:
                     checks.append(complaint.dateSubmitted + COMPLAINT_STAND_STILL_TIME)
                 elif complaint.status == 'answered' and complaint.dateAnswered:
                     checks.append(complaint.dateAnswered + COMPLAINT_STAND_STILL_TIME)
+            for award in self.awards:
+                for complaint in award.complaints:
+                    if complaint.status == 'claim' and complaint.dateSubmitted:
+                        checks.append(complaint.dateSubmitted + COMPLAINT_STAND_STILL_TIME)
+                    elif complaint.status == 'answered' and complaint.dateAnswered:
+                        checks.append(complaint.dateAnswered + COMPLAINT_STAND_STILL_TIME)
         return min(checks).isoformat() if checks else None
 
     @serializable

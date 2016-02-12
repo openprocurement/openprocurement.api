@@ -226,7 +226,7 @@ def save_tender(request):
             request.errors.add('body', 'data', str(e))
         else:
             LOGGER.info('Saved tender {}: dateModified {} -> {}'.format(tender.id, old_dateModified and old_dateModified.isoformat(), tender.dateModified.isoformat()),
-                        extra=context_unpack(request, {'MESSAGE_ID': 'save_tender'}, {'TENDER_REV': tender.rev}))
+                        extra=context_unpack(request, {'MESSAGE_ID': 'save_tender'}, {'RESULT': tender.rev}))
             return True
 
 
