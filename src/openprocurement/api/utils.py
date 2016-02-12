@@ -333,7 +333,6 @@ def check_status(request):
     elif tender.lots and tender.status in ['active.qualification', 'active.awarded']:
         if any([i['status'] in ['claim', 'answered', 'pending'] and i.relatedLot is None for i in tender.complaints]):
             return
-        lots_ends = []
         for lot in tender.lots:
             if lot['status'] != 'active':
                 continue
@@ -364,11 +363,6 @@ def check_status(request):
                     LOGGER.info('Switched lot {} of tender {} to {}'.format(lot['id'], tender.id, 'unsuccessful'),
                                 extra=context_unpack(request, {'MESSAGE_ID': 'switched_lot_unsuccessful'}, {'LOT_ID': lot['id']}))
                     check_tender_status(request)
-                    return
-            elif standStillEnd > now:
-                lots_ends.append(standStillEnd)
-        if lots_ends:
-            return
 
 
 def check_tender_status(request):
