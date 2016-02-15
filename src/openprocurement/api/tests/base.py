@@ -392,6 +392,7 @@ class BaseTenderWebTest(BaseWebTest):
         self.tender_id = tender['id']
         status = tender['status']
         if self.initial_bids:
+            self.initial_bids_tokens = {}
             response = self.set_status('active.tendering')
             status = response.json['data']['status']
             bids = []
@@ -409,6 +410,7 @@ class BaseTenderWebTest(BaseWebTest):
                 response = self.app.post_json('/tenders/{}/bids'.format(self.tender_id), {'data': i})
                 self.assertEqual(response.status, '201 Created')
                 bids.append(response.json['data'])
+                self.initial_bids_tokens[response.json['data']['id']] = response.json['access']['token']
             self.initial_bids = bids
         if self.initial_status != status:
             self.set_status(self.initial_status)
