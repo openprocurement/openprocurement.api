@@ -1434,6 +1434,113 @@ class TenderLotProcessTest(BaseTenderWebTest):
         self.assertTrue(all([i['status'] == 'complete' for i in response.json['data']['lots']]))
         self.assertEqual(response.json['data']['status'], 'complete')
 
+    def test_2lot_1feature_2bid_2com_2win(self):
+        self.app.authorization = ('Basic', ('broker', ''))
+        # create tender
+        response = self.app.post_json('/tenders', {"data": test_tender_data})
+        tender_id = self.tender_id = response.json['data']['id']
+        owner_token = response.json['access']['token']
+        lots = []
+        for lot in 2 * test_lots:
+            # add lot
+            response = self.app.post_json('/tenders/{}/lots?acc_token={}'.format(tender_id, owner_token), {'data': test_lots[0]})
+            self.assertEqual(response.status, '201 Created')
+            lots.append(response.json['data']['id'])
+        self.initial_lots = lots
+        # add item
+        response = self.app.patch_json('/tenders/{}?acc_token={}'.format(tender_id, owner_token), {"data": {"items": [test_tender_data['items'][0] for i in lots]}})
+        # add relatedLot for item
+        response = self.app.patch_json('/tenders/{}?acc_token={}'.format(tender_id, owner_token), {"data": {"items": [{'relatedLot': i} for i in lots]}})
+        # add features
+        response = self.app.patch_json('/tenders/{}?acc_token={}'.format(tender_id, owner_token), {"data": {"features": [
+            {
+                "code": "code_item",
+                "featureOf": "item",
+                "relatedItem": response.json['data']['items'][0]['id'],
+                "title": u"item feature",
+                "enum": [
+                    {
+                        "value": 0.1,
+                        "title": u"good"
+                    },
+                    {
+                        "value": 0.2,
+                        "title": u"best"
+                    }
+                ]
+            }
+        ]}})
+        self.assertEqual(response.status, '200 OK')
+        # switch to active.tendering
+        response = self.set_status('active.tendering', {"lots": [
+            {"auctionPeriod": {"startDate": (get_now() + timedelta(days=10)).isoformat()}}
+            for i in lots
+        ]})
+        # create bid
+        self.app.authorization = ('Basic', ('broker', ''))
+        response = self.app.post_json('/tenders/{}/bids'.format(tender_id), {'data': {'tenderers': [test_tender_data["procuringEntity"]], 'lotValues': [
+            {"value": {"amount": 500}, 'relatedLot': lots[0]}
+        ], 'parameters': [{"code": "code_item", "value": 0.2}]}})
+        # create second bid
+        self.app.authorization = ('Basic', ('broker', ''))
+        response = self.app.post_json('/tenders/{}/bids'.format(tender_id), {'data': {'tenderers': [test_tender_data["procuringEntity"]], 'lotValues': [
+            {"value": {"amount": 500}, 'relatedLot': lots[1]}
+        ]}})
+        # switch to active.qualification
+        response = self.set_status('active.auction', {'status': 'active.tendering'})
+        self.app.authorization = ('Basic', ('chronograph', ''))
+        response = self.app.patch_json('/tenders/{}'.format(tender_id), {"data": {"id": tender_id}})
+        # for first lot
+        lot_id = lots[0]
+        # get awards
+        self.app.authorization = ('Basic', ('broker', ''))
+        response = self.app.get('/tenders/{}/awards?acc_token={}'.format(tender_id, owner_token))
+        print response.json['data']
+        # get pending award
+        award_id = [i['id'] for i in response.json['data'] if i['status'] == 'pending' and i['lotID'] == lot_id][0]
+        # set award as active
+        self.app.patch_json('/tenders/{}/awards/{}?acc_token={}'.format(tender_id, award_id, owner_token), {"data": {"status": "active"}})
+        # get contract id
+        response = self.app.get('/tenders/{}'.format(tender_id))
+        contract_id = response.json['data']['contracts'][-1]['id']
+        # after stand slill period
+        self.set_status('complete', {'status': 'active.awarded'})
+        # time travel
+        tender = self.db.get(tender_id)
+        for i in tender.get('awards', []):
+            i['complaintPeriod']['endDate'] = i['complaintPeriod']['startDate']
+        self.db.save(tender)
+        # sign contract
+        self.app.authorization = ('Basic', ('broker', ''))
+        self.app.patch_json('/tenders/{}/contracts/{}?acc_token={}'.format(tender_id, contract_id, owner_token), {"data": {"status": "active"}})
+        # for second lot
+        lot_id = lots[1]
+        # get awards
+        self.app.authorization = ('Basic', ('broker', ''))
+        response = self.app.get('/tenders/{}/awards?acc_token={}'.format(tender_id, owner_token))
+        # get pending award
+        award_id = [i['id'] for i in response.json['data'] if i['status'] == 'pending' and i['lotID'] == lot_id][0]
+        # set award as active
+        self.app.patch_json('/tenders/{}/awards/{}?acc_token={}'.format(tender_id, award_id, owner_token), {"data": {"status": "active"}})
+        # get contract id
+        response = self.app.get('/tenders/{}'.format(tender_id))
+        contract_id = response.json['data']['contracts'][-1]['id']
+        # after stand slill period
+        self.set_status('complete', {'status': 'active.awarded'})
+        # time travel
+        tender = self.db.get(tender_id)
+        for i in tender.get('awards', []):
+            i['complaintPeriod']['endDate'] = i['complaintPeriod']['startDate']
+        self.db.save(tender)
+        # sign contract
+        self.app.authorization = ('Basic', ('broker', ''))
+        self.app.patch_json('/tenders/{}/contracts/{}?acc_token={}'.format(tender_id, contract_id, owner_token), {"data": {"status": "active"}})
+        # check status
+        self.app.authorization = ('Basic', ('broker', ''))
+        response = self.app.get('/tenders/{}'.format(tender_id))
+        self.assertTrue(all([i['status'] == 'complete' for i in response.json['data']['lots']]))
+        self.assertEqual(response.json['data']['status'], 'complete')
+
 
 def suite():
     suite = unittest.TestSuite()

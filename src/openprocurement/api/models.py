@@ -520,8 +520,6 @@ class Bid(Model):
     def validate_parameters(self, data, parameters):
         if isinstance(data['__parent__'], Model):
             tender = data['__parent__']
-            if not parameters and tender.features:
-                raise ValidationError(u'This field is required.')
             if tender.lots:
                 lots = [i.relatedLot for i in data['lotValues']]
                 items = [i.id for i in tender.items if i.relatedLot in lots]
