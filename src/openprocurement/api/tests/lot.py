@@ -114,20 +114,6 @@ class TenderLotResourceTest(BaseTenderWebTest):
         self.assertEqual(lots[0]['minimalStep']['currency'], "UAH")
         self.assertEqual(lots[0]['minimalStep']['amount'], 100)
 
-        response = self.app.post_json(request_path, {'data': {
-            'title': 'lot title',
-            'description': 'lot description',
-            'value': {'amount': '500.0'},
-            'minimalStep': {'amount': '100.0'},
-            'auctionPeriod': {'startDate': '2014-10-31T00:00:00', 'endDate': '2015-10-01T00:00:00'}
-        }}, status=422)
-        self.assertEqual(response.status, '422 Unprocessable Entity')
-        self.assertEqual(response.content_type, 'application/json')
-        self.assertEqual(response.json['status'], 'error')
-        self.assertEqual(response.json['errors'], [
-            {u'description': [u'period should begin after tenderPeriod'], u'location': u'body', u'name': u'auctionPeriod'}
-        ])
-
         response = self.app.patch_json('/tenders/{}'.format(self.tender_id), {"data": {"items": [{'relatedLot': '0' * 32}]}}, status=422)
         self.assertEqual(response.status, '422 Unprocessable Entity')
         self.assertEqual(response.content_type, 'application/json')

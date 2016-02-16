@@ -852,12 +852,6 @@ class Lot(Model):
                           currency=self.__parent__.minimalStep.currency,
                           valueAddedTaxIncluded=self.__parent__.minimalStep.valueAddedTaxIncluded))
 
-    def validate_auctionPeriod(self, data, auctionPeriod):
-        if auctionPeriod and isinstance(data['__parent__'], Model):
-            tender = data['__parent__']
-            if auctionPeriod.startDate and tender.tenderPeriod and tender.tenderPeriod.endDate and auctionPeriod.startDate < tender.tenderPeriod.endDate:
-                raise ValidationError(u"period should begin after tenderPeriod")
-
     def validate_minimalStep(self, data, value):
         if value and value.amount and data.get('value'):
             if data.get('value').amount < value.amount:
@@ -1166,10 +1160,6 @@ class Tender(SchematicsDocument, Model):
     def validate_tenderPeriod(self, data, period):
         if period and period.startDate and data.get('enquiryPeriod') and data.get('enquiryPeriod').endDate and period.startDate < data.get('enquiryPeriod').endDate:
             raise ValidationError(u"period should begin after enquiryPeriod")
-
-    def validate_auctionPeriod(self, data, period):
-        if period and period.startDate and data.get('tenderPeriod') and data.get('tenderPeriod').endDate and period.startDate < data.get('tenderPeriod').endDate:
-            raise ValidationError(u"period should begin after tenderPeriod")
 
     def validate_awardPeriod(self, data, period):
         if period and period.startDate and data.get('auctionPeriod') and data.get('auctionPeriod').endDate and period.startDate < data.get('auctionPeriod').endDate:
