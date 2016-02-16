@@ -530,6 +530,8 @@ class Bid(Model):
                 ])
                 if set([i['code'] for i in parameters]) != set(codes):
                     raise ValidationError(u"All features parameters is required.")
+            elif not parameters and tender.features:
+                raise ValidationError(u'This field is required.')
             elif set([i['code'] for i in parameters]) != set([i.code for i in (tender.features or [])]):
                 raise ValidationError(u"All features parameters is required.")
 
