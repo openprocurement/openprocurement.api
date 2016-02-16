@@ -407,7 +407,7 @@ class TenderBidderFeaturesResourceTest(BaseTenderWebTest):
         self.assertEqual(response.content_type, 'application/json')
         self.assertEqual(response.json['status'], 'error')
         self.assertEqual(response.json['errors'], [
-            {u'description': [u'This field is required.'], u'location': u'body', u'name': u'parameters'}
+            {u'description': [u'All features parameters is required.'], u'location': u'body', u'name': u'parameters'}
         ])
         data["parameters"] = [
             {
