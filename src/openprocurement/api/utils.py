@@ -29,6 +29,7 @@ PKG = get_distribution(__package__)
 LOGGER = getLogger(PKG.project_name)
 VERSION = '{}.{}'.format(int(PKG.parsed_version[0]), int(PKG.parsed_version[1]))
 ROUTE_PREFIX = '/api/{}'.format(VERSION)
+DOCUMENT_BLACKLISTED_FIELDS = ('title', 'format', '__parent__', 'id', 'url', 'dateModified', )
 json_view = partial(view, renderer='json')
 
 
@@ -68,7 +69,7 @@ def get_filename(data):
         return header[0]
 
 
-def upload_file(request):
+def upload_file(request, blacklisted_fields=DOCUMENT_BLACKLISTED_FIELDS):
     first_document = request.validated['documents'][0] if 'documents' in request.validated and request.validated['documents'] else None
     if request.content_type == 'multipart/form-data':
         data = request.validated['file']
@@ -91,7 +92,9 @@ def upload_file(request):
     if 'document_id' in request.validated:
         document.id = request.validated['document_id']
     if first_document:
-        document.datePublished = first_document.datePublished
+        for attr_name in type(first_document)._fields:
+            if attr_name not in blacklisted_fields:
+                setattr(document, attr_name, getattr(first_document, attr_name))
     key = generate_id()
     document_route = request.matched_route.name.replace("collection_", "")
     document_path = request.current_route_path(_route_name=document_route, document_id=document.id, _query={'download': key})
