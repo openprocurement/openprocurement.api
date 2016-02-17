@@ -1,4 +1,4 @@
-#
+# 
 msgid ""
 msgstr ""
 "Project-Id-Version: openprocurement.api 0.5\n"
@@ -10,10 +10,10 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Generator: Poedit 1.7.6\n"
 "Language: uk\n"
+"X-Generator: Poedit 1.7.6\n"
 
-#: ../../source/standard/contract.rst:8 ../../source/standard/contract.rst:4
+#: ../../source/standard/contract.rst:8
 msgid "Contract"
 msgstr "Contract"
 
@@ -36,9 +36,11 @@ msgstr "рядок, обов’язковий"
 
 #: ../../source/standard/contract.rst:22
 msgid ""
-"|ocdsDescription| The `Award.id` against which this contract is being issued."
+"|ocdsDescription| The `Award.id` against which this contract is being "
+"issued."
 msgstr ""
-"|ocdsDescription| `Award.id` вказує на рішення, згідно якого видається договір."
+"|ocdsDescription| `Award.id` вказує на рішення, згідно якого видається "
+"договір."
 
 #: ../../source/standard/contract.rst:28
 msgid "|ocdsDescription| Contract title"
@@ -85,8 +87,8 @@ msgid ""
 "|ocdsDescription| The date the contract was signed. In the case of multiple "
 "signatures, the date of the last signature."
 msgstr ""
-"|ocdsDescription| Дата підписання договору. Якщо було декілька підписань, то "
-"береться дата останнього підписання."
+"|ocdsDescription| Дата підписання договору. Якщо було декілька підписань, то"
+" береться дата останнього підписання."
 
 #: ../../source/standard/contract.rst:73
 msgid "List of :ref:`Document` objects"
@@ -102,11 +104,11 @@ msgstr ""
 
 #: ../../source/standard/contract.rst:45
 msgid ""
-"`pending` - this contract has been proposed, but is not yet in force. It may "
-"be awaiting signature."
+"`pending` - this contract has been proposed, but is not yet in force. It may"
+" be awaiting signature."
 msgstr ""
-"`pending` - цей договір запропоновано, але він ще не діє. Можливо очікується "
-"його підписання."
+"`pending` - цей договір запропоновано, але він ще не діє. Можливо очікується"
+" його підписання."
 
 #: ../../source/standard/contract.rst:47
 msgid ""
@@ -123,19 +125,19 @@ msgstr "`cancelled` - цей договір було скасовано до п�
 #: ../../source/standard/contract.rst:50
 msgid ""
 "`terminated` - this contract was signed and in force, and has now come to a "
-"close.  This may be due to a successful completion of the contract, or may be "
-"early termination due to some non-completion issue."
+"close.  This may be due to a successful completion of the contract, or may "
+"be early termination due to some non-completion issue."
 msgstr ""
-"`terminated` - цей договір був підписаний та діяв, але вже завершився. Це може "
-"бути пов'язано з виконанням договору, або з достроковим припиненням через "
-"якусь незавершеність."
+"`terminated` - цей договір був підписаний та діяв, але вже завершився. Це "
+"може бути пов'язано з виконанням договору, або з достроковим припиненням "
+"через якусь незавершеність."
 
 #~ msgid ""
-#~ "`pending` - this contract has been proposed, but is not yet in force. It "
-#~ "may be awaiting signature"
+#~ "`pending` - this contract has been proposed, but is not yet in force. It may"
+#~ " be awaiting signature"
 #~ msgstr ""
-#~ "`pending` - цей договір запропоновано, але він ще не діє. Можливо "
-#~ "очікується його підписання."
+#~ "`pending` - цей договір запропоновано, але він ще не діє. Можливо очікується"
+#~ " його підписання."
 
 #~ msgid ""
 #~ "`active` - this contract has been signed by all the parties, and is now "

@@ -10,8 +10,8 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Generator: Poedit 1.7.6\n"
 "Language: uk\n"
+"X-Generator: Poedit 1.7.6\n"
 
 #: ../../source/index.rst:12
 msgid "Welcome to openprocurement.api's documentation!"
@@ -33,15 +33,15 @@ msgstr ""
 "через `issue tracker "
 "<https://github.com/openprocurement/openprocurement.api/issues>`_."
 
-#: ../../source/index.rst:43
+#: ../../source/index.rst:45
 msgid "Indices and tables"
 msgstr "Індекси та таблиці"
 
-#: ../../source/index.rst:45
+#: ../../source/index.rst:47
 msgid ":ref:`genindex`"
 msgstr ":ref:`genindex`"
 
-#: ../../source/index.rst:46
+#: ../../source/index.rst:48
 msgid ":ref:`search`"
 msgstr ":ref:`search`"
 

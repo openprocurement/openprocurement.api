@@ -4,7 +4,7 @@ msgstr ""
 "Project-Id-Version: openprocurement.api 0.1\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2014-10-21 10:42+0300\n"
-"PO-Revision-Date: 2016-02-10 13:30+0200\n"
+"PO-Revision-Date: 2016-02-17 13:20+0200\n"
 "Last-Translator: Zoriana Zaiats <sorenabell@quintagroup.com>\n"
 "Language-Team: Ukrainian <info@quintagroup.com>\n"
 "MIME-Version: 1.0\n"
@@ -13,7 +13,7 @@ msgstr ""
 "Language: uk\n"
 "Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n"
 "%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
-"X-Generator: Poedit 1.8.5\n"
+"X-Generator: Lokalize 1.5\n"
 
 #: ../../source/tutorial.rst:4
 msgid "Tutorial"
@@ -25,7 +25,7 @@ msgstr "При виклику видає пустий набір."
 
 #: ../../source/tutorial.rst:56
 msgid "We can see the same response we got after creating tender."
-msgstr "Ми бачимо, що ту ж відповідь, що і після створення закупівлі."
+msgstr "Ми бачимо ту ж відповідь, що і після створення закупівлі."
 
 #: ../../source/tutorial.rst:78
 msgid "And indeed we have 2 tenders now."
@@ -77,7 +77,8 @@ msgid ""
 "We can additionally query the `documents` collection API endpoint to confirm "
 "the action:"
 msgstr ""
-"Код відповіді `201 Created` та заголовок `Location` підтверджують, що документ "
+"Код відповіді `201 Created` та заголовок `Location` підтверджують, що "
+"документ "
 "було створено. Додатково можна зробити запит точки входу API колекції "
 "`документів`, щоб підтвердити дію:"
 
@@ -160,7 +161,8 @@ msgstr ""
 #: ../../source/tutorial.rst:63
 msgid ""
 "We do see the internal `id` of a tender (that can be used to construct full "
-"URL by prepending `http://api-sandbox.openprocurement.org/api/0/tenders/`) and "
+"URL by prepending `http://api-sandbox.openprocurement.org/api/0/tenders/`) "
+"and "
 "its `dateModified` datestamp."
 msgstr ""
 "Ми бачимо внутрішнє `id` закупівлі (що може бути використано для побудови "
@@ -237,10 +239,12 @@ msgstr "Використаємо URL створеного об’єкта (за�
 
 #: ../../source/tutorial.rst:71
 msgid ""
-"And again we have `201 Created` response code, `Location` header and body with "
+"And again we have `201 Created` response code, `Location` header and body "
+"with "
 "extra `id`, `tenderID`, and `dateModified` properties."
 msgstr ""
-"І знову код відповіді `201 Created`,  заголовок `Location` і тіло з додатковим "
+"І знову код відповіді `201 Created`,  заголовок `Location` і тіло з "
+"додатковим "
 "`id`, `tenderID`, та властивість `dateModified`."
 
 #: ../../source/tutorial.rst:84
@@ -271,7 +275,8 @@ msgid ""
 "The single array element describes the uploaded document. We can upload more "
 "documents:"
 msgstr ""
-"Один елемент масиву описує завантажений документ. Ми можемо завантажити більше "
+"Один елемент масиву описує завантажений документ. Ми можемо завантажити "
+"більше "
 "документів:"
 
 #: ../../source/tutorial.rst:183
@@ -342,12 +347,14 @@ msgid ""
 "with more data (tender has status `created`):"
 msgstr ""
 "Попередня закупівля була створена лише з обов’язковими полями. Тепер додамо "
-"закупівлю з максимально допустимим набором даних при створенні (тендер повинен "
+"закупівлю з максимально допустимим набором даних при створенні (тендер "
+"повинен "
 "бути у статусі `created`)."
 
 #: ../../source/tutorial.rst:127
 msgid ""
-"Let’s add new `documentType` field with `technicalSpecifications` parameter to "
+"Let’s add new `documentType` field with `technicalSpecifications` parameter "
+"to "
 "the previously uploaded document:"
 msgstr ""
 "Додамо нове поле `documentType` з параметром `technicalSpecifications` до вже "
@@ -358,7 +365,8 @@ msgid ""
 "Success! Response code is `200 OK` and it confirms that `documentType` field "
 "with `technicalSpecifications` parameter was added ."
 msgstr ""
-"Успіх! Код відповіді `200 OK` підтверджує, що поле `documentType` з параметром "
+"Успіх! Код відповіді `200 OK` підтверджує, що поле `documentType` з "
+"параметром "
 "`technicalSpecifications` було додано."
 
 #: ../../source/tutorial.rst:134
@@ -384,7 +392,8 @@ msgstr "Спробуємо завантажити документ пов’яз
 msgid ""
 "`201 Created` response code and `Location` header confirm document was added."
 msgstr ""
-"Код відповіді `201 Created` та заголовок `Location` підтверджують, що документ "
+"Код відповіді `201 Created` та заголовок `Location` підтверджують, що "
+"документ "
 "додано."
 
 #: ../../source/tutorial.rst:244

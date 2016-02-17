@@ -10,10 +10,10 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Generator: Poedit 1.7.6\n"
 "Language: uk\n"
+"X-Generator: Poedit 1.7.6\n"
 
-#: ../../source/standard/bid.rst:8 ../../source/standard/bid.rst:3
+#: ../../source/standard/bid.rst:8
 msgid "Bid"
 msgstr "Bid"
 
@@ -54,18 +54,6 @@ msgstr "`invalidBid` - недійсна пропозиція"
 msgid "List of :ref:`Document` objects"
 msgstr "Список об’єктів :ref:`Document`"
 
-#: ../../source/standard/bid.rst:3
-msgid "bidder"
-msgstr "учасник, який робить пропозиції"
-
-#: ../../source/standard/bid.rst:3
-msgid "participant"
-msgstr "учасник"
-
-#: ../../source/standard/bid.rst:3
-msgid "pretendent"
-msgstr "претендент"
-
 #: ../../source/standard/bid.rst:32 ../../source/standard/bid.rst:81
 msgid ":ref:`Value`, required"
 msgstr ":ref:`Value`, обов’язково"
@@ -96,7 +84,7 @@ msgstr ""
 msgid "List of :ref:`Parameter` objects"
 msgstr "Список об’єктів :ref:`Parameter`"
 
-#: ../../source/standard/bid.rst:57 ../../source/standard/bid.rst:3
+#: ../../source/standard/bid.rst:57
 msgid "Parameter"
 msgstr "Parameter"
 
@@ -132,7 +120,7 @@ msgstr "URL-адреса"
 msgid "A web address for participation in auction."
 msgstr "Веб-адреса для участі в аукціоні."
 
-#: ../../source/standard/bid.rst:75 ../../source/standard/bid.rst:3
+#: ../../source/standard/bid.rst:75
 msgid "LotValue"
 msgstr "LotValue"
 
@@ -156,6 +144,15 @@ msgstr ""
 #: ../../source/standard/bid.rst:92
 msgid "Id of related :ref:`lot`."
 msgstr "ID пов’язаного :ref:`lot`."
+
+#~ msgid "bidder"
+#~ msgstr "учасник, який робить пропозиції"
+
+#~ msgid "participant"
+#~ msgstr "учасник"
+
+#~ msgid "pretendent"
+#~ msgstr "претендент"
 
 #~ msgid "string, :ref:`date`"
 #~ msgstr "рядок, :ref:`date`"
