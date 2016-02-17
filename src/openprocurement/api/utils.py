@@ -243,7 +243,7 @@ def check_bids(request):
     tender = request.validated['tender']
     if tender.lots:
         [setattr(i.auctionPeriod, 'startDate', None) for i in tender.lots if i.numberOfBids < 2 and i.auctionPeriod and i.auctionPeriod.startDate]
-        [setattr(i, 'status', 'unsuccessful') for i in tender.lots if i.numberOfBids == 0]
+        [setattr(i, 'status', 'unsuccessful') for i in tender.lots if i.numberOfBids == 0 and i.status == 'active']
         if max([i.numberOfBids for i in tender.lots]) < 2:
             #tender.status = 'active.qualification'
             add_next_award(request)
