@@ -1,5 +1,4 @@
-#
-# , 2015.
+#, 2015.
 msgid ""
 msgstr ""
 "Project-Id-Version: openprocurement.api 0.3\n"
@@ -11,10 +10,10 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Generator: Poedit 1.7.6\n"
 "Language: uk\n"
+"X-Generator: Poedit 1.7.6\n"
 
-#: ../../source/standard/util.rst:8 ../../source/standard/util.rst:4
+#: ../../source/standard/util.rst:8
 msgid "Period"
 msgstr "Period"
 
@@ -40,7 +39,7 @@ msgstr "Date"
 msgid "Date/time in :ref:`date-format`."
 msgstr "Дата/час у :ref:`date-format`."
 
-#: ../../source/standard/util.rst:38 ../../source/standard/util.rst:34
+#: ../../source/standard/util.rst:38
 msgid "Value"
 msgstr "Value"
 
@@ -52,29 +51,9 @@ msgstr "|ocdsDescription| Кількість як число."
 msgid "|ocdsDescription| The currency in 3-letter ISO 4217 format."
 msgstr "|ocdsDescription| Валюта у трибуквенному форматі ISO 4217."
 
-#: ../../source/standard/util.rst:64 ../../source/standard/util.rst:60
+#: ../../source/standard/util.rst:64
 msgid "Revision"
 msgstr "Revision"
-
-#: ../../source/standard/util.rst:4
-msgid "startDate"
-msgstr "startDate"
-
-#: ../../source/standard/util.rst:4
-msgid "endDate"
-msgstr "endDate"
-
-#: ../../source/standard/util.rst:34
-msgid "Currency"
-msgstr "Валюта"
-
-#: ../../source/standard/util.rst:34
-msgid "VAT"
-msgstr "ПДВ"
-
-#: ../../source/standard/util.rst:60
-msgid "Change Tracking"
-msgstr "Відслідковування змін"
 
 #: ../../source/standard/util.rst:16
 msgid "|ocdsDescription| The start date for the period."
@@ -107,6 +86,21 @@ msgstr "Дата, коли зміни були записані."
 #: ../../source/standard/util.rst:75
 msgid "List of `Change` objects"
 msgstr "Список об’єктів `Change`"
+
+#~ msgid "startDate"
+#~ msgstr "startDate"
+
+#~ msgid "endDate"
+#~ msgstr "endDate"
+
+#~ msgid "Currency"
+#~ msgstr "Валюта"
+
+#~ msgid "VAT"
+#~ msgstr "ПДВ"
+
+#~ msgid "Change Tracking"
+#~ msgstr "Відслідковування змін"
 
 #~ msgid "List of :`Change` objects"
 #~ msgstr "Список об’єктів :ref:`Change`"

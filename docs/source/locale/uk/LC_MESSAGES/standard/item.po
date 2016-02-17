@@ -10,10 +10,10 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Generator: Poedit 1.7.6\n"
 "Language: uk\n"
+"X-Generator: Poedit 1.7.6\n"
 
-#: ../../source/standard/item.rst:9 ../../source/standard/item.rst:4
+#: ../../source/standard/item.rst:9
 msgid "Item"
 msgstr "Item"
 
@@ -33,12 +33,12 @@ msgstr ":ref:`Classification`"
 #: ../../source/standard/item.rst:26
 msgid ""
 "|ocdsDescription| The primary classification for the item. See the "
-"itemClassificationScheme to identify preferred classification lists, including "
-"CPV and GSIN."
+"itemClassificationScheme to identify preferred classification lists, "
+"including CPV and GSIN."
 msgstr ""
 "|ocdsDescription| Початкова класифікація елемента. Дивіться у "
-"itemClassificationScheme, щоб визначити бажані списки класифікації, включно з "
-"CPV та GSIN."
+"itemClassificationScheme, щоб визначити бажані списки класифікації, включно "
+"з CPV та GSIN."
 
 #: ../../source/standard/item.rst:35
 msgid "List of :ref:`Classification` objects"
@@ -46,14 +46,15 @@ msgstr "Список об’єктів :ref:`Classification`"
 
 #: ../../source/standard/item.rst:37
 msgid ""
-"|ocdsDescription| An array of additional classifications for the item. See the "
-"itemClassificationScheme codelist for common options to use in OCDS. This may "
-"also be used to present codes from an internal classification scheme."
+"|ocdsDescription| An array of additional classifications for the item. See "
+"the itemClassificationScheme codelist for common options to use in OCDS. "
+"This may also be used to present codes from an internal classification "
+"scheme."
 msgstr ""
 "|ocdsDescription| Масив додаткових класифікацій для елемента. Дивіться у "
 "список кодів itemClassificationScheme, щоб використати поширені варіанти в "
-"OCDS. Також можна використовувати для представлення кодів з внутрішньої схеми "
-"класифікації."
+"OCDS. Також можна використовувати для представлення кодів з внутрішньої "
+"схеми класифікації."
 
 #: ../../source/standard/item.rst:46
 msgid ":ref:`Unit`"
@@ -61,8 +62,8 @@ msgstr ":ref:`Unit`"
 
 #: ../../source/standard/item.rst:48
 msgid ""
-"|ocdsDescription| Description of the unit which the good comes in e.g.  hours, "
-"kilograms. Made up of a unit name, and the value of a single unit."
+"|ocdsDescription| Description of the unit which the good comes in e.g.  "
+"hours, kilograms. Made up of a unit name, and the value of a single unit."
 msgstr ""
 "|ocdsDescription| Опис одиниці виміру товару, наприклад, години, кілограми. "
 "Складається з назви одиниці та значення однієї одиниці."
@@ -75,7 +76,7 @@ msgstr "ціле число"
 msgid "|ocdsDescription| The number of units required"
 msgstr "|ocdsDescription| Кількість необхідних одиниць."
 
-#: ../../source/standard/item.rst:91 ../../source/standard/item.rst:4
+#: ../../source/standard/item.rst:91
 msgid "Classification"
 msgstr "Classification"
 
@@ -86,7 +87,8 @@ msgid "string"
 msgstr "рядок"
 
 #: ../../source/standard/item.rst:108
-msgid "|ocdsDescription| The classification code drawn from the selected scheme."
+msgid ""
+"|ocdsDescription| The classification code drawn from the selected scheme."
 msgstr "|ocdsDescription| Код класифікації взятий з вибраної схеми."
 
 #: ../../source/standard/item.rst:114
@@ -95,14 +97,15 @@ msgstr "|ocdsDescription| Текстовий опис або назва коду
 
 #: ../../source/standard/item.rst:120
 msgid ""
-"|ocdsDescription| A URI to identify the code. In the event individual URIs are "
-"not available for items in the identifier scheme this value should be left "
-"blank."
+"|ocdsDescription| A URI to identify the code. In the event individual URIs "
+"are not available for items in the identifier scheme this value should be "
+"left blank."
 msgstr ""
 "|ocdsDescription| URI для ідентифікації коду. Якщо індивідуальні URI не "
-"доступні для елементів у схемі ідентифікації це значення треба залишити пустим."
+"доступні для елементів у схемі ідентифікації це значення треба залишити "
+"пустим."
 
-#: ../../source/standard/item.rst:128 ../../source/standard/item.rst:4
+#: ../../source/standard/item.rst:128
 msgid "Unit"
 msgstr "Unit"
 
@@ -110,21 +113,18 @@ msgstr "Unit"
 msgid "|ocdsDescription| Name of the unit"
 msgstr "|ocdsDescription| Назва одиниці"
 
-#: ../../source/standard/item.rst:4
-msgid "CPV"
-msgstr "CPV"
-
 #: ../../source/standard/item.rst:99
 msgid ""
-"|ocdsDescription| A classification should be drawn from an existing scheme or "
-"list of codes.  This field is used to indicate the scheme/codelist from which "
-"the classification is drawn.  For line item classifications, this value should "
-"represent a known Item Classification Scheme wherever possible."
+"|ocdsDescription| A classification should be drawn from an existing scheme "
+"or list of codes.  This field is used to indicate the scheme/codelist from "
+"which the classification is drawn.  For line item classifications, this "
+"value should represent a known Item Classification Scheme wherever possible."
 msgstr ""
-"|ocdsDescription| Класифікація повинна бути взята з існуючої схеми або списку "
-"кодів. Це поле використовується, щоб вказати схему/список кодів, з яких буде "
-"братись класифікація. Для класифікацій лінійних елементів це значення повинно "
-"представляти відому Схему Класифікації Елементів, де це можливо."
+"|ocdsDescription| Класифікація повинна бути взята з існуючої схеми або "
+"списку кодів. Це поле використовується, щоб вказати схему/список кодів, з "
+"яких буде братись класифікація. Для класифікацій лінійних елементів це "
+"значення повинно представляти відому Схему Класифікації Елементів, де це "
+"можливо."
 
 #: ../../source/standard/item.rst:118
 msgid "uri"
@@ -157,8 +157,8 @@ msgstr "рядок, обов’язковий"
 
 #: ../../source/standard/item.rst:80
 msgid ""
-"`deliveryLocation` usually takes precedence over `deliveryAddress` if both are "
-"present."
+"`deliveryLocation` usually takes precedence over `deliveryAddress` if both "
+"are present."
 msgstr ""
 "`deliveryLocation` зазвичай має вищий пріоритет ніж `deliveryAddress`, якщо "
 "вони обидва вказані."
@@ -169,8 +169,8 @@ msgstr "рядок, багатомовний, обов’язковий"
 
 #: ../../source/standard/item.rst:31
 msgid ""
-"It is mandatory for `classification.scheme` to be `CPV`. The `classification."
-"id` should be valid CPV code."
+"It is mandatory for `classification.scheme` to be `CPV`. The "
+"`classification.id` should be valid CPV code."
 msgstr ""
 "Класифікація `classification.scheme` обов’язково повинна бути `CPV`.  "
 "`classification.id` повинно бути дійсним CPV кодом."
@@ -187,7 +187,8 @@ msgstr "Код одиниці в UN/CEFACT Recommendation 20."
 msgid ""
 "Geographical coordinates of delivery location. Element consist of the "
 "following items:"
-msgstr "Географічні координати місця доставки. Складається з таких компонентів:"
+msgstr ""
+"Географічні координати місця доставки. Складається з таких компонентів:"
 
 #: ../../source/standard/item.rst:78
 msgid "string, optional, usually not used"
@@ -197,13 +198,15 @@ msgstr "стрічка, не обов’язково, переважно не в
 msgid "string, autogenerated"
 msgstr "рядок, згенерований автоматично"
 
-#: ../../source/standard/item.rst:4
-msgid "Parameter"
-msgstr "Parameter"
-
 #: ../../source/standard/item.rst:85
 msgid "Id of related :ref:`lot`."
 msgstr "ID пов’язаного :ref:`lot`."
+
+#~ msgid "CPV"
+#~ msgstr "CPV"
+
+#~ msgid "Parameter"
+#~ msgstr "Parameter"
 
 #~ msgid ""
 #~ "Geographical coordinates of delivery location. Element consist of following "

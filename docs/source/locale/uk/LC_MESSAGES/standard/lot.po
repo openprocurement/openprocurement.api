@@ -1,5 +1,4 @@
-#
-# , 2015.
+#, 2015.
 msgid ""
 msgstr ""
 "Project-Id-Version: openprocurement.api 0.8.1\n"
@@ -11,10 +10,10 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Generator: Poedit 1.7.6\n"
 "Language: uk\n"
+"X-Generator: Poedit 1.7.6\n"
 
-#: ../../source/standard/lot.rst:9 ../../source/standard/lot.rst:4
+#: ../../source/standard/lot.rst:9
 msgid "Lot"
 msgstr "Lot"
 
@@ -65,11 +64,11 @@ msgstr ""
 
 #: ../../source/standard/lot.rst:39
 msgid ""
-"`valueAddedTaxIncluded` should either be absent or match `Lot.value."
-"valueAddedTaxIncluded`"
+"`valueAddedTaxIncluded` should either be absent or match "
+"`Lot.value.valueAddedTaxIncluded`"
 msgstr ""
-"`valueAddedTaxIncluded` повинно або бути відсутнім, або відповідати `Lot."
-"value.valueAddedTaxIncluded`"
+"`valueAddedTaxIncluded` повинно або бути відсутнім, або відповідати "
+"`Lot.value.valueAddedTaxIncluded`"
 
 #: ../../source/standard/lot.rst:42
 msgid ":ref:`period`, read-only"
