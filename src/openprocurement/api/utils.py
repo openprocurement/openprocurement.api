@@ -122,8 +122,8 @@ def update_file_content_type(request):
         bucket = conn.get_bucket(request.registry.bucket_name)
         filename = "{}/{}/{}".format(request.validated['tender_id'], document.id, key)
         key = bucket.get_key(filename)
-        key.set_metadata('Content-Type', document.format)
-        key.copy(key.bucket.name, key.name, key.metadata, preserve_acl=True)
+        if key.content_type != document.format:
+            key.set_remote_metadata({'Content-Type': document.format}, {}, True)
 
 
 def get_file(request):

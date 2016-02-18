@@ -411,6 +411,27 @@ class MockKey(object):
         else:
             self.metadata[name] = value
 
+    def set_remote_metadata(self, metadata_plus, metadata_minus, preserve_acl,
+                            headers=None):
+        src_bucket = self.bucket
+        metadata = self.metadata
+        metadata.update(metadata_plus)
+        for h in metadata_minus:
+            if h in metadata:
+                del metadata[h]
+        rewritten_metadata = {}
+        for h in metadata:
+            if (h.startswith('x-goog-meta-') or h.startswith('x-amz-meta-')):
+                rewritten_h = (h.replace('x-goog-meta-', '')
+                               .replace('x-amz-meta-', ''))
+            else:
+                rewritten_h = h
+            rewritten_metadata[rewritten_h] = metadata[h]
+        metadata = rewritten_metadata
+        src_bucket.copy_key(self.name, self.bucket.name, self.name,
+                            metadata=metadata, preserve_acl=preserve_acl,
+                            headers=headers)
+
     def copy(self, dst_bucket_name, dst_key, metadata=NOT_IMPL,
              reduced_redundancy=NOT_IMPL, preserve_acl=NOT_IMPL):
         dst_bucket = self.bucket.connection.get_bucket(dst_bucket_name)
