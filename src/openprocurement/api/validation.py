@@ -28,7 +28,8 @@ def validate_data(request, model, partial=False, data=None):
             initial_data = request.context.serialize()
             m = model(initial_data)
             new_patch = apply_data_patch(initial_data, data)
-            m.import_data(new_patch, partial=True, strict=True)
+            if new_patch:
+                m.import_data(new_patch, partial=True, strict=True)
             m.__parent__ = request.context.__parent__
             m.validate()
             role = request.context.get_role()
