@@ -255,6 +255,7 @@ class TenderComplaintSwitchResourceTest(BaseTenderWebTest):
 
             response = self.app.patch_json('/tenders/{}/complaints/{}?acc_token={}'.format(self.tender_id, complaint['id'], self.tender_token), {"data": {
                 "status": "answered",
+                "resolution": status * 4,
                 "resolutionType": status
             }})
             self.assertEqual(response.status, '200 OK')
@@ -332,6 +333,7 @@ class TenderAwardComplaintSwitchResourceTest(BaseTenderWebTest):
 
             response = self.app.patch_json('/tenders/{}/awards/{}/complaints/{}?acc_token={}'.format(self.tender_id, self.award_id, complaint['id'], self.tender_token), {"data": {
                 "status": "answered",
+                "resolution": status * 4,
                 "resolutionType": status
             }})
             self.assertEqual(response.status, '200 OK')

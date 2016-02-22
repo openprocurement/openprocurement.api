@@ -1146,7 +1146,7 @@ class TenderProcessTest(BaseTenderWebTest):
         self.app.patch_json('/tenders/{}/awards/{}/complaints/{}?acc_token={}'.format(tender_id, award_id, complaint_id, owner_token), {"data": {
             "status": "answered",
             "resolutionType": "resolved",
-            "resolution": "resolution text"
+            "resolution": "resolution text " * 2
         }})
         # satisfying resolution
         self.app.patch_json('/tenders/{}/awards/{}/complaints/{}?acc_token={}'.format(tender_id, award_id, complaint_id, complaint_owner_token), {"data": {
