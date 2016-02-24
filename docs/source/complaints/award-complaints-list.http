@@ -1,4 +1,4 @@
-GET /api/0.12/tenders/ac4ba1add9f045f4bc5439ad00bf56f5/awards/6fa179377bde44649af27bc5dfcfbaf4/complaints HTTP/1.0
+GET /api/0.12/tenders/02318d921ca04fd2877ae9b6c02e9425/awards/2bfec8100a2d41309a967f7fa612af96/complaints HTTP/1.0
 Host: api-sandbox.openprocurement.org
 
 
@@ -13,12 +13,12 @@ Content-Type: application/json; charset=UTF-8
         {
           "author": "complaint_owner", 
           "title": "Complaint_Attachement.pdf", 
-          "url": "http://api-sandbox.openprocurement.org/api/0.12/tenders/ac4ba1add9f045f4bc5439ad00bf56f5/awards/6fa179377bde44649af27bc5dfcfbaf4/complaints/12a0a233326242dd955c0d2c461d2540/documents/6300fb4abf2f4d66b787386197f9b5ae?download=8ffeb47b88c4430ea462718b308ba2e1", 
+          "url": "http://api-sandbox.openprocurement.org/api/0.12/tenders/02318d921ca04fd2877ae9b6c02e9425/awards/2bfec8100a2d41309a967f7fa612af96/complaints/efb97d08438e4acda7e1d1b43174e1f6/documents/f3df9514a552427fa4497f70f8a25075?download=1105ad0d7842423aa018a2d6bf25468b", 
           "format": "application/pdf", 
           "documentOf": "tender", 
-          "datePublished": "2016-02-10T12:41:53.113354+02:00", 
-          "id": "6300fb4abf2f4d66b787386197f9b5ae", 
-          "dateModified": "2016-02-10T12:41:53.113417+02:00"
+          "datePublished": "2016-02-24T11:29:22.486727+02:00", 
+          "id": "f3df9514a552427fa4497f70f8a25075", 
+          "dateModified": "2016-02-24T11:29:22.486773+02:00"
         }
       ], 
       "description": "complaint description", 
@@ -42,10 +42,10 @@ Content-Type: application/json; charset=UTF-8
           "locality": "м. Київ"
         }
       }, 
-      "dateSubmitted": "2016-02-10T12:41:53.314293+02:00", 
-      "date": "2016-02-10T12:41:52.897233+02:00", 
+      "dateSubmitted": "2016-02-24T11:29:22.644119+02:00", 
+      "date": "2016-02-24T11:29:22.355667+02:00", 
       "type": "claim", 
-      "id": "12a0a233326242dd955c0d2c461d2540"
+      "id": "efb97d08438e4acda7e1d1b43174e1f6"
     }, 
     {
       "status": "claim", 
@@ -70,10 +70,10 @@ Content-Type: application/json; charset=UTF-8
         }
       }, 
       "title": "complaint title", 
-      "dateSubmitted": "2016-02-10T12:41:53.520461+02:00", 
-      "date": "2016-02-10T12:41:53.519103+02:00", 
+      "dateSubmitted": "2016-02-24T11:29:22.790079+02:00", 
+      "date": "2016-02-24T11:29:22.786897+02:00", 
       "type": "claim", 
-      "id": "a0e8b0bd10a3441c84b95f51b0e1e28b"
+      "id": "eb8b0c29729e41b8a3b0b673466bd83e"
     }
   ]
 }

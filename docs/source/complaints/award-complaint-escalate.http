@@ -1,4 +1,4 @@
-PATCH /api/0.12/tenders/ac4ba1add9f045f4bc5439ad00bf56f5/awards/6fa179377bde44649af27bc5dfcfbaf4/complaints/a0e8b0bd10a3441c84b95f51b0e1e28b?acc_token=6668d15458b54d21ad15259940856b8a HTTP/1.0
+PATCH /api/0.12/tenders/02318d921ca04fd2877ae9b6c02e9425/awards/2bfec8100a2d41309a967f7fa612af96/complaints/eb8b0c29729e41b8a3b0b673466bd83e?acc_token=3f3e081e79c9455982c39867e47fbc9a HTTP/1.0
 Authorization: Basic YnJva2VyOg==
 Content-Length: 51
 Content-Type: application/json
@@ -42,12 +42,12 @@ Content-Type: application/json; charset=UTF-8
     "type": "claim", 
     "title": "complaint title", 
     "satisfied": false, 
-    "dateEscalated": "2016-02-10T12:41:54.592773+02:00", 
-    "dateAnswered": "2016-02-10T12:41:54.343661+02:00", 
-    "dateSubmitted": "2016-02-10T12:41:53.520461+02:00", 
-    "date": "2016-02-10T12:41:53.519103+02:00", 
-    "resolution": "Виправлено", 
-    "id": "a0e8b0bd10a3441c84b95f51b0e1e28b"
+    "dateEscalated": "2016-02-24T11:29:23.653894+02:00", 
+    "dateAnswered": "2016-02-24T11:29:23.481443+02:00", 
+    "dateSubmitted": "2016-02-24T11:29:22.790079+02:00", 
+    "date": "2016-02-24T11:29:22.786897+02:00", 
+    "resolution": "Виправлено неконкурентні умови", 
+    "id": "eb8b0c29729e41b8a3b0b673466bd83e"
   }
 }
 

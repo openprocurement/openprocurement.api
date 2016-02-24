@@ -1,6 +1,6 @@
-PATCH /api/0.12/tenders/ac4ba1add9f045f4bc5439ad00bf56f5/awards/6fa179377bde44649af27bc5dfcfbaf4/complaints/12a0a233326242dd955c0d2c461d2540?acc_token=76e80e41c99b475295ba32b94cc09d62 HTTP/1.0
+PATCH /api/0.12/tenders/02318d921ca04fd2877ae9b6c02e9425/awards/2bfec8100a2d41309a967f7fa612af96/complaints/efb97d08438e4acda7e1d1b43174e1f6?acc_token=a678ceafabdc48b0b0827d4f8ddab802 HTTP/1.0
 Authorization: Basic YnJva2VyOg==
-Content-Length: 140
+Content-Length: 250
 Content-Type: application/json
 Host: api-sandbox.openprocurement.org
 
@@ -8,7 +8,7 @@ Host: api-sandbox.openprocurement.org
   "data": {
     "status": "answered", 
     "resolutionType": "resolved", 
-    "resolution": "Виправлено"
+    "resolution": "Виправлено неконкурентні умови"
   }
 }
 
@@ -23,12 +23,12 @@ Content-Type: application/json; charset=UTF-8
       {
         "author": "complaint_owner", 
         "title": "Complaint_Attachement.pdf", 
-        "url": "http://api-sandbox.openprocurement.org/api/0.12/tenders/ac4ba1add9f045f4bc5439ad00bf56f5/awards/6fa179377bde44649af27bc5dfcfbaf4/complaints/12a0a233326242dd955c0d2c461d2540/documents/6300fb4abf2f4d66b787386197f9b5ae?download=8ffeb47b88c4430ea462718b308ba2e1", 
+        "url": "http://api-sandbox.openprocurement.org/api/0.12/tenders/02318d921ca04fd2877ae9b6c02e9425/awards/2bfec8100a2d41309a967f7fa612af96/complaints/efb97d08438e4acda7e1d1b43174e1f6/documents/f3df9514a552427fa4497f70f8a25075?download=1105ad0d7842423aa018a2d6bf25468b", 
         "format": "application/pdf", 
         "documentOf": "tender", 
-        "datePublished": "2016-02-10T12:41:53.113354+02:00", 
-        "id": "6300fb4abf2f4d66b787386197f9b5ae", 
-        "dateModified": "2016-02-10T12:41:53.113417+02:00"
+        "datePublished": "2016-02-24T11:29:22.486727+02:00", 
+        "id": "f3df9514a552427fa4497f70f8a25075", 
+        "dateModified": "2016-02-24T11:29:22.486773+02:00"
       }
     ], 
     "description": "complaint description", 
@@ -54,11 +54,11 @@ Content-Type: application/json; charset=UTF-8
     "resolutionType": "resolved", 
     "type": "claim", 
     "title": "complaint title", 
-    "dateAnswered": "2016-02-10T12:41:53.893096+02:00", 
-    "dateSubmitted": "2016-02-10T12:41:53.314293+02:00", 
-    "date": "2016-02-10T12:41:52.897233+02:00", 
-    "resolution": "Виправлено", 
-    "id": "12a0a233326242dd955c0d2c461d2540"
+    "dateAnswered": "2016-02-24T11:29:23.118966+02:00", 
+    "dateSubmitted": "2016-02-24T11:29:22.644119+02:00", 
+    "date": "2016-02-24T11:29:22.355667+02:00", 
+    "resolution": "Виправлено неконкурентні умови", 
+    "id": "efb97d08438e4acda7e1d1b43174e1f6"
   }
 }
 
