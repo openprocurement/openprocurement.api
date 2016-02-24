@@ -590,8 +590,15 @@ class Complaint(Model):
             'answer': whitelist('resolution', 'resolutionType', 'status', 'tendererAction'),
             'action': whitelist('tendererAction'),
             'review': whitelist('decision', 'status'),
-            'embedded': (blacklist('owner_token', 'owner') + schematics_embedded_role),
-            'view': (blacklist('owner_token', 'owner') + schematics_default_role),
+            'view': view_bid_role,
+            'active.enquiries': view_bid_role,
+            'active.tendering': view_bid_role,
+            'active.auction': view_bid_role,
+            'active.qualification': view_bid_role,
+            'active.awarded': view_bid_role,
+            'complete': view_bid_role,
+            'unsuccessful': view_bid_role,
+            'cancelled': view_bid_role,
         }
     # system
     id = MD5Type(required=True, default=lambda: uuid4().hex)
