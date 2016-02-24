@@ -75,6 +75,7 @@ def main(global_config, **settings):
     config.add_subscriber(set_renderer, NewRequest)
     config.add_subscriber(beforerender, BeforeRender)
     config.scan("openprocurement.api.views.spore")
+    config.scan("openprocurement.api.views.health")
 
     # tender procurementMethodType plugins support
     config.add_route_predicate('procurementMethodType', isTender)
@@ -100,6 +101,7 @@ def main(global_config, **settings):
     config.registry.couchdb_server = server
     if 'couchdb.admin_url' in settings and server.resource.credentials:
         aserver = Server(settings.get('couchdb.admin_url'), session=Session(retry_delays=range(10)))
+        config.registry.admin_couchdb_server = aserver
         users_db = aserver['_users']
         if SECURITY != users_db.security:
             LOGGER.info("Updating users db security", extra={'MESSAGE_ID': 'update_users_security'})
@@ -165,6 +167,7 @@ def main(global_config, **settings):
             connection.create_bucket(bucket_name, location=Location.EU)
         config.registry.bucket_name = bucket_name
     config.registry.server_id = settings.get('id', '')
+    config.registry.health_threshold = settings.get('health_threshold', 99)
     return config.make_wsgi_app()
 
 
