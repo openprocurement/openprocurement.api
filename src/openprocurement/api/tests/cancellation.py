@@ -1,10 +1,12 @@
 # -*- coding: utf-8 -*-
 import unittest
 
-from openprocurement.api.tests.base import BaseTenderWebTest, test_lots
+from openprocurement.api.tests.base import BaseTenderWebTest, test_lots, test_bids
 
 
 class TenderCancellationResourceTest(BaseTenderWebTest):
+    initial_status = 'active.tendering'
+    initial_bids = test_bids
 
     def test_create_tender_cancellation_invalid(self):
         response = self.app.post_json('/tenders/some_id/cancellations', {
@@ -110,7 +112,7 @@ class TenderCancellationResourceTest(BaseTenderWebTest):
         response = self.app.get('/tenders/{}'.format(self.tender_id))
         self.assertEqual(response.status, '200 OK')
         self.assertEqual(response.content_type, 'application/json')
-        self.assertEqual(response.json['data']["status"], 'active.enquiries')
+        self.assertEqual(response.json['data']["status"], 'active.tendering')
 
         response = self.app.post_json('/tenders/{}/cancellations'.format(
             self.tender_id), {'data': {'reason': 'cancellation reason', 'status': 'active'}})
@@ -126,6 +128,7 @@ class TenderCancellationResourceTest(BaseTenderWebTest):
         self.assertEqual(response.status, '200 OK')
         self.assertEqual(response.content_type, 'application/json')
         self.assertEqual(response.json['data']["status"], 'cancelled')
+        self.assertNotIn("bids", response.json['data'])
 
         response = self.app.post_json('/tenders/{}/cancellations'.format(
             self.tender_id), {'data': {'reason': 'cancellation reason'}}, status=403)
@@ -149,6 +152,7 @@ class TenderCancellationResourceTest(BaseTenderWebTest):
         self.assertEqual(response.status, '200 OK')
         self.assertEqual(response.content_type, 'application/json')
         self.assertEqual(response.json['data']["status"], 'cancelled')
+        self.assertNotIn("bids", response.json['data'])
 
         response = self.app.patch_json('/tenders/{}/cancellations/{}'.format(self.tender_id, cancellation['id']), {"data": {"status": "pending"}}, status=403)
         self.assertEqual(response.status, '403 Forbidden')
