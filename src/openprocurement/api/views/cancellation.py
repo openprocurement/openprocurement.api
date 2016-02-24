@@ -45,6 +45,8 @@ class TenderCancellationResource(object):
             [setattr(i, 'status', 'cancelled') for i in tender.lots if i.id == cancellation.relatedLot]
             check_tender_status(self.request)
         elif cancellation.status == 'active':
+            if tender.status in ['active.tendering', 'active.auction']:
+                tender.bids = []
             tender.status = 'cancelled'
         tender.cancellations.append(cancellation)
         if save_tender(self.request):
@@ -84,6 +86,8 @@ class TenderCancellationResource(object):
             [setattr(i, 'status', 'cancelled') for i in tender.lots if i.id == self.request.context.relatedLot]
             check_tender_status(self.request)
         elif self.request.context.status == 'active':
+            if tender.status in ['active.tendering', 'active.auction']:
+                tender.bids = []
             tender.status = 'cancelled'
         if save_tender(self.request):
             LOGGER.info('Updated tender cancellation {}'.format(self.request.context.id),
