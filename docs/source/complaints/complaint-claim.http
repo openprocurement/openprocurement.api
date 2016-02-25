@@ -1,4 +1,4 @@
-PATCH /api/0.12/tenders/42e7845f7fa64c82bded7abb70fae466/complaints/a16daf43210144489b4d8de71b1bd1e0?acc_token=d54790235c8349da8a9873acc4a4fb2b HTTP/1.0
+PATCH /api/0.12/tenders/4c4f3ddec75e42298f397d0c9e83a623/complaints/562642010df44f52a3d9bb0bc2e152e6?acc_token=8b0a2fc743e046f3aaf2f3121b013f62 HTTP/1.0
 Authorization: Basic YnJva2VyOg==
 Content-Length: 29
 Content-Type: application/json
@@ -21,12 +21,12 @@ Content-Type: application/json; charset=UTF-8
       {
         "author": "complaint_owner", 
         "title": "Complaint_Attachement.pdf", 
-        "url": "http://api-sandbox.openprocurement.org/api/0.12/tenders/42e7845f7fa64c82bded7abb70fae466/complaints/a16daf43210144489b4d8de71b1bd1e0/documents/3e72ccdc0e6b435d8ff5eba58e2c5dd9?download=8bc737bc587540968b210c7f993bfaa6", 
+        "url": "http://api-sandbox.openprocurement.org/api/0.12/tenders/4c4f3ddec75e42298f397d0c9e83a623/complaints/562642010df44f52a3d9bb0bc2e152e6/documents/19c0a4c004074fdcae9b1e693027a136?download=b6e30357c2184a11bdfff951d0296e71", 
         "format": "application/pdf", 
         "documentOf": "tender", 
-        "datePublished": "2016-02-24T11:29:18.399771+02:00", 
-        "id": "3e72ccdc0e6b435d8ff5eba58e2c5dd9", 
-        "dateModified": "2016-02-24T11:29:18.399816+02:00"
+        "datePublished": "2016-02-25T18:02:02.057952+02:00", 
+        "id": "19c0a4c004074fdcae9b1e693027a136", 
+        "dateModified": "2016-02-25T18:02:02.058002+02:00"
       }
     ], 
     "description": "complaint description", 
@@ -50,10 +50,10 @@ Content-Type: application/json; charset=UTF-8
         "locality": "м. Київ"
       }
     }, 
-    "dateSubmitted": "2016-02-24T11:29:18.534632+02:00", 
-    "date": "2016-02-24T11:29:18.047748+02:00", 
+    "dateSubmitted": "2016-02-25T18:02:02.208741+02:00", 
+    "date": "2016-02-25T18:02:01.619185+02:00", 
     "type": "claim", 
-    "id": "a16daf43210144489b4d8de71b1bd1e0"
+    "id": "562642010df44f52a3d9bb0bc2e152e6"
   }
 }
 
