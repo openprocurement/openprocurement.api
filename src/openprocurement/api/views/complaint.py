@@ -105,7 +105,11 @@ class TenderComplaintResource(object):
         # tender_owner
         elif self.request.authenticated_role == 'tender_owner' and self.context.status == 'claim' and data.get('status', self.context.status) == self.context.status:
             apply_patch(self.request, save=False, src=self.context.serialize())
-        elif self.request.authenticated_role == 'tender_owner' and self.context.status == 'claim' and data.get('resolution', self.context.resolution) and len(data.get('resolution', self.context.resolution)) >= 20 and data.get('resolutionType', self.context.resolutionType) and data.get('status', self.context.status) == 'answered':
+        elif self.request.authenticated_role == 'tender_owner' and self.context.status == 'claim' and data.get('resolution', self.context.resolution) and data.get('resolutionType', self.context.resolutionType) and data.get('status', self.context.status) == 'answered':
+            if len(data.get('resolution', self.context.resolution)) < 20:
+                self.request.errors.add('body', 'data', 'Can\'t update complaint: resolution too short')
+                self.request.errors.status = 403
+                return
             apply_patch(self.request, save=False, src=self.context.serialize())
             self.context.dateAnswered = get_now()
         elif self.request.authenticated_role == 'tender_owner' and self.context.status == 'pending':
