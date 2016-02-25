@@ -7,6 +7,7 @@ from openprocurement.api.utils import (
     opresource,
     json_view,
     context_unpack,
+    cleanup_bids_for_cancelled_lots,
 )
 from openprocurement.api.validation import (
     validate_tender_auction_data,
@@ -166,7 +167,7 @@ class TenderAuctionResource(object):
 
         """
         apply_patch(self.request, save=False, src=self.request.validated['tender_src'])
-        if all([i.auctionPeriod and i.auctionPeriod.endDate for i in self.request.validated['tender'].lots if i.numberOfBids > 1]):
+        if all([i.auctionPeriod and i.auctionPeriod.endDate for i in self.request.validated['tender'].lots if i.numberOfBids > 1 and i.status == 'active']):
             add_next_award(self.request)
         if save_tender(self.request):
             LOGGER.info('Report auction results', extra=context_unpack(self.request, {'MESSAGE_ID': 'tender_auction_post'}))
@@ -185,7 +186,8 @@ class TenderAuctionResource(object):
         """Report auction results for lot.
         """
         apply_patch(self.request, save=False, src=self.request.validated['tender_src'])
-        if all([i.auctionPeriod and i.auctionPeriod.endDate for i in self.request.validated['tender'].lots if i.numberOfBids > 1]):
+        if all([i.auctionPeriod and i.auctionPeriod.endDate for i in self.request.validated['tender'].lots if i.numberOfBids > 1 and i.status == 'active']):
+            cleanup_bids_for_cancelled_lots(self.request.validated['tender'])
             add_next_award(self.request)
         if save_tender(self.request):
             LOGGER.info('Report auction results', extra=context_unpack(self.request, {'MESSAGE_ID': 'tender_lot_auction_post'}))

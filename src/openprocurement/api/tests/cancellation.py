@@ -236,7 +236,9 @@ class TenderCancellationResourceTest(BaseTenderWebTest):
 
 
 class TenderLotCancellationResourceTest(BaseTenderWebTest):
+    initial_status = 'active.tendering'
     initial_lots = test_lots
+    initial_bids = test_bids
 
     def test_create_tender_cancellation(self):
         lot_id = self.initial_lots[0]['id']
@@ -256,7 +258,7 @@ class TenderLotCancellationResourceTest(BaseTenderWebTest):
         self.assertEqual(response.status, '200 OK')
         self.assertEqual(response.content_type, 'application/json')
         self.assertEqual(response.json['data']['lots'][0]["status"], 'active')
-        self.assertEqual(response.json['data']["status"], 'active.enquiries')
+        self.assertEqual(response.json['data']["status"], 'active.tendering')
 
         response = self.app.post_json('/tenders/{}/cancellations'.format(self.tender_id), {'data': {
             'reason': 'cancellation reason',
@@ -319,7 +321,9 @@ class TenderLotCancellationResourceTest(BaseTenderWebTest):
 
 
 class TenderLotsCancellationResourceTest(BaseTenderWebTest):
+    initial_status = 'active.tendering'
     initial_lots = 2 * test_lots
+    initial_bids = test_bids
 
     def test_create_tender_cancellation(self):
         lot_id = self.initial_lots[0]['id']
@@ -339,7 +343,7 @@ class TenderLotsCancellationResourceTest(BaseTenderWebTest):
         self.assertEqual(response.status, '200 OK')
         self.assertEqual(response.content_type, 'application/json')
         self.assertEqual(response.json['data']['lots'][0]["status"], 'active')
-        self.assertEqual(response.json['data']["status"], 'active.enquiries')
+        self.assertEqual(response.json['data']["status"], 'active.tendering')
 
         response = self.app.post_json('/tenders/{}/cancellations'.format(self.tender_id), {'data': {
             'reason': 'cancellation reason',
