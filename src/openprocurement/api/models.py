@@ -692,6 +692,7 @@ class Complaint(Model):
 
     def __acl__(self):
         return [
+            (Allow, 'g:reviewers', 'edit_complaint'),
             (Allow, '{}_{}'.format(self.owner, self.owner_token), 'edit_complaint'),
             (Allow, '{}_{}'.format(self.owner, self.owner_token), 'upload_complaint_documents'),
         ]
