@@ -120,6 +120,35 @@ class ListType(BaseListType):
             return data
 
 
+class ComplaintModelType(ModelType):
+    view_claim_statuses = ['active.enquiries', 'active.tendering', 'active.auction']
+
+    def export_loop(self, model_instance, field_converter,
+                    role=None, print_none=False):
+        """
+        Calls the main `export_loop` implementation because they are both
+        supposed to operate on models.
+        """
+        if isinstance(model_instance, self.model_class):
+            model_class = model_instance.__class__
+        else:
+            model_class = self.model_class
+
+        if role in self.view_claim_statuses and getattr(model_instance, 'type') == 'claim':
+            role = 'view_claim'
+
+        shaped = export_loop(model_class, model_instance,
+                             field_converter,
+                             role=role, print_none=print_none)
+
+        if shaped and len(shaped) == 0 and self.allow_none():
+            return shaped
+        elif shaped:
+            return shaped
+        elif print_none:
+            return shaped
+
+
 class Model(SchematicsModel):
     class Options(object):
         """Export options for Document."""
@@ -591,6 +620,7 @@ class Complaint(Model):
             'action': whitelist('tendererAction'),
             'review': whitelist('decision', 'status'),
             'view': view_bid_role,
+            'view_claim': (blacklist('author') + view_bid_role),
             'active.enquiries': view_bid_role,
             'active.tendering': view_bid_role,
             'active.auction': view_bid_role,
@@ -629,6 +659,11 @@ class Complaint(Model):
     # complainant
     cancellationReason = StringType()
     dateCanceled = IsoDateTimeType()
+
+    def serialize(self, role=None, context=None):
+        if role == 'view' and self.type == 'claim' and get_tender(self).status in ['active.enquiries', 'active.tendering']:
+            role = 'view_claim'
+        return super(Complaint, self).serialize(role=role, context=context)
 
     def get_role(self):
         root = self.__parent__
@@ -985,7 +1020,7 @@ class Tender(SchematicsDocument, Model):
     minimalStep = ModelType(Value, required=True)
     status = StringType(choices=['active.enquiries', 'active.tendering', 'active.auction', 'active.qualification', 'active.awarded', 'complete', 'cancelled', 'unsuccessful'], default='active.enquiries')
     questions = ListType(ModelType(Question), default=list())
-    complaints = ListType(ModelType(Complaint), default=list())
+    complaints = ListType(ComplaintModelType(Complaint), default=list())
     auctionUrl = URLType()
     mode = StringType(choices=['test'])
     cancellations = ListType(ModelType(Cancellation), default=list())

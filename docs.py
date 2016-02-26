@@ -755,37 +755,23 @@ class TenderResourceTest(BaseTenderWebTest):
                     self.tender_id, complaint4_id), {"data":{"status":"declined"}})
             self.assertEqual(response.status, '200 OK')
 
-
-
-        ###################### Tender Award Claims/Complaints ##################
-        #
-
-        #### Tender Award Claim Submission (with documents)
-        #
-
-        self.app.authorization = ('Basic', ('broker', ''))
-        # create tender
-        response = self.app.post_json('/tenders',
-                                      {"data": test_tender_data})
-        tender_id = self.tender_id = response.json['data']['id']
-        owner_token = self.tender_token = response.json['access']['token']
         # create bids
         self.set_status('active.tendering')
         self.app.authorization = ('Basic', ('broker', ''))
-        response = self.app.post_json('/tenders/{}/bids'.format(tender_id),
+        response = self.app.post_json('/tenders/{}/bids'.format(self.tender_id),
                                       {'data': {'tenderers': [test_tender_data["procuringEntity"]], "value": {"amount": 450}}})
         bid_id = response.json['data']['id']
         bid_token = response.json['access']['token']
         self.app.authorization = ('Basic', ('broker', ''))
-        response = self.app.post_json('/tenders/{}/bids'.format(tender_id),
+        response = self.app.post_json('/tenders/{}/bids'.format(self.tender_id),
                                       {'data': {'tenderers': [test_tender_data["procuringEntity"]], "value": {"amount": 475}}})
         # get auction info
         self.set_status('active.auction')
         self.app.authorization = ('Basic', ('auction', ''))
-        response = self.app.get('/tenders/{}/auction'.format(tender_id))
+        response = self.app.get('/tenders/{}/auction'.format(self.tender_id))
         auction_bids_data = response.json['data']['bids']
         # posting auction urls
-        response = self.app.patch_json('/tenders/{}/auction'.format(tender_id),
+        response = self.app.patch_json('/tenders/{}/auction'.format(self.tender_id),
                                        {
                                            'data': {
                                                'auctionUrl': 'https://tender.auction.url',
@@ -800,13 +786,18 @@ class TenderResourceTest(BaseTenderWebTest):
         })
         # posting auction results
         self.app.authorization = ('Basic', ('auction', ''))
-        response = self.app.post_json('/tenders/{}/auction'.format(tender_id),
+        response = self.app.post_json('/tenders/{}/auction'.format(self.tender_id),
                                       {'data': {'bids': auction_bids_data}})
         # get awards
         self.app.authorization = ('Basic', ('broker', ''))
-        response = self.app.get('/tenders/{}/awards?acc_token={}'.format(tender_id, owner_token))
+        response = self.app.get('/tenders/{}/awards?acc_token={}'.format(self.tender_id, self.tender_token))
         award_id = [i['id'] for i in response.json['data'] if i['status'] == 'pending'][0]
 
+        ###################### Tender Award Claims/Complaints ##################
+        #
+
+        #### Tender Award Claim Submission (with documents)
+        #
 
         with open('docs/source/complaints/award-complaint-submission.http', 'w') as self.app.file_obj:
             response = self.app.post_json('/tenders/{}/awards/{}/complaints?acc_token={}'.format(

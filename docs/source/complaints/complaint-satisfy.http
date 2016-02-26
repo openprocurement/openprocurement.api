@@ -1,4 +1,4 @@
-PATCH /api/0.12/tenders/4c4f3ddec75e42298f397d0c9e83a623/complaints/562642010df44f52a3d9bb0bc2e152e6?acc_token=8b0a2fc743e046f3aaf2f3121b013f62 HTTP/1.0
+PATCH /api/0.12/tenders/34da1cd9ac4343e79f4b163d0a583125/complaints/cf8bef819a69424fbf29768c4385d80e?acc_token=90570714ad74407da1f8ce36c38bdb36 HTTP/1.0
 Authorization: Basic YnJva2VyOg==
 Content-Length: 51
 Content-Type: application/json
@@ -22,45 +22,26 @@ Content-Type: application/json; charset=UTF-8
       {
         "author": "complaint_owner", 
         "title": "Complaint_Attachement.pdf", 
-        "url": "http://api-sandbox.openprocurement.org/api/0.12/tenders/4c4f3ddec75e42298f397d0c9e83a623/complaints/562642010df44f52a3d9bb0bc2e152e6/documents/19c0a4c004074fdcae9b1e693027a136?download=b6e30357c2184a11bdfff951d0296e71", 
+        "url": "http://api-sandbox.openprocurement.org/api/0.12/tenders/34da1cd9ac4343e79f4b163d0a583125/complaints/cf8bef819a69424fbf29768c4385d80e/documents/fd46dbcdf07f4efca75fe7d754af4db3?download=92db6238a7874c198140a3e718814a81", 
         "format": "application/pdf", 
         "documentOf": "tender", 
-        "datePublished": "2016-02-25T18:02:02.057952+02:00", 
-        "id": "19c0a4c004074fdcae9b1e693027a136", 
-        "dateModified": "2016-02-25T18:02:02.058002+02:00"
+        "datePublished": "2016-02-26T15:08:44.819111+02:00", 
+        "id": "fd46dbcdf07f4efca75fe7d754af4db3", 
+        "dateModified": "2016-02-26T15:08:44.819162+02:00"
       }
     ], 
     "description": "complaint description", 
-    "author": {
-      "contactPoint": {
-        "name": "Державне управління справами", 
-        "telephone": "0440000000"
-      }, 
-      "identifier": {
-        "scheme": "UA-EDR", 
-        "id": "00037256", 
-        "uri": "http://www.dus.gov.ua/"
-      }, 
-      "name": "Державне управління справами", 
-      "address": {
-        "postalCode": "01220", 
-        "countryName": "Україна", 
-        "streetAddress": "вул. Банкова, 11, корпус 1", 
-        "region": "м. Київ", 
-        "locality": "м. Київ"
-      }
-    }, 
+    "title": "complaint title", 
     "resolutionType": "resolved", 
     "type": "claim", 
-    "title": "complaint title", 
     "satisfied": true, 
     "tendererAction": "Виправлено неконкурентні умови", 
-    "dateAnswered": "2016-02-25T18:02:02.616895+02:00", 
-    "tendererActionDate": "2016-02-25T18:02:02.616939+02:00", 
-    "dateSubmitted": "2016-02-25T18:02:02.208741+02:00", 
-    "date": "2016-02-25T18:02:01.619185+02:00", 
+    "dateAnswered": "2016-02-26T15:08:45.250444+02:00", 
+    "tendererActionDate": "2016-02-26T15:08:45.250470+02:00", 
+    "dateSubmitted": "2016-02-26T15:08:44.937436+02:00", 
+    "date": "2016-02-26T15:08:44.541929+02:00", 
     "resolution": "Виправлено неконкурентні умови", 
-    "id": "562642010df44f52a3d9bb0bc2e152e6"
+    "id": "cf8bef819a69424fbf29768c4385d80e"
   }
 }
 
