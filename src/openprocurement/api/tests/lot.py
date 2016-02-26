@@ -1495,7 +1495,6 @@ class TenderLotProcessTest(BaseTenderWebTest):
         # get awards
         self.app.authorization = ('Basic', ('broker', ''))
         response = self.app.get('/tenders/{}/awards?acc_token={}'.format(tender_id, owner_token))
-        print response.json['data']
         # get pending award
         award_id = [i['id'] for i in response.json['data'] if i['status'] == 'pending' and i['lotID'] == lot_id][0]
         # set award as active
