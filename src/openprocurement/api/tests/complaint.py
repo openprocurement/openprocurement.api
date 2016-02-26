@@ -356,6 +356,7 @@ class TenderComplaintResourceTest(BaseTenderWebTest):
         self.assertEqual(response.status, '201 Created')
         self.assertEqual(response.content_type, 'application/json')
         complaint = response.json['data']
+        del complaint['author']
 
         response = self.app.get('/tenders/{}/complaints/{}'.format(self.tender_id, complaint['id']))
         self.assertEqual(response.status, '200 OK')
@@ -386,6 +387,7 @@ class TenderComplaintResourceTest(BaseTenderWebTest):
         self.assertEqual(response.status, '201 Created')
         self.assertEqual(response.content_type, 'application/json')
         complaint = response.json['data']
+        del complaint['author']
 
         response = self.app.get('/tenders/{}/complaints'.format(self.tender_id))
         self.assertEqual(response.status, '200 OK')
