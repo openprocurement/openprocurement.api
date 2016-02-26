@@ -311,7 +311,13 @@ class TenderAwardResource(object):
             tender.contracts.append(type(tender).contracts.model_class({'awardID': award.id}))
             add_next_award(self.request)
         elif award_status == 'active' and award.status == 'cancelled':
-            award.complaintPeriod.endDate = get_now()
+            now = get_now()
+            award.complaintPeriod.endDate = now
+            for j in award.complaints:
+                if j.status not in ['invalid', 'resolved', 'declined']:
+                    j.status = 'cancelled'
+                    j.cancellationReason = 'cancelled'
+                    j.dateCanceled = now
             for i in tender.contracts:
                 if i.awardID == award.id:
                     i.status = 'cancelled'
