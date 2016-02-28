@@ -764,3 +764,126 @@ def decrypt(uuid, name, key):
     except:
         text = ''
     return text
+
+
+def get_listing_data(request, server, db, field_collection, model_serializer, feed_collection,
+                     view_map_collection, change_view_map_collection):
+    """ Common func for retrieving data from view
+
+    :param request: self.request
+    :param server: couchdb server (request.registry.couchdb_server)
+    :param db: couchdb database
+    :param field_collection: FIELDS from design.py
+    :param model_serializer: callable for serialization of object 'model'
+    :param feed_collection:
+    :param view_map_collection:
+    :param change_view_map_collection:
+    :return: json object data
+    """
+    # http://wiki.apache.org/couchdb/HTTP_view_API#Querying_Options
+    model_name = request.matched_route.name  # Tenders, Plans, Auctions, etc
+    params = {}
+    pparams = {}
+    # list of additional columns in result json, separated by comma - `?opt_fields=comma,separated,field,list`
+    fields = request.params.get('opt_fields', '')
+    if fields:
+        params['opt_fields'] = fields
+        pparams['opt_fields'] = fields
+        fields = fields.split(',')
+        view_fields = fields + ['dateModified', 'id']  # add two base field always
+    limit = request.params.get('limit', '')  # batch size of result data
+    if limit:
+        params['limit'] = limit
+        pparams['limit'] = limit
+    limit = int(limit) if limit.isdigit() and int(limit) > 0 else 100
+    descending = bool(request.params.get('descending'))  # sort order
+    offset = request.params.get('offset', '')
+    if descending:
+        params['descending'] = 1
+    else:
+        pparams['descending'] = 1
+    feed = request.params.get('feed', '')
+    view_map = feed_collection.get(feed, view_map_collection)  # get type of views
+    changes = view_map is change_view_map_collection
+    if feed and feed in feed_collection:
+        params['feed'] = feed
+        pparams['feed'] = feed
+    mode = request.params.get('mode', '')  # in ('', '_all_', 'test')
+    if mode and mode in view_map:
+        params['mode'] = mode
+        pparams['mode'] = mode
+    view_limit = limit + 1 if offset else limit
+    if changes:
+        if offset:
+            view_offset = decrypt(server.uuid, db.name, offset)
+            if view_offset and view_offset.isdigit():
+                view_offset = int(view_offset)
+            else:
+                request.errors.add('params', 'offset', 'Offset expired/invalid')
+                request.errors.status = 404
+                return
+        if not offset:
+            view_offset = 'now' if descending else 0
+    else:
+        if offset:
+            view_offset = offset
+        else:
+            view_offset = '9' if descending else ''
+    list_view = view_map.get(mode, view_map[u''])  # result view
+    if fields:
+        if set(fields).issubset(set(field_collection)):
+            if not changes:
+                results = [
+                    (dict([(i, j) for i, j in x.value.items() + [('id', x.id), ('dateModified', x.key)] if
+                           i in view_fields]), x.key)
+                    for x in list_view(db, limit=view_limit, startkey=view_offset, descending=descending)
+                    ]
+            else:
+                results = [
+                    (dict([(i, j) for i, j in x.value.items() + [('id', x.id)] if i in view_fields]), x.key)
+                    for x in list_view(db, limit=view_limit, startkey=view_offset, descending=descending)
+                    ]
+        else:
+            LOGGER.info('Used custom fields for {} list: {}'.format(model_name.lower(), ','.join(sorted(fields))),
+                        extra=context_unpack(request, {'MESSAGE_ID': '{}_list_custom'.format(model_name.lower())}))
+
+            results = [
+                (model_serializer(request, i[u'doc'], view_fields), i.key)
+                for i in
+                list_view(db, limit=view_limit, startkey=view_offset, descending=descending, include_docs=True)
+                ]
+    else:
+        results = [
+            ({'id': i.id, 'dateModified': i.value['dateModified']} if changes else {'id': i.id,
+                                                                                    'dateModified': i.key}, i.key)
+            for i in list_view(db, limit=view_limit, startkey=view_offset, descending=descending)
+            ]
+    if results:
+        params['offset'], pparams['offset'] = results[-1][1], results[0][1]
+        if offset and view_offset == results[0][1]:
+            results = results[1:]
+        elif offset and view_offset != results[0][1]:
+            results = results[:limit]
+            params['offset'], pparams['offset'] = results[-1][1], view_offset
+        results = [i[0] for i in results]
+        if changes:
+            params['offset'] = encrypt(server.uuid, db.name, params['offset'])
+            pparams['offset'] = encrypt(server.uuid, db.name, pparams['offset'])
+    else:
+        params['offset'] = offset
+        pparams['offset'] = offset
+    data = {
+        'data': results,
+        'next_page': {
+            "offset": params['offset'],
+            "path": request.route_path(model_name, _query=params),
+            "uri": request.route_url(model_name, _query=params)
+        }
+    }
+    if descending or offset:
+        data['prev_page'] = {
+            "offset": pparams['offset'],
+            "path": request.route_path(model_name, _query=pparams),
+            "uri": request.route_url(model_name, _query=pparams)
+        }
+    return data
