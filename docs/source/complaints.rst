@@ -32,8 +32,20 @@ Tender Award Claims/Complaints
 Workflow
 --------
 
-.. image:: complaint_w.png
-   :alt: Complaint workflow
+.. graphviz::
+
+    digraph G {
+        claim -> answered;
+        edge[style=dashed];
+        draft -> claim; 
+        answered -> {pending,resolved};
+        {draft,claim,answered,pending} -> cancelled; 
+        edge[style=bold];
+        pending -> {declined,resolved,invalid};
+        edge[label="3d" style=dotted];
+        claim -> pending;
+        answered -> {resolved, invalid, declined};
+    }
 
 Roles
 -----
