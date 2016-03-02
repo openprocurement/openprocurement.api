@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-from logging import getLogger
 from openprocurement.api.models import get_now
 from openprocurement.api.utils import (
     apply_patch,
@@ -8,6 +7,7 @@ from openprocurement.api.utils import (
     opresource,
     json_view,
     context_unpack,
+    APIResource,
 )
 from openprocurement.api.validation import (
     validate_contract_data,
@@ -15,19 +15,12 @@ from openprocurement.api.validation import (
 )
 
 
-LOGGER = getLogger(__name__)
-
-
 @opresource(name='Tender Contracts',
             collection_path='/tenders/{tender_id}/contracts',
             path='/tenders/{tender_id}/contracts/{contract_id}',
             procurementMethodType='belowThreshold',
             description="Tender contracts")
-class TenderAwardContractResource(object):
-
-    def __init__(self, request, context):
-        self.request = request
-        self.db = request.registry.db
+class TenderAwardContractResource(APIResource):
 
     @json_view(content_type="application/json", permission='create_contract', validators=(validate_contract_data,))
     def collection_post(self):
@@ -41,7 +34,7 @@ class TenderAwardContractResource(object):
         contract = self.request.validated['contract']
         tender.contracts.append(contract)
         if save_tender(self.request):
-            LOGGER.info('Created tender contract {}'.format(contract.id),
+            self.LOGGER.info('Created tender contract {}'.format(contract.id),
                         extra=context_unpack(self.request, {'MESSAGE_ID': 'tender_contract_create'}, {'contract_id': contract.id}))
             self.request.response.status = 201
             self.request.response.headers['Location'] = self.request.route_url('Tender Contracts', tender_id=tender.id, contract_id=contract['id'])
@@ -105,6 +98,6 @@ class TenderAwardContractResource(object):
             self.request.context.dateSigned = get_now()
         check_tender_status(self.request)
         if save_tender(self.request):
-            LOGGER.info('Updated tender contract {}'.format(self.request.context.id),
+            self.LOGGER.info('Updated tender contract {}'.format(self.request.context.id),
                         extra=context_unpack(self.request, {'MESSAGE_ID': 'tender_contract_patch'}))
             return {'data': self.request.context.serialize()}

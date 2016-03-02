@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-from logging import getLogger
 from openprocurement.api.design import (
     FIELDS,
     tenders_by_dateModified_view,
@@ -23,6 +22,7 @@ from openprocurement.api.utils import (
     save_tender,
     set_ownership,
     tender_serialize,
+    APIResource,
 )
 from openprocurement.api.validation import (
     validate_patch_tender_data,
@@ -30,7 +30,6 @@ from openprocurement.api.validation import (
 )
 
 
-LOGGER = getLogger(__name__)
 VIEW_MAP = {
     u'': tenders_real_by_dateModified_view,
     u'test': tenders_test_by_dateModified_view,
@@ -50,12 +49,11 @@ FEED = {
 @opresource(name='Tenders',
             path='/tenders',
             description="Open Contracting compatible data exchange format. See http://ocds.open-contracting.org/standard/r/master/#tender for more info")
-class TendersResource(object):
+class TendersResource(APIResource):
 
     def __init__(self, request, context):
-        self.request = request
+        super(TendersResource, self).__init__(request, context)
         self.server = request.registry.couchdb_server
-        self.db = request.registry.db
         self.server_id = request.registry.server_id
 
     @json_view(permission='view_tender')
@@ -150,7 +148,7 @@ class TendersResource(object):
                     for x in list_view(self.db, limit=view_limit, startkey=view_offset, descending=descending)
                 ]
             elif fields:
-                LOGGER.info('Used custom fields for tenders list: {}'.format(','.join(sorted(fields))),
+                self.LOGGER.info('Used custom fields for tenders list: {}'.format(','.join(sorted(fields))),
                             extra=context_unpack(self.request, {'MESSAGE_ID': 'tender_list_custom'}))
 
                 results = [
@@ -351,7 +349,7 @@ class TendersResource(object):
         self.request.validated['tender'] = tender
         self.request.validated['tender_src'] = {}
         if save_tender(self.request):
-            LOGGER.info('Created tender {} ({})'.format(tender_id, tender.tenderID),
+            self.LOGGER.info('Created tender {} ({})'.format(tender_id, tender.tenderID),
                         extra=context_unpack(self.request, {'MESSAGE_ID': 'tender_create'}, {'tender_id': tender_id, 'tenderID': tender.tenderID}))
             self.request.response.status = 201
             self.request.response.headers[
@@ -368,12 +366,7 @@ class TendersResource(object):
             path='/tenders/{tender_id}',
             procurementMethodType='belowThreshold',
             description="Open Contracting compatible data exchange format. See http://ocds.open-contracting.org/standard/r/master/#tender for more info")
-class TenderResource(object):
-
-    def __init__(self, request, context):
-        self.request = request
-        self.db = request.registry.db
-        self.context = context
+class TenderResource(APIResource):
 
     @json_view(permission='view_tender')
     def get(self):
@@ -533,13 +526,12 @@ class TenderResource(object):
             self.request.errors.add('body', 'data', 'Can\'t update tender in current ({}) status'.format(tender.status))
             self.request.errors.status = 403
             return
-        data = self.request.validated['data']
         if self.request.authenticated_role == 'chronograph':
             apply_patch(self.request, save=False, src=self.request.validated['tender_src'])
             check_status(self.request)
             save_tender(self.request)
         else:
             apply_patch(self.request, src=self.request.validated['tender_src'])
-        LOGGER.info('Updated tender {}'.format(tender.id),
+        self.LOGGER.info('Updated tender {}'.format(tender.id),
                     extra=context_unpack(self.request, {'MESSAGE_ID': 'tender_patch'}))
         return {'data': tender.serialize(tender.status)}

@@ -260,7 +260,6 @@ def cleanup_bids_for_cancelled_lots(tender):
             tender.bids.remove(bid)
 
 
-
 def check_bids(request):
     tender = request.validated['tender']
     if tender.lots:
@@ -578,6 +577,15 @@ def error_handler(errors, request_params=True):
 
 
 opresource = partial(resource, error_handler=error_handler, factory=factory)
+
+
+class APIResource(object):
+
+    def __init__(self, request, context):
+        self.context = context
+        self.request = request
+        self.db = request.registry.db
+        self.LOGGER = getLogger(type(self).__module__)
 
 
 def forbidden(request):

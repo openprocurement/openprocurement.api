@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-from logging import getLogger
 from openprocurement.api.models import STAND_STILL_TIME, get_now
 from openprocurement.api.utils import (
     apply_patch,
@@ -8,6 +7,7 @@ from openprocurement.api.utils import (
     opresource,
     json_view,
     context_unpack,
+    APIResource,
 )
 from openprocurement.api.validation import (
     validate_award_data,
@@ -15,19 +15,12 @@ from openprocurement.api.validation import (
 )
 
 
-LOGGER = getLogger(__name__)
-
-
 @opresource(name='Tender Awards',
             collection_path='/tenders/{tender_id}/awards',
             path='/tenders/{tender_id}/awards/{award_id}',
             description="Tender awards",
             procurementMethodType='belowThreshold')
-class TenderAwardResource(object):
-
-    def __init__(self, request, context):
-        self.request = request
-        self.db = request.registry.db
+class TenderAwardResource(APIResource):
 
     @json_view(permission='view_tender')
     def collection_get(self):
@@ -178,7 +171,7 @@ class TenderAwardResource(object):
         award.complaintPeriod = {'startDate': get_now().isoformat()}
         tender.awards.append(award)
         if save_tender(self.request):
-            LOGGER.info('Created tender award {}'.format(award.id),
+            self.LOGGER.info('Created tender award {}'.format(award.id),
                         extra=context_unpack(self.request, {'MESSAGE_ID': 'tender_award_create'}, {'award_id': award.id}))
             self.request.response.status = 201
             self.request.response.headers['Location'] = self.request.route_url('Tender Awards', tender_id=tender.id, award_id=award['id'])
@@ -352,6 +345,6 @@ class TenderAwardResource(object):
             self.request.errors.status = 403
             return
         if save_tender(self.request):
-            LOGGER.info('Updated tender award {}'.format(self.request.context.id),
+            self.LOGGER.info('Updated tender award {}'.format(self.request.context.id),
                         extra=context_unpack(self.request, {'MESSAGE_ID': 'tender_award_patch'}))
             return {'data': award.serialize("view")}

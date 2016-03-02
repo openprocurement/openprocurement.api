@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-from logging import getLogger
 from openprocurement.api.utils import (
     get_file,
     save_tender,
@@ -9,6 +8,7 @@ from openprocurement.api.utils import (
     opresource,
     json_view,
     context_unpack,
+    APIResource,
 )
 from openprocurement.api.validation import (
     validate_file_update,
@@ -18,20 +18,12 @@ from openprocurement.api.validation import (
 from openprocurement.api.views.complaint_document import STATUS4ROLE
 
 
-LOGGER = getLogger(__name__)
-
-
 @opresource(name='Tender Award Complaint Documents',
             collection_path='/tenders/{tender_id}/awards/{award_id}/complaints/{complaint_id}/documents',
             path='/tenders/{tender_id}/awards/{award_id}/complaints/{complaint_id}/documents/{document_id}',
             procurementMethodType='belowThreshold',
             description="Tender award complaint documents")
-class TenderAwardComplaintDocumentResource(object):
-
-    def __init__(self, request, context):
-        self.context = context
-        self.request = request
-        self.db = request.registry.db
+class TenderAwardComplaintDocumentResource(APIResource):
 
     @json_view(permission='view_tender')
     def collection_get(self):
@@ -65,7 +57,7 @@ class TenderAwardComplaintDocumentResource(object):
         document.author = self.request.authenticated_role
         self.context.documents.append(document)
         if save_tender(self.request):
-            LOGGER.info('Created tender award complaint document {}'.format(document.id),
+            self.LOGGER.info('Created tender award complaint document {}'.format(document.id),
                         extra=context_unpack(self.request, {'MESSAGE_ID': 'tender_award_complaint_document_create'}, {'document_id': document.id}))
             self.request.response.status = 201
             document_route = self.request.matched_route.name.replace("collection_", "")
@@ -109,7 +101,7 @@ class TenderAwardComplaintDocumentResource(object):
         document.author = self.request.authenticated_role
         self.request.validated['complaint'].documents.append(document)
         if save_tender(self.request):
-            LOGGER.info('Updated tender award complaint document {}'.format(self.request.context.id),
+            self.LOGGER.info('Updated tender award complaint document {}'.format(self.request.context.id),
                         extra=context_unpack(self.request, {'MESSAGE_ID': 'tender_award_complaint_document_put'}))
             return {'data': document.serialize("view")}
 
@@ -134,6 +126,6 @@ class TenderAwardComplaintDocumentResource(object):
             return
         if apply_patch(self.request, src=self.request.context.serialize()):
             update_file_content_type(self.request)
-            LOGGER.info('Updated tender award complaint document {}'.format(self.request.context.id),
+            self.LOGGER.info('Updated tender award complaint document {}'.format(self.request.context.id),
                         extra=context_unpack(self.request, {'MESSAGE_ID': 'tender_award_complaint_document_patch'}))
             return {'data': self.request.context.serialize("view")}

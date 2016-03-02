@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-from logging import getLogger
 from openprocurement.api.utils import (
     get_file,
     save_tender,
@@ -9,6 +8,7 @@ from openprocurement.api.utils import (
     opresource,
     json_view,
     context_unpack,
+    APIResource,
 )
 from openprocurement.api.validation import (
     validate_file_update,
@@ -17,20 +17,12 @@ from openprocurement.api.validation import (
 )
 
 
-LOGGER = getLogger(__name__)
-
-
 @opresource(name='Tender Contract Documents',
             collection_path='/tenders/{tender_id}/contracts/{contract_id}/documents',
             path='/tenders/{tender_id}/contracts/{contract_id}/documents/{document_id}',
             procurementMethodType='belowThreshold',
             description="Tender contract documents")
-class TenderAwardContractDocumentResource(object):
-
-    def __init__(self, request, context):
-        self.context = context
-        self.request = request
-        self.db = request.registry.db
+class TenderAwardContractDocumentResource(APIResource):
 
     @json_view(permission='view_tender')
     def collection_get(self):
@@ -65,7 +57,7 @@ class TenderAwardContractDocumentResource(object):
         document = upload_file(self.request)
         self.context.documents.append(document)
         if save_tender(self.request):
-            LOGGER.info('Created tender contract document {}'.format(document.id),
+            self.LOGGER.info('Created tender contract document {}'.format(document.id),
                         extra=context_unpack(self.request, {'MESSAGE_ID': 'tender_contract_document_create'}, {'document_id': document.id}))
             self.request.response.status = 201
             document_route = self.request.matched_route.name.replace("collection_", "")
@@ -106,7 +98,7 @@ class TenderAwardContractDocumentResource(object):
         document = upload_file(self.request)
         self.request.validated['contract'].documents.append(document)
         if save_tender(self.request):
-            LOGGER.info('Updated tender contract document {}'.format(self.request.context.id),
+            self.LOGGER.info('Updated tender contract document {}'.format(self.request.context.id),
                         extra=context_unpack(self.request, {'MESSAGE_ID': 'tender_contract_document_put'}))
             return {'data': document.serialize("view")}
 
@@ -129,6 +121,6 @@ class TenderAwardContractDocumentResource(object):
             return
         if apply_patch(self.request, src=self.request.context.serialize()):
             update_file_content_type(self.request)
-            LOGGER.info('Updated tender contract document {}'.format(self.request.context.id),
+            self.LOGGER.info('Updated tender contract document {}'.format(self.request.context.id),
                         extra=context_unpack(self.request, {'MESSAGE_ID': 'tender_contract_document_patch'}))
             return {'data': self.request.context.serialize("view")}

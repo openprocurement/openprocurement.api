@@ -1,12 +1,12 @@
 # -*- coding: utf-8 -*-
-from logging import getLogger
 from openprocurement.api.utils import (
     apply_patch,
     save_tender,
-    check_tender_status,
+    add_next_award,
     opresource,
     json_view,
     context_unpack,
+    APIResource,
 )
 from openprocurement.api.validation import (
     validate_cancellation_data,
@@ -14,20 +14,12 @@ from openprocurement.api.validation import (
 )
 
 
-LOGGER = getLogger(__name__)
-
-
 @opresource(name='Tender Cancellations',
             collection_path='/tenders/{tender_id}/cancellations',
             path='/tenders/{tender_id}/cancellations/{cancellation_id}',
             procurementMethodType='belowThreshold',
             description="Tender cancellations")
-class TenderCancellationResource(object):
-
-    def __init__(self, request, context):
-        self.context = context
-        self.request = request
-        self.db = request.registry.db
+class TenderCancellationResource(APIResource):
 
     def cancel_tender(self):
         tender = self.request.validated['tender']
@@ -74,7 +66,7 @@ class TenderCancellationResource(object):
             self.cancel_tender()
         tender.cancellations.append(cancellation)
         if save_tender(self.request):
-            LOGGER.info('Created tender cancellation {}'.format(cancellation.id),
+            self.LOGGER.info('Created tender cancellation {}'.format(cancellation.id),
                         extra=context_unpack(self.request, {'MESSAGE_ID': 'tender_cancellation_create'}, {'cancellation_id': cancellation.id}))
             self.request.response.status = 201
             self.request.response.headers['Location'] = self.request.route_url('Tender Cancellations', tender_id=tender.id, cancellation_id=cancellation.id)
@@ -111,6 +103,6 @@ class TenderCancellationResource(object):
         elif self.request.context.status == 'active':
             self.cancel_tender()
         if save_tender(self.request):
-            LOGGER.info('Updated tender cancellation {}'.format(self.request.context.id),
+            self.LOGGER.info('Updated tender cancellation {}'.format(self.request.context.id),
                         extra=context_unpack(self.request, {'MESSAGE_ID': 'tender_cancellation_patch'}))
             return {'data': self.request.context.serialize("view")}

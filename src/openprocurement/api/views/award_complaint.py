@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-from logging import getLogger
 from openprocurement.api.models import get_now
 from openprocurement.api.utils import (
     apply_patch,
@@ -9,6 +8,7 @@ from openprocurement.api.utils import (
     opresource,
     save_tender,
     set_ownership,
+    APIResource,
 )
 from openprocurement.api.validation import (
     validate_complaint_data,
@@ -16,20 +16,12 @@ from openprocurement.api.validation import (
 )
 
 
-LOGGER = getLogger(__name__)
-
-
 @opresource(name='Tender Award Complaints',
             collection_path='/tenders/{tender_id}/awards/{award_id}/complaints',
             path='/tenders/{tender_id}/awards/{award_id}/complaints/{complaint_id}',
             procurementMethodType='belowThreshold',
             description="Tender award complaints")
-class TenderAwardComplaintResource(object):
-
-    def __init__(self, request, context):
-        self.context = context
-        self.request = request
-        self.db = request.registry.db
+class TenderAwardComplaintResource(APIResource):
 
     @json_view(content_type="application/json", permission='create_award_complaint', validators=(validate_complaint_data,))
     def collection_post(self):
@@ -59,7 +51,7 @@ class TenderAwardComplaintResource(object):
         set_ownership(complaint, self.request)
         self.context.complaints.append(complaint)
         if save_tender(self.request):
-            LOGGER.info('Created tender award complaint {}'.format(complaint.id),
+            self.LOGGER.info('Created tender award complaint {}'.format(complaint.id),
                         extra=context_unpack(self.request, {'MESSAGE_ID': 'tender_award_complaint_create'}, {'complaint_id': complaint.id}))
             self.request.response.status = 201
             self.request.response.headers['Location'] = self.request.route_url('Tender Award Complaints', tender_id=tender.id, award_id=self.request.validated['award_id'], complaint_id=complaint['id'])
@@ -141,6 +133,6 @@ class TenderAwardComplaintResource(object):
         if self.context.status not in ['draft', 'claim', 'answered', 'pending'] and tender.status in ['active.qualification', 'active.awarded']:
             check_tender_status(self.request)
         if save_tender(self.request):
-            LOGGER.info('Updated tender award complaint {}'.format(self.context.id),
+            self.LOGGER.info('Updated tender award complaint {}'.format(self.context.id),
                         extra=context_unpack(self.request, {'MESSAGE_ID': 'tender_award_complaint_patch'}))
             return {'data': self.context.serialize("view")}
