@@ -15,8 +15,8 @@ cornice==1.0.0
 couchdb-schematics==1.1.1
 coverage==3.7.1
 docutils==0.12
-gevent==1.0.1
-greenlet==0.4.5
+gevent==1.1rc5
+greenlet==0.4.9
 iso8601==0.1.10
 jsonpointer==1.9
 mock==1.0.1
