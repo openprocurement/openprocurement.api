@@ -109,7 +109,7 @@ Released: 2015-03-13
  - Set title, classification and additionalClassifications required
  - Added validation identical cpv groups of items
  - Added upload tender documents by auction user
- - Closing tender by signing contract
+ - Closing tender by registering contract
  - Strict mode for patching operation
  - Cancalling active award
 

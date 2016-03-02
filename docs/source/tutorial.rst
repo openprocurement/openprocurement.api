@@ -258,8 +258,8 @@ Let's see the list of all added contract documents:
 .. include:: tutorial/tender-contract-get-documents-again.http
    :code:
 
-Contract signing
-----------------
+Contract registration
+---------------------
 
 .. include:: tutorial/tender-contract-sign.http
    :code:

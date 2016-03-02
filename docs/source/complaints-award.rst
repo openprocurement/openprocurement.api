@@ -8,7 +8,7 @@ If tender conditions are favoriting only one supplier, or in any other viable ca
 Tender Award Claim Submission (with documents)
 ---------------------------------------------------
 
-At first create a complaint. Send POST request with bidder's access token.
+At first create a claim. Send POST request with bidder's access token.
 
 .. include:: complaints/award-complaint-submission.http
    :code:
