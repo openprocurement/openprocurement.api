@@ -7,7 +7,7 @@ from email.header import decode_header
 
 
 LOGGER = logging.getLogger(__name__)
-SCHEMA_VERSION = 19
+SCHEMA_VERSION = 20
 SCHEMA_DOC = 'openprocurement_schema'
 
 
@@ -615,6 +615,22 @@ def from18to19(db):
                 if item == 'awards':
                     for complaint in item_val.get('complaints', []):
                         changed = update_documents_type(complaint, changed)
+        if changed:
+            doc['dateModified'] = get_now().isoformat()
+            db.save(doc)
+
+
+def from19to20(db):
+    results = db.iterview('tenders/all', 2**10, include_docs=True)
+    for i in results:
+        doc = i.doc
+        changed = False
+        for contract in doc.get('contracts', []):
+            for document in contract.get('documents', []):
+                if 'awards' in document['url']:
+                    url = document['url'].split('/')
+                    document['url'] = '/'.join(url[:3] + url[5:])
+                    changed = True
         if changed:
             doc['dateModified'] = get_now().isoformat()
             db.save(doc)
