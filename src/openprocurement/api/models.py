@@ -248,6 +248,8 @@ class LotAuctionPeriod(Period):
         lot = self.__parent__
         if tender.status not in ['active.tendering', 'active.auction'] or lot.status != 'active':
             return
+        if tender.status == 'active.auction' and lot.numberOfBids < 2:
+            return
         if self.startDate and get_now() > calc_auction_end_time(lot.numberOfBids, self.startDate):
             return calc_auction_end_time(lot.numberOfBids, self.startDate).isoformat()
         else:
