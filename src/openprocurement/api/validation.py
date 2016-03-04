@@ -118,11 +118,11 @@ def validate_tender_auction_data(request):
                 for (y, x) in sorted(zip([tender_lots_ids.index(i['id']) for i in data.get('lots', [])], data.get('lots', [])))
             ]
         tender_bids_lots_ids = dict([(i.id, [j['relatedLot'] for j in i.lotValues]) for i in tender.bids])
-        if tender.lots and any([len(bid['lotValues']) != len(tender_bids_lots_ids.get(bid['id'], [])) for bid in bids]):
+        if tender.lots and any([len(bid.get('lotValues', [])) != len(tender_bids_lots_ids.get(bid['id'], [])) for bid in bids]):
             request.errors.add('body', 'bids', [{u'lotValues': [u'Number of lots of auction results did not match the number of tender lots']}])
             request.errors.status = 422
             return
-        if tender.lots and any([set([j['relatedLot'] for j in bid['lotValues']]) != set(tender_bids_lots_ids[bid['id']]) for bid in bids]):
+        if tender.lots and any([set([j['relatedLot'] for j in bid.get('lotValues', [])]) != set(tender_bids_lots_ids[bid['id']]) for bid in bids]):
             request.errors.add('body', 'bids', [{u'lotValues': [{u'relatedLot': ['relatedLot should be one of lots of bid']}]}])
             request.errors.status = 422
             return
