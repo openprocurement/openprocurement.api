@@ -750,6 +750,7 @@ class Contract(Model):
 
     id = MD5Type(required=True, default=lambda: uuid4().hex)
     awardID = StringType(required=True)
+    contractID = StringType()
     title = StringType()  # Contract title
     title_en = StringType()
     title_ru = StringType()

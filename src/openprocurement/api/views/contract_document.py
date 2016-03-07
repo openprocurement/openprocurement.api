@@ -56,6 +56,7 @@ class TenderAwardContractDocumentResource(APIResource):
             return
         document = upload_file(self.request)
         self.context.documents.append(document)
+        contract.contractID = '{}.{}{}'.format(tender.tenderID, self.server_id, len(tender.contracts) + 1)
         if save_tender(self.request):
             self.LOGGER.info('Created tender contract document {}'.format(document.id),
                         extra=context_unpack(self.request, {'MESSAGE_ID': 'tender_contract_document_create'}, {'document_id': document.id}))

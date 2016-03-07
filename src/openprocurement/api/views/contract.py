@@ -33,6 +33,7 @@ class TenderAwardContractResource(APIResource):
             return
         contract = self.request.validated['contract']
         tender.contracts.append(contract)
+        contract.contractID = '{}-{}{}'.format(tender.tenderID, self.server_id, len(tender.contracts) + 1)
         if save_tender(self.request):
             self.LOGGER.info('Created tender contract {}'.format(contract.id),
                         extra=context_unpack(self.request, {'MESSAGE_ID': 'tender_contract_create'}, {'contract_id': contract.id}))
