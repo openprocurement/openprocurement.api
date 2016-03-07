@@ -301,7 +301,8 @@ class TenderAwardResource(APIResource):
         apply_patch(self.request, save=False, src=self.request.context.serialize())
         if award_status == 'pending' and award.status == 'active':
             award.complaintPeriod.endDate = get_now() + STAND_STILL_TIME
-            tender.contracts.append(type(tender).contracts.model_class({'awardID': award.id}))
+
+            tender.contracts.append(type(tender).contracts.model_class({'awardID': award.id, 'suppliers': award.suppliers, 'value': award.value, 'items': [i for i in tender.items if i.relatedLot == award.lotID ]}))
             add_next_award(self.request)
         elif award_status == 'active' and award.status == 'cancelled':
             now = get_now()

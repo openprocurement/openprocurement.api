@@ -13,9 +13,11 @@ class TenderContractResourceTest(BaseTenderWebTest):
         super(TenderContractResourceTest, self).setUp()
         # Create award
         response = self.app.post_json('/tenders/{}/awards'.format(
-            self.tender_id), {'data': {'suppliers': [test_tender_data["procuringEntity"]], 'status': 'pending', 'bid_id': self.initial_bids[0]['id']}})
+            self.tender_id), {'data': {'suppliers': [test_tender_data["procuringEntity"]], 'status': 'pending', 'bid_id': self.initial_bids[0]['id'], 'value': test_tender_data["value"]}})
         award = response.json['data']
         self.award_id = award['id']
+        self.award_value = award['value']
+        self.award_suppliers = award['suppliers']
         response = self.app.patch_json('/tenders/{}/awards/{}'.format(self.tender_id, self.award_id), {"data": {"status": "active"}})
 
     def test_create_tender_contract_invalid(self):
@@ -88,11 +90,13 @@ class TenderContractResourceTest(BaseTenderWebTest):
 
     def test_create_tender_contract(self):
         response = self.app.post_json('/tenders/{}/contracts'.format(
-            self.tender_id), {'data': {'title': 'contract title', 'description': 'contract description', 'awardID': self.award_id}})
+            self.tender_id), {'data': {'title': 'contract title', 'description': 'contract description', 'awardID': self.award_id, 'value': self.award_value, 'suppliers': self.award_suppliers}})
         self.assertEqual(response.status, '201 Created')
         self.assertEqual(response.content_type, 'application/json')
         contract = response.json['data']
         self.assertIn('id', contract)
+        self.assertIn('value', contract)
+        self.assertIn('suppliers', contract)
         self.assertIn(contract['id'], response.headers['Location'])
 
         tender = self.db.get(self.tender_id)

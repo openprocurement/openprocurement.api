@@ -325,7 +325,7 @@ class Item(Model):
     relatedLot = MD5Type()
 
     def validate_relatedLot(self, data, relatedLot):
-        if relatedLot and isinstance(data['__parent__'], Model) and relatedLot not in [i.id for i in data['__parent__'].lots]:
+        if relatedLot and isinstance(data['__parent__'], Model) and relatedLot not in [i.id for i in get_tender(data['__parent__']).lots]:
             raise ValidationError(u"relatedLot should be one of lots")
 
 
@@ -743,7 +743,7 @@ class Contract(Model):
     class Options:
         roles = {
             'create': blacklist('id', 'status', 'documents', 'dateSigned'),
-            'edit': blacklist('id', 'documents', 'dateSigned', 'awardID'),
+            'edit': blacklist('id', 'documents', 'dateSigned', 'awardID', 'value', 'suppliers', 'items', 'contractID'),
             'embedded': schematics_embedded_role,
             'view': schematics_default_role,
         }
@@ -763,6 +763,8 @@ class Contract(Model):
     dateSigned = IsoDateTimeType()
     documents = ListType(ModelType(Document), default=list())
     items = ListType(ModelType(Item))
+    suppliers = ListType(ModelType(Organization), min_size=1, max_size=1)
+    value = ModelType(Value)
 
     def validate_awardID(self, data, awardID):
         if awardID and isinstance(data['__parent__'], Model) and awardID not in [i.id for i in data['__parent__'].awards]:
