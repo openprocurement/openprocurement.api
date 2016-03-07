@@ -54,7 +54,6 @@ class TendersResource(APIResource):
     def __init__(self, request, context):
         super(TendersResource, self).__init__(request, context)
         self.server = request.registry.couchdb_server
-        self.server_id = request.registry.server_id
 
     @json_view(permission='view_tender')
     def get(self):

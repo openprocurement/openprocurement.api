@@ -585,6 +585,7 @@ class APIResource(object):
         self.context = context
         self.request = request
         self.db = request.registry.db
+        self.server_id = request.registry.server_id
         self.LOGGER = getLogger(type(self).__module__)
 
 

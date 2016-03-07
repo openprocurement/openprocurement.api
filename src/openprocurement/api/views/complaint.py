@@ -37,6 +37,7 @@ class TenderComplaintResource(APIResource):
             complaint.dateSubmitted = get_now()
         else:
             complaint.status = 'draft'
+        complaint.complaintID = '{}.{}{}'.format(tender.tenderID, self.server_id, sum([len(i.complaints) for i in tender.awards], len(tender.complaints)) + 1)
         set_ownership(complaint, self.request)
         tender.complaints.append(complaint)
         if save_tender(self.request):
