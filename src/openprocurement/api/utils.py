@@ -211,7 +211,8 @@ def save_tender(request):
     if patch:
         tender.revisions.append(Revision({'author': request.authenticated_userid, 'changes': patch, 'rev': tender.rev}))
         old_dateModified = tender.dateModified
-        tender.dateModified = get_now()
+        if getattr(tender, 'modified', True):
+            tender.dateModified = get_now()
         try:
             tender.store(request.registry.db)
         except ModelValidationError, e:
