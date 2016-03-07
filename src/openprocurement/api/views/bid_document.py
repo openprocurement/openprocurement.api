@@ -54,6 +54,8 @@ class TenderBidDocumentResource(APIResource):
             return
         document = upload_file(self.request)
         self.context.documents.append(document)
+        if self.request.validated['tender_status'] == 'active.tendering':
+            self.request.validated['tender'].modified = False
         if save_tender(self.request):
             self.LOGGER.info('Created tender bid document {}'.format(document.id),
                         extra=context_unpack(self.request, {'MESSAGE_ID': 'tender_bid_document_create'}, {'document_id': document.id}))
@@ -93,6 +95,8 @@ class TenderBidDocumentResource(APIResource):
             return
         document = upload_file(self.request)
         self.request.validated['bid'].documents.append(document)
+        if self.request.validated['tender_status'] == 'active.tendering':
+            self.request.validated['tender'].modified = False
         if save_tender(self.request):
             self.LOGGER.info('Updated tender bid document {}'.format(self.request.context.id),
                         extra=context_unpack(self.request, {'MESSAGE_ID': 'tender_bid_document_put'}))
@@ -109,6 +113,8 @@ class TenderBidDocumentResource(APIResource):
             self.request.errors.add('body', 'data', 'Can\'t update document because award of bid is not in pending state')
             self.request.errors.status = 403
             return
+        if self.request.validated['tender_status'] == 'active.tendering':
+            self.request.validated['tender'].modified = False
         if apply_patch(self.request, src=self.request.context.serialize()):
             update_file_content_type(self.request)
             self.LOGGER.info('Updated tender bid document {}'.format(self.request.context.id),

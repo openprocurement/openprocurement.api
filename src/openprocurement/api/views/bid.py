@@ -112,6 +112,7 @@ class TenderBidResource(APIResource):
         bid = self.request.validated['bid']
         set_ownership(bid, self.request)
         tender.bids.append(bid)
+        tender.modified = False
         if save_tender(self.request):
             self.LOGGER.info('Created tender bid {}'.format(bid.id),
                         extra=context_unpack(self.request, {'MESSAGE_ID': 'tender_bid_create'}, {'bid_id': bid.id}))
@@ -254,6 +255,7 @@ class TenderBidResource(APIResource):
             for lotvalue in self.request.validated['data'].get("lotValues", []):
                 if lotvalue['relatedLot'] in lotValues and lotvalue.get("value", {}).get("amount") != lotValues[lotvalue['relatedLot']]:
                     lotvalue['date'] = get_now().isoformat()
+        self.request.validated['tender'].modified = False
         if apply_patch(self.request, src=self.request.context.serialize()):
             self.LOGGER.info('Updated tender bid {}'.format(self.request.context.id),
                         extra=context_unpack(self.request, {'MESSAGE_ID': 'tender_bid_patch'}))
@@ -296,6 +298,7 @@ class TenderBidResource(APIResource):
             return
         res = bid.serialize("view")
         self.request.validated['tender'].bids.remove(bid)
+        self.request.validated['tender'].modified = False
         if save_tender(self.request):
             self.LOGGER.info('Deleted tender bid {}'.format(self.request.context.id),
                         extra=context_unpack(self.request, {'MESSAGE_ID': 'tender_bid_delete'}))
