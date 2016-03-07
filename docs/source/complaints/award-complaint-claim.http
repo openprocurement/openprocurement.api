@@ -1,4 +1,4 @@
-PATCH /api/0.12/tenders/34da1cd9ac4343e79f4b163d0a583125/awards/0da7879e7234468c9ae9c5766edd805c/complaints/cd0bc6c7a74f486eb0076a4412c3e997?acc_token=229fc1f30681400f9e6de3bcd32dd2f4 HTTP/1.0
+PATCH /api/0.12/tenders/bdd5c28bdb7945adbd560303fc3159f8/awards/3ad50d7d194f4987a4c8d9b8dd936de7/complaints/b3ac4098908b422f9269c1fa4e7b283d?acc_token=fce9563d51ad4ef7ae4e3114654217a0 HTTP/1.0
 Authorization: Basic YnJva2VyOg==
 Content-Length: 29
 Content-Type: application/json
@@ -21,12 +21,12 @@ Content-Type: application/json; charset=UTF-8
       {
         "author": "complaint_owner", 
         "title": "Complaint_Attachement.pdf", 
-        "url": "http://api-sandbox.openprocurement.org/api/0.12/tenders/34da1cd9ac4343e79f4b163d0a583125/awards/0da7879e7234468c9ae9c5766edd805c/complaints/cd0bc6c7a74f486eb0076a4412c3e997/documents/2394bd27c14148869eb200b5246aed03?download=2c0709213c414971a83abee31a4f0502", 
+        "url": "http://api-sandbox.openprocurement.org/api/0.12/tenders/bdd5c28bdb7945adbd560303fc3159f8/awards/3ad50d7d194f4987a4c8d9b8dd936de7/complaints/b3ac4098908b422f9269c1fa4e7b283d/documents/bf403e56a7684e41b3b595171f434721?download=4dfd91b295ab457e84d6323eb74ef539", 
         "format": "application/pdf", 
         "documentOf": "tender", 
-        "datePublished": "2016-02-26T15:08:49.134667+02:00", 
-        "id": "2394bd27c14148869eb200b5246aed03", 
-        "dateModified": "2016-02-26T15:08:49.134704+02:00"
+        "datePublished": "2016-03-07T12:32:23.506909+02:00", 
+        "id": "bf403e56a7684e41b3b595171f434721", 
+        "dateModified": "2016-03-07T12:32:23.506957+02:00"
       }
     ], 
     "description": "complaint description", 
@@ -50,10 +50,11 @@ Content-Type: application/json; charset=UTF-8
         "locality": "м. Київ"
       }
     }, 
-    "dateSubmitted": "2016-02-26T15:08:49.343202+02:00", 
-    "date": "2016-02-26T15:08:48.935630+02:00", 
+    "dateSubmitted": "2016-03-07T12:32:23.800567+02:00", 
+    "complaintID": "UA-2016-03-07-000001.5", 
+    "date": "2016-03-07T12:32:23.262400+02:00", 
     "type": "claim", 
-    "id": "cd0bc6c7a74f486eb0076a4412c3e997"
+    "id": "b3ac4098908b422f9269c1fa4e7b283d"
   }
 }
 

@@ -1,4 +1,4 @@
-POST /api/0.12/tenders/34da1cd9ac4343e79f4b163d0a583125/awards/0da7879e7234468c9ae9c5766edd805c/complaints?acc_token=d136b9a75f454ba3a2476a96cf7a5525 HTTP/1.0
+POST /api/0.12/tenders/bdd5c28bdb7945adbd560303fc3159f8/awards/3ad50d7d194f4987a4c8d9b8dd936de7/complaints?acc_token=bac9eadf7bae4176afb0d77cb98c8e12 HTTP/1.0
 Authorization: Basic YnJva2VyOg==
 Content-Length: 899
 Content-Type: application/json
@@ -34,15 +34,16 @@ Host: api-sandbox.openprocurement.org
 
 201 Created
 Content-Type: application/json; charset=UTF-8
-Location: http://api-sandbox.openprocurement.org/api/0.12/tenders/34da1cd9ac4343e79f4b163d0a583125/awards/0da7879e7234468c9ae9c5766edd805c/complaints/392b95c592084cfc954a60c346894ed6
+Location: http://api-sandbox.openprocurement.org/api/0.12/tenders/bdd5c28bdb7945adbd560303fc3159f8/awards/3ad50d7d194f4987a4c8d9b8dd936de7/complaints/12781e42ffdb4160b0a3f29dd5ccaa4d
 
 {
   "access": {
-    "token": "95472c160183466a8e5062d97540e061"
+    "token": "0614c2255f1b44b4996b28d75ad418f4"
   }, 
   "data": {
     "status": "claim", 
     "description": "complaint description", 
+    "title": "complaint title", 
     "author": {
       "contactPoint": {
         "name": "Державне управління справами", 
@@ -62,11 +63,11 @@ Location: http://api-sandbox.openprocurement.org/api/0.12/tenders/34da1cd9ac4343
         "locality": "м. Київ"
       }
     }, 
-    "title": "complaint title", 
-    "dateSubmitted": "2016-02-26T15:08:49.544866+02:00", 
-    "date": "2016-02-26T15:08:49.543468+02:00", 
+    "dateSubmitted": "2016-03-07T12:32:24.067244+02:00", 
+    "complaintID": "UA-2016-03-07-000001.6", 
+    "date": "2016-03-07T12:32:24.065484+02:00", 
     "type": "claim", 
-    "id": "392b95c592084cfc954a60c346894ed6"
+    "id": "12781e42ffdb4160b0a3f29dd5ccaa4d"
   }
 }
 

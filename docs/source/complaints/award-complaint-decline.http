@@ -1,4 +1,4 @@
-PATCH /api/0.12/tenders/34da1cd9ac4343e79f4b163d0a583125/awards/0da7879e7234468c9ae9c5766edd805c/complaints/e672967c46174edc9d941ecdb01c7a49 HTTP/1.0
+PATCH /api/0.12/tenders/bdd5c28bdb7945adbd560303fc3159f8/awards/3ad50d7d194f4987a4c8d9b8dd936de7/complaints/185356d995914a228cd2884a7b310131 HTTP/1.0
 Authorization: Basic cmV2aWV3ZXI6
 Content-Length: 32
 Content-Type: application/json
@@ -17,11 +17,8 @@ Content-Type: application/json; charset=UTF-8
 {
   "data": {
     "status": "declined", 
-    "dateDecision": "2016-02-26T15:08:53.414826+02:00", 
+    "dateDecision": "2016-03-07T12:32:28.684391+02:00", 
     "description": "complaint description", 
-    "title": "complaint title", 
-    "resolutionType": "resolved", 
-    "type": "claim", 
     "author": {
       "contactPoint": {
         "name": "Державне управління справами", 
@@ -41,13 +38,17 @@ Content-Type: application/json; charset=UTF-8
         "locality": "м. Київ"
       }
     }, 
+    "resolutionType": "resolved", 
+    "type": "claim", 
+    "title": "complaint title", 
     "satisfied": false, 
-    "dateEscalated": "2016-02-26T15:08:52.541883+02:00", 
-    "dateAnswered": "2016-02-26T15:08:52.274923+02:00", 
-    "dateSubmitted": "2016-02-26T15:08:52.019342+02:00", 
-    "date": "2016-02-26T15:08:52.017615+02:00", 
+    "dateEscalated": "2016-03-07T12:32:27.689249+02:00", 
+    "dateAnswered": "2016-03-07T12:32:27.365718+02:00", 
+    "dateSubmitted": "2016-03-07T12:32:27.034996+02:00", 
+    "complaintID": "UA-2016-03-07-000001.8", 
+    "date": "2016-03-07T12:32:27.033488+02:00", 
     "resolution": "Виправлено неконкурентні умови", 
-    "id": "e672967c46174edc9d941ecdb01c7a49"
+    "id": "185356d995914a228cd2884a7b310131"
   }
 }
 
