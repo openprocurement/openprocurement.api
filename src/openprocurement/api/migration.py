@@ -604,7 +604,7 @@ def from18to19(db):
                 changed = True
         return changed
 
-    results = db.iterview('tenders/all', 2**10, include_docs=True)
+    results = db.iterview('tenders/all', 2 ** 10, include_docs=True)
     for i in results:
         doc = i.doc
         changed = update_documents_type(doc, False)
@@ -617,11 +617,17 @@ def from18to19(db):
                         changed = update_documents_type(complaint, changed)
         if changed:
             doc['dateModified'] = get_now().isoformat()
-            db.save(doc)
+            docs.append(doc)
+        if len(docs) >= 100:
+            db.update(docs)
+            docs = []
+    if docs:
+        db.update(docs)
 
 
 def from19to20(db):
-    results = db.iterview('tenders/all', 2**10, include_docs=True)
+    results = db.iterview('tenders/all', 2 ** 10, include_docs=True)
+    docs = []
     for i in results:
         doc = i.doc
         changed = False
@@ -633,4 +639,9 @@ def from19to20(db):
                     changed = True
         if changed:
             doc['dateModified'] = get_now().isoformat()
-            db.save(doc)
+            docs.append(doc)
+        if len(docs) >= 100:
+            result = db.update(docs)
+            docs = []
+    if docs:
+        db.update(docs)
