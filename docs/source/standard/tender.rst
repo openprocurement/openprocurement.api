@@ -57,6 +57,11 @@ Schema
    |ocdsDescription|
    The goods and services to be purchased, broken into line items wherever possible. Items should not be duplicated, but a quantity of 2 specified instead.
 
+:features:
+   list of :ref:`Feature` objects
+
+   Features of tender.
+
 :documents:
    List of :ref:`document` objects
  
@@ -91,9 +96,12 @@ Schema
    * `valueAddedTaxIncluded` should either be absent or match `Tender.value.valueAddedTaxIncluded`
 
 :awards:
-   List of :ref:`award` objects
+    List of :ref:`award` objects
 
-   All qualifications (disqualifications and awards).
+    All qualifications (disqualifications and awards).
+
+:contracts:
+    List of :ref:`Contract` objects
 
 :enquiryPeriod:
    :ref:`period`, required
@@ -115,6 +123,11 @@ Schema
    :ref:`period`, read-only
 
    Period when Auction is conducted.
+
+:auctionUrl:
+    url
+
+    A web address for view auction.
 
 :awardPeriod:
    :ref:`period`, read-only
@@ -146,6 +159,11 @@ Schema
 
    Status of the Tender.
 
+:lots:
+   List of :ref:`lot` objects.
+
+   Contains all tender lots.
+
 :cancellations:
    List of :ref:`cancellation` objects.
 
@@ -159,10 +177,12 @@ Schema
 
    Historical changes to Tender object properties.
 
-The Tender dates should be sequential:
+.. important::
 
- * Current time
- * `enquiryPeriod.startDate`
- * `enquiryPeriod.endDate`
- * `tenderPeriod.startDate`
- * `tenderPeriod.endDate`
+    The Tender dates should be sequential:
+
+        * Current time
+        * `enquiryPeriod.startDate`
+        * `enquiryPeriod.endDate`
+        * `tenderPeriod.startDate`
+        * `tenderPeriod.endDate`

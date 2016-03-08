@@ -1,12 +1,12 @@
 # -*- coding: utf-8 -*-
-from logging import getLogger
-from cornice.resource import resource, view
-from openprocurement.api.models import Question, get_now
+from openprocurement.api.models import get_now
 from openprocurement.api.utils import (
     apply_patch,
     save_tender,
-    error_handler,
-    update_journal_handler_params,
+    opresource,
+    json_view,
+    context_unpack,
+    APIResource,
 )
 from openprocurement.api.validation import (
     validate_question_data,
@@ -14,21 +14,14 @@ from openprocurement.api.validation import (
 )
 
 
-LOGGER = getLogger(__name__)
+@opresource(name='Tender Questions',
+            collection_path='/tenders/{tender_id}/questions',
+            path='/tenders/{tender_id}/questions/{question_id}',
+            procurementMethodType='belowThreshold',
+            description="Tender questions")
+class TenderQuestionResource(APIResource):
 
-
-@resource(name='Tender Questions',
-          collection_path='/tenders/{tender_id}/questions',
-          path='/tenders/{tender_id}/questions/{question_id}',
-          description="Tender questions",
-          error_handler=error_handler)
-class TenderQuestionResource(object):
-
-    def __init__(self, request):
-        self.request = request
-        self.db = request.registry.db
-
-    @view(content_type="application/json", validators=(validate_question_data,), permission='create_question', renderer='json')
+    @json_view(content_type="application/json", validators=(validate_question_data,), permission='create_question')
     def collection_post(self):
         """Post a question
         """
@@ -37,29 +30,32 @@ class TenderQuestionResource(object):
             self.request.errors.add('body', 'data', 'Can add question only in enquiryPeriod')
             self.request.errors.status = 403
             return
-        question_data = self.request.validated['data']
-        question = Question(question_data)
+        question = self.request.validated['question']
+        if any([i.status != 'active' for i in tender.lots if i.id == question.relatedItem]):
+            self.request.errors.add('body', 'data', 'Can add question only in active lot status')
+            self.request.errors.status = 403
+            return
         tender.questions.append(question)
         if save_tender(self.request):
-            update_journal_handler_params({'question_id': question.id})
-            LOGGER.info('Created tender question {}'.format(question.id), extra={'MESSAGE_ID': 'tender_question_create'})
+            self.LOGGER.info('Created tender question {}'.format(question.id),
+                        extra=context_unpack(self.request, {'MESSAGE_ID': 'tender_question_create'}, {'question_id': question.id}))
             self.request.response.status = 201
             self.request.response.headers['Location'] = self.request.route_url('Tender Questions', tender_id=tender.id, question_id=question.id)
             return {'data': question.serialize("view")}
 
-    @view(renderer='json', permission='view_tender')
+    @json_view(permission='view_tender')
     def collection_get(self):
         """List questions
         """
         return {'data': [i.serialize(self.request.validated['tender'].status) for i in self.request.validated['tender'].questions]}
 
-    @view(renderer='json', permission='view_tender')
+    @json_view(permission='view_tender')
     def get(self):
         """Retrieving the question
         """
         return {'data': self.request.validated['question'].serialize(self.request.validated['tender'].status)}
 
-    @view(content_type="application/json", permission='edit_tender', validators=(validate_patch_question_data,), renderer='json')
+    @json_view(content_type="application/json", permission='edit_tender', validators=(validate_patch_question_data,))
     def patch(self):
         """Post an Answer
         """
@@ -68,6 +64,11 @@ class TenderQuestionResource(object):
             self.request.errors.add('body', 'data', 'Can\'t update question in current ({}) tender status'.format(tender.status))
             self.request.errors.status = 403
             return
+        if any([i.status != 'active' for i in tender.lots if i.id == self.request.context.relatedItem]):
+            self.request.errors.add('body', 'data', 'Can update question only in active lot status')
+            self.request.errors.status = 403
+            return
         if apply_patch(self.request, src=self.request.context.serialize()):
-            LOGGER.info('Updated tender question {}'.format(self.request.context.id), extra={'MESSAGE_ID': 'tender_question_patch'})
+            self.LOGGER.info('Updated tender question {}'.format(self.request.context.id),
+                        extra=context_unpack(self.request, {'MESSAGE_ID': 'tender_question_patch'}))
             return {'data': self.request.context.serialize(tender.status)}

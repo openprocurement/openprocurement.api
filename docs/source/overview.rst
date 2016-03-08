@@ -46,15 +46,22 @@ Project status
 
 The project has pre alpha status.
 
-The source repository for this project is on GitHub:
-
-https://github.com/openprocurement/openprocurement.api
+The source repository for this project is on GitHub: https://github.com/openprocurement/openprocurement.api
 
 You can leave feedback by raising a new issue on the `issue tracker
 <https://github.com/openprocurement/openprocurement.api/issues>`_ (GitHub
-registration necessary).  For general discussion use `Open Procurement
+registration necessary).  
+
+For general discussion use `Open Procurement
 General <https://groups.google.com/group/open-procurement-general>`_
 maillist.
+
+General information, roadmap, and technical specifications for the 
+Open Procurement project can be found at `openprocurement.org <http://openprocurement.org/en>`_.
+
+Information on work with Negotiation procurement procedure is in this `tutorial <http://limited.api-docs.openprocurement.org/en/latest/>`_.
+
+Instructions for the Open Procurement Open UA procedure can be found in this `documentation <http://openua.api-docs.openprocurement.org/en/latest/overview.html>`_.
 
 API stability
 -------------
@@ -66,11 +73,22 @@ lot.  The changes in the API are communicated via `Open Procurement API
 Change log
 ----------
 
+0.10
+~~~~
+Released: not released
+
+ New features:
+
+ - :ref:`Multilot tenders <lots>`
+
+
 0.9
 ~~~
 Released: not released
 
  New features:
+
+ - :ref:`MEAT tenders <meat>`
 
 
 0.8
@@ -91,7 +109,7 @@ Released: 2015-03-13
  - Set title, classification and additionalClassifications required
  - Added validation identical cpv groups of items
  - Added upload tender documents by auction user
- - Closing tender by signing contract
+ - Closing tender by registering contract
  - Strict mode for patching operation
  - Cancalling active award
 

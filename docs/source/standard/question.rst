@@ -36,3 +36,17 @@ Schema
     string
 
     Answer for the question asked.
+
+:questionOf:
+    string
+
+    Possible values are:
+
+    * `tender`
+    * `item`
+    * `lot`
+
+:relatedItem:
+    string
+
+    Id of related :ref:`lot` or :ref:`item`.

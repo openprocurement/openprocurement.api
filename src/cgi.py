@@ -458,7 +458,7 @@ class FieldStorage:
         # Process content-disposition header
         cdisp, pdict = "", {}
         if 'content-disposition' in self.headers:
-            cd = rfc6266.parse_headers(self.headers['content-disposition'])
+            cd = rfc6266.parse_headers(self.headers['content-disposition'], relaxed=True)
             cdisp, pdict = cd.disposition, cd.assocs
         self.disposition = cdisp
         self.disposition_options = pdict

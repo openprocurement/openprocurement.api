@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 import unittest
 
-from openprocurement.api.tests.base import BaseTenderWebTest, test_tender_data
+from openprocurement.api.tests.base import BaseTenderWebTest, test_tender_data, test_lots
 
 
 class TenderQuestionResourceTest(BaseTenderWebTest):
@@ -102,6 +102,47 @@ class TenderQuestionResourceTest(BaseTenderWebTest):
             {u'description': {u'contactPoint': [u'This field is required.'], u'identifier': {u'scheme': [u'This field is required.'], u'id': [u'This field is required.'], u'uri': [u'Not a well formed URL.']}, u'address': [u'This field is required.']}, u'location': u'body', u'name': u'author'}
         ])
 
+        response = self.app.post_json('/tenders/{}/questions'.format(self.tender_id), {'data': {
+            'title': 'question title',
+            'description': 'question description',
+            'author': test_tender_data["procuringEntity"],
+            "questionOf": "lot"
+        }}, status=422)
+        self.assertEqual(response.status, '422 Unprocessable Entity')
+        self.assertEqual(response.content_type, 'application/json')
+        self.assertEqual(response.json['status'], 'error')
+        self.assertEqual(response.json['errors'], [
+            {u'description': [u'This field is required.'], u'location': u'body', u'name': u'relatedItem'}
+        ])
+
+        response = self.app.post_json('/tenders/{}/questions'.format(self.tender_id), {'data': {
+            'title': 'question title',
+            'description': 'question description',
+            'author': test_tender_data["procuringEntity"],
+            "questionOf": "lot",
+            "relatedItem": '0' * 32
+        }}, status=422)
+        self.assertEqual(response.status, '422 Unprocessable Entity')
+        self.assertEqual(response.content_type, 'application/json')
+        self.assertEqual(response.json['status'], 'error')
+        self.assertEqual(response.json['errors'], [
+            {u'description': [u'relatedItem should be one of lots'], u'location': u'body', u'name': u'relatedItem'}
+        ])
+
+        response = self.app.post_json('/tenders/{}/questions'.format(self.tender_id), {'data': {
+            'title': 'question title',
+            'description': 'question description',
+            'author': test_tender_data["procuringEntity"],
+            "questionOf": "item",
+            "relatedItem": '0' * 32
+        }}, status=422)
+        self.assertEqual(response.status, '422 Unprocessable Entity')
+        self.assertEqual(response.content_type, 'application/json')
+        self.assertEqual(response.json['status'], 'error')
+        self.assertEqual(response.json['errors'], [
+            {u'description': [u'relatedItem should be one of items'], u'location': u'body', u'name': u'relatedItem'}
+        ])
+
     def test_create_tender_question(self):
         response = self.app.post_json('/tenders/{}/questions'.format(
             self.tender_id), {'data': {'title': 'question title', 'description': 'question description', 'author': test_tender_data["procuringEntity"]}})
@@ -172,7 +213,7 @@ class TenderQuestionResourceTest(BaseTenderWebTest):
         response = self.app.get('/tenders/{}/questions/{}'.format(self.tender_id, question['id']))
         self.assertEqual(response.status, '200 OK')
         self.assertEqual(response.content_type, 'application/json')
-        self.assertEqual(set(response.json['data']), set([u'id', u'date', u'title', u'description']))
+        self.assertEqual(set(response.json['data']), set([u'id', u'date', u'title', u'description', u'questionOf']))
 
         self.set_status('active.qualification')
 
@@ -209,7 +250,7 @@ class TenderQuestionResourceTest(BaseTenderWebTest):
         response = self.app.get('/tenders/{}/questions'.format(self.tender_id))
         self.assertEqual(response.status, '200 OK')
         self.assertEqual(response.content_type, 'application/json')
-        self.assertEqual(set(response.json['data'][0]), set([u'id', u'date', u'title', u'description']))
+        self.assertEqual(set(response.json['data'][0]), set([u'id', u'date', u'title', u'description', u'questionOf']))
 
         self.set_status('active.qualification')
 
@@ -228,9 +269,94 @@ class TenderQuestionResourceTest(BaseTenderWebTest):
         ])
 
 
+class TenderLotQuestionResourceTest(BaseTenderWebTest):
+    initial_lots = 2 * test_lots
+
+    def test_create_tender_question(self):
+        response = self.app.post_json('/tenders/{}/cancellations'.format(self.tender_id), {'data': {
+            'reason': 'cancellation reason',
+            'status': 'active',
+            "cancellationOf": "lot",
+            "relatedLot": self.initial_lots[0]['id']
+        }})
+        self.assertEqual(response.status, '201 Created')
+
+        response = self.app.post_json('/tenders/{}/questions'.format(self.tender_id), {'data': {
+            'title': 'question title',
+            'description': 'question description',
+            "questionOf": "lot",
+            "relatedItem": self.initial_lots[0]['id'],
+            'author': test_tender_data["procuringEntity"]
+        }}, status=403)
+        self.assertEqual(response.status, '403 Forbidden')
+        self.assertEqual(response.content_type, 'application/json')
+        self.assertEqual(response.json['errors'][0]["description"], "Can add question only in active lot status")
+
+        response = self.app.post_json('/tenders/{}/questions'.format(self.tender_id), {'data': {
+            'title': 'question title',
+            'description': 'question description',
+            "questionOf": "lot",
+            "relatedItem": self.initial_lots[1]['id'],
+            'author': test_tender_data["procuringEntity"]
+        }})
+        self.assertEqual(response.status, '201 Created')
+        self.assertEqual(response.content_type, 'application/json')
+        question = response.json['data']
+        self.assertEqual(question['author']['name'], test_tender_data["procuringEntity"]['name'])
+        self.assertIn('id', question)
+        self.assertIn(question['id'], response.headers['Location'])
+
+    def test_patch_tender_question(self):
+        response = self.app.post_json('/tenders/{}/questions'.format(self.tender_id), {'data': {
+            'title': 'question title',
+            'description': 'question description',
+            "questionOf": "lot",
+            "relatedItem": self.initial_lots[0]['id'],
+            'author': test_tender_data["procuringEntity"]
+        }})
+        self.assertEqual(response.status, '201 Created')
+        self.assertEqual(response.content_type, 'application/json')
+        question = response.json['data']
+
+        response = self.app.post_json('/tenders/{}/cancellations'.format(self.tender_id), {'data': {
+            'reason': 'cancellation reason',
+            'status': 'active',
+            "cancellationOf": "lot",
+            "relatedLot": self.initial_lots[0]['id']
+        }})
+        self.assertEqual(response.status, '201 Created')
+
+        response = self.app.patch_json('/tenders/{}/questions/{}'.format(self.tender_id, question['id']), {"data": {"answer": "answer"}}, status=403)
+        self.assertEqual(response.status, '403 Forbidden')
+        self.assertEqual(response.content_type, 'application/json')
+        self.assertEqual(response.json['errors'][0]["description"], "Can update question only in active lot status")
+
+        response = self.app.post_json('/tenders/{}/questions'.format(self.tender_id), {'data': {
+            'title': 'question title',
+            'description': 'question description',
+            "questionOf": "lot",
+            "relatedItem": self.initial_lots[1]['id'],
+            'author': test_tender_data["procuringEntity"]
+        }})
+        self.assertEqual(response.status, '201 Created')
+        self.assertEqual(response.content_type, 'application/json')
+        question = response.json['data']
+
+        response = self.app.patch_json('/tenders/{}/questions/{}'.format(self.tender_id, question['id']), {"data": {"answer": "answer"}})
+        self.assertEqual(response.status, '200 OK')
+        self.assertEqual(response.content_type, 'application/json')
+        self.assertEqual(response.json['data']["answer"], "answer")
+
+        response = self.app.get('/tenders/{}/questions/{}'.format(self.tender_id, question['id']))
+        self.assertEqual(response.status, '200 OK')
+        self.assertEqual(response.content_type, 'application/json')
+        self.assertEqual(response.json['data']["answer"], "answer")
+
+
 def suite():
     suite = unittest.TestSuite()
     suite.addTest(unittest.makeSuite(TenderQuestionResourceTest))
+    suite.addTest(unittest.makeSuite(TenderLotQuestionResourceTest))
     return suite
 
 

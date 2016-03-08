@@ -32,9 +32,13 @@ Contents:
    tenders
    procuring
    bidding
+   meat
+   lots
    qualification
    questions
    complaints
+   performance
+   cluster
    reference
 
 Indices and tables

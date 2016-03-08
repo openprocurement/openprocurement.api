@@ -1,0 +1,82 @@
+GET /api/0.12/tenders/bdd5c28bdb7945adbd560303fc3159f8/awards/3ad50d7d194f4987a4c8d9b8dd936de7/complaints HTTP/1.0
+Host: api-sandbox.openprocurement.org
+
+
+200 OK
+Content-Type: application/json; charset=UTF-8
+
+{
+  "data": [
+    {
+      "status": "claim", 
+      "documents": [
+        {
+          "author": "complaint_owner", 
+          "title": "Complaint_Attachement.pdf", 
+          "url": "http://api-sandbox.openprocurement.org/api/0.12/tenders/bdd5c28bdb7945adbd560303fc3159f8/awards/3ad50d7d194f4987a4c8d9b8dd936de7/complaints/b3ac4098908b422f9269c1fa4e7b283d/documents/bf403e56a7684e41b3b595171f434721?download=4dfd91b295ab457e84d6323eb74ef539", 
+          "format": "application/pdf", 
+          "documentOf": "tender", 
+          "datePublished": "2016-03-07T12:32:23.506909+02:00", 
+          "id": "bf403e56a7684e41b3b595171f434721", 
+          "dateModified": "2016-03-07T12:32:23.506957+02:00"
+        }
+      ], 
+      "description": "complaint description", 
+      "title": "complaint title", 
+      "author": {
+        "contactPoint": {
+          "name": "Державне управління справами", 
+          "telephone": "0440000000"
+        }, 
+        "identifier": {
+          "scheme": "UA-EDR", 
+          "id": "00037256", 
+          "uri": "http://www.dus.gov.ua/"
+        }, 
+        "name": "Державне управління справами", 
+        "address": {
+          "postalCode": "01220", 
+          "countryName": "Україна", 
+          "streetAddress": "вул. Банкова, 11, корпус 1", 
+          "region": "м. Київ", 
+          "locality": "м. Київ"
+        }
+      }, 
+      "dateSubmitted": "2016-03-07T12:32:23.800567+02:00", 
+      "complaintID": "UA-2016-03-07-000001.5", 
+      "date": "2016-03-07T12:32:23.262400+02:00", 
+      "type": "claim", 
+      "id": "b3ac4098908b422f9269c1fa4e7b283d"
+    }, 
+    {
+      "status": "claim", 
+      "description": "complaint description", 
+      "title": "complaint title", 
+      "author": {
+        "contactPoint": {
+          "name": "Державне управління справами", 
+          "telephone": "0440000000"
+        }, 
+        "identifier": {
+          "scheme": "UA-EDR", 
+          "id": "00037256", 
+          "uri": "http://www.dus.gov.ua/"
+        }, 
+        "name": "Державне управління справами", 
+        "address": {
+          "postalCode": "01220", 
+          "countryName": "Україна", 
+          "streetAddress": "вул. Банкова, 11, корпус 1", 
+          "region": "м. Київ", 
+          "locality": "м. Київ"
+        }
+      }, 
+      "dateSubmitted": "2016-03-07T12:32:24.067244+02:00", 
+      "complaintID": "UA-2016-03-07-000001.6", 
+      "date": "2016-03-07T12:32:24.065484+02:00", 
+      "type": "claim", 
+      "id": "12781e42ffdb4160b0a3f29dd5ccaa4d"
+    }
+  ]
+}
+

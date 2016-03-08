@@ -1,24 +1,28 @@
 # -*- coding: utf-8 -*-
-from datetime import timedelta
-from logging import getLogger
-from cornice.resource import resource, view
-from iso8601 import parse_date
 from openprocurement.api.design import (
+    FIELDS,
     tenders_by_dateModified_view,
     tenders_real_by_dateModified_view,
     tenders_test_by_dateModified_view,
+    tenders_by_local_seq_view,
+    tenders_real_by_local_seq_view,
+    tenders_test_by_local_seq_view,
 )
-from openprocurement.api.models import Tender, get_now
+from openprocurement.api.models import get_now
 from openprocurement.api.utils import (
+    apply_patch,
+    check_status,
+    context_unpack,
+    decrypt,
+    encrypt,
     generate_id,
     generate_tender_id,
+    json_view,
+    opresource,
     save_tender,
     set_ownership,
     tender_serialize,
-    apply_patch,
-    add_next_award,
-    error_handler,
-    update_journal_handler_params,
+    APIResource,
 )
 from openprocurement.api.validation import (
     validate_patch_tender_data,
@@ -26,26 +30,33 @@ from openprocurement.api.validation import (
 )
 
 
-LOGGER = getLogger(__name__)
 VIEW_MAP = {
+    u'': tenders_real_by_dateModified_view,
     u'test': tenders_test_by_dateModified_view,
     u'_all_': tenders_by_dateModified_view,
 }
+CHANGES_VIEW_MAP = {
+    u'': tenders_real_by_local_seq_view,
+    u'test': tenders_test_by_local_seq_view,
+    u'_all_': tenders_by_local_seq_view,
+}
+FEED = {
+    u'dateModified': VIEW_MAP,
+    u'changes': CHANGES_VIEW_MAP,
+}
 
 
-@resource(name='Tender',
-          collection_path='/tenders',
-          path='/tenders/{tender_id}',
-          description="Open Contracting compatible data exchange format. See http://ocds.open-contracting.org/standard/r/master/#tender for more info",
-          error_handler=error_handler)
-class TenderResource(object):
+@opresource(name='Tenders',
+            path='/tenders',
+            description="Open Contracting compatible data exchange format. See http://ocds.open-contracting.org/standard/r/master/#tender for more info")
+class TendersResource(APIResource):
 
-    def __init__(self, request):
-        self.request = request
-        self.db = request.registry.db
+    def __init__(self, request, context):
+        super(TendersResource, self).__init__(request, context)
+        self.server = request.registry.couchdb_server
 
-    @view(renderer='json', permission='view_tender')
-    def collection_get(self):
+    @json_view(permission='view_tender')
+    def get(self):
         """Tenders List
 
         Get Tenders List
@@ -78,52 +89,108 @@ class TenderResource(object):
         """
         # http://wiki.apache.org/couchdb/HTTP_view_API#Querying_Options
         params = {}
+        pparams = {}
         fields = self.request.params.get('opt_fields', '')
         if fields:
             params['opt_fields'] = fields
+            pparams['opt_fields'] = fields
+            fields = fields.split(',')
+            view_fields = fields + ['dateModified', 'id']
         limit = self.request.params.get('limit', '')
         if limit:
             params['limit'] = limit
-        limit = int(limit) if limit.isdigit() else 100
-        descending = self.request.params.get('descending')
-        offset = self.request.params.get('offset', '9' if descending else '')
+            pparams['limit'] = limit
+        limit = int(limit) if limit.isdigit() and (100 if fields else 1000) >= int(limit) > 0 else 100
+        descending = bool(self.request.params.get('descending'))
+        offset = self.request.params.get('offset', '')
         if descending:
-            params['descending'] = descending
-        mode = self.request.params.get('mode')
-        if mode:
+            params['descending'] = 1
+        else:
+            pparams['descending'] = 1
+        feed = self.request.params.get('feed', '')
+        view_map = FEED.get(feed, VIEW_MAP)
+        changes = view_map is CHANGES_VIEW_MAP
+        if feed and feed in FEED:
+            params['feed'] = feed
+            pparams['feed'] = feed
+        mode = self.request.params.get('mode', '')
+        if mode and mode in view_map:
             params['mode'] = mode
-        list_view = VIEW_MAP.get(mode, tenders_real_by_dateModified_view)
+            pparams['mode'] = mode
+        view_limit = limit + 1 if offset else limit
+        if changes:
+            if offset:
+                view_offset = decrypt(self.server.uuid, self.db.name, offset)
+                if view_offset and view_offset.isdigit():
+                    view_offset = int(view_offset)
+                else:
+                    self.request.errors.add('params', 'offset', 'Offset expired/invalid')
+                    self.request.errors.status = 404
+                    return
+            if not offset:
+                view_offset = 'now' if descending else 0
+        else:
+            if offset:
+                view_offset = offset
+            else:
+                view_offset = '9' if descending else ''
+        list_view = view_map.get(mode, view_map[u''])
         if fields:
-            LOGGER.info('Used custom fields for tenders list: {}'.format(','.join(sorted(fields.split(',')))), extra={'MESSAGE_ID': 'tender_list_custom'})
-            fields = fields.split(',') + ['dateModified', 'id']
-            list_view_name = '/'.join([list_view.design, list_view.name])
-            results = [
-                tender_serialize(i, fields)
-                for i in Tender.view(self.db, list_view_name, limit=limit + 1, startkey=offset, descending=bool(descending), include_docs=True)
-            ]
+            if not changes and set(fields).issubset(set(FIELDS)):
+                results = [
+                    (dict([(i, j) for i, j in x.value.items() + [('id', x.id), ('dateModified', x.key)] if i in view_fields]), x.key)
+                    for x in list_view(self.db, limit=view_limit, startkey=view_offset, descending=descending)
+                ]
+            elif changes and set(fields).issubset(set(FIELDS)):
+                results = [
+                    (dict([(i, j) for i, j in x.value.items() + [('id', x.id)] if i in view_fields]), x.key)
+                    for x in list_view(self.db, limit=view_limit, startkey=view_offset, descending=descending)
+                ]
+            elif fields:
+                self.LOGGER.info('Used custom fields for tenders list: {}'.format(','.join(sorted(fields))),
+                            extra=context_unpack(self.request, {'MESSAGE_ID': 'tender_list_custom'}))
+
+                results = [
+                    (tender_serialize(self.request, i[u'doc'], view_fields), i.key)
+                    for i in list_view(self.db, limit=view_limit, startkey=view_offset, descending=descending, include_docs=True)
+                ]
         else:
             results = [
-                {'id': i.id, 'dateModified': i.key}
-                for i in list_view(self.db, limit=limit + 1, startkey=offset, descending=bool(descending))
+                ({'id': i.id, 'dateModified': i.value['dateModified']} if changes else {'id': i.id, 'dateModified': i.key}, i.key)
+                for i in list_view(self.db, limit=view_limit, startkey=view_offset, descending=descending)
             ]
-        if len(results) > limit:
-            results, last = results[:-1], results[-1]
-            params['offset'] = last['dateModified']
-        elif len(results) > 0:
-            params['offset'] = (parse_date(results[-1]['dateModified']) + timedelta(microseconds=-1 if descending else 1)).isoformat()
+        if results:
+            params['offset'], pparams['offset'] = results[-1][1], results[0][1]
+            if offset and view_offset == results[0][1]:
+                results = results[1:]
+            elif offset and view_offset != results[0][1]:
+                results = results[:limit]
+                params['offset'], pparams['offset'] = results[-1][1], view_offset
+            results = [i[0] for i in results]
+            if changes:
+                params['offset'] = encrypt(self.server.uuid, self.db.name, params['offset'])
+                pparams['offset'] = encrypt(self.server.uuid, self.db.name, pparams['offset'])
         else:
             params['offset'] = offset
-        return {
+            pparams['offset'] = offset
+        data = {
             'data': results,
             'next_page': {
                 "offset": params['offset'],
-                "path": self.request.route_path('collection_Tender', _query=params),
-                "uri": self.request.route_url('collection_Tender', _query=params)
+                "path": self.request.route_path('Tenders', _query=params),
+                "uri": self.request.route_url('Tenders', _query=params)
             }
         }
+        if descending or offset:
+            data['prev_page'] = {
+                "offset": pparams['offset'],
+                "path": self.request.route_path('Tenders', _query=pparams),
+                "uri": self.request.route_url('Tenders', _query=pparams)
+            }
+        return data
 
-    @view(content_type="application/json", permission='create_tender', validators=(validate_tender_data,), renderer='json')
-    def collection_post(self):
+    @json_view(content_type="application/json", permission='create_tender', validators=(validate_tender_data,))
+    def post(self):
         """This API request is targeted to creating new Tenders by procuring organizations.
 
         Creating new Tender
@@ -271,21 +338,18 @@ class TenderResource(object):
             }
 
         """
-        tender_data = self.request.validated['data']
         tender_id = generate_id()
-        tender = Tender(tender_data)
+        tender = self.request.validated['tender']
         tender.id = tender_id
-        if not tender.enquiryPeriod.startDate:
-            tender.enquiryPeriod.startDate = get_now()
-        tender.tenderID = generate_tender_id(tender.enquiryPeriod.startDate, self.db)
-        if not tender.tenderPeriod.startDate:
-            tender.tenderPeriod.startDate = tender.enquiryPeriod.endDate
+        tender.tenderID = generate_tender_id(get_now(), self.db, self.server_id)
+        if hasattr(tender, "initialize"):
+            tender.initialize()
         set_ownership(tender, self.request)
         self.request.validated['tender'] = tender
         self.request.validated['tender_src'] = {}
         if save_tender(self.request):
-            update_journal_handler_params({'tender_id': tender_id, 'tenderID': tender.tenderID})
-            LOGGER.info('Created tender {} ({})'.format(tender_id, tender.tenderID), extra={'MESSAGE_ID': 'tender_create'})
+            self.LOGGER.info('Created tender {} ({})'.format(tender_id, tender.tenderID),
+                        extra=context_unpack(self.request, {'MESSAGE_ID': 'tender_create'}, {'tender_id': tender_id, 'tenderID': tender.tenderID}))
             self.request.response.status = 201
             self.request.response.headers[
                 'Location'] = self.request.route_url('Tender', tender_id=tender_id)
@@ -296,7 +360,14 @@ class TenderResource(object):
                 }
             }
 
-    @view(renderer='json', permission='view_tender')
+
+@opresource(name='Tender',
+            path='/tenders/{tender_id}',
+            procurementMethodType='belowThreshold',
+            description="Open Contracting compatible data exchange format. See http://ocds.open-contracting.org/standard/r/master/#tender for more info")
+class TenderResource(APIResource):
+
+    @json_view(permission='view_tender')
     def get(self):
         """Tender Read
 
@@ -383,11 +454,13 @@ class TenderResource(object):
             }
 
         """
-        tender = self.request.validated['tender']
-        tender_data = tender.serialize('view' if self.request.authenticated_role == 'chronograph' else tender.status)
+        if self.request.authenticated_role == 'chronograph':
+            tender_data = self.context.serialize('chronograph_view')
+        else:
+            tender_data = self.context.serialize(self.context.status)
         return {'data': tender_data}
 
-    #@view(content_type="application/json", validators=(validate_tender_data, ), permission='edit_tender', renderer='json')
+    #@json_view(content_type="application/json", validators=(validate_tender_data, ), permission='edit_tender')
     #def put(self):
         #"""Tender Edit (full)"""
         #tender = self.request.validated['tender']
@@ -398,7 +471,7 @@ class TenderResource(object):
         #apply_patch(self.request, src=self.request.validated['tender_src'])
         #return {'data': tender.serialize(tender.status)}
 
-    @view(content_type="application/json", validators=(validate_patch_tender_data, ), permission='edit_tender', renderer='json')
+    @json_view(content_type="application/json", validators=(validate_patch_tender_data, ), permission='edit_tender')
     def patch(self):
         """Tender Edit (partial)
 
@@ -447,21 +520,17 @@ class TenderResource(object):
             }
 
         """
-        tender = self.request.validated['tender']
+        tender = self.context
         if self.request.authenticated_role != 'Administrator' and tender.status in ['complete', 'unsuccessful', 'cancelled']:
             self.request.errors.add('body', 'data', 'Can\'t update tender in current ({}) status'.format(tender.status))
             self.request.errors.status = 403
             return
-        data = self.request.validated['data']
-        if self.request.authenticated_role == 'tender_owner' and 'status' in data and data['status'] not in ['cancelled', tender.status]:
-            self.request.errors.add('body', 'data', 'Can\'t update tender status')
-            self.request.errors.status = 403
-            return
-        if self.request.authenticated_role == 'chronograph' and tender.status == 'active.tendering' and data.get('status', tender.status) == 'active.qualification' and tender.numberOfBids == 1:
+        if self.request.authenticated_role == 'chronograph':
             apply_patch(self.request, save=False, src=self.request.validated['tender_src'])
-            add_next_award(self.request)
+            check_status(self.request)
             save_tender(self.request)
         else:
             apply_patch(self.request, src=self.request.validated['tender_src'])
-        LOGGER.info('Updated tender {}'.format(tender.id), extra={'MESSAGE_ID': 'tender_patch'})
+        self.LOGGER.info('Updated tender {}'.format(tender.id),
+                    extra=context_unpack(self.request, {'MESSAGE_ID': 'tender_patch'}))
         return {'data': tender.serialize(tender.status)}

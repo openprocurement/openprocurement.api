@@ -4,40 +4,31 @@
 import gevent.monkey
 gevent.monkey.patch_all()
 import os
+from boto.s3.connection import S3Connection, Location
+from couchdb import Server as CouchdbServer, Session
+from couchdb.http import Unauthorized, extract_credentials
 from logging import getLogger
-from pkg_resources import get_distribution
-from pyramid.config import Configurator
-from openprocurement.api.auth import AuthenticationPolicy
-from pyramid.authorization import ACLAuthorizationPolicy as AuthorizationPolicy
-from pyramid.renderers import JSON, JSONP
-from pyramid.events import NewRequest, BeforeRender, ContextFound
-from couchdb import Server, Session
-from couchdb.http import Unauthorized, extract_credentials, ResourceConflict
+from openprocurement.api.auth import AuthenticationPolicy, authenticated_role
 from openprocurement.api.design import sync_design
 from openprocurement.api.migration import migrate_data
-from boto.s3.connection import S3Connection, Location
-from openprocurement.api.traversal import factory
-from openprocurement.api.utils import forbidden, set_journal_handler, cleanup_journal_handler, update_journal_handler_role
+from openprocurement.api.models import Tender
+from openprocurement.api.utils import forbidden, add_logging_context, set_logging_context, extract_tender, request_params, isTender, set_renderer, beforerender, register_tender_procurementMethodType, tender_from_data, ROUTE_PREFIX
 from pbkdf2 import PBKDF2
 from repoze.retry import Retry
-
-try:
-    from systemd.journal import JournalHandler
-except ImportError:  # pragma: no cover
-    JournalHandler = False
+from pkg_resources import iter_entry_points
+from pyramid.authorization import ACLAuthorizationPolicy as AuthorizationPolicy
+from pyramid.config import Configurator
+from pyramid.events import NewRequest, BeforeRender, ContextFound
+from pyramid.renderers import JSON, JSONP
 
 LOGGER = getLogger("{}.init".format(__name__))
-#VERSION = int(pkg_resources.get_distribution(__package__).parsed_version[0])
-PKG = get_distribution(__package__)
-VERSION = '{}.{}'.format(int(PKG.parsed_version[0]), int(PKG.parsed_version[1]))
-ROUTE_PREFIX = '/api/{}'.format(VERSION)
 SECURITY = {u'admins': {u'names': [], u'roles': ['_admin']}, u'members': {u'names': [], u'roles': ['_admin']}}
 VALIDATE_DOC_ID = '_design/_auth'
 VALIDATE_DOC_UPDATE = """function(newDoc, oldDoc, userCtx){
-    if(newDoc._deleted) {
+    if(newDoc._deleted && newDoc.tenderID) {
         throw({forbidden: 'Not authorized to delete this document'});
     }
-    if(userCtx.roles.indexOf('_admin') !== -1 && newDoc.indexOf('_design/') === 0) {
+    if(userCtx.roles.indexOf('_admin') !== -1 && newDoc._id.indexOf('_design/') === 0) {
         return;
     }
     if(userCtx.name === '%s') {
@@ -48,96 +39,57 @@ VALIDATE_DOC_UPDATE = """function(newDoc, oldDoc, userCtx){
 }"""
 
 
-def set_renderer(event):
-    request = event.request
-    try:
-        json = request.json_body
-    except ValueError:
-        json = {}
-    pretty = isinstance(json, dict) and json.get('options', {}).get('pretty') or request.params.get('opt_pretty')
-    jsonp = request.params.get('opt_jsonp')
-    if jsonp and pretty:
-        request.override_renderer = 'prettyjsonp'
-        return True
-    if jsonp:
-        request.override_renderer = 'jsonp'
-        return True
-    if pretty:
-        request.override_renderer = 'prettyjson'
-        return True
+class Server(CouchdbServer):
+    _uuid = None
 
+    @property
+    def uuid(self):
+        """The uuid of the server.
 
-def get_local_roles(context):
-    from pyramid.location import lineage
-    roles = {}
-    for location in lineage(context):
-        try:
-            roles = location.__local_roles__
-        except AttributeError:
-            continue
-        if roles and callable(roles):
-            roles = roles()
-        break
-    return roles
-
-
-def authenticated_role(request):
-    principals = request.effective_principals
-    if hasattr(request, 'context'):
-        roles = get_local_roles(request.context)
-        local_roles = [roles[i] for i in reversed(principals) if i in roles]
-        if local_roles:
-            return local_roles[0]
-    groups = [g for g in reversed(principals) if g.startswith('g:')]
-    return groups[0][2:] if groups else 'anonymous'
-
-
-def fix_url(item, app_url):
-    if isinstance(item, list):
-        [
-            fix_url(i, app_url)
-            for i in item
-            if isinstance(i, dict) or isinstance(i, list)
-        ]
-    elif isinstance(item, dict):
-        if "format" in item and "url" in item and '?download=' in item['url']:
-            path = item["url"] if item["url"].startswith('/tenders') else '/tenders' + item['url'].split('/tenders', 1)[1]
-            item["url"] = app_url + ROUTE_PREFIX + path
-            return
-        [
-            fix_url(item[i], app_url)
-            for i in item
-            if isinstance(item[i], dict) or isinstance(item[i], list)
-        ]
-
-
-def beforerender(event):
-    if event.rendering_val and 'data' in event.rendering_val:
-        fix_url(event.rendering_val['data'], event['request'].application_url)
+        :rtype: basestring
+        """
+        if self._uuid is None:
+            _, _, data = self.resource.get_json()
+            self._uuid = data['uuid']
+        return self._uuid
 
 
 def main(global_config, **settings):
     config = Configurator(
+        autocommit=True,
         settings=settings,
-        root_factory=factory,
         authentication_policy=AuthenticationPolicy(settings['auth.file'], __name__),
         authorization_policy=AuthorizationPolicy(),
         route_prefix=ROUTE_PREFIX,
     )
+    config.include('pyramid_exclog')
+    config.include("cornice")
     config.add_forbidden_view(forbidden)
+    config.add_request_method(request_params, 'params', reify=True)
     config.add_request_method(authenticated_role, reify=True)
+    config.add_request_method(extract_tender, 'tender', reify=True)
     config.add_renderer('prettyjson', JSON(indent=4))
     config.add_renderer('jsonp', JSONP(param_name='opt_jsonp'))
     config.add_renderer('prettyjsonp', JSONP(indent=4, param_name='opt_jsonp'))
-    if JournalHandler:
-        config.add_subscriber(set_journal_handler, NewRequest)
-        config.add_subscriber(update_journal_handler_role, ContextFound)
-        config.add_subscriber(cleanup_journal_handler, BeforeRender)
+    config.add_subscriber(add_logging_context, NewRequest)
+    config.add_subscriber(set_logging_context, ContextFound)
     config.add_subscriber(set_renderer, NewRequest)
     config.add_subscriber(beforerender, BeforeRender)
-    config.include('pyramid_exclog')
-    config.include("cornice")
-    config.scan("openprocurement.api.views")
+    config.scan("openprocurement.api.views.spore")
+    config.scan("openprocurement.api.views.health")
+
+    # tender procurementMethodType plugins support
+    config.add_route_predicate('procurementMethodType', isTender)
+    config.registry.tender_procurementMethodTypes = {}
+    config.add_request_method(tender_from_data)
+    config.add_directive('add_tender_procurementMethodType', register_tender_procurementMethodType)
+
+    # search for plugins
+    plugins = settings.get('plugins') and settings['plugins'].split(',')
+    for entry_point in iter_entry_points('openprocurement.api.plugins'):
+        if not plugins or entry_point.name in plugins:
+            plugin = entry_point.load()
+            plugin(config)
 
     # CouchDB connection
     db_name = os.environ.get('DB_NAME', settings['couchdb.db_name'])
@@ -150,6 +102,7 @@ def main(global_config, **settings):
     config.registry.couchdb_server = server
     if 'couchdb.admin_url' in settings and server.resource.credentials:
         aserver = Server(settings.get('couchdb.admin_url'), session=Session(retry_delays=range(10)))
+        config.registry.admin_couchdb_server = aserver
         users_db = aserver['_users']
         if SECURITY != users_db.security:
             LOGGER.info("Updating users db security", extra={'MESSAGE_ID': 'update_users_security'})
@@ -203,7 +156,8 @@ def main(global_config, **settings):
     config.registry.db = db
 
     # migrate data
-    migrate_data(config.registry.db)
+    if not os.environ.get('MIGRATION_SKIP'):
+        migrate_data(config.registry.db)
 
     # S3 connection
     if 'aws.access_key' in settings and 'aws.secret_key' in settings and 'aws.s3_bucket' in settings:
@@ -213,4 +167,11 @@ def main(global_config, **settings):
         if bucket_name not in [b.name for b in connection.get_all_buckets()]:
             connection.create_bucket(bucket_name, location=Location.EU)
         config.registry.bucket_name = bucket_name
+    config.registry.server_id = settings.get('id', '')
+    config.registry.health_threshold = settings.get('health_threshold', 99)
     return Retry(config.make_wsgi_app(), tries=3, retryable=ResourceConflict, log_after_try_count=10)
+
+
+def includeme(config):
+    config.add_tender_procurementMethodType(Tender)
+    config.scan("openprocurement.api.views")

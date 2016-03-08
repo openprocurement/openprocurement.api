@@ -1,13 +1,13 @@
 # -*- coding: utf-8 -*-
-from logging import getLogger
-from cornice.resource import resource, view
-from openprocurement.api.models import Bid, get_now
+from openprocurement.api.models import get_now
 from openprocurement.api.utils import (
     save_tender,
     set_ownership,
     apply_patch,
-    error_handler,
-    update_journal_handler_params,
+    opresource,
+    json_view,
+    context_unpack,
+    APIResource,
 )
 from openprocurement.api.validation import (
     validate_bid_data,
@@ -15,21 +15,14 @@ from openprocurement.api.validation import (
 )
 
 
-LOGGER = getLogger(__name__)
+@opresource(name='Tender Bids',
+            collection_path='/tenders/{tender_id}/bids',
+            path='/tenders/{tender_id}/bids/{bid_id}',
+            procurementMethodType='belowThreshold',
+            description="Tender bids")
+class TenderBidResource(APIResource):
 
-
-@resource(name='Tender Bids',
-          collection_path='/tenders/{tender_id}/bids',
-          path='/tenders/{tender_id}/bids/{bid_id}',
-          description="Tender bids",
-          error_handler=error_handler)
-class TenderBidResource(object):
-
-    def __init__(self, request):
-        self.request = request
-        self.db = request.registry.db
-
-    @view(content_type="application/json", permission='create_bid', validators=(validate_bid_data,), renderer='json')
+    @json_view(content_type="application/json", permission='create_bid', validators=(validate_bid_data,))
     def collection_post(self):
         """Registration of new bid proposal
 
@@ -112,17 +105,17 @@ class TenderBidResource(object):
         # See https://github.com/open-contracting/standard/issues/78#issuecomment-59830415
         # for more info upon schema
         tender = self.request.validated['tender']
-        if self.request.validated['tender_status'] != 'active.tendering':
+        if self.request.validated['tender_status'] != 'active.tendering' or tender.tenderPeriod.startDate and get_now() < tender.tenderPeriod.startDate or get_now() > tender.tenderPeriod.endDate:
             self.request.errors.add('body', 'data', 'Can\'t add bid in current ({}) tender status'.format(self.request.validated['tender_status']))
             self.request.errors.status = 403
             return
-        bid_data = self.request.validated['data']
-        bid = Bid(bid_data)
+        bid = self.request.validated['bid']
         set_ownership(bid, self.request)
         tender.bids.append(bid)
+        tender.modified = False
         if save_tender(self.request):
-            update_journal_handler_params({'bid_id': bid.id})
-            LOGGER.info('Created tender bid {}'.format(bid.id), extra={'MESSAGE_ID': 'tender_bid_create'})
+            self.LOGGER.info('Created tender bid {}'.format(bid.id),
+                        extra=context_unpack(self.request, {'MESSAGE_ID': 'tender_bid_create'}, {'bid_id': bid.id}))
             self.request.response.status = 201
             self.request.response.headers['Location'] = self.request.route_url('Tender Bids', tender_id=tender.id, bid_id=bid['id'])
             return {
@@ -132,7 +125,7 @@ class TenderBidResource(object):
                 }
             }
 
-    @view(renderer='json', permission='view_tender')
+    @json_view(permission='view_tender')
     def collection_get(self):
         """Bids Listing
 
@@ -174,7 +167,7 @@ class TenderBidResource(object):
             return
         return {'data': [i.serialize(self.request.validated['tender_status']) for i in tender.bids]}
 
-    @view(renderer='json', permission='view_tender')
+    @json_view(permission='view_tender')
     def get(self):
         """Retrieving the proposal
 
@@ -212,7 +205,7 @@ class TenderBidResource(object):
             return
         return {'data': self.request.context.serialize(self.request.validated['tender_status'])}
 
-    @view(content_type="application/json", permission='edit_bid', validators=(validate_patch_bid_data,), renderer='json')
+    @json_view(content_type="application/json", permission='edit_bid', validators=(validate_patch_bid_data,))
     def patch(self):
         """Update of proposal
 
@@ -250,18 +243,25 @@ class TenderBidResource(object):
             }
 
         """
-        if self.request.validated['tender_status'] != 'active.tendering':
+        if self.request.authenticated_role != 'Administrator' and self.request.validated['tender_status'] != 'active.tendering':
             self.request.errors.add('body', 'data', 'Can\'t update bid in current ({}) tender status'.format(self.request.validated['tender_status']))
             self.request.errors.status = 403
             return
-        value = self.request.validated['data'].get("value", {}).get("amount")
+        value = self.request.validated['data'].get("value") and self.request.validated['data']["value"].get("amount")
         if value and value != self.request.context.get("value", {}).get("amount"):
             self.request.validated['data']['date'] = get_now().isoformat()
+        if self.request.context.lotValues:
+            lotValues = dict([(i.relatedLot, i.value.amount) for i in self.request.context.lotValues])
+            for lotvalue in self.request.validated['data'].get("lotValues", []):
+                if lotvalue['relatedLot'] in lotValues and lotvalue.get("value", {}).get("amount") != lotValues[lotvalue['relatedLot']]:
+                    lotvalue['date'] = get_now().isoformat()
+        self.request.validated['tender'].modified = False
         if apply_patch(self.request, src=self.request.context.serialize()):
-            LOGGER.info('Updated tender bid {}'.format(self.request.context.id), extra={'MESSAGE_ID': 'tender_bid_patch'})
+            self.LOGGER.info('Updated tender bid {}'.format(self.request.context.id),
+                        extra=context_unpack(self.request, {'MESSAGE_ID': 'tender_bid_patch'}))
             return {'data': self.request.context.serialize("view")}
 
-    @view(renderer='json', permission='edit_bid')
+    @json_view(permission='edit_bid')
     def delete(self):
         """Cancelling the proposal
 
@@ -298,6 +298,8 @@ class TenderBidResource(object):
             return
         res = bid.serialize("view")
         self.request.validated['tender'].bids.remove(bid)
+        self.request.validated['tender'].modified = False
         if save_tender(self.request):
-            LOGGER.info('Deleted tender bid {}'.format(self.request.context.id), extra={'MESSAGE_ID': 'tender_bid_delete'})
+            self.LOGGER.info('Deleted tender bid {}'.format(self.request.context.id),
+                        extra=context_unpack(self.request, {'MESSAGE_ID': 'tender_bid_delete'}))
             return {'data': res}

@@ -1,22 +1,22 @@
-#
+#, 2015.
+# Zoriana Zaiats <sorenabell@quintagroup.com>, 2016.
 msgid ""
 msgstr ""
 "Project-Id-Version: openprocurement.api 0.8\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2015-05-04 17:34+0300\n"
-"PO-Revision-Date: 2015-07-23 12:54+0200\n"
+"PO-Revision-Date: 2016-02-17 13:23+0200\n"
 "Last-Translator: Zoriana Zaiats <sorenabell@quintagroup.com>\n"
-"Language-Team: Quintagroup <info@quintagroup.com>\n"
+"Language-Team: Ukrainian <info@quintagroup.com>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Language: uk\n"
-"Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n"
-"%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
-"X-Generator: Poedit 1.7.6\n"
+"X-Generator: Lokalize 1.5\n"
+"Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<"
+"=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
 
 #: ../../source/standard/cancellation.rst:8
-#: ../../source/standard/cancellation.rst:4
 msgid "Cancellation"
 msgstr "Cancellation"
 
@@ -33,10 +33,13 @@ msgid "string, multilingual, required"
 msgstr "рядок, багатомовний, обов’язковий"
 
 #: ../../source/standard/cancellation.rst:22
+#: ../../source/standard/cancellation.rst:42
+#: ../../source/standard/cancellation.rst:50
 msgid "string"
 msgstr "рядок"
 
 #: ../../source/standard/cancellation.rst:28
+#: ../../source/standard/cancellation.rst:44
 msgid "Possible values are:"
 msgstr "Можливі значення:"
 
@@ -58,7 +61,7 @@ msgstr "Причина, з якої скасовується закупівля.
 
 #: ../../source/standard/cancellation.rst:26
 msgid "Default. The request is being prepared."
-msgstr "Стандартно. Запит оформляється."
+msgstr "За замовчуванням. Запит оформляється."
 
 #: ../../source/standard/cancellation.rst:28
 msgid "Cancellation activated."
@@ -71,6 +74,18 @@ msgid ""
 msgstr ""
 "Супровідна документація скасування: Протокол рішення Тендерного комітету "
 "Замовника про скасування закупівлі."
+
+#: ../../source/standard/cancellation.rst:46
+msgid "`tender`"
+msgstr "`tender` - закупівля"
+
+#: ../../source/standard/cancellation.rst:47
+msgid "`lot`"
+msgstr "`lot` - лот"
+
+#: ../../source/standard/cancellation.rst:52
+msgid "Id of related :ref:`lot`."
+msgstr "ID пов’язаного :ref:`lot`."
 
 #~ msgid "The reason, whey Tender is being cancelled"
 #~ msgstr "Причина, з якої скасовується закупівля"

@@ -30,7 +30,12 @@ import pkg_resources
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
 # ones.
 import cornice
-extensions = ['cornice.ext.sphinxext', 'sphinxcontrib.httpdomain']
+extensions = [
+    'cornice.ext.sphinxext',
+    'sphinx.ext.intersphinx',
+    'sphinx.ext.graphviz',
+    'sphinxcontrib.httpdomain',
+]
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']
@@ -46,7 +51,7 @@ master_doc = 'index'
 
 # General information about the project.
 project = u'openprocurement.api'
-copyright = u'2014, Quintagroup, Ltd'
+copyright = u'2014-2015, Quintagroup, Ltd'
 
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the
@@ -100,7 +105,7 @@ pygments_style = 'sphinx'
 
 # The theme to use for HTML and HTML Help pages.  See the documentation for
 # a list of builtin themes.
-html_theme = 'default'
+html_theme = 'sphinx_rtd_theme'
 
 # Theme options are theme-specific and customize the look and feel of a theme
 # further.  For a list of options available for each theme, see the
@@ -261,3 +266,8 @@ texinfo_documents = [
 
 locale_dirs = ['locale/']   # path is example but recommended.
 gettext_compact = False     # optional.
+
+intersphinx_mapping = {
+    'python': ('http://docs.python.org/dev', None),
+    'openprocurementtenderlimited': ('http://openprocurementtenderlimited.readthedocs.org/en/latest/', None),
+}

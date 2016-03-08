@@ -1,24 +1,23 @@
-$ http --form POST https://api-sandbox.openprocurement.org/api/0/tenders/327c00d16cff4c37be5bd4915cdff8a3/documents file@./AwardCriteria.pdf
-POST /api/0/tenders/327c00d16cff4c37be5bd4915cdff8a3/documents HTTP/1.1
-Content-Type: multipart/form-data; boundary=dbae19b2722a47c481e3072c8ed958d4
+POST /api/0.12/tenders/e98e2eb727c645d4b04ff7a56fef272f/documents?acc_token=fb616747193c4f9bba0aee4e40c29121 HTTP/1.0
+Authorization: Basic YnJva2VyOg==
+Content-Length: 193
+Content-Type: multipart/form-data; boundary=----------a_BoUnDaRy924650100753$
+Host: api-sandbox.openprocurement.org
 
 
-
-+-----------------------------------------+
-| NOTE: binary data not shown in terminal |
-+-----------------------------------------+
-
-HTTP/1.1 201 Created
+201 Created
 Content-Type: application/json; charset=UTF-8
-Location: http://api-sandbox.openprocurement.org/api/0/tenders/327c00d16cff4c37be5bd4915cdff8a3/documents/4b65c046be264da4a430823d4376a757
+Location: http://api-sandbox.openprocurement.org/api/0.12/tenders/e98e2eb727c645d4b04ff7a56fef272f/documents/399f69bf89aa46be836de94e9709b15d
 
 {
-    "data": {
-        "dateModified": "2014-12-01T17:39:31.443132+02:00", 
-        "datePublished": "2014-12-01T17:39:31.443089+02:00", 
-        "format": "text/plain", 
-        "id": "4b65c046be264da4a430823d4376a757", 
-        "title": "AwardCriteria.pdf", 
-        "url": "http://api-sandbox.openprocurement.org/api/0/tenders/327c00d16cff4c37be5bd4915cdff8a3/documents/4b65c046be264da4a430823d4376a757?download=d0ef7d53169041ed8093172c6ba6870c"
-    }
+  "data": {
+    "title": "AwardCriteria.pdf", 
+    "url": "http://api-sandbox.openprocurement.org/api/0.12/tenders/e98e2eb727c645d4b04ff7a56fef272f/documents/399f69bf89aa46be836de94e9709b15d?download=2c08086a858b46bca3c001bd62f88238", 
+    "format": "application/pdf", 
+    "documentOf": "tender", 
+    "datePublished": "2016-02-10T12:42:00.319378+02:00", 
+    "id": "399f69bf89aa46be836de94e9709b15d", 
+    "dateModified": "2016-02-10T12:42:00.319419+02:00"
+  }
 }
+

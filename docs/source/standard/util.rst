@@ -72,5 +72,5 @@ Schema
     Date when changes were recorded.
 
 :changes:
-    List of :`Change` objects
+    List of `Change` objects
 

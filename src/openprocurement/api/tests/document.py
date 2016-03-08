@@ -131,7 +131,7 @@ class TenderDocumentResourceTest(BaseTenderWebTest):
         self.assertEqual(u'укр.doc', response.json["data"]["title"])
         doc_id = response.json["data"]['id']
         self.assertIn(doc_id, response.headers['Location'])
-        self.assertFalse('acc_token' in response.headers['Location'])
+        self.assertNotIn('acc_token', response.headers['Location'])
 
         self.set_status('active.tendering')
 
@@ -144,6 +144,18 @@ class TenderDocumentResourceTest(BaseTenderWebTest):
     def test_put_tender_document(self):
         from six import BytesIO
         from urllib import quote
+        body = u'''--BOUNDARY\nContent-Disposition: form-data; name="file"; filename={}\nContent-Type: application/msword\n\ncontent\n'''.format(u'\uff07')
+        environ = self.app._make_environ()
+        environ['CONTENT_TYPE'] = 'multipart/form-data; boundary=BOUNDARY'
+        environ['REQUEST_METHOD'] = 'POST'
+        req = self.app.RequestClass.blank(self.app._remove_fragment('/tenders/{}/documents'.format(self.tender_id)), environ)
+        req.environ['wsgi.input'] = BytesIO(body.encode('utf8'))
+        req.content_length = len(body)
+        response = self.app.do_request(req, status=422)
+        self.assertEqual(response.status, '422 Unprocessable Entity')
+        self.assertEqual(response.content_type, 'application/json')
+        self.assertEqual(response.json['errors'][0]["description"], "could not decode params")
+
         body = u'''--BOUNDARY\nContent-Disposition: form-data; name="file"; filename*=utf-8''{}\nContent-Type: application/msword\n\ncontent\n'''.format(quote('укр.doc'))
         environ = self.app._make_environ()
         environ['CONTENT_TYPE'] = 'multipart/form-data; boundary=BOUNDARY'
@@ -162,7 +174,7 @@ class TenderDocumentResourceTest(BaseTenderWebTest):
         self.assertIn(doc_id, response.headers['Location'])
 
         response = self.app.put('/tenders/{}/documents/{}'.format(
-            self.tender_id, doc_id), upload_files=[('file', 'name.doc', 'content2')])
+            self.tender_id, doc_id), upload_files=[('file', 'name  name.doc', 'content2')])
         self.assertEqual(response.status, '200 OK')
         self.assertEqual(response.content_type, 'application/json')
         self.assertEqual(doc_id, response.json["data"]["id"])
@@ -186,7 +198,7 @@ class TenderDocumentResourceTest(BaseTenderWebTest):
         self.assertEqual(response.status, '200 OK')
         self.assertEqual(response.content_type, 'application/json')
         self.assertEqual(doc_id, response.json["data"]["id"])
-        self.assertEqual('name.doc', response.json["data"]["title"])
+        self.assertEqual('name name.doc', response.json["data"]["title"])
         dateModified2 = response.json["data"]['dateModified']
         self.assertTrue(dateModified < dateModified2)
         self.assertEqual(dateModified, response.json["data"]["previousVersions"][0]['dateModified'])
@@ -258,11 +270,57 @@ class TenderDocumentResourceTest(BaseTenderWebTest):
         #dateModified = response.json["data"]['dateModified']
         self.assertIn(doc_id, response.headers['Location'])
         self.assertEqual(u'укр.doc', response.json["data"]["title"])
+        self.assertNotIn("documentType", response.json["data"])
 
-        response = self.app.patch_json('/tenders/{}/documents/{}'.format(self.tender_id, doc_id), {"data": {"description": "document description"}})
+        response = self.app.patch_json('/tenders/{}/documents/{}'.format(self.tender_id, doc_id), {"data": {
+            "documentOf": "lot"
+        }}, status=422)
+        self.assertEqual(response.status, '422 Unprocessable Entity')
+        self.assertEqual(response.content_type, 'application/json')
+        self.assertEqual(response.json['status'], 'error')
+        self.assertEqual(response.json['errors'], [
+            {u'description': [u'This field is required.'], u'location': u'body', u'name': u'relatedItem'},
+        ])
+
+        response = self.app.patch_json('/tenders/{}/documents/{}'.format(self.tender_id, doc_id), {"data": {
+            "documentOf": "lot",
+            "relatedItem": '0' * 32
+        }}, status=422)
+        self.assertEqual(response.status, '422 Unprocessable Entity')
+        self.assertEqual(response.content_type, 'application/json')
+        self.assertEqual(response.json['status'], 'error')
+        self.assertEqual(response.json['errors'], [
+            {u'description': [u'relatedItem should be one of lots'], u'location': u'body', u'name': u'relatedItem'}
+        ])
+
+        response = self.app.patch_json('/tenders/{}/documents/{}'.format(self.tender_id, doc_id), {"data": {
+            "documentOf": "item",
+            "relatedItem": '0' * 32
+        }}, status=422)
+        self.assertEqual(response.status, '422 Unprocessable Entity')
+        self.assertEqual(response.content_type, 'application/json')
+        self.assertEqual(response.json['status'], 'error')
+        self.assertEqual(response.json['errors'], [
+            {u'description': [u'relatedItem should be one of items'], u'location': u'body', u'name': u'relatedItem'}
+        ])
+
+        response = self.app.patch_json('/tenders/{}/documents/{}'.format(self.tender_id, doc_id), {"data": {
+            "description": "document description",
+            "documentType": 'tenderNotice'
+        }})
         self.assertEqual(response.status, '200 OK')
         self.assertEqual(response.content_type, 'application/json')
         self.assertEqual(doc_id, response.json["data"]["id"])
+        self.assertIn("documentType", response.json["data"])
+        self.assertEqual(response.json["data"]["documentType"], 'tenderNotice')
+
+        response = self.app.patch_json('/tenders/{}/documents/{}'.format(self.tender_id, doc_id), {"data": {
+            "documentType": None
+        }})
+        self.assertEqual(response.status, '200 OK')
+        self.assertEqual(response.content_type, 'application/json')
+        self.assertEqual(doc_id, response.json["data"]["id"])
+        self.assertNotIn("documentType", response.json["data"])
 
         response = self.app.get('/tenders/{}/documents/{}'.format(self.tender_id, doc_id))
         self.assertEqual(response.status, '200 OK')
@@ -366,6 +424,27 @@ class MockKey(object):
             self.metadata['Content-MD5'] = value
         else:
             self.metadata[name] = value
+
+    def set_remote_metadata(self, metadata_plus, metadata_minus, preserve_acl,
+                            headers=None):
+        src_bucket = self.bucket
+        metadata = self.metadata
+        metadata.update(metadata_plus)
+        for h in metadata_minus:
+            if h in metadata:
+                del metadata[h]
+        rewritten_metadata = {}
+        for h in metadata:
+            if (h.startswith('x-goog-meta-') or h.startswith('x-amz-meta-')):
+                rewritten_h = (h.replace('x-goog-meta-', '')
+                               .replace('x-amz-meta-', ''))
+            else:
+                rewritten_h = h
+            rewritten_metadata[rewritten_h] = metadata[h]
+        metadata = rewritten_metadata
+        src_bucket.copy_key(self.name, self.bucket.name, self.name,
+                            metadata=metadata, preserve_acl=preserve_acl,
+                            headers=headers)
 
     def copy(self, dst_bucket_name, dst_key, metadata=NOT_IMPL,
              reduced_redundancy=NOT_IMPL, preserve_acl=NOT_IMPL):

@@ -1,14 +1,14 @@
 # -*- coding: utf-8 -*-
-from logging import getLogger
-from cornice.resource import resource, view
 from openprocurement.api.utils import (
     get_file,
     save_tender,
     upload_file,
     apply_patch,
-    error_handler,
-    update_journal_handler_params,
     update_file_content_type,
+    opresource,
+    json_view,
+    context_unpack,
+    APIResource,
 )
 from openprocurement.api.validation import (
     validate_file_update,
@@ -17,38 +17,30 @@ from openprocurement.api.validation import (
 )
 
 
-LOGGER = getLogger(__name__)
+@opresource(name='Tender Bid Documents',
+            collection_path='/tenders/{tender_id}/bids/{bid_id}/documents',
+            path='/tenders/{tender_id}/bids/{bid_id}/documents/{document_id}',
+            procurementMethodType='belowThreshold',
+            description="Tender bidder documents")
+class TenderBidDocumentResource(APIResource):
 
-
-@resource(name='Tender Bid Documents',
-          collection_path='/tenders/{tender_id}/bids/{bid_id}/documents',
-          path='/tenders/{tender_id}/bids/{bid_id}/documents/{document_id}',
-          description="Tender bidder documents",
-          error_handler=error_handler)
-class TenderBidDocumentResource(object):
-
-    def __init__(self, request):
-        self.request = request
-        self.db = request.registry.db
-
-    @view(renderer='json', permission='view_tender')
+    @json_view(permission='view_tender')
     def collection_get(self):
         """Tender Bid Documents List"""
         if self.request.validated['tender_status'] in ['active.tendering', 'active.auction'] and self.request.authenticated_role != 'bid_owner':
             self.request.errors.add('body', 'data', 'Can\'t view bid documents in current ({}) tender status'.format(self.request.validated['tender_status']))
             self.request.errors.status = 403
             return
-        bid = self.request.validated['bid']
         if self.request.params.get('all', ''):
-            collection_data = [i.serialize("view") for i in bid['documents']]
+            collection_data = [i.serialize("view") for i in self.context.documents]
         else:
             collection_data = sorted(dict([
                 (i.id, i.serialize("view"))
-                for i in bid['documents']
+                for i in self.context.documents
             ]).values(), key=lambda i: i['dateModified'])
         return {'data': collection_data}
 
-    @view(renderer='json', validators=(validate_file_upload,), permission='edit_bid')
+    @json_view(validators=(validate_file_upload,), permission='edit_bid')
     def collection_post(self):
         """Tender Bid Document Upload
         """
@@ -61,16 +53,18 @@ class TenderBidDocumentResource(object):
             self.request.errors.status = 403
             return
         document = upload_file(self.request)
-        self.request.validated['bid'].documents.append(document)
+        self.context.documents.append(document)
+        if self.request.validated['tender_status'] == 'active.tendering':
+            self.request.validated['tender'].modified = False
         if save_tender(self.request):
-            update_journal_handler_params({'document_id': document.id})
-            LOGGER.info('Created tender bid document {}'.format(document.id), extra={'MESSAGE_ID': 'tender_bid_document_create'})
+            self.LOGGER.info('Created tender bid document {}'.format(document.id),
+                        extra=context_unpack(self.request, {'MESSAGE_ID': 'tender_bid_document_create'}, {'document_id': document.id}))
             self.request.response.status = 201
             document_route = self.request.matched_route.name.replace("collection_", "")
             self.request.response.headers['Location'] = self.request.current_route_url(_route_name=document_route, document_id=document.id, _query={})
             return {'data': document.serialize("view")}
 
-    @view(renderer='json', permission='view_tender')
+    @json_view(permission='view_tender')
     def get(self):
         """Tender Bid Document Read"""
         if self.request.validated['tender_status'] in ['active.tendering', 'active.auction'] and self.request.authenticated_role != 'bid_owner':
@@ -88,7 +82,7 @@ class TenderBidDocumentResource(object):
         ]
         return {'data': document_data}
 
-    @view(renderer='json', validators=(validate_file_update,), permission='edit_bid')
+    @json_view(validators=(validate_file_update,), permission='edit_bid')
     def put(self):
         """Tender Bid Document Update"""
         if self.request.validated['tender_status'] not in ['active.tendering', 'active.qualification']:
@@ -101,11 +95,14 @@ class TenderBidDocumentResource(object):
             return
         document = upload_file(self.request)
         self.request.validated['bid'].documents.append(document)
+        if self.request.validated['tender_status'] == 'active.tendering':
+            self.request.validated['tender'].modified = False
         if save_tender(self.request):
-            LOGGER.info('Updated tender bid document {}'.format(self.request.context.id), extra={'MESSAGE_ID': 'tender_bid_document_put'})
+            self.LOGGER.info('Updated tender bid document {}'.format(self.request.context.id),
+                        extra=context_unpack(self.request, {'MESSAGE_ID': 'tender_bid_document_put'}))
             return {'data': document.serialize("view")}
 
-    @view(content_type="application/json", renderer='json', validators=(validate_patch_document_data,), permission='edit_bid')
+    @json_view(content_type="application/json", validators=(validate_patch_document_data,), permission='edit_bid')
     def patch(self):
         """Tender Bid Document Update"""
         if self.request.validated['tender_status'] not in ['active.tendering', 'active.qualification']:
@@ -116,7 +113,10 @@ class TenderBidDocumentResource(object):
             self.request.errors.add('body', 'data', 'Can\'t update document because award of bid is not in pending state')
             self.request.errors.status = 403
             return
+        if self.request.validated['tender_status'] == 'active.tendering':
+            self.request.validated['tender'].modified = False
         if apply_patch(self.request, src=self.request.context.serialize()):
             update_file_content_type(self.request)
-            LOGGER.info('Updated tender bid document {}'.format(self.request.context.id), extra={'MESSAGE_ID': 'tender_bid_document_patch'})
+            self.LOGGER.info('Updated tender bid document {}'.format(self.request.context.id),
+                        extra=context_unpack(self.request, {'MESSAGE_ID': 'tender_bid_document_patch'}))
             return {'data': self.request.context.serialize("view")}

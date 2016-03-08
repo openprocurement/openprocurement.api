@@ -16,6 +16,7 @@ areas that were not covered by it.
    organization
    item
    document
+   lot
    bid
    award
    question
@@ -23,3 +24,4 @@ areas that were not covered by it.
    contract
    util
    cancellation
+   feature
