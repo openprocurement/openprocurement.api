@@ -605,6 +605,7 @@ def from18to19(db):
         return changed
 
     results = db.iterview('tenders/all', 2 ** 10, include_docs=True)
+    docs = []
     for i in results:
         doc = i.doc
         changed = update_documents_type(doc, False)
