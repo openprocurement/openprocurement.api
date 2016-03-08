@@ -363,6 +363,21 @@ class Document(Model):
     relatedItem = MD5Type()
     author = StringType()
 
+    def import_data(self, raw_data, **kw):
+        """
+        Converts and imports the raw data into the instance of the model
+        according to the fields in the model.
+        :param raw_data:
+            The data to be imported.
+        """
+        data = self.convert(raw_data, **kw)
+        del_keys = [k for k in data.keys() if data[k] == getattr(self, k)]
+        for k in del_keys:
+            del data[k]
+
+        self._data.update(data)
+        return self
+
     def validate_relatedItem(self, data, relatedItem):
         if not relatedItem and data.get('documentOf') in ['item', 'lot']:
             raise ValidationError(u'This field is required.')
