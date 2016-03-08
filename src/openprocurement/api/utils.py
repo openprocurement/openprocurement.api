@@ -114,6 +114,7 @@ def upload_file(request, blacklisted_fields=DOCUMENT_BLACKLISTED_FIELDS):
             "content_type": document.format,
             "data": b64encode(in_file.read())
         }
+    update_logging_context(request, {'file_size': in_file.tell()})
     return document
 
 
