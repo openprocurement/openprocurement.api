@@ -227,6 +227,9 @@ def save_tender(request):
             for i in e.message:
                 request.errors.add('body', i, e.message[i])
             request.errors.status = 422
+        except ResourceConflict:  # pragma: no cover
+            request.errors.add('body', 'data', str(e))
+            request.errors.status = 409
         except Exception, e:  # pragma: no cover
             request.errors.add('body', 'data', str(e))
         else:
