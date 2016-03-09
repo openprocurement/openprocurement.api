@@ -13,11 +13,12 @@ class TenderContractResourceTest(BaseTenderWebTest):
         super(TenderContractResourceTest, self).setUp()
         # Create award
         response = self.app.post_json('/tenders/{}/awards'.format(
-            self.tender_id), {'data': {'suppliers': [test_tender_data["procuringEntity"]], 'status': 'pending', 'bid_id': self.initial_bids[0]['id'], 'value': test_tender_data["value"]}})
+            self.tender_id), {'data': {'suppliers': [test_tender_data["procuringEntity"]], 'status': 'pending', 'bid_id': self.initial_bids[0]['id'], 'value': test_tender_data["value"], 'items': test_tender_data["items"]}})
         award = response.json['data']
         self.award_id = award['id']
         self.award_value = award['value']
         self.award_suppliers = award['suppliers']
+        self.award_items = award['items']
         response = self.app.patch_json('/tenders/{}/awards/{}'.format(self.tender_id, self.award_id), {"data": {"status": "active"}})
 
     def test_create_tender_contract_invalid(self):
@@ -168,6 +169,15 @@ class TenderContractResourceTest(BaseTenderWebTest):
             i['complaintPeriod']['endDate'] = i['complaintPeriod']['startDate']
         self.db.save(tender)
 
+        response = self.app.patch_json('/tenders/{}/contracts/{}'.format(self.tender_id, contract['id']), {"data": {"contractID": "myselfID",
+                                                                                                                    "items": [{"description": "New Description"}],
+                                                                                                                    "suppliers": [{"name": "New Name"}]}})
+
+        response = self.app.get('/tenders/{}/contracts/{}'.format(self.tender_id, contract['id']))
+        self.assertEqual(response.json['data']['contractID'], contract['contractID'])
+        self.assertEqual(response.json['data']['items'], contract['items'])
+        self.assertEqual(response.json['data']['suppliers'], contract['suppliers'])
+
         response = self.app.patch_json('/tenders/{}/contracts/{}'.format(self.tender_id, contract['id']), {"data": {"value": {"currency": "USD"}}}, status=403)
         self.assertEqual(response.status, '403 Forbidden')
         self.assertEqual(response.json['errors'][0]["description"], "Can\'t update currency for contract value")
@@ -240,11 +250,20 @@ class TenderContractResourceTest(BaseTenderWebTest):
                 u'url', u'name': u'tender_id'}
         ])
 
+        response = self.app.patch_json('/tenders/{}/contracts/{}'.format(self.tender_id, contract['id']), {"data": {"contractID": "myselfID",
+                                                                                                                    "items": [{"description": "New Description"}],
+                                                                                                                    "suppliers": [{"name": "New Name"}]}})
+
+
         response = self.app.get('/tenders/{}/contracts/{}'.format(self.tender_id, contract['id']))
         self.assertEqual(response.status, '200 OK')
         self.assertEqual(response.content_type, 'application/json')
         self.assertEqual(response.json['data']["status"], "active")
         self.assertEqual(response.json['data']["value"]['amount'], 238)
+        self.assertEqual(response.json['data']['contractID'], contract['contractID'])
+        self.assertEqual(response.json['data']['items'], contract['items'])
+        self.assertEqual(response.json['data']['suppliers'], contract['suppliers'])
+
 
     def test_get_tender_contract(self):
         response = self.app.post_json('/tenders/{}/contracts'.format(
