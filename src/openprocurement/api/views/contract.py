@@ -76,7 +76,7 @@ class TenderAwardContractResource(APIResource):
 
             award = [a for a in tender.awards if a.id == self.request.context.awardID][0]
             if data['value']['amount'] > award.value.amount:
-                self.request.errors.add('body', 'data', 'Value amount should be less than awarded amount ({})'.format(award.value.amount))
+                self.request.errors.add('body', 'data', 'Value amount should be less or equal to awarded amount ({})'.format(award.value.amount))
                 self.request.errors.status = 403
                 return
 
