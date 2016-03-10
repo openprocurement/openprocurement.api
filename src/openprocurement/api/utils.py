@@ -27,7 +27,6 @@ from Crypto.Cipher import AES
 
 PKG = get_distribution(__package__)
 LOGGER = getLogger(PKG.project_name)
-print PKG.parsed_version
 VERSION = '{}.{}'.format(int(PKG.parsed_version[0]), int(PKG.parsed_version[1]) if PKG.parsed_version[1].isdigit() else 0)
 ROUTE_PREFIX = '/api/{}'.format(VERSION)
 DOCUMENT_BLACKLISTED_FIELDS = ('title', 'format', '__parent__', 'id', 'url', 'dateModified', )
