@@ -779,7 +779,6 @@ class Contract(Model):
     documents = ListType(ModelType(Document), default=list())
     items = ListType(ModelType(Item))
     suppliers = ListType(ModelType(Organization), min_size=1, max_size=1)
-    value = ModelType(Value)
 
     def validate_awardID(self, data, awardID):
         if awardID and isinstance(data['__parent__'], Model) and awardID not in [i.id for i in data['__parent__'].awards]:
