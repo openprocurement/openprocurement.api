@@ -774,7 +774,6 @@ class Contract(Model):
     description_ru = StringType()
     status = StringType(choices=['pending', 'terminated', 'active', 'cancelled'], default='pending')
     period = ModelType(Period)
-    value = ModelType(Value)
     dateSigned = IsoDateTimeType()
     documents = ListType(ModelType(Document), default=list())
     items = ListType(ModelType(Item))
