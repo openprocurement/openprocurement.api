@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 import unittest
+from datetime import timedelta
 
+from openprocurement.api.models import get_now
 from openprocurement.api.tests.base import BaseTenderWebTest, test_tender_data, test_bids, test_lots
 
 
@@ -20,6 +22,7 @@ class TenderContractResourceTest(BaseTenderWebTest):
         self.award_suppliers = award['suppliers']
         self.award_items = award['items']
         response = self.app.patch_json('/tenders/{}/awards/{}'.format(self.tender_id, self.award_id), {"data": {"status": "active"}})
+        self.award_activation_date = response.json['data']['date']
 
     def test_create_tender_contract_invalid(self):
         response = self.app.post_json('/tenders/some_id/contracts', {
@@ -192,6 +195,19 @@ class TenderContractResourceTest(BaseTenderWebTest):
         self.assertEqual(response.status, '200 OK')
         self.assertEqual(response.json['data']['value']['amount'], 238)
 
+        response = self.app.patch_json('/tenders/{}/contracts/{}'.format(self.tender_id, contract['id']), {"data": {"dateSigned": self.award_activation_date}}, status=422)
+        self.assertEqual(response.status, '422 Unprocessable Entity')
+        self.assertEqual(response.json['errors'], [{u'description': [u'Contract signature date should be after award confirmation date'], u'location': u'body', u'name': u'dateSigned'}])
+
+        one_hour_in_furure = (get_now() + timedelta(hours=1)).isoformat()
+        response = self.app.patch_json('/tenders/{}/contracts/{}'.format(self.tender_id, contract['id']), {"data": {"dateSigned": one_hour_in_furure}}, status=422)
+        self.assertEqual(response.status, '422 Unprocessable Entity')
+        self.assertEqual(response.json['errors'], [{u'description': [u"Contract signature date can't be in the future"], u'location': u'body', u'name': u'dateSigned'}])
+
+        custom_signature_date = get_now().isoformat()
+        response = self.app.patch_json('/tenders/{}/contracts/{}'.format(self.tender_id, contract['id']), {"data": {"dateSigned": custom_signature_date}})
+        self.assertEqual(response.status, '200 OK')
+
         response = self.app.patch_json('/tenders/{}/contracts/{}'.format(self.tender_id, contract['id']), {"data": {"status": "active"}}, status=403)
         self.assertEqual(response.status, '403 Forbidden')
         self.assertEqual(response.content_type, 'application/json')
@@ -268,6 +284,7 @@ class TenderContractResourceTest(BaseTenderWebTest):
         self.assertEqual(response.json['data']['contractID'], contract['contractID'])
         self.assertEqual(response.json['data']['items'], contract['items'])
         self.assertEqual(response.json['data']['suppliers'], contract['suppliers'])
+        self.assertEqual(response.json['data']['dateSigned'], custom_signature_date)
 
 
     def test_get_tender_contract(self):
