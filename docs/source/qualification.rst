@@ -30,7 +30,7 @@ document into award and later its status should switch to either `active`
 .. include:: qualification/award-pending-upload.http
    :code:
 
-The Qualification Comittee can upload several documents, for example, decisions to
+The Qualification Committee can upload several documents, for example, decisions to
 prolong the qualification process - in order to allow the bidder to collect all
 necessary documents or correct errors.  Such documents would help to have
 procedure as transparent as possible and will reduce risk of cancellation by
