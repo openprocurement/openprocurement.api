@@ -76,7 +76,7 @@ Schema
     The start and end date for the contract.
 
 :dateSigned:
-    string, :ref:`date`, auto-generated
+    string, :ref:`date`
 
     |ocdsDescription|
     The date the contract was signed. In the case of multiple signatures, the date of the last signature.
