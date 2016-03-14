@@ -1,26 +1,25 @@
 PATCH /api/2.0/tenders/5daa560c72734310ac6a73489233b32b/awards/7208bd48a6a24b55bee20b87d20c7bbf?acc_token=50353aa831de498d908a1362334e9989 HTTP/1.0
 Authorization: Basic YnJva2VyOg==
-Content-Length: 33
+Content-Length: 30
 Content-Type: application/json
 Host: api-sandbox.openprocurement.org
 
 {
   "data": {
-    "status": "cancelled"
+    "status": "active"
   }
 }
 
 
 200 OK
 Content-Type: application/json; charset=UTF-8
-Location: http://api-sandbox.openprocurement.org/api/2.0/tenders/5daa560c72734310ac6a73489233b32b/awards/d8d21da77a0b4e42826039be59cad33a
 
 {
   "data": {
-    "status": "cancelled", 
+    "status": "active", 
     "complaintPeriod": {
       "startDate": "2016-03-14T13:38:24.099474+02:00", 
-      "endDate": "2016-03-14T13:38:24.741999+02:00"
+      "endDate": "2016-03-15T13:38:24.414698+02:00"
     }, 
     "suppliers": [
       {

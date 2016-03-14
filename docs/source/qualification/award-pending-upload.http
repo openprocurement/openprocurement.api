@@ -1,0 +1,23 @@
+POST /api/2.0/tenders/5daa560c72734310ac6a73489233b32b/awards/ec1c1fab15a34b328516660d3d52e257/documents?acc_token=50353aa831de498d908a1362334e9989 HTTP/1.0
+Authorization: Basic YnJva2VyOg==
+Content-Length: 199
+Content-Type: multipart/form-data; boundary=----------a_BoUnDaRy996418221927$
+Host: api-sandbox.openprocurement.org
+
+
+201 Created
+Content-Type: application/json; charset=UTF-8
+Location: http://api-sandbox.openprocurement.org/api/2.0/tenders/5daa560c72734310ac6a73489233b32b/awards/ec1c1fab15a34b328516660d3d52e257/documents/eaf3dd2ddaf34d1fa173258ea2dfbabd
+
+{
+  "data": {
+    "title": "Unsuccessful_Reason.pdf", 
+    "url": "http://api-sandbox.openprocurement.org/api/2.0/tenders/5daa560c72734310ac6a73489233b32b/awards/ec1c1fab15a34b328516660d3d52e257/documents/eaf3dd2ddaf34d1fa173258ea2dfbabd?download=f081742ba7754e598ed7079d178ed880", 
+    "format": "application/pdf", 
+    "documentOf": "tender", 
+    "datePublished": "2016-03-14T13:38:23.903568+02:00", 
+    "id": "eaf3dd2ddaf34d1fa173258ea2dfbabd", 
+    "dateModified": "2016-03-14T13:38:23.903617+02:00"
+  }
+}
+

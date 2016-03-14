@@ -13,9 +13,9 @@ Listing awards
 
 The pending award can be retrieved via request to list all available awards:
 
-.. sourcecode:: http
+.. include:: qualification/awards-get.http
+   :code:
 
-  GET /tenders/64e93250be76435397e8c992ed4214d1/awards HTTP/1.1
 
 When the award is in `pending` status, it means that procuring entity has
 to review documents describing the bid and other bidder documents.
@@ -27,9 +27,8 @@ The protocol of Qualification Committee decision should be uploaded as
 document into award and later its status should switch to either `active`
 (if it is accepted) or `unsuccessful` (if rejected).
 
-.. sourcecode:: http
-
-  POST /tenders/64e93250be76435397e8c992ed4214d1/awards/{}/documents HTTP/1.1
+.. include:: qualification/award-pending-upload.http
+   :code:
 
 The Qualification Comittee can upload several documents, for example, decisions to
 prolong the qualification process - in order to allow the bidder to collect all
@@ -37,20 +36,8 @@ necessary documents or correct errors.  Such documents would help to have
 procedure as transparent as possible and will reduce risk of cancellation by
 Complaint Review Body.
 
-.. sourcecode:: http
-
-  PATCH /tenders/64e93250be76435397e8c992ed4214d1/awards/{} HTTP/1.1
-
-  {
-      "data":{
-          "status": "unsuccessful"
-      }
-  }
-
-.. sourcecode:: http
-
-  HTTP/1.1 200 OK
-  Location: /tenders/64e93250be76435397e8c992ed4214d1/awards/ea36a10ad89649ccac253f23d8e0e80d HTTP/1.1
+.. include:: qualification/award-pending-unsuccessful.http
+   :code:
 
 Note that after award rejection the next bid in the value-sorted bid
 sequence becomes subject of subsequent award.  For convenience you can use
@@ -130,3 +117,12 @@ complaint was filed against) are cancelled (switch to `cancelled` status).
 New pending award is generated and Procuring Entity is obliged to qualify it
 again, taking into consideration recommendations in the report of Complaint
 Review Body.
+
+.. include:: qualification/awards-unsuccessful-get1.http
+   :code:
+
+.. include:: qualification/award-unsuccessful-cancel.http
+   :code:
+
+.. include:: qualification/awards-unsuccessful-get2.http
+   :code:

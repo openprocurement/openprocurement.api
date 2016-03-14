@@ -790,8 +790,54 @@ class TenderResourceTest(BaseTenderWebTest):
                                       {'data': {'bids': auction_bids_data}})
         # get awards
         self.app.authorization = ('Basic', ('broker', ''))
-        response = self.app.get('/tenders/{}/awards?acc_token={}'.format(self.tender_id, self.tender_token))
+
+        with open('docs/source/qualification/awards-get.http', 'w') as self.app.file_obj:
+            response = self.app.get('/tenders/{}/awards?acc_token={}'.format(
+                self.tender_id, self.tender_token))
+            self.assertEqual(response.status, '200 OK')
+
         award_id = [i['id'] for i in response.json['data'] if i['status'] == 'pending'][0]
+
+        with open('docs/source/qualification/award-pending-upload.http', 'w') as self.app.file_obj:
+            response = self.app.post('/tenders/{}/awards/{}/documents?acc_token={}'.format(
+                self.tender_id, award_id, self.tender_token), upload_files=[('file', u'Unsuccessful_Reason.pdf', 'content')])
+            self.assertEqual(response.status, '201 Created')
+
+        with open('docs/source/qualification/award-pending-unsuccessful.http', 'w') as self.app.file_obj:
+            response = self.app.patch_json('/tenders/{}/awards/{}?acc_token={}'.format(
+                self.tender_id, award_id, self.tender_token), {"data":{"status":"unsuccessful"}})
+            self.assertEqual(response.status, '200 OK')
+
+        response = self.app.get('/tenders/{}/awards?acc_token={}'.format(self.tender_id, self.tender_token))
+        award_id2 = [i['id'] for i in response.json['data'] if i['status'] == 'pending'][0]
+
+        with open('docs/source/qualification/award-pending-active.http', 'w') as self.app.file_obj:
+            response = self.app.patch_json('/tenders/{}/awards/{}?acc_token={}'.format(
+                self.tender_id, award_id2, self.tender_token), {"data":{"status":"active"}})
+            self.assertEqual(response.status, '200 OK')
+
+        with open('docs/source/qualification/award-active-get.http', 'w') as self.app.file_obj:
+            response = self.app.get('/tenders/{}/awards/{}?acc_token={}'.format(
+                self.tender_id, award_id2, self.tender_token))
+            self.assertEqual(response.status, '200 OK')
+
+        with open('docs/source/qualification/award-active-cancel.http', 'w') as self.app.file_obj:
+            response = self.app.patch_json('/tenders/{}/awards/{}?acc_token={}'.format(
+                self.tender_id, award_id2, self.tender_token), {"data":{"status":"cancelled"}})
+            self.assertEqual(response.status, '200 OK')
+
+        response = self.app.get('/tenders/{}/awards?acc_token={}'.format(self.tender_id, self.tender_token))
+        award_id3 = [i['id'] for i in response.json['data'] if i['status'] == 'pending'][0]
+
+        with open('docs/source/qualification/award-active-cancel-upload.http', 'w') as self.app.file_obj:
+            response = self.app.post('/tenders/{}/awards/{}/documents?acc_token={}'.format(
+                self.tender_id, award_id3, self.tender_token), upload_files=[('file', u'Cancellation_Reason.pdf', 'content')])
+            self.assertEqual(response.status, '201 Created')
+
+        with open('docs/source/qualification/award-active-cancel-disqualify.http', 'w') as self.app.file_obj:
+            response = self.app.patch_json('/tenders/{}/awards/{}?acc_token={}'.format(
+                self.tender_id, award_id3, self.tender_token), {"data":{"status":"unsuccessful"}})
+            self.assertEqual(response.status, '200 OK')
 
         ###################### Tender Award Claims/Complaints ##################
         #
@@ -803,7 +849,6 @@ class TenderResourceTest(BaseTenderWebTest):
             response = self.app.post_json('/tenders/{}/awards/{}/complaints?acc_token={}'.format(
                 self.tender_id, award_id, bid_token), test_complaint_data)
             self.assertEqual(response.status, '201 Created')
-
 
         complaint1_id = response.json['data']['id']
         complaint1_token = response.json['access']['token']
@@ -917,7 +962,6 @@ class TenderResourceTest(BaseTenderWebTest):
         self.app.patch_json('/tenders/{}/awards/{}/complaints/{}?acc_token={}'.format(
                 self.tender_id, award_id, complaint4_id, complaint4_token), {"data":{"status":"pending","satisfied":False}})
 
-
         self.app.authorization = ('Basic', ('reviewer', ''))
 
         with open('docs/source/complaints/award-complaint-resolution-upload.http', 'w') as self.app.file_obj:
@@ -933,4 +977,21 @@ class TenderResourceTest(BaseTenderWebTest):
         with open('docs/source/complaints/award-complaint-decline.http', 'w') as self.app.file_obj:
             response = self.app.patch_json('/tenders/{}/awards/{}/complaints/{}'.format(
                     self.tender_id, award_id, complaint4_id), {"data":{"status":"declined"}})
+            self.assertEqual(response.status, '200 OK')
+
+        self.app.authorization = ('Basic', ('broker', ''))
+
+        with open('docs/source/qualification/awards-unsuccessful-get1.http', 'w') as self.app.file_obj:
+            response = self.app.get('/tenders/{}/awards?acc_token={}'.format(
+                self.tender_id, award_id, self.tender_token))
+            self.assertEqual(response.status, '200 OK')
+
+        with open('docs/source/qualification/award-unsuccessful-cancel.http', 'w') as self.app.file_obj:
+            response = self.app.patch_json('/tenders/{}/awards/{}?acc_token={}'.format(
+                self.tender_id, award_id, self.tender_token), {"data":{"status":"cancelled"}})
+            self.assertEqual(response.status, '200 OK')
+
+        with open('docs/source/qualification/awards-unsuccessful-get2.http', 'w') as self.app.file_obj:
+            response = self.app.get('/tenders/{}/awards?acc_token={}'.format(
+                self.tender_id, award_id, self.tender_token))
             self.assertEqual(response.status, '200 OK')

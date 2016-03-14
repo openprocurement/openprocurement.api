@@ -1,0 +1,12 @@
+PATCH /api/2.0/tenders/25ca065b704c4f27947977dc3e84a6e3/awards/101049d20bdf496c8b20d37afd0fe3ab?acc_token=76b96b2fd188457fb1ae287a54a15091 HTTP/1.0
+Authorization: Basic YnJva2VyOg==
+Content-Length: 33
+Content-Type: application/json
+Host: api-sandbox.openprocurement.org
+
+{
+  "data": {
+    "status": "cancelled"
+  }
+}
+
