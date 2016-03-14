@@ -338,6 +338,22 @@ class TenderAwardResourceTest(BaseTenderWebTest):
                 u'url', u'name': u'tender_id'}
         ])
 
+    def test_patch_tender_award_Administrator_change(self):
+        response = self.app.post_json('/tenders/{}/awards'.format(
+            self.tender_id), {'data': {'suppliers': [test_tender_data["procuringEntity"]], 'status': 'pending', 'bid_id': self.initial_bids[0]['id']}})
+        self.assertEqual(response.status, '201 Created')
+        self.assertEqual(response.content_type, 'application/json')
+        award = response.json['data']
+        complaintPeriod = award['complaintPeriod'][u'startDate']
+
+        authorization = self.app.authorization
+        self.app.authorization = ('Basic', ('administrator', ''))
+        response = self.app.patch_json('/tenders/{}/awards/{}'.format(self.tender_id, award['id']), {"data": {"complaintPeriod": {"endDate": award['complaintPeriod'][u'startDate']}}})
+        self.assertEqual(response.status, '200 OK')
+        self.assertEqual(response.content_type, 'application/json')
+        self.assertIn("endDate", response.json['data']['complaintPeriod'])
+        self.assertEqual(response.json['data']['complaintPeriod']["endDate"], complaintPeriod)
+
 
 class TenderLotAwardResourceTest(BaseTenderWebTest):
     initial_status = 'active.qualification'

@@ -796,6 +796,7 @@ class Award(Model):
             'edit': whitelist('status'),
             'embedded': schematics_embedded_role,
             'view': schematics_default_role,
+            'Administrator': whitelist('complaintPeriod'),
         }
 
     id = MD5Type(required=True, default=lambda: uuid4().hex)
