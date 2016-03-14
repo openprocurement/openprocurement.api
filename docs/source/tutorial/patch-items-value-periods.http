@@ -1,4 +1,4 @@
-PATCH /api/0.12/tenders/e98e2eb727c645d4b04ff7a56fef272f?acc_token=fb616747193c4f9bba0aee4e40c29121 HTTP/1.0
+PATCH /api/0.12/tenders/d43c874272844fab88e7f2681b304252?acc_token=622e4e63e5d849698294f5ab6d6f13e5 HTTP/1.0
 Authorization: Basic YnJva2VyOg==
 Content-Length: 75
 Content-Type: application/json
@@ -7,7 +7,7 @@ Host: api-sandbox.openprocurement.org
 {
   "data": {
     "tenderPeriod": {
-      "endDate": "2016-02-25T12:42:09.422746+02:00"
+      "endDate": "2016-03-29T21:29:18.701984+02:00"
     }
   }
 }
@@ -20,10 +20,10 @@ Content-Type: application/json; charset=UTF-8
   "data": {
     "procurementMethod": "open", 
     "status": "active.enquiries", 
-    "tenderID": "UA-2016-02-10-000001", 
+    "tenderID": "UA-2016-03-14-000001", 
     "tenderPeriod": {
-      "startDate": "2016-02-17T12:41:44.631380+02:00", 
-      "endDate": "2016-02-25T12:42:09.422746+02:00"
+      "startDate": "2016-03-21T21:28:49.213542+02:00", 
+      "endDate": "2016-03-29T21:29:18.701984+02:00"
     }, 
     "title": "футляри до державних нагород", 
     "minimalStep": {
@@ -46,7 +46,7 @@ Content-Type: application/json; charset=UTF-8
             "description": "папір і картон гофровані, паперова й картонна тара"
           }
         ], 
-        "id": "aff521dc6b454d538a2e173a90fbdb90", 
+        "id": "2de43756594b4903acf594ee38681873", 
         "unit": {
           "code": "44617100-9", 
           "name": "item"
@@ -61,7 +61,7 @@ Content-Type: application/json; charset=UTF-8
       "valueAddedTaxIncluded": true
     }, 
     "submissionMethod": "electronicAuction", 
-    "next_check": "2016-02-17T12:41:44.631380+02:00", 
+    "next_check": "2016-03-21T21:28:49.213542+02:00", 
     "procuringEntity": {
       "contactPoint": {
         "name": "Державне управління справами", 
@@ -82,12 +82,12 @@ Content-Type: application/json; charset=UTF-8
       }
     }, 
     "enquiryPeriod": {
-      "startDate": "2016-02-10T12:41:58.474848+02:00", 
-      "endDate": "2016-02-17T12:41:44.631380+02:00"
+      "startDate": "2016-03-14T21:29:08.114765+02:00", 
+      "endDate": "2016-03-21T21:28:49.213542+02:00"
     }, 
     "owner": "broker", 
-    "dateModified": "2016-02-10T12:41:59.476763+02:00", 
-    "id": "e98e2eb727c645d4b04ff7a56fef272f", 
+    "dateModified": "2016-03-14T21:29:08.761463+02:00", 
+    "id": "d43c874272844fab88e7f2681b304252", 
     "awardCriteria": "lowestCost"
   }
 }
