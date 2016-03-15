@@ -40,7 +40,7 @@ entry_points = {
 }
 
 setup(name='openprocurement.api',
-      version='0.12b2',
+      version='0.12',
       description='openprocurement.api',
       long_description=README,
       classifiers=[
