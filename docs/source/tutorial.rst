@@ -258,6 +258,15 @@ Let's see the list of all added contract documents:
 .. include:: tutorial/tender-contract-get-documents-again.http
    :code:
 
+Set contract signature date
+---------------------------
+
+There is a possibility to set custom contract signature date.
+If the date is not set it will be generated on contract registration.
+
+.. include:: tutorial/tender-contract-sign-date.http
+   :code:
+
 Contract registration
 ---------------------
 

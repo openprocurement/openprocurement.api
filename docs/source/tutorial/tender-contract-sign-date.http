@@ -1,12 +1,12 @@
 PATCH /api/0.12/tenders/d43c874272844fab88e7f2681b304252/contracts/2c1431eec94e4d2d820d369c0d107576?acc_token=622e4e63e5d849698294f5ab6d6f13e5 HTTP/1.0
 Authorization: Basic YnJva2VyOg==
-Content-Length: 30
+Content-Length: 60
 Content-Type: application/json
 Host: api-sandbox.openprocurement.org
 
 {
   "data": {
-    "status": "active"
+    "dateSigned": "2016-03-14T21:29:12.525658+02:00"
   }
 }
 
@@ -16,7 +16,7 @@ Content-Type: application/json; charset=UTF-8
 
 {
   "data": {
-    "status": "active", 
+    "status": "pending", 
     "documents": [
       {
         "title": "contract_first_document.doc", 
