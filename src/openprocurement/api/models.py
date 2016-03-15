@@ -206,6 +206,11 @@ class Value(Model):
     valueAddedTaxIncluded = BooleanType(required=True, default=True)
 
 
+class Guarantee(Model):
+    amount = FloatType(required=True, min_value=0)  # Amount as a number.
+    currency = StringType(required=True, default=u'UAH', max_length=3, min_length=3)  # The currency in 3-letter ISO 4217 format.
+
+
 class Period(Model):
     """The period when the tender is open for submissions. The end date is the closing date for tender submissions."""
 
@@ -500,8 +505,8 @@ class Bid(Model):
             'Administrator': Administrator_bid_role,
             'embedded': view_bid_role,
             'view': view_bid_role,
-            'create': whitelist('value', 'tenderers', 'parameters', 'lotValues'),
-            'edit': whitelist('value', 'tenderers', 'parameters', 'lotValues'),
+            'create': whitelist('value', 'guarantee', 'tenderers', 'parameters', 'lotValues'),
+            'edit': whitelist('value', 'guarantee', 'tenderers', 'parameters', 'lotValues'),
             'auction_view': whitelist('value', 'lotValues', 'id', 'date', 'parameters', 'participationUrl'),
             'auction_post': whitelist('value', 'lotValues', 'id', 'date'),
             'auction_patch': whitelist('id', 'lotValues', 'participationUrl'),
@@ -529,6 +534,7 @@ class Bid(Model):
     participationUrl = URLType()
     owner_token = StringType()
     owner = StringType()
+    guarantee = ModelType(Guarantee)
 
     __name__ = ''
 
