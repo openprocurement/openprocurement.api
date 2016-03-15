@@ -21,7 +21,6 @@ class TenderContractResourceTest(BaseTenderWebTest):
         self.award_value = award['value']
         self.award_suppliers = award['suppliers']
         response = self.app.patch_json('/tenders/{}/awards/{}'.format(self.tender_id, self.award_id), {"data": {"status": "active"}})
-        self.award_activation_date = response.json['data']['date']
 
     def test_create_tender_contract_invalid(self):
         response = self.app.post_json('/tenders/some_id/contracts', {
@@ -187,9 +186,9 @@ class TenderContractResourceTest(BaseTenderWebTest):
         self.assertEqual(response.status, '200 OK')
         self.assertEqual(response.json['data']['value']['amount'], 238)
 
-        response = self.app.patch_json('/tenders/{}/contracts/{}'.format(self.tender_id, contract['id']), {"data": {"dateSigned": self.award_activation_date}}, status=422)
+        response = self.app.patch_json('/tenders/{}/contracts/{}'.format(self.tender_id, contract['id']), {"data": {"dateSigned": i['complaintPeriod']['endDate']}}, status=422)
         self.assertEqual(response.status, '422 Unprocessable Entity')
-        self.assertEqual(response.json['errors'], [{u'description': [u'Contract signature date should be after award confirmation date'], u'location': u'body', u'name': u'dateSigned'}])
+        self.assertEqual(response.json['errors'], [{u'description': [u'Contract signature date should be after award complaint period end date ({})'.format(i['complaintPeriod']['endDate'])], u'location': u'body', u'name': u'dateSigned'}])
 
         one_hour_in_furure = (get_now() + timedelta(hours=1)).isoformat()
         response = self.app.patch_json('/tenders/{}/contracts/{}'.format(self.tender_id, contract['id']), {"data": {"dateSigned": one_hour_in_furure}}, status=422)
