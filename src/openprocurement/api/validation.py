@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from openprocurement.api.models import Award, Document, Question, Complaint, Contract, Cancellation, Lot, get_now
+from openprocurement.api.models import get_now
 from schematics.exceptions import ModelValidationError, ModelConversionError
 from openprocurement.api.utils import apply_data_patch, update_logging_context
 
@@ -28,10 +28,11 @@ def validate_data(request, model, partial=False, data=None):
             initial_data = request.context.serialize()
             m = model(initial_data)
             new_patch = apply_data_patch(initial_data, data)
-            m.import_data(new_patch, partial=True, strict=True)
+            if new_patch:
+                m.import_data(new_patch, partial=True, strict=True)
             m.__parent__ = request.context.__parent__
             m.validate()
-            role = m.get_role()
+            role = request.context.get_role()
             method = m.to_patch
         else:
             m = model(data)
@@ -49,7 +50,7 @@ def validate_data(request, model, partial=False, data=None):
         request.errors.status = 422
         data = None
     else:
-        if hasattr(m.__class__, '_options') and role not in m.__class__._options.roles:
+        if hasattr(type(m), '_options') and role not in type(m)._options.roles:
             request.errors.add('url', 'role', 'Forbidden')
             request.errors.status = 403
             data = None
@@ -75,7 +76,7 @@ def validate_tender_data(request):
 
 
 def validate_patch_tender_data(request):
-    return validate_data(request, request.tender.__class__, True)
+    return validate_data(request, type(request.tender), True)
 
 
 def validate_tender_auction_data(request):
@@ -116,12 +117,21 @@ def validate_tender_auction_data(request):
                 x if x['id'] == lot_id else {}
                 for (y, x) in sorted(zip([tender_lots_ids.index(i['id']) for i in data.get('lots', [])], data.get('lots', [])))
             ]
-        tender_bids_lots_ids = dict([(i.id, [j['relatedLot'] for j in i.lotValues]) for i in tender.bids])
-        if tender.lots and any([len(bid['lotValues']) != len(tender_bids_lots_ids.get(bid['id'], [])) for bid in bids]):
+        tender_bids_lots_ids = dict([
+            (i.id, [
+                j['relatedLot']
+                for j in i.lotValues
+                if getattr(j, 'status', 'active') == 'active'
+            ])
+            for i in tender.bids
+            if (getattr(i, 'status', 'active') or 'active') == 'active'
+        ])
+
+        if tender.lots and any([len(bid.get('lotValues', [])) != len(tender_bids_lots_ids.get(bid['id'], [])) for bid in bids if getattr(bid, 'status', 'active') == 'active']):
             request.errors.add('body', 'bids', [{u'lotValues': [u'Number of lots of auction results did not match the number of tender lots']}])
             request.errors.status = 422
             return
-        if tender.lots and any([set([j['relatedLot'] for j in bid['lotValues']]) != set(tender_bids_lots_ids[bid['id']]) for bid in bids]):
+        if tender.lots and any([set([j['relatedLot'] for j in bid.get('lotValues', [])]) != set(tender_bids_lots_ids.get(bid['id'], [])) for bid in bids if getattr(bid, 'status', 'active') == 'active']):
             request.errors.add('body', 'bids', [{u'lotValues': [{u'relatedLot': ['relatedLot should be one of lots of bid']}]}])
             request.errors.status = 422
             return
@@ -144,71 +154,84 @@ def validate_tender_auction_data(request):
 
 def validate_bid_data(request):
     update_logging_context(request, {'bid_id': '__new__'})
-    model = request.tender.__class__.bids.model_class
+    model = type(request.tender).bids.model_class
     return validate_data(request, model)
 
 
 def validate_patch_bid_data(request):
-    model = request.tender.__class__.bids.model_class
+    model = type(request.tender).bids.model_class
     return validate_data(request, model, True)
 
 
 def validate_award_data(request):
     update_logging_context(request, {'award_id': '__new__'})
-    return validate_data(request, Award)
+    model = type(request.tender).awards.model_class
+    return validate_data(request, model)
 
 
 def validate_patch_award_data(request):
-    return validate_data(request, Award, True)
+    model = type(request.tender).awards.model_class
+    return validate_data(request, model, True)
 
 
 def validate_patch_document_data(request):
-    return validate_data(request, Document, True)
+    model = type(request.context)
+    return validate_data(request, model, True)
 
 
 def validate_question_data(request):
     update_logging_context(request, {'question_id': '__new__'})
-    return validate_data(request, Question)
+    model = type(request.tender).questions.model_class
+    return validate_data(request, model)
 
 
 def validate_patch_question_data(request):
-    return validate_data(request, Question, True)
+    model = type(request.tender).questions.model_class
+    return validate_data(request, model, True)
 
 
 def validate_complaint_data(request):
     update_logging_context(request, {'complaint_id': '__new__'})
-    return validate_data(request, Complaint)
+    model = type(request.tender).complaints.model_class
+    return validate_data(request, model)
 
 
 def validate_patch_complaint_data(request):
-    return validate_data(request, Complaint, True)
+    model = type(request.tender).complaints.model_class
+    return validate_data(request, model, True)
 
 
 def validate_cancellation_data(request):
     update_logging_context(request, {'cancellation_id': '__new__'})
-    return validate_data(request, Cancellation)
+    model = type(request.tender).cancellations.model_class
+    return validate_data(request, model)
 
 
 def validate_patch_cancellation_data(request):
-    return validate_data(request, Cancellation, True)
+    model = type(request.tender).cancellations.model_class
+    return validate_data(request, model, True)
 
 
 def validate_contract_data(request):
     update_logging_context(request, {'contract_id': '__new__'})
-    return validate_data(request, Contract)
+    model = type(request.tender).contracts.model_class
+    return validate_data(request, model)
 
 
 def validate_patch_contract_data(request):
-    return validate_data(request, Contract, True)
+    model = type(request.tender).contracts.model_class
+    return validate_data(request, model, True)
 
 
 def validate_lot_data(request):
     update_logging_context(request, {'lot_id': '__new__'})
-    return validate_data(request, Lot)
+    model = type(request.tender).lots.model_class
+    return validate_data(request, model)
 
 
 def validate_patch_lot_data(request):
-    return validate_data(request, Lot, True)
+    model = type(request.tender).lots.model_class
+    return validate_data(request, model, True)
 
 
 def validate_file_upload(request):

@@ -1,0 +1,27 @@
+POST /api/0.12/tenders/e98e2eb727c645d4b04ff7a56fef272f/cancellations?acc_token=fb616747193c4f9bba0aee4e40c29121 HTTP/1.0
+Authorization: Basic YnJva2VyOg==
+Content-Length: 43
+Content-Type: application/json
+Host: api-sandbox.openprocurement.org
+
+{
+  "data": {
+    "reason": "cancellation reason"
+  }
+}
+
+
+201 Created
+Content-Type: application/json; charset=UTF-8
+Location: http://api-sandbox.openprocurement.org/api/0.12/tenders/e98e2eb727c645d4b04ff7a56fef272f/cancellations/88f9b18fa36343708b785fc5fb78de41
+
+{
+  "data": {
+    "date": "2016-02-10T12:42:05.094649+02:00", 
+    "status": "pending", 
+    "reason": "cancellation reason", 
+    "cancellationOf": "tender", 
+    "id": "88f9b18fa36343708b785fc5fb78de41"
+  }
+}
+

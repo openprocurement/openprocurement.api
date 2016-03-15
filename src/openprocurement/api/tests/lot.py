@@ -114,20 +114,6 @@ class TenderLotResourceTest(BaseTenderWebTest):
         self.assertEqual(lots[0]['minimalStep']['currency'], "UAH")
         self.assertEqual(lots[0]['minimalStep']['amount'], 100)
 
-        response = self.app.post_json(request_path, {'data': {
-            'title': 'lot title',
-            'description': 'lot description',
-            'value': {'amount': '500.0'},
-            'minimalStep': {'amount': '100.0'},
-            'auctionPeriod': {'startDate': '2014-10-31T00:00:00', 'endDate': '2015-10-01T00:00:00'}
-        }}, status=422)
-        self.assertEqual(response.status, '422 Unprocessable Entity')
-        self.assertEqual(response.content_type, 'application/json')
-        self.assertEqual(response.json['status'], 'error')
-        self.assertEqual(response.json['errors'], [
-            {u'description': [u'period should begin after tenderPeriod'], u'location': u'body', u'name': u'auctionPeriod'}
-        ])
-
         response = self.app.patch_json('/tenders/{}'.format(self.tender_id), {"data": {"items": [{'relatedLot': '0' * 32}]}}, status=422)
         self.assertEqual(response.status, '422 Unprocessable Entity')
         self.assertEqual(response.content_type, 'application/json')
@@ -211,9 +197,7 @@ class TenderLotResourceTest(BaseTenderWebTest):
         self.assertEqual(lot['value']['currency'], "UAH")
 
         # update tender currency without mimimalStep currency change
-        response = self.app.patch_json('/tenders/{}'.format(self.tender_id), {"data":
-                                                                              {"value": {"currency": "GBP"}}
-                                                                              }, status = 422)
+        response = self.app.patch_json('/tenders/{}'.format(self.tender_id), {"data": {"value": {"currency": "GBP"}}}, status=422)
         self.assertEqual(response.status, '422 Unprocessable Entity')
         self.assertEqual(response.content_type, 'application/json')
         self.assertEqual(response.json['status'], 'error')
@@ -223,10 +207,10 @@ class TenderLotResourceTest(BaseTenderWebTest):
         ])
 
         # update tender currency
-        response = self.app.patch_json('/tenders/{}'.format(self.tender_id), {"data":
-                                                                              {"value": {"currency": "GBP"},
-                                                                               "minimalStep": {"currency": "GBP"}}
-                                                                              })
+        response = self.app.patch_json('/tenders/{}'.format(self.tender_id), {"data": {
+            "value": {"currency": "GBP"},
+            "minimalStep": {"currency": "GBP"}
+        }})
         self.assertEqual(response.status, '200 OK')
         # log currency is updated too
         response = self.app.get('/tenders/{}/lots/{}'.format(self.tender_id, lot['id']))
@@ -254,7 +238,6 @@ class TenderLotResourceTest(BaseTenderWebTest):
         self.assertEqual(response.content_type, 'application/json')
         lot = response.json['data']
         self.assertEqual(lot['minimalStep']['currency'], "GBP")
-
 
         # try to update lot minimalStep currency and lot value currency in single request
         response = self.app.patch_json('/tenders/{}/lots/{}'.format(self.tender_id, lot['id']), {"data": {"value": {"currency": "USD"},
@@ -312,7 +295,6 @@ class TenderLotResourceTest(BaseTenderWebTest):
         self.assertEqual(response.content_type, 'application/json')
         lot = response.json['data']
         self.assertFalse(lot['minimalStep']['valueAddedTaxIncluded'])
-
 
         # try to update minimalStep VAT and value VAT in single request
         response = self.app.patch_json('/tenders/{}/lots/{}'.format(self.tender_id, lot['id']), {"data": {"value": {"valueAddedTaxIncluded": True},
@@ -691,7 +673,7 @@ class TenderLotFeatureBidderResourceTest(BaseTenderWebTest):
         self.assertEqual(response.content_type, 'application/json')
         self.assertEqual(response.json['status'], 'error')
         self.assertEqual(response.json['errors'], [
-            {u'description': [u'This field is required.'], u'location': u'body', u'name': u'parameters'},
+            {u'description': [u'All features parameters is required.'], u'location': u'body', u'name': u'parameters'},
             {u'description': [u'This field is required.'], u'location': u'body', u'name': u'lotValues'}
         ])
 
@@ -748,7 +730,7 @@ class TenderLotFeatureBidderResourceTest(BaseTenderWebTest):
         self.assertEqual(response.content_type, 'application/json')
         self.assertEqual(response.json['status'], 'error')
         self.assertEqual(response.json['errors'], [
-            {u'description': [u'This field is required.'], u'location': u'body', u'name': u'parameters'}
+            {u'description': [u'All features parameters is required.'], u'location': u'body', u'name': u'parameters'}
         ])
 
         response = self.app.post_json(request_path, {'data': {'tenderers': [test_tender_data["procuringEntity"]], 'lotValues': [{"value": {"amount": 500}, 'relatedLot': self.lot_id}], 'parameters': [{"code": "code_item", "value": 0.01}]}}, status=422)
@@ -825,7 +807,9 @@ class TenderLotProcessTest(BaseTenderWebTest):
         response = self.set_status('active.tendering', {"lots": [{"auctionPeriod": {"startDate": (get_now() + timedelta(days=10)).isoformat()}}]})
         self.assertIn("auctionPeriod", response.json['data']['lots'][0])
         # switch to unsuccessful
-        response = self.set_status('active.auction', {"lots": [{"auctionPeriod": {"startDate": None}}]})
+        response = self.set_status('active.auction', {"lots": [{"auctionPeriod": {"startDate": None}}], 'status': 'active.tendering'})
+        self.app.authorization = ('Basic', ('chronograph', ''))
+        response = self.app.patch_json('/tenders/{}'.format(tender_id), {"data": {"id": tender_id}})
         self.assertEqual(response.json['data']["lots"][0]['status'], 'unsuccessful')
         self.assertEqual(response.json['data']['status'], 'unsuccessful')
 
@@ -850,8 +834,9 @@ class TenderLotProcessTest(BaseTenderWebTest):
         response = self.app.post_json('/tenders/{}/bids'.format(tender_id),
                                       {'data': {'tenderers': [test_tender_data["procuringEntity"]], 'lotValues': [{"value": {"amount": 500}, 'relatedLot': lot_id}]}})
         # switch to active.qualification
-        response = self.set_status('active.auction', {"lots": [{"auctionPeriod": {"startDate": None}}]})
-        #self.assertNotIn("auctionPeriod", response.json['data']['lots'][0])
+        response = self.set_status('active.auction', {"lots": [{"auctionPeriod": {"startDate": None}}], 'status': 'active.tendering'})
+        self.app.authorization = ('Basic', ('chronograph', ''))
+        response = self.app.patch_json('/tenders/{}'.format(tender_id), {"data": {"id": tender_id}})
         # get awards
         self.app.authorization = ('Basic', ('broker', ''))
         response = self.app.get('/tenders/{}/awards?acc_token={}'.format(tender_id, owner_token))
@@ -993,10 +978,14 @@ class TenderLotProcessTest(BaseTenderWebTest):
         ]})
         self.assertTrue(all(["auctionPeriod" in i for i in response.json['data']['lots']]))
         # switch to unsuccessful
-        response = self.set_status('active.auction', {"lots": [
-            {"auctionPeriod": {"startDate": None}}
-            for i in lots
-        ]})
+        response = self.set_status('active.auction', {
+            "lots": [
+                {"auctionPeriod": {"startDate": None}}
+                for i in lots
+            ],
+            'status': 'active.tendering'})
+        self.app.authorization = ('Basic', ('chronograph', ''))
+        response = self.app.patch_json('/tenders/{}'.format(tender_id), {"data": {"id": tender_id}})
         self.assertTrue(all([i['status'] == 'unsuccessful' for i in response.json['data']['lots']]))
         self.assertEqual(response.json['data']['status'], 'unsuccessful')
 
@@ -1064,13 +1053,18 @@ class TenderLotProcessTest(BaseTenderWebTest):
             for lot_id in lots
         ]}})
         # switch to active.qualification
-        response = self.set_status('active.auction', {"lots": [
-            {"auctionPeriod": {"startDate": None}}
-            for i in lots
-        ]})
+        response = self.set_status('active.auction', {
+            "lots": [
+                {"auctionPeriod": {"startDate": None}}
+                for i in lots
+            ],
+            'status': 'active.tendering'})
+        self.app.authorization = ('Basic', ('chronograph', ''))
+        response = self.app.patch_json('/tenders/{}'.format(tender_id), {"data": {"id": tender_id}})
         # for first lot
         lot_id = lots[0]
         # cancel lot
+        self.app.authorization = ('Basic', ('broker', ''))
         response = self.app.post_json('/tenders/{}/cancellations?acc_token={}'.format(tender_id, owner_token), {'data': {
             'reason': 'cancellation reason',
             'status': 'active',
@@ -1094,7 +1088,8 @@ class TenderLotProcessTest(BaseTenderWebTest):
             i['complaintPeriod']['endDate'] = i['complaintPeriod']['startDate']
         self.db.save(tender)
         # check tender status
-        response = self.set_status('complete', {'status': 'active.awarded'})
+        self.app.authorization = ('Basic', ('chronograph', ''))
+        response = self.app.patch_json('/tenders/{}'.format(tender_id), {"data": {"id": tender_id}})
         # check status
         self.app.authorization = ('Basic', ('broker', ''))
         response = self.app.get('/tenders/{}'.format(tender_id))
@@ -1130,10 +1125,14 @@ class TenderLotProcessTest(BaseTenderWebTest):
             for lot_id in lots
         ]}})
         # switch to active.qualification
-        response = self.set_status('active.auction', {"lots": [
-            {"auctionPeriod": {"startDate": None}}
-            for i in lots
-        ]})
+        response = self.set_status('active.auction', {
+            "lots": [
+                {"auctionPeriod": {"startDate": None}}
+                for i in lots
+            ],
+            'status': 'active.tendering'})
+        self.app.authorization = ('Basic', ('chronograph', ''))
+        response = self.app.patch_json('/tenders/{}'.format(tender_id), {"data": {"id": tender_id}})
         for lot_id in lots:
             # get awards
             self.app.authorization = ('Basic', ('broker', ''))
@@ -1190,10 +1189,14 @@ class TenderLotProcessTest(BaseTenderWebTest):
             for lot_id in lots
         ]}})
         # switch to active.qualification
-        response = self.set_status('active.auction', {"lots": [
-            {"auctionPeriod": {"startDate": None}}
-            for i in lots
-        ]})
+        response = self.set_status('active.auction', {
+            "lots": [
+                {"auctionPeriod": {"startDate": None}}
+                for i in lots
+            ],
+            'status': 'active.tendering'})
+        self.app.authorization = ('Basic', ('chronograph', ''))
+        response = self.app.patch_json('/tenders/{}'.format(tender_id), {"data": {"id": tender_id}})
         # for every lot
         for lot_id in lots:
             # get awards
@@ -1212,6 +1215,8 @@ class TenderLotProcessTest(BaseTenderWebTest):
             self.db.save(tender)
         # check tender status
         self.set_status('complete', {'status': 'active.awarded'})
+        self.app.authorization = ('Basic', ('chronograph', ''))
+        response = self.app.patch_json('/tenders/{}'.format(tender_id), {"data": {"id": tender_id}})
         # check status
         self.app.authorization = ('Basic', ('broker', ''))
         response = self.app.get('/tenders/{}'.format(tender_id))
@@ -1247,10 +1252,14 @@ class TenderLotProcessTest(BaseTenderWebTest):
             for lot_id in lots
         ]}})
         # switch to active.qualification
-        response = self.set_status('active.auction', {"lots": [
-            {"auctionPeriod": {"startDate": None}}
-            for i in lots
-        ]})
+        response = self.set_status('active.auction', {
+            "lots": [
+                {"auctionPeriod": {"startDate": None}}
+                for i in lots
+            ],
+            'status': 'active.tendering'})
+        self.app.authorization = ('Basic', ('chronograph', ''))
+        response = self.app.patch_json('/tenders/{}'.format(tender_id), {"data": {"id": tender_id}})
         # for first lot
         lot_id = lots[0]
         # get awards
@@ -1290,7 +1299,8 @@ class TenderLotProcessTest(BaseTenderWebTest):
             i['complaintPeriod']['endDate'] = i['complaintPeriod']['startDate']
         self.db.save(tender)
         # check tender status
-        self.set_status('complete', {'status': 'active.awarded'})
+        self.app.authorization = ('Basic', ('chronograph', ''))
+        response = self.app.patch_json('/tenders/{}'.format(tender_id), {"data": {"id": tender_id}})
         # check status
         self.app.authorization = ('Basic', ('broker', ''))
         response = self.app.get('/tenders/{}'.format(tender_id))
@@ -1398,6 +1408,112 @@ class TenderLotProcessTest(BaseTenderWebTest):
         award_id = [i['id'] for i in response.json['data'] if i['status'] == 'pending' and i['lotID'] == lot_id][0]
         # set award as unsuccessful
         self.app.patch_json('/tenders/{}/awards/{}?acc_token={}'.format(tender_id, award_id, owner_token), {"data": {"status": "unsuccessful"}})
+        # get awards
+        self.app.authorization = ('Basic', ('broker', ''))
+        response = self.app.get('/tenders/{}/awards?acc_token={}'.format(tender_id, owner_token))
+        # get pending award
+        award_id = [i['id'] for i in response.json['data'] if i['status'] == 'pending' and i['lotID'] == lot_id][0]
+        # set award as active
+        self.app.patch_json('/tenders/{}/awards/{}?acc_token={}'.format(tender_id, award_id, owner_token), {"data": {"status": "active"}})
+        # get contract id
+        response = self.app.get('/tenders/{}'.format(tender_id))
+        contract_id = response.json['data']['contracts'][-1]['id']
+        # after stand slill period
+        self.set_status('complete', {'status': 'active.awarded'})
+        # time travel
+        tender = self.db.get(tender_id)
+        for i in tender.get('awards', []):
+            i['complaintPeriod']['endDate'] = i['complaintPeriod']['startDate']
+        self.db.save(tender)
+        # sign contract
+        self.app.authorization = ('Basic', ('broker', ''))
+        self.app.patch_json('/tenders/{}/contracts/{}?acc_token={}'.format(tender_id, contract_id, owner_token), {"data": {"status": "active"}})
+        # check status
+        self.app.authorization = ('Basic', ('broker', ''))
+        response = self.app.get('/tenders/{}'.format(tender_id))
+        self.assertTrue(all([i['status'] == 'complete' for i in response.json['data']['lots']]))
+        self.assertEqual(response.json['data']['status'], 'complete')
+
+    def test_2lot_1feature_2bid_2com_2win(self):
+        self.app.authorization = ('Basic', ('broker', ''))
+        # create tender
+        response = self.app.post_json('/tenders', {"data": test_tender_data})
+        tender_id = self.tender_id = response.json['data']['id']
+        owner_token = response.json['access']['token']
+        lots = []
+        for lot in 2 * test_lots:
+            # add lot
+            response = self.app.post_json('/tenders/{}/lots?acc_token={}'.format(tender_id, owner_token), {'data': test_lots[0]})
+            self.assertEqual(response.status, '201 Created')
+            lots.append(response.json['data']['id'])
+        self.initial_lots = lots
+        # add item
+        response = self.app.patch_json('/tenders/{}?acc_token={}'.format(tender_id, owner_token), {"data": {"items": [test_tender_data['items'][0] for i in lots]}})
+        # add relatedLot for item
+        response = self.app.patch_json('/tenders/{}?acc_token={}'.format(tender_id, owner_token), {"data": {"items": [{'relatedLot': i} for i in lots]}})
+        # add features
+        response = self.app.patch_json('/tenders/{}?acc_token={}'.format(tender_id, owner_token), {"data": {"features": [
+            {
+                "code": "code_item",
+                "featureOf": "item",
+                "relatedItem": response.json['data']['items'][0]['id'],
+                "title": u"item feature",
+                "enum": [
+                    {
+                        "value": 0.1,
+                        "title": u"good"
+                    },
+                    {
+                        "value": 0.2,
+                        "title": u"best"
+                    }
+                ]
+            }
+        ]}})
+        self.assertEqual(response.status, '200 OK')
+        # switch to active.tendering
+        response = self.set_status('active.tendering', {"lots": [
+            {"auctionPeriod": {"startDate": (get_now() + timedelta(days=10)).isoformat()}}
+            for i in lots
+        ]})
+        # create bid
+        self.app.authorization = ('Basic', ('broker', ''))
+        response = self.app.post_json('/tenders/{}/bids'.format(tender_id), {'data': {'tenderers': [test_tender_data["procuringEntity"]], 'lotValues': [
+            {"value": {"amount": 500}, 'relatedLot': lots[0]}
+        ], 'parameters': [{"code": "code_item", "value": 0.2}]}})
+        # create second bid
+        self.app.authorization = ('Basic', ('broker', ''))
+        response = self.app.post_json('/tenders/{}/bids'.format(tender_id), {'data': {'tenderers': [test_tender_data["procuringEntity"]], 'lotValues': [
+            {"value": {"amount": 500}, 'relatedLot': lots[1]}
+        ]}})
+        # switch to active.qualification
+        response = self.set_status('active.auction', {'status': 'active.tendering'})
+        self.app.authorization = ('Basic', ('chronograph', ''))
+        response = self.app.patch_json('/tenders/{}'.format(tender_id), {"data": {"id": tender_id}})
+        # for first lot
+        lot_id = lots[0]
+        # get awards
+        self.app.authorization = ('Basic', ('broker', ''))
+        response = self.app.get('/tenders/{}/awards?acc_token={}'.format(tender_id, owner_token))
+        # get pending award
+        award_id = [i['id'] for i in response.json['data'] if i['status'] == 'pending' and i['lotID'] == lot_id][0]
+        # set award as active
+        self.app.patch_json('/tenders/{}/awards/{}?acc_token={}'.format(tender_id, award_id, owner_token), {"data": {"status": "active"}})
+        # get contract id
+        response = self.app.get('/tenders/{}'.format(tender_id))
+        contract_id = response.json['data']['contracts'][-1]['id']
+        # after stand slill period
+        self.set_status('complete', {'status': 'active.awarded'})
+        # time travel
+        tender = self.db.get(tender_id)
+        for i in tender.get('awards', []):
+            i['complaintPeriod']['endDate'] = i['complaintPeriod']['startDate']
+        self.db.save(tender)
+        # sign contract
+        self.app.authorization = ('Basic', ('broker', ''))
+        self.app.patch_json('/tenders/{}/contracts/{}?acc_token={}'.format(tender_id, contract_id, owner_token), {"data": {"status": "active"}})
+        # for second lot
+        lot_id = lots[1]
         # get awards
         self.app.authorization = ('Basic', ('broker', ''))
         response = self.app.get('/tenders/{}/awards?acc_token={}'.format(tender_id, owner_token))

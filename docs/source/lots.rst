@@ -7,6 +7,8 @@ When having tender with separate items that can be supplied by different
 providers it is possible to split the tender into :ref:`Lots <lot>`.  Each
 Lot has its own budget (i.e. `Lot.value`).
 
+For more information read `Tender with multiple lots <http://openprocurement.org/en/multilots.html>`_.
+
 .. sourcecode:: json
 
   {

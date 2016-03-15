@@ -30,7 +30,12 @@ import pkg_resources
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
 # ones.
 import cornice
-extensions = ['cornice.ext.sphinxext', 'sphinxcontrib.httpdomain']
+extensions = [
+    'cornice.ext.sphinxext',
+    'sphinx.ext.intersphinx',
+    'sphinx.ext.graphviz',
+    'sphinxcontrib.httpdomain',
+]
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']
@@ -261,3 +266,8 @@ texinfo_documents = [
 
 locale_dirs = ['locale/']   # path is example but recommended.
 gettext_compact = False     # optional.
+
+intersphinx_mapping = {
+    'python': ('http://docs.python.org/dev', None),
+    'openprocurementtenderlimited': ('http://openprocurementtenderlimited.readthedocs.org/en/latest/', None),
+}

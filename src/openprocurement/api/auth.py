@@ -76,7 +76,7 @@ class AuthenticationPolicy(BasicAuthAuthenticationPolicy):
             auth = authbytes.decode('latin-1')
 
         try:
-            username, password = auth.split(':', 1)
+            username, _ = auth.split(':', 1)
         except ValueError:  # not enough values to unpack
             return None
         return username
@@ -87,12 +87,12 @@ def get_local_roles(context):
     roles = {}
     for location in lineage(context):
         try:
-            roles = location.__local_roles__
+            local_roles = location.__local_roles__
         except AttributeError:
             continue
-        if roles and callable(roles):
-            roles = roles()
-        break
+        if local_roles and callable(local_roles):
+            local_roles = local_roles()
+        roles.update(local_roles)
     return roles
 
 

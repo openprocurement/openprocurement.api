@@ -1,121 +1,94 @@
-$ http --auth broker: -j PATCH https://api-sandbox.openprocurement.org/api/0/tenders/166b4a36611047a492d85c3693b86b4e?acc_token=953613dd25d6421588b2597504b747ed data:=@./school-tender-patch.json
-PATCH /api/0/tenders/166b4a36611047a492d85c3693b86b4e?acc_token=953613dd25d6421588b2597504b747ed HTTP/1.1
+PATCH /api/0.12/tenders/e98e2eb727c645d4b04ff7a56fef272f?acc_token=fb616747193c4f9bba0aee4e40c29121 HTTP/1.0
 Authorization: Basic YnJva2VyOg==
-Content-Type: application/json; charset=utf-8
+Content-Length: 75
+Content-Type: application/json
+Host: api-sandbox.openprocurement.org
 
 {
-    "data": {
-        "enquiryPeriod": {
-            "endDate": "2015-05-29T00:00:00"
-        }, 
-        "items": [
-            {
-                "additionalClassifications": [
-                    {
-                        "description": "Послуги шкільних їдалень", 
-                        "id": "55.51.10.300", 
-                        "scheme": "ДКПП"
-                    }
-                ], 
-                "classification": {
-                    "description": "Послуги з харчування у школах", 
-                    "id": "55523100-3", 
-                    "scheme": "CPV"
-                }, 
-                "description": "Послуги шкільних їдалень", 
-                "quantity": 9, 
-                "unit": {
-                    "code": "MON", 
-                    "name": "month"
-                }
-            }
-        ], 
-        "minimalStep": {
-            "amount": 35000, 
-            "currency": "UAH", 
-            "valueAddedTaxIncluded": true
-        }, 
-        "tenderPeriod": {
-            "endDate": "2015-06-07T10:00:00", 
-            "startDate": "2015-05-29T00:00:00"
-        }, 
-        "value": {
-            "amount": 500000, 
-            "currency": "UAH", 
-            "valueAddedTaxIncluded": true
-        }
+  "data": {
+    "tenderPeriod": {
+      "endDate": "2016-02-25T12:42:09.422746+02:00"
     }
+  }
 }
 
-HTTP/1.1 200 OK
+
+200 OK
 Content-Type: application/json; charset=UTF-8
 
 {
-    "data": {
-        "dateModified": "2014-12-26T21:30:58.424362+02:00", 
-        "enquiryPeriod": {
-            "endDate": "2015-05-29T00:00:00+02:00", 
-            "startDate": "2014-12-26T21:30:56.522694+02:00"
+  "data": {
+    "procurementMethod": "open", 
+    "status": "active.enquiries", 
+    "tenderID": "UA-2016-02-10-000001", 
+    "tenderPeriod": {
+      "startDate": "2016-02-17T12:41:44.631380+02:00", 
+      "endDate": "2016-02-25T12:42:09.422746+02:00"
+    }, 
+    "title": "футляри до державних нагород", 
+    "minimalStep": {
+      "currency": "UAH", 
+      "amount": 35.0, 
+      "valueAddedTaxIncluded": true
+    }, 
+    "items": [
+      {
+        "description": "футляри до державних нагород", 
+        "classification": {
+          "scheme": "CPV", 
+          "description": "Cartons", 
+          "id": "44617100-9"
         }, 
-        "id": "166b4a36611047a492d85c3693b86b4e", 
-        "items": [
-            {
-                "additionalClassifications": [
-                    {
-                        "description": "Послуги шкільних їдалень", 
-                        "id": "55.51.10.300", 
-                        "scheme": "ДКПП"
-                    }
-                ], 
-                "classification": {
-                    "description": "Послуги з харчування у школах", 
-                    "id": "55523100-3", 
-                    "scheme": "CPV"
-                }, 
-                "description": "Послуги шкільних їдалень", 
-                "quantity": 9, 
-                "unit": {
-                    "code": "MON", 
-                    "name": "month"
-                }
-            }
+        "additionalClassifications": [
+          {
+            "scheme": "ДКПП", 
+            "id": "17.21.1", 
+            "description": "папір і картон гофровані, паперова й картонна тара"
+          }
         ], 
-        "minimalStep": {
-            "amount": 35000.0, 
-            "currency": "UAH", 
-            "valueAddedTaxIncluded": true
+        "id": "aff521dc6b454d538a2e173a90fbdb90", 
+        "unit": {
+          "code": "44617100-9", 
+          "name": "item"
         }, 
-        "owner": "broker", 
-        "procuringEntity": {
-            "address": {
-                "countryName": "Україна", 
-                "locality": "м. Вінниця", 
-                "postalCode": "21027", 
-                "region": "м. Вінниця", 
-                "streetAddress": "вул. Стахурського. 22"
-            }, 
-            "contactPoint": {
-                "name": "Куца Світлана Валентинівна", 
-                "telephone": "+380 (432) 46-53-02", 
-                "url": "http://sch10.edu.vn.ua/"
-            }, 
-            "identifier": {
-                "id": "21725150", 
-                "legalName": "Заклад \"Загальноосвітня школа І-ІІІ ступенів № 10 Вінницької міської ради\"", 
-                "scheme": "UA-EDR"
-            }, 
-            "name": "ЗОСШ #10 м.Вінниці"
-        }, 
-        "status": "active.enquiries", 
-        "tenderID": "UA-2014-12-26-000050", 
-        "tenderPeriod": {
-            "endDate": "2015-06-07T10:00:00+02:00", 
-            "startDate": "2015-05-29T00:00:00+02:00"
-        }, 
-        "value": {
-            "amount": 500000.0, 
-            "currency": "UAH", 
-            "valueAddedTaxIncluded": true
-        }
-    }
+        "quantity": 5
+      }
+    ], 
+    "procurementMethodType": "belowThreshold", 
+    "value": {
+      "currency": "UAH", 
+      "amount": 500.0, 
+      "valueAddedTaxIncluded": true
+    }, 
+    "submissionMethod": "electronicAuction", 
+    "next_check": "2016-02-17T12:41:44.631380+02:00", 
+    "procuringEntity": {
+      "contactPoint": {
+        "name": "Державне управління справами", 
+        "telephone": "0440000000"
+      }, 
+      "identifier": {
+        "scheme": "UA-EDR", 
+        "id": "00037256", 
+        "uri": "http://www.dus.gov.ua/"
+      }, 
+      "name": "Державне управління справами", 
+      "address": {
+        "postalCode": "01220", 
+        "countryName": "Україна", 
+        "streetAddress": "вул. Банкова, 11, корпус 1", 
+        "region": "м. Київ", 
+        "locality": "м. Київ"
+      }
+    }, 
+    "enquiryPeriod": {
+      "startDate": "2016-02-10T12:41:58.474848+02:00", 
+      "endDate": "2016-02-17T12:41:44.631380+02:00"
+    }, 
+    "owner": "broker", 
+    "dateModified": "2016-02-10T12:41:59.476763+02:00", 
+    "id": "e98e2eb727c645d4b04ff7a56fef272f", 
+    "awardCriteria": "lowestCost"
+  }
 }
+

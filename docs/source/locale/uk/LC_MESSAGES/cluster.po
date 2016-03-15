@@ -1,0 +1,43 @@
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: openprocurement.api 0.12a1\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2016-02-12 12:32+0200\n"
+"PO-Revision-Date: 2016-02-12 17:29+0200\n"
+"Last-Translator: Zoriana Zaiats <sorenabell@quintagroup.com>\n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Language: uk\n"
+"X-Generator: Poedit 1.8.5\n"
+
+#: ../../source/cluster.rst:4
+msgid "API in cluster mode"
+msgstr "Робота з API в режимі кластеру"
+
+#: ../../source/cluster.rst:6
+msgid ""
+"There is a cluster of several servers that synchronize data between each "
+"other. Client should always work with the same server to ensure consistency "
+"between separate requests to the CDB. That is why cookie is required while "
+"sending POST/PUT/PATCH/DELETE requests. Cookies provide server stickiness. You "
+"can get such cookie via GET request and then use it for POST/PUT/PATCH/DELETE."
+msgstr ""
+"Дані синхронізуються на кластері з декількох серверів. Для узгодження між "
+"окремими запитами до ЦБД важливо, щоб клієнт працював завжди з одним сервером. "
+"Тому обов’язково використовувати реп’яшок (сookie) при подачі POST/PUT/PATCH/"
+"DELETE запитів. Реп’яшки (сookies) забезпечують прив’язку до сервера. Такий "
+"реп’яшок можна отримати через GET запит, а тоді використовувати його в POST/"
+"PUT/PATCH/DELETE."
+
+#: ../../source/cluster.rst:9
+msgid ""
+"If during operations the server requested by cookie went down or is "
+"unavailable, client will receive :ref:`status code 412 <errors>` of request "
+"and new cookie to use. Request should be repeated with new cookie."
+msgstr ""
+"Якщо під час операцій сервер запитаний реп’яшком недоступний або впав, клієнт "
+"отримає :ref:`412 код стану <errors>` запиту і новий реп’яшок. Запит потрібно "
+"повторити з використанням нового реп’яшка."

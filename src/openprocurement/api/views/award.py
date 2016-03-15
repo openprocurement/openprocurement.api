@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
-from logging import getLogger
-from openprocurement.api.models import Contract, STAND_STILL_TIME, get_now
+from openprocurement.api.models import STAND_STILL_TIME, get_now
 from openprocurement.api.utils import (
     apply_patch,
     save_tender,
@@ -8,6 +7,7 @@ from openprocurement.api.utils import (
     opresource,
     json_view,
     context_unpack,
+    APIResource,
 )
 from openprocurement.api.validation import (
     validate_award_data,
@@ -15,18 +15,12 @@ from openprocurement.api.validation import (
 )
 
 
-LOGGER = getLogger(__name__)
-
-
 @opresource(name='Tender Awards',
             collection_path='/tenders/{tender_id}/awards',
             path='/tenders/{tender_id}/awards/{award_id}',
-            description="Tender awards")
-class TenderAwardResource(object):
-
-    def __init__(self, request, context):
-        self.request = request
-        self.db = request.registry.db
+            description="Tender awards",
+            procurementMethodType='belowThreshold')
+class TenderAwardResource(APIResource):
 
     @json_view(permission='view_tender')
     def collection_get(self):
@@ -177,7 +171,7 @@ class TenderAwardResource(object):
         award.complaintPeriod = {'startDate': get_now().isoformat()}
         tender.awards.append(award)
         if save_tender(self.request):
-            LOGGER.info('Created tender award {}'.format(award.id),
+            self.LOGGER.info('Created tender award {}'.format(award.id),
                         extra=context_unpack(self.request, {'MESSAGE_ID': 'tender_award_create'}, {'award_id': award.id}))
             self.request.response.status = 201
             self.request.response.headers['Location'] = self.request.route_url('Tender Awards', tender_id=tender.id, award_id=award['id'])
@@ -307,10 +301,21 @@ class TenderAwardResource(object):
         apply_patch(self.request, save=False, src=self.request.context.serialize())
         if award_status == 'pending' and award.status == 'active':
             award.complaintPeriod.endDate = get_now() + STAND_STILL_TIME
-            tender.contracts.append(Contract({'awardID': award.id}))
+            tender.contracts.append(type(tender).contracts.model_class({
+                'awardID': award.id,
+                'suppliers': award.suppliers,
+                'value': award.value,
+                'items': [i for i in tender.items if i.relatedLot == award.lotID ],
+                'contractID': '{}-{}{}'.format(tender.tenderID, self.server_id, len(tender.contracts) + 1) }))
             add_next_award(self.request)
         elif award_status == 'active' and award.status == 'cancelled':
-            award.complaintPeriod.endDate = get_now()
+            now = get_now()
+            award.complaintPeriod.endDate = now
+            for j in award.complaints:
+                if j.status not in ['invalid', 'resolved', 'declined']:
+                    j.status = 'cancelled'
+                    j.cancellationReason = 'cancelled'
+                    j.dateCanceled = now
             for i in tender.contracts:
                 if i.awardID == award.id:
                     i.status = 'cancelled'
@@ -318,11 +323,33 @@ class TenderAwardResource(object):
         elif award_status == 'pending' and award.status == 'unsuccessful':
             award.complaintPeriod.endDate = get_now() + STAND_STILL_TIME
             add_next_award(self.request)
-        else:
+        elif award_status == 'unsuccessful' and award.status == 'cancelled' and any([i.status in ['claim', 'answered', 'pending', 'resolved'] for i in award.complaints]):
+            if tender.status == 'active.awarded':
+                tender.status = 'active.qualification'
+                tender.awardPeriod.endDate = None
+            now = get_now()
+            award.complaintPeriod.endDate = now
+            cancelled_awards = []
+            for i in tender.awards[tender.awards.index(award):]:
+                if i.lotID != award.lotID:
+                    continue
+                i.complaintPeriod.endDate = now
+                i.status = 'cancelled'
+                for j in i.complaints:
+                    if j.status not in ['invalid', 'resolved', 'declined']:
+                        j.status = 'cancelled'
+                        j.cancellationReason = 'cancelled'
+                        j.dateCanceled = now
+                cancelled_awards.append(i.id)
+            for i in tender.contracts:
+                if i.awardID in cancelled_awards:
+                    i.status = 'cancelled'
+            add_next_award(self.request)
+        elif self.request.authenticated_role != 'Administrator':
             self.request.errors.add('body', 'data', 'Can\'t update award in current ({}) status'.format(award_status))
             self.request.errors.status = 403
             return
         if save_tender(self.request):
-            LOGGER.info('Updated tender award {}'.format(self.request.context.id),
-                        extra=context_unpack(self.request, {'MESSAGE_ID': 'tender_award_patch'}, {'TENDER_REV': tender.rev}))
+            self.LOGGER.info('Updated tender award {}'.format(self.request.context.id),
+                        extra=context_unpack(self.request, {'MESSAGE_ID': 'tender_award_patch'}))
             return {'data': award.serialize("view")}

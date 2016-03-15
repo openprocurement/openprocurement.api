@@ -4,6 +4,8 @@ python:
   - "2.7"
 services:
   - couchdb
+env:
+  - TZ=Europe/Kiev
 cache:
   directories:
     - eggs

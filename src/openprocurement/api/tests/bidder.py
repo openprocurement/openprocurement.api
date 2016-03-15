@@ -128,6 +128,8 @@ class TenderBidderResourceTest(BaseTenderWebTest):
         ])
 
     def test_create_tender_bidder(self):
+        dateModified = self.db.get(self.tender_id).get('dateModified')
+
         response = self.app.post_json('/tenders/{}/bids'.format(
             self.tender_id), {'data': {'tenderers': [test_tender_data["procuringEntity"]], "value": {"amount": 500}}})
         self.assertEqual(response.status, '201 Created')
@@ -136,6 +138,8 @@ class TenderBidderResourceTest(BaseTenderWebTest):
         self.assertEqual(bidder['tenderers'][0]['name'], test_tender_data["procuringEntity"]['name'])
         self.assertIn('id', bidder)
         self.assertIn(bidder['id'], response.headers['Location'])
+
+        self.assertEqual(self.db.get(self.tender_id).get('dateModified'), dateModified)
 
         self.set_status('complete')
 

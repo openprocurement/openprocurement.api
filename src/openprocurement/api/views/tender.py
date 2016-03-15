@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-from logging import getLogger
 from openprocurement.api.design import (
     FIELDS,
     tenders_by_dateModified_view,
@@ -11,19 +10,19 @@ from openprocurement.api.design import (
 )
 from openprocurement.api.models import get_now
 from openprocurement.api.utils import (
+    apply_patch,
+    check_status,
+    context_unpack,
+    decrypt,
+    encrypt,
     generate_id,
     generate_tender_id,
+    json_view,
+    opresource,
     save_tender,
     set_ownership,
     tender_serialize,
-    apply_patch,
-    check_bids,
-    check_tender_status,
-    opresource,
-    json_view,
-    context_unpack,
-    encrypt,
-    decrypt,
+    APIResource,
 )
 from openprocurement.api.validation import (
     validate_patch_tender_data,
@@ -31,7 +30,6 @@ from openprocurement.api.validation import (
 )
 
 
-LOGGER = getLogger(__name__)
 VIEW_MAP = {
     u'': tenders_real_by_dateModified_view,
     u'test': tenders_test_by_dateModified_view,
@@ -51,13 +49,11 @@ FEED = {
 @opresource(name='Tenders',
             path='/tenders',
             description="Open Contracting compatible data exchange format. See http://ocds.open-contracting.org/standard/r/master/#tender for more info")
-class TendersResource(object):
+class TendersResource(APIResource):
 
     def __init__(self, request, context):
-        self.request = request
+        super(TendersResource, self).__init__(request, context)
         self.server = request.registry.couchdb_server
-        self.db = request.registry.db
-        self.server_id = request.registry.server_id
 
     @json_view(permission='view_tender')
     def get(self):
@@ -104,7 +100,7 @@ class TendersResource(object):
         if limit:
             params['limit'] = limit
             pparams['limit'] = limit
-        limit = int(limit) if limit.isdigit() and int(limit) > 0 else 100
+        limit = int(limit) if limit.isdigit() and (100 if fields else 1000) >= int(limit) > 0 else 100
         descending = bool(self.request.params.get('descending'))
         offset = self.request.params.get('offset', '')
         if descending:
@@ -151,7 +147,7 @@ class TendersResource(object):
                     for x in list_view(self.db, limit=view_limit, startkey=view_offset, descending=descending)
                 ]
             elif fields:
-                LOGGER.info('Used custom fields for tenders list: {}'.format(','.join(sorted(fields))),
+                self.LOGGER.info('Used custom fields for tenders list: {}'.format(','.join(sorted(fields))),
                             extra=context_unpack(self.request, {'MESSAGE_ID': 'tender_list_custom'}))
 
                 results = [
@@ -345,16 +341,14 @@ class TendersResource(object):
         tender_id = generate_id()
         tender = self.request.validated['tender']
         tender.id = tender_id
-        if not tender.enquiryPeriod.startDate:
-            tender.enquiryPeriod.startDate = get_now()
-        tender.tenderID = generate_tender_id(tender.enquiryPeriod.startDate, self.db, self.server_id)
-        if not tender.tenderPeriod.startDate:
-            tender.tenderPeriod.startDate = tender.enquiryPeriod.endDate
+        tender.tenderID = generate_tender_id(get_now(), self.db, self.server_id)
+        if hasattr(tender, "initialize"):
+            tender.initialize()
         set_ownership(tender, self.request)
         self.request.validated['tender'] = tender
         self.request.validated['tender_src'] = {}
         if save_tender(self.request):
-            LOGGER.info('Created tender {} ({})'.format(tender_id, tender.tenderID),
+            self.LOGGER.info('Created tender {} ({})'.format(tender_id, tender.tenderID),
                         extra=context_unpack(self.request, {'MESSAGE_ID': 'tender_create'}, {'tender_id': tender_id, 'tenderID': tender.tenderID}))
             self.request.response.status = 201
             self.request.response.headers[
@@ -371,11 +365,7 @@ class TendersResource(object):
             path='/tenders/{tender_id}',
             procurementMethodType='belowThreshold',
             description="Open Contracting compatible data exchange format. See http://ocds.open-contracting.org/standard/r/master/#tender for more info")
-class TenderResource(object):
-
-    def __init__(self, request, context):
-        self.request = request
-        self.db = request.registry.db
+class TenderResource(APIResource):
 
     @json_view(permission='view_tender')
     def get(self):
@@ -464,8 +454,10 @@ class TenderResource(object):
             }
 
         """
-        tender = self.request.validated['tender']
-        tender_data = tender.serialize('chronograph_view' if self.request.authenticated_role == 'chronograph' else tender.status)
+        if self.request.authenticated_role == 'chronograph':
+            tender_data = self.context.serialize('chronograph_view')
+        else:
+            tender_data = self.context.serialize(self.context.status)
         return {'data': tender_data}
 
     #@json_view(content_type="application/json", validators=(validate_tender_data, ), permission='edit_tender')
@@ -528,22 +520,14 @@ class TenderResource(object):
             }
 
         """
-        tender = self.request.validated['tender']
+        tender = self.context
         if self.request.authenticated_role != 'Administrator' and tender.status in ['complete', 'unsuccessful', 'cancelled']:
             self.request.errors.add('body', 'data', 'Can\'t update tender in current ({}) status'.format(tender.status))
             self.request.errors.status = 403
             return
-        data = self.request.validated['data']
-        if self.request.authenticated_role == 'tender_owner' and 'status' in data and data['status'] not in ['cancelled', tender.status]:
-            self.request.errors.add('body', 'data', 'Can\'t update tender status')
-            self.request.errors.status = 403
-            return
-        if self.request.authenticated_role == 'chronograph' and tender.status == 'active.tendering' and data.get('status', tender.status) == 'active.auction':
+        if self.request.authenticated_role == 'chronograph':
             apply_patch(self.request, save=False, src=self.request.validated['tender_src'])
-            check_bids(self.request)
-            save_tender(self.request)
-        elif self.request.authenticated_role == 'chronograph' and tender.status in ['active.qualification', 'active.awarded'] and data.get('status', tender.status) == tender.status:
-            check_tender_status(self.request)
+            check_status(self.request)
             save_tender(self.request)
         elif self.request.authenticated_role == 'tender_owner' and tender.status in ['active.tendering', 'active.auction'] and data.get('status', tender.status) == 'cancelled':
             apply_patch(self.request, save=False, src=self.request.validated['tender_src'])
@@ -551,6 +535,6 @@ class TenderResource(object):
             save_tender(self.request)
         else:
             apply_patch(self.request, src=self.request.validated['tender_src'])
-        LOGGER.info('Updated tender {}'.format(tender.id),
+        self.LOGGER.info('Updated tender {}'.format(tender.id),
                     extra=context_unpack(self.request, {'MESSAGE_ID': 'tender_patch'}))
         return {'data': tender.serialize(tender.status)}

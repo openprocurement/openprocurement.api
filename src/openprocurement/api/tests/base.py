@@ -6,7 +6,7 @@ from copy import deepcopy
 from datetime import datetime, timedelta
 from uuid import uuid4
 
-from openprocurement.api.utils import VERSION
+from openprocurement.api.utils import VERSION, apply_data_patch
 
 
 now = datetime.now()
@@ -200,6 +200,7 @@ class BaseWebTest(unittest.TestCase):
             "config:tests.ini", relative_to=os.path.dirname(__file__))
         self.app.RequestClass = PrefixedRequestClass
         self.app.authorization = ('Basic', ('token', ''))
+        #self.app.authorization = ('Basic', ('broker', ''))
         self.couchdb_server = self.app.app.registry.couchdb_server
         self.db = self.app.app.registry.db
 
@@ -356,9 +357,15 @@ class BaseTenderWebTest(BaseWebTest):
                 })
         if extra:
             data.update(extra)
+
+        tender = self.db.get(self.tender_id)
+        tender.update(apply_data_patch(tender, data))
+        self.db.save(tender)
+
         authorization = self.app.authorization
         self.app.authorization = ('Basic', ('chronograph', ''))
-        response = self.app.patch_json('/tenders/{}'.format(self.tender_id), {'data': data})
+        #response = self.app.patch_json('/tenders/{}'.format(self.tender_id), {'data': {'id': self.tender_id}})
+        response = self.app.get('/tenders/{}'.format(self.tender_id))
         self.app.authorization = authorization
         self.assertEqual(response.status, '200 OK')
         self.assertEqual(response.content_type, 'application/json')
@@ -385,6 +392,7 @@ class BaseTenderWebTest(BaseWebTest):
         self.tender_id = tender['id']
         status = tender['status']
         if self.initial_bids:
+            self.initial_bids_tokens = {}
             response = self.set_status('active.tendering')
             status = response.json['data']['status']
             bids = []
@@ -402,6 +410,7 @@ class BaseTenderWebTest(BaseWebTest):
                 response = self.app.post_json('/tenders/{}/bids'.format(self.tender_id), {'data': i})
                 self.assertEqual(response.status, '201 Created')
                 bids.append(response.json['data'])
+                self.initial_bids_tokens[response.json['data']['id']] = response.json['access']['token']
             self.initial_bids = bids
         if self.initial_status != status:
             self.set_status(self.initial_status)

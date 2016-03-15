@@ -594,6 +594,122 @@ class MigrateTest(BaseWebTest):
             self.assertNotIn('contracts', i)
         self.assertIn('contracts', migrated_item)
 
+    def test_migrate_from18to19(self):
+        set_db_schema_version(self.db, 18)
+        data = {
+            'doc_type': 'Tender',
+            "documents": [
+                {"title": "title1.doc",
+                    "id": "tender_document1_id",
+                    "documentType": "contractAnnexes"},
+                {"title": "title2.doc",
+                    "id": "tender_document2_id",
+                    "documentType": "tenderNotice"},
+                {"title": "title3.doc",
+                    "id": "tender_document3_id",
+                    "documentType": "contractAnnexes"},
+            ],
+            "bids": [
+                {
+                    "id": "bid1_id",
+                    "documents": [
+                        {"title": "title1.doc",
+                         "id": "bid_document1_id",
+                         "documentType": "contractAnnexes"},
+                    ]
+                }
+            ],
+            "complaints": [
+                {
+                    "id": "complaint1_id",
+                    "documents": [
+                        {"title": "title1.doc",
+                         "id": "complaint_document1_id",
+                         "documentType": "contractAnnexes"},
+                    ]
+                }
+            ],
+            "cancellations": [
+                {
+                    "id": "cancellation1_id",
+                    "documents": [
+                        {"title": "title1.doc",
+                         "id": "cancellation_document1_id",
+                         "documentType": "contractAnnexes"},
+                    ]
+                }
+            ],
+            "contracts": [
+                {
+                    "id": "contract1_id",
+                    "documents": [
+                        {"title": "title1.doc",
+                         "id": "contract_document1_id",
+                         "documentType": "contractAnnexes"},
+                    ]
+                }
+            ],
+            "awards": [
+                {
+                    "id": "award_id",
+                    "documents": [
+                        {"title": "title1.doc",
+                         "id": "award_document1_id",
+                         "documentType": "contractAnnexes"},
+                    ],
+                    "complaints": [
+                        {"id": "complaint_id",
+                         "documents": [
+                             {"title": "title1.doc",
+                              "id": "award_complaint_document1_id",
+                              "documentType": "contractAnnexes"},
+                             {"title": "title2.doc",
+                              "id": "award_complaint_document2_id",
+                              "documentType": "contractGuarantees"},
+                             {"title": "title3.doc",
+                              "id": "award_complaint_document3_id",
+                              "documentType": "contractAnnexes"},
+                         ]
+                         }
+                    ]
+                }
+            ]
+        }
+        _id, _rev = self.db.save(data)
+        migrate_data(self.db, 19)
+        migrated_item = self.db.get(_id)
+        tender_docs = migrated_item['documents']
+        self.assertEqual('contractAnnexe', tender_docs[0]['documentType'])
+        self.assertEqual('tenderNotice', tender_docs[1]['documentType'])
+        self.assertEqual('contractAnnexe', tender_docs[2]['documentType'])
+        for e in ('bids', 'complaints', 'cancellations', 'contracts', 'awards'):
+            for i in migrated_item[e]:
+                document = i['documents'][0]
+                self.assertEqual('contractAnnexe', document['documentType'])
+        award_compl_docs = migrated_item['awards'][0]['complaints'][0]['documents']
+        self.assertEqual('contractAnnexe', award_compl_docs[0]['documentType'])
+        self.assertEqual('contractGuarantees', award_compl_docs[1]['documentType'])
+        self.assertEqual('contractAnnexe', award_compl_docs[2]['documentType'])
+
+    def test_migrate_from19to20(self):
+        set_db_schema_version(self.db, 19)
+        data = {
+            'doc_type': 'Tender',
+            "contracts": [
+                {
+                    "documents": [
+                        {
+                            "url": "/tenders/13fcd78ee62e40dda3a89dc930e5bac9/awards/76ab137ced6e47268d0cdd33448ff22c/contracts/3e9b292b2a7540a89797de335bf053ce/documents/ebcb5dd7f7384b0fbfbed2dc4252fa6e?download=10367238a2964ee18513f209d9b6d1d3"
+                        }
+                    ]
+                }
+            ]
+        }
+        _id, _rev = self.db.save(data)
+        migrate_data(self.db, 20)
+        migrated_item = self.db.get(_id)
+        self.assertEqual('/tenders/13fcd78ee62e40dda3a89dc930e5bac9/contracts/3e9b292b2a7540a89797de335bf053ce/documents/ebcb5dd7f7384b0fbfbed2dc4252fa6e?download=10367238a2964ee18513f209d9b6d1d3', migrated_item['contracts'][0]['documents'][0]['url'])
+
 
 def suite():
     suite = unittest.TestSuite()

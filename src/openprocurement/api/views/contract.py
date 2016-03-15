@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-from logging import getLogger
 from openprocurement.api.models import get_now
 from openprocurement.api.utils import (
     apply_patch,
@@ -8,6 +7,7 @@ from openprocurement.api.utils import (
     opresource,
     json_view,
     context_unpack,
+    APIResource,
 )
 from openprocurement.api.validation import (
     validate_contract_data,
@@ -15,18 +15,12 @@ from openprocurement.api.validation import (
 )
 
 
-LOGGER = getLogger(__name__)
-
-
 @opresource(name='Tender Contracts',
             collection_path='/tenders/{tender_id}/contracts',
             path='/tenders/{tender_id}/contracts/{contract_id}',
+            procurementMethodType='belowThreshold',
             description="Tender contracts")
-class TenderAwardContractResource(object):
-
-    def __init__(self, request, context):
-        self.request = request
-        self.db = request.registry.db
+class TenderAwardContractResource(APIResource):
 
     @json_view(content_type="application/json", permission='create_contract', validators=(validate_contract_data,))
     def collection_post(self):
@@ -40,7 +34,7 @@ class TenderAwardContractResource(object):
         contract = self.request.validated['contract']
         tender.contracts.append(contract)
         if save_tender(self.request):
-            LOGGER.info('Created tender contract {}'.format(contract.id),
+            self.LOGGER.info('Created tender contract {}'.format(contract.id),
                         extra=context_unpack(self.request, {'MESSAGE_ID': 'tender_contract_create'}, {'contract_id': contract.id}))
             self.request.response.status = 201
             self.request.response.headers['Location'] = self.request.route_url('Tender Contracts', tender_id=tender.id, contract_id=contract['id'])
@@ -72,6 +66,20 @@ class TenderAwardContractResource(object):
             self.request.errors.status = 403
             return
         data = self.request.validated['data']
+
+        if data['value']:
+            for ro_attr in ('valueAddedTaxIncluded', 'currency'):
+                if data['value'][ro_attr] != getattr(self.context.value, ro_attr):
+                    self.request.errors.add('body', 'data', 'Can\'t update {} for contract value'.format(ro_attr))
+                    self.request.errors.status = 403
+                    return
+
+            award = [a for a in tender.awards if a.id == self.request.context.awardID][0]
+            if data['value']['amount'] > award.value.amount:
+                self.request.errors.add('body', 'data', 'Value amount should be less or equal to awarded amount ({})'.format(award.value.amount))
+                self.request.errors.status = 403
+                return
+
         if self.request.context.status != 'active' and 'status' in data and data['status'] == 'active':
             award = [a for a in tender.awards if a.id == self.request.context.awardID][0]
             stand_still_end = award.complaintPeriod.endDate
@@ -82,13 +90,13 @@ class TenderAwardContractResource(object):
             pending_complaints = [
                 i
                 for i in tender.complaints
-                if i.status == 'pending'
+                if i.status in ['claim', 'answered', 'pending'] and i.relatedLot in [None, award.lotID]
             ]
             pending_awards_complaints = [
                 i
                 for a in tender.awards
                 for i in a.complaints
-                if i.status == 'pending' and a.lotID == award.lotID
+                if i.status in ['claim', 'answered', 'pending'] and a.lotID == award.lotID
             ]
             if pending_complaints or pending_awards_complaints:
                 self.request.errors.add('body', 'data', 'Can\'t sign contract before reviewing all complaints')
@@ -104,6 +112,6 @@ class TenderAwardContractResource(object):
             self.request.context.dateSigned = get_now()
         check_tender_status(self.request)
         if save_tender(self.request):
-            LOGGER.info('Updated tender contract {}'.format(self.request.context.id),
+            self.LOGGER.info('Updated tender contract {}'.format(self.request.context.id),
                         extra=context_unpack(self.request, {'MESSAGE_ID': 'tender_contract_patch'}))
             return {'data': self.request.context.serialize()}

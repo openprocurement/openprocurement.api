@@ -7,7 +7,7 @@ from email.header import decode_header
 
 
 LOGGER = logging.getLogger(__name__)
-SCHEMA_VERSION = 18
+SCHEMA_VERSION = 21
 SCHEMA_DOC = 'openprocurement_schema'
 
 
@@ -593,3 +593,71 @@ def from17to18(db):
             doc['contracts'] = contracts
             doc['dateModified'] = get_now().isoformat()
             db.save(doc)
+
+
+def from18to19(db):
+
+    def update_documents_type(item, changed):
+        for document in item.get('documents', []):
+            if document.get('documentType') == 'contractAnnexes':
+                document['documentType'] = 'contractAnnexe'
+                changed = True
+        return changed
+
+    results = db.iterview('tenders/all', 2 ** 10, include_docs=True)
+    docs = []
+    for i in results:
+        doc = i.doc
+        changed = update_documents_type(doc, False)
+        for item in ('bids', 'complaints', 'cancellations', 'contracts',
+                     'awards'):
+            for item_val in doc.get(item, []):
+                changed = update_documents_type(item_val, changed)
+                if item == 'awards':
+                    for complaint in item_val.get('complaints', []):
+                        changed = update_documents_type(complaint, changed)
+        if changed:
+            doc['dateModified'] = get_now().isoformat()
+            docs.append(doc)
+        if len(docs) >= 2 ** 7:
+            db.update(docs)
+            docs = []
+    if docs:
+        db.update(docs)
+
+
+def from19to20(db):
+    results = db.iterview('tenders/all', 2 ** 10, include_docs=True)
+    docs = []
+    for i in results:
+        doc = i.doc
+        changed = False
+        for contract in doc.get('contracts', []):
+            for document in contract.get('documents', []):
+                if 'awards' in document['url']:
+                    url = document['url'].split('/')
+                    document['url'] = '/'.join(url[:3] + url[5:])
+                    changed = True
+        if changed:
+            doc['dateModified'] = get_now().isoformat()
+            docs.append(doc)
+        if len(docs) >= 2 ** 7:
+            result = db.update(docs)
+            docs = []
+    if docs:
+        db.update(docs)
+
+
+def from20to21(db):
+    results = db.iterview('tenders/all', 2 ** 10, include_docs=True)
+    docs = []
+    for i in results:
+        doc = i.doc
+        if not doc.get('next_check') and doc['status'] in ['active.enquiries', 'active.tendering', 'active.auction', 'active.awarded']:
+            doc['next_check'] = get_now().isoformat()
+            docs.append(doc)
+        if len(docs) >= 2 ** 7:
+            result = db.update(docs)
+            docs = []
+    if docs:
+        db.update(docs)

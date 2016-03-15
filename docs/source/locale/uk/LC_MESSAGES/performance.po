@@ -1,0 +1,63 @@
+# 
+msgid ""
+msgstr ""
+"Project-Id-Version: openprocurement.api 0.12a1\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2016-02-09 16:30+0200\n"
+"PO-Revision-Date: 2016-02-10 10:19+0200\n"
+"Last-Translator: Zoriana Zaiats <sorenabell@quintagroup.com>\n"
+"Language-Team: Ukrainian <info@quintagroup.com>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Language: uk\n"
+"X-Generator: Poedit 1.8.5\n"
+
+#: ../../source/performance.rst:4
+msgid "Performance recommendations"
+msgstr "Рекомендації для роботи"
+
+#: ../../source/performance.rst:8
+msgid "Rate Control"
+msgstr "Контроль частоти запитів"
+
+#: ../../source/performance.rst:12
+msgid ""
+"Expected client response to such restriction is to repeat requests returned "
+"with 429 status code increasing the delay between individual requests sent "
+"to the CDB until requests become successful (2xx / 3xx responses)."
+msgstr ""
+"Очікується, що на такий код відповіді ПЗ майданчика буде реагувати таким "
+"чином: буде повторювати запити, які повернулися з таким кодом помилки, "
+"збільшуючи затримку між окремими запитами, що посилаються на ЦБД, доти доки "
+"запити не почнуть вдаватися (2xx/3xx відповіді)."
+
+#: ../../source/performance.rst:14
+msgid ""
+"Such CDB servers behavior is required in order to distribute server "
+"resources evenly between clients."
+msgstr ""
+"Така поведінка серверів ЦБД необхідна, щоб рівномірніше розподіляти ресурси "
+"серверів між майданчиками."
+
+#: ../../source/performance.rst:10
+msgid ""
+"\"Aggressive\" IP addresses can be restricted in the speed with which "
+"servers are processing CDB requests. In this case CDB will respond with "
+":ref:`status code 429 <errors>` to the requests that returned faster than "
+"allowed."
+msgstr ""
+"На “агресивні” IP адреси може бути накладено обмеження на швидкість, з якою "
+"сервери ЦБД опрацьовують запити. У відповідь на запити, які прийшли швидше "
+"ніж дозволено, ЦБД відповідає з :ref:`кодом статусу 429 <errors>`."
+
+#~ msgid ""
+#~ "\"Aggressive\" IP addresses can be restricted in the speed with which "
+#~ "servers are processing CDB requests. In this case CDB will respond with "
+#~ "`status code 429 <http://api-docs.openprocurement.org/en/latest/errors.html"
+#~ "#status-codes>`_ to the requests that returned faster than allowed."
+#~ msgstr ""
+#~ "На \"агресивні\" IP адреси може бути накладено обмеження на швидкість, з "
+#~ "якою сервери ЦБД опрацьовують запити. У відповідь на запити, які прийшли "
+#~ "швидше ніж дозволено, ЦБД відповідає з `кодом статусу 429 <http://api-"
+#~ "docs.openprocurement.org/uk_UA/latest/errors.html#status-codes>`_."

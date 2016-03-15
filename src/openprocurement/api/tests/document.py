@@ -270,6 +270,7 @@ class TenderDocumentResourceTest(BaseTenderWebTest):
         #dateModified = response.json["data"]['dateModified']
         self.assertIn(doc_id, response.headers['Location'])
         self.assertEqual(u'укр.doc', response.json["data"]["title"])
+        self.assertNotIn("documentType", response.json["data"])
 
         response = self.app.patch_json('/tenders/{}/documents/{}'.format(self.tender_id, doc_id), {"data": {
             "documentOf": "lot"
@@ -303,10 +304,23 @@ class TenderDocumentResourceTest(BaseTenderWebTest):
             {u'description': [u'relatedItem should be one of items'], u'location': u'body', u'name': u'relatedItem'}
         ])
 
-        response = self.app.patch_json('/tenders/{}/documents/{}'.format(self.tender_id, doc_id), {"data": {"description": "document description"}})
+        response = self.app.patch_json('/tenders/{}/documents/{}'.format(self.tender_id, doc_id), {"data": {
+            "description": "document description",
+            "documentType": 'tenderNotice'
+        }})
         self.assertEqual(response.status, '200 OK')
         self.assertEqual(response.content_type, 'application/json')
         self.assertEqual(doc_id, response.json["data"]["id"])
+        self.assertIn("documentType", response.json["data"])
+        self.assertEqual(response.json["data"]["documentType"], 'tenderNotice')
+
+        response = self.app.patch_json('/tenders/{}/documents/{}'.format(self.tender_id, doc_id), {"data": {
+            "documentType": None
+        }})
+        self.assertEqual(response.status, '200 OK')
+        self.assertEqual(response.content_type, 'application/json')
+        self.assertEqual(doc_id, response.json["data"]["id"])
+        self.assertNotIn("documentType", response.json["data"])
 
         response = self.app.get('/tenders/{}/documents/{}'.format(self.tender_id, doc_id))
         self.assertEqual(response.status, '200 OK')
