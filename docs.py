@@ -520,7 +520,7 @@ class TenderResourceTest(BaseTenderWebTest):
 
         self.app.authorization = ('Basic', ('broker', ''))
 
-        response = self.app.get('/tenders/{}/awards?acc_token={}'.format(self.tender_id, owner_token))
+        response = self.app.get('/tenders/{}/awards'.format(self.tender_id))
         # get pending award
         award_id = [i['id'] for i in response.json['data'] if i['status'] == 'pending'][0]
 
@@ -528,8 +528,7 @@ class TenderResourceTest(BaseTenderWebTest):
             self.app.patch_json('/tenders/{}/awards/{}?acc_token={}'.format(self.tender_id, award_id, owner_token), {"data": {"status": "active"}})
             self.assertEqual(response.status, '200 OK')
 
-        response = self.app.get('/tenders/{}/contracts?acc_token={}'.format(
-                self.tender_id, owner_token))
+        response = self.app.get('/tenders/{}/contracts'.format(self.tender_id))
         self.contract_id = response.json['data'][0]['id']
 
         ####  Set contract value
@@ -821,8 +820,7 @@ class TenderResourceTest(BaseTenderWebTest):
         self.app.authorization = ('Basic', ('broker', ''))
 
         with open('docs/source/qualification/awards-get.http', 'w') as self.app.file_obj:
-            response = self.app.get('/tenders/{}/awards?acc_token={}'.format(
-                self.tender_id, self.tender_token))
+            response = self.app.get('/tenders/{}/awards'.format(self.tender_id))
             self.assertEqual(response.status, '200 OK')
 
         award_id = [i['id'] for i in response.json['data'] if i['status'] == 'pending'][0]
@@ -837,7 +835,7 @@ class TenderResourceTest(BaseTenderWebTest):
                 self.tender_id, award_id, self.tender_token), {"data":{"status":"unsuccessful"}})
             self.assertEqual(response.status, '200 OK')
 
-        response = self.app.get('/tenders/{}/awards?acc_token={}'.format(self.tender_id, self.tender_token))
+        response = self.app.get('/tenders/{}/awards'.format(self.tender_id))
         award_id2 = [i['id'] for i in response.json['data'] if i['status'] == 'pending'][0]
 
         with open('docs/source/qualification/award-pending-active.http', 'w') as self.app.file_obj:
@@ -846,8 +844,8 @@ class TenderResourceTest(BaseTenderWebTest):
             self.assertEqual(response.status, '200 OK')
 
         with open('docs/source/qualification/award-active-get.http', 'w') as self.app.file_obj:
-            response = self.app.get('/tenders/{}/awards/{}?acc_token={}'.format(
-                self.tender_id, award_id2, self.tender_token))
+            response = self.app.get('/tenders/{}/awards/{}'.format(
+                self.tender_id, award_id2))
             self.assertEqual(response.status, '200 OK')
 
         with open('docs/source/qualification/award-active-cancel.http', 'w') as self.app.file_obj:
@@ -1011,8 +1009,8 @@ class TenderResourceTest(BaseTenderWebTest):
         self.app.authorization = ('Basic', ('broker', ''))
 
         with open('docs/source/qualification/awards-unsuccessful-get1.http', 'w') as self.app.file_obj:
-            response = self.app.get('/tenders/{}/awards?acc_token={}'.format(
-                self.tender_id, award_id, self.tender_token))
+            response = self.app.get('/tenders/{}/awards'.format(
+                self.tender_id, award_id))
             self.assertEqual(response.status, '200 OK')
 
         with open('docs/source/qualification/award-unsuccessful-cancel.http', 'w') as self.app.file_obj:
@@ -1021,6 +1019,6 @@ class TenderResourceTest(BaseTenderWebTest):
             self.assertEqual(response.status, '200 OK')
 
         with open('docs/source/qualification/awards-unsuccessful-get2.http', 'w') as self.app.file_obj:
-            response = self.app.get('/tenders/{}/awards?acc_token={}'.format(
-                self.tender_id, award_id, self.tender_token))
+            response = self.app.get('/tenders/{}/awards'.format(
+                self.tender_id, award_id))
             self.assertEqual(response.status, '200 OK')
