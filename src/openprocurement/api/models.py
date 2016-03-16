@@ -303,9 +303,12 @@ class Location(Model):
     elevation = BaseType()
 
 
+ADDITIONAL_CLASSIFICATIONS_SCHEMES = [u'ДКПП', u'MEDT', u'ДК003', u'ДК015', u'ДК018']
+
+
 def validate_dkpp(items, *args):
-    if items and not any([i.scheme == u'ДКПП' for i in items]):
-        raise ValidationError(u"One of additional classifications should be 'ДКПП'")
+    if items and not any([i.scheme in ADDITIONAL_CLASSIFICATIONS_SCHEMES for i in items]):
+        raise ValidationError(u"One of additional classifications should be one of [{0}].".format(', '.join(ADDITIONAL_CLASSIFICATIONS_SCHEMES)))
 
 
 class Item(Model):
