@@ -43,8 +43,8 @@ and `Location` response header reports the location of the created object.  The
 body of response reveals the information about the created tender: its internal
 `id` (that matches the `Location` segment), its official `tenderID` and
 `dateModified` datestamp stating the moment in time when tender was last
-modified. Pay attention to the `procurementMethodType`. Note that tender is 
-created with `active.enquiries` status. 
+modified. Pay attention to the `procurementMethodType`. Note that tender is
+created with `active.enquiries` status.
 
 Let's access the URL of the created object (the `Location` header of the response):
 
@@ -53,7 +53,7 @@ Let's access the URL of the created object (the `Location` header of the respons
 
 .. XXX body is empty for some reason (printf fails)
 
-We can see the same response we got after creating tender. 
+We can see the same response we got after creating tender.
 
 Let's see what listing of tenders reveals us:
 
@@ -62,7 +62,7 @@ Let's see what listing of tenders reveals us:
 
 We do see the internal `id` of a tender (that can be used to construct full URL by prepending `http://api-sandbox.openprocurement.org/api/0/tenders/`) and its `dateModified` datestamp.
 
-The previous tender contained only required fields. Let's try creating tender with more data 
+The previous tender contained only required fields. Let's try creating tender with more data
 (tender has status `created`):
 
 .. include:: tutorial/create-tender-procuringEntity.http
@@ -107,7 +107,7 @@ follow the :ref:`upload` rules.
 .. include:: tutorial/upload-tender-notice.http
    :code:
 
-`201 Created` response code and `Location` header confirm document creation. 
+`201 Created` response code and `Location` header confirm document creation.
 We can additionally query the `documents` collection API endpoint to confirm the
 action:
 
@@ -231,6 +231,33 @@ Qualification comission registers its decision via the following call:
 .. include:: tutorial/confirm-qualification.http
    :code:
 
+Set contract value
+------------------
+
+By default contract value is set based on the award, but there is a possibility to set custom contract value. If you want to **lower contract value**, you can insert new one into the `amount` field.
+
+.. include:: tutorial/tender-contract-set-contract-value.http
+   :code:
+
+`200 OK` response was returned. The value was modified successfully.
+
+Set contract signature date
+---------------------------
+
+There is a possibility to set custom contract signature date. You can insert appropriate date into the `dateSigned` field.
+If this date is not set, it will be auto-generated on the date of contract registration.
+
+.. include:: tutorial/tender-contract-sign-date.http
+   :code:
+
+Set contract validity period
+----------------------------
+
+Setting contract validity period is optional, but if it is needed, you can set appropriate `startDate` and `endDate`.
+
+.. include:: tutorial/tender-contract-period.http
+   :code:
+
 Uploading contract documentation
 --------------------------------
 
@@ -258,15 +285,6 @@ Let's see the list of all added contract documents:
 .. include:: tutorial/tender-contract-get-documents-again.http
    :code:
 
-Set contract signature date
----------------------------
-
-There is a possibility to set custom contract signature date.
-If the date is not set it will be generated on contract registration.
-
-.. include:: tutorial/tender-contract-sign-date.http
-   :code:
-
 Contract registration
 ---------------------
 
@@ -276,12 +294,12 @@ Contract registration
 Cancelling tender
 -----------------
 
-Tender creator can cancel tender anytime (except when tender has terminal status e.g. `usuccesfull`, `canceled`, `complete`). 
+Tender creator can cancel tender anytime (except when tender has terminal status e.g. `usuccesfull`, `canceled`, `complete`).
 
 The following steps should be applied:
 
 1. Prepare cancellation request
-2. Fill it with the protocol describing the cancellation reasons 
+2. Fill it with the protocol describing the cancellation reasons
 3. Cancel the tender with the reasons prepared.
 
 Only the request that has been activated (3rd step above) has power to
@@ -323,5 +341,3 @@ Activating the request and cancelling tender
 
 .. include:: tutorial/active-cancellation.http
    :code:
-
-

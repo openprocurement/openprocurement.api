@@ -1,4 +1,4 @@
-GET /api/0.12/tenders/d43c874272844fab88e7f2681b304252/bids/996c243258784b6da23d3cd24f7a2f96/documents?acc_token=aeee2e4aa9014dada87ceff37894892f HTTP/1.0
+GET /api/2.0/tenders/3bbde406592c4c82b392442cc7affbbc/bids/a295ddce71ac47df961e527ff43eb8cb/documents?acc_token=9444d5f0f6d14b5eb823d9076f09bf66 HTTP/1.0
 Authorization: Basic YnJva2VyOg==
 Host: api-sandbox.openprocurement.org
 
@@ -10,12 +10,12 @@ Content-Type: application/json; charset=UTF-8
   "data": [
     {
       "title": "Proposal.pdf", 
-      "url": "http://api-sandbox.openprocurement.org/api/0.12/tenders/d43c874272844fab88e7f2681b304252/bids/996c243258784b6da23d3cd24f7a2f96/documents/0e292de155974b33b1ed7f2d251d90df?download=bcc21a3d8f274fe39d33ee99fadf400a", 
+      "url": "http://api-sandbox.openprocurement.org/api/2.0/tenders/3bbde406592c4c82b392442cc7affbbc/bids/a295ddce71ac47df961e527ff43eb8cb/documents/e765eeb41f834311885c22f8e4bc41c6?download=fca68223e33746ec837b2bab64bc4941", 
       "format": "application/pdf", 
       "documentOf": "tender", 
-      "datePublished": "2016-03-14T21:29:10.311838+02:00", 
-      "id": "0e292de155974b33b1ed7f2d251d90df", 
-      "dateModified": "2016-03-14T21:29:10.311879+02:00"
+      "datePublished": "2016-03-16T14:12:02.536907+02:00", 
+      "id": "e765eeb41f834311885c22f8e4bc41c6", 
+      "dateModified": "2016-03-16T14:12:02.536948+02:00"
     }
   ]
 }

@@ -1,23 +1,23 @@
-POST /api/0.12/tenders/6497d563e3fd40a187641dcebd1e27ca/awards/49d06a4b14d94da6ad87855e0a5cd7ad/documents?acc_token=19914ff2213f471dbb8bd51e49e59ba1 HTTP/1.0
+POST /api/2.0/tenders/9098e60f7f804155b50899f6feea3b92/awards/e5badabcf6104e809448588e22bb3c60/documents?acc_token=248cfc54c304409abd14a0da79f81fd3 HTTP/1.0
 Authorization: Basic YnJva2VyOg==
 Content-Length: 199
-Content-Type: multipart/form-data; boundary=----------a_BoUnDaRy837748116718$
+Content-Type: multipart/form-data; boundary=----------a_BoUnDaRy416400982638$
 Host: api-sandbox.openprocurement.org
 
 
 201 Created
 Content-Type: application/json; charset=UTF-8
-Location: http://api-sandbox.openprocurement.org/api/0.12/tenders/6497d563e3fd40a187641dcebd1e27ca/awards/49d06a4b14d94da6ad87855e0a5cd7ad/documents/4b60590334f5402092e80026bebc9850
+Location: http://api-sandbox.openprocurement.org/api/2.0/tenders/9098e60f7f804155b50899f6feea3b92/awards/e5badabcf6104e809448588e22bb3c60/documents/583eedda2d8a45afb4cb1080e992c28f
 
 {
   "data": {
     "title": "Cancellation_Reason.pdf", 
-    "url": "http://api-sandbox.openprocurement.org/api/0.12/tenders/6497d563e3fd40a187641dcebd1e27ca/awards/49d06a4b14d94da6ad87855e0a5cd7ad/documents/4b60590334f5402092e80026bebc9850?download=c8d40e3b1f754238999e288d7537f0e0", 
+    "url": "http://api-sandbox.openprocurement.org/api/2.0/tenders/9098e60f7f804155b50899f6feea3b92/awards/e5badabcf6104e809448588e22bb3c60/documents/583eedda2d8a45afb4cb1080e992c28f?download=a0468a8d6b0e4b3bb6dac6036ba955ed", 
     "format": "application/pdf", 
     "documentOf": "tender", 
-    "datePublished": "2016-03-14T21:28:58.930475+02:00", 
-    "id": "4b60590334f5402092e80026bebc9850", 
-    "dateModified": "2016-03-14T21:28:58.930518+02:00"
+    "datePublished": "2016-03-16T14:11:49.834635+02:00", 
+    "id": "583eedda2d8a45afb4cb1080e992c28f", 
+    "dateModified": "2016-03-16T14:11:49.834672+02:00"
   }
 }
 

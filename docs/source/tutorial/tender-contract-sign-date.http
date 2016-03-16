@@ -1,4 +1,4 @@
-PATCH /api/0.12/tenders/d43c874272844fab88e7f2681b304252/contracts/2c1431eec94e4d2d820d369c0d107576?acc_token=622e4e63e5d849698294f5ab6d6f13e5 HTTP/1.0
+PATCH /api/2.0/tenders/3bbde406592c4c82b392442cc7affbbc/contracts/0ca81e96fc78403995cf02cd3b49ff07?acc_token=e63fecce92854fc38bb5c3f5d3df15c2 HTTP/1.0
 Authorization: Basic YnJva2VyOg==
 Content-Length: 60
 Content-Type: application/json
@@ -6,7 +6,7 @@ Host: api-sandbox.openprocurement.org
 
 {
   "data": {
-    "dateSigned": "2016-03-14T21:29:12.525658+02:00"
+    "dateSigned": "2016-03-16T14:12:04.899730+02:00"
   }
 }
 
@@ -17,26 +17,6 @@ Content-Type: application/json; charset=UTF-8
 {
   "data": {
     "status": "pending", 
-    "documents": [
-      {
-        "title": "contract_first_document.doc", 
-        "url": "http://api-sandbox.openprocurement.org/api/0.12/tenders/d43c874272844fab88e7f2681b304252/contracts/2c1431eec94e4d2d820d369c0d107576/documents/417f25da3cb94c828daf559f415b3af6?download=a7383886fb1c4d1b9625cae6c6327d42", 
-        "format": "application/msword", 
-        "documentOf": "tender", 
-        "datePublished": "2016-03-14T21:29:11.976806+02:00", 
-        "id": "417f25da3cb94c828daf559f415b3af6", 
-        "dateModified": "2016-03-14T21:29:11.976844+02:00"
-      }, 
-      {
-        "title": "contract_second_document.doc", 
-        "url": "http://api-sandbox.openprocurement.org/api/0.12/tenders/d43c874272844fab88e7f2681b304252/contracts/2c1431eec94e4d2d820d369c0d107576/documents/41ae91404f194e9e9210424eaad4f765?download=dc265d9c3240432b93289a262681e15d", 
-        "format": "application/msword", 
-        "documentOf": "tender", 
-        "datePublished": "2016-03-14T21:29:12.316998+02:00", 
-        "id": "41ae91404f194e9e9210424eaad4f765", 
-        "dateModified": "2016-03-14T21:29:12.317045+02:00"
-      }
-    ], 
     "items": [
       {
         "description": "футляри до державних нагород", 
@@ -52,7 +32,7 @@ Content-Type: application/json; charset=UTF-8
             "description": "папір і картон гофровані, паперова й картонна тара"
           }
         ], 
-        "id": "2de43756594b4903acf594ee38681873", 
+        "id": "ea38b0cc6e4f4380a2da96422148eee1", 
         "unit": {
           "code": "44617100-9", 
           "name": "item"
@@ -84,13 +64,13 @@ Content-Type: application/json; charset=UTF-8
     ], 
     "value": {
       "currency": "UAH", 
-      "amount": 499.0, 
+      "amount": 238.0, 
       "valueAddedTaxIncluded": true
     }, 
-    "dateSigned": "2016-03-14T21:29:12.525658+02:00", 
-    "awardID": "bda5edbadbae4fa7923e0c7b72081709", 
-    "id": "2c1431eec94e4d2d820d369c0d107576", 
-    "contractID": "UA-2016-03-14-000001-1"
+    "dateSigned": "2016-03-16T14:12:04.899730+02:00", 
+    "awardID": "982e96c6da8740d5980c6178213483ec", 
+    "id": "0ca81e96fc78403995cf02cd3b49ff07", 
+    "contractID": "UA-2016-03-16-000001-1"
   }
 }
 
