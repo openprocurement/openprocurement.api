@@ -440,6 +440,14 @@ class TenderResourceTest(BaseTenderWebTest):
             bids_access[bid1_id] = response.json['access']['token']
             self.assertEqual(response.status, '201 Created')
 
+        # Setting Bid guarantee
+        #
+        with open('docs/source/tutorial/set-bid-guarantee.http', 'w') as self.app.file_obj:
+            response = self.app.patch_json('/tenders/{}/bids/{}?acc_token={}'.format(
+                self.tender_id, bid1_id, bids_access[bid1_id]), {"data": {"guarantee": {"amount": 8, "currency": "USD"}}})
+            self.assertEqual(response.status, '200 OK')
+            self.assertIn('guarantee', response.json['data'])
+
         # Proposal Uploading
         #
 

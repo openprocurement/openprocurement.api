@@ -187,6 +187,11 @@ Bidder can register a bid:
 .. include:: tutorial/register-bidder.http
    :code:
 
+Bidder can set guarantee:
+
+.. include:: tutorial/set-bid-guarantee.http
+   :code:
+
 And upload proposal document:
 
 .. include:: tutorial/upload-bid-proposal.http
