@@ -1,4 +1,4 @@
-GET /api/2.0/tenders/3bbde406592c4c82b392442cc7affbbc/bids/a295ddce71ac47df961e527ff43eb8cb?acc_token=9444d5f0f6d14b5eb823d9076f09bf66 HTTP/1.0
+GET /api/0.12/tenders/c734b0da0d05467a82ae248b319b79e1/bids/d8a5f816dbef4b09be478237ac3251ce?acc_token=3ed5fcbcf7614b45b6e6e1e20cc2b0a9 HTTP/1.0
 Authorization: Basic YnJva2VyOg==
 Host: api-sandbox.openprocurement.org
 
@@ -11,12 +11,12 @@ Content-Type: application/json; charset=UTF-8
     "documents": [
       {
         "title": "Proposal.pdf", 
-        "url": "http://api-sandbox.openprocurement.org/api/2.0/tenders/3bbde406592c4c82b392442cc7affbbc/bids/a295ddce71ac47df961e527ff43eb8cb/documents/e765eeb41f834311885c22f8e4bc41c6?download=fca68223e33746ec837b2bab64bc4941", 
+        "url": "http://api-sandbox.openprocurement.org/api/0.12/tenders/c734b0da0d05467a82ae248b319b79e1/bids/d8a5f816dbef4b09be478237ac3251ce/documents/36427cd33524401bbb4830a6fd7307ef?download=93c6f7f215414e4c846b4ffc6ff33a76", 
         "format": "application/pdf", 
         "documentOf": "tender", 
-        "datePublished": "2016-03-16T14:12:02.536907+02:00", 
-        "id": "e765eeb41f834311885c22f8e4bc41c6", 
-        "dateModified": "2016-03-16T14:12:02.536948+02:00"
+        "datePublished": "2016-03-16T15:13:24.497872+02:00", 
+        "id": "36427cd33524401bbb4830a6fd7307ef", 
+        "dateModified": "2016-03-16T15:13:24.497922+02:00"
       }
     ], 
     "value": {
@@ -46,9 +46,13 @@ Content-Type: application/json; charset=UTF-8
         }
       }
     ], 
-    "date": "2016-03-16T14:12:02.335039+02:00", 
-    "id": "a295ddce71ac47df961e527ff43eb8cb", 
-    "participationUrl": "http://auction-sandbox.openprocurement.org/tenders/3bbde406592c4c82b392442cc7affbbc?key_for_bid=a295ddce71ac47df961e527ff43eb8cb"
+    "date": "2016-03-16T15:13:24.165239+02:00", 
+    "id": "d8a5f816dbef4b09be478237ac3251ce", 
+    "participationUrl": "http://auction-sandbox.openprocurement.org/tenders/c734b0da0d05467a82ae248b319b79e1?key_for_bid=d8a5f816dbef4b09be478237ac3251ce", 
+    "guarantee": {
+      "currency": "USD", 
+      "amount": 8.0
+    }
   }
 }
 

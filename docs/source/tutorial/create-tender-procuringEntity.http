@@ -1,4 +1,4 @@
-POST /api/2.0/tenders?opt_pretty=1 HTTP/1.0
+POST /api/0.12/tenders?opt_pretty=1 HTTP/1.0
 Authorization: Basic YnJva2VyOg==
 Content-Length: 4133
 Content-Type: application/json
@@ -22,7 +22,7 @@ Host: api-sandbox.openprocurement.org
           }
         ], 
         "title_en": "Air Intake", 
-        "relatedItem": "9e5bebd1a7e94157a1bc9e89f6a0fb5f", 
+        "relatedItem": "2fd9e345ca974b4d8d780af01305b798", 
         "featureOf": "item"
       }, 
       {
@@ -53,7 +53,7 @@ Host: api-sandbox.openprocurement.org
       "amount": 35
     }, 
     "enquiryPeriod": {
-      "endDate": "2016-03-23T14:11:39.477244"
+      "endDate": "2016-03-23T15:13:00.799773"
     }, 
     "title_en": "Cases with state awards", 
     "value": {
@@ -99,7 +99,7 @@ Host: api-sandbox.openprocurement.org
           }
         ], 
         "description_ru": "футляры к государственным наградам", 
-        "id": "9e5bebd1a7e94157a1bc9e89f6a0fb5f", 
+        "id": "2fd9e345ca974b4d8d780af01305b798", 
         "unit": {
           "code": "44617100-9", 
           "name": "item"
@@ -108,7 +108,7 @@ Host: api-sandbox.openprocurement.org
       }
     ], 
     "tenderPeriod": {
-      "endDate": "2016-03-30T14:11:39.477244"
+      "endDate": "2016-03-30T15:13:00.799773"
     }
   }
 }
@@ -116,19 +116,19 @@ Host: api-sandbox.openprocurement.org
 
 201 Created
 Content-Type: application/json; charset=UTF-8
-Location: http://api-sandbox.openprocurement.org/api/2.0/tenders/f6c9adf9f5564e07b9b76774cbc1b17f
+Location: http://api-sandbox.openprocurement.org/api/0.12/tenders/66c4f56b660e4e27b6336d874300f24d
 
 {
   "access": {
-    "token": "727efdafaf1347c0a8d9f98d49a16e01"
+    "token": "3e6d835696a142a5a1493d0b7d617d86"
   }, 
   "data": {
     "procurementMethod": "open", 
     "status": "active.enquiries", 
     "tenderID": "UA-2016-03-16-000002", 
     "tenderPeriod": {
-      "startDate": "2016-03-23T14:11:39.477244+02:00", 
-      "endDate": "2016-03-30T14:11:39.477244+03:00"
+      "startDate": "2016-03-23T15:13:00.799773+02:00", 
+      "endDate": "2016-03-30T15:13:00.799773+03:00"
     }, 
     "title": "[ТЕСТУВАННЯ] футляри до державних нагород", 
     "minimalStep": {
@@ -153,7 +153,7 @@ Location: http://api-sandbox.openprocurement.org/api/2.0/tenders/f6c9adf9f5564e0
           }
         ], 
         "description_ru": "футляры к государственным наградам", 
-        "id": "9e5bebd1a7e94157a1bc9e89f6a0fb5f", 
+        "id": "2fd9e345ca974b4d8d780af01305b798", 
         "unit": {
           "code": "44617100-9", 
           "name": "item"
@@ -169,7 +169,7 @@ Location: http://api-sandbox.openprocurement.org/api/2.0/tenders/f6c9adf9f5564e0
     }, 
     "submissionMethod": "electronicAuction", 
     "awardCriteria": "lowestCost", 
-    "next_check": "2016-03-23T14:11:39.477244+02:00", 
+    "next_check": "2016-03-23T15:13:00.799773+02:00", 
     "procuringEntity": {
       "contactPoint": {
         "name": "Державне управління справами", 
@@ -191,14 +191,14 @@ Location: http://api-sandbox.openprocurement.org/api/2.0/tenders/f6c9adf9f5564e0
     }, 
     "title_ru": "[ТЕСТИРОВАНИЕ] футляры к государственным наградам", 
     "enquiryPeriod": {
-      "startDate": "2016-03-16T14:11:59.719435+02:00", 
-      "endDate": "2016-03-23T14:11:39.477244+02:00"
+      "startDate": "2016-03-16T15:13:22.247655+02:00", 
+      "endDate": "2016-03-23T15:13:00.799773+02:00"
     }, 
     "owner": "broker", 
-    "dateModified": "2016-03-16T14:11:59.725800+02:00", 
+    "dateModified": "2016-03-16T15:13:22.253534+02:00", 
     "mode": "test", 
     "title_en": "[TESTING] Cases with state awards", 
-    "id": "f6c9adf9f5564e07b9b76774cbc1b17f", 
+    "id": "66c4f56b660e4e27b6336d874300f24d", 
     "features": [
       {
         "code": "OCDS-123454-AIR-INTAKE", 
@@ -215,7 +215,7 @@ Location: http://api-sandbox.openprocurement.org/api/2.0/tenders/f6c9adf9f5564e0
           }
         ], 
         "title_en": "Air Intake", 
-        "relatedItem": "9e5bebd1a7e94157a1bc9e89f6a0fb5f", 
+        "relatedItem": "2fd9e345ca974b4d8d780af01305b798", 
         "featureOf": "item"
       }, 
       {

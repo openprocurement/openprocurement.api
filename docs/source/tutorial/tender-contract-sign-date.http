@@ -1,4 +1,4 @@
-PATCH /api/2.0/tenders/3bbde406592c4c82b392442cc7affbbc/contracts/0ca81e96fc78403995cf02cd3b49ff07?acc_token=e63fecce92854fc38bb5c3f5d3df15c2 HTTP/1.0
+PATCH /api/0.12/tenders/c734b0da0d05467a82ae248b319b79e1/contracts/8a3f870ab3b941fb9e656a4e18ba26da?acc_token=45f71956f89b48eea8ca964dd4bf97fb HTTP/1.0
 Authorization: Basic YnJva2VyOg==
 Content-Length: 60
 Content-Type: application/json
@@ -6,7 +6,7 @@ Host: api-sandbox.openprocurement.org
 
 {
   "data": {
-    "dateSigned": "2016-03-16T14:12:04.899730+02:00"
+    "dateSigned": "2016-03-16T15:13:26.581305+02:00"
   }
 }
 
@@ -32,7 +32,7 @@ Content-Type: application/json; charset=UTF-8
             "description": "папір і картон гофровані, паперова й картонна тара"
           }
         ], 
-        "id": "ea38b0cc6e4f4380a2da96422148eee1", 
+        "id": "8655bb55172f4ca4b9733b90f919180c", 
         "unit": {
           "code": "44617100-9", 
           "name": "item"
@@ -67,9 +67,9 @@ Content-Type: application/json; charset=UTF-8
       "amount": 238.0, 
       "valueAddedTaxIncluded": true
     }, 
-    "dateSigned": "2016-03-16T14:12:04.899730+02:00", 
-    "awardID": "982e96c6da8740d5980c6178213483ec", 
-    "id": "0ca81e96fc78403995cf02cd3b49ff07", 
+    "dateSigned": "2016-03-16T15:13:26.581305+02:00", 
+    "awardID": "5f86ddc49b6c4d7da042b4a8fbb9ad6b", 
+    "id": "8a3f870ab3b941fb9e656a4e18ba26da", 
     "contractID": "UA-2016-03-16-000001-1"
   }
 }
