@@ -271,8 +271,8 @@ Let's see the list of all added contract documents:
 Set contract signature date
 ---------------------------
 
-There is a possibility to set custom contract signature date.
-If the date is not set it will be generated on contract registration.
+There is a possibility to set custom contract signature date. You can insert appropriate date into the `dateSigned` field.
+If this date is not set, it will be auto-generated on the date of contract registration.
 
 .. include:: tutorial/tender-contract-sign-date.http
    :code:
