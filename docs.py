@@ -461,15 +461,7 @@ class TenderResourceTest(BaseTenderWebTest):
                 self.tender_id, bid1_id, bids_access[bid1_id]))
             self.assertEqual(response.status, '200 OK')
 
-        # Bid invalidation
-        #
-
-        with open('docs/source/tutorial/bidder-after-changing-tender.http', 'w') as self.app.file_obj:
-            response = self.app.get('/tenders/{}/bids/{}?acc_token={}'.format(
-                self.tender_id, bid1_id, bids_access[bid1_id]))
-            self.assertEqual(response.status, '200 OK')
-
-        # Bid confirmation
+        # Second bidder registration
         #
 
         with open('docs/source/tutorial/register-2nd-bidder.http', 'w') as self.app.file_obj:
