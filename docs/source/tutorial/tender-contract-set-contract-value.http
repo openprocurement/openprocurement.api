@@ -1,12 +1,14 @@
 PATCH /api/2.0/tenders/b75d5f63bf2e42afa5909b1010b04a82/contracts/9cfbfcfe16a4403aab983c511f89b0b8?acc_token=dd63600df44a422eb7bdb729c9269624 HTTP/1.0
 Authorization: Basic YnJva2VyOg==
-Content-Length: 30
+Content-Length: 36
 Content-Type: application/json
 Host: api-sandbox.openprocurement.org
 
 {
   "data": {
-    "status": "active"
+    "value": {
+      "amount": 238
+    }
   }
 }
 
@@ -16,27 +18,7 @@ Content-Type: application/json; charset=UTF-8
 
 {
   "data": {
-    "status": "active", 
-    "documents": [
-      {
-        "title": "contract_first_document.doc", 
-        "url": "http://api-sandbox.openprocurement.org/api/2.0/tenders/b75d5f63bf2e42afa5909b1010b04a82/contracts/9cfbfcfe16a4403aab983c511f89b0b8/documents/679716b683844ab789050484b44a5748?download=68f4d6af0f7947259fe150cfe833f7b8", 
-        "format": "application/msword", 
-        "documentOf": "tender", 
-        "datePublished": "2016-03-16T11:22:33.979174+02:00", 
-        "id": "679716b683844ab789050484b44a5748", 
-        "dateModified": "2016-03-16T11:22:33.979222+02:00"
-      }, 
-      {
-        "title": "contract_second_document.doc", 
-        "url": "http://api-sandbox.openprocurement.org/api/2.0/tenders/b75d5f63bf2e42afa5909b1010b04a82/contracts/9cfbfcfe16a4403aab983c511f89b0b8/documents/6bd24a7b15614803ab31f7697a561f9b?download=68fe0a15de9f414b96e587bb1cfb9254", 
-        "format": "application/msword", 
-        "documentOf": "tender", 
-        "datePublished": "2016-03-16T11:22:34.306159+02:00", 
-        "id": "6bd24a7b15614803ab31f7697a561f9b", 
-        "dateModified": "2016-03-16T11:22:34.306197+02:00"
-      }
-    ], 
+    "status": "pending", 
     "items": [
       {
         "description": "футляри до державних нагород", 
@@ -87,7 +69,6 @@ Content-Type: application/json; charset=UTF-8
       "amount": 238.0, 
       "valueAddedTaxIncluded": true
     }, 
-    "dateSigned": "2016-03-16T11:22:34.520179+02:00", 
     "awardID": "3eeaece97788416bab7a1660b4b5465d", 
     "id": "9cfbfcfe16a4403aab983c511f89b0b8", 
     "contractID": "UA-2016-03-16-000001-1"

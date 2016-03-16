@@ -1,4 +1,4 @@
-GET /api/0.12/tenders/d43c874272844fab88e7f2681b304252 HTTP/1.0
+GET /api/2.0/tenders/b75d5f63bf2e42afa5909b1010b04a82 HTTP/1.0
 Authorization: Basic YnJva2VyOg==
 Host: api-sandbox.openprocurement.org
 
@@ -10,10 +10,10 @@ Content-Type: application/json; charset=UTF-8
   "data": {
     "procurementMethod": "open", 
     "status": "active.enquiries", 
-    "tenderID": "UA-2016-03-14-000001", 
+    "tenderID": "UA-2016-03-16-000001", 
     "tenderPeriod": {
-      "startDate": "2016-03-21T21:28:49.213542+02:00", 
-      "endDate": "2016-03-28T21:28:49.213542+03:00"
+      "startDate": "2016-03-23T11:22:09.910045+02:00", 
+      "endDate": "2016-03-30T11:22:09.910045+03:00"
     }, 
     "title": "футляри до державних нагород", 
     "minimalStep": {
@@ -36,7 +36,7 @@ Content-Type: application/json; charset=UTF-8
             "description": "папір і картон гофровані, паперова й картонна тара"
           }
         ], 
-        "id": "2de43756594b4903acf594ee38681873", 
+        "id": "e277d0cf26c0475d963cad4d6c90a589", 
         "unit": {
           "code": "44617100-9", 
           "name": "item"
@@ -51,7 +51,7 @@ Content-Type: application/json; charset=UTF-8
       "valueAddedTaxIncluded": true
     }, 
     "submissionMethod": "electronicAuction", 
-    "next_check": "2016-03-21T21:28:49.213542+02:00", 
+    "next_check": "2016-03-23T11:22:09.910045+02:00", 
     "procuringEntity": {
       "contactPoint": {
         "name": "Державне управління справами", 
@@ -72,12 +72,12 @@ Content-Type: application/json; charset=UTF-8
       }
     }, 
     "enquiryPeriod": {
-      "startDate": "2016-03-14T21:29:08.114765+02:00", 
-      "endDate": "2016-03-21T21:28:49.213542+02:00"
+      "startDate": "2016-03-16T11:22:28.465181+02:00", 
+      "endDate": "2016-03-23T11:22:09.910045+02:00"
     }, 
     "owner": "broker", 
-    "dateModified": "2016-03-14T21:29:08.120069+02:00", 
-    "id": "d43c874272844fab88e7f2681b304252", 
+    "dateModified": "2016-03-16T11:22:28.470916+02:00", 
+    "id": "b75d5f63bf2e42afa5909b1010b04a82", 
     "awardCriteria": "lowestCost"
   }
 }

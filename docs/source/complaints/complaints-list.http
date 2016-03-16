@@ -1,4 +1,4 @@
-GET /api/0.12/tenders/6497d563e3fd40a187641dcebd1e27ca/complaints HTTP/1.0
+GET /api/2.0/tenders/df482adf4b1a41d38ff9d7f1fd8888c3/complaints HTTP/1.0
 Host: api-sandbox.openprocurement.org
 
 
@@ -13,31 +13,31 @@ Content-Type: application/json; charset=UTF-8
         {
           "author": "complaint_owner", 
           "title": "Complaint_Attachement.pdf", 
-          "url": "http://api-sandbox.openprocurement.org/api/0.12/tenders/6497d563e3fd40a187641dcebd1e27ca/complaints/ef3799f84bb54def939cf0e0d474144e/documents/776041ed645f4154bcdaa90dc3a00049?download=5503fe0396fe4a8a95373863d3a84ea9", 
+          "url": "http://api-sandbox.openprocurement.org/api/2.0/tenders/df482adf4b1a41d38ff9d7f1fd8888c3/complaints/c8d12e22fe7f494788a7673706c44f98/documents/f8bd9dee4bde4674b760c27555646511?download=1452005177d6404eb7622712244ade30", 
           "format": "application/pdf", 
           "documentOf": "tender", 
-          "datePublished": "2016-03-14T21:28:51.777741+02:00", 
-          "id": "776041ed645f4154bcdaa90dc3a00049", 
-          "dateModified": "2016-03-14T21:28:51.777787+02:00"
+          "datePublished": "2016-03-16T11:22:12.423959+02:00", 
+          "id": "f8bd9dee4bde4674b760c27555646511", 
+          "dateModified": "2016-03-16T11:22:12.423998+02:00"
         }
       ], 
       "description": "complaint description", 
       "title": "complaint title", 
-      "dateSubmitted": "2016-03-14T21:28:51.939716+02:00", 
-      "complaintID": "UA-2016-03-14-000001.1", 
-      "date": "2016-03-14T21:28:51.311909+02:00", 
+      "dateSubmitted": "2016-03-16T11:22:12.608863+02:00", 
+      "complaintID": "UA-2016-03-16-000001.1", 
+      "date": "2016-03-16T11:22:12.093155+02:00", 
       "type": "claim", 
-      "id": "ef3799f84bb54def939cf0e0d474144e"
+      "id": "c8d12e22fe7f494788a7673706c44f98"
     }, 
     {
       "status": "claim", 
       "description": "complaint description", 
       "title": "complaint title", 
-      "dateSubmitted": "2016-03-14T21:28:52.101304+02:00", 
-      "complaintID": "UA-2016-03-14-000001.2", 
-      "date": "2016-03-14T21:28:52.099412+02:00", 
+      "dateSubmitted": "2016-03-16T11:22:12.796302+02:00", 
+      "complaintID": "UA-2016-03-16-000001.2", 
+      "date": "2016-03-16T11:22:12.794970+02:00", 
       "type": "claim", 
-      "id": "f16950bde0b34733940e4d9a74cff695"
+      "id": "b8540044a51645ae9f13fc14367f1dde"
     }
   ]
 }
