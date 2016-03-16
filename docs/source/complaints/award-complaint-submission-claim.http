@@ -1,4 +1,4 @@
-POST /api/2.0/tenders/df482adf4b1a41d38ff9d7f1fd8888c3/awards/c53e53a0e11c486ba2e3675edfb19d28/complaints?acc_token=34fd56a3a76c4c8a9022649d19b6ad8e HTTP/1.0
+POST /api/2.0/tenders/e72d1f1a818c4e01a064dace694c43fe/awards/6eb15520a0f54373bc29eb884cccf0c4/complaints?acc_token=4c39e96271b14e3a9fe5b94db318e21d HTTP/1.0
 Authorization: Basic YnJva2VyOg==
 Content-Length: 899
 Content-Type: application/json
@@ -34,11 +34,11 @@ Host: api-sandbox.openprocurement.org
 
 201 Created
 Content-Type: application/json; charset=UTF-8
-Location: http://api-sandbox.openprocurement.org/api/2.0/tenders/df482adf4b1a41d38ff9d7f1fd8888c3/awards/c53e53a0e11c486ba2e3675edfb19d28/complaints/acef0f8bd37e47348cee6814eafc033c
+Location: http://api-sandbox.openprocurement.org/api/2.0/tenders/e72d1f1a818c4e01a064dace694c43fe/awards/6eb15520a0f54373bc29eb884cccf0c4/complaints/f86dbb606db949fba8aa07a9ad3ede1b
 
 {
   "access": {
-    "token": "6ff5a4c2c681468688d75d61ea883393"
+    "token": "3a3013d8f4a54443a32b4458d4949b07"
   }, 
   "data": {
     "status": "claim", 
@@ -63,11 +63,11 @@ Location: http://api-sandbox.openprocurement.org/api/2.0/tenders/df482adf4b1a41d
         "locality": "м. Київ"
       }
     }, 
-    "dateSubmitted": "2016-03-16T11:22:20.979325+02:00", 
-    "complaintID": "UA-2016-03-16-000001.6", 
-    "date": "2016-03-16T11:22:20.977962+02:00", 
+    "dateSubmitted": "2016-03-16T12:11:35.003070+02:00", 
+    "complaintID": "UA-2016-03-16-000002.6", 
+    "date": "2016-03-16T12:11:35.001682+02:00", 
     "type": "claim", 
-    "id": "acef0f8bd37e47348cee6814eafc033c"
+    "id": "f86dbb606db949fba8aa07a9ad3ede1b"
   }
 }
 

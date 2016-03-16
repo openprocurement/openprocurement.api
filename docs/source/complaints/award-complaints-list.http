@@ -1,4 +1,4 @@
-GET /api/2.0/tenders/df482adf4b1a41d38ff9d7f1fd8888c3/awards/c53e53a0e11c486ba2e3675edfb19d28/complaints HTTP/1.0
+GET /api/2.0/tenders/e72d1f1a818c4e01a064dace694c43fe/awards/6eb15520a0f54373bc29eb884cccf0c4/complaints HTTP/1.0
 Host: api-sandbox.openprocurement.org
 
 
@@ -13,12 +13,12 @@ Content-Type: application/json; charset=UTF-8
         {
           "author": "complaint_owner", 
           "title": "Complaint_Attachement.pdf", 
-          "url": "http://api-sandbox.openprocurement.org/api/2.0/tenders/df482adf4b1a41d38ff9d7f1fd8888c3/awards/c53e53a0e11c486ba2e3675edfb19d28/complaints/26a86a7e7887444db3c4cc1a9ce384b7/documents/480c607f36ba4a8495663b34af597f6b?download=2d396ecceb1640308f5c66364c9350f8", 
+          "url": "http://api-sandbox.openprocurement.org/api/2.0/tenders/e72d1f1a818c4e01a064dace694c43fe/awards/6eb15520a0f54373bc29eb884cccf0c4/complaints/b6799fb9fe8244be9587f93774af802e/documents/8050d0e2fb4b45189c0c3e7eaf44636d?download=3fee935d0421458cb9ef4a9cf2f40498", 
           "format": "application/pdf", 
           "documentOf": "tender", 
-          "datePublished": "2016-03-16T11:22:20.207949+02:00", 
-          "id": "480c607f36ba4a8495663b34af597f6b", 
-          "dateModified": "2016-03-16T11:22:20.207988+02:00"
+          "datePublished": "2016-03-16T12:11:34.287051+02:00", 
+          "id": "8050d0e2fb4b45189c0c3e7eaf44636d", 
+          "dateModified": "2016-03-16T12:11:34.287094+02:00"
         }
       ], 
       "description": "complaint description", 
@@ -42,11 +42,11 @@ Content-Type: application/json; charset=UTF-8
           "locality": "м. Київ"
         }
       }, 
-      "dateSubmitted": "2016-03-16T11:22:20.553772+02:00", 
-      "complaintID": "UA-2016-03-16-000001.5", 
-      "date": "2016-03-16T11:22:19.883796+02:00", 
+      "dateSubmitted": "2016-03-16T12:11:34.647550+02:00", 
+      "complaintID": "UA-2016-03-16-000002.5", 
+      "date": "2016-03-16T12:11:33.966774+02:00", 
       "type": "claim", 
-      "id": "26a86a7e7887444db3c4cc1a9ce384b7"
+      "id": "b6799fb9fe8244be9587f93774af802e"
     }, 
     {
       "status": "claim", 
@@ -71,11 +71,11 @@ Content-Type: application/json; charset=UTF-8
           "locality": "м. Київ"
         }
       }, 
-      "dateSubmitted": "2016-03-16T11:22:20.979325+02:00", 
-      "complaintID": "UA-2016-03-16-000001.6", 
-      "date": "2016-03-16T11:22:20.977962+02:00", 
+      "dateSubmitted": "2016-03-16T12:11:35.003070+02:00", 
+      "complaintID": "UA-2016-03-16-000002.6", 
+      "date": "2016-03-16T12:11:35.001682+02:00", 
       "type": "claim", 
-      "id": "acef0f8bd37e47348cee6814eafc033c"
+      "id": "f86dbb606db949fba8aa07a9ad3ede1b"
     }
   ]
 }

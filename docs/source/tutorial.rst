@@ -277,6 +277,14 @@ If this date is not set, it will be auto-generated on the date of contract regis
 .. include:: tutorial/tender-contract-sign-date.http
    :code:
 
+Set contract validity period
+----------------------------
+
+Setting contract validity period is optional, but if it is needed, you can set appropriate `startDate` and `endDate`.
+
+.. include:: tutorial/tender-contract-period.http
+   :code:
+
 Contract registration
 ---------------------
 

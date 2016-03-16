@@ -576,6 +576,14 @@ class TenderResourceTest(BaseTenderWebTest):
                 self.tender_id, self.contract_id, owner_token), {'data': {"dateSigned": get_now().isoformat()} })
             self.assertEqual(response.status, '200 OK')
 
+        #### Setting contract period
+
+        period_dates = {"period": {"startDate": (now).isoformat(), "endDate": (now + timedelta(days=365)).isoformat()}}
+        with open('docs/source/tutorial/tender-contract-period.http', 'w') as self.app.file_obj:
+            response = self.app.patch_json('/tenders/{}/contracts/{}?acc_token={}'.format(
+            self.tender_id, self.contract_id, owner_token), {'data': {'period': period_dates["period"]}})
+        self.assertEqual(response.status, '200 OK')
+
         #### Contract signing
         #
 
