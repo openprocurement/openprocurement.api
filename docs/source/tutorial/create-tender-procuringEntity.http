@@ -22,7 +22,7 @@ Host: api-sandbox.openprocurement.org
           }
         ], 
         "title_en": "Air Intake", 
-        "relatedItem": "454560203de04edeb7fe5c99f04bd176", 
+        "relatedItem": "9e5bebd1a7e94157a1bc9e89f6a0fb5f", 
         "featureOf": "item"
       }, 
       {
@@ -53,7 +53,7 @@ Host: api-sandbox.openprocurement.org
       "amount": 35
     }, 
     "enquiryPeriod": {
-      "endDate": "2016-03-23T12:11:23.680247"
+      "endDate": "2016-03-23T14:11:39.477244"
     }, 
     "title_en": "Cases with state awards", 
     "value": {
@@ -99,7 +99,7 @@ Host: api-sandbox.openprocurement.org
           }
         ], 
         "description_ru": "футляры к государственным наградам", 
-        "id": "454560203de04edeb7fe5c99f04bd176", 
+        "id": "9e5bebd1a7e94157a1bc9e89f6a0fb5f", 
         "unit": {
           "code": "44617100-9", 
           "name": "item"
@@ -108,7 +108,7 @@ Host: api-sandbox.openprocurement.org
       }
     ], 
     "tenderPeriod": {
-      "endDate": "2016-03-30T12:11:23.680247"
+      "endDate": "2016-03-30T14:11:39.477244"
     }
   }
 }
@@ -116,19 +116,19 @@ Host: api-sandbox.openprocurement.org
 
 201 Created
 Content-Type: application/json; charset=UTF-8
-Location: http://api-sandbox.openprocurement.org/api/2.0/tenders/c77c8d19fbc74b4fb725c6b548e78789
+Location: http://api-sandbox.openprocurement.org/api/2.0/tenders/f6c9adf9f5564e07b9b76774cbc1b17f
 
 {
   "access": {
-    "token": "ee35779bd108423e90da47bb2abf6374"
+    "token": "727efdafaf1347c0a8d9f98d49a16e01"
   }, 
   "data": {
     "procurementMethod": "open", 
     "status": "active.enquiries", 
     "tenderID": "UA-2016-03-16-000002", 
     "tenderPeriod": {
-      "startDate": "2016-03-23T12:11:23.680247+02:00", 
-      "endDate": "2016-03-30T12:11:23.680247+03:00"
+      "startDate": "2016-03-23T14:11:39.477244+02:00", 
+      "endDate": "2016-03-30T14:11:39.477244+03:00"
     }, 
     "title": "[ТЕСТУВАННЯ] футляри до державних нагород", 
     "minimalStep": {
@@ -153,7 +153,7 @@ Location: http://api-sandbox.openprocurement.org/api/2.0/tenders/c77c8d19fbc74b4
           }
         ], 
         "description_ru": "футляры к государственным наградам", 
-        "id": "454560203de04edeb7fe5c99f04bd176", 
+        "id": "9e5bebd1a7e94157a1bc9e89f6a0fb5f", 
         "unit": {
           "code": "44617100-9", 
           "name": "item"
@@ -169,7 +169,7 @@ Location: http://api-sandbox.openprocurement.org/api/2.0/tenders/c77c8d19fbc74b4
     }, 
     "submissionMethod": "electronicAuction", 
     "awardCriteria": "lowestCost", 
-    "next_check": "2016-03-23T12:11:23.680247+02:00", 
+    "next_check": "2016-03-23T14:11:39.477244+02:00", 
     "procuringEntity": {
       "contactPoint": {
         "name": "Державне управління справами", 
@@ -191,14 +191,14 @@ Location: http://api-sandbox.openprocurement.org/api/2.0/tenders/c77c8d19fbc74b4
     }, 
     "title_ru": "[ТЕСТИРОВАНИЕ] футляры к государственным наградам", 
     "enquiryPeriod": {
-      "startDate": "2016-03-16T12:11:42.975668+02:00", 
-      "endDate": "2016-03-23T12:11:23.680247+02:00"
+      "startDate": "2016-03-16T14:11:59.719435+02:00", 
+      "endDate": "2016-03-23T14:11:39.477244+02:00"
     }, 
     "owner": "broker", 
-    "dateModified": "2016-03-16T12:11:42.982802+02:00", 
+    "dateModified": "2016-03-16T14:11:59.725800+02:00", 
     "mode": "test", 
     "title_en": "[TESTING] Cases with state awards", 
-    "id": "c77c8d19fbc74b4fb725c6b548e78789", 
+    "id": "f6c9adf9f5564e07b9b76774cbc1b17f", 
     "features": [
       {
         "code": "OCDS-123454-AIR-INTAKE", 
@@ -215,7 +215,7 @@ Location: http://api-sandbox.openprocurement.org/api/2.0/tenders/c77c8d19fbc74b4
           }
         ], 
         "title_en": "Air Intake", 
-        "relatedItem": "454560203de04edeb7fe5c99f04bd176", 
+        "relatedItem": "9e5bebd1a7e94157a1bc9e89f6a0fb5f", 
         "featureOf": "item"
       }, 
       {

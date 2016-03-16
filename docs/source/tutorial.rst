@@ -241,6 +241,23 @@ By default contract value is set based on the award, but there is a possibility 
 
 `200 OK` response was returned. The value was modified successfully.
 
+Set contract signature date
+---------------------------
+
+There is a possibility to set custom contract signature date. You can insert appropriate date into the `dateSigned` field.
+If this date is not set, it will be auto-generated on the date of contract registration.
+
+.. include:: tutorial/tender-contract-sign-date.http
+   :code:
+
+Set contract validity period
+----------------------------
+
+Setting contract validity period is optional, but if it is needed, you can set appropriate `startDate` and `endDate`.
+
+.. include:: tutorial/tender-contract-period.http
+   :code:
+
 Uploading contract documentation
 --------------------------------
 
@@ -266,23 +283,6 @@ We can add another contract document:
 Let's see the list of all added contract documents:
 
 .. include:: tutorial/tender-contract-get-documents-again.http
-   :code:
-
-Set contract signature date
----------------------------
-
-There is a possibility to set custom contract signature date. You can insert appropriate date into the `dateSigned` field.
-If this date is not set, it will be auto-generated on the date of contract registration.
-
-.. include:: tutorial/tender-contract-sign-date.http
-   :code:
-
-Set contract validity period
-----------------------------
-
-Setting contract validity period is optional, but if it is needed, you can set appropriate `startDate` and `endDate`.
-
-.. include:: tutorial/tender-contract-period.http
    :code:
 
 Contract registration

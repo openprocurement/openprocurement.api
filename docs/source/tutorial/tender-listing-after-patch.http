@@ -7,18 +7,18 @@ Content-Type: application/json; charset=UTF-8
 
 {
   "next_page": {
-    "path": "/api/2.0/tenders?offset=2016-03-16T12%3A11%3A43.504117%2B02%3A00", 
-    "uri": "http://api-sandbox.openprocurement.org/api/2.0/tenders?offset=2016-03-16T12%3A11%3A43.504117%2B02%3A00", 
-    "offset": "2016-03-16T12:11:43.504117+02:00"
+    "path": "/api/2.0/tenders?offset=2016-03-16T14%3A12%3A00.357511%2B02%3A00", 
+    "uri": "http://api-sandbox.openprocurement.org/api/2.0/tenders?offset=2016-03-16T14%3A12%3A00.357511%2B02%3A00", 
+    "offset": "2016-03-16T14:12:00.357511+02:00"
   }, 
   "data": [
     {
-      "id": "1ecd5c6b1b2b4bfeb4d98fc27b078bce", 
-      "dateModified": "2016-03-16T12:11:43.275873+02:00"
+      "id": "a30a5d38eeec49c5859de2691ef97b68", 
+      "dateModified": "2016-03-16T14:12:00.092082+02:00"
     }, 
     {
-      "id": "befb9d3f7d284391a71619c9f5681d04", 
-      "dateModified": "2016-03-16T12:11:43.504117+02:00"
+      "id": "3bbde406592c4c82b392442cc7affbbc", 
+      "dateModified": "2016-03-16T14:12:00.357511+02:00"
     }
   ]
 }
