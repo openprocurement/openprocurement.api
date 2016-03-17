@@ -83,12 +83,3 @@ msgstr "Ось приклад, де токен передається як ря�
 msgid "You can pass access token in the following ways:"
 msgstr "Ви можете передати токен доступу такими способами:"
 
-#~ msgid "You can pass access token in following ways:"
-#~ msgstr "Ви можете передати токен доступу такими способами:"
-
-#~ msgid ""
-#~ "You can see the `access` with `token` in response.  Its value can be used "
-#~ "to modify objects further under \"Owner role\":"
-#~ msgstr ""
-#~ "У відповіді є  `access` з `token`. Це значення можна використати для "
-#~ "модифікації об’єктів у \"ролі Власника\":"

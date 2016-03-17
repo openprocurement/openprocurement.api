@@ -45,5 +45,3 @@ msgstr ":ref:`genindex`"
 msgid ":ref:`search`"
 msgstr ":ref:`search`"
 
-#~ msgid ":ref:`modindex`"
-#~ msgstr ":ref:`modindex`"
