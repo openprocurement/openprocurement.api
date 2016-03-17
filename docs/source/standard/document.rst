@@ -19,7 +19,7 @@ Schema
     Possible values for :ref:`tender`
     
 
-    * `notice` - **Tender notice**
+    * `tenderNotice` - **Tender notice**
       
       The formal notice that gives details of a tender. This may be a link to a downloadable document, to a web page, or to an official gazette in which the notice is contained.
     
@@ -61,7 +61,7 @@ Schema
     Possible values for :ref:`award`
     
     
-    * `notice` - **Award Notice**
+    * `awardNotice` - **Award Notice**
     
       The formal notice that gives details of the contract award. This may be a link to a downloadable document, to a web page, or to an official gazette in which the notice is contained.
     
@@ -77,7 +77,7 @@ Schema
     Possible values for :ref:`contract`
     
     
-    * `notice` - **Contract notice**
+    * `contractNotice` - **Contract notice**
     
       The formal notice that gives details of a contract being signed and valid to start implementation. This may be a link to a downloadable document, to a web page, or to an official gazette in which the notice is contained.
     
