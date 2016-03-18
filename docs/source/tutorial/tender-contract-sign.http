@@ -1,4 +1,4 @@
-PATCH /api/2.0/tenders/1abe14ce81d9405ea40ecbe2929df9b5/contracts/c268919b4cc943b9928b439de1bbeb43?acc_token=dda4e13a0cc1461dac422e5e5842ff95 HTTP/1.0
+PATCH /api/2.0/tenders/8c1933ccbb7845e5889fed56ce841de2/contracts/5f2e55566e85412197b9b07e78533edf?acc_token=e61a5d68d10346578c28acd0bc56a332 HTTP/1.0
 Authorization: Basic YnJva2VyOg==
 Content-Length: 30
 Content-Type: application/json
@@ -20,21 +20,21 @@ Content-Type: application/json; charset=UTF-8
     "documents": [
       {
         "title": "contract_first_document.doc", 
-        "url": "http://api-sandbox.openprocurement.org/api/2.0/tenders/1abe14ce81d9405ea40ecbe2929df9b5/contracts/c268919b4cc943b9928b439de1bbeb43/documents/07de74341e624978bab9c94bedccf543?download=3661178d05904c1b9adf6084dd12abf6", 
+        "url": "http://api-sandbox.openprocurement.org/api/2.0/tenders/8c1933ccbb7845e5889fed56ce841de2/contracts/5f2e55566e85412197b9b07e78533edf/documents/59af71fc90484709883a0e22895aff29?download=51c0e0d89f7e46a887dc7f3a54f34c14", 
         "format": "application/msword", 
         "documentOf": "tender", 
-        "datePublished": "2016-03-16T17:54:34.084440+02:00", 
-        "id": "07de74341e624978bab9c94bedccf543", 
-        "dateModified": "2016-03-16T17:54:34.084478+02:00"
+        "datePublished": "2016-03-18T18:43:41.436116+02:00", 
+        "id": "59af71fc90484709883a0e22895aff29", 
+        "dateModified": "2016-03-18T18:43:41.436166+02:00"
       }, 
       {
         "title": "contract_second_document.doc", 
-        "url": "http://api-sandbox.openprocurement.org/api/2.0/tenders/1abe14ce81d9405ea40ecbe2929df9b5/contracts/c268919b4cc943b9928b439de1bbeb43/documents/e17997a43a0d4c108dd5750feac99442?download=775e846ddf5041298adb199c21d8ea1b", 
+        "url": "http://api-sandbox.openprocurement.org/api/2.0/tenders/8c1933ccbb7845e5889fed56ce841de2/contracts/5f2e55566e85412197b9b07e78533edf/documents/8cbb3554d1e24e32bd2983455977150c?download=cdbb53b7350f4f6587e5b84b3ee95a2d", 
         "format": "application/msword", 
         "documentOf": "tender", 
-        "datePublished": "2016-03-16T17:54:34.389372+02:00", 
-        "id": "e17997a43a0d4c108dd5750feac99442", 
-        "dateModified": "2016-03-16T17:54:34.389410+02:00"
+        "datePublished": "2016-03-18T18:43:41.693775+02:00", 
+        "id": "8cbb3554d1e24e32bd2983455977150c", 
+        "dateModified": "2016-03-18T18:43:41.693816+02:00"
       }
     ], 
     "items": [
@@ -52,7 +52,18 @@ Content-Type: application/json; charset=UTF-8
             "description": "папір і картон гофровані, паперова й картонна тара"
           }
         ], 
-        "id": "e39cfbf1e3d148b58d45b4399ae8d417", 
+        "deliveryAddress": {
+          "postalCode": "79000", 
+          "countryName": "Україна", 
+          "streetAddress": "вул. Банкова 1", 
+          "region": "м. Київ", 
+          "locality": "м. Київ"
+        }, 
+        "deliveryDate": {
+          "startDate": "2016-03-20T18:43:21.372874+02:00", 
+          "endDate": "2016-03-23T18:43:21.372874+02:00"
+        }, 
+        "id": "f18c0e5b55d64c32887a34b13a32cd5b", 
         "unit": {
           "code": "44617100-9", 
           "name": "item"
@@ -82,19 +93,20 @@ Content-Type: application/json; charset=UTF-8
         }
       }
     ], 
+    "contractNumber": "contract #13111", 
     "period": {
-      "startDate": "2016-03-16T17:54:08.937285+02:00", 
-      "endDate": "2017-03-16T17:54:08.937285+02:00"
+      "startDate": "2016-03-18T18:43:21.375716+02:00", 
+      "endDate": "2017-03-18T18:43:21.375716+02:00"
     }, 
     "value": {
       "currency": "UAH", 
       "amount": 238.0, 
       "valueAddedTaxIncluded": true
     }, 
-    "dateSigned": "2016-03-16T17:54:33.473210+02:00", 
-    "awardID": "412949e81bf44c1db34941d4cf9ed268", 
-    "id": "c268919b4cc943b9928b439de1bbeb43", 
-    "contractID": "UA-2016-03-16-000001-1"
+    "dateSigned": "2016-03-18T18:43:40.904886+02:00", 
+    "awardID": "90187ae297674366ab24ff3b1ceaec83", 
+    "id": "5f2e55566e85412197b9b07e78533edf", 
+    "contractID": "UA-2016-03-18-000001-1"
   }
 }
 

@@ -1,4 +1,4 @@
-PATCH /api/2.0/tenders/1abe14ce81d9405ea40ecbe2929df9b5/contracts/c268919b4cc943b9928b439de1bbeb43?acc_token=dda4e13a0cc1461dac422e5e5842ff95 HTTP/1.0
+PATCH /api/2.0/tenders/8c1933ccbb7845e5889fed56ce841de2/contracts/5f2e55566e85412197b9b07e78533edf?acc_token=e61a5d68d10346578c28acd0bc56a332 HTTP/1.0
 Authorization: Basic YnJva2VyOg==
 Content-Length: 106
 Content-Type: application/json
@@ -7,8 +7,8 @@ Host: api-sandbox.openprocurement.org
 {
   "data": {
     "period": {
-      "startDate": "2016-03-16T17:54:08.937285", 
-      "endDate": "2017-03-16T17:54:08.937285"
+      "startDate": "2016-03-18T18:43:21.375716", 
+      "endDate": "2017-03-18T18:43:21.375716"
     }
   }
 }
@@ -35,7 +35,18 @@ Content-Type: application/json; charset=UTF-8
             "description": "папір і картон гофровані, паперова й картонна тара"
           }
         ], 
-        "id": "e39cfbf1e3d148b58d45b4399ae8d417", 
+        "deliveryAddress": {
+          "postalCode": "79000", 
+          "countryName": "Україна", 
+          "streetAddress": "вул. Банкова 1", 
+          "region": "м. Київ", 
+          "locality": "м. Київ"
+        }, 
+        "deliveryDate": {
+          "startDate": "2016-03-20T18:43:21.372874+02:00", 
+          "endDate": "2016-03-23T18:43:21.372874+02:00"
+        }, 
+        "id": "f18c0e5b55d64c32887a34b13a32cd5b", 
         "unit": {
           "code": "44617100-9", 
           "name": "item"
@@ -65,19 +76,20 @@ Content-Type: application/json; charset=UTF-8
         }
       }
     ], 
+    "contractNumber": "contract #13111", 
     "period": {
-      "startDate": "2016-03-16T17:54:08.937285+02:00", 
-      "endDate": "2017-03-16T17:54:08.937285+02:00"
+      "startDate": "2016-03-18T18:43:21.375716+02:00", 
+      "endDate": "2017-03-18T18:43:21.375716+02:00"
     }, 
-    "dateSigned": "2016-03-16T17:54:33.473210+02:00", 
     "value": {
       "currency": "UAH", 
       "amount": 238.0, 
       "valueAddedTaxIncluded": true
     }, 
-    "awardID": "412949e81bf44c1db34941d4cf9ed268", 
-    "id": "c268919b4cc943b9928b439de1bbeb43", 
-    "contractID": "UA-2016-03-16-000001-1"
+    "dateSigned": "2016-03-18T18:43:40.904886+02:00", 
+    "awardID": "90187ae297674366ab24ff3b1ceaec83", 
+    "id": "5f2e55566e85412197b9b07e78533edf", 
+    "contractID": "UA-2016-03-18-000001-1"
   }
 }
 

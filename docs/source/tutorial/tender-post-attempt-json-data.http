@@ -1,13 +1,13 @@
 POST /api/2.0/tenders?opt_pretty=1 HTTP/1.0
 Authorization: Basic YnJva2VyOg==
-Content-Length: 1942
+Content-Length: 2328
 Content-Type: application/json
 Host: api-sandbox.openprocurement.org
 
 {
   "data": {
     "tenderPeriod": {
-      "endDate": "2016-03-30T17:54:08.916824"
+      "endDate": "2016-04-01T18:43:21.372874"
     }, 
     "title": "футляри до державних нагород", 
     "minimalStep": {
@@ -15,7 +15,7 @@ Host: api-sandbox.openprocurement.org
       "amount": 35
     }, 
     "enquiryPeriod": {
-      "endDate": "2016-03-23T17:54:08.916824"
+      "endDate": "2016-03-25T18:43:21.372874"
     }, 
     "procurementMethodType": "belowThreshold", 
     "value": {
@@ -43,6 +43,7 @@ Host: api-sandbox.openprocurement.org
     }, 
     "items": [
       {
+        "description": "футляри до державних нагород", 
         "classification": {
           "scheme": "CPV", 
           "id": "44617100-9", 
@@ -55,7 +56,17 @@ Host: api-sandbox.openprocurement.org
             "description": "папір і картон гофровані, паперова й картонна тара"
           }
         ], 
-        "description": "футляри до державних нагород", 
+        "deliveryAddress": {
+          "countryName": "Україна", 
+          "postalCode": "79000", 
+          "region": "м. Київ", 
+          "streetAddress": "вул. Банкова 1", 
+          "locality": "м. Київ"
+        }, 
+        "deliveryDate": {
+          "startDate": "2016-03-20T18:43:21.372874", 
+          "endDate": "2016-03-23T18:43:21.372874"
+        }, 
         "unit": {
           "code": "44617100-9", 
           "name": "item"
@@ -69,19 +80,19 @@ Host: api-sandbox.openprocurement.org
 
 201 Created
 Content-Type: application/json; charset=UTF-8
-Location: http://api-sandbox.openprocurement.org/api/2.0/tenders/1abe14ce81d9405ea40ecbe2929df9b5
+Location: http://api-sandbox.openprocurement.org/api/2.0/tenders/8c1933ccbb7845e5889fed56ce841de2
 
 {
   "access": {
-    "token": "dda4e13a0cc1461dac422e5e5842ff95"
+    "token": "e61a5d68d10346578c28acd0bc56a332"
   }, 
   "data": {
     "procurementMethod": "open", 
     "status": "active.enquiries", 
-    "tenderID": "UA-2016-03-16-000001", 
+    "tenderID": "UA-2016-03-18-000001", 
     "tenderPeriod": {
-      "startDate": "2016-03-23T17:54:08.916824+02:00", 
-      "endDate": "2016-03-30T17:54:08.916824+03:00"
+      "startDate": "2016-03-25T18:43:21.372874+02:00", 
+      "endDate": "2016-04-01T18:43:21.372874+03:00"
     }, 
     "title": "футляри до державних нагород", 
     "minimalStep": {
@@ -104,7 +115,18 @@ Location: http://api-sandbox.openprocurement.org/api/2.0/tenders/1abe14ce81d9405
             "description": "папір і картон гофровані, паперова й картонна тара"
           }
         ], 
-        "id": "e39cfbf1e3d148b58d45b4399ae8d417", 
+        "deliveryAddress": {
+          "postalCode": "79000", 
+          "countryName": "Україна", 
+          "streetAddress": "вул. Банкова 1", 
+          "region": "м. Київ", 
+          "locality": "м. Київ"
+        }, 
+        "deliveryDate": {
+          "startDate": "2016-03-20T18:43:21.372874+02:00", 
+          "endDate": "2016-03-23T18:43:21.372874+02:00"
+        }, 
+        "id": "f18c0e5b55d64c32887a34b13a32cd5b", 
         "unit": {
           "code": "44617100-9", 
           "name": "item"
@@ -119,7 +141,7 @@ Location: http://api-sandbox.openprocurement.org/api/2.0/tenders/1abe14ce81d9405
       "valueAddedTaxIncluded": true
     }, 
     "submissionMethod": "electronicAuction", 
-    "next_check": "2016-03-23T17:54:08.916824+02:00", 
+    "next_check": "2016-03-25T18:43:21.372874+02:00", 
     "procuringEntity": {
       "contactPoint": {
         "name": "Державне управління справами", 
@@ -140,12 +162,12 @@ Location: http://api-sandbox.openprocurement.org/api/2.0/tenders/1abe14ce81d9405
       }
     }, 
     "enquiryPeriod": {
-      "startDate": "2016-03-16T17:54:27.604995+02:00", 
-      "endDate": "2016-03-23T17:54:08.916824+02:00"
+      "startDate": "2016-03-18T18:43:36.634052+02:00", 
+      "endDate": "2016-03-25T18:43:21.372874+02:00"
     }, 
     "owner": "broker", 
-    "dateModified": "2016-03-16T17:54:27.612824+02:00", 
-    "id": "1abe14ce81d9405ea40ecbe2929df9b5", 
+    "dateModified": "2016-03-18T18:43:36.637485+02:00", 
+    "id": "8c1933ccbb7845e5889fed56ce841de2", 
     "awardCriteria": "lowestCost"
   }
 }

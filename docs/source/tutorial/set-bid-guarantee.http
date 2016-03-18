@@ -1,4 +1,4 @@
-PATCH /api/2.0/tenders/1abe14ce81d9405ea40ecbe2929df9b5/bids/22abe99d4c6845f38ef2e7c916ffeb60?acc_token=cad45d550ed5439d87d99259a801da6a HTTP/1.0
+PATCH /api/2.0/tenders/8c1933ccbb7845e5889fed56ce841de2/bids/d4e804fca19d49f4988a07c36acef918?acc_token=d4bcea3868564db086658b2763ef2e5b HTTP/1.0
 Authorization: Basic YnJva2VyOg==
 Content-Length: 57
 Content-Type: application/json
@@ -19,7 +19,7 @@ Content-Type: application/json; charset=UTF-8
 
 {
   "data": {
-    "date": "2016-03-16T17:54:30.639499+02:00", 
+    "date": "2016-03-18T18:43:38.723546+02:00", 
     "tenderers": [
       {
         "contactPoint": {
@@ -42,7 +42,7 @@ Content-Type: application/json; charset=UTF-8
         }
       }
     ], 
-    "id": "22abe99d4c6845f38ef2e7c916ffeb60", 
+    "id": "d4e804fca19d49f4988a07c36acef918", 
     "value": {
       "currency": "UAH", 
       "amount": 500.0, 
