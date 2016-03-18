@@ -37,11 +37,6 @@ Schema
     * `currency` should either be absent or match `Tender.value.currency`
     * `valueAddedTaxIncluded` should either be absent or match `Tender.value.valueAddedTaxIncluded`
 
-:guarantee:
-    :ref:`Guarantee`
-
-    Bid guarantee
-
 :documents:
     List of :ref:`Document` objects
 
