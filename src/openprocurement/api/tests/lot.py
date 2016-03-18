@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 import unittest
+from copy import deepcopy
 from datetime import timedelta
 
 from openprocurement.api.models import get_now
@@ -131,6 +132,17 @@ class TenderLotResourceTest(BaseTenderWebTest):
         self.assertEqual(lot['description'], 'lot description')
         self.assertIn('id', lot)
         self.assertIn(lot['id'], response.headers['Location'])
+        self.assertNotIn('guarantee', lot)
+
+        lot2 = deepcopy(test_lots[0])
+        lot2['guarantee'] = {"amount": 100500, "currency": "USD"}
+        response = self.app.post_json('/tenders/{}/lots'.format(self.tender_id), {'data': lot2})
+        self.assertEqual(response.status, '201 Created')
+        self.assertEqual(response.content_type, 'application/json')
+        data = response.json['data']
+        self.assertIn('guarantee', data)
+        self.assertEqual(data['guarantee']['amount'], 100500)
+        self.assertEqual(data['guarantee']['currency'], "USD")
 
         response = self.app.post_json('/tenders/{}/lots'.format(self.tender_id), {'data': lot}, status=422)
         self.assertEqual(response.status, '422 Unprocessable Entity')
@@ -157,6 +169,16 @@ class TenderLotResourceTest(BaseTenderWebTest):
         self.assertEqual(response.status, '200 OK')
         self.assertEqual(response.content_type, 'application/json')
         self.assertEqual(response.json['data']["title"], "new title")
+
+        response = self.app.patch_json('/tenders/{}/lots/{}'.format(self.tender_id, lot['id']), {"data": {"guarantee": {"amount": 12}}})
+        self.assertEqual(response.status, '200 OK')
+        self.assertIn('guarantee', response.json['data'])
+        self.assertEqual(response.json['data']['guarantee']['amount'], 12)
+        self.assertEqual(response.json['data']['guarantee']['currency'], 'UAH')
+
+        response = self.app.patch_json('/tenders/{}/lots/{}'.format(self.tender_id, lot['id']), {"data": {"guarantee": {"currency": "USD"}}})
+        self.assertEqual(response.status, '200 OK')
+        self.assertEqual(response.json['data']['guarantee']['currency'], 'USD')
 
         response = self.app.patch_json('/tenders/{}/lots/some_id'.format(self.tender_id), {"data": {"title": "other title"}}, status=404)
         self.assertEqual(response.status, '404 Not Found')
