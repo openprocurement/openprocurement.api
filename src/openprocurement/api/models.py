@@ -355,7 +355,7 @@ class Document(Model):
         'debarments', 'evaluationReports', 'winningBid', 'complaints',
         'contractSigned', 'contractArrangements', 'contractSchedule',
         'contractAnnexe', 'contractGuarantees', 'subContract',
-        'eligibilityCriteria',
+        'eligibilityCriteria', 'contractProforma', 'commercialProposal',
     ])
     title = StringType()  # A title of the document.
     title_en = StringType()
@@ -775,6 +775,7 @@ class Contract(Model):
     id = MD5Type(required=True, default=lambda: uuid4().hex)
     awardID = StringType(required=True)
     contractID = StringType()
+    contractNumber = StringType()
     title = StringType()  # Contract title
     title_en = StringType()
     title_ru = StringType()

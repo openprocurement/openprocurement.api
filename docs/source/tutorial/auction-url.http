@@ -1,4 +1,4 @@
-GET /api/0.12/tenders/86c2e9f4706041e2abbf98d6662d3c66 HTTP/1.0
+GET /api/0.12/tenders/ce536c5f46d543ec81ffa86ce4c77c8b HTTP/1.0
 Authorization: Basic YnJva2VyOg==
 Host: api-sandbox.openprocurement.org
 
@@ -9,26 +9,26 @@ Content-Type: application/json; charset=UTF-8
 {
   "data": {
     "procurementMethod": "open", 
-    "auctionUrl": "http://auction-sandbox.openprocurement.org/tenders/86c2e9f4706041e2abbf98d6662d3c66", 
+    "auctionUrl": "http://auction-sandbox.openprocurement.org/tenders/ce536c5f46d543ec81ffa86ce4c77c8b", 
     "enquiryPeriod": {
-      "startDate": "2016-03-04T15:00:14.567351+02:00", 
-      "endDate": "2016-03-11T15:00:14.567351+02:00"
+      "startDate": "2016-03-04T18:47:47.136678+02:00", 
+      "endDate": "2016-03-11T18:47:47.136678+02:00"
     }, 
     "submissionMethod": "electronicAuction", 
-    "next_check": "2016-03-18T15:36:14.567351+02:00", 
+    "next_check": "2016-03-18T19:23:47.136678+02:00", 
     "awardCriteria": "lowestCost", 
     "questions": [
       {
         "description": "Просимо додати таблицю потрібної калорійності харчування", 
         "title": "Калорійність", 
-        "date": "2016-03-18T15:00:35.248642+02:00", 
+        "date": "2016-03-18T18:48:03.398193+02:00", 
         "answer": "Таблицю додано в файлі \"Kalorijnist.xslx\"", 
-        "id": "14215009271842b58ea0d85af082b6f4", 
+        "id": "241f4ab8df634f23a11f61fe2074a78f", 
         "questionOf": "tender"
       }
     ], 
     "owner": "broker", 
-    "id": "86c2e9f4706041e2abbf98d6662d3c66", 
+    "id": "ce536c5f46d543ec81ffa86ce4c77c8b", 
     "guarantee": {
       "currency": "USD", 
       "amount": 8.0
@@ -37,44 +37,44 @@ Content-Type: application/json; charset=UTF-8
       {
         "description": "document description modified", 
         "title": "Notice.pdf", 
-        "url": "http://api-sandbox.openprocurement.org/api/0.12/tenders/86c2e9f4706041e2abbf98d6662d3c66/documents/4ca63754a77d47aa9b83192a1effe848?download=074f14ad430f4b3bb13cc0a69a77b9ed", 
+        "url": "http://api-sandbox.openprocurement.org/api/0.12/tenders/ce536c5f46d543ec81ffa86ce4c77c8b/documents/caeb63b8bee24a3cbf4d7f8bbbe7352b?download=f7a875fc152744c7a5e9124a400f688a", 
         "format": "application/pdf", 
         "documentOf": "tender", 
-        "datePublished": "2016-03-18T15:00:34.479531+02:00", 
+        "datePublished": "2016-03-18T18:48:02.645660+02:00", 
         "documentType": "technicalSpecifications", 
-        "id": "4ca63754a77d47aa9b83192a1effe848", 
-        "dateModified": "2016-03-18T15:00:34.479582+02:00"
+        "id": "caeb63b8bee24a3cbf4d7f8bbbe7352b", 
+        "dateModified": "2016-03-18T18:48:02.645712+02:00"
       }, 
       {
         "title": "AwardCriteria.pdf", 
-        "url": "http://api-sandbox.openprocurement.org/api/0.12/tenders/86c2e9f4706041e2abbf98d6662d3c66/documents/9d860e9a46574f0ab0dac8cbdf6dd452?download=975b736cb1b0423e8cf8de5f62c47e8d", 
+        "url": "http://api-sandbox.openprocurement.org/api/0.12/tenders/ce536c5f46d543ec81ffa86ce4c77c8b/documents/670a093aa19d418598c9b9d04ec5b034?download=f35b159bf3a04c41896382cdf7103ca3", 
         "format": "application/pdf", 
         "documentOf": "tender", 
-        "datePublished": "2016-03-18T15:00:34.890876+02:00", 
-        "id": "9d860e9a46574f0ab0dac8cbdf6dd452", 
-        "dateModified": "2016-03-18T15:00:34.890912+02:00"
+        "datePublished": "2016-03-18T18:48:03.064872+02:00", 
+        "id": "670a093aa19d418598c9b9d04ec5b034", 
+        "dateModified": "2016-03-18T18:48:03.064908+02:00"
       }, 
       {
         "title": "AwardCriteria-2.pdf", 
-        "url": "http://api-sandbox.openprocurement.org/api/0.12/tenders/86c2e9f4706041e2abbf98d6662d3c66/documents/9d860e9a46574f0ab0dac8cbdf6dd452?download=118f10479a774c19a98c8f5c7287fba1", 
+        "url": "http://api-sandbox.openprocurement.org/api/0.12/tenders/ce536c5f46d543ec81ffa86ce4c77c8b/documents/670a093aa19d418598c9b9d04ec5b034?download=6cd6ebcdea1f459c86913e39953e4b3d", 
         "format": "application/pdf", 
         "documentOf": "tender", 
-        "datePublished": "2016-03-18T15:00:34.890876+02:00", 
-        "id": "9d860e9a46574f0ab0dac8cbdf6dd452", 
-        "dateModified": "2016-03-18T15:00:35.084641+02:00"
+        "datePublished": "2016-03-18T18:48:03.064872+02:00", 
+        "id": "670a093aa19d418598c9b9d04ec5b034", 
+        "dateModified": "2016-03-18T18:48:03.235028+02:00"
       }
     ], 
     "title": "футляри до державних нагород", 
     "tenderID": "UA-2016-03-18-000001", 
-    "dateModified": "2016-03-18T15:00:36.534079+02:00", 
+    "dateModified": "2016-03-18T18:48:04.626732+02:00", 
     "status": "active.auction", 
     "tenderPeriod": {
-      "startDate": "2016-03-11T15:00:14.567351+02:00", 
-      "endDate": "2016-03-18T15:00:14.567351+02:00"
+      "startDate": "2016-03-11T18:47:47.136678+02:00", 
+      "endDate": "2016-03-18T18:47:47.136678+02:00"
     }, 
     "auctionPeriod": {
-      "startDate": "2016-03-18T15:00:14.567351+02:00", 
-      "shouldStartAfter": "2016-03-18T15:00:14.567351+02:00"
+      "startDate": "2016-03-18T18:47:47.136678+02:00", 
+      "shouldStartAfter": "2016-03-18T18:47:47.136678+02:00"
     }, 
     "procurementMethodType": "belowThreshold", 
     "minimalStep": {
@@ -97,7 +97,18 @@ Content-Type: application/json; charset=UTF-8
             "description": "папір і картон гофровані, паперова й картонна тара"
           }
         ], 
-        "id": "75b294c8c61a4d42a2bb160e6b2915ea", 
+        "deliveryAddress": {
+          "postalCode": "79000", 
+          "countryName": "Україна", 
+          "streetAddress": "вул. Банкова 1", 
+          "region": "м. Київ", 
+          "locality": "м. Київ"
+        }, 
+        "deliveryDate": {
+          "startDate": "2016-03-20T18:47:47.136678+02:00", 
+          "endDate": "2016-03-23T18:47:47.136678+02:00"
+        }, 
+        "id": "c6c6e8ed4b1542e4bf13d3f98ec5ab59", 
         "unit": {
           "code": "44617100-9", 
           "name": "item"

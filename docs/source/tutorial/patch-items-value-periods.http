@@ -1,4 +1,4 @@
-PATCH /api/0.12/tenders/86c2e9f4706041e2abbf98d6662d3c66?acc_token=a065886580d7451c9a6bcb13714c0a12 HTTP/1.0
+PATCH /api/0.12/tenders/ce536c5f46d543ec81ffa86ce4c77c8b?acc_token=945a452ee1b442bdaf665b09d0cb4cce HTTP/1.0
 Authorization: Basic YnJva2VyOg==
 Content-Length: 75
 Content-Type: application/json
@@ -7,7 +7,7 @@ Host: api-sandbox.openprocurement.org
 {
   "data": {
     "tenderPeriod": {
-      "endDate": "2016-04-02T15:00:44.131290+02:00"
+      "endDate": "2016-04-02T18:48:12.309829+02:00"
     }
   }
 }
@@ -22,8 +22,8 @@ Content-Type: application/json; charset=UTF-8
     "status": "active.enquiries", 
     "tenderID": "UA-2016-03-18-000001", 
     "tenderPeriod": {
-      "startDate": "2016-03-25T15:00:14.567351+02:00", 
-      "endDate": "2016-04-02T15:00:44.131290+02:00"
+      "startDate": "2016-03-25T18:47:47.136678+02:00", 
+      "endDate": "2016-04-02T18:48:12.309829+02:00"
     }, 
     "title": "футляри до державних нагород", 
     "minimalStep": {
@@ -46,7 +46,18 @@ Content-Type: application/json; charset=UTF-8
             "description": "папір і картон гофровані, паперова й картонна тара"
           }
         ], 
-        "id": "75b294c8c61a4d42a2bb160e6b2915ea", 
+        "deliveryAddress": {
+          "postalCode": "79000", 
+          "countryName": "Україна", 
+          "streetAddress": "вул. Банкова 1", 
+          "region": "м. Київ", 
+          "locality": "м. Київ"
+        }, 
+        "deliveryDate": {
+          "startDate": "2016-03-20T18:47:47.136678+02:00", 
+          "endDate": "2016-03-23T18:47:47.136678+02:00"
+        }, 
+        "id": "c6c6e8ed4b1542e4bf13d3f98ec5ab59", 
         "unit": {
           "code": "44617100-9", 
           "name": "item"
@@ -61,7 +72,7 @@ Content-Type: application/json; charset=UTF-8
       "valueAddedTaxIncluded": true
     }, 
     "submissionMethod": "electronicAuction", 
-    "next_check": "2016-03-25T15:00:14.567351+02:00", 
+    "next_check": "2016-03-25T18:47:47.136678+02:00", 
     "procuringEntity": {
       "contactPoint": {
         "name": "Державне управління справами", 
@@ -82,12 +93,12 @@ Content-Type: application/json; charset=UTF-8
       }
     }, 
     "enquiryPeriod": {
-      "startDate": "2016-03-18T15:00:33.511873+02:00", 
-      "endDate": "2016-03-25T15:00:14.567351+02:00"
+      "startDate": "2016-03-18T18:48:01.702855+02:00", 
+      "endDate": "2016-03-25T18:47:47.136678+02:00"
     }, 
     "owner": "broker", 
-    "dateModified": "2016-03-18T15:00:34.185244+02:00", 
-    "id": "86c2e9f4706041e2abbf98d6662d3c66", 
+    "dateModified": "2016-03-18T18:48:02.374981+02:00", 
+    "id": "ce536c5f46d543ec81ffa86ce4c77c8b", 
     "awardCriteria": "lowestCost"
   }
 }

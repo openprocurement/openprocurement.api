@@ -1,4 +1,4 @@
-PATCH /api/0.12/tenders/86c2e9f4706041e2abbf98d6662d3c66/contracts/0ff05393466f4690afad476f082f84e6?acc_token=a065886580d7451c9a6bcb13714c0a12 HTTP/1.0
+PATCH /api/0.12/tenders/ce536c5f46d543ec81ffa86ce4c77c8b/contracts/1359720ade994a56b488a92f2fa577b2?acc_token=945a452ee1b442bdaf665b09d0cb4cce HTTP/1.0
 Authorization: Basic YnJva2VyOg==
 Content-Length: 60
 Content-Type: application/json
@@ -6,7 +6,7 @@ Host: api-sandbox.openprocurement.org
 
 {
   "data": {
-    "dateSigned": "2016-03-18T15:00:37.760242+02:00"
+    "dateSigned": "2016-03-18T18:48:05.762961+02:00"
   }
 }
 
@@ -32,7 +32,18 @@ Content-Type: application/json; charset=UTF-8
             "description": "папір і картон гофровані, паперова й картонна тара"
           }
         ], 
-        "id": "75b294c8c61a4d42a2bb160e6b2915ea", 
+        "deliveryAddress": {
+          "postalCode": "79000", 
+          "countryName": "Україна", 
+          "streetAddress": "вул. Банкова 1", 
+          "region": "м. Київ", 
+          "locality": "м. Київ"
+        }, 
+        "deliveryDate": {
+          "startDate": "2016-03-20T18:47:47.136678+02:00", 
+          "endDate": "2016-03-23T18:47:47.136678+02:00"
+        }, 
+        "id": "c6c6e8ed4b1542e4bf13d3f98ec5ab59", 
         "unit": {
           "code": "44617100-9", 
           "name": "item"
@@ -62,14 +73,15 @@ Content-Type: application/json; charset=UTF-8
         }
       }
     ], 
+    "contractNumber": "contract #13111", 
+    "dateSigned": "2016-03-18T18:48:05.762961+02:00", 
     "value": {
       "currency": "UAH", 
       "amount": 238.0, 
       "valueAddedTaxIncluded": true
     }, 
-    "dateSigned": "2016-03-18T15:00:37.760242+02:00", 
-    "awardID": "5906770a3b2f41a0b6c7d15134095ebd", 
-    "id": "0ff05393466f4690afad476f082f84e6", 
+    "awardID": "8481d7eb01694c25b18658036c236c5d", 
+    "id": "1359720ade994a56b488a92f2fa577b2", 
     "contractID": "UA-2016-03-18-000001-1"
   }
 }

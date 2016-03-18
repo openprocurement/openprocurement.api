@@ -25,6 +25,9 @@ Schema
 :contractID:
        string, auto-generated, read-only
 
+:contractNumber:
+       string
+
 :title:
     string, required
 
