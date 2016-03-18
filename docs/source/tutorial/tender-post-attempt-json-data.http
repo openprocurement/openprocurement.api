@@ -1,4 +1,4 @@
-POST /api/2.0/tenders?opt_pretty=1 HTTP/1.0
+POST /api/0.12/tenders?opt_pretty=1 HTTP/1.0
 Authorization: Basic YnJva2VyOg==
 Content-Length: 1942
 Content-Type: application/json
@@ -7,7 +7,7 @@ Host: api-sandbox.openprocurement.org
 {
   "data": {
     "tenderPeriod": {
-      "endDate": "2016-03-30T17:54:08.916824"
+      "endDate": "2016-04-01T15:00:14.567351"
     }, 
     "title": "футляри до державних нагород", 
     "minimalStep": {
@@ -15,7 +15,7 @@ Host: api-sandbox.openprocurement.org
       "amount": 35
     }, 
     "enquiryPeriod": {
-      "endDate": "2016-03-23T17:54:08.916824"
+      "endDate": "2016-03-25T15:00:14.567351"
     }, 
     "procurementMethodType": "belowThreshold", 
     "value": {
@@ -69,19 +69,19 @@ Host: api-sandbox.openprocurement.org
 
 201 Created
 Content-Type: application/json; charset=UTF-8
-Location: http://api-sandbox.openprocurement.org/api/2.0/tenders/1abe14ce81d9405ea40ecbe2929df9b5
+Location: http://api-sandbox.openprocurement.org/api/0.12/tenders/86c2e9f4706041e2abbf98d6662d3c66
 
 {
   "access": {
-    "token": "dda4e13a0cc1461dac422e5e5842ff95"
+    "token": "a065886580d7451c9a6bcb13714c0a12"
   }, 
   "data": {
     "procurementMethod": "open", 
     "status": "active.enquiries", 
-    "tenderID": "UA-2016-03-16-000001", 
+    "tenderID": "UA-2016-03-18-000001", 
     "tenderPeriod": {
-      "startDate": "2016-03-23T17:54:08.916824+02:00", 
-      "endDate": "2016-03-30T17:54:08.916824+03:00"
+      "startDate": "2016-03-25T15:00:14.567351+02:00", 
+      "endDate": "2016-04-01T15:00:14.567351+03:00"
     }, 
     "title": "футляри до державних нагород", 
     "minimalStep": {
@@ -104,7 +104,7 @@ Location: http://api-sandbox.openprocurement.org/api/2.0/tenders/1abe14ce81d9405
             "description": "папір і картон гофровані, паперова й картонна тара"
           }
         ], 
-        "id": "e39cfbf1e3d148b58d45b4399ae8d417", 
+        "id": "75b294c8c61a4d42a2bb160e6b2915ea", 
         "unit": {
           "code": "44617100-9", 
           "name": "item"
@@ -119,7 +119,7 @@ Location: http://api-sandbox.openprocurement.org/api/2.0/tenders/1abe14ce81d9405
       "valueAddedTaxIncluded": true
     }, 
     "submissionMethod": "electronicAuction", 
-    "next_check": "2016-03-23T17:54:08.916824+02:00", 
+    "next_check": "2016-03-25T15:00:14.567351+02:00", 
     "procuringEntity": {
       "contactPoint": {
         "name": "Державне управління справами", 
@@ -140,12 +140,12 @@ Location: http://api-sandbox.openprocurement.org/api/2.0/tenders/1abe14ce81d9405
       }
     }, 
     "enquiryPeriod": {
-      "startDate": "2016-03-16T17:54:27.604995+02:00", 
-      "endDate": "2016-03-23T17:54:08.916824+02:00"
+      "startDate": "2016-03-18T15:00:33.511873+02:00", 
+      "endDate": "2016-03-25T15:00:14.567351+02:00"
     }, 
     "owner": "broker", 
-    "dateModified": "2016-03-16T17:54:27.612824+02:00", 
-    "id": "1abe14ce81d9405ea40ecbe2929df9b5", 
+    "dateModified": "2016-03-18T15:00:33.517885+02:00", 
+    "id": "86c2e9f4706041e2abbf98d6662d3c66", 
     "awardCriteria": "lowestCost"
   }
 }

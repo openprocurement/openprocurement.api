@@ -1,4 +1,4 @@
-PATCH /api/2.0/tenders/1abe14ce81d9405ea40ecbe2929df9b5/contracts/c268919b4cc943b9928b439de1bbeb43?acc_token=dda4e13a0cc1461dac422e5e5842ff95 HTTP/1.0
+PATCH /api/0.12/tenders/86c2e9f4706041e2abbf98d6662d3c66/contracts/0ff05393466f4690afad476f082f84e6?acc_token=a065886580d7451c9a6bcb13714c0a12 HTTP/1.0
 Authorization: Basic YnJva2VyOg==
 Content-Length: 30
 Content-Type: application/json
@@ -20,21 +20,21 @@ Content-Type: application/json; charset=UTF-8
     "documents": [
       {
         "title": "contract_first_document.doc", 
-        "url": "http://api-sandbox.openprocurement.org/api/2.0/tenders/1abe14ce81d9405ea40ecbe2929df9b5/contracts/c268919b4cc943b9928b439de1bbeb43/documents/07de74341e624978bab9c94bedccf543?download=3661178d05904c1b9adf6084dd12abf6", 
+        "url": "http://api-sandbox.openprocurement.org/api/0.12/tenders/86c2e9f4706041e2abbf98d6662d3c66/contracts/0ff05393466f4690afad476f082f84e6/documents/23582c446a0445c08fd6d31913268c9e?download=154f2719953b491fb2b311cf1aa0fabf", 
         "format": "application/msword", 
         "documentOf": "tender", 
-        "datePublished": "2016-03-16T17:54:34.084440+02:00", 
-        "id": "07de74341e624978bab9c94bedccf543", 
-        "dateModified": "2016-03-16T17:54:34.084478+02:00"
+        "datePublished": "2016-03-18T15:00:38.252166+02:00", 
+        "id": "23582c446a0445c08fd6d31913268c9e", 
+        "dateModified": "2016-03-18T15:00:38.252215+02:00"
       }, 
       {
         "title": "contract_second_document.doc", 
-        "url": "http://api-sandbox.openprocurement.org/api/2.0/tenders/1abe14ce81d9405ea40ecbe2929df9b5/contracts/c268919b4cc943b9928b439de1bbeb43/documents/e17997a43a0d4c108dd5750feac99442?download=775e846ddf5041298adb199c21d8ea1b", 
+        "url": "http://api-sandbox.openprocurement.org/api/0.12/tenders/86c2e9f4706041e2abbf98d6662d3c66/contracts/0ff05393466f4690afad476f082f84e6/documents/f5e0c079e12c448da2399a24ad97e6f8?download=dbf9cad3ae7b46e1a958349e761203ff", 
         "format": "application/msword", 
         "documentOf": "tender", 
-        "datePublished": "2016-03-16T17:54:34.389372+02:00", 
-        "id": "e17997a43a0d4c108dd5750feac99442", 
-        "dateModified": "2016-03-16T17:54:34.389410+02:00"
+        "datePublished": "2016-03-18T15:00:38.509656+02:00", 
+        "id": "f5e0c079e12c448da2399a24ad97e6f8", 
+        "dateModified": "2016-03-18T15:00:38.509694+02:00"
       }
     ], 
     "items": [
@@ -52,7 +52,7 @@ Content-Type: application/json; charset=UTF-8
             "description": "папір і картон гофровані, паперова й картонна тара"
           }
         ], 
-        "id": "e39cfbf1e3d148b58d45b4399ae8d417", 
+        "id": "75b294c8c61a4d42a2bb160e6b2915ea", 
         "unit": {
           "code": "44617100-9", 
           "name": "item"
@@ -83,18 +83,18 @@ Content-Type: application/json; charset=UTF-8
       }
     ], 
     "period": {
-      "startDate": "2016-03-16T17:54:08.937285+02:00", 
-      "endDate": "2017-03-16T17:54:08.937285+02:00"
+      "startDate": "2016-03-18T15:00:14.568898+02:00", 
+      "endDate": "2017-03-18T15:00:14.568898+02:00"
     }, 
     "value": {
       "currency": "UAH", 
       "amount": 238.0, 
       "valueAddedTaxIncluded": true
     }, 
-    "dateSigned": "2016-03-16T17:54:33.473210+02:00", 
-    "awardID": "412949e81bf44c1db34941d4cf9ed268", 
-    "id": "c268919b4cc943b9928b439de1bbeb43", 
-    "contractID": "UA-2016-03-16-000001-1"
+    "dateSigned": "2016-03-18T15:00:37.760242+02:00", 
+    "awardID": "5906770a3b2f41a0b6c7d15134095ebd", 
+    "id": "0ff05393466f4690afad476f082f84e6", 
+    "contractID": "UA-2016-03-18-000001-1"
   }
 }
 

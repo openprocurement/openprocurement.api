@@ -1,4 +1,4 @@
-GET /api/2.0/tenders HTTP/1.0
+GET /api/0.12/tenders HTTP/1.0
 Authorization: Basic YnJva2VyOg==
 Host: api-sandbox.openprocurement.org
 
@@ -8,8 +8,8 @@ Content-Type: application/json; charset=UTF-8
 
 {
   "next_page": {
-    "path": "/api/2.0/tenders?offset=", 
-    "uri": "http://api-sandbox.openprocurement.org/api/2.0/tenders?offset=", 
+    "path": "/api/0.12/tenders?offset=", 
+    "uri": "http://api-sandbox.openprocurement.org/api/0.12/tenders?offset=", 
     "offset": ""
   }, 
   "data": []
