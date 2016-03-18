@@ -509,8 +509,8 @@ class Bid(Model):
             'Administrator': Administrator_bid_role,
             'embedded': view_bid_role,
             'view': view_bid_role,
-            'create': whitelist('value', 'guarantee', 'tenderers', 'parameters', 'lotValues'),
-            'edit': whitelist('value', 'guarantee', 'tenderers', 'parameters', 'lotValues'),
+            'create': whitelist('value', 'tenderers', 'parameters', 'lotValues'),
+            'edit': whitelist('value', 'tenderers', 'parameters', 'lotValues'),
             'auction_view': whitelist('value', 'lotValues', 'id', 'date', 'parameters', 'participationUrl'),
             'auction_post': whitelist('value', 'lotValues', 'id', 'date'),
             'auction_patch': whitelist('id', 'lotValues', 'participationUrl'),
@@ -538,7 +538,6 @@ class Bid(Model):
     participationUrl = URLType()
     owner_token = StringType()
     owner = StringType()
-    guarantee = ModelType(Guarantee)
 
     __name__ = ''
 
