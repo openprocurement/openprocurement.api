@@ -95,6 +95,11 @@ Checking the listing again reflects the new modification date:
 .. include:: tutorial/tender-listing-after-patch.http
    :code:
 
+Tender owner can set bid guarantee:
+
+.. include:: tutorial/set-bid-guarantee.http
+   :code:
+
 
 .. index:: Document
 
@@ -185,11 +190,6 @@ When ``Tender.tenderingPeriod.startDate`` comes, Tender switches to `active.tend
 Bidder can register a bid:
 
 .. include:: tutorial/register-bidder.http
-   :code:
-
-Bidder can set guarantee:
-
-.. include:: tutorial/set-bid-guarantee.http
    :code:
 
 And upload proposal document:
