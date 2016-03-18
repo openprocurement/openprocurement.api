@@ -509,8 +509,8 @@ class Bid(Model):
             'Administrator': Administrator_bid_role,
             'embedded': view_bid_role,
             'view': view_bid_role,
-            'create': whitelist('value', 'guarantee', 'tenderers', 'parameters', 'lotValues'),
-            'edit': whitelist('value', 'guarantee', 'tenderers', 'parameters', 'lotValues'),
+            'create': whitelist('value', 'tenderers', 'parameters', 'lotValues'),
+            'edit': whitelist('value', 'tenderers', 'parameters', 'lotValues'),
             'auction_view': whitelist('value', 'lotValues', 'id', 'date', 'parameters', 'participationUrl'),
             'auction_post': whitelist('value', 'lotValues', 'id', 'date'),
             'auction_patch': whitelist('id', 'lotValues', 'participationUrl'),
@@ -538,7 +538,6 @@ class Bid(Model):
     participationUrl = URLType()
     owner_token = StringType()
     owner = StringType()
-    guarantee = ModelType(Guarantee)
 
     __name__ = ''
 
@@ -890,8 +889,8 @@ embedded_lot_role = (blacklist('numberOfBids') + schematics_embedded_role)
 class Lot(Model):
     class Options:
         roles = {
-            'create': whitelist('id', 'title', 'title_en', 'title_ru', 'description', 'description_en', 'description_ru', 'value', 'minimalStep'),
-            'edit': whitelist('title', 'title_en', 'title_ru', 'description', 'description_en', 'description_ru', 'value', 'minimalStep'),
+            'create': whitelist('id', 'title', 'title_en', 'title_ru', 'description', 'description_en', 'description_ru', 'value', 'guarantee', 'minimalStep'),
+            'edit': whitelist('title', 'title_en', 'title_ru', 'description', 'description_en', 'description_ru', 'value', 'guarantee', 'minimalStep'),
             'embedded': embedded_lot_role,
             'view': default_lot_role,
             'default': default_lot_role,
@@ -913,6 +912,7 @@ class Lot(Model):
     auctionPeriod = ModelType(LotAuctionPeriod, default={})
     auctionUrl = URLType()
     status = StringType(choices=['active', 'cancelled', 'unsuccessful', 'complete'], default='active')
+    guarantee = ModelType(Guarantee)
 
     @serializable
     def numberOfBids(self):
@@ -1068,6 +1068,7 @@ class Tender(SchematicsDocument, Model):
     cancellations = ListType(ModelType(Cancellation), default=list())
     features = ListType(ModelType(Feature), validators=[validate_features_uniq])
     lots = ListType(ModelType(Lot), default=list(), validators=[validate_lots_uniq])
+    guarantee = ModelType(Guarantee)
 
     _attachments = DictType(DictType(BaseType), default=dict())  # couchdb attachments
     dateModified = IsoDateTimeType()

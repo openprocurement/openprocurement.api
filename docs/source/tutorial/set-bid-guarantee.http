@@ -1,4 +1,4 @@
-PATCH /api/2.0/tenders/8c1933ccbb7845e5889fed56ce841de2/bids/d4e804fca19d49f4988a07c36acef918?acc_token=d4bcea3868564db086658b2763ef2e5b HTTP/1.0
+PATCH /api/0.12/tenders/ce536c5f46d543ec81ffa86ce4c77c8b?acc_token=945a452ee1b442bdaf665b09d0cb4cce HTTP/1.0
 Authorization: Basic YnJva2VyOg==
 Content-Length: 57
 Content-Type: application/json
@@ -19,39 +19,92 @@ Content-Type: application/json; charset=UTF-8
 
 {
   "data": {
-    "date": "2016-03-18T18:43:38.723546+02:00", 
-    "tenderers": [
+    "procurementMethod": "open", 
+    "status": "active.enquiries", 
+    "tenderID": "UA-2016-03-18-000001", 
+    "tenderPeriod": {
+      "startDate": "2016-03-25T18:47:47.136678+02:00", 
+      "endDate": "2016-04-02T18:48:12.309829+02:00"
+    }, 
+    "title": "футляри до державних нагород", 
+    "minimalStep": {
+      "currency": "UAH", 
+      "amount": 35.0, 
+      "valueAddedTaxIncluded": true
+    }, 
+    "items": [
       {
-        "contactPoint": {
-          "email": "soleksuk@gmail.com", 
-          "telephone": "+380 (432) 21-69-30", 
-          "name": "Сергій Олексюк"
+        "description": "футляри до державних нагород", 
+        "classification": {
+          "scheme": "CPV", 
+          "description": "Cartons", 
+          "id": "44617100-9"
         }, 
-        "identifier": {
-          "scheme": "UA-EDR", 
-          "id": "00137256", 
-          "uri": "http://www.sc.gov.ua/"
-        }, 
-        "name": "ДКП «Школяр»", 
-        "address": {
-          "postalCode": "21100", 
+        "additionalClassifications": [
+          {
+            "scheme": "ДКПП", 
+            "id": "17.21.1", 
+            "description": "папір і картон гофровані, паперова й картонна тара"
+          }
+        ], 
+        "deliveryAddress": {
+          "postalCode": "79000", 
           "countryName": "Україна", 
-          "streetAddress": "вул. Островського, 33", 
-          "region": "м. Вінниця", 
-          "locality": "м. Вінниця"
-        }
+          "streetAddress": "вул. Банкова 1", 
+          "region": "м. Київ", 
+          "locality": "м. Київ"
+        }, 
+        "deliveryDate": {
+          "startDate": "2016-03-20T18:47:47.136678+02:00", 
+          "endDate": "2016-03-23T18:47:47.136678+02:00"
+        }, 
+        "id": "c6c6e8ed4b1542e4bf13d3f98ec5ab59", 
+        "unit": {
+          "code": "44617100-9", 
+          "name": "item"
+        }, 
+        "quantity": 5
       }
     ], 
-    "id": "d4e804fca19d49f4988a07c36acef918", 
+    "procurementMethodType": "belowThreshold", 
     "value": {
       "currency": "UAH", 
       "amount": 500.0, 
       "valueAddedTaxIncluded": true
     }, 
+    "submissionMethod": "electronicAuction", 
+    "next_check": "2016-03-25T18:47:47.136678+02:00", 
+    "procuringEntity": {
+      "contactPoint": {
+        "name": "Державне управління справами", 
+        "telephone": "0440000000"
+      }, 
+      "identifier": {
+        "scheme": "UA-EDR", 
+        "id": "00037256", 
+        "uri": "http://www.dus.gov.ua/"
+      }, 
+      "name": "Державне управління справами", 
+      "address": {
+        "postalCode": "01220", 
+        "countryName": "Україна", 
+        "streetAddress": "вул. Банкова, 11, корпус 1", 
+        "region": "м. Київ", 
+        "locality": "м. Київ"
+      }
+    }, 
+    "enquiryPeriod": {
+      "startDate": "2016-03-18T18:48:01.702855+02:00", 
+      "endDate": "2016-03-25T18:47:47.136678+02:00"
+    }, 
+    "owner": "broker", 
+    "dateModified": "2016-03-18T18:48:02.547485+02:00", 
     "guarantee": {
       "currency": "USD", 
       "amount": 8.0
-    }
+    }, 
+    "id": "ce536c5f46d543ec81ffa86ce4c77c8b", 
+    "awardCriteria": "lowestCost"
   }
 }
 

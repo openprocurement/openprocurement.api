@@ -1,4 +1,4 @@
-GET /api/2.0/tenders/8c1933ccbb7845e5889fed56ce841de2/documents HTTP/1.0
+GET /api/0.12/tenders/ce536c5f46d543ec81ffa86ce4c77c8b/documents HTTP/1.0
 Authorization: Basic YnJva2VyOg==
 Host: api-sandbox.openprocurement.org
 
@@ -11,22 +11,22 @@ Content-Type: application/json; charset=UTF-8
     {
       "description": "document description modified", 
       "title": "Notice.pdf", 
-      "url": "http://api-sandbox.openprocurement.org/api/2.0/tenders/8c1933ccbb7845e5889fed56ce841de2/documents/6f2057d6c73f49edaff959269262caeb?download=6502da959abe4c478cbee7fecb6e8224", 
+      "url": "http://api-sandbox.openprocurement.org/api/0.12/tenders/ce536c5f46d543ec81ffa86ce4c77c8b/documents/caeb63b8bee24a3cbf4d7f8bbbe7352b?download=f7a875fc152744c7a5e9124a400f688a", 
       "format": "application/pdf", 
       "documentOf": "tender", 
-      "datePublished": "2016-03-18T18:43:37.508563+02:00", 
+      "datePublished": "2016-03-18T18:48:02.645660+02:00", 
       "documentType": "technicalSpecifications", 
-      "id": "6f2057d6c73f49edaff959269262caeb", 
-      "dateModified": "2016-03-18T18:43:37.508603+02:00"
+      "id": "caeb63b8bee24a3cbf4d7f8bbbe7352b", 
+      "dateModified": "2016-03-18T18:48:02.645712+02:00"
     }, 
     {
       "title": "AwardCriteria-2.pdf", 
-      "url": "http://api-sandbox.openprocurement.org/api/2.0/tenders/8c1933ccbb7845e5889fed56ce841de2/documents/7742e59f1ae340c4a90f55814792d565?download=48a8fcf00f89414fb2623254223e66d9", 
+      "url": "http://api-sandbox.openprocurement.org/api/0.12/tenders/ce536c5f46d543ec81ffa86ce4c77c8b/documents/670a093aa19d418598c9b9d04ec5b034?download=6cd6ebcdea1f459c86913e39953e4b3d", 
       "format": "application/pdf", 
       "documentOf": "tender", 
-      "datePublished": "2016-03-18T18:43:37.945664+02:00", 
-      "id": "7742e59f1ae340c4a90f55814792d565", 
-      "dateModified": "2016-03-18T18:43:38.127981+02:00"
+      "datePublished": "2016-03-18T18:48:03.064872+02:00", 
+      "id": "670a093aa19d418598c9b9d04ec5b034", 
+      "dateModified": "2016-03-18T18:48:03.235028+02:00"
     }
   ]
 }
