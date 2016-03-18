@@ -308,7 +308,7 @@ class Location(Model):
     elevation = BaseType()
 
 
-ADDITIONAL_CLASSIFICATIONS_SCHEMES = [u'ДКПП', u'MEDT', u'ДК003', u'ДК015', u'ДК018']
+ADDITIONAL_CLASSIFICATIONS_SCHEMES = [u'ДКПП', u'NONE', u'ДК003', u'ДК015', u'ДК018']
 
 
 def validate_dkpp(items, *args):
