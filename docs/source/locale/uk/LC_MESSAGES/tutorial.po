@@ -1,10 +1,10 @@
-# Zoriana Zaiats <sorenabell@quintagroup.com>, 2016.
+#
 msgid ""
 msgstr ""
 "Project-Id-Version: openprocurement.api 0.1\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2014-10-21 10:42+0300\n"
-"PO-Revision-Date: 2016-03-17 10:58+0200\n"
+"PO-Revision-Date: 2016-03-21 13:51+0200\n"
 "Last-Translator: Zoriana Zaiats <sorenabell@quintagroup.com>\n"
 "Language-Team: Ukrainian <info@quintagroup.com>\n"
 "MIME-Version: 1.0\n"
@@ -67,11 +67,11 @@ msgstr "Створення закупівлі"
 msgid "Modifying tender"
 msgstr "Модифікація закупівлі"
 
-#: ../../source/tutorial.rst:102
+#: ../../source/tutorial.rst:107
 msgid "Uploading documentation"
 msgstr "Завантаження документації"
 
-#: ../../source/tutorial.rst:110
+#: ../../source/tutorial.rst:115
 msgid ""
 "`201 Created` response code and `Location` header confirm document creation."
 " We can additionally query the `documents` collection API endpoint to "
@@ -81,11 +81,11 @@ msgstr ""
 "документ було створено. Додатково можна зробити запит точки входу API "
 "колекції `документів`, щоб підтвердити дію:"
 
-#: ../../source/tutorial.rst:122
+#: ../../source/tutorial.rst:127
 msgid "And again we can confirm that there are two documents uploaded."
 msgstr "І знову можна перевірити, що є два завантажених документа."
 
-#: ../../source/tutorial.rst:141
+#: ../../source/tutorial.rst:146
 msgid ""
 "In case we made an error, we can reupload the document over the older "
 "version:"
@@ -93,15 +93,15 @@ msgstr ""
 "Якщо сталась помилка, ми можемо ще раз завантажити документ поверх старої "
 "версії:"
 
-#: ../../source/tutorial.rst:146
+#: ../../source/tutorial.rst:151
 msgid "And we can see that it is overriding the original version:"
 msgstr "І ми бачимо, що вона перекриває оригінальну версію:"
 
-#: ../../source/tutorial.rst:181
+#: ../../source/tutorial.rst:186
 msgid "Registering bid"
 msgstr "Реєстрація пропозиції"
 
-#: ../../source/tutorial.rst:185
+#: ../../source/tutorial.rst:190
 msgid "Bidder can register a bid:"
 msgstr "Учасник може зареєструвати цінову пропозицію:"
 
@@ -113,15 +113,15 @@ msgstr "І завантажити документ пропозиції:"
 msgid "Confirming qualification"
 msgstr "Підтвердження кваліфікації"
 
-#: ../../source/tutorial.rst:155
+#: ../../source/tutorial.rst:160
 msgid "Enquiries"
 msgstr "Уточнення"
 
-#: ../../source/tutorial.rst:167
+#: ../../source/tutorial.rst:172
 msgid "And one can retrieve the questions list:"
 msgstr "Можна отримати список запитань:"
 
-#: ../../source/tutorial.rst:172
+#: ../../source/tutorial.rst:177
 msgid "And individual answer:"
 msgstr "та окрему відповідь:"
 
@@ -133,7 +133,7 @@ msgstr ""
 "Для найкращого результату (найбільшої економії) Закупівля повинна мати "
 "багато зареєстрованих учасників."
 
-#: ../../source/tutorial.rst:157
+#: ../../source/tutorial.rst:162
 msgid ""
 "When tender is in `active.enquiry` status, interested parties can ask "
 "questions:"
@@ -259,7 +259,7 @@ msgstr ""
 "Додатково оновлена властивість `dateModified`, щоб відображати останню дату "
 "модифікації."
 
-#: ../../source/tutorial.rst:104
+#: ../../source/tutorial.rst:109
 msgid ""
 "Procuring entity can upload PDF files into the created tender. Uploading "
 "should follow the :ref:`upload` rules."
@@ -267,7 +267,7 @@ msgstr ""
 "Замовник може завантажити PDF файл у створену закупівлю. Завантаження "
 "повинно відбуватись згідно правил :ref:`upload`."
 
-#: ../../source/tutorial.rst:117
+#: ../../source/tutorial.rst:122
 msgid ""
 "The single array element describes the uploaded document. We can upload more"
 " documents:"
@@ -275,7 +275,7 @@ msgstr ""
 "Один елемент масиву описує завантажений документ. Ми можемо завантажити "
 "більше документів:"
 
-#: ../../source/tutorial.rst:183
+#: ../../source/tutorial.rst:188
 msgid ""
 "When ``Tender.tenderingPeriod.startDate`` comes, Tender switches to "
 "`active.tendering` status that allows registration of bids."
@@ -309,7 +309,7 @@ msgstr ""
 "тобто, для скасування закупівлі буде обов’язковим не тільки створити заявку,"
 " але і активувати її."
 
-#: ../../source/tutorial.rst:162
+#: ../../source/tutorial.rst:167
 msgid "Procuring entity can answer them:"
 msgstr "Замовник може на них відповісти:"
 
@@ -346,7 +346,7 @@ msgstr ""
 "закупівлю з максимально допустимим набором даних при створенні (тендер "
 "повинен бути у статусі `created`)."
 
-#: ../../source/tutorial.rst:127
+#: ../../source/tutorial.rst:132
 msgid ""
 "Let’s add new `documentType` field with `technicalSpecifications` parameter "
 "to the previously uploaded document:"
@@ -354,7 +354,7 @@ msgstr ""
 "Додамо нове поле `documentType` з параметром `technicalSpecifications` до "
 "вже завантаженого документа."
 
-#: ../../source/tutorial.rst:132
+#: ../../source/tutorial.rst:137
 msgid ""
 "Success! Response code is `200 OK` and it confirms that `documentType` field"
 " with `technicalSpecifications` parameter was added ."
@@ -362,14 +362,14 @@ msgstr ""
 "Успіх! Код відповіді `200 OK` підтверджує, що поле `documentType` з "
 "параметром `technicalSpecifications` було додано."
 
-#: ../../source/tutorial.rst:134
+#: ../../source/tutorial.rst:139
 msgid ""
 "Now let’s try to modify any field in our document. For example, "
 "`description`:"
 msgstr ""
 "Можна змінити будь-яке поле в документі. Наприклад, `description` (опис):"
 
-#: ../../source/tutorial.rst:139
+#: ../../source/tutorial.rst:144
 msgid ""
 "`200 OK` response was returned. The description was modified successfully."
 msgstr "Повернено код `200 OK`, тобто опис було успішно відредаговано."
@@ -439,17 +439,13 @@ msgstr ""
 "можете встановити відповідну дату початку `startDate` та кінця `endDate` "
 "терміну дії."
 
-#: ../../source/tutorial.rst:190
-msgid "Bidder can set guarantee:"
-msgstr "Учасник може встановити забезпечення тендерної пропозиції:"
-
 #: ../../source/tutorial.rst:254
 msgid ""
 "There is a possibility to set custom contract signature date. You can insert"
 " appropriate date into the `dateSigned` field."
 msgstr ""
-"Є можливість встановити дату підписання угоди. Для цього вставте "
-"відповідну дату в поле `dateSigned`."
+"Є можливість встановити дату підписання угоди. Для цього вставте відповідну "
+"дату в поле `dateSigned`."
 
 #: ../../source/tutorial.rst:256
 msgid ""
@@ -476,8 +472,8 @@ msgid ""
 "If you want to **lower contract value**, you can insert new one into the "
 "`amount` field."
 msgstr ""
-"Якщо ви хочете **знизити вартість угоди**, ви можете встановити нове значення "
-"для поля `amount`."
+"Якщо ви хочете **знизити вартість угоди**, ви можете встановити нове "
+"значення для поля `amount`."
 
 #: ../../source/tutorial.rst:252
 msgid "Setting contract signature date"
@@ -487,28 +483,7 @@ msgstr "Встановлення дати підписання угоди"
 msgid "Setting contract validity period"
 msgstr "Встановлення терміну дії угоди"
 
-#~ msgid "Set contract signature date"
-#~ msgstr "Встановлення дати підписання договору"
+#: ../../source/tutorial.rst:98
+msgid "Procuring entity can set bid guarantee:"
+msgstr "Замовник може встановити забезпечення тендерної пропозиції:"
 
-#~ msgid "Set contract value"
-#~ msgstr ""
-
-#~ msgid ""
-#~ "By default contract value is set based on the award, but there is a "
-#~ "possibility to set custom contract value. If you want to **lower contract "
-#~ "value**, you can insert new one into the `amount` field."
-#~ msgstr ""
-
-#~ msgid ""
-#~ "There is a possibility to set custom contract signature date. You can insert"
-#~ " appropriate date into the `dateSigned` field. If this date is not set, it "
-#~ "will be auto-generated on the date of contract registration."
-#~ msgstr ""
-
-#~ msgid "Set contract validity period"
-#~ msgstr ""
-
-#~ msgid ""
-#~ "There is a possibility to set custom contract signature date. If the date is"
-#~ " not set it will be generated on contract registration."
-#~ msgstr ""

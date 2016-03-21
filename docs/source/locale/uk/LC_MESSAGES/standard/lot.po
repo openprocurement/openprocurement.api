@@ -1,20 +1,19 @@
-#
 # Zoriana Zaiats <sorenabell@quintagroup.com>, 2016.
 msgid ""
 msgstr ""
 "Project-Id-Version: openprocurement.api 0.8.1\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2015-10-29 12:53+0200\n"
-"PO-Revision-Date: 2016-03-09 15:04+0200\n"
+"PO-Revision-Date: 2016-03-21 13:45+0200\n"
 "Last-Translator: Zoriana Zaiats <sorenabell@quintagroup.com>\n"
 "Language-Team: Ukrainian <info@quintagroup.com>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Language: uk\n"
-"X-Generator: Lokalize 1.5\n"
 "Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<"
 "=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
+"X-Generator: Lokalize 1.5\n"
 
 #: ../../source/standard/lot.rst:9
 msgid "Lot"
@@ -36,7 +35,7 @@ msgstr "Назва лота закупівлі."
 msgid "Detailed description of tender lot."
 msgstr "Детальний опис лота закупівлі."
 
-#: ../../source/standard/lot.rst:28 ../../source/standard/lot.rst:33
+#: ../../source/standard/lot.rst:28 ../../source/standard/lot.rst:38
 msgid ":ref:`value`, required"
 msgstr ":ref:`value`, обов’язково"
 
@@ -48,20 +47,20 @@ msgstr ""
 "Повний доступний бюджет лота закупівлі. Цінові пропозиції, більші ніж "
 "``value``, будуть відхилені."
 
-#: ../../source/standard/lot.rst:35
+#: ../../source/standard/lot.rst:40
 msgid "The minimal step of auction (reduction). Validation rules:"
 msgstr "Мінімальний крок аукціону (редукціону). Правила валідації:"
 
-#: ../../source/standard/lot.rst:37
+#: ../../source/standard/lot.rst:42
 msgid "`amount` should be less then `Lot.value.amount`"
 msgstr "`amount` повинно бути меншим, ніж `Lot.value.amount`"
 
-#: ../../source/standard/lot.rst:38
+#: ../../source/standard/lot.rst:43
 msgid "`currency` should either be absent or match `Lot.value.currency`"
 msgstr ""
 "`currency` повинно або бути відсутнім, або відповідати `Lot.value.currency`"
 
-#: ../../source/standard/lot.rst:39
+#: ../../source/standard/lot.rst:44
 msgid ""
 "`valueAddedTaxIncluded` should either be absent or match "
 "`Lot.value.valueAddedTaxIncluded`"
@@ -69,47 +68,55 @@ msgstr ""
 "`valueAddedTaxIncluded` повинно або бути відсутнім, або відповідати "
 "`Lot.value.valueAddedTaxIncluded`"
 
-#: ../../source/standard/lot.rst:42
+#: ../../source/standard/lot.rst:47
 msgid ":ref:`period`, read-only"
 msgstr ":ref:`period`, доступно лише для читання"
 
-#: ../../source/standard/lot.rst:44
+#: ../../source/standard/lot.rst:49
 msgid "Period when Auction is conducted."
 msgstr "Період проведення аукціону."
 
-#: ../../source/standard/lot.rst:47
+#: ../../source/standard/lot.rst:52
 msgid "url"
 msgstr "URL-адреса"
 
-#: ../../source/standard/lot.rst:49
+#: ../../source/standard/lot.rst:54
 msgid "A web address for view auction."
 msgstr "Веб-адреса для перегляду аукціону."
 
-#: ../../source/standard/lot.rst:52
+#: ../../source/standard/lot.rst:57
 msgid "string"
 msgstr "рядок"
 
-#: ../../source/standard/lot.rst:55
+#: ../../source/standard/lot.rst:60
 msgid "Active tender lot (active)"
 msgstr "Активний лот закупівлі (активний)"
 
-#: ../../source/standard/lot.rst:57
+#: ../../source/standard/lot.rst:62
 msgid "Unsuccessful tender lot (unsuccessful)"
 msgstr "Неуспішний лот закупівлі (не відбувся)"
 
-#: ../../source/standard/lot.rst:59
+#: ../../source/standard/lot.rst:64
 msgid "Complete tender lot (complete)"
 msgstr "Завершено лот закупівлі (завершено)"
 
-#: ../../source/standard/lot.rst:61
+#: ../../source/standard/lot.rst:66
 msgid "Cancelled tender lot (cancelled)"
 msgstr "Скасовано лот закупівлі (скасовано)"
 
-#: ../../source/standard/lot.rst:63
+#: ../../source/standard/lot.rst:68
 msgid "Status of the Lot."
 msgstr "Статус лота."
 
 #: ../../source/standard/lot.rst:15
 msgid "string, auto-generated"
 msgstr "рядок, генерується автоматично"
+
+#: ../../source/standard/lot.rst:33
+msgid ":ref:`Guarantee`"
+msgstr ":ref:`Guarantee`"
+
+#: ../../source/standard/lot.rst:35
+msgid "Bid guarantee"
+msgstr "Забезпечення тендерної пропозиції"
 
