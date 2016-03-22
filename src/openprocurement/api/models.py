@@ -812,7 +812,8 @@ class Award(Model):
     class Options:
         roles = {
             'create': blacklist('id', 'status', 'date', 'documents', 'complaints', 'complaintPeriod'),
-            'edit': whitelist('status'),
+            'edit': whitelist('status', 'title', 'title_en', 'title_ru',
+                              'description', 'description_en', 'description_ru'),
             'embedded': schematics_embedded_role,
             'view': schematics_default_role,
             'Administrator': whitelist('complaintPeriod'),
