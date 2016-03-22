@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 from barbecue import chef
 from base64 import b64encode
+from datetime import datetime, time, timedelta
 from cornice.resource import resource, view
 from cornice.util import json_error
 from couchdb.http import ResourceConflict
@@ -9,7 +10,7 @@ from functools import partial
 from json import dumps
 from jsonpatch import make_patch, apply_patch as _apply_patch
 from logging import getLogger
-from openprocurement.api.models import get_now, TZ, COMPLAINT_STAND_STILL_TIME
+from openprocurement.api.models import get_now, TZ, COMPLAINT_STAND_STILL_TIME, WORKING_DAYS
 from openprocurement.api.traversal import factory
 from pkg_resources import get_distribution
 from rfc6266 import build_header
@@ -23,6 +24,7 @@ from pyramid.exceptions import URLDecodeError
 from pyramid.compat import decode_path_info
 from binascii import hexlify, unhexlify
 from Crypto.Cipher import AES
+from re import compile
 
 
 PKG = get_distribution(__package__)
@@ -30,6 +32,7 @@ LOGGER = getLogger(PKG.project_name)
 VERSION = '{}.{}'.format(int(PKG.parsed_version[0]), int(PKG.parsed_version[1]) if PKG.parsed_version[1].isdigit() else 0)
 ROUTE_PREFIX = '/api/{}'.format(VERSION)
 DOCUMENT_BLACKLISTED_FIELDS = ('title', 'format', '__parent__', 'id', 'url', 'dateModified', )
+ACCELERATOR_RE = compile(r'.accelerator=(?P<accelerator>\d+)')
 json_view = partial(view, renderer='json')
 
 
@@ -779,3 +782,22 @@ def decrypt(uuid, name, key):
     except:
         text = ''
     return text
+
+
+def calculate_business_date(date_obj, timedelta_obj, context=None, working_days=False):
+    if context and 'procurementMethodDetails' in context:
+        re_obj = ACCELERATOR_RE.search(context['procurementMethodDetails'])
+        if re_obj and 'accelerator' in re_obj.groupdict():
+            return date_obj + (timedelta_obj / int(re_obj.groupdict()['accelerator']))
+    if working_days:
+        date = date_obj
+        if date.weekday() in [5, 6] and WORKING_DAYS.get(date.date().isoformat(), True) or WORKING_DAYS.get(date.date().isoformat(), False):
+            date = datetime.combine(date.date(), time(0, tzinfo=date.tzinfo)) + timedelta(1)
+            while date.weekday() in [5, 6] and WORKING_DAYS.get(date.date().isoformat(), True) or WORKING_DAYS.get(date.date().isoformat(), False):
+                date += timedelta(1)
+        for _ in xrange(timedelta_obj.days):
+            date += timedelta(1)
+            while date.weekday() in [5, 6] and WORKING_DAYS.get(date.date().isoformat(), True) or WORKING_DAYS.get(date.date().isoformat(), False):
+                date += timedelta(1)
+        timedelta_obj = date_obj - date
+    return date_obj + timedelta_obj
