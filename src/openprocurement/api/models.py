@@ -933,6 +933,12 @@ class Lot(Model):
                           currency=self.__parent__.value.currency,
                           valueAddedTaxIncluded=self.__parent__.value.valueAddedTaxIncluded))
 
+    @serializable(serialized_name="guarantee", serialize_when_none=False, type=ModelType(Guarantee))
+    def lot_guarantee(self):
+        if self.guarantee:
+            currency = self.__parent__.guarantee.currency if self.__parent__.guarantee else self.guarantee.currency
+            return Guarantee(dict(amount=self.guarantee.amount, currency=currency))
+
     @serializable(serialized_name="minimalStep", type=ModelType(Value))
     def lot_minimalStep(self):
         return Value(dict(amount=self.minimalStep.amount,
@@ -943,6 +949,7 @@ class Lot(Model):
         if value and value.amount and data.get('value'):
             if data.get('value').amount < value.amount:
                 raise ValidationError(u"value should be less than value of lot")
+
 
 
 def validate_features_uniq(features, *args):
@@ -1197,6 +1204,21 @@ class Tender(SchematicsDocument, Model):
                           currency=self.value.currency,
                           valueAddedTaxIncluded=self.value.valueAddedTaxIncluded)) if self.lots else self.value
 
+    @serializable(serialized_name="guarantee", serialize_when_none=False, type=ModelType(Guarantee))
+    def tender_guarantee(self):
+        if self.lots:
+            lots_amount = [i.guarantee.amount for i in self.lots if i.guarantee]
+            if not lots_amount:
+                return self.guarantee
+            guarantee = {'amount': sum(lots_amount)}
+            lots_currency = [i.guarantee.currency for i in self.lots if i.guarantee]
+            guarantee['currency'] = lots_currency[0] if lots_currency else None
+            if self.guarantee:
+                guarantee['currency'] = self.guarantee.currency
+            return Guarantee(guarantee)
+        else:
+            return self.guarantee
+
     @serializable(serialized_name="minimalStep", type=ModelType(Value))
     def tender_minimalStep(self):
         return Value(dict(amount=min([i.minimalStep.amount for i in self.lots]),
@@ -1253,3 +1275,10 @@ class Tender(SchematicsDocument, Model):
             raise ValidationError(u"period should begin after auctionPeriod")
         if period and period.startDate and data.get('tenderPeriod') and data.get('tenderPeriod').endDate and period.startDate < data.get('tenderPeriod').endDate:
             raise ValidationError(u"period should begin after tenderPeriod")
+    def validate_lots(self, data, value):
+        if len(value) == 1 and data['guarantee']:
+            lot = value[0]
+            if lot.guarantee and lot.guarantee.currency != data['guarantee'].currency:
+                raise ValidationError(u"lot guarantee currency should be identical to tender guarantee currency")
+        if len(set([lot.guarantee.currency for lot in value if lot.guarantee])) > 1:
+            raise ValidationError(u"lot guarantee currency should be identical to tender guarantee currency")
