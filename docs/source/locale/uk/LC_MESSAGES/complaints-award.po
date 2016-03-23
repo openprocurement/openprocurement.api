@@ -1,10 +1,11 @@
-# 
+#
+# Zoriana Zaiats <sorenabell@quintagroup.com>, 2016.
 msgid ""
 msgstr ""
 "Project-Id-Version: openprocurement.api 0.4\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2014-12-04 10:19+0200\n"
-"PO-Revision-Date: 2016-03-02 11:22+0200\n"
+"PO-Revision-Date: 2016-03-23 13:30+0200\n"
 "Last-Translator: Zoriana Zaiats <sorenabell@quintagroup.com>\n"
 "Language-Team: Ukrainian <info@quintagroup.com>\n"
 "MIME-Version: 1.0\n"
@@ -91,15 +92,6 @@ msgstr "Ви можете отримати список всіх вимог/ск
 msgid "And check individual complaint or claim:"
 msgstr "Або перевірити окрему скаргу чи вимогу:"
 
-#: ../../source/complaints-award.rst:6
-msgid ""
-"If tender conditions are favoriting only one supplier, or in any other "
-"viable case, one can submit Tender Award Claim."
-msgstr ""
-"Якщо умови закупівлі сприятливі лише для одного постачальника або при будь-"
-"якому іншому серйозному порушенні можна подати вимогу про виправлення "
-"визначення переможця."
-
 #: ../../source/complaints-award.rst:29
 msgid "You can submit claim that does not need additional documents:"
 msgstr "Ви можете подати скаргу, що не потребує додаткових документів:"
@@ -110,3 +102,19 @@ msgstr ""
 "Спочатку створимо вимогу. В запиті потрібно передати токен доступу одного з "
 "учасників, який вже подав пропозицію."
 
+#: ../../source/complaints-award.rst:6
+msgid ""
+"If tender conditions are favoriting only one supplier, or in any other "
+"viable case, participants can submit Tender Award Claim."
+msgstr ""
+"Якщо умови закупівлі сприятливі лише для одного постачальника або при "
+"будь-якому іншому серйозному порушенні, учасники можуть подати вимогу про "
+"виправлення результатів про визначення переможця."
+
+#~ msgid ""
+#~ "If tender conditions are favoriting only one supplier, or in any other "
+#~ "viable case, one can submit Tender Award Claim."
+#~ msgstr ""
+#~ "Якщо умови закупівлі сприятливі лише для одного постачальника або при будь-"
+#~ "якому іншому серйозному порушенні можна подати вимогу про виправлення "
+#~ "визначення переможця."
