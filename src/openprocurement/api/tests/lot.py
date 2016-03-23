@@ -134,15 +134,64 @@ class TenderLotResourceTest(BaseTenderWebTest):
         self.assertIn(lot['id'], response.headers['Location'])
         self.assertNotIn('guarantee', lot)
 
+        response = self.app.get('/tenders/{}'.format(self.tender_id))
+        self.assertNotIn('guarantee', response.json['data'])
+
         lot2 = deepcopy(test_lots[0])
         lot2['guarantee'] = {"amount": 100500, "currency": "USD"}
         response = self.app.post_json('/tenders/{}/lots'.format(self.tender_id), {'data': lot2})
         self.assertEqual(response.status, '201 Created')
-        self.assertEqual(response.content_type, 'application/json')
         data = response.json['data']
         self.assertIn('guarantee', data)
         self.assertEqual(data['guarantee']['amount'], 100500)
         self.assertEqual(data['guarantee']['currency'], "USD")
+
+        response = self.app.get('/tenders/{}'.format(self.tender_id))
+        self.assertIn('guarantee', response.json['data'])
+        self.assertEqual(response.json['data']['guarantee']['amount'], 100500)
+        self.assertEqual(response.json['data']['guarantee']['currency'], "USD")
+        self.assertNotIn('guarantee', response.json['data']['lots'][0])
+
+        lot3 = deepcopy(test_lots[0])
+        lot3['guarantee'] = {"amount": 500, "currency": "UAH"}
+        response = self.app.post_json('/tenders/{}/lots'.format(self.tender_id), {'data': lot3}, status=422)
+        self.assertEqual(response.status, '422 Unprocessable Entity')
+        self.assertEqual(response.content_type, 'application/json')
+        self.assertEqual(response.json['status'], 'error')
+        self.assertEqual(response.json['errors'], [
+            {u'description': [u'lot guarantee currency should be identical to tender guarantee currency'], u'location': u'body', u'name': u'lots'}
+        ])
+
+        lot3['guarantee'] = {"amount": 500}
+        response = self.app.post_json('/tenders/{}/lots'.format(self.tender_id), {'data': lot3}, status=422)
+        self.assertEqual(response.status, '422 Unprocessable Entity')
+        self.assertEqual(response.content_type, 'application/json')
+        self.assertEqual(response.json['status'], 'error')
+        self.assertEqual(response.json['errors'], [
+            {u'description': [u'lot guarantee currency should be identical to tender guarantee currency'], u'location': u'body', u'name': u'lots'}
+        ])
+
+        lot3['guarantee'] = {"amount": 20, "currency": "USD"}
+        response = self.app.post_json('/tenders/{}/lots'.format(self.tender_id), {'data': lot3})
+        self.assertEqual(response.status, '201 Created')
+        data = response.json['data']
+        self.assertIn('guarantee', data)
+        self.assertEqual(data['guarantee']['amount'], 20)
+        self.assertEqual(data['guarantee']['currency'], "USD")
+
+        response = self.app.get('/tenders/{}'.format(self.tender_id))
+        self.assertIn('guarantee', response.json['data'])
+        self.assertEqual(response.json['data']['guarantee']['amount'], 100500 + 20)
+        self.assertEqual(response.json['data']['guarantee']['currency'], "USD")
+
+        response = self.app.patch_json('/tenders/{}'.format(self.tender_id), {"data": {"guarantee": {"currency": "EUR"}}})
+        self.assertEqual(response.json['data']['guarantee']['amount'], 100500 + 20)
+        self.assertEqual(response.json['data']['guarantee']['currency'], "EUR")
+        self.assertNotIn('guarantee', response.json['data']['lots'][0])
+        self.assertEqual(response.json['data']['lots'][1]['guarantee']['amount'], 100500)
+        self.assertEqual(response.json['data']['lots'][1]['guarantee']['currency'], "EUR")
+        self.assertEqual(response.json['data']['lots'][2]['guarantee']['amount'], 20)
+        self.assertEqual(response.json['data']['lots'][2]['guarantee']['currency'], "EUR")
 
         response = self.app.post_json('/tenders/{}/lots'.format(self.tender_id), {'data': lot}, status=422)
         self.assertEqual(response.status, '422 Unprocessable Entity')
@@ -178,7 +227,7 @@ class TenderLotResourceTest(BaseTenderWebTest):
 
         response = self.app.patch_json('/tenders/{}/lots/{}'.format(self.tender_id, lot['id']), {"data": {"guarantee": {"currency": "USD"}}})
         self.assertEqual(response.status, '200 OK')
-        self.assertEqual(response.json['data']['guarantee']['currency'], 'USD')
+        self.assertEqual(response.body, 'null')
 
         response = self.app.patch_json('/tenders/{}/lots/some_id'.format(self.tender_id), {"data": {"title": "other title"}}, status=404)
         self.assertEqual(response.status, '404 Not Found')
@@ -450,6 +499,91 @@ class TenderLotResourceTest(BaseTenderWebTest):
         self.assertEqual(response.status, '403 Forbidden')
         self.assertEqual(response.content_type, 'application/json')
         self.assertEqual(response.json['errors'][0]["description"], "Can't delete lot in current (active.tendering) tender status")
+
+    def test_tender_lot_guarantee(self):
+        data = deepcopy(test_tender_data)
+        data['guarantee'] = {"amount": 100, "currency": "GBP"}
+        response = self.app.post_json('/tenders', {'data': data})
+        tender = response.json['data']
+        self.assertEqual(response.status, '201 Created')
+        self.assertIn('guarantee', response.json['data'])
+        self.assertEqual(response.json['data']['guarantee']['amount'], 100)
+        self.assertEqual(response.json['data']['guarantee']['currency'], "GBP")
+
+        lot = deepcopy(test_lots[0])
+        lot['guarantee'] = {"amount": 20, "currency": "USD"}
+        response = self.app.post_json('/tenders/{}/lots'.format(tender['id']), {'data': lot}, status=422)
+        self.assertEqual(response.status, '422 Unprocessable Entity')
+        self.assertEqual(response.content_type, 'application/json')
+        self.assertEqual(response.json['status'], 'error')
+        self.assertEqual(response.json['errors'], [
+            {u'description': [u'lot guarantee currency should be identical to tender guarantee currency'], u'location': u'body', u'name': u'lots'}
+        ])
+
+        lot['guarantee'] = {"amount": 20, "currency": "GBP"}
+        response = self.app.post_json('/tenders/{}/lots'.format(tender['id']), {'data': lot})
+        self.assertEqual(response.status, '201 Created')
+        lot_id = response.json['data']['id']
+        self.assertEqual(response.json['data']['guarantee']['amount'], 20)
+        self.assertEqual(response.json['data']['guarantee']['currency'], "GBP")
+
+        response = self.app.get('/tenders/{}'.format(tender['id']))
+        self.assertEqual(response.json['data']['guarantee']['amount'], 20)
+        self.assertEqual(response.json['data']['guarantee']['currency'], "GBP")
+
+        lot2 = deepcopy(test_lots[0])
+        lot2['guarantee'] = {"amount": 30, "currency": "GBP"}
+        response = self.app.post_json('/tenders/{}/lots'.format(tender['id']), {'data': lot2})
+        self.assertEqual(response.status, '201 Created')
+        lot2_id = response.json['data']['id']
+        self.assertEqual(response.json['data']['guarantee']['amount'], 30)
+        self.assertEqual(response.json['data']['guarantee']['currency'], "GBP")
+
+        lot2['guarantee'] = {"amount": 40, "currency": "USD"}
+        response = self.app.post_json('/tenders/{}/lots'.format(tender['id']), {'data': lot2}, status=422)
+        self.assertEqual(response.status, '422 Unprocessable Entity')
+        self.assertEqual(response.content_type, 'application/json')
+        self.assertEqual(response.json['status'], 'error')
+        self.assertEqual(response.json['errors'], [
+            {u'description': [u'lot guarantee currency should be identical to tender guarantee currency'], u'location': u'body', u'name': u'lots'}
+        ])
+
+        response = self.app.get('/tenders/{}'.format(tender['id']))
+        self.assertIn('guarantee', response.json['data'])
+        self.assertEqual(response.json['data']['guarantee']['amount'], 20 + 30)
+        self.assertEqual(response.json['data']['guarantee']['currency'], "GBP")
+
+        response = self.app.patch_json('/tenders/{}'.format(tender['id']), {"data": {"guarantee": {"amount": 55}}})
+        self.assertEqual(response.json['data']['guarantee']['amount'], 20 + 30)
+        self.assertEqual(response.json['data']['guarantee']['currency'], "GBP")
+
+        response = self.app.patch_json('/tenders/{}/lots/{}'.format(tender['id'], lot2_id), {'data': {'guarantee': {"amount": 35, "currency": "GBP"}}})
+        self.assertEqual(response.json['data']['guarantee']['amount'], 35)
+        self.assertEqual(response.json['data']['guarantee']['currency'], "GBP")
+
+        response = self.app.get('/tenders/{}'.format(tender['id']))
+        self.assertIn('guarantee', response.json['data'])
+        self.assertEqual(response.json['data']['guarantee']['amount'], 20 + 35)
+        self.assertEqual(response.json['data']['guarantee']['currency'], "GBP")
+
+        for l_id in (lot_id, lot2_id):
+            response = self.app.patch_json('/tenders/{}/lots/{}'.format(tender['id'], l_id), {'data': {'guarantee': {"amount": 0, "currency": "GBP"}}})
+            self.assertEqual(response.json['data']['guarantee']['amount'], 0)
+            self.assertEqual(response.json['data']['guarantee']['currency'], "GBP")
+
+        response = self.app.get('/tenders/{}'.format(tender['id']))
+        self.assertIn('guarantee', response.json['data'])
+        self.assertEqual(response.json['data']['guarantee']['amount'], 0)
+        self.assertEqual(response.json['data']['guarantee']['currency'], "GBP")
+
+        for l_id in (lot_id, lot2_id):
+            response = self.app.delete('/tenders/{}/lots/{}'.format(tender['id'], l_id))
+            self.assertEqual(response.status, '200 OK')
+
+        response = self.app.get('/tenders/{}'.format(tender['id']))
+        self.assertIn('guarantee', response.json['data'])
+        self.assertEqual(response.json['data']['guarantee']['amount'], 0)
+        self.assertEqual(response.json['data']['guarantee']['currency'], "GBP")
 
 
 class TenderLotFeatureResourceTest(BaseTenderWebTest):
