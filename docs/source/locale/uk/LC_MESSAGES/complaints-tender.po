@@ -1,11 +1,10 @@
 #
-# Zoriana Zaiats <sorenabell@quintagroup.com>, 2016.
 msgid ""
 msgstr ""
 "Project-Id-Version: openprocurement.api 0.4\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2014-12-04 10:19+0200\n"
-"PO-Revision-Date: 2016-03-23 13:31+0200\n"
+"PO-Revision-Date: 2016-03-23 15:32+0200\n"
 "Last-Translator: Zoriana Zaiats <sorenabell@quintagroup.com>\n"
 "Language-Team: Ukrainian <info@quintagroup.com>\n"
 "MIME-Version: 1.0\n"
@@ -103,16 +102,9 @@ msgstr "Ви можете подати скаргу, що не потребує 
 #: ../../source/complaints-tender.rst:6
 msgid ""
 "If tender conditions are favoriting particular supplier, or in any other "
-"viable case, anyone can submit Tender Conditions Claim."
+"viable case, any registered user can submit Tender Conditions Claim."
 msgstr ""
 "Якщо умови закупівлі сприятливі лише для одного постачальника або при "
-"будь-якому іншому серйозному порушенні, будь-хто може подати вимогу про "
-"виправлення умов закупівлі."
+"будь-якому іншому серйозному порушенні, будь-який зареєстрований користувач "
+"може подати вимогу про виправлення умов закупівлі."
 
-#~ msgid ""
-#~ "If tender conditions are favoriting particular supplier, or in any other "
-#~ "viable case, one can submit Tender Conditions Claim."
-#~ msgstr ""
-#~ "Якщо умови закупівлі сприятливі лише для одного постачальника або при будь-"
-#~ "якому іншому серйозному порушенні можна подати вимогу про виправлення умов "
-#~ "закупівлі."
