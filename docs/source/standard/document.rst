@@ -102,7 +102,7 @@ Schema
 
     * `commercialProposal` - **Сommercial proposal**    
     
-    * `qualificationDocuments` - **Qualificatioin documents**
+    * `qualificationDocuments` - **Qualification documents**
     
     * `eligibilityDocuments` - **Eligibility documents**
     
@@ -162,3 +162,4 @@ Schema
     string
 
     Id of related :ref:`lot` or :ref:`item`.
+    

@@ -1,11 +1,10 @@
 #
-# Zoriana Zaiats <sorenabell@quintagroup.com>, 2016.
 msgid ""
 msgstr ""
 "Project-Id-Version: openprocurement.api 0.3\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2014-11-24 18:25+0200\n"
-"PO-Revision-Date: 2016-03-23 12:37+0200\n"
+"PO-Revision-Date: 2016-03-24 17:10+0200\n"
 "Last-Translator: Zoriana Zaiats <sorenabell@quintagroup.com>\n"
 "Language-Team: Ukrainian <info@quintagroup.com>\n"
 "MIME-Version: 1.0\n"
@@ -307,15 +306,14 @@ msgstr "Можливі значення для :ref:`bid`"
 msgid "`commercialProposal` - **Сommercial proposal**"
 msgstr "`commercialProposal` - **Цінова пропозиція**"
 
-#: ../../source/standard/document.rst:105
-msgid "`qualificationDocuments` - **Qualificatioin documents**"
-msgstr ""
-"`qualificationDocuments` - **Документи, що підтверджують кваліфікацію**"
-
 #: ../../source/standard/document.rst:107
 msgid "`eligibilityDocuments` - **Eligibility documents**"
 msgstr ""
 "`eligibilityDocuments` - **Документи, що підтверджують відповідність** (в "
 "тому числі, відповідність вимогам ст. 17)"
 
+#: ../../source/standard/document.rst:105
+msgid "`qualificationDocuments` - **Qualification documents**"
+msgstr ""
+"`qualificationDocuments` - **Документи, що підтверджують кваліфікацію**"
 

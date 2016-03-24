@@ -112,10 +112,10 @@ msgid ":ref:`ContactPoint`, required"
 msgstr ":ref:`ContactPoint`, обов’язково"
 
 #: ../../source/standard/organization.rst:54
-#: ../../source/standard/organization.rst:116
 msgid "string, required"
 msgstr "рядок, обов’язковий"
 
+#: ../../source/standard/organization.rst:116
 #: ../../source/standard/organization.rst:133
 msgid "string, multilingual, required"
 msgstr "рядок, багатомовний, обов’язковий"
@@ -199,4 +199,3 @@ msgstr "|ocdsDescription| Веб адреса контактної особи/п
 msgid "Either `email` or `telephone` field has to be provided."
 msgstr ""
 "Повинне бути заповнене хоча б одне з полів: або `email`, або `telephone`."
-
