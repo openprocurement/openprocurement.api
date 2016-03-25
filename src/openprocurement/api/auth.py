@@ -13,7 +13,14 @@ class AuthenticationPolicy(BasicAuthAuthenticationPolicy):
         self.users = {}
         for i in config.sections():
             self.users.update(dict([
-                (k, {'name': j, 'group': i})
+                (
+                    k.split(',', 1)[0],
+                    {
+                        'name': j,
+                        'level': k.split(',', 1)[1] if ',' in k else '1234',
+                        'group': i
+                    }
+                )
                 for j, k in config.items(i)
             ]))
 
@@ -25,8 +32,11 @@ class AuthenticationPolicy(BasicAuthAuthenticationPolicy):
             if user:
                 return user['name']
 
-    def check(self, user, group, request):
+    def check(self, user, request):
         token = request.params.get('acc_token')
+        auth_groups = ['g:{}'.format(user['group'])]
+        for i in user['level']:
+            auth_groups.append('a:{}'.format(i))
         if not token:
             token = request.headers.get('X-Access-Token')
             if not token:
@@ -37,8 +47,9 @@ class AuthenticationPolicy(BasicAuthAuthenticationPolicy):
                         json = None
                     token = isinstance(json, dict) and json.get('access', {}).get('token')
                 if not token:
-                    return ['g:{}'.format(group)]
-        return ['g:{}'.format(group), '{}_{}'.format(user, token)]
+                    return auth_groups
+        auth_groups.append('{}_{}'.format(user['name'], token))
+        return auth_groups
 
     def callback(self, username, request):
         # Username arg is ignored.  Unfortunately _get_credentials winds up
@@ -48,7 +59,7 @@ class AuthenticationPolicy(BasicAuthAuthenticationPolicy):
         if token:
             user = self.users.get(token)
             if user:
-                return self.check(user['name'], user['group'], request)
+                return self.check(user, request)
 
     def _get_credentials(self, request):
         authorization = request.headers.get('Authorization')
@@ -105,3 +116,7 @@ def authenticated_role(request):
             return local_roles[0]
     groups = [g for g in reversed(principals) if g.startswith('g:')]
     return groups[0][2:] if groups else 'anonymous'
+
+
+def check_accreditation(request, level):
+    return "a:{}".format(level) in request.effective_principals

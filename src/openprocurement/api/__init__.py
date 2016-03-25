@@ -8,7 +8,7 @@ from boto.s3.connection import S3Connection, Location
 from couchdb import Server as CouchdbServer, Session
 from couchdb.http import Unauthorized, extract_credentials
 from logging import getLogger
-from openprocurement.api.auth import AuthenticationPolicy, authenticated_role
+from openprocurement.api.auth import AuthenticationPolicy, authenticated_role, check_accreditation
 from openprocurement.api.design import sync_design
 from openprocurement.api.migration import migrate_data
 from openprocurement.api.models import Tender
@@ -67,6 +67,7 @@ def main(global_config, **settings):
     config.add_request_method(request_params, 'params', reify=True)
     config.add_request_method(authenticated_role, reify=True)
     config.add_request_method(extract_tender, 'tender', reify=True)
+    config.add_request_method(check_accreditation)
     config.add_renderer('prettyjson', JSON(indent=4))
     config.add_renderer('jsonp', JSONP(param_name='opt_jsonp'))
     config.add_renderer('prettyjsonp', JSONP(indent=4, param_name='opt_jsonp'))

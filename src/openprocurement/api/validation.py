@@ -72,6 +72,10 @@ def validate_tender_data(request):
         return
 
     model = request.tender_from_data(data, create=False)
+    if not request.check_accreditation(model.create_accreditation):
+        request.errors.add('procurementMethodType', 'accreditation', 'Accreditation not allows to create tender')
+        request.errors.status = 403
+        return
     return validate_data(request, model, data=data)
 
 
@@ -148,6 +152,10 @@ def validate_tender_auction_data(request):
 
 
 def validate_bid_data(request):
+    if not request.check_accreditation(request.tender.edit_accreditation):
+        request.errors.add('procurementMethodType', 'accreditation', 'Accreditation not allows to create bid')
+        request.errors.status = 403
+        return
     update_logging_context(request, {'bid_id': '__new__'})
     model = type(request.tender).bids.model_class
     return validate_data(request, model)
@@ -159,6 +167,10 @@ def validate_patch_bid_data(request):
 
 
 def validate_award_data(request):
+    if not request.check_accreditation(request.tender.edit_accreditation):
+        request.errors.add('procurementMethodType', 'accreditation', 'Accreditation not allows to create award')
+        request.errors.status = 403
+        return
     update_logging_context(request, {'award_id': '__new__'})
     model = type(request.tender).awards.model_class
     return validate_data(request, model)
@@ -175,6 +187,10 @@ def validate_patch_document_data(request):
 
 
 def validate_question_data(request):
+    if not request.check_accreditation(request.tender.edit_accreditation):
+        request.errors.add('procurementMethodType', 'accreditation', 'Accreditation not allows to create question')
+        request.errors.status = 403
+        return
     update_logging_context(request, {'question_id': '__new__'})
     model = type(request.tender).questions.model_class
     return validate_data(request, model)
@@ -186,6 +202,10 @@ def validate_patch_question_data(request):
 
 
 def validate_complaint_data(request):
+    if not request.check_accreditation(request.tender.edit_accreditation):
+        request.errors.add('procurementMethodType', 'accreditation', 'Accreditation not allows to create complaint')
+        request.errors.status = 403
+        return
     update_logging_context(request, {'complaint_id': '__new__'})
     model = type(request.tender).complaints.model_class
     return validate_data(request, model)

@@ -1087,6 +1087,9 @@ class Tender(SchematicsDocument, Model):
 
     procurementMethodType = StringType(default="belowThreshold")
 
+    create_accreditation = 1
+    edit_accreditation = 2
+
     __name__ = ''
 
     def get_role(self):

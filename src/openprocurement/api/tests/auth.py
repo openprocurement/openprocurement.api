@@ -3,6 +3,7 @@ import unittest
 from pyramid import testing
 from openprocurement.api.auth import AuthenticationPolicy
 from pyramid.tests.test_authentication import TestBasicAuthAuthenticationPolicy
+from openprocurement.api.tests.base import test_tender_data, BaseWebTest, BaseTenderWebTest
 
 
 class AuthTest(TestBasicAuthAuthenticationPolicy):
@@ -17,6 +18,60 @@ class AuthTest(TestBasicAuthAuthenticationPolicy):
         request.headers['Authorization'] = 'Bearer chrisr'
         policy = self._makeOne(None)
         self.assertEqual(policy.unauthenticated_userid(request), 'chrisr')
+
+
+class AccreditationTenderTest(BaseWebTest):
+    def test_create_tender_accreditation(self):
+        self.app.authorization = ('Basic', ('broker1', ''))
+        response = self.app.post_json('/tenders', {"data": test_tender_data})
+        self.assertEqual(response.status, '201 Created')
+        self.assertEqual(response.content_type, 'application/json')
+
+        for broker in ['broker2', 'broker3', 'broker4']:
+            self.app.authorization = ('Basic', (broker, ''))
+            response = self.app.post_json('/tenders', {"data": test_tender_data}, status=403)
+            self.assertEqual(response.status, '403 Forbidden')
+            self.assertEqual(response.content_type, 'application/json')
+            self.assertEqual(response.json['errors'][0]["description"], "Accreditation not allows to create tender")
+
+
+class AccreditationTenderQuestionTest(BaseTenderWebTest):
+    def test_create_tender_question_accreditation(self):
+        self.app.authorization = ('Basic', ('broker2', ''))
+        response = self.app.post_json('/tenders/{}/questions'.format(self.tender_id),
+                                      {'data': {'title': 'question title', 'description': 'question description', 'author': test_tender_data["procuringEntity"]}})
+        self.assertEqual(response.status, '201 Created')
+        self.assertEqual(response.content_type, 'application/json')
+
+        for broker in ['broker1', 'broker3', 'broker4']:
+            self.app.authorization = ('Basic', (broker, ''))
+            response = self.app.post_json('/tenders/{}/questions'.format(self.tender_id),
+                                          {'data': {'title': 'question title', 'description': 'question description', 'author': test_tender_data["procuringEntity"]}},
+                                          status=403)
+            self.assertEqual(response.status, '403 Forbidden')
+            self.assertEqual(response.content_type, 'application/json')
+            self.assertEqual(response.json['errors'][0]["description"], "Accreditation not allows to create question")
+
+
+class AccreditationTenderBidTest(BaseTenderWebTest):
+    initial_status = 'active.tendering'
+
+    def test_create_tender_bid_accreditation(self):
+        self.app.authorization = ('Basic', ('broker2', ''))
+        response = self.app.post_json('/tenders/{}/bids'.format(self.tender_id),
+                                      {'data': {'tenderers': [test_tender_data["procuringEntity"]], "value": {"amount": 500}}})
+        self.assertEqual(response.status, '201 Created')
+        self.assertEqual(response.content_type, 'application/json')
+
+        for broker in ['broker1', 'broker3', 'broker4']:
+            self.app.authorization = ('Basic', (broker, ''))
+            response = self.app.post_json('/tenders/{}/bids'.format(self.tender_id),
+                                          {'data': {'tenderers': [test_tender_data["procuringEntity"]], "value": {"amount": 500}}},
+                                          status=403)
+            self.assertEqual(response.status, '403 Forbidden')
+            self.assertEqual(response.content_type, 'application/json')
+            self.assertEqual(response.json['errors'][0]["description"], "Accreditation not allows to create bid")
+
 
 
 def suite():
