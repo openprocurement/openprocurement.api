@@ -453,7 +453,7 @@ def check_tender_status(request):
         stand_still_end = max(stand_still_ends) if stand_still_ends else now
         stand_still_time_expired = stand_still_end < now
         active_awards = any([
-            a.status == 'active'
+            a.status in ['active', 'pending']
             for a in tender.awards
         ])
         if not active_awards and not pending_complaints and not pending_awards_complaints and stand_still_time_expired:
