@@ -1248,7 +1248,7 @@ class Tender(SchematicsDocument, Model):
             round(vnmax([
                 i
                 for i in features
-                if i.featureOf == 'tenderer' or i.featureOf == 'lot' and i.relatedItem != lot['id'] or i.featureOf == 'item' and i.relatedItem in [j.id for j in data['items'] if j.relatedLot != lot['id']]
+                if i.featureOf == 'tenderer' or i.featureOf == 'lot' and i.relatedItem == lot['id'] or i.featureOf == 'item' and i.relatedItem in [j.id for j in data['items'] if j.relatedLot == lot['id']]
             ]), 15) > 0.3
             for lot in data['lots']
         ]):
