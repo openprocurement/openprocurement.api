@@ -167,10 +167,6 @@ def validate_patch_bid_data(request):
 
 
 def validate_award_data(request):
-    if not request.check_accreditation(request.tender.edit_accreditation):
-        request.errors.add('procurementMethodType', 'accreditation', 'Accreditation not allows to create award')
-        request.errors.status = 403
-        return
     update_logging_context(request, {'award_id': '__new__'})
     model = type(request.tender).awards.model_class
     return validate_data(request, model)
