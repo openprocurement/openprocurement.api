@@ -42,7 +42,7 @@ Schema
     Possible values are:
 
     * `pending` - the award is under review of qualification committee
-    * `unsuccessful` - the award has been rejected by qualification comittee
+    * `unsuccessful` - the award has been rejected by qualification committee
     * `active` - the tender is awarded to the bidder from the `bid_id`
     * `cancelled` - the award has been cancelled by complaint review body
 

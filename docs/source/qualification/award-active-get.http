@@ -1,42 +1,47 @@
-GET /tenders/64e93250be76435397e8c992ed4214d1/awards/fbccb31b3b864c7b80ca19ebd510ee72 HTTP/1.1
+GET /api/0.12/tenders/9f65ed38c8f446fcab0b6709b76f38b0/awards/604eedfaa47c49ea81eaf511e378cd9c HTTP/1.0
+Authorization: Basic YnJva2VyOg==
+Host: api-sandbox.openprocurement.org
+
+
+200 OK
+Content-Type: application/json; charset=UTF-8
 
 {
-    "data": {
-        "status": "active", 
-        "contracts": [
-            {
-                "status": "pending", 
-                "awardID": "fbccb31b3b864c7b80ca19ebd510ee72", 
-                "id": "40d0fe977c0f4560a1de71ab122a6fae"
-            }
-        ], 
-        "suppliers": [
-            {
-                "contactPoint": {
-                    "name": "Розалія Піддубний", 
-                    "telephone": "014 883 59 49"
-                }, 
-                "identifier": {
-                    "scheme": "UA-EDR", 
-                    "id": "0000741"
-                }, 
-                "name": "Чуйко-Скопенко", 
-                "address": {
-                    "postalCode": "21100", 
-                    "countryName": "Україна", 
-                    "streetAddress": "21284 Данько Cape", 
-                    "region": "м. Вінниця", 
-                    "locality": "м. Вінниця"
-                }
-            }
-        ], 
-        "bid_id": "1af1d3169c5947c3a30450d2f8c8e7a2", 
-        "value": {
-            "currency": "UAH", 
-            "amount": 39000.0, 
-            "valueAddedTaxIncluded": true
+  "data": {
+    "status": "active", 
+    "complaintPeriod": {
+      "startDate": "2016-03-18T18:47:53.304173+02:00", 
+      "endDate": "2016-03-19T18:47:53.629554+02:00"
+    }, 
+    "suppliers": [
+      {
+        "contactPoint": {
+          "name": "Державне управління справами", 
+          "telephone": "0440000000"
         }, 
-        "date": "2015-03-04T14:21:01.006685+02:00", 
-        "id": "fbccb31b3b864c7b80ca19ebd510ee72"
-    }
+        "identifier": {
+          "scheme": "UA-EDR", 
+          "id": "00037256", 
+          "uri": "http://www.dus.gov.ua/"
+        }, 
+        "name": "Державне управління справами", 
+        "address": {
+          "postalCode": "01220", 
+          "countryName": "Україна", 
+          "streetAddress": "вул. Банкова, 11, корпус 1", 
+          "region": "м. Київ", 
+          "locality": "м. Київ"
+        }
+      }
+    ], 
+    "bid_id": "8c2d769086b24bcbb8b9f9c56bb8998f", 
+    "value": {
+      "currency": "UAH", 
+      "amount": 469.0, 
+      "valueAddedTaxIncluded": true
+    }, 
+    "date": "2016-03-18T18:47:53.304450+02:00", 
+    "id": "604eedfaa47c49ea81eaf511e378cd9c"
+  }
 }
+

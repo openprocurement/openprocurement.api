@@ -1,10 +1,10 @@
-# Zoriana Zaiats <sorenabell@quintagroup.com>, 2016.
+#
 msgid ""
 msgstr ""
 "Project-Id-Version: openprocurement.api 0.4\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2014-12-04 10:19+0200\n"
-"PO-Revision-Date: 2016-03-02 11:22+0200\n"
+"PO-Revision-Date: 2016-03-23 15:30+0200\n"
 "Last-Translator: Zoriana Zaiats <sorenabell@quintagroup.com>\n"
 "Language-Team: Ukrainian <info@quintagroup.com>\n"
 "MIME-Version: 1.0\n"
@@ -51,10 +51,6 @@ msgstr "Перетворення вимоги в скаргу"
 msgid "Then upload necessary documents:"
 msgstr "Потім завантажте документи:"
 
-#: ../../source/complaints-award.rst:21
-msgid "Submit tender conditions claim:"
-msgstr "Подамо вимогу про виправлення визначення переможця:"
-
 #: ../../source/complaints-award.rst:4
 msgid "Claim Submission"
 msgstr "Подання вимоги"
@@ -91,15 +87,6 @@ msgstr "Ви можете отримати список всіх вимог/ск
 msgid "And check individual complaint or claim:"
 msgstr "Або перевірити окрему скаргу чи вимогу:"
 
-#: ../../source/complaints-award.rst:6
-msgid ""
-"If tender conditions are favoriting only one supplier, or in any other "
-"viable case, one can submit Tender Award Claim."
-msgstr ""
-"Якщо умови закупівлі сприятливі лише для одного постачальника або при будь-"
-"якому іншому серйозному порушенні можна подати вимогу про виправлення "
-"визначення переможця."
-
 #: ../../source/complaints-award.rst:29
 msgid "You can submit claim that does not need additional documents:"
 msgstr "Ви можете подати скаргу, що не потребує додаткових документів:"
@@ -110,166 +97,16 @@ msgstr ""
 "Спочатку створимо вимогу. В запиті потрібно передати токен доступу одного з "
 "учасників, який вже подав пропозицію."
 
-#~ msgid ""
-#~ "At first create a complaint. Send POST request with bidder's access token."
-#~ msgstr ""
-#~ "Спочатку створимо вимогу. В запиті потрібно передати токен доступу одного з "
-#~ "учасників, який вже подав пропозицію."
+#: ../../source/complaints-award.rst:21
+msgid "Submit tender award claim:"
+msgstr "Подамо вимогу про виправлення рішення по визначенню переможця:"
 
-#~ msgid "At first create a claim:"
-#~ msgstr "Спочатку створимо вимогу:"
+#: ../../source/complaints-award.rst:6
+msgid ""
+"If tender award is favoriting only one supplier, or in any other viable "
+"case, participants can submit Tender Award Claim."
+msgstr ""
+"Якщо при визначенні переможця надавалась перевага лише одному постачальнику "
+"або при будь-якому іншому серйозному порушенні, учасники можуть подати вимогу "
+"про виправлення результатів визначення переможця."
 
-#~ msgid ""
-#~ "If tender conditions are favoriting only one provider, or in any other "
-#~ "viable case, one can submit Tender Award Claim."
-#~ msgstr ""
-#~ "Якщо умови закупівлі сприятливі лише для одного постачальника або при будь-"
-#~ "якому іншому серйозному порушенні можна подати вимогу про виправлення "
-#~ "визначення переможця."
-
-#~ msgid "Complaint Workflow"
-#~ msgstr "Схема роботи оскаржень"
-
-#~ msgid "Workflow"
-#~ msgstr "Схема роботи"
-
-#~ msgid "Roles"
-#~ msgstr "Ролі"
-
-#~ msgid "dashed"
-#~ msgstr "пунктирна лінія"
-
-#~ msgid "plain"
-#~ msgstr "звичайна лінія"
-
-#~ msgid "bold"
-#~ msgstr "жирна лінія"
-
-#~ msgid "dotted"
-#~ msgstr "лінія з крапками"
-
-#~ msgid "Statuses"
-#~ msgstr "Статуси"
-
-#~ msgid "Complainant can cancel claim."
-#~ msgstr "Скаржник може відкликати вимогу."
-
-#~ msgid "Reviewer can upload documents and review complaint."
-#~ msgstr "Орган оскарження може завантажувати документи та розглядати скарги."
-
-#~ msgid "Complaint recognized as invalid."
-#~ msgstr "Скаргу визнано недійсною."
-
-#~ msgid "Complaint recognized as declined."
-#~ msgstr "Скаргу визнано відхиленою."
-
-#~ msgid "Complaint recognized as resolved."
-#~ msgstr "Скаргу визнано вирішеною."
-
-#~ msgid "Complaint cancelled by complainant."
-#~ msgstr "Скаргу відкликано скаржником."
-
-#~ msgid "Initial status"
-#~ msgstr "Початковий статус"
-
-#~ msgid ""
-#~ "Complainant can submit claim, upload documents, cancel claim, and re-submit "
-#~ "it."
-#~ msgstr ""
-#~ "На цьому етапі скаржник може подати вимогу, завантажити документи, "
-#~ "відкликати вимогу та подати її знову."
-
-#~ msgid "Procuring entity can upload documents and answer to claim."
-#~ msgstr "Замовник може завантажити документи та відповісти на вимогу."
-
-#~ msgid ""
-#~ "Complainant can cancel claim, upload documents, accept solution or escalate "
-#~ "claim to complaint."
-#~ msgstr ""
-#~ "Скаржник може відкликати вимогу, завантажити документи, погодитись з "
-#~ "вирішенням або перетворити вимогу на скаргу."
-
-#~ msgid "Terminal status"
-#~ msgstr "Кінцевий статус"
-
-#~ msgid ""
-#~ "For more detailed information read `Complaints "
-#~ "<http://openprocurement.org/en/complaints.html>`_."
-#~ msgstr ""
-#~ "Більш детальну інформацію шукайте на сторінці `Оскарження "
-#~ "<http://openprocurement.org/ua/complaints.html>`_."
-
-#~ msgid "And check individual complaint:"
-#~ msgstr "І перевірити окрему скаргу:"
-
-#~ msgid "Tender Awards Complaint Retrieval"
-#~ msgstr "Отримання інформації про скарги на рішення замовника"
-
-#~ msgid "You can list all Tender Awards Complaints:"
-#~ msgstr "Ви можете отримати список всіх скарг на рішення замовника:"
-
-#~ msgid ""
-#~ "If tender conditions are favoriting only one provider, or in any other "
-#~ "viable case, one can submit Tender Awards Complaint."
-#~ msgstr ""
-#~ "Якщо умови закупівлі сприятливі лише для одного постачальника або при будь-"
-#~ "якому іншому серйозному порушенні можна подати скаргу на рішення замовника."
-
-#~ msgid ""
-#~ "For more detailed information read `Non-price criteria "
-#~ "<http://openprocurement.org/en/nonprice-criteria.html>`_."
-#~ msgstr ""
-#~ "Більш детальну інформацію шукайте на сторінці `Нецінові параметри "
-#~ "<http://openprocurement.org/ua/nonprice-criteria.html>`_."
-
-#~ msgid "Complaints Resolution"
-#~ msgstr "Вирішення скарг"
-
-#~ msgid "initial status"
-#~ msgstr "початковий статус"
-
-#~ msgid "Complainant can cancel claim, upload documents and submit claim."
-#~ msgstr "Скаржник може відмінити скаргу, "
-
-#~ msgid "Tender owner can upload documents and answer to claim."
-#~ msgstr "Замовник може завантажити документи та "
-
-#~ msgid ""
-#~ "Complainant can cancel claim, upload documents, admit solution or escalate "
-#~ "claim to complaint."
-#~ msgstr "Скаржник може відмінити скаргу, завантажити документи"
-
-#~ msgid "Complaints Submission"
-#~ msgstr "Подання скарг"
-
-#~ msgid "Tender Awards Complaint Submission"
-#~ msgstr "Подання скарги на рішення замовника"
-
-#~ msgid "Tender Award Complaint Submission"
-#~ msgstr "Подання скарги на визначення переможця"
-
-#~ msgid "Tender Award Complaint Retrieval"
-#~ msgstr "Отримання інформації про скарги на визначення переможця"
-
-#~ msgid "You can list all complaints:"
-#~ msgstr "Ви можете отримати список всіх скарг:"
-
-#~ msgid ""
-#~ "For more information read `Complaints page "
-#~ "<http://openprocurement.org/en/complaints.html>`_."
-#~ msgstr ""
-#~ "Більш детальну інформацію шукайте на сторінці `Оскарження "
-#~ "<http://openprocurement.org/ua/complaints.html>`_."
-
-#~ msgid ""
-#~ "If tender conditions are favoriting only one provider, or in any other "
-#~ "viable case one can submit Tender Awards Complaint."
-#~ msgstr ""
-#~ "Якщо умови закупівлі сприятливі лише для одного постачальника або при будь-"
-#~ "якому іншому серйозному порушенні можна подати скаргу на рішення замовника."
-
-#~ msgid "And can check individual complaint:"
-#~ msgstr "І можете перевірити окрему скаргу:"
-
-#~ msgid "And either resolves it:"
-#~ msgstr "Який або вирішує скаргу:"

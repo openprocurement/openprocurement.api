@@ -43,8 +43,10 @@ def read_json(name):
 
 
 CPV_CODES = read_json('cpv.json')
+CPV_CODES.append('99999999-9')
 #DKPP_CODES = read_json('dkpp.json')
 ORA_CODES = [i['code'] for i in read_json('OrganisationRegistrationAgency.json')['data']]
+WORKING_DAYS = read_json('working_days.json')
 
 
 class ITender(Interface):
@@ -206,6 +208,11 @@ class Value(Model):
     valueAddedTaxIncluded = BooleanType(required=True, default=True)
 
 
+class Guarantee(Model):
+    amount = FloatType(required=True, min_value=0)  # Amount as a number.
+    currency = StringType(required=True, default=u'UAH', max_length=3, min_length=3)  # The currency in 3-letter ISO 4217 format.
+
+
 class Period(Model):
     """The period when the tender is open for submissions. The end date is the closing date for tender submissions."""
 
@@ -303,9 +310,12 @@ class Location(Model):
     elevation = BaseType()
 
 
+ADDITIONAL_CLASSIFICATIONS_SCHEMES = [u'ДКПП', u'NONE', u'ДК003', u'ДК015', u'ДК018']
+
+
 def validate_dkpp(items, *args):
-    if items and not any([i.scheme == u'ДКПП' for i in items]):
-        raise ValidationError(u"One of additional classifications should be 'ДКПП'")
+    if items and not any([i.scheme in ADDITIONAL_CLASSIFICATIONS_SCHEMES for i in items]):
+        raise ValidationError(u"One of additional classifications should be one of [{0}].".format(', '.join(ADDITIONAL_CLASSIFICATIONS_SCHEMES)))
 
 
 class Item(Model):
@@ -346,7 +356,9 @@ class Document(Model):
         'riskProvisions', 'billOfQuantity', 'bidders', 'conflictOfInterest',
         'debarments', 'evaluationReports', 'winningBid', 'complaints',
         'contractSigned', 'contractArrangements', 'contractSchedule',
-        'contractAnnexe', 'contractGuarantees', 'subContract'
+        'contractAnnexe', 'contractGuarantees', 'subContract',
+        'eligibilityCriteria', 'contractProforma', 'commercialProposal',
+        'qualificationDocuments', 'eligibilityDocuments',
     ])
     title = StringType()  # A title of the document.
     title_en = StringType()
@@ -766,6 +778,7 @@ class Contract(Model):
     id = MD5Type(required=True, default=lambda: uuid4().hex)
     awardID = StringType(required=True)
     contractID = StringType()
+    contractNumber = StringType()
     title = StringType()  # Contract title
     title_en = StringType()
     title_ru = StringType()
@@ -779,7 +792,6 @@ class Contract(Model):
     documents = ListType(ModelType(Document), default=list())
     items = ListType(ModelType(Item))
     suppliers = ListType(ModelType(Organization), min_size=1, max_size=1)
-    value = ModelType(Value)
 
     def validate_awardID(self, data, awardID):
         if awardID and isinstance(data['__parent__'], Model) and awardID not in [i.id for i in data['__parent__'].awards]:
@@ -802,7 +814,8 @@ class Award(Model):
     class Options:
         roles = {
             'create': blacklist('id', 'status', 'date', 'documents', 'complaints', 'complaintPeriod'),
-            'edit': whitelist('status'),
+            'edit': whitelist('status', 'title', 'title_en', 'title_ru',
+                              'description', 'description_en', 'description_ru'),
             'embedded': schematics_embedded_role,
             'view': schematics_default_role,
             'Administrator': whitelist('complaintPeriod'),
@@ -880,8 +893,8 @@ embedded_lot_role = (blacklist('numberOfBids') + schematics_embedded_role)
 class Lot(Model):
     class Options:
         roles = {
-            'create': whitelist('id', 'title', 'title_en', 'title_ru', 'description', 'description_en', 'description_ru', 'value', 'minimalStep'),
-            'edit': whitelist('title', 'title_en', 'title_ru', 'description', 'description_en', 'description_ru', 'value', 'minimalStep'),
+            'create': whitelist('id', 'title', 'title_en', 'title_ru', 'description', 'description_en', 'description_ru', 'value', 'guarantee', 'minimalStep'),
+            'edit': whitelist('title', 'title_en', 'title_ru', 'description', 'description_en', 'description_ru', 'value', 'guarantee', 'minimalStep'),
             'embedded': embedded_lot_role,
             'view': default_lot_role,
             'default': default_lot_role,
@@ -903,6 +916,7 @@ class Lot(Model):
     auctionPeriod = ModelType(LotAuctionPeriod, default={})
     auctionUrl = URLType()
     status = StringType(choices=['active', 'cancelled', 'unsuccessful', 'complete'], default='active')
+    guarantee = ModelType(Guarantee)
 
     @serializable
     def numberOfBids(self):
@@ -920,6 +934,12 @@ class Lot(Model):
                           currency=self.__parent__.value.currency,
                           valueAddedTaxIncluded=self.__parent__.value.valueAddedTaxIncluded))
 
+    @serializable(serialized_name="guarantee", serialize_when_none=False, type=ModelType(Guarantee))
+    def lot_guarantee(self):
+        if self.guarantee:
+            currency = self.__parent__.guarantee.currency if self.__parent__.guarantee else self.guarantee.currency
+            return Guarantee(dict(amount=self.guarantee.amount, currency=currency))
+
     @serializable(serialized_name="minimalStep", type=ModelType(Value))
     def lot_minimalStep(self):
         return Value(dict(amount=self.minimalStep.amount,
@@ -930,6 +950,7 @@ class Lot(Model):
         if value and value.amount and data.get('value'):
             if data.get('value').amount < value.amount:
                 raise ValidationError(u"value should be less than value of lot")
+
 
 
 def validate_features_uniq(features, *args):
@@ -1058,6 +1079,7 @@ class Tender(SchematicsDocument, Model):
     cancellations = ListType(ModelType(Cancellation), default=list())
     features = ListType(ModelType(Feature), validators=[validate_features_uniq])
     lots = ListType(ModelType(Lot), default=list(), validators=[validate_lots_uniq])
+    guarantee = ModelType(Guarantee)
 
     _attachments = DictType(DictType(BaseType), default=dict())  # couchdb attachments
     dateModified = IsoDateTimeType()
@@ -1065,6 +1087,9 @@ class Tender(SchematicsDocument, Model):
     owner = StringType()
 
     procurementMethodType = StringType(default="belowThreshold")
+
+    create_accreditation = 1
+    edit_accreditation = 2
 
     __name__ = ''
 
@@ -1183,6 +1208,21 @@ class Tender(SchematicsDocument, Model):
                           currency=self.value.currency,
                           valueAddedTaxIncluded=self.value.valueAddedTaxIncluded)) if self.lots else self.value
 
+    @serializable(serialized_name="guarantee", serialize_when_none=False, type=ModelType(Guarantee))
+    def tender_guarantee(self):
+        if self.lots:
+            lots_amount = [i.guarantee.amount for i in self.lots if i.guarantee]
+            if not lots_amount:
+                return self.guarantee
+            guarantee = {'amount': sum(lots_amount)}
+            lots_currency = [i.guarantee.currency for i in self.lots if i.guarantee]
+            guarantee['currency'] = lots_currency[0] if lots_currency else None
+            if self.guarantee:
+                guarantee['currency'] = self.guarantee.currency
+            return Guarantee(guarantee)
+        else:
+            return self.guarantee
+
     @serializable(serialized_name="minimalStep", type=ModelType(Value))
     def tender_minimalStep(self):
         return Value(dict(amount=min([i.minimalStep.amount for i in self.lots]),
@@ -1209,7 +1249,7 @@ class Tender(SchematicsDocument, Model):
             round(vnmax([
                 i
                 for i in features
-                if i.featureOf == 'tenderer' or i.featureOf == 'lot' and i.relatedItem != lot['id'] or i.featureOf == 'item' and i.relatedItem in [j.id for j in data['items'] if j.relatedLot != lot['id']]
+                if i.featureOf == 'tenderer' or i.featureOf == 'lot' and i.relatedItem == lot['id'] or i.featureOf == 'item' and i.relatedItem in [j.id for j in data['items'] if j.relatedLot == lot['id']]
             ]), 15) > 0.3
             for lot in data['lots']
         ]):
@@ -1239,3 +1279,10 @@ class Tender(SchematicsDocument, Model):
             raise ValidationError(u"period should begin after auctionPeriod")
         if period and period.startDate and data.get('tenderPeriod') and data.get('tenderPeriod').endDate and period.startDate < data.get('tenderPeriod').endDate:
             raise ValidationError(u"period should begin after tenderPeriod")
+    def validate_lots(self, data, value):
+        if len(value) == 1 and data['guarantee']:
+            lot = value[0]
+            if lot.guarantee and lot.guarantee.currency != data['guarantee'].currency:
+                raise ValidationError(u"lot guarantee currency should be identical to tender guarantee currency")
+        if len(set([lot.guarantee.currency for lot in value if lot.guarantee])) > 1:
+            raise ValidationError(u"lot guarantee currency should be identical to tender guarantee currency")

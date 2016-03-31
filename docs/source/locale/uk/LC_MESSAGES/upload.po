@@ -56,6 +56,3 @@ msgstr ""
 "Всі точки входу API завантаження документів використовують той самий набір "
 "правил."
 
-#~ msgid ""
-#~ "All of the document uploading API endpoints follows the same set of rules."
-#~ msgstr "Всі точки входу API завантаження документів "

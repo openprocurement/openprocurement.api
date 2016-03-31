@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 from barbecue import chef
 from base64 import b64encode
+from datetime import datetime, time, timedelta
 from cornice.resource import resource, view
 from cornice.util import json_error
 from couchdb.http import ResourceConflict
@@ -9,7 +10,7 @@ from functools import partial
 from json import dumps
 from jsonpatch import make_patch, apply_patch as _apply_patch
 from logging import getLogger
-from openprocurement.api.models import get_now, TZ, COMPLAINT_STAND_STILL_TIME
+from openprocurement.api.models import get_now, TZ, COMPLAINT_STAND_STILL_TIME, WORKING_DAYS
 from openprocurement.api.traversal import factory
 from pkg_resources import get_distribution
 from rfc6266 import build_header
@@ -23,13 +24,15 @@ from pyramid.exceptions import URLDecodeError
 from pyramid.compat import decode_path_info
 from binascii import hexlify, unhexlify
 from Crypto.Cipher import AES
+from re import compile
 
 
 PKG = get_distribution(__package__)
 LOGGER = getLogger(PKG.project_name)
-VERSION = '{}.{}'.format(int(PKG.parsed_version[0]), int(PKG.parsed_version[1]))
+VERSION = '{}.{}'.format(int(PKG.parsed_version[0]), int(PKG.parsed_version[1]) if PKG.parsed_version[1].isdigit() else 0)
 ROUTE_PREFIX = '/api/{}'.format(VERSION)
 DOCUMENT_BLACKLISTED_FIELDS = ('title', 'format', '__parent__', 'id', 'url', 'dateModified', )
+ACCELERATOR_RE = compile(r'.accelerator=(?P<accelerator>\d+)')
 json_view = partial(view, renderer='json')
 
 
@@ -227,7 +230,7 @@ def save_tender(request):
             for i in e.message:
                 request.errors.add('body', i, e.message[i])
             request.errors.status = 422
-        except ResourceConflict:  # pragma: no cover
+        except ResourceConflict, e:  # pragma: no cover
             request.errors.add('body', 'data', str(e))
             request.errors.status = 409
         except Exception, e:  # pragma: no cover
@@ -450,7 +453,7 @@ def check_tender_status(request):
         stand_still_end = max(stand_still_ends) if stand_still_ends else now
         stand_still_time_expired = stand_still_end < now
         active_awards = any([
-            a.status == 'active'
+            a.status in ['active', 'pending']
             for a in tender.awards
         ])
         if not active_awards and not pending_complaints and not pending_awards_complaints and stand_still_time_expired:
@@ -779,3 +782,29 @@ def decrypt(uuid, name, key):
     except:
         text = ''
     return text
+
+
+def calculate_business_date(date_obj, timedelta_obj, context=None, working_days=False):
+    if context and 'procurementMethodDetails' in context:
+        re_obj = ACCELERATOR_RE.search(context['procurementMethodDetails'])
+        if re_obj and 'accelerator' in re_obj.groupdict():
+            return date_obj + (timedelta_obj / int(re_obj.groupdict()['accelerator']))
+    if working_days:
+        date = date_obj
+        if timedelta_obj > timedelta():
+            if date_obj.weekday() in [5, 6] and WORKING_DAYS.get(date_obj.date().isoformat(), True) or WORKING_DAYS.get(date_obj.date().isoformat(), False):
+                date_obj = datetime.combine(date_obj.date(), time(0, tzinfo=date_obj.tzinfo)) + timedelta(1)
+                while date_obj.weekday() in [5, 6] and WORKING_DAYS.get(date_obj.date().isoformat(), True) or WORKING_DAYS.get(date_obj.date().isoformat(), False):
+                    date_obj += timedelta(1)
+        else:
+            if date_obj.weekday() in [5, 6] and WORKING_DAYS.get(date_obj.date().isoformat(), True) or WORKING_DAYS.get(date_obj.date().isoformat(), False):
+                date_obj = datetime.combine(date_obj.date(), time(0, tzinfo=date_obj.tzinfo))
+                while date_obj.weekday() in [5, 6] and WORKING_DAYS.get(date_obj.date().isoformat(), True) or WORKING_DAYS.get(date_obj.date().isoformat(), False):
+                    date_obj -= timedelta(1)
+                date_obj += timedelta(1)
+        for _ in xrange(abs(timedelta_obj.days)):
+            date_obj += timedelta(1) if timedelta_obj > timedelta() else -timedelta(1)
+            while date_obj.weekday() in [5, 6] and WORKING_DAYS.get(date_obj.date().isoformat(), True) or WORKING_DAYS.get(date_obj.date().isoformat(), False):
+                date_obj += timedelta(1) if timedelta_obj > timedelta() else -timedelta(1)
+        return date_obj
+    return date_obj + timedelta_obj

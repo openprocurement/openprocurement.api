@@ -3,7 +3,7 @@
 Claim Submission
 ================
 
-If tender conditions are favoriting particular supplier, or in any other viable case, one can submit Tender Conditions Claim.
+If tender conditions are favoriting particular supplier, or in any other viable case, any registered user can submit Tender Conditions Claim.
 
 Tender Conditions Claim Submission (with documents)
 ---------------------------------------------------

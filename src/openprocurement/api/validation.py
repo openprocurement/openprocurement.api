@@ -72,6 +72,10 @@ def validate_tender_data(request):
         return
 
     model = request.tender_from_data(data, create=False)
+    if not request.check_accreditation(model.create_accreditation):
+        request.errors.add('procurementMethodType', 'accreditation', 'Accreditation not allows to create tender')
+        request.errors.status = 403
+        return
     return validate_data(request, model, data=data)
 
 
@@ -117,30 +121,25 @@ def validate_tender_auction_data(request):
                 x if x['id'] == lot_id else {}
                 for (y, x) in sorted(zip([tender_lots_ids.index(i['id']) for i in data.get('lots', [])], data.get('lots', [])))
             ]
-        tender_bids_lots_ids = dict([
-            (i.id, [
-                j['relatedLot']
-                for j in i.lotValues
-                if getattr(j, 'status', 'active') == 'active'
-            ])
-            for i in tender.bids
-            if (getattr(i, 'status', 'active') or 'active') == 'active'
-        ])
+        if tender.lots:
+            for index, bid in enumerate(bids):
+                if (getattr(tender.bids[index], 'status', 'active') or 'active') == 'active':
+                    if len(bid.get('lotValues', [])) != len(tender.bids[index].lotValues):
+                        request.errors.add('body', 'bids', [{u'lotValues': [u'Number of lots of auction results did not match the number of tender lots']}])
+                        request.errors.status = 422
+                        return
+                    for lot_index, lotValue in enumerate(tender.bids[index].lotValues):
+                        if lotValue.relatedLot != bid.get('lotValues', [])[lot_index].get('relatedLot', None):
+                            request.errors.add('body', 'bids', [{u'lotValues': [{u'relatedLot': ['relatedLot should be one of lots of bid']}]}])
+                            request.errors.status = 422
+                            return
+            for bid_index, bid in enumerate(data['bids']):
+                if 'lotValues' in bid:
+                    bid['lotValues'] = [
+                        x if x['relatedLot'] == lot_id and (getattr(tender.bids[bid_index].lotValues[lotValue_index], 'status', 'active') or 'active') == 'active' else {}
+                        for lotValue_index, x in enumerate(bid['lotValues'])
+                    ]
 
-        if tender.lots and any([len(bid.get('lotValues', [])) != len(tender_bids_lots_ids.get(bid['id'], [])) for bid in bids if getattr(bid, 'status', 'active') == 'active']):
-            request.errors.add('body', 'bids', [{u'lotValues': [u'Number of lots of auction results did not match the number of tender lots']}])
-            request.errors.status = 422
-            return
-        if tender.lots and any([set([j['relatedLot'] for j in bid.get('lotValues', [])]) != set(tender_bids_lots_ids.get(bid['id'], [])) for bid in bids if getattr(bid, 'status', 'active') == 'active']):
-            request.errors.add('body', 'bids', [{u'lotValues': [{u'relatedLot': ['relatedLot should be one of lots of bid']}]}])
-            request.errors.status = 422
-            return
-        for bid in data['bids']:
-            if 'lotValues' in bid:
-                bid['lotValues'] = [
-                    x if x['relatedLot'] == lot_id else {}
-                    for (y, x) in sorted(zip([tender_bids_lots_ids[bid['id']].index(i['relatedLot']) for i in bid['lotValues']], bid['lotValues']))
-                ]
     else:
         data = {}
     if request.method == 'POST':
@@ -153,6 +152,10 @@ def validate_tender_auction_data(request):
 
 
 def validate_bid_data(request):
+    if not request.check_accreditation(request.tender.edit_accreditation):
+        request.errors.add('procurementMethodType', 'accreditation', 'Accreditation not allows to create bid')
+        request.errors.status = 403
+        return
     update_logging_context(request, {'bid_id': '__new__'})
     model = type(request.tender).bids.model_class
     return validate_data(request, model)
@@ -180,6 +183,10 @@ def validate_patch_document_data(request):
 
 
 def validate_question_data(request):
+    if not request.check_accreditation(request.tender.edit_accreditation):
+        request.errors.add('procurementMethodType', 'accreditation', 'Accreditation not allows to create question')
+        request.errors.status = 403
+        return
     update_logging_context(request, {'question_id': '__new__'})
     model = type(request.tender).questions.model_class
     return validate_data(request, model)
@@ -191,6 +198,10 @@ def validate_patch_question_data(request):
 
 
 def validate_complaint_data(request):
+    if not request.check_accreditation(request.tender.edit_accreditation):
+        request.errors.add('procurementMethodType', 'accreditation', 'Accreditation not allows to create complaint')
+        request.errors.status = 403
+        return
     update_logging_context(request, {'complaint_id': '__new__'})
     model = type(request.tender).complaints.model_class
     return validate_data(request, model)

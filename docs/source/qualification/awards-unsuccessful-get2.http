@@ -1,0 +1,380 @@
+GET /api/0.12/tenders/9f65ed38c8f446fcab0b6709b76f38b0/awards HTTP/1.0
+Authorization: Basic YnJva2VyOg==
+Host: api-sandbox.openprocurement.org
+
+
+200 OK
+Content-Type: application/json; charset=UTF-8
+
+{
+  "data": [
+    {
+      "status": "cancelled", 
+      "documents": [
+        {
+          "title": "Unsuccessful_Reason.pdf", 
+          "url": "http://api-sandbox.openprocurement.org/api/0.12/tenders/9f65ed38c8f446fcab0b6709b76f38b0/awards/14fa07fa028d472896c4047375e08407/documents/d16d63904ff640d3bc201c9b59d71aaa?download=d1fcdab810604a4f97a61c6f57bed2ac", 
+          "format": "application/pdf", 
+          "documentOf": "tender", 
+          "datePublished": "2016-03-18T18:47:53.108334+02:00", 
+          "id": "d16d63904ff640d3bc201c9b59d71aaa", 
+          "dateModified": "2016-03-18T18:47:53.108372+02:00"
+        }
+      ], 
+      "complaintPeriod": {
+        "startDate": "2016-03-18T18:47:52.843898+02:00", 
+        "endDate": "2016-03-18T18:48:00.387879+02:00"
+      }, 
+      "suppliers": [
+        {
+          "contactPoint": {
+            "name": "Державне управління справами", 
+            "telephone": "0440000000"
+          }, 
+          "identifier": {
+            "scheme": "UA-EDR", 
+            "id": "00037256", 
+            "uri": "http://www.dus.gov.ua/"
+          }, 
+          "name": "Державне управління справами", 
+          "address": {
+            "postalCode": "01220", 
+            "countryName": "Україна", 
+            "streetAddress": "вул. Банкова, 11, корпус 1", 
+            "region": "м. Київ", 
+            "locality": "м. Київ"
+          }
+        }
+      ], 
+      "bid_id": "a2af548d79ac4e03b0dee91767412b03", 
+      "value": {
+        "currency": "UAH", 
+        "amount": 450.0, 
+        "valueAddedTaxIncluded": true
+      }, 
+      "date": "2016-03-18T18:47:52.844215+02:00", 
+      "complaints": [
+        {
+          "status": "resolved", 
+          "documents": [
+            {
+              "author": "complaint_owner", 
+              "title": "Complaint_Attachement.pdf", 
+              "url": "http://api-sandbox.openprocurement.org/api/0.12/tenders/9f65ed38c8f446fcab0b6709b76f38b0/awards/14fa07fa028d472896c4047375e08407/complaints/482fbed83f884b94adfccb63128f58cb/documents/558b64a00131433185592996898706da?download=1e8f27ec05dc41acb1deca6630560cd5", 
+              "format": "application/pdf", 
+              "documentOf": "tender", 
+              "datePublished": "2016-03-18T18:47:55.041259+02:00", 
+              "id": "558b64a00131433185592996898706da", 
+              "dateModified": "2016-03-18T18:47:55.041297+02:00"
+            }
+          ], 
+          "description": "complaint description", 
+          "author": {
+            "contactPoint": {
+              "name": "Державне управління справами", 
+              "telephone": "0440000000"
+            }, 
+            "identifier": {
+              "scheme": "UA-EDR", 
+              "id": "00037256", 
+              "uri": "http://www.dus.gov.ua/"
+            }, 
+            "name": "Державне управління справами", 
+            "address": {
+              "postalCode": "01220", 
+              "countryName": "Україна", 
+              "streetAddress": "вул. Банкова, 11, корпус 1", 
+              "region": "м. Київ", 
+              "locality": "м. Київ"
+            }
+          }, 
+          "resolutionType": "resolved", 
+          "type": "claim", 
+          "title": "complaint title", 
+          "satisfied": true, 
+          "tendererAction": "Виправлено неконкурентні умови", 
+          "dateAnswered": "2016-03-18T18:47:56.026765+02:00", 
+          "tendererActionDate": "2016-03-18T18:47:56.026793+02:00", 
+          "dateSubmitted": "2016-03-18T18:47:55.295253+02:00", 
+          "complaintID": "UA-2016-03-18-000001.5", 
+          "date": "2016-03-18T18:47:54.800487+02:00", 
+          "resolution": "Виправлено неконкурентні умови", 
+          "id": "482fbed83f884b94adfccb63128f58cb"
+        }, 
+        {
+          "status": "invalid", 
+          "dateDecision": "2016-03-18T18:47:57.187093+02:00", 
+          "description": "complaint description", 
+          "author": {
+            "contactPoint": {
+              "name": "Державне управління справами", 
+              "telephone": "0440000000"
+            }, 
+            "identifier": {
+              "scheme": "UA-EDR", 
+              "id": "00037256", 
+              "uri": "http://www.dus.gov.ua/"
+            }, 
+            "name": "Державне управління справами", 
+            "address": {
+              "postalCode": "01220", 
+              "countryName": "Україна", 
+              "streetAddress": "вул. Банкова, 11, корпус 1", 
+              "region": "м. Київ", 
+              "locality": "м. Київ"
+            }
+          }, 
+          "resolutionType": "resolved", 
+          "type": "claim", 
+          "title": "complaint title", 
+          "satisfied": false, 
+          "dateEscalated": "2016-03-18T18:47:56.905741+02:00", 
+          "dateAnswered": "2016-03-18T18:47:56.638171+02:00", 
+          "dateSubmitted": "2016-03-18T18:47:55.569906+02:00", 
+          "complaintID": "UA-2016-03-18-000001.6", 
+          "date": "2016-03-18T18:47:55.568530+02:00", 
+          "resolution": "Виправлено неконкурентні умови", 
+          "id": "b399b144ba5243e1be27b915a1469ad8"
+        }, 
+        {
+          "status": "resolved", 
+          "dateDecision": "2016-03-18T18:47:59.562161+02:00", 
+          "documents": [
+            {
+              "author": "reviewers", 
+              "title": "ComplaintResolution.pdf", 
+              "url": "http://api-sandbox.openprocurement.org/api/0.12/tenders/9f65ed38c8f446fcab0b6709b76f38b0/awards/14fa07fa028d472896c4047375e08407/complaints/acd3b4ff35c54e45aa697c7f99644488/documents/2a24b5f0196847b8a4c4cd5c4fe8a4b6?download=a756a130d08b49269300b2ea9348f821", 
+              "format": "application/pdf", 
+              "documentOf": "tender", 
+              "datePublished": "2016-03-18T18:47:59.230298+02:00", 
+              "id": "2a24b5f0196847b8a4c4cd5c4fe8a4b6", 
+              "dateModified": "2016-03-18T18:47:59.230335+02:00"
+            }
+          ], 
+          "description": "complaint description", 
+          "author": {
+            "contactPoint": {
+              "name": "Державне управління справами", 
+              "telephone": "0440000000"
+            }, 
+            "identifier": {
+              "scheme": "UA-EDR", 
+              "id": "00037256", 
+              "uri": "http://www.dus.gov.ua/"
+            }, 
+            "name": "Державне управління справами", 
+            "address": {
+              "postalCode": "01220", 
+              "countryName": "Україна", 
+              "streetAddress": "вул. Банкова, 11, корпус 1", 
+              "region": "м. Київ", 
+              "locality": "м. Київ"
+            }
+          }, 
+          "resolutionType": "resolved", 
+          "type": "claim", 
+          "title": "complaint title", 
+          "satisfied": false, 
+          "dateEscalated": "2016-03-18T18:47:58.040949+02:00", 
+          "dateAnswered": "2016-03-18T18:47:57.745227+02:00", 
+          "dateSubmitted": "2016-03-18T18:47:57.455759+02:00", 
+          "complaintID": "UA-2016-03-18-000001.7", 
+          "date": "2016-03-18T18:47:57.454372+02:00", 
+          "resolution": "Виправлено неконкурентні умови", 
+          "id": "acd3b4ff35c54e45aa697c7f99644488"
+        }, 
+        {
+          "status": "declined", 
+          "dateDecision": "2016-03-18T18:47:59.874871+02:00", 
+          "description": "complaint description", 
+          "author": {
+            "contactPoint": {
+              "name": "Державне управління справами", 
+              "telephone": "0440000000"
+            }, 
+            "identifier": {
+              "scheme": "UA-EDR", 
+              "id": "00037256", 
+              "uri": "http://www.dus.gov.ua/"
+            }, 
+            "name": "Державне управління справами", 
+            "address": {
+              "postalCode": "01220", 
+              "countryName": "Україна", 
+              "streetAddress": "вул. Банкова, 11, корпус 1", 
+              "region": "м. Київ", 
+              "locality": "м. Київ"
+            }
+          }, 
+          "resolutionType": "resolved", 
+          "type": "claim", 
+          "title": "complaint title", 
+          "satisfied": false, 
+          "dateEscalated": "2016-03-18T18:47:58.935210+02:00", 
+          "dateAnswered": "2016-03-18T18:47:58.628491+02:00", 
+          "dateSubmitted": "2016-03-18T18:47:58.315476+02:00", 
+          "complaintID": "UA-2016-03-18-000001.8", 
+          "date": "2016-03-18T18:47:58.314054+02:00", 
+          "resolution": "Виправлено неконкурентні умови", 
+          "id": "05a30da1f9e940d7953a743a44422453"
+        }
+      ], 
+      "id": "14fa07fa028d472896c4047375e08407"
+    }, 
+    {
+      "status": "cancelled", 
+      "complaintPeriod": {
+        "startDate": "2016-03-18T18:47:53.304173+02:00", 
+        "endDate": "2016-03-18T18:48:00.387879+02:00"
+      }, 
+      "suppliers": [
+        {
+          "contactPoint": {
+            "name": "Державне управління справами", 
+            "telephone": "0440000000"
+          }, 
+          "identifier": {
+            "scheme": "UA-EDR", 
+            "id": "00037256", 
+            "uri": "http://www.dus.gov.ua/"
+          }, 
+          "name": "Державне управління справами", 
+          "address": {
+            "postalCode": "01220", 
+            "countryName": "Україна", 
+            "streetAddress": "вул. Банкова, 11, корпус 1", 
+            "region": "м. Київ", 
+            "locality": "м. Київ"
+          }
+        }
+      ], 
+      "bid_id": "8c2d769086b24bcbb8b9f9c56bb8998f", 
+      "value": {
+        "currency": "UAH", 
+        "amount": 469.0, 
+        "valueAddedTaxIncluded": true
+      }, 
+      "date": "2016-03-18T18:47:53.304450+02:00", 
+      "id": "604eedfaa47c49ea81eaf511e378cd9c"
+    }, 
+    {
+      "status": "cancelled", 
+      "documents": [
+        {
+          "title": "Cancellation_Reason.pdf", 
+          "url": "http://api-sandbox.openprocurement.org/api/0.12/tenders/9f65ed38c8f446fcab0b6709b76f38b0/awards/fd79d41fbde649e48b5cd35f98a40451/documents/469ca6632a0b4803bab745ef24bb569a?download=0c339d3f215f4f9cbd71253ef9f2347c", 
+          "format": "application/pdf", 
+          "documentOf": "tender", 
+          "datePublished": "2016-03-18T18:47:54.290710+02:00", 
+          "id": "469ca6632a0b4803bab745ef24bb569a", 
+          "dateModified": "2016-03-18T18:47:54.290748+02:00"
+        }
+      ], 
+      "complaintPeriod": {
+        "startDate": "2016-03-18T18:47:53.963195+02:00", 
+        "endDate": "2016-03-18T18:48:00.387879+02:00"
+      }, 
+      "suppliers": [
+        {
+          "contactPoint": {
+            "name": "Державне управління справами", 
+            "telephone": "0440000000"
+          }, 
+          "identifier": {
+            "scheme": "UA-EDR", 
+            "id": "00037256", 
+            "uri": "http://www.dus.gov.ua/"
+          }, 
+          "name": "Державне управління справами", 
+          "address": {
+            "postalCode": "01220", 
+            "countryName": "Україна", 
+            "streetAddress": "вул. Банкова, 11, корпус 1", 
+            "region": "м. Київ", 
+            "locality": "м. Київ"
+          }
+        }
+      ], 
+      "bid_id": "8c2d769086b24bcbb8b9f9c56bb8998f", 
+      "value": {
+        "currency": "UAH", 
+        "amount": 469.0, 
+        "valueAddedTaxIncluded": true
+      }, 
+      "date": "2016-03-18T18:47:53.963660+02:00", 
+      "id": "fd79d41fbde649e48b5cd35f98a40451"
+    }, 
+    {
+      "status": "cancelled", 
+      "complaintPeriod": {
+        "startDate": "2016-03-18T18:47:54.553322+02:00", 
+        "endDate": "2016-03-18T18:48:00.387879+02:00"
+      }, 
+      "suppliers": [
+        {
+          "contactPoint": {
+            "name": "Державне управління справами", 
+            "telephone": "0440000000"
+          }, 
+          "identifier": {
+            "scheme": "UA-EDR", 
+            "id": "00037256", 
+            "uri": "http://www.dus.gov.ua/"
+          }, 
+          "name": "Державне управління справами", 
+          "address": {
+            "postalCode": "01220", 
+            "countryName": "Україна", 
+            "streetAddress": "вул. Банкова, 11, корпус 1", 
+            "region": "м. Київ", 
+            "locality": "м. Київ"
+          }
+        }
+      ], 
+      "bid_id": "6e523173194247cda57db466a19db1d8", 
+      "value": {
+        "currency": "UAH", 
+        "amount": 475.0, 
+        "valueAddedTaxIncluded": true
+      }, 
+      "date": "2016-03-18T18:47:54.556143+02:00", 
+      "id": "7c794c59c8304a998360d05402e34d09"
+    }, 
+    {
+      "status": "pending", 
+      "complaintPeriod": {
+        "startDate": "2016-03-18T18:48:00.388762+02:00"
+      }, 
+      "suppliers": [
+        {
+          "contactPoint": {
+            "name": "Державне управління справами", 
+            "telephone": "0440000000"
+          }, 
+          "identifier": {
+            "scheme": "UA-EDR", 
+            "id": "00037256", 
+            "uri": "http://www.dus.gov.ua/"
+          }, 
+          "name": "Державне управління справами", 
+          "address": {
+            "postalCode": "01220", 
+            "countryName": "Україна", 
+            "streetAddress": "вул. Банкова, 11, корпус 1", 
+            "region": "м. Київ", 
+            "locality": "м. Київ"
+          }
+        }
+      ], 
+      "bid_id": "a2af548d79ac4e03b0dee91767412b03", 
+      "value": {
+        "currency": "UAH", 
+        "amount": 450.0, 
+        "valueAddedTaxIncluded": true
+      }, 
+      "date": "2016-03-18T18:48:00.389193+02:00", 
+      "id": "012b6607b2ea4c619d8ad45106bf84cf"
+    }
+  ]
+}
+

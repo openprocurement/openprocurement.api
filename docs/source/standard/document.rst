@@ -58,6 +58,8 @@ Schema
     
     * `debarments` - **Debarments issued**
     
+    * `contractProforma` - **Draft contract**
+    
     
     Possible values for :ref:`award`
     
@@ -93,6 +95,17 @@ Schema
     * `contractGuarantees` - **Guarantees**
     
     * `subContract` - **Subcontracts**
+    
+    
+    Possible values for :ref:`bid`
+    
+
+    * `commercialProposal` - **Сommercial proposal**    
+    
+    * `qualificationDocuments` - **Qualification documents**
+    
+    * `eligibilityDocuments` - **Eligibility documents**
+    
 
 :title:
     string, multilingual
@@ -149,3 +162,4 @@ Schema
     string
 
     Id of related :ref:`lot` or :ref:`item`.
+    

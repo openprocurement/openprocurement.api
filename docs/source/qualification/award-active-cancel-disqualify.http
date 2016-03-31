@@ -1,153 +1,67 @@
-PATCH /tenders/6d01584306ad4138bd78c9cf41056ea3/awards/77272dfb3e9645b4ab499e1d42913b87 HTTP/1.1
+PATCH /api/0.12/tenders/9f65ed38c8f446fcab0b6709b76f38b0/awards/fd79d41fbde649e48b5cd35f98a40451?acc_token=156967f2c18c4783ae1d34e4a20929a1 HTTP/1.0
+Authorization: Basic YnJva2VyOg==
+Content-Length: 36
+Content-Type: application/json
+Host: api-sandbox.openprocurement.org
 
 {
-    "data":{
-        "awardStatus": "unsuccessful"
-    }
-}
-
-HTTP/1.1 200 OK
-Location: /tenders/6d01584306ad4138bd78c9cf41056ea3/awards/2beef6aa944c4a8ba0e9654ed5e25993
-
-{
-    "data": {
-        "status": "unsuccessful", 
-        "suppliers": [
-            {
-                "contactPoint": {
-                    "name": "Розалія Піддубний", 
-                    "telephone": "014 883 59 49"
-                }, 
-                "identifier": {
-                    "scheme": "UA-EDR", 
-                    "id": "0000741"
-                }, 
-                "name": "Чуйко-Скопенко", 
-                "address": {
-                    "postalCode": "21100", 
-                    "countryName": "Україна", 
-                    "streetAddress": "21284 Данько Cape", 
-                    "region": "м. Вінниця", 
-                    "locality": "м. Вінниця"
-                }
-            }
-        ], 
-        "bid_id": "1af1d3169c5947c3a30450d2f8c8e7a2", 
-        "value": {
-            "currency": "UAH", 
-            "amount": 39000.0, 
-            "valueAddedTaxIncluded": true
-        }, 
-        "date": "2015-03-04T14:22:07.937667+02:00", 
-        "id": "77272dfb3e9645b4ab499e1d42913b87"
-    }
+  "data": {
+    "status": "unsuccessful"
+  }
 }
 
 
-
-GET /tenders/64e93250be76435397e8c992ed4214d1/awards  HTTP/1.1
+200 OK
+Content-Type: application/json; charset=UTF-8
+Location: http://api-sandbox.openprocurement.org/api/0.12/tenders/9f65ed38c8f446fcab0b6709b76f38b0/awards/7c794c59c8304a998360d05402e34d09
 
 {
-    "data": [
-        {
-            "status": "cancelled", 
-            "contracts": [
-                {
-                    "status": "cancelled", 
-                    "awardID": "fbccb31b3b864c7b80ca19ebd510ee72", 
-                    "id": "40d0fe977c0f4560a1de71ab122a6fae"
-                }
-            ], 
-            "suppliers": [
-                {
-                    "contactPoint": {
-                        "name": "Розалія Піддубний", 
-                        "telephone": "014 883 59 49"
-                    }, 
-                    "identifier": {
-                        "scheme": "UA-EDR", 
-                        "id": "0000741"
-                    }, 
-                    "name": "Чуйко-Скопенко", 
-                    "address": {
-                        "postalCode": "21100", 
-                        "countryName": "Україна", 
-                        "streetAddress": "21284 Данько Cape", 
-                        "region": "м. Вінниця", 
-                        "locality": "м. Вінниця"
-                    }
-                }
-            ], 
-            "bid_id": "1af1d3169c5947c3a30450d2f8c8e7a2", 
-            "value": {
-                "currency": "UAH", 
-                "amount": 39000.0, 
-                "valueAddedTaxIncluded": true
-            }, 
-            "date": "2015-03-04T14:21:01.006685+02:00", 
-            "id": "fbccb31b3b864c7b80ca19ebd510ee72"
+  "data": {
+    "status": "unsuccessful", 
+    "documents": [
+      {
+        "title": "Cancellation_Reason.pdf", 
+        "url": "http://api-sandbox.openprocurement.org/api/0.12/tenders/9f65ed38c8f446fcab0b6709b76f38b0/awards/fd79d41fbde649e48b5cd35f98a40451/documents/469ca6632a0b4803bab745ef24bb569a?download=0c339d3f215f4f9cbd71253ef9f2347c", 
+        "format": "application/pdf", 
+        "documentOf": "tender", 
+        "datePublished": "2016-03-18T18:47:54.290710+02:00", 
+        "id": "469ca6632a0b4803bab745ef24bb569a", 
+        "dateModified": "2016-03-18T18:47:54.290748+02:00"
+      }
+    ], 
+    "complaintPeriod": {
+      "startDate": "2016-03-18T18:47:53.963195+02:00", 
+      "endDate": "2016-03-19T18:47:54.552352+02:00"
+    }, 
+    "suppliers": [
+      {
+        "contactPoint": {
+          "name": "Державне управління справами", 
+          "telephone": "0440000000"
         }, 
-        {
-            "status": "unsuccessful", 
-            "suppliers": [
-                {
-                    "contactPoint": {
-                        "name": "Розалія Піддубний", 
-                        "telephone": "014 883 59 49"
-                    }, 
-                    "identifier": {
-                        "scheme": "UA-EDR", 
-                        "id": "0000741"
-                    }, 
-                    "name": "Чуйко-Скопенко", 
-                    "address": {
-                        "postalCode": "21100", 
-                        "countryName": "Україна", 
-                        "streetAddress": "21284 Данько Cape", 
-                        "region": "м. Вінниця", 
-                        "locality": "м. Вінниця"
-                    }
-                }
-            ], 
-            "bid_id": "1af1d3169c5947c3a30450d2f8c8e7a2", 
-            "value": {
-                "currency": "UAH", 
-                "amount": 39000.0, 
-                "valueAddedTaxIncluded": true
-            }, 
-            "date": "2015-03-04T14:22:07.937667+02:00", 
-            "id": "77272dfb3e9645b4ab499e1d42913b87"
+        "identifier": {
+          "scheme": "UA-EDR", 
+          "id": "00037256", 
+          "uri": "http://www.dus.gov.ua/"
         }, 
-        {
-            "status": "pending", 
-            "suppliers": [
-                {
-                    "contactPoint": {
-                        "name": "пан Остап Пелех", 
-                        "telephone": "+38 (485) 390-29-49"
-                    }, 
-                    "identifier": {
-                        "scheme": "UA-EDR", 
-                        "id": "00003195"
-                    }, 
-                    "name": "Ємець and Sons", 
-                    "address": {
-                        "postalCode": "21100", 
-                        "countryName": "Україна", 
-                        "streetAddress": "93546 John Street", 
-                        "region": "м. Вінниця", 
-                        "locality": "м. Вінниця"
-                    }
-                }
-            ], 
-            "bid_id": "bbb0b1a3344b4d79b67298af4b143bce", 
-            "value": {
-                "currency": "UAH", 
-                "amount": 40000.0, 
-                "valueAddedTaxIncluded": true
-            }, 
-            "date": "2015-03-04T14:22:11.530927+02:00", 
-            "id": "2beef6aa944c4a8ba0e9654ed5e25993"
+        "name": "Державне управління справами", 
+        "address": {
+          "postalCode": "01220", 
+          "countryName": "Україна", 
+          "streetAddress": "вул. Банкова, 11, корпус 1", 
+          "region": "м. Київ", 
+          "locality": "м. Київ"
         }
-    ]
+      }
+    ], 
+    "bid_id": "8c2d769086b24bcbb8b9f9c56bb8998f", 
+    "value": {
+      "currency": "UAH", 
+      "amount": 469.0, 
+      "valueAddedTaxIncluded": true
+    }, 
+    "date": "2016-03-18T18:47:53.963660+02:00", 
+    "id": "fd79d41fbde649e48b5cd35f98a40451"
+  }
 }
+
