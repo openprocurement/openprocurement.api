@@ -32,7 +32,7 @@ class AccreditationTenderTest(BaseWebTest):
             response = self.app.post_json('/tenders', {"data": test_tender_data}, status=403)
             self.assertEqual(response.status, '403 Forbidden')
             self.assertEqual(response.content_type, 'application/json')
-            self.assertEqual(response.json['errors'][0]["description"], "Accreditation not allows to create tender")
+            self.assertEqual(response.json['errors'][0]["description"], "Broker Accreditation level does not permit tender creation")
 
 
 class AccreditationTenderQuestionTest(BaseTenderWebTest):
@@ -50,7 +50,7 @@ class AccreditationTenderQuestionTest(BaseTenderWebTest):
                                           status=403)
             self.assertEqual(response.status, '403 Forbidden')
             self.assertEqual(response.content_type, 'application/json')
-            self.assertEqual(response.json['errors'][0]["description"], "Accreditation not allows to create question")
+            self.assertEqual(response.json['errors'][0]["description"], "Broker Accreditation level does not permit question creation")
 
 
 class AccreditationTenderBidTest(BaseTenderWebTest):
@@ -70,7 +70,7 @@ class AccreditationTenderBidTest(BaseTenderWebTest):
                                           status=403)
             self.assertEqual(response.status, '403 Forbidden')
             self.assertEqual(response.content_type, 'application/json')
-            self.assertEqual(response.json['errors'][0]["description"], "Accreditation not allows to create bid")
+            self.assertEqual(response.json['errors'][0]["description"], "Broker Accreditation level does not permit bid creation")
 
 
 
