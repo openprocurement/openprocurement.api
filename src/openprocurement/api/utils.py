@@ -742,7 +742,7 @@ def fix_url(item, app_url):
 
 
 def beforerender(event):
-    if event.rendering_val and 'data' in event.rendering_val:
+    if event.rendering_val and isinstance(event.rendering_val, dict) and 'data' in event.rendering_val:
         fix_url(event.rendering_val['data'], event['request'].application_url)
 
 
