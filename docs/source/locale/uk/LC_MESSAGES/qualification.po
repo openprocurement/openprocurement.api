@@ -4,16 +4,16 @@ msgstr ""
 "Project-Id-Version: openprocurement.api 0.1\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2014-10-29 12:11+0200\n"
-"PO-Revision-Date: 2016-03-14 15:48+0200\n"
+"PO-Revision-Date: 2016-04-07 13:18+0300\n"
 "Last-Translator: Zoriana Zaiats <sorenabell@quintagroup.com>\n"
 "Language-Team: Ukrainian <info@quintagroup.com>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Language: uk\n"
-"X-Generator: Lokalize 1.5\n"
 "Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<"
 "=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
+"X-Generator: Lokalize 1.5\n"
 
 #: ../../source/qualification.rst:5
 msgid "Qualification Operations"
@@ -52,26 +52,6 @@ msgstr "Підтвердження визначення переможця:"
 #: ../../source/qualification.rst:110
 msgid "Influence of Complaint Satisfaction"
 msgstr "Вплив задовільненої скарги"
-
-#: ../../source/qualification.rst:112
-msgid ""
-"If decision of the procuring entity is considered unfair any bidder can file"
-" complaint and after proper review the whole awarding process can start from"
-" the award in question.  When Complaint Review Body satifies the complaint, "
-"all awards registered in the system that were issued (including the one that"
-" complaint was filed against) are cancelled (switch to `cancelled` status). "
-"New pending award is generated and Procuring Entity is obliged to qualify it"
-" again, taking into consideration recommendations in the report of Complaint"
-" Review Body."
-msgstr ""
-"Якщо рішення замовника вважатиметься несправедливим, будь-який учасник може "
-"подати скаргу і, після її відповідного розгляду, весь процес визначення "
-"переможця може вернутись до цього рішення. Коли орган розгляду скарг "
-"задовільнить скаргу, всі рішення зареєстровані в системі (включно з тим, "
-"проти якого подана скарга) відміняються (отримують статус `cancelled`). "
-"Генерується новий процес визначення переможця і Замовник зобов’язаний "
-"кваліфікувати його знову, зважаючи на рекомендації зазначені в звіті органу "
-"розгляду скарг."
 
 #: ../../source/qualification.rst:80
 msgid "Cancelling Active Award"
@@ -173,7 +153,59 @@ msgid ""
 msgstr ""
 "Кваліфікаційний комітет може завантажити декілька документів, наприклад, "
 "рішення подовжити процес кваліфікації, щоб дозволити кандидату зібрати усі "
-"необхідні документи або виправити помилки. Такі документи допоможуть зробити "
-"процедуру прозорою та зменшать ймовірність відміни рішення органом розгляду "
-"скарг."
+"необхідні документи або виправити помилки. Такі документи допоможуть зробити"
+" процедуру прозорою та зменшать ймовірність відміни рішення органом розгляду"
+" скарг."
+
+#: ../../source/qualification.rst:116
+msgid ""
+"Disqualification decision of procuring entity's qualification committee can "
+"be cancelled in the following cases:"
+msgstr ""
+"Рішення кваліфікаційної комісії замовника про дискваліфікацію  можна "
+"відмінити у таких випадках:"
+
+#: ../../source/qualification.rst:118
+msgid ""
+"claim for this disqualification has been submitted (claim status is "
+"``claim``);"
+msgstr "подана вимога на цю дискваліфікацію (статус вимоги ``claim``);"
+
+#: ../../source/qualification.rst:119
+msgid "claim has been answered (claim status is ``answered``);"
+msgstr "надана відповідь по вимозі (статус вимоги ``answered``);"
+
+#: ../../source/qualification.rst:120
+msgid "complaint is pending review (complaint status is ``pending``);"
+msgstr "скарга очікує розгляду органом оскарження (статус скарги ``pending``);"
+
+#: ../../source/qualification.rst:121
+msgid ""
+"complaint has been satisfied by the Complaint Review Body (complaint status "
+"is ``resolved``)."
+msgstr ""
+"скарга задовільнена, тобто є позитивне рішення органу оскарження (статус "
+"скарги ``resolved``)."
+
+#: ../../source/qualification.rst:112
+msgid ""
+"If decision of the procuring entity is unfair any bidder can file complaint "
+"and after proper review the whole awarding process can start from the award "
+"in question."
+msgstr ""
+"Якщо рішення замовника є несправедливим, будь-який учасник може подати скаргу "
+"і, після її відповідного розгляду, весь процес визначення переможця може "
+"вернутись до цього рішення."
+
+#: ../../source/qualification.rst:123
+msgid ""
+"After the disqualification decision cancellation it receives ``cancelled`` "
+"status. New pending award is generated and procuring entity is obliged to "
+"qualify it again (taking into consideration recommendations from the report "
+"of Complaint Review Body if there is one)."
+msgstr ""
+"При відміні рішення про дискваліфікацію воно отримує статус ``cancelled``. "
+"Генерується новий процес визначення переможця і замовник зобов’язаний "
+"кваліфікувати його знову (зважаючи на рекомендації зазначені в звіті органу "
+"розгляду скарг, якщо такий є)."
 
