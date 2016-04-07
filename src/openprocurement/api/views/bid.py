@@ -305,6 +305,11 @@ class TenderBidResource(APIResource):
             self.request.errors.add('body', 'data', 'Can\'t delete bid in current ({}) tender status'.format(self.request.validated['tender_status']))
             self.request.errors.status = 403
             return
+        tender = self.request.validated['tender']
+        if tender.tenderPeriod.startDate and get_now() < tender.tenderPeriod.startDate or get_now() > tender.tenderPeriod.endDate:
+            self.request.errors.add('body', 'data', 'Bid can be deleted only during the tendering period: from ({}) to ({}).'.format(tender.tenderPeriod.startDate and tender.tenderPeriod.startDate.isoformat(), tender.tenderPeriod.endDate.isoformat()))
+            self.request.errors.status = 403
+            return
         res = bid.serialize("view")
         self.request.validated['tender'].bids.remove(bid)
         self.request.validated['tender'].modified = False
