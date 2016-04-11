@@ -1,11 +1,10 @@
 #
-# Zoriana Zaiats <sorenabell@quintagroup.com>, 2016.
 msgid ""
 msgstr ""
 "Project-Id-Version: openprocurement.api 0.8.1\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2015-10-12 13:39+0300\n"
-"PO-Revision-Date: 2016-03-09 15:02+0200\n"
+"PO-Revision-Date: 2016-04-01 11:41+0300\n"
 "Last-Translator: Zoriana Zaiats <sorenabell@quintagroup.com>\n"
 "Language-Team: Ukrainian <info@quintagroup.com>\n"
 "MIME-Version: 1.0\n"
@@ -38,7 +37,7 @@ msgstr "Можливі значення:"
 
 #: ../../source/standard/feature.rst:24
 msgid "`tenderer`"
-msgstr "`tenderer`"
+msgstr "`tenderer` - учасник закупівлі"
 
 #: ../../source/standard/feature.rst:26
 msgid "`item`"
@@ -99,4 +98,5 @@ msgstr "`lot`"
 #: ../../source/standard/feature.rst:15
 msgid "string, auto-generated"
 msgstr "рядок, генерується автоматично"
+
 

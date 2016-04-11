@@ -823,8 +823,25 @@ class TenderResourceTest(BaseWebTest):
         self.assertEqual(response.status, '200 OK')
         self.assertEqual(response.content_type, 'application/json')
 
+        import random
         response = self.app.patch_json('/tenders/{}'.format(tender['id']), {'data': {'items': [{"additionalClassifications": [
-            tender['items'][0]["additionalClassifications"][0] for i in range(3)
+            {
+                "scheme": "ДКПП",
+                "id": "{}".format(i),
+                "description": "description #{}".format(i)
+            }
+            for i in random.sample(range(30), 25)
+        ]}]}})
+        self.assertEqual(response.status, '200 OK')
+        self.assertEqual(response.content_type, 'application/json')
+
+        response = self.app.patch_json('/tenders/{}'.format(tender['id']), {'data': {'items': [{"additionalClassifications": [
+            {
+                "scheme": "ДКПП",
+                "id": "{}".format(i),
+                "description": "description #{}".format(i)
+            }
+            for i in random.sample(range(30), 20)
         ]}]}})
         self.assertEqual(response.status, '200 OK')
         self.assertEqual(response.content_type, 'application/json')

@@ -310,7 +310,8 @@ class TenderAwardResource(APIResource):
             add_next_award(self.request)
         elif award_status == 'active' and award.status == 'cancelled':
             now = get_now()
-            award.complaintPeriod.endDate = now
+            if award.complaintPeriod.endDate > now:
+                award.complaintPeriod.endDate = now
             for j in award.complaints:
                 if j.status not in ['invalid', 'resolved', 'declined']:
                     j.status = 'cancelled'

@@ -109,14 +109,18 @@ Location header in the response pointing to its Award.
 Influence of Complaint Satisfaction
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-If decision of the procuring entity is considered unfair any bidder can file
+If decision of the procuring entity is unfair any bidder can file
 complaint and after proper review the whole awarding process can start from
-the award in question.  When Complaint Review Body satifies the complaint,
-all awards registered in the system that were issued (including the one that
-complaint was filed against) are cancelled (switch to `cancelled` status). 
-New pending award is generated and Procuring Entity is obliged to qualify it
-again, taking into consideration recommendations in the report of Complaint
-Review Body.
+the award in question.  
+
+Disqualification decision of procuring entity's qualification committee can be cancelled in the following cases:
+
+* claim for this disqualification has been submitted (claim status is ``claim``);
+* claim has been answered (claim status is ``answered``);
+* complaint is pending review (complaint status is ``pending``);
+* complaint has been satisfied by the Complaint Review Body (complaint status is ``resolved``).
+
+After the disqualification decision cancellation it receives ``cancelled`` status. New pending award is generated and procuring entity is obliged to qualify it again (taking into consideration recommendations from the report of Complaint Review Body if there is one).
 
 .. include:: qualification/awards-unsuccessful-get1.http
    :code:

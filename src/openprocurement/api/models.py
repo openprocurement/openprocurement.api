@@ -1279,10 +1279,7 @@ class Tender(SchematicsDocument, Model):
             raise ValidationError(u"period should begin after auctionPeriod")
         if period and period.startDate and data.get('tenderPeriod') and data.get('tenderPeriod').endDate and period.startDate < data.get('tenderPeriod').endDate:
             raise ValidationError(u"period should begin after tenderPeriod")
+
     def validate_lots(self, data, value):
-        if len(value) == 1 and data['guarantee']:
-            lot = value[0]
-            if lot.guarantee and lot.guarantee.currency != data['guarantee'].currency:
-                raise ValidationError(u"lot guarantee currency should be identical to tender guarantee currency")
         if len(set([lot.guarantee.currency for lot in value if lot.guarantee])) > 1:
             raise ValidationError(u"lot guarantee currency should be identical to tender guarantee currency")
