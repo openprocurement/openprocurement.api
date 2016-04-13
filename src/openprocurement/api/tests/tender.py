@@ -5,7 +5,7 @@ from datetime import timedelta
 
 from openprocurement.api import ROUTE_PREFIX
 from openprocurement.api.models import Tender, get_now
-from openprocurement.api.tests.base import test_tender_data, BaseWebTest, BaseTenderWebTest
+from openprocurement.api.tests.base import test_tender_data, test_organization, BaseWebTest, BaseTenderWebTest
 
 
 class TenderTest(BaseWebTest):
@@ -461,10 +461,10 @@ class TenderResourceTest(BaseWebTest):
             {u'description': [{u'additionalClassifications': [u"One of additional classifications should be one of [ДКПП, NONE, ДК003, ДК015, ДК018]."]}], u'location': u'body', u'name': u'items'}
         ])
 
-        data = test_tender_data["procuringEntity"]["contactPoint"]["telephone"]
-        del test_tender_data["procuringEntity"]["contactPoint"]["telephone"]
+        data = test_organization["contactPoint"]["telephone"]
+        del test_organization["contactPoint"]["telephone"]
         response = self.app.post_json(request_path, {'data': test_tender_data}, status=422)
-        test_tender_data["procuringEntity"]["contactPoint"]["telephone"] = data
+        test_organization["contactPoint"]["telephone"] = data
         self.assertEqual(response.status, '422 Unprocessable Entity')
         self.assertEqual(response.content_type, 'application/json')
         self.assertEqual(response.json['status'], 'error')
@@ -484,6 +484,19 @@ class TenderResourceTest(BaseWebTest):
         self.assertEqual(response.json['status'], 'error')
         self.assertEqual(response.json['errors'], [
             {u'description': [u'CPV group of items be identical'], u'location': u'body', u'name': u'items'}
+        ])
+
+        procuringEntity = test_tender_data["procuringEntity"]
+        data = test_tender_data["procuringEntity"].copy()
+        del data['kind']
+        test_tender_data["procuringEntity"] = data
+        response = self.app.post_json(request_path, {'data': test_tender_data}, status=403)
+        test_tender_data["procuringEntity"] = procuringEntity
+        self.assertEqual(response.status, '403 Forbidden')
+        self.assertEqual(response.content_type, 'application/json')
+        self.assertEqual(response.json['status'], 'error')
+        self.assertEqual(response.json['errors'], [
+            {u'description': u"'' procuringEntity cannot publish this type of procedure. Only general, special, defense, other are allowed.", u'location': u'procuringEntity', u'name': u'kind'}
         ])
 
     def test_create_tender_generated(self):
@@ -980,7 +993,7 @@ class TenderResourceTest(BaseWebTest):
         self.assertEqual(response.status, '201 Created')
         tender = response.json['data']
 
-        response = self.app.post_json('/tenders/{}/questions'.format(tender['id']), {'data': {'title': 'question title', 'description': 'question description', 'author': test_tender_data["procuringEntity"]}})
+        response = self.app.post_json('/tenders/{}/questions'.format(tender['id']), {'data': {'title': 'question title', 'description': 'question description', 'author': test_organization}})
         self.assertEqual(response.status, '201 Created')
         self.assertEqual(response.content_type, 'application/json')
         question = response.json['data']
@@ -1033,7 +1046,7 @@ class TenderProcessTest(BaseTenderWebTest):
         self.set_status('active.tendering')
         # create compaint
         response = self.app.post_json('/tenders/{}/complaints'.format(tender_id),
-                                      {'data': {'title': 'invalid conditions', 'description': 'description', 'author': test_tender_data["procuringEntity"], 'status': 'claim'}})
+                                      {'data': {'title': 'invalid conditions', 'description': 'description', 'author': test_organization, 'status': 'claim'}})
         complaint_id = response.json['data']['id']
         complaint_owner_token = response.json['access']['token']
         # answering claim
@@ -1072,7 +1085,7 @@ class TenderProcessTest(BaseTenderWebTest):
         # create bid
         self.app.authorization = ('Basic', ('broker', ''))
         response = self.app.post_json('/tenders/{}/bids'.format(tender_id),
-                                      {'data': {'tenderers': [test_tender_data["procuringEntity"]], "value": {"amount": 500}}})
+                                      {'data': {'tenderers': [test_organization], "value": {"amount": 500}}})
         # switch to active.qualification
         self.set_status('active.auction', {'status': 'active.tendering'})
         self.app.authorization = ('Basic', ('chronograph', ''))
@@ -1119,7 +1132,7 @@ class TenderProcessTest(BaseTenderWebTest):
         # create bid
         self.app.authorization = ('Basic', ('broker', ''))
         response = self.app.post_json('/tenders/{}/bids'.format(tender_id),
-                                      {'data': {'tenderers': [test_tender_data["procuringEntity"]], "value": {"amount": 500}}})
+                                      {'data': {'tenderers': [test_organization], "value": {"amount": 500}}})
         # switch to active.qualification
         self.set_status('active.auction', {"auctionPeriod": {"startDate": None}, 'status': 'active.tendering'})
         self.app.authorization = ('Basic', ('chronograph', ''))
@@ -1160,13 +1173,13 @@ class TenderProcessTest(BaseTenderWebTest):
         # create bid
         self.app.authorization = ('Basic', ('broker', ''))
         response = self.app.post_json('/tenders/{}/bids'.format(tender_id),
-                                      {'data': {'tenderers': [test_tender_data["procuringEntity"]], "value": {"amount": 450}}})
+                                      {'data': {'tenderers': [test_organization], "value": {"amount": 450}}})
         bid_id = response.json['data']['id']
         bid_token = response.json['access']['token']
         # create second bid
         self.app.authorization = ('Basic', ('broker', ''))
         response = self.app.post_json('/tenders/{}/bids'.format(tender_id),
-                                      {'data': {'tenderers': [test_tender_data["procuringEntity"]], "value": {"amount": 475}}})
+                                      {'data': {'tenderers': [test_organization], "value": {"amount": 475}}})
         # switch to active.auction
         self.set_status('active.auction')
 
@@ -1214,12 +1227,12 @@ class TenderProcessTest(BaseTenderWebTest):
         # create first award complaint
         self.app.authorization = ('Basic', ('broker', ''))
         response = self.app.post_json('/tenders/{}/awards/{}/complaints?acc_token={}'.format(tender_id, award_id, bid_token),
-                                      {'data': {'title': 'complaint title', 'description': 'complaint description', 'author': test_tender_data["procuringEntity"], 'status': 'claim'}})
+                                      {'data': {'title': 'complaint title', 'description': 'complaint description', 'author': test_organization, 'status': 'claim'}})
         complaint_id = response.json['data']['id']
         complaint_owner_token = response.json['access']['token']
         # create first award complaint #2
         response = self.app.post_json('/tenders/{}/awards/{}/complaints?acc_token={}'.format(tender_id, award_id, bid_token),
-                                      {'data': {'title': 'complaint title', 'description': 'complaint description', 'author': test_tender_data["procuringEntity"]}})
+                                      {'data': {'title': 'complaint title', 'description': 'complaint description', 'author': test_organization}})
         # answering claim
         self.app.patch_json('/tenders/{}/awards/{}/complaints/{}?acc_token={}'.format(tender_id, award_id, complaint_id, owner_token), {"data": {
             "status": "answered",

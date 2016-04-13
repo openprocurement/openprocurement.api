@@ -3,7 +3,7 @@ import unittest
 from datetime import timedelta
 
 from openprocurement.api.models import get_now
-from openprocurement.api.tests.base import BaseTenderWebTest, test_tender_data, test_bids, test_lots
+from openprocurement.api.tests.base import BaseTenderWebTest, test_tender_data, test_bids, test_lots, test_organization
 
 
 class TenderContractResourceTest(BaseTenderWebTest):
@@ -15,7 +15,7 @@ class TenderContractResourceTest(BaseTenderWebTest):
         super(TenderContractResourceTest, self).setUp()
         # Create award
         response = self.app.post_json('/tenders/{}/awards'.format(
-            self.tender_id), {'data': {'suppliers': [test_tender_data["procuringEntity"]], 'status': 'pending', 'bid_id': self.initial_bids[0]['id'], 'value': test_tender_data["value"], 'items': test_tender_data["items"]}})
+            self.tender_id), {'data': {'suppliers': [test_organization], 'status': 'pending', 'bid_id': self.initial_bids[0]['id'], 'value': test_tender_data["value"], 'items': test_tender_data["items"]}})
         award = response.json['data']
         self.award_id = award['id']
         self.award_value = award['value']
@@ -159,7 +159,7 @@ class TenderContractResourceTest(BaseTenderWebTest):
         response = self.app.post_json('/tenders/{}/awards/{}/complaints'.format(self.tender_id, self.award_id), {'data': {
             'title': 'complaint title',
             'description': 'complaint description',
-            'author': test_tender_data["procuringEntity"],
+            'author': test_organization,
             'status': 'claim'
         }})
         self.assertEqual(response.status, '201 Created')
@@ -347,7 +347,7 @@ class Tender2LotContractResourceTest(BaseTenderWebTest):
         super(Tender2LotContractResourceTest, self).setUp()
         # Create award
         response = self.app.post_json('/tenders/{}/awards'.format(self.tender_id), {'data': {
-            'suppliers': [test_tender_data["procuringEntity"]],
+            'suppliers': [test_organization],
             'status': 'pending',
             'bid_id': self.initial_bids[0]['id'],
             'lotID': self.initial_lots[0]['id']
@@ -392,7 +392,7 @@ class TenderContractDocumentResourceTest(BaseTenderWebTest):
         super(TenderContractDocumentResourceTest, self).setUp()
         # Create award
         response = self.app.post_json('/tenders/{}/awards'.format(
-            self.tender_id), {'data': {'suppliers': [test_tender_data["procuringEntity"]], 'status': 'pending', 'bid_id': self.initial_bids[0]['id']}})
+            self.tender_id), {'data': {'suppliers': [test_organization], 'status': 'pending', 'bid_id': self.initial_bids[0]['id']}})
         award = response.json['data']
         self.award_id = award['id']
         response = self.app.patch_json('/tenders/{}/awards/{}'.format(self.tender_id, self.award_id), {"data": {"status": "active"}})
@@ -686,7 +686,7 @@ class Tender2LotContractDocumentResourceTest(BaseTenderWebTest):
         super(Tender2LotContractDocumentResourceTest, self).setUp()
         # Create award
         response = self.app.post_json('/tenders/{}/awards'.format(self.tender_id), {'data': {
-            'suppliers': [test_tender_data["procuringEntity"]],
+            'suppliers': [test_organization],
             'status': 'pending',
             'bid_id': self.initial_bids[0]['id'],
             'lotID': self.initial_lots[0]['id']

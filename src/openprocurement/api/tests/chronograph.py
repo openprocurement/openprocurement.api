@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 import unittest
 from openprocurement.api.models import get_now
-from openprocurement.api.tests.base import BaseTenderWebTest, test_lots, test_bids
+from openprocurement.api.tests.base import BaseTenderWebTest, test_lots, test_bids, test_organization
 
 
 class TenderSwitchTenderingResourceTest(BaseTenderWebTest):
@@ -249,7 +249,7 @@ class TenderComplaintSwitchResourceTest(BaseTenderWebTest):
         response = self.app.post_json('/tenders/{}/complaints'.format(self.tender_id), {'data': {
             'title': 'complaint title',
             'description': 'complaint description',
-            'author': self.initial_data["procuringEntity"],
+            'author': test_organization,
             'status': 'claim'
         }})
         self.assertEqual(response.status, '201 Created')
@@ -270,7 +270,7 @@ class TenderComplaintSwitchResourceTest(BaseTenderWebTest):
             response = self.app.post_json('/tenders/{}/complaints'.format(self.tender_id), {'data': {
                 'title': 'complaint title',
                 'description': 'complaint description',
-                'author': self.initial_data["procuringEntity"],
+                'author': test_organization,
                 'status': 'claim'
             }})
             self.assertEqual(response.status, '201 Created')
@@ -309,7 +309,7 @@ class TenderAwardComplaintSwitchResourceTest(BaseTenderWebTest):
         super(TenderAwardComplaintSwitchResourceTest, self).setUp()
         # Create award
         response = self.app.post_json('/tenders/{}/awards'.format(
-            self.tender_id), {'data': {'suppliers': [self.initial_data["procuringEntity"]], 'status': 'pending', 'bid_id': self.initial_bids[0]['id']}})
+            self.tender_id), {'data': {'suppliers': [test_organization], 'status': 'pending', 'bid_id': self.initial_bids[0]['id']}})
         award = response.json['data']
         self.award_id = award['id']
 
@@ -317,7 +317,7 @@ class TenderAwardComplaintSwitchResourceTest(BaseTenderWebTest):
         response = self.app.post_json('/tenders/{}/awards/{}/complaints'.format(self.tender_id, self.award_id), {'data': {
             'title': 'complaint title',
             'description': 'complaint description',
-            'author': self.initial_data["procuringEntity"],
+            'author': test_organization,
             'status': 'claim'
         }})
         self.assertEqual(response.status, '201 Created')
@@ -348,7 +348,7 @@ class TenderAwardComplaintSwitchResourceTest(BaseTenderWebTest):
             response = self.app.post_json('/tenders/{}/awards/{}/complaints'.format(self.tender_id, self.award_id), {'data': {
                 'title': 'complaint title',
                 'description': 'complaint description',
-                'author': self.initial_data["procuringEntity"],
+                'author': test_organization,
                 'status': 'claim'
             }})
             self.assertEqual(response.status, '201 Created')
@@ -382,7 +382,7 @@ class TenderLotAwardComplaintSwitchResourceTest(TenderAwardComplaintSwitchResour
         super(TenderAwardComplaintSwitchResourceTest, self).setUp()
         # Create award
         response = self.app.post_json('/tenders/{}/awards'.format(self.tender_id), {'data': {
-            'suppliers': [self.initial_data["procuringEntity"]],
+            'suppliers': [test_organization],
             'status': 'pending',
             'bid_id': self.initial_bids[0]['id'],
             'lotID': self.initial_bids[0]['lotValues'][0]['relatedLot']

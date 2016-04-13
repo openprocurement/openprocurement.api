@@ -3,7 +3,7 @@ import unittest
 from datetime import timedelta
 
 from openprocurement.api.models import get_now
-from openprocurement.api.tests.base import BaseTenderWebTest, test_tender_data, test_features_tender_data, test_bids, test_lots
+from openprocurement.api.tests.base import BaseTenderWebTest, test_tender_data, test_features_tender_data, test_bids, test_lots, test_organization
 
 
 class TenderAuctionResourceTest(BaseTenderWebTest):
@@ -280,7 +280,7 @@ class TenderSameValueAuctionResourceTest(BaseTenderWebTest):
     initial_bids = [
         {
             "tenderers": [
-                test_tender_data["procuringEntity"]
+                test_organization
             ],
             "value": {
                 "amount": 469,
@@ -992,7 +992,7 @@ class TenderFeaturesAuctionResourceTest(BaseTenderWebTest):
                 for i in test_features_tender_data['features']
             ],
             "tenderers": [
-                test_tender_data["procuringEntity"]
+                test_organization
             ],
             "value": {
                 "amount": 469,
@@ -1009,7 +1009,7 @@ class TenderFeaturesAuctionResourceTest(BaseTenderWebTest):
                 for i in test_features_tender_data['features']
             ],
             "tenderers": [
-                test_tender_data["procuringEntity"]
+                test_organization
             ],
             "value": {
                 "amount": 479,
