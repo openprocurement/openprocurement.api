@@ -1,4 +1,4 @@
-PATCH /api/0.12/tenders/9f65ed38c8f446fcab0b6709b76f38b0/awards/14fa07fa028d472896c4047375e08407?acc_token=156967f2c18c4783ae1d34e4a20929a1 HTTP/1.0
+PATCH /api/2.0/tenders/4630a487b9cd4ee0abadd23ef4b8e05f/awards/6ba25103f3614f78a635b8fc4cb30295?acc_token=2408bafb138842659f22d6d511a91633 HTTP/1.0
 Authorization: Basic YnJva2VyOg==
 Content-Length: 36
 Content-Type: application/json
@@ -13,7 +13,7 @@ Host: api-sandbox.openprocurement.org
 
 200 OK
 Content-Type: application/json; charset=UTF-8
-Location: http://api-sandbox.openprocurement.org/api/0.12/tenders/9f65ed38c8f446fcab0b6709b76f38b0/awards/604eedfaa47c49ea81eaf511e378cd9c
+Location: http://api-sandbox.openprocurement.org/api/2.0/tenders/4630a487b9cd4ee0abadd23ef4b8e05f/awards/4913677f1ae947c29d0ce61de1679805
 
 {
   "data": {
@@ -21,47 +21,48 @@ Location: http://api-sandbox.openprocurement.org/api/0.12/tenders/9f65ed38c8f446
     "documents": [
       {
         "title": "Unsuccessful_Reason.pdf", 
-        "url": "http://api-sandbox.openprocurement.org/api/0.12/tenders/9f65ed38c8f446fcab0b6709b76f38b0/awards/14fa07fa028d472896c4047375e08407/documents/d16d63904ff640d3bc201c9b59d71aaa?download=d1fcdab810604a4f97a61c6f57bed2ac", 
+        "url": "http://api-sandbox.openprocurement.org/api/2.0/tenders/4630a487b9cd4ee0abadd23ef4b8e05f/awards/6ba25103f3614f78a635b8fc4cb30295/documents/7cedd31fe0a04893abb933a12c5bed8b?download=ddbc057160e145b6b7379b951c9545df", 
         "format": "application/pdf", 
         "documentOf": "tender", 
-        "datePublished": "2016-03-18T18:47:53.108334+02:00", 
-        "id": "d16d63904ff640d3bc201c9b59d71aaa", 
-        "dateModified": "2016-03-18T18:47:53.108372+02:00"
+        "datePublished": "2016-04-15T12:15:22.113966+03:00", 
+        "id": "7cedd31fe0a04893abb933a12c5bed8b", 
+        "dateModified": "2016-04-15T12:15:22.114011+03:00"
       }
     ], 
     "complaintPeriod": {
-      "startDate": "2016-03-18T18:47:52.843898+02:00", 
-      "endDate": "2016-03-19T18:47:53.303518+02:00"
+      "startDate": "2016-04-15T12:15:21.697359+03:00", 
+      "endDate": "2016-04-16T12:15:22.404973+03:00"
     }, 
     "suppliers": [
       {
         "contactPoint": {
-          "name": "Державне управління справами", 
-          "telephone": "0440000000"
+          "email": "soleksuk@gmail.com", 
+          "telephone": "+380 (432) 21-69-30", 
+          "name": "Сергій Олексюк"
         }, 
         "identifier": {
           "scheme": "UA-EDR", 
-          "id": "00037256", 
-          "uri": "http://www.dus.gov.ua/"
+          "id": "00137256", 
+          "uri": "http://www.sc.gov.ua/"
         }, 
-        "name": "Державне управління справами", 
+        "name": "ДКП «Школяр»", 
         "address": {
-          "postalCode": "01220", 
+          "postalCode": "21100", 
           "countryName": "Україна", 
-          "streetAddress": "вул. Банкова, 11, корпус 1", 
-          "region": "м. Київ", 
-          "locality": "м. Київ"
+          "streetAddress": "вул. Островського, 33", 
+          "region": "м. Вінниця", 
+          "locality": "м. Вінниця"
         }
       }
     ], 
-    "bid_id": "a2af548d79ac4e03b0dee91767412b03", 
+    "bid_id": "189224dd3bf544b7a208500122ce50de", 
     "value": {
       "currency": "UAH", 
       "amount": 450.0, 
       "valueAddedTaxIncluded": true
     }, 
-    "date": "2016-03-18T18:47:52.844215+02:00", 
-    "id": "14fa07fa028d472896c4047375e08407"
+    "date": "2016-04-15T12:15:21.697823+03:00", 
+    "id": "6ba25103f3614f78a635b8fc4cb30295"
   }
 }
 

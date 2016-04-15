@@ -1,6 +1,6 @@
-POST /api/0.12/tenders/9f65ed38c8f446fcab0b6709b76f38b0/complaints HTTP/1.0
+POST /api/2.0/tenders/4630a487b9cd4ee0abadd23ef4b8e05f/complaints HTTP/1.0
 Authorization: Basic YnJva2VyOg==
-Content-Length: 880
+Content-Length: 775
 Content-Type: application/json
 Host: api-sandbox.openprocurement.org
 
@@ -10,21 +10,22 @@ Host: api-sandbox.openprocurement.org
     "description": "complaint description", 
     "author": {
       "contactPoint": {
-        "name": "Державне управління справами", 
-        "telephone": "0440000000"
+        "telephone": "+380 (432) 21-69-30", 
+        "name": "Сергій Олексюк", 
+        "email": "soleksuk@gmail.com"
       }, 
       "identifier": {
         "scheme": "UA-EDR", 
-        "id": "00037256", 
-        "uri": "http://www.dus.gov.ua/"
+        "id": "00137256", 
+        "uri": "http://www.sc.gov.ua/"
       }, 
-      "name": "Державне управління справами", 
+      "name": "ДКП «Школяр»", 
       "address": {
         "countryName": "Україна", 
-        "postalCode": "01220", 
-        "region": "м. Київ", 
-        "streetAddress": "вул. Банкова, 11, корпус 1", 
-        "locality": "м. Київ"
+        "postalCode": "21100", 
+        "region": "м. Вінниця", 
+        "streetAddress": "вул. Островського, 33", 
+        "locality": "м. Вінниця"
       }
     }
   }
@@ -33,11 +34,11 @@ Host: api-sandbox.openprocurement.org
 
 201 Created
 Content-Type: application/json; charset=UTF-8
-Location: http://api-sandbox.openprocurement.org/api/0.12/tenders/9f65ed38c8f446fcab0b6709b76f38b0/complaints/d3bdc18a7e884e33b73c91a46cc34083
+Location: http://api-sandbox.openprocurement.org/api/2.0/tenders/4630a487b9cd4ee0abadd23ef4b8e05f/complaints/f6ab27168c544dc0afc930b8a6c623c5
 
 {
   "access": {
-    "token": "4b412ae081b74a928ad1c01526619375"
+    "token": "cb72b4a155a3465dacbc54bb1e985924"
   }, 
   "data": {
     "status": "draft", 
@@ -45,27 +46,28 @@ Location: http://api-sandbox.openprocurement.org/api/0.12/tenders/9f65ed38c8f446
     "title": "complaint title", 
     "author": {
       "contactPoint": {
-        "name": "Державне управління справами", 
-        "telephone": "0440000000"
+        "email": "soleksuk@gmail.com", 
+        "telephone": "+380 (432) 21-69-30", 
+        "name": "Сергій Олексюк"
       }, 
       "identifier": {
         "scheme": "UA-EDR", 
-        "id": "00037256", 
-        "uri": "http://www.dus.gov.ua/"
+        "id": "00137256", 
+        "uri": "http://www.sc.gov.ua/"
       }, 
-      "name": "Державне управління справами", 
+      "name": "ДКП «Школяр»", 
       "address": {
-        "postalCode": "01220", 
+        "postalCode": "21100", 
         "countryName": "Україна", 
-        "streetAddress": "вул. Банкова, 11, корпус 1", 
-        "region": "м. Київ", 
-        "locality": "м. Київ"
+        "streetAddress": "вул. Островського, 33", 
+        "region": "м. Вінниця", 
+        "locality": "м. Вінниця"
       }
     }, 
-    "complaintID": "UA-2016-03-18-000001.1", 
-    "date": "2016-03-18T18:47:48.772297+02:00", 
+    "complaintID": "UA-2016-04-15-000004.1", 
+    "date": "2016-04-15T12:15:13.057854+03:00", 
     "type": "claim", 
-    "id": "d3bdc18a7e884e33b73c91a46cc34083"
+    "id": "f6ab27168c544dc0afc930b8a6c623c5"
   }
 }
 
