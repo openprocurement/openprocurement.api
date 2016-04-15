@@ -295,6 +295,7 @@ def check_complaint_status(request, complaint, now=None):
     if complaint.status == 'claim' and complaint.dateSubmitted + COMPLAINT_STAND_STILL_TIME < now:
         complaint.status = 'pending'
         complaint.type = 'complaint'
+        complaint.dateEscaleted = now
     elif complaint.status == 'answered' and complaint.dateAnswered + COMPLAINT_STAND_STILL_TIME < now:
         complaint.status = complaint.resolutionType
 
