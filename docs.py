@@ -137,7 +137,8 @@ test_tender_maximum_data = {
         "contactPoint": {
             "name": u"Державне управління справами",
             "telephone": u"0440000000"
-        }
+        },
+        'kind': 'general'
     },
     "value": {
         "amount": 500,
@@ -228,7 +229,7 @@ test_complaint_data = {'data':
         {
             'title': 'complaint title',
             'description': 'complaint description',
-            'author': test_tender_data["procuringEntity"]
+            'author': bid["data"]["tenderers"][0]
         }
     }
 
@@ -788,12 +789,12 @@ class TenderResourceTest(BaseTenderWebTest):
         self.set_status('active.tendering')
         self.app.authorization = ('Basic', ('broker', ''))
         response = self.app.post_json('/tenders/{}/bids'.format(self.tender_id),
-                                      {'data': {'tenderers': [test_tender_data["procuringEntity"]], "value": {"amount": 450}}})
+                                      {'data': {'tenderers': [bid["data"]["tenderers"][0]], "value": {"amount": 450}}})
         bid_id = response.json['data']['id']
         bid_token = response.json['access']['token']
         self.app.authorization = ('Basic', ('broker', ''))
         response = self.app.post_json('/tenders/{}/bids'.format(self.tender_id),
-                                      {'data': {'tenderers': [test_tender_data["procuringEntity"]], "value": {"amount": 475}}})
+                                      {'data': {'tenderers': [bid["data"]["tenderers"][0]], "value": {"amount": 475}}})
         # get auction info
         self.set_status('active.auction')
         self.app.authorization = ('Basic', ('auction', ''))
