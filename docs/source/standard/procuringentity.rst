@@ -33,10 +33,13 @@ Schema
     :ref:`ContactPoint`, required
 
 :kind:
-    string, Type of customer
+    string
+    
+    Type of procuring entity
 
-    choices:
-        - 'general' - Customer (general)
-        - 'special' - The customer that operates in specific areas of management
-        - 'defense' - Customer carrying out procurement for defense
-        - 'other' -  Legal persons who are not customers in the sense of the law, but are state, municipal, public enterprises, economic societies or associations of enterprises in which state or municipal share is 50 percent or more
+    Possible values:
+        - ``general`` - Procuring entity (general)
+        - ``special`` - Procuring entity that operates in certain spheres of economic activity
+        - ``defense`` - Procuring entity that conducts procurement for the defense needs
+        - ``other`` -  Legal persons that are not procuring entities in the sense of the Law, but are state, utility, public enterprises, economic partnerships or associations of enterprises in which state or public utility share is 50 percent or more
+

@@ -1,0 +1,115 @@
+#
+# Zoriana Zaiats <sorenabell@quintagroup.com>, 2016.
+msgid ""
+msgstr ""
+"Project-Id-Version: openprocurement.api 0.12a1\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2016-04-15 13:12+0300\n"
+"PO-Revision-Date: 2016-04-15 14:04+0300\n"
+"Last-Translator: Zoriana Zaiats <sorenabell@quintagroup.com>\n"
+"Language-Team: Ukrainian <info@quintagroup.com>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Language: uk\n"
+"Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<"
+"=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
+"X-Generator: Lokalize 1.5\n"
+
+#: ../../source/standard/procuringentity.rst:9
+msgid "ProcuringEntity"
+msgstr "ProcuringEntity"
+
+#: ../../source/standard/procuringentity.rst:12
+msgid "Schema"
+msgstr "Схема"
+
+#: ../../source/standard/procuringentity.rst:15
+msgid "string, multilingual"
+msgstr "рядок, багатомовний"
+
+#: ../../source/standard/procuringentity.rst:17
+msgid "|ocdsDescription| The common name of the organization."
+msgstr "|ocdsDescription| Назва організації."
+
+#: ../../source/standard/procuringentity.rst:21
+msgid ":ref:`Identifier`"
+msgstr ":ref:`Identifier`"
+
+#: ../../source/standard/procuringentity.rst:23
+msgid "|ocdsDescription| The primary identifier for this organization."
+msgstr "|ocdsDescription| Ідентифікатор цієї організації."
+
+#: ../../source/standard/procuringentity.rst:27
+msgid "List of :ref:`identifier` objects"
+msgstr "Список об’єктів :ref:`identifier`"
+
+#: ../../source/standard/procuringentity.rst:30
+msgid ":ref:`Address`, required"
+msgstr ":ref:`Address`, обов’язково"
+
+#: ../../source/standard/procuringentity.rst:33
+msgid ":ref:`ContactPoint`, required"
+msgstr ":ref:`ContactPoint`, обов’язково"
+
+#: ../../source/standard/procuringentity.rst:36
+msgid "string"
+msgstr "рядок"
+
+#: ../../source/standard/procuringentity.rst:38
+msgid "Type of procuring entity"
+msgstr "Тип замовника"
+
+#: ../../source/standard/procuringentity.rst:44
+msgid "Possible values:"
+msgstr "Можливі значення:"
+
+#: ../../source/standard/procuringentity.rst:41
+msgid "``general`` - Procuring entity (general)"
+msgstr "``general`` - Замовник (загальний)"
+
+#: ../../source/standard/procuringentity.rst:42
+msgid ""
+"``special`` - Procuring entity that operates in certain spheres of economic "
+"activity"
+msgstr ""
+"``special`` - Замовник, що здійснює діяльність в окремих сферах господарювання"
+
+#: ../../source/standard/procuringentity.rst:43
+msgid ""
+"``defense`` - Procuring entity that conducts procurement for the defense "
+"needs"
+msgstr "``defense`` - Замовник, що здійснює закупівлі для потреб оборони"
+
+#: ../../source/standard/procuringentity.rst:44
+msgid ""
+"``other`` -  Legal persons that are not procuring entities in the sense of "
+"the Law, but are state, utility, public enterprises, economic partnerships "
+"or associations of enterprises in which state or public utility share is 50 "
+"percent or more"
+msgstr ""
+"``other`` -  Юридичні особи, які не є замовниками в розумінні Закону, але є "
+"державними, комунальними, казенними підприємствами, господарськими "
+"товариствами чи об'єднаннями підприємств, у яких державна чи комунальна "
+"частка складає 50 і більше відсотків"
+
+#~ msgid "string, Type of customer"
+#~ msgstr ""
+
+#~ msgid "choices:"
+#~ msgstr ""
+
+#~ msgid "'general' - Customer (general)"
+#~ msgstr ""
+
+#~ msgid "'special' - The customer that operates in specific areas of management"
+#~ msgstr ""
+
+#~ msgid "'defense' - Customer carrying out procurement for defense"
+#~ msgstr ""
+
+#~ msgid ""
+#~ "'other' -  Legal persons who are not customers in the sense of the law, but "
+#~ "are state, municipal, public enterprises, economic societies or associations"
+#~ " of enterprises in which state or municipal share is 50 percent or more"
+#~ msgstr ""
