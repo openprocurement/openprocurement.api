@@ -16,7 +16,7 @@ from barbecue import vnmax
 from zope.interface import implementer, Interface
 
 
-STAND_STILL_TIME = timedelta(days=1)
+STAND_STILL_TIME = timedelta(days=2)
 COMPLAINT_STAND_STILL_TIME = timedelta(days=3)
 BIDDER_TIME = timedelta(minutes=6)
 SERVICE_TIME = timedelta(minutes=9)

@@ -8,6 +8,7 @@ from openprocurement.api.utils import (
     json_view,
     context_unpack,
     APIResource,
+    calculate_business_date,
 )
 from openprocurement.api.validation import (
     validate_award_data,
@@ -300,7 +301,7 @@ class TenderAwardResource(APIResource):
         award_status = award.status
         apply_patch(self.request, save=False, src=self.request.context.serialize())
         if award_status == 'pending' and award.status == 'active':
-            award.complaintPeriod.endDate = get_now() + STAND_STILL_TIME
+            award.complaintPeriod.endDate = calculate_business_date(get_now(), STAND_STILL_TIME, tender, True)
             tender.contracts.append(type(tender).contracts.model_class({
                 'awardID': award.id,
                 'suppliers': award.suppliers,
@@ -322,7 +323,7 @@ class TenderAwardResource(APIResource):
                     i.status = 'cancelled'
             add_next_award(self.request)
         elif award_status == 'pending' and award.status == 'unsuccessful':
-            award.complaintPeriod.endDate = get_now() + STAND_STILL_TIME
+            award.complaintPeriod.endDate = calculate_business_date(get_now(), STAND_STILL_TIME, tender, True)
             add_next_award(self.request)
         elif award_status == 'unsuccessful' and award.status == 'cancelled' and any([i.status in ['claim', 'answered', 'pending', 'resolved'] for i in award.complaints]):
             if tender.status == 'active.awarded':
