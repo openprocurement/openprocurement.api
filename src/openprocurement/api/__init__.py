@@ -19,6 +19,7 @@ from pyramid.authorization import ACLAuthorizationPolicy as AuthorizationPolicy
 from pyramid.config import Configurator
 from pyramid.events import NewRequest, BeforeRender, ContextFound
 from pyramid.renderers import JSON, JSONP
+from pyramid.settings import asbool
 
 LOGGER = getLogger("{}.init".format(__name__))
 SECURITY = {u'admins': {u'names': [], u'roles': ['_admin']}, u'members': {u'names': [], u'roles': ['_admin']}}
@@ -169,6 +170,7 @@ def main(global_config, **settings):
         config.registry.bucket_name = bucket_name
     config.registry.server_id = settings.get('id', '')
     config.registry.health_threshold = float(settings.get('health_threshold', 99))
+    config.registry.update_after = asbool(settings.get('update_after', True))
     return config.make_wsgi_app()
 
 
