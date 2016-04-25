@@ -535,10 +535,6 @@ class TenderResource(APIResource):
             apply_patch(self.request, save=False, src=self.request.validated['tender_src'])
             check_status(self.request)
             save_tender(self.request)
-        elif self.request.authenticated_role == 'tender_owner' and tender.status in ['active.tendering', 'active.auction'] and data.get('status', tender.status) == 'cancelled':
-            apply_patch(self.request, save=False, src=self.request.validated['tender_src'])
-            tender.bids = []
-            save_tender(self.request)
         else:
             apply_patch(self.request, src=self.request.validated['tender_src'])
         self.LOGGER.info('Updated tender {}'.format(tender.id),
