@@ -1,13 +1,13 @@
-POST /api/0.12/tenders?opt_pretty=1 HTTP/1.0
+POST /api/2.0/tenders?opt_pretty=1 HTTP/1.0
 Authorization: Basic YnJva2VyOg==
-Content-Length: 2328
+Content-Length: 2347
 Content-Type: application/json
 Host: api-sandbox.openprocurement.org
 
 {
   "data": {
     "tenderPeriod": {
-      "endDate": "2016-04-01T18:47:47.136678"
+      "endDate": "2016-04-29T12:15:11.496411"
     }, 
     "title": "футляри до державних нагород", 
     "minimalStep": {
@@ -15,7 +15,7 @@ Host: api-sandbox.openprocurement.org
       "amount": 35
     }, 
     "enquiryPeriod": {
-      "endDate": "2016-03-25T18:47:47.136678"
+      "endDate": "2016-04-22T12:15:11.496411"
     }, 
     "procurementMethodType": "belowThreshold", 
     "value": {
@@ -33,6 +33,7 @@ Host: api-sandbox.openprocurement.org
         "uri": "http://www.dus.gov.ua/"
       }, 
       "name": "Державне управління справами", 
+      "kind": "general", 
       "address": {
         "countryName": "Україна", 
         "postalCode": "01220", 
@@ -64,8 +65,8 @@ Host: api-sandbox.openprocurement.org
           "locality": "м. Київ"
         }, 
         "deliveryDate": {
-          "startDate": "2016-03-20T18:47:47.136678", 
-          "endDate": "2016-03-23T18:47:47.136678"
+          "startDate": "2016-04-17T12:15:11.496411", 
+          "endDate": "2016-04-20T12:15:11.496411"
         }, 
         "unit": {
           "code": "44617100-9", 
@@ -80,19 +81,19 @@ Host: api-sandbox.openprocurement.org
 
 201 Created
 Content-Type: application/json; charset=UTF-8
-Location: http://api-sandbox.openprocurement.org/api/0.12/tenders/ce536c5f46d543ec81ffa86ce4c77c8b
+Location: http://api-sandbox.openprocurement.org/api/2.0/tenders/38e02e86df65417c8e66145a0e10112a
 
 {
   "access": {
-    "token": "945a452ee1b442bdaf665b09d0cb4cce"
+    "token": "f0d923398ed24a8dbabbc8c8c4a5a04a"
   }, 
   "data": {
     "procurementMethod": "open", 
     "status": "active.enquiries", 
-    "tenderID": "UA-2016-03-18-000001", 
+    "tenderID": "UA-2016-04-15-000001", 
     "tenderPeriod": {
-      "startDate": "2016-03-25T18:47:47.136678+02:00", 
-      "endDate": "2016-04-01T18:47:47.136678+03:00"
+      "startDate": "2016-04-22T12:15:11.496411+03:00", 
+      "endDate": "2016-04-29T12:15:11.496411+03:00"
     }, 
     "title": "футляри до державних нагород", 
     "minimalStep": {
@@ -123,10 +124,10 @@ Location: http://api-sandbox.openprocurement.org/api/0.12/tenders/ce536c5f46d543
           "locality": "м. Київ"
         }, 
         "deliveryDate": {
-          "startDate": "2016-03-20T18:47:47.136678+02:00", 
-          "endDate": "2016-03-23T18:47:47.136678+02:00"
+          "startDate": "2016-04-17T12:15:11.496411+03:00", 
+          "endDate": "2016-04-20T12:15:11.496411+03:00"
         }, 
-        "id": "c6c6e8ed4b1542e4bf13d3f98ec5ab59", 
+        "id": "8d51ae523fa148588d4e21d3d4fb69ad", 
         "unit": {
           "code": "44617100-9", 
           "name": "item"
@@ -141,7 +142,7 @@ Location: http://api-sandbox.openprocurement.org/api/0.12/tenders/ce536c5f46d543
       "valueAddedTaxIncluded": true
     }, 
     "submissionMethod": "electronicAuction", 
-    "next_check": "2016-03-25T18:47:47.136678+02:00", 
+    "next_check": "2016-04-22T12:15:11.496411+03:00", 
     "procuringEntity": {
       "contactPoint": {
         "name": "Державне управління справами", 
@@ -153,6 +154,7 @@ Location: http://api-sandbox.openprocurement.org/api/0.12/tenders/ce536c5f46d543
         "uri": "http://www.dus.gov.ua/"
       }, 
       "name": "Державне управління справами", 
+      "kind": "general", 
       "address": {
         "postalCode": "01220", 
         "countryName": "Україна", 
@@ -162,12 +164,12 @@ Location: http://api-sandbox.openprocurement.org/api/0.12/tenders/ce536c5f46d543
       }
     }, 
     "enquiryPeriod": {
-      "startDate": "2016-03-18T18:48:01.702855+02:00", 
-      "endDate": "2016-03-25T18:47:47.136678+02:00"
+      "startDate": "2016-04-15T12:15:40.164782+03:00", 
+      "endDate": "2016-04-22T12:15:11.496411+03:00"
     }, 
     "owner": "broker", 
-    "dateModified": "2016-03-18T18:48:01.708625+02:00", 
-    "id": "ce536c5f46d543ec81ffa86ce4c77c8b", 
+    "dateModified": "2016-04-15T12:15:40.169171+03:00", 
+    "id": "38e02e86df65417c8e66145a0e10112a", 
     "awardCriteria": "lowestCost"
   }
 }

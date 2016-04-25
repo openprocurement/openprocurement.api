@@ -3,7 +3,7 @@ import unittest
 from pyramid import testing
 from openprocurement.api.auth import AuthenticationPolicy
 from pyramid.tests.test_authentication import TestBasicAuthAuthenticationPolicy
-from openprocurement.api.tests.base import test_tender_data, BaseWebTest, BaseTenderWebTest
+from openprocurement.api.tests.base import test_tender_data, test_organization, BaseWebTest, BaseTenderWebTest
 
 
 class AuthTest(TestBasicAuthAuthenticationPolicy):
@@ -39,14 +39,14 @@ class AccreditationTenderQuestionTest(BaseTenderWebTest):
     def test_create_tender_question_accreditation(self):
         self.app.authorization = ('Basic', ('broker2', ''))
         response = self.app.post_json('/tenders/{}/questions'.format(self.tender_id),
-                                      {'data': {'title': 'question title', 'description': 'question description', 'author': test_tender_data["procuringEntity"]}})
+                                      {'data': {'title': 'question title', 'description': 'question description', 'author': test_organization}})
         self.assertEqual(response.status, '201 Created')
         self.assertEqual(response.content_type, 'application/json')
 
         for broker in ['broker1', 'broker3', 'broker4']:
             self.app.authorization = ('Basic', (broker, ''))
             response = self.app.post_json('/tenders/{}/questions'.format(self.tender_id),
-                                          {'data': {'title': 'question title', 'description': 'question description', 'author': test_tender_data["procuringEntity"]}},
+                                          {'data': {'title': 'question title', 'description': 'question description', 'author': test_organization}},
                                           status=403)
             self.assertEqual(response.status, '403 Forbidden')
             self.assertEqual(response.content_type, 'application/json')
@@ -59,14 +59,14 @@ class AccreditationTenderBidTest(BaseTenderWebTest):
     def test_create_tender_bid_accreditation(self):
         self.app.authorization = ('Basic', ('broker2', ''))
         response = self.app.post_json('/tenders/{}/bids'.format(self.tender_id),
-                                      {'data': {'tenderers': [test_tender_data["procuringEntity"]], "value": {"amount": 500}}})
+                                      {'data': {'tenderers': [test_organization], "value": {"amount": 500}}})
         self.assertEqual(response.status, '201 Created')
         self.assertEqual(response.content_type, 'application/json')
 
         for broker in ['broker1', 'broker3', 'broker4']:
             self.app.authorization = ('Basic', (broker, ''))
             response = self.app.post_json('/tenders/{}/bids'.format(self.tender_id),
-                                          {'data': {'tenderers': [test_tender_data["procuringEntity"]], "value": {"amount": 500}}},
+                                          {'data': {'tenderers': [test_organization], "value": {"amount": 500}}},
                                           status=403)
             self.assertEqual(response.status, '403 Forbidden')
             self.assertEqual(response.content_type, 'application/json')

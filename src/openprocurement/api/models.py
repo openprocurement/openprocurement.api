@@ -16,7 +16,7 @@ from barbecue import vnmax
 from zope.interface import implementer, Interface
 
 
-STAND_STILL_TIME = timedelta(days=1)
+STAND_STILL_TIME = timedelta(days=2)
 COMPLAINT_STAND_STILL_TIME = timedelta(days=3)
 BIDDER_TIME = timedelta(minutes=6)
 SERVICE_TIME = timedelta(minutes=9)
@@ -441,6 +441,19 @@ class Organization(Model):
     additionalIdentifiers = ListType(ModelType(Identifier))
     address = ModelType(Address, required=True)
     contactPoint = ModelType(ContactPoint, required=True)
+
+
+class ProcuringEntity(Organization):
+    """An organization."""
+    class Options:
+        roles = {
+            'embedded': schematics_embedded_role,
+            'view': schematics_default_role,
+            'edit_active.enquiries': schematics_default_role + blacklist("kind"),
+            'edit_active.tendering': schematics_default_role + blacklist("kind"),
+        }
+
+    kind = StringType(choices=['general', 'special', 'defense', 'other'])
 
 
 class Parameter(Model):
@@ -1064,7 +1077,7 @@ class Tender(SchematicsDocument, Model):
     numberOfBidders = IntType()  # The number of unique tenderers who participated in the tender
     #numberOfBids = IntType()  # The number of bids or submissions to the tender. In the case of an auction, the number of bids may differ from the numberOfBidders.
     bids = ListType(ModelType(Bid), default=list())  # A list of all the companies who entered submissions for the tender.
-    procuringEntity = ModelType(Organization, required=True)  # The entity managing the procurement, which may be different from the buyer who is paying / using the items being procured.
+    procuringEntity = ModelType(ProcuringEntity, required=True)  # The entity managing the procurement, which may be different from the buyer who is paying / using the items being procured.
     documents = ListType(ModelType(Document), default=list())  # All documents and attachments related to the tender.
     awards = ListType(ModelType(Award), default=list())
     contracts = ListType(ModelType(Contract), default=list())
@@ -1090,6 +1103,7 @@ class Tender(SchematicsDocument, Model):
 
     create_accreditation = 1
     edit_accreditation = 2
+    procuring_entity_kinds = ['general', 'special', 'defense', 'other']
 
     __name__ = ''
 

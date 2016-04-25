@@ -34,7 +34,7 @@ Schema
    TenderID should always be the same as the OCID. It is included to make the flattened data structure more convenient.
 
 :procuringEntity:
-   :ref:`organization`, required
+   :ref:`ProcuringEntity`, required
 
    Organization conducting the tender.
 

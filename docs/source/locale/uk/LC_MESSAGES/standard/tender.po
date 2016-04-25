@@ -4,7 +4,7 @@ msgstr ""
 "Project-Id-Version: openprocurement.api 0.10\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2014-11-24 18:25+0200\n"
-"PO-Revision-Date: 2016-03-21 13:46+0200\n"
+"PO-Revision-Date: 2016-04-15 14:05+0300\n"
 "Last-Translator: Zoriana Zaiats <sorenabell@quintagroup.com>\n"
 "Language-Team: Ukrainian <info@quintagroup.com>\n"
 "MIME-Version: 1.0\n"
@@ -159,10 +159,6 @@ msgstr "Зміни властивостей об’єктів Закупівлі
 #: ../../source/standard/tender.rst:18
 msgid "tender code (in procuring organization management system)"
 msgstr "код закупівлі (у системі управління організації-замовника)"
-
-#: ../../source/standard/tender.rst:37
-msgid ":ref:`organization`, required"
-msgstr ":ref:`organization`, обов’язково"
 
 #: ../../source/standard/tender.rst:45 ../../source/standard/tender.rst:95
 msgid ":ref:`value`, required"
@@ -374,3 +370,9 @@ msgstr ":ref:`Guarantee`"
 msgid "Bid guarantee"
 msgstr "Забезпечення тендерної пропозиції"
 
+#: ../../source/standard/tender.rst:37
+msgid ":ref:`ProcuringEntity`, required"
+msgstr ":ref:`ProcuringEntity`, обов’язково"
+
+#~ msgid ":ref:`organization`, required"
+#~ msgstr ":ref:`organization`, обов’язково"

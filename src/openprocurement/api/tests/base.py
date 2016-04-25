@@ -10,27 +10,30 @@ from openprocurement.api.utils import VERSION, apply_data_patch
 
 
 now = datetime.now()
+test_organization = {
+    "name": u"Державне управління справами",
+    "identifier": {
+        "scheme": u"UA-EDR",
+        "id": u"00037256",
+        "uri": u"http://www.dus.gov.ua/"
+    },
+    "address": {
+        "countryName": u"Україна",
+        "postalCode": u"01220",
+        "region": u"м. Київ",
+        "locality": u"м. Київ",
+        "streetAddress": u"вул. Банкова, 11, корпус 1"
+    },
+    "contactPoint": {
+        "name": u"Державне управління справами",
+        "telephone": u"0440000000"
+    }
+}
+test_procuringEntity = test_organization.copy()
+test_procuringEntity["kind"] = "general"
 test_tender_data = {
     "title": u"футляри до державних нагород",
-    "procuringEntity": {
-        "name": u"Державне управління справами",
-        "identifier": {
-            "scheme": u"UA-EDR",
-            "id": u"00037256",
-            "uri": u"http://www.dus.gov.ua/"
-        },
-        "address": {
-            "countryName": u"Україна",
-            "postalCode": u"01220",
-            "region": u"м. Київ",
-            "locality": u"м. Київ",
-            "streetAddress": u"вул. Банкова, 11, корпус 1"
-        },
-        "contactPoint": {
-            "name": u"Державне управління справами",
-            "telephone": u"0440000000"
-        }
-    },
+    "procuringEntity": test_procuringEntity,
     "value": {
         "amount": 500,
         "currency": u"UAH"
@@ -129,7 +132,7 @@ test_features_tender_data["features"] = [
 test_bids = [
     {
         "tenderers": [
-            test_tender_data["procuringEntity"]
+            test_organization
         ],
         "value": {
             "amount": 469,
@@ -139,7 +142,7 @@ test_bids = [
     },
     {
         "tenderers": [
-            test_tender_data["procuringEntity"]
+            test_organization
         ],
         "value": {
             "amount": 479,

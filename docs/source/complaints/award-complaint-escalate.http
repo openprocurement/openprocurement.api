@@ -1,4 +1,4 @@
-PATCH /api/0.12/tenders/9f65ed38c8f446fcab0b6709b76f38b0/awards/14fa07fa028d472896c4047375e08407/complaints/b399b144ba5243e1be27b915a1469ad8?acc_token=8453d6492eb8479fa8f6430f2585dca3 HTTP/1.0
+PATCH /api/2.0/tenders/4630a487b9cd4ee0abadd23ef4b8e05f/awards/6ba25103f3614f78a635b8fc4cb30295/complaints/bfa4790a795742ac85b5d3b253cd944f?acc_token=097267c36ca54cf99dac911ea9659efa HTTP/1.0
 Authorization: Basic YnJva2VyOg==
 Content-Length: 51
 Content-Type: application/json
@@ -24,31 +24,32 @@ Content-Type: application/json; charset=UTF-8
     "type": "claim", 
     "author": {
       "contactPoint": {
-        "name": "Державне управління справами", 
-        "telephone": "0440000000"
+        "email": "soleksuk@gmail.com", 
+        "telephone": "+380 (432) 21-69-30", 
+        "name": "Сергій Олексюк"
       }, 
       "identifier": {
         "scheme": "UA-EDR", 
-        "id": "00037256", 
-        "uri": "http://www.dus.gov.ua/"
+        "id": "00137256", 
+        "uri": "http://www.sc.gov.ua/"
       }, 
-      "name": "Державне управління справами", 
+      "name": "ДКП «Школяр»", 
       "address": {
-        "postalCode": "01220", 
+        "postalCode": "21100", 
         "countryName": "Україна", 
-        "streetAddress": "вул. Банкова, 11, корпус 1", 
-        "region": "м. Київ", 
-        "locality": "м. Київ"
+        "streetAddress": "вул. Островського, 33", 
+        "region": "м. Вінниця", 
+        "locality": "м. Вінниця"
       }
     }, 
     "satisfied": false, 
-    "dateEscalated": "2016-03-18T18:47:56.905741+02:00", 
-    "dateAnswered": "2016-03-18T18:47:56.638171+02:00", 
-    "dateSubmitted": "2016-03-18T18:47:55.569906+02:00", 
-    "complaintID": "UA-2016-03-18-000001.6", 
-    "date": "2016-03-18T18:47:55.568530+02:00", 
+    "dateEscalated": "2016-04-15T12:15:30.213159+03:00", 
+    "dateAnswered": "2016-04-15T12:15:29.454104+03:00", 
+    "dateSubmitted": "2016-04-15T12:15:26.924174+03:00", 
+    "complaintID": "UA-2016-04-15-000004.6", 
+    "date": "2016-04-15T12:15:26.922016+03:00", 
     "resolution": "Виправлено неконкурентні умови", 
-    "id": "b399b144ba5243e1be27b915a1469ad8"
+    "id": "bfa4790a795742ac85b5d3b253cd944f"
   }
 }
 

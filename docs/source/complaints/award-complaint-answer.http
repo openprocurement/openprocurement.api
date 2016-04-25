@@ -1,4 +1,4 @@
-PATCH /api/0.12/tenders/9f65ed38c8f446fcab0b6709b76f38b0/awards/14fa07fa028d472896c4047375e08407/complaints/482fbed83f884b94adfccb63128f58cb?acc_token=156967f2c18c4783ae1d34e4a20929a1 HTTP/1.0
+PATCH /api/2.0/tenders/4630a487b9cd4ee0abadd23ef4b8e05f/awards/6ba25103f3614f78a635b8fc4cb30295/complaints/9f001f1ed640417384afb037e7f43ea1?acc_token=2408bafb138842659f22d6d511a91633 HTTP/1.0
 Authorization: Basic YnJva2VyOg==
 Content-Length: 442
 Content-Type: application/json
@@ -24,45 +24,46 @@ Content-Type: application/json; charset=UTF-8
       {
         "author": "complaint_owner", 
         "title": "Complaint_Attachement.pdf", 
-        "url": "http://api-sandbox.openprocurement.org/api/0.12/tenders/9f65ed38c8f446fcab0b6709b76f38b0/awards/14fa07fa028d472896c4047375e08407/complaints/482fbed83f884b94adfccb63128f58cb/documents/558b64a00131433185592996898706da?download=1e8f27ec05dc41acb1deca6630560cd5", 
+        "url": "http://api-sandbox.openprocurement.org/api/2.0/tenders/4630a487b9cd4ee0abadd23ef4b8e05f/awards/6ba25103f3614f78a635b8fc4cb30295/complaints/9f001f1ed640417384afb037e7f43ea1/documents/c8b471ccb52a4193911df981ed1972b9?download=3223e2aa024c4cc5a879f978c65b0a32", 
         "format": "application/pdf", 
         "documentOf": "tender", 
-        "datePublished": "2016-03-18T18:47:55.041259+02:00", 
-        "id": "558b64a00131433185592996898706da", 
-        "dateModified": "2016-03-18T18:47:55.041297+02:00"
+        "datePublished": "2016-04-15T12:15:25.863950+03:00", 
+        "id": "c8b471ccb52a4193911df981ed1972b9", 
+        "dateModified": "2016-04-15T12:15:25.863996+03:00"
       }
     ], 
     "description": "complaint description", 
     "author": {
       "contactPoint": {
-        "name": "Державне управління справами", 
-        "telephone": "0440000000"
+        "email": "soleksuk@gmail.com", 
+        "telephone": "+380 (432) 21-69-30", 
+        "name": "Сергій Олексюк"
       }, 
       "identifier": {
         "scheme": "UA-EDR", 
-        "id": "00037256", 
-        "uri": "http://www.dus.gov.ua/"
+        "id": "00137256", 
+        "uri": "http://www.sc.gov.ua/"
       }, 
-      "name": "Державне управління справами", 
+      "name": "ДКП «Школяр»", 
       "address": {
-        "postalCode": "01220", 
+        "postalCode": "21100", 
         "countryName": "Україна", 
-        "streetAddress": "вул. Банкова, 11, корпус 1", 
-        "region": "м. Київ", 
-        "locality": "м. Київ"
+        "streetAddress": "вул. Островського, 33", 
+        "region": "м. Вінниця", 
+        "locality": "м. Вінниця"
       }
     }, 
     "resolutionType": "resolved", 
     "type": "claim", 
     "title": "complaint title", 
     "tendererAction": "Виправлено неконкурентні умови", 
-    "dateAnswered": "2016-03-18T18:47:56.026765+02:00", 
-    "tendererActionDate": "2016-03-18T18:47:56.026793+02:00", 
-    "dateSubmitted": "2016-03-18T18:47:55.295253+02:00", 
-    "complaintID": "UA-2016-03-18-000001.5", 
-    "date": "2016-03-18T18:47:54.800487+02:00", 
+    "dateAnswered": "2016-04-15T12:15:27.952003+03:00", 
+    "tendererActionDate": "2016-04-15T12:15:27.952044+03:00", 
+    "dateSubmitted": "2016-04-15T12:15:26.391232+03:00", 
+    "complaintID": "UA-2016-04-15-000004.5", 
+    "date": "2016-04-15T12:15:25.319519+03:00", 
     "resolution": "Виправлено неконкурентні умови", 
-    "id": "482fbed83f884b94adfccb63128f58cb"
+    "id": "9f001f1ed640417384afb037e7f43ea1"
   }
 }
 

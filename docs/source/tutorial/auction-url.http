@@ -1,4 +1,4 @@
-GET /api/0.12/tenders/ce536c5f46d543ec81ffa86ce4c77c8b HTTP/1.0
+GET /api/2.0/tenders/38e02e86df65417c8e66145a0e10112a HTTP/1.0
 Authorization: Basic YnJva2VyOg==
 Host: api-sandbox.openprocurement.org
 
@@ -9,26 +9,26 @@ Content-Type: application/json; charset=UTF-8
 {
   "data": {
     "procurementMethod": "open", 
-    "auctionUrl": "http://auction-sandbox.openprocurement.org/tenders/ce536c5f46d543ec81ffa86ce4c77c8b", 
+    "auctionUrl": "http://auction-sandbox.openprocurement.org/tenders/38e02e86df65417c8e66145a0e10112a", 
     "enquiryPeriod": {
-      "startDate": "2016-03-04T18:47:47.136678+02:00", 
-      "endDate": "2016-03-11T18:47:47.136678+02:00"
+      "startDate": "2016-04-01T12:15:11.496411+03:00", 
+      "endDate": "2016-04-08T12:15:11.496411+03:00"
     }, 
     "submissionMethod": "electronicAuction", 
-    "next_check": "2016-03-18T19:23:47.136678+02:00", 
+    "next_check": "2016-04-15T12:51:11.496411+03:00", 
     "awardCriteria": "lowestCost", 
     "questions": [
       {
         "description": "Просимо додати таблицю потрібної калорійності харчування", 
         "title": "Калорійність", 
-        "date": "2016-03-18T18:48:03.398193+02:00", 
+        "date": "2016-04-15T12:15:42.202439+03:00", 
         "answer": "Таблицю додано в файлі \"Kalorijnist.xslx\"", 
-        "id": "241f4ab8df634f23a11f61fe2074a78f", 
+        "id": "49167171b41a448a8dd4edf924a4402e", 
         "questionOf": "tender"
       }
     ], 
     "owner": "broker", 
-    "id": "ce536c5f46d543ec81ffa86ce4c77c8b", 
+    "id": "38e02e86df65417c8e66145a0e10112a", 
     "guarantee": {
       "currency": "USD", 
       "amount": 8.0
@@ -37,44 +37,44 @@ Content-Type: application/json; charset=UTF-8
       {
         "description": "document description modified", 
         "title": "Notice.pdf", 
-        "url": "http://api-sandbox.openprocurement.org/api/0.12/tenders/ce536c5f46d543ec81ffa86ce4c77c8b/documents/caeb63b8bee24a3cbf4d7f8bbbe7352b?download=f7a875fc152744c7a5e9124a400f688a", 
+        "url": "http://api-sandbox.openprocurement.org/api/2.0/tenders/38e02e86df65417c8e66145a0e10112a/documents/ea2c08632408480e96bb7290311925e8?download=78cc300fa15a43f29f5f9f1babbab6b6", 
         "format": "application/pdf", 
         "documentOf": "tender", 
-        "datePublished": "2016-03-18T18:48:02.645660+02:00", 
+        "datePublished": "2016-04-15T12:15:41.341659+03:00", 
         "documentType": "technicalSpecifications", 
-        "id": "caeb63b8bee24a3cbf4d7f8bbbe7352b", 
-        "dateModified": "2016-03-18T18:48:02.645712+02:00"
+        "id": "ea2c08632408480e96bb7290311925e8", 
+        "dateModified": "2016-04-15T12:15:41.341736+03:00"
       }, 
       {
         "title": "AwardCriteria.pdf", 
-        "url": "http://api-sandbox.openprocurement.org/api/0.12/tenders/ce536c5f46d543ec81ffa86ce4c77c8b/documents/670a093aa19d418598c9b9d04ec5b034?download=f35b159bf3a04c41896382cdf7103ca3", 
+        "url": "http://api-sandbox.openprocurement.org/api/2.0/tenders/38e02e86df65417c8e66145a0e10112a/documents/4a0d8aca59ed4e51954acdcb6ddb5c1d?download=9e92265f54f94fc38f4cd1a2550e944c", 
         "format": "application/pdf", 
         "documentOf": "tender", 
-        "datePublished": "2016-03-18T18:48:03.064872+02:00", 
-        "id": "670a093aa19d418598c9b9d04ec5b034", 
-        "dateModified": "2016-03-18T18:48:03.064908+02:00"
+        "datePublished": "2016-04-15T12:15:41.819625+03:00", 
+        "id": "4a0d8aca59ed4e51954acdcb6ddb5c1d", 
+        "dateModified": "2016-04-15T12:15:41.819672+03:00"
       }, 
       {
         "title": "AwardCriteria-2.pdf", 
-        "url": "http://api-sandbox.openprocurement.org/api/0.12/tenders/ce536c5f46d543ec81ffa86ce4c77c8b/documents/670a093aa19d418598c9b9d04ec5b034?download=6cd6ebcdea1f459c86913e39953e4b3d", 
+        "url": "http://api-sandbox.openprocurement.org/api/2.0/tenders/38e02e86df65417c8e66145a0e10112a/documents/4a0d8aca59ed4e51954acdcb6ddb5c1d?download=b93fa73827594636a61a4d37d2eb9e49", 
         "format": "application/pdf", 
         "documentOf": "tender", 
-        "datePublished": "2016-03-18T18:48:03.064872+02:00", 
-        "id": "670a093aa19d418598c9b9d04ec5b034", 
-        "dateModified": "2016-03-18T18:48:03.235028+02:00"
+        "datePublished": "2016-04-15T12:15:41.819625+03:00", 
+        "id": "4a0d8aca59ed4e51954acdcb6ddb5c1d", 
+        "dateModified": "2016-04-15T12:15:42.047082+03:00"
       }
     ], 
     "title": "футляри до державних нагород", 
-    "tenderID": "UA-2016-03-18-000001", 
-    "dateModified": "2016-03-18T18:48:04.626732+02:00", 
+    "tenderID": "UA-2016-04-15-000001", 
+    "dateModified": "2016-04-15T12:15:43.966324+03:00", 
     "status": "active.auction", 
     "tenderPeriod": {
-      "startDate": "2016-03-11T18:47:47.136678+02:00", 
-      "endDate": "2016-03-18T18:47:47.136678+02:00"
+      "startDate": "2016-04-08T12:15:11.496411+03:00", 
+      "endDate": "2016-04-15T12:15:11.496411+03:00"
     }, 
     "auctionPeriod": {
-      "startDate": "2016-03-18T18:47:47.136678+02:00", 
-      "shouldStartAfter": "2016-03-18T18:47:47.136678+02:00"
+      "startDate": "2016-04-15T12:15:11.496411+03:00", 
+      "shouldStartAfter": "2016-04-15T12:15:11.496411+03:00"
     }, 
     "procurementMethodType": "belowThreshold", 
     "minimalStep": {
@@ -105,10 +105,10 @@ Content-Type: application/json; charset=UTF-8
           "locality": "м. Київ"
         }, 
         "deliveryDate": {
-          "startDate": "2016-03-20T18:47:47.136678+02:00", 
-          "endDate": "2016-03-23T18:47:47.136678+02:00"
+          "startDate": "2016-04-17T12:15:11.496411+03:00", 
+          "endDate": "2016-04-20T12:15:11.496411+03:00"
         }, 
-        "id": "c6c6e8ed4b1542e4bf13d3f98ec5ab59", 
+        "id": "8d51ae523fa148588d4e21d3d4fb69ad", 
         "unit": {
           "code": "44617100-9", 
           "name": "item"
@@ -132,6 +132,7 @@ Content-Type: application/json; charset=UTF-8
         "uri": "http://www.dus.gov.ua/"
       }, 
       "name": "Державне управління справами", 
+      "kind": "general", 
       "address": {
         "postalCode": "01220", 
         "countryName": "Україна", 
