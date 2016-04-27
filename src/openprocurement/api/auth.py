@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 import binascii
-from hashlib import md5
+from pbkdf2 import PBKDF2
 from pyramid.authentication import BasicAuthAuthenticationPolicy, b64decode
 from ConfigParser import ConfigParser
 
@@ -50,7 +50,8 @@ class AuthenticationPolicy(BasicAuthAuthenticationPolicy):
                 if not token:
                     return auth_groups
         auth_groups.append('{}_{}'.format(user['name'], token))
-        auth_groups.append('{}_{}'.format(user['name'], md5(token).hexdigest()))
+        token_key = PBKDF2(token, request.registry.auth_ssid, iterations=1000).hexread(16)  # 128-bit key
+        auth_groups.append('{}_{}'.format(user['name'], token_key))
         return auth_groups
 
     def callback(self, username, request):

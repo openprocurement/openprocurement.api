@@ -85,6 +85,9 @@ def main(global_config, **settings):
     config.add_request_method(tender_from_data)
     config.add_directive('add_tender_procurementMethodType', register_tender_procurementMethodType)
 
+    # authentication ssid
+    config.registry.auth_ssid = settings.get('auth.ssid', '')
+
     # search for plugins
     plugins = settings.get('plugins') and settings['plugins'].split(',')
     for entry_point in iter_entry_points('openprocurement.api.plugins'):
