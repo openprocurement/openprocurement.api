@@ -1041,6 +1041,7 @@ class Tender(SchematicsDocument, Model):
             'chronograph_view': chronograph_view_role,
             'Administrator': Administrator_role,
             'default': schematics_default_role,
+            'contracting': whitelist('doc_id', 'owner'),
         }
 
     def __local_roles__(self):
@@ -1116,6 +1117,8 @@ class Tender(SchematicsDocument, Model):
             role = 'chronograph'
         elif request.authenticated_role == 'auction':
             role = 'auction_{}'.format(request.method.lower())
+        elif request.authenticated_role == 'contracting':
+            role = 'contracting'
         else:
             role = 'edit_{}'.format(request.context.status)
         return role
