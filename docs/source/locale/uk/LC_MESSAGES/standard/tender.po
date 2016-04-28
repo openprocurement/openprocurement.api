@@ -1,4 +1,4 @@
-# Zoriana Zaiats <sorenabell@quintagroup.com>, 2016.
+#
 msgid ""
 msgstr ""
 "Project-Id-Version: openprocurement.api 0.10\n"
@@ -374,5 +374,3 @@ msgstr "Забезпечення тендерної пропозиції"
 msgid ":ref:`ProcuringEntity`, required"
 msgstr ":ref:`ProcuringEntity`, обов’язково"
 
-#~ msgid ":ref:`organization`, required"
-#~ msgstr ":ref:`organization`, обов’язково"

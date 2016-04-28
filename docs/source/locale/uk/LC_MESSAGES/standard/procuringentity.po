@@ -1,5 +1,4 @@
 #
-# Zoriana Zaiats <sorenabell@quintagroup.com>, 2016.
 msgid ""
 msgstr ""
 "Project-Id-Version: openprocurement.api 0.12a1\n"
@@ -93,23 +92,3 @@ msgstr ""
 "товариствами чи об'єднаннями підприємств, у яких державна чи комунальна "
 "частка складає 50 і більше відсотків"
 
-#~ msgid "string, Type of customer"
-#~ msgstr ""
-
-#~ msgid "choices:"
-#~ msgstr ""
-
-#~ msgid "'general' - Customer (general)"
-#~ msgstr ""
-
-#~ msgid "'special' - The customer that operates in specific areas of management"
-#~ msgstr ""
-
-#~ msgid "'defense' - Customer carrying out procurement for defense"
-#~ msgstr ""
-
-#~ msgid ""
-#~ "'other' -  Legal persons who are not customers in the sense of the law, but "
-#~ "are state, municipal, public enterprises, economic societies or associations"
-#~ " of enterprises in which state or municipal share is 50 percent or more"
-#~ msgstr ""
