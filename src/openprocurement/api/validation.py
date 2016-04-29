@@ -86,7 +86,18 @@ def validate_tender_data(request):
 
 
 def validate_patch_tender_data(request):
-    return validate_data(request, type(request.tender), True)
+    data = validate_json_data(request)
+    if data is None:
+        return
+    if request.context.status != 'draft':
+        return validate_data(request, type(request.tender), True, data)
+    default_status = type(request.tender).fields['status'].default
+    if data.get('status') != default_status:
+        request.errors.add('body', 'data', 'Can\'t update tender in current (draft) status')
+        request.errors.status = 403
+        return
+    request.validated['data'] = {}
+    request.context.status = default_status
 
 
 def validate_tender_auction_data(request):

@@ -537,6 +537,29 @@ class TenderResourceTest(BaseWebTest):
         self.assertNotEqual(data['doc_id'], tender['id'])
         self.assertNotEqual(data['tenderID'], tender['tenderID'])
 
+    def test_create_tender_draft(self):
+        data = test_tender_data.copy()
+        data.update({'status': 'draft'})
+        response = self.app.post_json('/tenders', {'data': data})
+        self.assertEqual(response.status, '201 Created')
+        self.assertEqual(response.content_type, 'application/json')
+        tender = response.json['data']
+        self.assertEqual(tender['status'], 'draft')
+
+        response = self.app.patch_json('/tenders/{}'.format(tender['id']), {'data': {'value': {'amount': 100}}}, status=403)
+        self.assertEqual(response.status, '403 Forbidden')
+        self.assertEqual(response.content_type, 'application/json')
+        self.assertEqual(response.json['status'], 'error')
+        self.assertEqual(response.json['errors'], [
+            {u'description': u"Can't update tender in current (draft) status", u'location': u'body', u'name': u'data'}
+        ])
+
+        response = self.app.patch_json('/tenders/{}'.format(tender['id']), {'data': {'status': 'active.enquiries'}})
+        self.assertEqual(response.status, '200 OK')
+        self.assertEqual(response.content_type, 'application/json')
+        tender = response.json['data']
+        self.assertEqual(tender['status'], 'active.enquiries')
+
     def test_create_tender(self):
         response = self.app.get('/tenders')
         self.assertEqual(response.status, '200 OK')
