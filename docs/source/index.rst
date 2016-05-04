@@ -39,6 +39,7 @@ Contents:
    complaints
    performance
    cluster
+   2pc
    reference
 
 Indices and tables

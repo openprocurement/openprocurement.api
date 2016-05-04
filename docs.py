@@ -280,6 +280,28 @@ class TenderResourceTest(BaseTenderWebTest):
         self.couchdb_server = self.app.app.registry.couchdb_server
         self.db = self.app.app.registry.db
 
+    def test_docs_2pc(self):
+        # Creating tender in draft status
+        #
+        data = test_tender_data.copy()
+        data['status'] = 'draft'
+
+        with open('docs/source/tutorial/tender-post-2pc.http', 'w') as self.app.file_obj:
+            response = self.app.post_json(
+                '/tenders?opt_pretty=1', {"data": data})
+            self.assertEqual(response.status, '201 Created')
+
+        tender = response.json['data']
+        self.tender_id = tender['id']
+        owner_token = response.json['access']['token']
+
+        # switch to 'active.enquiries'
+
+        with open('docs/source/tutorial/tender-patch-2pc.http', 'w') as self.app.file_obj:
+            response = self.app.patch_json('/tenders/{}?acc_token={}'.format(tender['id'], owner_token),
+                                           {'data': {"status": 'active.enquiries'}})
+            self.assertEqual(response.status, '200 OK')
+
     def test_docs_tutorial(self):
         request_path = '/tenders?opt_pretty=1'
 
