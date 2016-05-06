@@ -300,6 +300,7 @@ class TenderAwardResource(APIResource):
             return
         award_status = award.status
         apply_patch(self.request, save=False, src=self.request.context.serialize())
+        award.date = get_now()
         if award_status == 'pending' and award.status == 'active':
             award.complaintPeriod.endDate = calculate_business_date(get_now(), STAND_STILL_TIME, tender, True)
             tender.contracts.append(type(tender).contracts.model_class({
