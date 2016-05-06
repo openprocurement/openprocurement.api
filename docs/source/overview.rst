@@ -60,7 +60,7 @@ General information, roadmap, and technical specifications for the
 Open Procurement project can be found at `openprocurement.org <http://openprocurement.org/en>`_.
 
 Documentation of related packages
-=================================
+---------------------------------
 
 * `Open tender procedure (OpenUA) <http://openua.api-docs.openprocurement.org/en/latest/>`_
 
