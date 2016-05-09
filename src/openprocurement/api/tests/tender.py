@@ -562,6 +562,8 @@ class TenderResourceTest(BaseWebTest):
         self.assertEqual(response.status, '201 Created')
         self.assertEqual(response.content_type, 'application/json')
         tender = response.json['data']
+        if 'procurementMethodDetails' in tender:
+            tender.pop('procurementMethodDetails')
         self.assertEqual(set(tender), set([u'procurementMethodType', u'id', u'dateModified', u'tenderID', u'status', u'enquiryPeriod',
                                            u'tenderPeriod', u'minimalStep', u'items', u'value', u'procuringEntity', u'next_check',
                                            u'procurementMethod', u'awardCriteria', u'submissionMethod', u'title', u'owner']))

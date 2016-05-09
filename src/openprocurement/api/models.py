@@ -21,6 +21,7 @@ COMPLAINT_STAND_STILL_TIME = timedelta(days=3)
 BIDDER_TIME = timedelta(minutes=6)
 SERVICE_TIME = timedelta(minutes=9)
 AUCTION_STAND_STILL_TIME = timedelta(minutes=15)
+SANDBOX_MODE = os.environ.get('SANDBOX_MODE', False)
 
 schematics_embedded_role = SchematicsDocument.Options.roles['embedded'] + blacklist("__parent__")
 schematics_default_role = SchematicsDocument.Options.roles['default'] + blacklist("__parent__")
@@ -1097,6 +1098,8 @@ class Tender(SchematicsDocument, Model):
     features = ListType(ModelType(Feature), validators=[validate_features_uniq])
     lots = ListType(ModelType(Lot), default=list(), validators=[validate_lots_uniq])
     guarantee = ModelType(Guarantee)
+    if SANDBOX_MODE:
+        procurementMethodDetails = StringType()
 
     _attachments = DictType(DictType(BaseType), default=dict())  # couchdb attachments
     dateModified = IsoDateTimeType()
@@ -1199,18 +1202,23 @@ class Tender(SchematicsDocument, Model):
             if lots_ends:
                 checks.append(min(lots_ends))
         if self.status.startswith('active'):
+            from openprocurement.api.utils import calculate_business_date
             for complaint in self.complaints:
                 if complaint.status == 'claim' and complaint.dateSubmitted:
-                    checks.append(complaint.dateSubmitted + COMPLAINT_STAND_STILL_TIME)
+                    checks.append(calculate_business_date(complaint.dateSubmitted, COMPLAINT_STAND_STILL_TIME, self))
                 elif complaint.status == 'answered' and complaint.dateAnswered:
-                    checks.append(complaint.dateAnswered + COMPLAINT_STAND_STILL_TIME)
+                    checks.append(calculate_business_date(complaint.dateAnswered, COMPLAINT_STAND_STILL_TIME, self))
             for award in self.awards:
                 for complaint in award.complaints:
                     if complaint.status == 'claim' and complaint.dateSubmitted:
-                        checks.append(complaint.dateSubmitted + COMPLAINT_STAND_STILL_TIME)
+                        checks.append(calculate_business_date(complaint.dateSubmitted, COMPLAINT_STAND_STILL_TIME, self))
                     elif complaint.status == 'answered' and complaint.dateAnswered:
-                        checks.append(complaint.dateAnswered + COMPLAINT_STAND_STILL_TIME)
+                        checks.append(calculate_business_date(complaint.dateAnswered, COMPLAINT_STAND_STILL_TIME, self))
         return min(checks).isoformat() if checks else None
+
+    def validate_procurementMethodDetails(self, *args, **kw):
+        if self.mode and self.mode == 'test' and self.procurementMethodDetails and self.procurementMethodDetails != '':
+            raise ValidationError(u"procurementMethodDetails should be used with mode test")
 
     @serializable
     def numberOfBids(self):
