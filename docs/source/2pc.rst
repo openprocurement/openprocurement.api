@@ -3,6 +3,8 @@
 2 Phase Commit
 ==============
 
+.. _tender-2pc:
+
 Creating tender with 2 Phase Commit
 -----------------------------------
 
