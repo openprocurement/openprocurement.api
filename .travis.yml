@@ -7,7 +7,7 @@ services:
 env:
   global:
     - TZ=Europe/Kiev
-  env:
+  matrix:
     - SANDBOX_MODE=
     - SANDBOX_MODE=True
 cache:
