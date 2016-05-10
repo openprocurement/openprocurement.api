@@ -594,6 +594,12 @@ class TenderResourceTest(BaseWebTest):
         tender = response.json['data']
         self.assertEqual(tender['status'], 'active.enquiries')
 
+        response = self.app.get('/tenders/{}'.format(tender['id']))
+        self.assertEqual(response.status, '200 OK')
+        self.assertEqual(response.content_type, 'application/json')
+        tender = response.json['data']
+        self.assertEqual(tender['status'], 'active.enquiries')
+
     def test_create_tender(self):
         response = self.app.get('/tenders')
         self.assertEqual(response.status, '200 OK')
