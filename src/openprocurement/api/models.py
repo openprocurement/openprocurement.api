@@ -1049,7 +1049,10 @@ class Tender(SchematicsDocument, Model):
         }
 
     def __local_roles__(self):
-        return dict([('{}_{}'.format(self.owner, self.owner_token), 'tender_owner')])
+        roles = dict([('{}_{}'.format(self.owner, self.owner_token), 'tender_owner')])
+        for i in self.bids:
+            roles['{}_{}'.format(i.owner, i.owner_token)] = 'tender_bid_owner'
+        return roles
 
     title = StringType(required=True)
     title_en = StringType()
