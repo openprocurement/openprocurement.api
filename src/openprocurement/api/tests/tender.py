@@ -1187,8 +1187,11 @@ class TenderProcessTest(BaseTenderWebTest):
         response = self.app.get('/tenders/{}/awards?acc_token={}'.format(tender_id, owner_token))
         # get pending award
         award_id = [i['id'] for i in response.json['data'] if i['status'] == 'pending'][0]
+        award_date = [i['date'] for i in response.json['data'] if i['status'] == 'pending'][0]
         # set award as active
-        self.app.patch_json('/tenders/{}/awards/{}?acc_token={}'.format(tender_id, award_id, owner_token), {"data": {"status": "active"}})
+        response = self.app.patch_json('/tenders/{}/awards/{}?acc_token={}'.format(tender_id, award_id, owner_token), {"data": {"status": "active"}})
+        self.assertNotEqual(response.json['data']['date'], award_date)
+
         # get contract id
         response = self.app.get('/tenders/{}'.format(tender_id))
         contract_id = response.json['data']['contracts'][-1]['id']
