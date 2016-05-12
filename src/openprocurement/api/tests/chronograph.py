@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 import unittest
+from datetime import datetime, timedelta
 from openprocurement.api.models import get_now
 from openprocurement.api.tests.base import BaseTenderWebTest, test_lots, test_bids, test_organization
 
@@ -256,7 +257,7 @@ class TenderComplaintSwitchResourceTest(BaseTenderWebTest):
         self.assertEqual(response.json['data']['status'], 'claim')
 
         tender = self.db.get(self.tender_id)
-        tender['complaints'][0]['dateSubmitted'] = '2014-01-01'
+        tender['complaints'][0]['dateSubmitted'] = (get_now() - timedelta(days=1 if 'procurementMethodDetails' in tender else 4)).isoformat()
         self.db.save(tender)
 
         self.app.authorization = ('Basic', ('chronograph', ''))
@@ -288,7 +289,7 @@ class TenderComplaintSwitchResourceTest(BaseTenderWebTest):
             self.assertEqual(response.json['data']["resolutionType"], status)
 
             tender = self.db.get(self.tender_id)
-            tender['complaints'][-1]['dateAnswered'] = '2014-01-01'
+            tender['complaints'][-1]['dateAnswered'] = (get_now() - timedelta(days=1 if 'procurementMethodDetails' in tender else 4)).isoformat()
             self.db.save(tender)
 
             self.app.authorization = ('Basic', ('chronograph', ''))
@@ -329,7 +330,7 @@ class TenderAwardComplaintSwitchResourceTest(BaseTenderWebTest):
         self.assertEqual(response.json['data']["status"], "active")
 
         tender = self.db.get(self.tender_id)
-        tender['awards'][0]['complaints'][0]['dateSubmitted'] = '2014-01-01'
+        tender['awards'][0]['complaints'][0]['dateSubmitted'] = (get_now() - timedelta(days=1 if 'procurementMethodDetails' in tender else 4)).isoformat()
         self.db.save(tender)
 
         self.app.authorization = ('Basic', ('chronograph', ''))
@@ -366,7 +367,7 @@ class TenderAwardComplaintSwitchResourceTest(BaseTenderWebTest):
             self.assertEqual(response.json['data']["resolutionType"], status)
 
             tender = self.db.get(self.tender_id)
-            tender['awards'][0]['complaints'][-1]['dateAnswered'] = '2014-01-01'
+            tender['awards'][0]['complaints'][-1]['dateAnswered'] = (get_now() - timedelta(days=1 if 'procurementMethodDetails' in tender else 4)).isoformat()
             self.db.save(tender)
 
             self.app.authorization = ('Basic', ('chronograph', ''))

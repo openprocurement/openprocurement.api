@@ -1,4 +1,4 @@
-# Zoriana Zaiats <sorenabell@quintagroup.com>, 2015, 2016.
+#
 msgid ""
 msgstr ""
 "Project-Id-Version: openprocurement.api 0.3\n"
@@ -146,8 +146,3 @@ msgstr "рядок, :ref:`date`, генерується автоматично"
 msgid "uid, auto-generated"
 msgstr "uid, генерується автоматично"
 
-#~ msgid ":ref:`Guarantee`"
-#~ msgstr ":ref:`Guarantee`"
-
-#~ msgid "Bid guarantee"
-#~ msgstr "Забезпечення тендерної пропозиції"

@@ -39,6 +39,8 @@ Contents:
    complaints
    performance
    cluster
+   2pc
+   acceleration
    reference
 
 Indices and tables

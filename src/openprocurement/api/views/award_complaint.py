@@ -110,6 +110,7 @@ class TenderAwardComplaintResource(APIResource):
             apply_patch(self.request, save=False, src=self.context.serialize())
         elif self.request.authenticated_role == 'complaint_owner' and self.context.status == 'answered' and data.get('satisfied', self.context.satisfied) is False and data.get('status', self.context.status) == 'pending':
             apply_patch(self.request, save=False, src=self.context.serialize())
+            self.context.type = 'complaint'
             self.context.dateEscalated = get_now()
         # tender_owner
         elif self.request.authenticated_role == 'tender_owner' and self.context.status == 'claim' and data.get('status', self.context.status) == self.context.status:

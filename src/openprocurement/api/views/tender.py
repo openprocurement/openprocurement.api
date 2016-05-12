@@ -350,6 +350,8 @@ class TendersResource(APIResource):
         tender.tenderID = generate_tender_id(get_now(), self.db, self.server_id)
         if hasattr(tender, "initialize"):
             tender.initialize()
+        if self.request.json_body['data'].get('status') == 'draft':
+            tender.status = 'draft'
         set_ownership(tender, self.request)
         self.request.validated['tender'] = tender
         self.request.validated['tender_src'] = {}

@@ -292,11 +292,11 @@ def check_bids(request):
 def check_complaint_status(request, complaint, now=None):
     if not now:
         now = get_now()
-    if complaint.status == 'claim' and complaint.dateSubmitted + COMPLAINT_STAND_STILL_TIME < now:
+    if complaint.status == 'claim' and calculate_business_date(complaint.dateSubmitted, COMPLAINT_STAND_STILL_TIME, request.tender) < now:
         complaint.status = 'pending'
         complaint.type = 'complaint'
         complaint.dateEscalated = now
-    elif complaint.status == 'answered' and complaint.dateAnswered + COMPLAINT_STAND_STILL_TIME < now:
+    elif complaint.status == 'answered' and calculate_business_date(complaint.dateAnswered, COMPLAINT_STAND_STILL_TIME, request.tender) < now:
         complaint.status = complaint.resolutionType
 
 
@@ -786,7 +786,7 @@ def decrypt(uuid, name, key):
 
 
 def calculate_business_date(date_obj, timedelta_obj, context=None, working_days=False):
-    if context and 'procurementMethodDetails' in context:
+    if context and 'procurementMethodDetails' in context and context['procurementMethodDetails']:
         re_obj = ACCELERATOR_RE.search(context['procurementMethodDetails'])
         if re_obj and 'accelerator' in re_obj.groupdict():
             return date_obj + (timedelta_obj / int(re_obj.groupdict()['accelerator']))

@@ -1,4 +1,4 @@
-GET /api/2.0/tenders/4630a487b9cd4ee0abadd23ef4b8e05f/awards HTTP/1.0
+GET /api/2.3/tenders/6a4c5d69d2524ac797a4f0e59661ee01/awards HTTP/1.0
 Authorization: Basic YnJva2VyOg==
 Host: api-sandbox.openprocurement.org
 
@@ -11,7 +11,7 @@ Content-Type: application/json; charset=UTF-8
     {
       "status": "pending", 
       "complaintPeriod": {
-        "startDate": "2016-04-15T12:15:21.697359+03:00"
+        "startDate": "2016-05-12T18:08:07.816301+03:00"
       }, 
       "suppliers": [
         {
@@ -35,14 +35,14 @@ Content-Type: application/json; charset=UTF-8
           }
         }
       ], 
-      "bid_id": "189224dd3bf544b7a208500122ce50de", 
+      "bid_id": "681750c7611341649ac3eaa7a527cb8d", 
       "value": {
         "currency": "UAH", 
         "amount": 450.0, 
         "valueAddedTaxIncluded": true
       }, 
-      "date": "2016-04-15T12:15:21.697823+03:00", 
-      "id": "6ba25103f3614f78a635b8fc4cb30295"
+      "date": "2016-05-12T18:08:07.816664+03:00", 
+      "id": "ad5615dcee1d4d1296039b9da0eba5a6"
     }
   ]
 }

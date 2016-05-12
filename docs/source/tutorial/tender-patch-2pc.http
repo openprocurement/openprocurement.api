@@ -1,92 +1,20 @@
-POST /api/2.3/tenders?opt_pretty=1 HTTP/1.0
+PATCH /api/2.3/tenders/ff9d7e23ff5b40bba2818f427c9c4811?acc_token=77f642c025a143008742c04d57135a5a HTTP/1.0
 Authorization: Basic YnJva2VyOg==
-Content-Length: 2347
+Content-Length: 40
 Content-Type: application/json
 Host: api-sandbox.openprocurement.org
 
 {
   "data": {
-    "tenderPeriod": {
-      "endDate": "2016-05-26T18:07:59.549219"
-    }, 
-    "title": "футляри до державних нагород", 
-    "minimalStep": {
-      "currency": "UAH", 
-      "amount": 35
-    }, 
-    "enquiryPeriod": {
-      "endDate": "2016-05-19T18:07:59.549219"
-    }, 
-    "procurementMethodType": "belowThreshold", 
-    "value": {
-      "currency": "UAH", 
-      "amount": 500
-    }, 
-    "procuringEntity": {
-      "contactPoint": {
-        "name": "Державне управління справами", 
-        "telephone": "0440000000"
-      }, 
-      "identifier": {
-        "scheme": "UA-EDR", 
-        "id": "00037256", 
-        "uri": "http://www.dus.gov.ua/"
-      }, 
-      "name": "Державне управління справами", 
-      "kind": "general", 
-      "address": {
-        "countryName": "Україна", 
-        "postalCode": "01220", 
-        "region": "м. Київ", 
-        "streetAddress": "вул. Банкова, 11, корпус 1", 
-        "locality": "м. Київ"
-      }
-    }, 
-    "items": [
-      {
-        "description": "футляри до державних нагород", 
-        "classification": {
-          "scheme": "CPV", 
-          "id": "44617100-9", 
-          "description": "Cartons"
-        }, 
-        "additionalClassifications": [
-          {
-            "scheme": "ДКПП", 
-            "id": "17.21.1", 
-            "description": "папір і картон гофровані, паперова й картонна тара"
-          }
-        ], 
-        "deliveryAddress": {
-          "countryName": "Україна", 
-          "postalCode": "79000", 
-          "region": "м. Київ", 
-          "streetAddress": "вул. Банкова 1", 
-          "locality": "м. Київ"
-        }, 
-        "deliveryDate": {
-          "startDate": "2016-05-14T18:07:59.549219", 
-          "endDate": "2016-05-17T18:07:59.549219"
-        }, 
-        "unit": {
-          "code": "44617100-9", 
-          "name": "item"
-        }, 
-        "quantity": 5
-      }
-    ]
+    "status": "active.enquiries"
   }
 }
 
 
-201 Created
+200 OK
 Content-Type: application/json; charset=UTF-8
-Location: http://api-sandbox.openprocurement.org/api/2.3/tenders/cf18944f39e64959b68050125c8d0ce5
 
 {
-  "access": {
-    "token": "3ced854f7d5b4da0aac9cf653f84618b"
-  }, 
   "data": {
     "procurementMethod": "open", 
     "status": "active.enquiries", 
@@ -127,7 +55,7 @@ Location: http://api-sandbox.openprocurement.org/api/2.3/tenders/cf18944f39e6495
           "startDate": "2016-05-14T18:07:59.549219+03:00", 
           "endDate": "2016-05-17T18:07:59.549219+03:00"
         }, 
-        "id": "c48507ec8095479cafb0ffe6d52712d2", 
+        "id": "35c948dc2d1d45d2b72d40992ce5e110", 
         "unit": {
           "code": "44617100-9", 
           "name": "item"
@@ -164,12 +92,12 @@ Location: http://api-sandbox.openprocurement.org/api/2.3/tenders/cf18944f39e6495
       }
     }, 
     "enquiryPeriod": {
-      "startDate": "2016-05-12T18:08:20.093673+03:00", 
+      "startDate": "2016-05-12T18:08:00.805651+03:00", 
       "endDate": "2016-05-19T18:07:59.549219+03:00"
     }, 
     "owner": "broker", 
-    "dateModified": "2016-05-12T18:08:20.098668+03:00", 
-    "id": "cf18944f39e64959b68050125c8d0ce5", 
+    "dateModified": "2016-05-12T18:08:00.954938+03:00", 
+    "id": "ff9d7e23ff5b40bba2818f427c9c4811", 
     "awardCriteria": "lowestCost"
   }
 }

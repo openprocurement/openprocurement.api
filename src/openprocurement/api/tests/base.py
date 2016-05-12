@@ -6,6 +6,7 @@ from copy import deepcopy
 from datetime import datetime, timedelta
 from uuid import uuid4
 
+from openprocurement.api.models import SANDBOX_MODE
 from openprocurement.api.utils import VERSION, apply_data_patch
 
 
@@ -83,7 +84,8 @@ test_tender_data = {
     },
     "procurementMethodType": "belowThreshold",
 }
-
+if SANDBOX_MODE:
+    test_tender_data['procurementMethodDetails'] = 'quick, accelerator=1440'
 test_features_tender_data = test_tender_data.copy()
 test_features_item = test_features_tender_data['items'][0].copy()
 test_features_item['id'] = "1"

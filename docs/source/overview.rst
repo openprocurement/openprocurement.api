@@ -59,9 +59,19 @@ maillist.
 General information, roadmap, and technical specifications for the 
 Open Procurement project can be found at `openprocurement.org <http://openprocurement.org/en>`_.
 
-Information on work with Negotiation procurement procedure is in this `tutorial <http://limited.api-docs.openprocurement.org/en/latest/>`_.
+Documentation of related packages
+---------------------------------
 
-Instructions for the Open Procurement Open UA procedure can be found in this `documentation <http://openua.api-docs.openprocurement.org/en/latest/overview.html>`_.
+* `Open tender procedure (OpenUA) <http://openua.api-docs.openprocurement.org/en/latest/>`_
+
+* `Open tender procedure with publication in English (OpenEU) <http://openeu.api-docs.openprocurement.org/en/latest/>`_
+
+* `Reporting, negotiation procurement procedure and negotiation procedure for the urgent need  <http://limited.api-docs.openprocurement.org/en/latest/>`_
+
+* `Defense open tender <http://defense.api-docs.openprocurement.org/en/latest/>`_
+
+* `Contracting API interface to OpenProcurement database <http://contracting.api-docs.openprocurement.org/en/latest/>`_
+
 
 API stability
 -------------

@@ -21,6 +21,7 @@ COMPLAINT_STAND_STILL_TIME = timedelta(days=3)
 BIDDER_TIME = timedelta(minutes=6)
 SERVICE_TIME = timedelta(minutes=9)
 AUCTION_STAND_STILL_TIME = timedelta(minutes=15)
+SANDBOX_MODE = os.environ.get('SANDBOX_MODE', False)
 
 schematics_embedded_role = SchematicsDocument.Options.roles['embedded'] + blacklist("__parent__")
 schematics_default_role = SchematicsDocument.Options.roles['default'] + blacklist("__parent__")
@@ -805,6 +806,7 @@ class Contract(Model):
     documents = ListType(ModelType(Document), default=list())
     items = ListType(ModelType(Item))
     suppliers = ListType(ModelType(Organization), min_size=1, max_size=1)
+    date = IsoDateTimeType(default=get_now)
 
     def validate_awardID(self, data, awardID):
         if awardID and isinstance(data['__parent__'], Model) and awardID not in [i.id for i in data['__parent__'].awards]:
@@ -994,6 +996,7 @@ def validate_cpv_group(items, *args):
 
 plain_role = (blacklist('_attachments', 'revisions', 'dateModified') + schematics_embedded_role)
 create_role = (blacklist('owner_token', 'owner', '_attachments', 'revisions', 'dateModified', 'doc_id', 'tenderID', 'bids', 'documents', 'awards', 'questions', 'complaints', 'auctionUrl', 'status', 'auctionPeriod', 'awardPeriod', 'procurementMethod', 'awardCriteria', 'submissionMethod', 'cancellations') + schematics_embedded_role)
+draft_role = whitelist('status')
 edit_role = (blacklist('status', 'procurementMethodType', 'lots', 'owner_token', 'owner', '_attachments', 'revisions', 'dateModified', 'doc_id', 'tenderID', 'bids', 'documents', 'awards', 'questions', 'complaints', 'auctionUrl', 'auctionPeriod', 'awardPeriod', 'procurementMethod', 'awardCriteria', 'submissionMethod', 'mode', 'cancellations') + schematics_embedded_role)
 view_role = (blacklist('owner_token', '_attachments', 'revisions') + schematics_embedded_role)
 listing_role = whitelist('dateModified', 'doc_id')
@@ -1016,6 +1019,7 @@ class Tender(SchematicsDocument, Model):
             'plain': plain_role,
             'create': create_role,
             'edit': edit_role,
+            'edit_draft': draft_role,
             'edit_active.enquiries': edit_role,
             'edit_active.tendering': whitelist(),
             'edit_active.auction': whitelist(),
@@ -1029,6 +1033,7 @@ class Tender(SchematicsDocument, Model):
             'auction_view': auction_view_role,
             'auction_post': auction_post_role,
             'auction_patch': auction_patch_role,
+            'draft': enquiries_role,
             'active.enquiries': enquiries_role,
             'active.tendering': enquiries_role,
             'active.auction': auction_role,
@@ -1041,10 +1046,14 @@ class Tender(SchematicsDocument, Model):
             'chronograph_view': chronograph_view_role,
             'Administrator': Administrator_role,
             'default': schematics_default_role,
+            'contracting': whitelist('doc_id', 'owner'),
         }
 
     def __local_roles__(self):
-        return dict([('{}_{}'.format(self.owner, self.owner_token), 'tender_owner')])
+        roles = dict([('{}_{}'.format(self.owner, self.owner_token), 'tender_owner')])
+        for i in self.bids:
+            roles['{}_{}'.format(i.owner, i.owner_token)] = 'bid_owner'
+        return roles
 
     title = StringType(required=True)
     title_en = StringType()
@@ -1084,7 +1093,7 @@ class Tender(SchematicsDocument, Model):
     revisions = ListType(ModelType(Revision), default=list())
     auctionPeriod = ModelType(TenderAuctionPeriod, default={})
     minimalStep = ModelType(Value, required=True)
-    status = StringType(choices=['active.enquiries', 'active.tendering', 'active.auction', 'active.qualification', 'active.awarded', 'complete', 'cancelled', 'unsuccessful'], default='active.enquiries')
+    status = StringType(choices=['draft', 'active.enquiries', 'active.tendering', 'active.auction', 'active.qualification', 'active.awarded', 'complete', 'cancelled', 'unsuccessful'], default='active.enquiries')
     questions = ListType(ModelType(Question), default=list())
     complaints = ListType(ComplaintModelType(Complaint), default=list())
     auctionUrl = URLType()
@@ -1093,6 +1102,8 @@ class Tender(SchematicsDocument, Model):
     features = ListType(ModelType(Feature), validators=[validate_features_uniq])
     lots = ListType(ModelType(Lot), default=list(), validators=[validate_lots_uniq])
     guarantee = ModelType(Guarantee)
+    if SANDBOX_MODE:
+        procurementMethodDetails = StringType()
 
     _attachments = DictType(DictType(BaseType), default=dict())  # couchdb attachments
     dateModified = IsoDateTimeType()
@@ -1116,6 +1127,8 @@ class Tender(SchematicsDocument, Model):
             role = 'chronograph'
         elif request.authenticated_role == 'auction':
             role = 'auction_{}'.format(request.method.lower())
+        elif request.authenticated_role == 'contracting':
+            role = 'contracting'
         else:
             role = 'edit_{}'.format(request.context.status)
         return role
@@ -1193,18 +1206,23 @@ class Tender(SchematicsDocument, Model):
             if lots_ends:
                 checks.append(min(lots_ends))
         if self.status.startswith('active'):
+            from openprocurement.api.utils import calculate_business_date
             for complaint in self.complaints:
                 if complaint.status == 'claim' and complaint.dateSubmitted:
-                    checks.append(complaint.dateSubmitted + COMPLAINT_STAND_STILL_TIME)
+                    checks.append(calculate_business_date(complaint.dateSubmitted, COMPLAINT_STAND_STILL_TIME, self))
                 elif complaint.status == 'answered' and complaint.dateAnswered:
-                    checks.append(complaint.dateAnswered + COMPLAINT_STAND_STILL_TIME)
+                    checks.append(calculate_business_date(complaint.dateAnswered, COMPLAINT_STAND_STILL_TIME, self))
             for award in self.awards:
                 for complaint in award.complaints:
                     if complaint.status == 'claim' and complaint.dateSubmitted:
-                        checks.append(complaint.dateSubmitted + COMPLAINT_STAND_STILL_TIME)
+                        checks.append(calculate_business_date(complaint.dateSubmitted, COMPLAINT_STAND_STILL_TIME, self))
                     elif complaint.status == 'answered' and complaint.dateAnswered:
-                        checks.append(complaint.dateAnswered + COMPLAINT_STAND_STILL_TIME)
+                        checks.append(calculate_business_date(complaint.dateAnswered, COMPLAINT_STAND_STILL_TIME, self))
         return min(checks).isoformat() if checks else None
+
+    def validate_procurementMethodDetails(self, *args, **kw):
+        if self.mode and self.mode == 'test' and self.procurementMethodDetails and self.procurementMethodDetails != '':
+            raise ValidationError(u"procurementMethodDetails should be used with mode test")
 
     @serializable
     def numberOfBids(self):

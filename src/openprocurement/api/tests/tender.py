@@ -292,6 +292,38 @@ class TenderResourceTest(BaseWebTest):
         self.assertEqual(response.status, '200 OK')
         self.assertEqual(len(response.json['data']), 4)
 
+    def test_listing_draft(self):
+        response = self.app.get('/tenders')
+        self.assertEqual(response.status, '200 OK')
+        self.assertEqual(len(response.json['data']), 0)
+
+        tenders = []
+        data = test_tender_data.copy()
+        data.update({'status': 'draft'})
+
+        for i in range(3):
+            response = self.app.post_json('/tenders', {'data': test_tender_data})
+            self.assertEqual(response.status, '201 Created')
+            self.assertEqual(response.content_type, 'application/json')
+            tenders.append(response.json['data'])
+            response = self.app.post_json('/tenders', {'data': data})
+            self.assertEqual(response.status, '201 Created')
+            self.assertEqual(response.content_type, 'application/json')
+
+        ids = ','.join([i['id'] for i in tenders])
+
+        while True:
+            response = self.app.get('/tenders')
+            self.assertTrue(ids.startswith(','.join([i['id'] for i in response.json['data']])))
+            if len(response.json['data']) == 3:
+                break
+
+        self.assertEqual(len(response.json['data']), 3)
+        self.assertEqual(set(response.json['data'][0]), set([u'id', u'dateModified']))
+        self.assertEqual(set([i['id'] for i in response.json['data']]), set([i['id'] for i in tenders]))
+        self.assertEqual(set([i['dateModified'] for i in response.json['data']]), set([i['dateModified'] for i in tenders]))
+        self.assertEqual([i['dateModified'] for i in response.json['data']], sorted([i['dateModified'] for i in tenders]))
+
     def test_create_tender_invalid(self):
         request_path = '/tenders'
         response = self.app.post(request_path, 'data', status=415)
@@ -530,12 +562,43 @@ class TenderResourceTest(BaseWebTest):
         self.assertEqual(response.status, '201 Created')
         self.assertEqual(response.content_type, 'application/json')
         tender = response.json['data']
+        if 'procurementMethodDetails' in tender:
+            tender.pop('procurementMethodDetails')
         self.assertEqual(set(tender), set([u'procurementMethodType', u'id', u'dateModified', u'tenderID', u'status', u'enquiryPeriod',
                                            u'tenderPeriod', u'minimalStep', u'items', u'value', u'procuringEntity', u'next_check',
                                            u'procurementMethod', u'awardCriteria', u'submissionMethod', u'title', u'owner']))
         self.assertNotEqual(data['id'], tender['id'])
         self.assertNotEqual(data['doc_id'], tender['id'])
         self.assertNotEqual(data['tenderID'], tender['tenderID'])
+
+    def test_create_tender_draft(self):
+        data = test_tender_data.copy()
+        data.update({'status': 'draft'})
+        response = self.app.post_json('/tenders', {'data': data})
+        self.assertEqual(response.status, '201 Created')
+        self.assertEqual(response.content_type, 'application/json')
+        tender = response.json['data']
+        self.assertEqual(tender['status'], 'draft')
+
+        response = self.app.patch_json('/tenders/{}'.format(tender['id']), {'data': {'value': {'amount': 100}}}, status=403)
+        self.assertEqual(response.status, '403 Forbidden')
+        self.assertEqual(response.content_type, 'application/json')
+        self.assertEqual(response.json['status'], 'error')
+        self.assertEqual(response.json['errors'], [
+            {u'description': u"Can't update tender in current (draft) status", u'location': u'body', u'name': u'data'}
+        ])
+
+        response = self.app.patch_json('/tenders/{}'.format(tender['id']), {'data': {'status': 'active.enquiries'}})
+        self.assertEqual(response.status, '200 OK')
+        self.assertEqual(response.content_type, 'application/json')
+        tender = response.json['data']
+        self.assertEqual(tender['status'], 'active.enquiries')
+
+        response = self.app.get('/tenders/{}'.format(tender['id']))
+        self.assertEqual(response.status, '200 OK')
+        self.assertEqual(response.content_type, 'application/json')
+        tender = response.json['data']
+        self.assertEqual(tender['status'], 'active.enquiries')
 
     def test_create_tender(self):
         response = self.app.get('/tenders')
@@ -1124,8 +1187,11 @@ class TenderProcessTest(BaseTenderWebTest):
         response = self.app.get('/tenders/{}/awards?acc_token={}'.format(tender_id, owner_token))
         # get pending award
         award_id = [i['id'] for i in response.json['data'] if i['status'] == 'pending'][0]
+        award_date = [i['date'] for i in response.json['data'] if i['status'] == 'pending'][0]
         # set award as active
-        self.app.patch_json('/tenders/{}/awards/{}?acc_token={}'.format(tender_id, award_id, owner_token), {"data": {"status": "active"}})
+        response = self.app.patch_json('/tenders/{}/awards/{}?acc_token={}'.format(tender_id, award_id, owner_token), {"data": {"status": "active"}})
+        self.assertNotEqual(response.json['data']['date'], award_date)
+
         # get contract id
         response = self.app.get('/tenders/{}'.format(tender_id))
         contract_id = response.json['data']['contracts'][-1]['id']

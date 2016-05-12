@@ -1,11 +1,12 @@
 POST /api/2.3/tenders?opt_pretty=1 HTTP/1.0
 Authorization: Basic YnJva2VyOg==
-Content-Length: 2347
+Content-Length: 2366
 Content-Type: application/json
 Host: api-sandbox.openprocurement.org
 
 {
   "data": {
+    "status": "draft", 
     "tenderPeriod": {
       "endDate": "2016-05-26T18:07:59.549219"
     }, 
@@ -81,15 +82,15 @@ Host: api-sandbox.openprocurement.org
 
 201 Created
 Content-Type: application/json; charset=UTF-8
-Location: http://api-sandbox.openprocurement.org/api/2.3/tenders/cf18944f39e64959b68050125c8d0ce5
+Location: http://api-sandbox.openprocurement.org/api/2.3/tenders/ff9d7e23ff5b40bba2818f427c9c4811
 
 {
   "access": {
-    "token": "3ced854f7d5b4da0aac9cf653f84618b"
+    "token": "77f642c025a143008742c04d57135a5a"
   }, 
   "data": {
     "procurementMethod": "open", 
-    "status": "active.enquiries", 
+    "status": "draft", 
     "tenderID": "UA-2016-05-12-000001", 
     "tenderPeriod": {
       "startDate": "2016-05-19T18:07:59.549219+03:00", 
@@ -127,7 +128,7 @@ Location: http://api-sandbox.openprocurement.org/api/2.3/tenders/cf18944f39e6495
           "startDate": "2016-05-14T18:07:59.549219+03:00", 
           "endDate": "2016-05-17T18:07:59.549219+03:00"
         }, 
-        "id": "c48507ec8095479cafb0ffe6d52712d2", 
+        "id": "35c948dc2d1d45d2b72d40992ce5e110", 
         "unit": {
           "code": "44617100-9", 
           "name": "item"
@@ -142,7 +143,6 @@ Location: http://api-sandbox.openprocurement.org/api/2.3/tenders/cf18944f39e6495
       "valueAddedTaxIncluded": true
     }, 
     "submissionMethod": "electronicAuction", 
-    "next_check": "2016-05-19T18:07:59.549219+03:00", 
     "procuringEntity": {
       "contactPoint": {
         "name": "Державне управління справами", 
@@ -164,12 +164,12 @@ Location: http://api-sandbox.openprocurement.org/api/2.3/tenders/cf18944f39e6495
       }
     }, 
     "enquiryPeriod": {
-      "startDate": "2016-05-12T18:08:20.093673+03:00", 
+      "startDate": "2016-05-12T18:08:00.805651+03:00", 
       "endDate": "2016-05-19T18:07:59.549219+03:00"
     }, 
     "owner": "broker", 
-    "dateModified": "2016-05-12T18:08:20.098668+03:00", 
-    "id": "cf18944f39e64959b68050125c8d0ce5", 
+    "dateModified": "2016-05-12T18:08:00.809813+03:00", 
+    "id": "ff9d7e23ff5b40bba2818f427c9c4811", 
     "awardCriteria": "lowestCost"
   }
 }
