@@ -1,4 +1,4 @@
-GET /api/2.0/tenders/38e02e86df65417c8e66145a0e10112a/documents HTTP/1.0
+GET /api/2.3/tenders/cf18944f39e64959b68050125c8d0ce5/documents HTTP/1.0
 Authorization: Basic YnJva2VyOg==
 Host: api-sandbox.openprocurement.org
 
@@ -11,22 +11,22 @@ Content-Type: application/json; charset=UTF-8
     {
       "description": "document description modified", 
       "title": "Notice.pdf", 
-      "url": "http://api-sandbox.openprocurement.org/api/2.0/tenders/38e02e86df65417c8e66145a0e10112a/documents/ea2c08632408480e96bb7290311925e8?download=78cc300fa15a43f29f5f9f1babbab6b6", 
+      "url": "http://api-sandbox.openprocurement.org/api/2.3/tenders/cf18944f39e64959b68050125c8d0ce5/documents/07aaa07e754042bdb2ea38259861428c?download=5d1e5cd7e8434cf59fa75c7ef94bb2cd", 
       "format": "application/pdf", 
       "documentOf": "tender", 
-      "datePublished": "2016-04-15T12:15:41.341659+03:00", 
+      "datePublished": "2016-05-12T18:08:21.036224+03:00", 
       "documentType": "technicalSpecifications", 
-      "id": "ea2c08632408480e96bb7290311925e8", 
-      "dateModified": "2016-04-15T12:15:41.341736+03:00"
+      "id": "07aaa07e754042bdb2ea38259861428c", 
+      "dateModified": "2016-05-12T18:08:21.036719+03:00"
     }, 
     {
       "title": "AwardCriteria-2.pdf", 
-      "url": "http://api-sandbox.openprocurement.org/api/2.0/tenders/38e02e86df65417c8e66145a0e10112a/documents/4a0d8aca59ed4e51954acdcb6ddb5c1d?download=b93fa73827594636a61a4d37d2eb9e49", 
+      "url": "http://api-sandbox.openprocurement.org/api/2.3/tenders/cf18944f39e64959b68050125c8d0ce5/documents/985fc7636d4f4cb7aae3be241b5e150d?download=4922b59cc21e46e1887ea203ccdecc56", 
       "format": "application/pdf", 
       "documentOf": "tender", 
-      "datePublished": "2016-04-15T12:15:41.819625+03:00", 
-      "id": "4a0d8aca59ed4e51954acdcb6ddb5c1d", 
-      "dateModified": "2016-04-15T12:15:42.047082+03:00"
+      "datePublished": "2016-05-12T18:08:21.437626+03:00", 
+      "id": "985fc7636d4f4cb7aae3be241b5e150d", 
+      "dateModified": "2016-05-12T18:08:21.661907+03:00"
     }
   ]
 }
