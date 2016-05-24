@@ -1,8 +1,8 @@
 {
    "attributes":{
+      "category-codelist":"Country",
       "name":"OrganisationRegistrationAgency",
-      "complete":"0",
-      "category-codelist":"Country"
+      "complete":"0"
    },
    "data":[
       {
@@ -576,6 +576,46 @@
       {
          "category":"PL",
          "code":"PL-NIP"
+      },
+      {
+         "category":"RS",
+         "code":"RS-APR",
+         "name":"Serbian Business Registrations Agency (APR)",
+         "url":"http://www.apr.gov.rs/eng/Home.aspx",
+         "public-database":true,
+         "description":"The SBRA runs business registers as single, centralized, public electronic databases."
+      },
+      {
+         "category":"IL",
+         "code":"IL-ROC",
+         "name":"Israeli Corporations Authority (Department of Justice) also known as The Registrar of Companies (ROC)",
+         "url":"http://havarot.justice.gov.il/",
+         "public-database":true,
+         "description":"The register can be searched at http://havarot.justice.gov.il/ using part or all of a company name in English or Hebrew, or by entering the company number. The search interface and the results are in Hebrew. Free information on a company includes type of company, address, legal status and purpose of the company. Additional information such as details of directors, total authorized capital, division of share capital, shareholders, charges and liabilities is priced."
+      },
+      {
+         "category":"CZ",
+         "code":"CZ-ICO",
+         "name":"Access to Registers of Economic Subjects / Entities (ARES)",
+         "url":"http://wwwinfo.mfcr.cz/ares/ares_es.html.en",
+         "public-database":true,
+         "description":"Public registers comprising: the Commercial Register, the Federal Register, the Register of Foundations, the Register\u2019s Institute, and the Register of Public Service Companies. Information on companies is searchable in English and is free-of-charge."
+      },
+      {
+         "category":"EE",
+         "code":"EE-RIK",
+         "name":"Centre of Registers and Information Systems (RIK)",
+         "url":"http://www.rik.ee/en/e-business-register",
+         "public-database":true,
+         "description":"You can view the data related to you free-of-charge by logging in with your ID-card."
+      },
+      {
+         "category":"CN",
+         "code":"CN-SAIC",
+         "name":"State Administration for Industry and Commerce (SAIC)",
+         "url":"http://gsxt.saic.gov.cn/",
+         "public-database":true,
+         "description":"The database is only available in Chinese language."
       }
    ],
    "metadata":{
