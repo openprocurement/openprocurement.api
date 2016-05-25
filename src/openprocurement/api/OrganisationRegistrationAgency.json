@@ -1,1 +1,626 @@
-{"attributes": {"name": "OrganisationRegistrationAgency", "complete": "0", "category-codelist": "Country"}, "data": [{"category": "AF", "code": "AF-CBR", "name": "Afghanistan Central Business Registry", "url": "http://acbr.gov.af/", "public-database": false, "description": "Website not yet searchable"}, {"category": "AF", "code": "AF-MOE", "name": "Ministry of Economy", "url": "http://moec.gov.af/en", "public-database": true, "description": null}, {"category": "AU", "code": "AU-ABN", "name": "Australian Business Register", "url": "http://abr.business.gov.au/", "public-database": true, "description": null}, {"category": "AU", "code": "AU-ACNC", "name": "Australian Charities and Not-for-profits Commission", "url": "http://www.acnc.gov.au/ACNC/", "public-database": true, "description": null}, {"category": "BD", "code": "BD-NAB", "name": "Bangladesh NGO Affairs Bureau", "url": "http://114.129.9.31/welcome/ngo_profile", "public-database": true, "description": null}, {"category": "BE", "code": "BE-BCE_KBO", "name": "Banque Carrefour des entreprises / Kruispuntbank van ondernemingen", "url": "economie.fgov.be/fr/entreprises/BCE", "public-database": true, "description": null}, {"category": "CA", "code": "CA-CRA_ACR", "name": "Canadian Revenue Agency / Agence du revenu du Canada", "url": "http://www.cra-arc.gc.ca/", "public-database": true, "description": "CRA_ACR is legal requirement for bilingual use"}, {"category": "CO", "code": "CO-CCB", "name": "Bogota Chamber of Commerce", "url": "http://www.ccb.org.co/", "public-database": false, "description": "The Bogota Chamber of Commerce is a private, non-for-profit organization whose goal is to foster a sustainable Bogota-Region in the long term, by promoting its residents' prosperity, through services which enhance and strengthen the enterprise capabilities present in the region, and which improve the business environment with an impact over public policies."}, {"category": "DK", "code": "DK-CVR", "name": "Danish Central Business Register", "url": "https://datacvr.virk.dk/data/", "public-database": true, "description": "The Central Business Register at Virk is available with English headings and categories. It can be used to search for information on all Danish businesses."}, {"category": "ES", "code": "ES-DIR3", "name": "Common Directory of Organizational Units and Offices - DIR3", "url": "http://administracionelectronica.gob.es/ctt/dir3/descargas", "public-database": true, "description": "EXCEL Tables: http://administracionelectronica.gob.es/ctt/resources/Soluciones/238/Area%20descargas/Listado%20Oficinas%20AGE.xlsx?idIniciativa=238&idElemento=2745"}, {"category": "ET", "code": "ET-MFA", "name": "Ministry of Foreign Affairs", "url": "http://www.mfa.gov.et/", "public-database": false, "description": "Charities are registered but no openly searchable database yet available."}, {"category": "FI", "code": "FI-PRO", "name": "Finnish Patent and Registration office", "url": "http://www.prh.fi/en/index.html", "public-database": true, "description": null}, {"category": "FR", "code": "FR-RCS", "name": "Registre de Commerce et des Societies /Trade and Companies Register - Commercial Court Registry", "url": "http://www.infogreffe.fr", "public-database": true, "description": null}, {"category": "GB", "code": "GB-CHC", "name": "Charity Commission", "url": "http://www.charity-commission.gov.uk/", "public-database": true, "description": null}, {"category": "GB", "code": "GB-COH", "name": "Companies House", "url": "http://www.companieshouse.gov.uk/", "public-database": true, "description": null}, {"category": "GB", "code": "GB-GOV", "name": "UK Government Departments Reference Numbers", "url": "http://data.gov.uk/dataset/iati-organisation-identifier-for-uk-government-bodies", "public-database": true, "description": "Codes for use by IATI for UK Government Departments."}, {"category": "GB", "code": "GB-GOVUK", "name": "UK Government Departments, Agencies & Public Bodies", "url": "https://www.gov.uk/government/organisations", "public-database": true, "description": "Use the final segment of the url (below /organisations) as the \"registration number\", converting all \"-\" to \"_\". Keep \"registration number\" portion all lowercase."}, {"category": "GB", "code": "GB-NIC", "name": "The Charity Commission for Northern Ireland", "url": "http://www.charitycommissionni.org.uk/", "public-database": true, "description": null}, {"category": "GB", "code": "GB-REV", "name": "HM Revenue and Customs", "url": "http://www.hmrc.gov.uk/", "public-database": false, "description": null}, {"category": "GB", "code": "GB-SC", "name": "Scottish Charity Register", "url": "http://www.oscr.org.uk/", "public-database": true, "description": null}, {"category": "GB", "code": "GB-UKPRN", "name": "UK Register of Learning Providers", "url": "https://www.ukrlp.co.uk/", "public-database": true, "description": null}, {"category": "GG", "code": "GG-RCE", "name": "The Guernsey Registry at the Department of Commerce and Employment", "url": "http://www.guernseyregistry.com/charities", "public-database": true, "description": null}, {"category": "GH", "code": "GH-DSW", "name": "Department of Social Welfare", "url": null, "public-database": false, "description": null}, {"category": "ID", "code": "ID-KDN", "name": "Ministry Home affairs/ Kementerian Dalam Negeri", "url": "http://www.kemendagri.go.id/media/filemanager/2011/02/22/d/a/daf.ormas___lsm_2010.pdf", "public-database": true, "description": "NGO registration can also be done through Ministry Home affairs/ Kementerian Dalam Negeri"}, {"category": "ID", "code": "ID-KHH", "name": "Ministry of Justice & Human Rights/ Kementerian Hukum Dan Hak", "url": "http://www.kemenkumham.go.id/", "public-database": false, "description": "Company registration is done through Ministry of Justice & Human Rights/ Kementerian Hukum Dan Hak"}, {"category": "ID", "code": "ID-KLN", "name": "Ministry of Foreign affairs/ Kementerian Luar Negeri", "url": "http://www.kemlu.go.id/", "public-database": false, "description": "International NGO registration is done through Ministry of Foreign affairs/ Kementerian Luar Negeri"}, {"category": "ID", "code": "ID-PRO", "name": "NGOs registered at Provinicial Level", "url": "http://www.satulayanan.net/layanan/pendaftaran-lsm-atau-ormas/perizinan-lsm-atau-ormas-baru", "public-database": false, "description": "Registration for NGO in Indonesia can be done at the provincial level. Because there is regional autonomy, each provincial has different requirements. Website is just one example"}, {"category": "IE", "code": "IE-CHY", "name": "Irish Register of Charities", "url": null, "public-database": false, "description": null}, {"category": "IE", "code": "IE-CRO", "name": "Irish CompaniesRegistration Office", "url": "http://www.cro.ie/", "public-database": true, "description": null}, {"category": "IM", "code": "IM-CR", "name": "Isle of Man Companies Registry", "url": "http://www.gov.im/ded/companies/companiesregistry.xml?menuid=21615", "public-database": true, "description": null}, {"category": "IM", "code": "IM-GR", "name": "Isle of Man Index of Registered Charities", "url": "http://www.gov.im/registries/courts/charities/", "public-database": true, "description": null}, {"category": "IN", "code": "IN-MCA", "name": "Government of India, Minstry of Corporate Affairs", "url": "http://www.mca.gov.in/", "public-database": true, "description": "MCA regulates corporate affairs in India through the Companies Act, 1956, 2013 and other allied Acts, Bills and Rules."}, {"category": "JE", "code": "JE-CR", "name": "Jersey Companies Registry", "url": "http://www.jerseyfsc.org/registry/", "public-database": true, "description": null}, {"category": "JE", "code": "JE-OAC", "name": "Jersey Overseas Aid Commission", "url": "http://www.jerseyoverseasaid.org.je/", "public-database": false, "description": null}, {"category": "KE", "code": "KE-NCB", "name": "NGO's Coordination Board", "url": "http://www.ngobureau.or.ke/", "public-database": true, "description": null}, {"category": "KE", "code": "KE-RCO", "name": "Registar of Companies", "url": "http://www.attorney-general.go.ke/", "public-database": false, "description": null}, {"category": "KE", "code": "KE-RSO", "name": "Registrar of Societies", "url": "http://www.attorney-general.go.ke/", "public-database": false, "description": null}, {"category": "LS", "code": "LS-LCN", "name": "Lesotho Council of Non Governmental Organisations", "url": "http://www.lcn.org.ls/", "public-database": false, "description": null}, {"category": "MM", "code": "MM-MHA", "name": "Ministry of Home Affairs - Central Committee for the Registration and Supervision of Organisations", "url": "No url for the ministry (as at 2/10/2013)", "public-database": false, "description": "The MHA assigns a registration number to each NGO - this number is time limited, for example 4 years, after which the registration is reviewed."}, {"category": "MW", "code": "MW-CNM", "name": "The Council for Non Governmental Organisations in Malawi", "url": "http://www.congoma.mw/index.html", "public-database": false, "description": null}, {"category": "MW", "code": "MW-MRA", "name": "Malawi Revenue Authority", "url": "http://www.mra.mw/", "public-database": false, "description": null}, {"category": "MW", "code": "MW-NBM", "name": "NGO Board of Malawi", "url": "http://ngoboardmalawi.mw/directory.php", "public-database": false, "description": "There is a pdf file with a list of registered NGOs, but these do not appear to be registration numbers. New database is planned"}, {"category": "MW", "code": "MW-RG", "name": "Registrar General, Department of Justice", "url": null, "public-database": false, "description": null}, {"category": "MZ", "code": "MZ-MOJ", "name": "Mozambique Ministry of Justice", "url": null, "public-database": false, "description": null}, {"category": "NG", "code": "NG-CAC", "name": "Nigerian Corporate Affairs Commission", "url": "http://new.cac.gov.ng/home/", "public-database": true, "description": null}, {"category": "NL", "code": "NL-KVK", "name": "Kamer van Koophandel", "url": "http://www.kvk.nl/", "public-database": true, "description": null}, {"category": "NO", "code": "NO-BRC", "name": "Br\u00f8nn\u00f8ysundregistrene", "url": "http://www.brreg.no/", "public-database": true, "description": null}, {"category": "NP", "code": "NP-CRO", "name": "Company Registrar Office", "url": "http://www.cro.gov.np/", "public-database": false, "description": null}, {"category": "NP", "code": "NP-SWC", "name": "NGO registration", "url": "http://www.swc.org.np/", "public-database": true, "description": null}, {"category": "PK", "code": "PK-PCP", "name": "Pakistan Centre for Philanthropy", "url": "https://drive.google.com/file/d/0B67B7u-xqLazZFhHTkUtUVVRWXc/view", "public-database": true, "description": "The PCP Certification Programme seeks to bring transparency, accountability and good governance in the nonprofit sector in Pakistan. The first initiative of its kind in South Asia; it involves the evaluation of a nonprofit organisation on standardised parameters of internal governance, financial management and programme delivery."}, {"category": "SE", "code": "SE-BLV", "name": "Bolagsverket / Swedish Companies Registration Office", "url": "http://www.bolagsverket.se/", "public-database": true, "description": null}, {"category": "SK", "code": "SK-ZRSR", "name": "Slovakia Ministry Of Interior Trade Register", "url": "http://www.zrsr.sk/default.aspx?LANG=en", "public-database": true, "description": "Most organisations (including NGOs) have to be registered with the Ministry of Interior for the Trade Register Of The Slovak Republic (\u017divnostensky Register Slovenskej Republiky) and are allocated a unique registration number"}, {"category": "TZ", "code": "TZ-BRLA", "name": "Tanzania Business Registrations and Licensing Agency", "url": "http://www.brela.go.tz/", "public-database": true, "description": null}, {"category": "UA", "code": "UA-EDR", "name": "United State Register, Ukraine", "url": "http://irc.gov.ua/ua/Poshuk-v-YeDR.html", "public-database": true, "description": null}, {"category": "UG", "code": "UG-NGB", "name": "NGO Board, Ministry of Internal Affairs", "url": "http://www.mia.go.ug/?page_id=62", "public-database": false, "description": null}, {"category": "UG", "code": "UG-RSB", "name": "Registration Services Bureau", "url": "http://www.ursb.go.ug/", "public-database": false, "description": null}, {"category": "US", "code": "US-DOS", "name": "Corporation registration is the responsibility of each state (see link)", "url": "http://www.companieshouse.gov.uk/links/usaLink.shtml", "public-database": false, "description": null}, {"category": "US", "code": "US-EIN", "name": "Internal Revenue Service / Employer Identification Number", "url": "http://www.irs.gov/businesses/small/article/0,,id=98350,00.html", "public-database": false, "description": null}, {"category": "US", "code": "US-USAGOV", "name": "Index of U.S. Government Departments and Agencies", "url": "http://www.usa.gov/directory/federal/index.shtml", "public-database": true, "description": "Use the final segment of the url (below /federal and excluding the extension) as the \"registration number\", converting all \"-\" to \"_\". Keep \"registration number\" portion all lowercase."}, {"category": "XI", "code": "XI-IATI", "name": "International Aid Transparency Initiative Organisation Identifier", "url": "http://iatistandard.org/codelists/IATIOrganisationIdentifier/", "public-database": true, "description": "XI-IATI is a list of organisation identifiers that is maintained by the IATI Secretariat. Any publisher may apply to the IATI Technical Team for an identifier to be generated."}, {"category": "XI", "code": "XI-PB", "name": "Public Bodies", "url": "http://publicbodies.org/", "public-database": true, "description": "Public Bodies aims to provide a unique ID for every part of every government."}, {"category": "XM", "code": "XM-DAC", "name": "OECD Development Assistance Committee", "url": "http://www.oecd.org/dac/stats/dacandcrscodelists.htm", "public-database": true, "description": "See Donor, Agency, and Delivery Channel codes"}, {"category": "XM", "code": "XM-OCHA", "name": "United Nations Office for the Coordination of Humanitarian Affairs", "url": "http://www.unocha.org", "public-database": true, "description": "OCHA is the part of the United Nations Secretariat responsible for bringing together humanitarian actors to ensure a coherent response to emergencies."}, {"category": "ZA", "code": "ZA-CIP", "name": "Companies and Intellectual Property Commission (CIPC)", "url": "http://www.cipro.gov.za/", "public-database": true, "description": null}, {"category": "ZA", "code": "ZA-NPO", "description": null, "url": "http://www.npo.gov.za/", "public-database": true, "name": "Association for Non-Profit Organisations"}, {"category": "ZA", "code": "ZA-PBO", "name": "SA Revenue Service Tax Exemption Unit / Public Benefit Organisations", "url": "http://www.sars.gov.za/home.asp?pid=170", "public-database": false, "description": null}, {"category": "ZM", "code": "ZM-NRB", "name": "Non Governmental Organisation Registration Board", "url": null, "public-database": false, "description": null}, {"category": "ZM", "code": "ZM-PCR", "name": "Patents and Companies Registration Agency", "url": "http://www.pacra.org.zm/", "public-database": false, "description": null}, {"category": "ZW", "code": "ZW-PVO", "name": "Private Voluntary Organisations Council", "url": null, "public-database": false, "description": null}, {"category": "ZW", "code": "ZW-ROD", "name": "Registrar of Deeds", "url": null, "public-database": false, "description": null}, {"category": "PL", "code": "PL-REGON"}, {"category": "PL", "code": "PL-KRS"}, {"category": "PL", "code": "PL-NIP"}], "metadata": {"url": "", "name": "Organisation Registration Agency", "description": "\n        Organisation registry agencies and their code. These can be used as the\n        prefix for an organisation identifier.\n\n        For general guidance about constructing Organisation Identifiers, please see http://iatistandard.org/organisation-identifiers/\n\n        In this list, description contains IATI specific usage notes, rather\n        than a general description of the regsitration agency.\n\n        The categories on this list are ISO Country codes, except for XM which\n        is used to indicate Multilateral/International Agency, and XI which is \n        used to indicate International Organisations. This follows ISO's \n        convention of reserving codes starting with X for \"private use\".\n\n        This list is maintained by the IATI Secretariat, but is a \"NonEmbedded\"\n        codelist - which means changes and additions may be made at short\n        notice, outside of published decimal and integer upgrade schedules.  If\n        a Registation Agency that you wish to use is not on this list, please\n        contact support@iatistandard.org\n        \n        This list was previously located at:\n        https://docs.google.com/spreadsheet/ccc?key=0AnWngmdQt3stdFppMWdkcXJqVTRWTk9menR1N0FXNGc&usp=drive_web#gid=0\n    "}}
+{
+   "attributes":{
+      "category-codelist":"Country",
+      "name":"OrganisationRegistrationAgency",
+      "complete":"0"
+   },
+   "data":[
+      {
+         "category":"AF",
+         "code":"AF-CBR",
+         "name":"Afghanistan Central Business Registry",
+         "url":"http://acbr.gov.af/",
+         "public-database":false,
+         "description":"Website not yet searchable"
+      },
+      {
+         "category":"AF",
+         "code":"AF-MOE",
+         "name":"Ministry of Economy",
+         "url":"http://moec.gov.af/en",
+         "public-database":true,
+         "description":null
+      },
+      {
+         "category":"AU",
+         "code":"AU-ABN",
+         "name":"Australian Business Register",
+         "url":"http://abr.business.gov.au/",
+         "public-database":true,
+         "description":null
+      },
+      {
+         "category":"AU",
+         "code":"AU-ACNC",
+         "name":"Australian Charities and Not-for-profits Commission",
+         "url":"http://www.acnc.gov.au/ACNC/",
+         "public-database":true,
+         "description":null
+      },
+      {
+         "category":"BD",
+         "code":"BD-NAB",
+         "name":"Bangladesh NGO Affairs Bureau",
+         "url":"http://114.129.9.31/welcome/ngo_profile",
+         "public-database":true,
+         "description":null
+      },
+      {
+         "category":"BE",
+         "code":"BE-BCE_KBO",
+         "name":"Banque Carrefour des entreprises / Kruispuntbank van ondernemingen",
+         "url":"economie.fgov.be/fr/entreprises/BCE",
+         "public-database":true,
+         "description":null
+      },
+      {
+         "category":"CA",
+         "code":"CA-CRA_ACR",
+         "name":"Canadian Revenue Agency / Agence du revenu du Canada",
+         "url":"http://www.cra-arc.gc.ca/",
+         "public-database":true,
+         "description":"CRA_ACR is legal requirement for bilingual use"
+      },
+      {
+         "category":"CO",
+         "code":"CO-CCB",
+         "name":"Bogota Chamber of Commerce",
+         "url":"http://www.ccb.org.co/",
+         "public-database":false,
+         "description":"The Bogota Chamber of Commerce is a private, non-for-profit organization whose goal is to foster a sustainable Bogota-Region in the long term, by promoting its residents' prosperity, through services which enhance and strengthen the enterprise capabilities present in the region, and which improve the business environment with an impact over public policies."
+      },
+      {
+         "category":"DK",
+         "code":"DK-CVR",
+         "name":"Danish Central Business Register",
+         "url":"https://datacvr.virk.dk/data/",
+         "public-database":true,
+         "description":"The Central Business Register at Virk is available with English headings and categories. It can be used to search for information on all Danish businesses."
+      },
+      {
+         "category":"ES",
+         "code":"ES-DIR3",
+         "name":"Common Directory of Organizational Units and Offices - DIR3",
+         "url":"http://administracionelectronica.gob.es/ctt/dir3/descargas",
+         "public-database":true,
+         "description":"EXCEL Tables: http://administracionelectronica.gob.es/ctt/resources/Soluciones/238/Area%20descargas/Listado%20Oficinas%20AGE.xlsx?idIniciativa=238&idElemento=2745"
+      },
+      {
+         "category":"ET",
+         "code":"ET-MFA",
+         "name":"Ministry of Foreign Affairs",
+         "url":"http://www.mfa.gov.et/",
+         "public-database":false,
+         "description":"Charities are registered but no openly searchable database yet available."
+      },
+      {
+         "category":"FI",
+         "code":"FI-PRO",
+         "name":"Finnish Patent and Registration office",
+         "url":"http://www.prh.fi/en/index.html",
+         "public-database":true,
+         "description":null
+      },
+      {
+         "category":"FR",
+         "code":"FR-RCS",
+         "name":"Registre de Commerce et des Societies /Trade and Companies Register - Commercial Court Registry",
+         "url":"http://www.infogreffe.fr",
+         "public-database":true,
+         "description":null
+      },
+      {
+         "category":"GB",
+         "code":"GB-CHC",
+         "name":"Charity Commission",
+         "url":"http://www.charity-commission.gov.uk/",
+         "public-database":true,
+         "description":null
+      },
+      {
+         "category":"GB",
+         "code":"GB-COH",
+         "name":"Companies House",
+         "url":"http://www.companieshouse.gov.uk/",
+         "public-database":true,
+         "description":null
+      },
+      {
+         "category":"GB",
+         "code":"GB-GOV",
+         "name":"UK Government Departments Reference Numbers",
+         "url":"http://data.gov.uk/dataset/iati-organisation-identifier-for-uk-government-bodies",
+         "public-database":true,
+         "description":"Codes for use by IATI for UK Government Departments."
+      },
+      {
+         "category":"GB",
+         "code":"GB-GOVUK",
+         "name":"UK Government Departments, Agencies & Public Bodies",
+         "url":"https://www.gov.uk/government/organisations",
+         "public-database":true,
+         "description":"Use the final segment of the url (below /organisations) as the \"registration number\", converting all \"-\" to \"_\". Keep \"registration number\" portion all lowercase."
+      },
+      {
+         "category":"GB",
+         "code":"GB-NIC",
+         "name":"The Charity Commission for Northern Ireland",
+         "url":"http://www.charitycommissionni.org.uk/",
+         "public-database":true,
+         "description":null
+      },
+      {
+         "category":"GB",
+         "code":"GB-REV",
+         "name":"HM Revenue and Customs",
+         "url":"http://www.hmrc.gov.uk/",
+         "public-database":false,
+         "description":null
+      },
+      {
+         "category":"GB",
+         "code":"GB-SC",
+         "name":"Scottish Charity Register",
+         "url":"http://www.oscr.org.uk/",
+         "public-database":true,
+         "description":null
+      },
+      {
+         "category":"GB",
+         "code":"GB-UKPRN",
+         "name":"UK Register of Learning Providers",
+         "url":"https://www.ukrlp.co.uk/",
+         "public-database":true,
+         "description":null
+      },
+      {
+         "category":"GG",
+         "code":"GG-RCE",
+         "name":"The Guernsey Registry at the Department of Commerce and Employment",
+         "url":"http://www.guernseyregistry.com/charities",
+         "public-database":true,
+         "description":null
+      },
+      {
+         "category":"GH",
+         "code":"GH-DSW",
+         "name":"Department of Social Welfare",
+         "url":null,
+         "public-database":false,
+         "description":null
+      },
+      {
+         "category":"ID",
+         "code":"ID-KDN",
+         "name":"Ministry Home affairs/ Kementerian Dalam Negeri",
+         "url":"http://www.kemendagri.go.id/media/filemanager/2011/02/22/d/a/daf.ormas___lsm_2010.pdf",
+         "public-database":true,
+         "description":"NGO registration can also be done through Ministry Home affairs/ Kementerian Dalam Negeri"
+      },
+      {
+         "category":"ID",
+         "code":"ID-KHH",
+         "name":"Ministry of Justice & Human Rights/ Kementerian Hukum Dan Hak",
+         "url":"http://www.kemenkumham.go.id/",
+         "public-database":false,
+         "description":"Company registration is done through Ministry of Justice & Human Rights/ Kementerian Hukum Dan Hak"
+      },
+      {
+         "category":"ID",
+         "code":"ID-KLN",
+         "name":"Ministry of Foreign affairs/ Kementerian Luar Negeri",
+         "url":"http://www.kemlu.go.id/",
+         "public-database":false,
+         "description":"International NGO registration is done through Ministry of Foreign affairs/ Kementerian Luar Negeri"
+      },
+      {
+         "category":"ID",
+         "code":"ID-PRO",
+         "name":"NGOs registered at Provinicial Level",
+         "url":"http://www.satulayanan.net/layanan/pendaftaran-lsm-atau-ormas/perizinan-lsm-atau-ormas-baru",
+         "public-database":false,
+         "description":"Registration for NGO in Indonesia can be done at the provincial level. Because there is regional autonomy, each provincial has different requirements. Website is just one example"
+      },
+      {
+         "category":"IE",
+         "code":"IE-CHY",
+         "name":"Irish Register of Charities",
+         "url":null,
+         "public-database":false,
+         "description":null
+      },
+      {
+         "category":"IE",
+         "code":"IE-CRO",
+         "name":"Irish CompaniesRegistration Office",
+         "url":"http://www.cro.ie/",
+         "public-database":true,
+         "description":null
+      },
+      {
+         "category":"IM",
+         "code":"IM-CR",
+         "name":"Isle of Man Companies Registry",
+         "url":"http://www.gov.im/ded/companies/companiesregistry.xml?menuid=21615",
+         "public-database":true,
+         "description":null
+      },
+      {
+         "category":"IM",
+         "code":"IM-GR",
+         "name":"Isle of Man Index of Registered Charities",
+         "url":"http://www.gov.im/registries/courts/charities/",
+         "public-database":true,
+         "description":null
+      },
+      {
+         "category":"IN",
+         "code":"IN-MCA",
+         "name":"Government of India, Minstry of Corporate Affairs",
+         "url":"http://www.mca.gov.in/",
+         "public-database":true,
+         "description":"MCA regulates corporate affairs in India through the Companies Act, 1956, 2013 and other allied Acts, Bills and Rules."
+      },
+      {
+         "category":"JE",
+         "code":"JE-CR",
+         "name":"Jersey Companies Registry",
+         "url":"http://www.jerseyfsc.org/registry/",
+         "public-database":true,
+         "description":null
+      },
+      {
+         "category":"JE",
+         "code":"JE-OAC",
+         "name":"Jersey Overseas Aid Commission",
+         "url":"http://www.jerseyoverseasaid.org.je/",
+         "public-database":false,
+         "description":null
+      },
+      {
+         "category":"KE",
+         "code":"KE-NCB",
+         "name":"NGO's Coordination Board",
+         "url":"http://www.ngobureau.or.ke/",
+         "public-database":true,
+         "description":null
+      },
+      {
+         "category":"KE",
+         "code":"KE-RCO",
+         "name":"Registar of Companies",
+         "url":"http://www.attorney-general.go.ke/",
+         "public-database":false,
+         "description":null
+      },
+      {
+         "category":"KE",
+         "code":"KE-RSO",
+         "name":"Registrar of Societies",
+         "url":"http://www.attorney-general.go.ke/",
+         "public-database":false,
+         "description":null
+      },
+      {
+         "category":"LS",
+         "code":"LS-LCN",
+         "name":"Lesotho Council of Non Governmental Organisations",
+         "url":"http://www.lcn.org.ls/",
+         "public-database":false,
+         "description":null
+      },
+      {
+         "category":"MM",
+         "code":"MM-MHA",
+         "name":"Ministry of Home Affairs - Central Committee for the Registration and Supervision of Organisations",
+         "url":"No url for the ministry (as at 2/10/2013)",
+         "public-database":false,
+         "description":"The MHA assigns a registration number to each NGO - this number is time limited, for example 4 years, after which the registration is reviewed."
+      },
+      {
+         "category":"MW",
+         "code":"MW-CNM",
+         "name":"The Council for Non Governmental Organisations in Malawi",
+         "url":"http://www.congoma.mw/index.html",
+         "public-database":false,
+         "description":null
+      },
+      {
+         "category":"MW",
+         "code":"MW-MRA",
+         "name":"Malawi Revenue Authority",
+         "url":"http://www.mra.mw/",
+         "public-database":false,
+         "description":null
+      },
+      {
+         "category":"MW",
+         "code":"MW-NBM",
+         "name":"NGO Board of Malawi",
+         "url":"http://ngoboardmalawi.mw/directory.php",
+         "public-database":false,
+         "description":"There is a pdf file with a list of registered NGOs, but these do not appear to be registration numbers. New database is planned"
+      },
+      {
+         "category":"MW",
+         "code":"MW-RG",
+         "name":"Registrar General, Department of Justice",
+         "url":null,
+         "public-database":false,
+         "description":null
+      },
+      {
+         "category":"MZ",
+         "code":"MZ-MOJ",
+         "name":"Mozambique Ministry of Justice",
+         "url":null,
+         "public-database":false,
+         "description":null
+      },
+      {
+         "category":"NG",
+         "code":"NG-CAC",
+         "name":"Nigerian Corporate Affairs Commission",
+         "url":"http://new.cac.gov.ng/home/",
+         "public-database":true,
+         "description":null
+      },
+      {
+         "category":"NL",
+         "code":"NL-KVK",
+         "name":"Kamer van Koophandel",
+         "url":"http://www.kvk.nl/",
+         "public-database":true,
+         "description":null
+      },
+      {
+         "category":"NO",
+         "code":"NO-BRC",
+         "name":"Br\u00f8nn\u00f8ysundregistrene",
+         "url":"http://www.brreg.no/",
+         "public-database":true,
+         "description":null
+      },
+      {
+         "category":"NP",
+         "code":"NP-CRO",
+         "name":"Company Registrar Office",
+         "url":"http://www.cro.gov.np/",
+         "public-database":false,
+         "description":null
+      },
+      {
+         "category":"NP",
+         "code":"NP-SWC",
+         "name":"NGO registration",
+         "url":"http://www.swc.org.np/",
+         "public-database":true,
+         "description":null
+      },
+      {
+         "category":"PK",
+         "code":"PK-PCP",
+         "name":"Pakistan Centre for Philanthropy",
+         "url":"https://drive.google.com/file/d/0B67B7u-xqLazZFhHTkUtUVVRWXc/view",
+         "public-database":true,
+         "description":"The PCP Certification Programme seeks to bring transparency, accountability and good governance in the nonprofit sector in Pakistan. The first initiative of its kind in South Asia; it involves the evaluation of a nonprofit organisation on standardised parameters of internal governance, financial management and programme delivery."
+      },
+      {
+         "category":"SE",
+         "code":"SE-BLV",
+         "name":"Bolagsverket / Swedish Companies Registration Office",
+         "url":"http://www.bolagsverket.se/",
+         "public-database":true,
+         "description":null
+      },
+      {
+         "category":"SK",
+         "code":"SK-ZRSR",
+         "name":"Slovakia Ministry Of Interior Trade Register",
+         "url":"http://www.zrsr.sk/default.aspx?LANG=en",
+         "public-database":true,
+         "description":"Most organisations (including NGOs) have to be registered with the Ministry of Interior for the Trade Register Of The Slovak Republic (\u017divnostensky Register Slovenskej Republiky) and are allocated a unique registration number"
+      },
+      {
+         "category":"TZ",
+         "code":"TZ-BRLA",
+         "name":"Tanzania Business Registrations and Licensing Agency",
+         "url":"http://www.brela.go.tz/",
+         "public-database":true,
+         "description":null
+      },
+      {
+         "category":"UA",
+         "code":"UA-EDR",
+         "name":"United State Register, Ukraine",
+         "url":"http://irc.gov.ua/ua/Poshuk-v-YeDR.html",
+         "public-database":true,
+         "description":null
+      },
+      {
+         "category":"UG",
+         "code":"UG-NGB",
+         "name":"NGO Board, Ministry of Internal Affairs",
+         "url":"http://www.mia.go.ug/?page_id=62",
+         "public-database":false,
+         "description":null
+      },
+      {
+         "category":"UG",
+         "code":"UG-RSB",
+         "name":"Registration Services Bureau",
+         "url":"http://www.ursb.go.ug/",
+         "public-database":false,
+         "description":null
+      },
+      {
+         "category":"US",
+         "code":"US-DOS",
+         "name":"Corporation registration is the responsibility of each state (see link)",
+         "url":"http://www.companieshouse.gov.uk/links/usaLink.shtml",
+         "public-database":false,
+         "description":null
+      },
+      {
+         "category":"US",
+         "code":"US-EIN",
+         "name":"Internal Revenue Service / Employer Identification Number",
+         "url":"http://www.irs.gov/businesses/small/article/0,,id=98350,00.html",
+         "public-database":false,
+         "description":null
+      },
+      {
+         "category":"US",
+         "code":"US-USAGOV",
+         "name":"Index of U.S. Government Departments and Agencies",
+         "url":"http://www.usa.gov/directory/federal/index.shtml",
+         "public-database":true,
+         "description":"Use the final segment of the url (below /federal and excluding the extension) as the \"registration number\", converting all \"-\" to \"_\". Keep \"registration number\" portion all lowercase."
+      },
+      {
+         "category":"XI",
+         "code":"XI-IATI",
+         "name":"International Aid Transparency Initiative Organisation Identifier",
+         "url":"http://iatistandard.org/codelists/IATIOrganisationIdentifier/",
+         "public-database":true,
+         "description":"XI-IATI is a list of organisation identifiers that is maintained by the IATI Secretariat. Any publisher may apply to the IATI Technical Team for an identifier to be generated."
+      },
+      {
+         "category":"XI",
+         "code":"XI-PB",
+         "name":"Public Bodies",
+         "url":"http://publicbodies.org/",
+         "public-database":true,
+         "description":"Public Bodies aims to provide a unique ID for every part of every government."
+      },
+      {
+         "category":"XM",
+         "code":"XM-DAC",
+         "name":"OECD Development Assistance Committee",
+         "url":"http://www.oecd.org/dac/stats/dacandcrscodelists.htm",
+         "public-database":true,
+         "description":"See Donor, Agency, and Delivery Channel codes"
+      },
+      {
+         "category":"XM",
+         "code":"XM-OCHA",
+         "name":"United Nations Office for the Coordination of Humanitarian Affairs",
+         "url":"http://www.unocha.org",
+         "public-database":true,
+         "description":"OCHA is the part of the United Nations Secretariat responsible for bringing together humanitarian actors to ensure a coherent response to emergencies."
+      },
+      {
+         "category":"ZA",
+         "code":"ZA-CIP",
+         "name":"Companies and Intellectual Property Commission (CIPC)",
+         "url":"http://www.cipro.gov.za/",
+         "public-database":true,
+         "description":null
+      },
+      {
+         "category":"ZA",
+         "code":"ZA-NPO",
+         "description":null,
+         "url":"http://www.npo.gov.za/",
+         "public-database":true,
+         "name":"Association for Non-Profit Organisations"
+      },
+      {
+         "category":"ZA",
+         "code":"ZA-PBO",
+         "name":"SA Revenue Service Tax Exemption Unit / Public Benefit Organisations",
+         "url":"http://www.sars.gov.za/home.asp?pid=170",
+         "public-database":false,
+         "description":null
+      },
+      {
+         "category":"ZM",
+         "code":"ZM-NRB",
+         "name":"Non Governmental Organisation Registration Board",
+         "url":null,
+         "public-database":false,
+         "description":null
+      },
+      {
+         "category":"ZM",
+         "code":"ZM-PCR",
+         "name":"Patents and Companies Registration Agency",
+         "url":"http://www.pacra.org.zm/",
+         "public-database":false,
+         "description":null
+      },
+      {
+         "category":"ZW",
+         "code":"ZW-PVO",
+         "name":"Private Voluntary Organisations Council",
+         "url":null,
+         "public-database":false,
+         "description":null
+      },
+      {
+         "category":"ZW",
+         "code":"ZW-ROD",
+         "name":"Registrar of Deeds",
+         "url":null,
+         "public-database":false,
+         "description":null
+      },
+      {
+         "category":"PL",
+         "code":"PL-REGON"
+      },
+      {
+         "category":"PL",
+         "code":"PL-KRS"
+      },
+      {
+         "category":"PL",
+         "code":"PL-NIP"
+      },
+      {
+         "category":"RS",
+         "code":"RS-APR",
+         "name":"Serbian Business Registrations Agency (APR)",
+         "url":"http://www.apr.gov.rs/eng/Home.aspx",
+         "public-database":true,
+         "description":"The SBRA runs business registers as single, centralized, public electronic databases."
+      },
+      {
+         "category":"IL",
+         "code":"IL-ROC",
+         "name":"Israeli Corporations Authority (Department of Justice) also known as The Registrar of Companies (ROC)",
+         "url":"http://havarot.justice.gov.il/",
+         "public-database":true,
+         "description":"The register can be searched at http://havarot.justice.gov.il/ using part or all of a company name in English or Hebrew, or by entering the company number. The search interface and the results are in Hebrew. Free information on a company includes type of company, address, legal status and purpose of the company. Additional information such as details of directors, total authorized capital, division of share capital, shareholders, charges and liabilities is priced."
+      },
+      {
+         "category":"CZ",
+         "code":"CZ-ICO",
+         "name":"Access to Registers of Economic Subjects / Entities (ARES)",
+         "url":"http://wwwinfo.mfcr.cz/ares/ares_es.html.en",
+         "public-database":true,
+         "description":"Public registers comprising: the Commercial Register, the Federal Register, the Register of Foundations, the Register\u2019s Institute, and the Register of Public Service Companies. Information on companies is searchable in English and is free-of-charge."
+      },
+      {
+         "category":"EE",
+         "code":"EE-RIK",
+         "name":"Centre of Registers and Information Systems (RIK)",
+         "url":"http://www.rik.ee/en/e-business-register",
+         "public-database":true,
+         "description":"You can view the data related to you free-of-charge by logging in with your ID-card."
+      },
+      {
+         "category":"CN",
+         "code":"CN-SAIC",
+         "name":"State Administration for Industry and Commerce (SAIC)",
+         "url":"http://gsxt.saic.gov.cn/",
+         "public-database":true,
+         "description":"The database is only available in Chinese language."
+      }
+   ],
+   "metadata":{
+      "url":"",
+      "name":"Organisation Registration Agency",
+      "description":"\n        Organisation registry agencies and their code. These can be used as the\n        prefix for an organisation identifier.\n\n        For general guidance about constructing Organisation Identifiers, please see http://iatistandard.org/organisation-identifiers/\n\n        In this list, description contains IATI specific usage notes, rather\n        than a general description of the regsitration agency.\n\n        The categories on this list are ISO Country codes, except for XM which\n        is used to indicate Multilateral/International Agency, and XI which is \n        used to indicate International Organisations. This follows ISO's \n        convention of reserving codes starting with X for \"private use\".\n\n        This list is maintained by the IATI Secretariat, but is a \"NonEmbedded\"\n        codelist - which means changes and additions may be made at short\n        notice, outside of published decimal and integer upgrade schedules.  If\n        a Registation Agency that you wish to use is not on this list, please\n        contact support@iatistandard.org\n        \n        This list was previously located at:\n        https://docs.google.com/spreadsheet/ccc?key=0AnWngmdQt3stdFppMWdkcXJqVTRWTk9menR1N0FXNGc&usp=drive_web#gid=0\n    "
+   }
+}
