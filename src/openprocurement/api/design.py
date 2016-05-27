@@ -128,7 +128,3 @@ design_list = [tenders_all_view, tenders_by_dateModified_view, tenders_real_by_d
 
 def sync_design(db):
     ViewDefinition.sync_many(db, design_list, callback=add_index_options)
-
-
-def add_to_design_list(new_designs):
-        design_list.extend(new_designs)
