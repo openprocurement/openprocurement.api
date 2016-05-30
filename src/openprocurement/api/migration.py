@@ -7,7 +7,7 @@ from email.header import decode_header
 
 
 LOGGER = logging.getLogger(__name__)
-SCHEMA_VERSION = 21
+SCHEMA_VERSION = 22
 SCHEMA_DOC = 'openprocurement_schema'
 
 
@@ -655,6 +655,27 @@ def from20to21(db):
         doc = i.doc
         if not doc.get('next_check') and doc['status'] in ['active.enquiries', 'active.tendering', 'active.auction', 'active.awarded']:
             doc['next_check'] = get_now().isoformat()
+            docs.append(doc)
+        if len(docs) >= 2 ** 7:
+            result = db.update(docs)
+            docs = []
+    if docs:
+        db.update(docs)
+
+
+def from21to22(db):
+    results = db.iterview('tenders/all', 2 ** 10, include_docs=True)
+    docs = []
+    for i in results:
+        doc = i.doc
+        changed = False
+        for a in doc.get("awards", []):
+            for c in a.get("complaints", []):
+                if 'dateEscalated' in c and c['type'] == 'claim':
+                    c['type'] = 'complaint'
+                    changed = True
+        if changed:
+            doc['dateModified'] = get_now().isoformat()
             docs.append(doc)
         if len(docs) >= 2 ** 7:
             result = db.update(docs)
