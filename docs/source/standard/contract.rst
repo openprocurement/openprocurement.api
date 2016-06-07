@@ -87,7 +87,7 @@ Schema
 :date:
     string, :ref:`date`
 
-    The date the contract was changed or activated.
+    The date when the contract was changed or activated.
 
 :documents:
     List of :ref:`Document` objects
