@@ -272,7 +272,7 @@ def remove_draft_bids(request):
     if [bid for bid in tender.bids if getattr(bid, "status", "active") == "draft"]:
         LOGGER.info('Remove draft bids',
                     extra=context_unpack(request, {'MESSAGE_ID': 'remove_draft_bids'}))
-        tender.bids = [bid.id for bid in tender.bids if getattr(bid, "status", "active") != "draft"]
+        tender.bids = [bid for bid in tender.bids if getattr(bid, "status", "active") != "draft"]
 
 def check_bids(request):
     tender = request.validated['tender']
