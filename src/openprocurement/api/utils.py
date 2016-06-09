@@ -15,9 +15,9 @@ from openprocurement.api.traversal import factory
 from pkg_resources import get_distribution
 from rfc6266 import build_header
 from schematics.exceptions import ModelValidationError
-from time import sleep
-from urllib import quote
-from urlparse import urlparse, parse_qs
+from time import sleep, time as ttime
+from urllib import quote, urlencode
+from urlparse import urlparse, parse_qs, urljoin, urlunsplit
 from uuid import uuid4
 from webob.multidict import NestedMultiDict
 from pyramid.exceptions import URLDecodeError
@@ -25,14 +25,16 @@ from pyramid.compat import decode_path_info
 from binascii import hexlify, unhexlify
 from Crypto.Cipher import AES
 from re import compile
+from requests import Session
 
 
 PKG = get_distribution(__package__)
 LOGGER = getLogger(PKG.project_name)
 VERSION = '{}.{}'.format(int(PKG.parsed_version[0]), int(PKG.parsed_version[1]) if PKG.parsed_version[1].isdigit() else 0)
 ROUTE_PREFIX = '/api/{}'.format(VERSION)
-DOCUMENT_BLACKLISTED_FIELDS = ('title', 'format', '__parent__', 'id', 'url', 'dateModified', )
+DOCUMENT_BLACKLISTED_FIELDS = ('title', 'format', '__parent__', 'id', 'url', 'dateModified', 'md5')
 ACCELERATOR_RE = compile(r'.accelerator=(?P<accelerator>\d+)')
+SESSION = Session()
 json_view = partial(view, renderer='json')
 
 
@@ -74,6 +76,14 @@ def get_filename(data):
 
 def upload_file(request, blacklisted_fields=DOCUMENT_BLACKLISTED_FIELDS):
     first_document = request.validated['documents'][0] if 'documents' in request.validated and request.validated['documents'] else None
+    if 'data' in request.validated and request.validated['data']:
+        document = request.validated['document']
+        if first_document:
+            for attr_name in type(first_document)._fields:
+                if attr_name not in blacklisted_fields:
+                    setattr(document, attr_name, getattr(first_document, attr_name))
+        docservice_url = request.registry.docservice_url
+        return document
     if request.content_type == 'multipart/form-data':
         data = request.validated['file']
         filename = get_filename(data)
@@ -102,15 +112,31 @@ def upload_file(request, blacklisted_fields=DOCUMENT_BLACKLISTED_FIELDS):
     document_route = request.matched_route.name.replace("collection_", "")
     document_path = request.current_route_path(_route_name=document_route, document_id=document.id, _query={'download': key})
     document.url = '/' + '/'.join(document_path.split('/')[3:])
-    conn = getattr(request.registry, 's3_connection', None)
-    if conn:
-        bucket = conn.get_bucket(request.registry.bucket_name)
-        filename = "{}/{}/{}".format(request.validated['tender_id'], document.id, key)
-        key = bucket.new_key(filename)
-        key.set_metadata('Content-Type', document.format)
-        key.set_metadata("Content-Disposition", build_header(document.title, filename_compat=quote(document.title.encode('utf-8'))))
-        key.set_contents_from_file(in_file)
-        key.set_acl('private')
+    if request.registry.docservice_url:
+        url = urljoin(request.registry.docservice_url, '/upload')
+        files = {'file': (filename, in_file, content_type)}
+        doc_url = None
+        index = 10
+        while not doc_url and index:
+            try:
+                r = SESSION.post(url,
+                                files=files,
+                                headers={'X-Client-Request-ID': request.environ.get('REQUEST_ID', '')},
+                                #auth=(api_token, '')
+                                )
+            except:
+                pass
+            else:
+                if r.status_code == 200:
+                    doc_url = r.json()
+                    break
+            index -= 1
+        else:
+            request.errors.add('body', 'data', 'cant upload document')
+            request.errors.status = 422
+            raise error_handler(request.errors)
+        # TODO document url
+        document.url = doc_url
     else:
         filename = "{}_{}".format(document.id, key)
         request.validated['tender']['_attachments'][filename] = {
@@ -122,33 +148,31 @@ def upload_file(request, blacklisted_fields=DOCUMENT_BLACKLISTED_FIELDS):
 
 
 def update_file_content_type(request):
-    conn = getattr(request.registry, 's3_connection', None)
-    if conn:
-        document = request.validated['document']
-        key = parse_qs(urlparse(document.url).query).get('download').pop()
-        bucket = conn.get_bucket(request.registry.bucket_name)
-        filename = "{}/{}/{}".format(request.validated['tender_id'], document.id, key)
-        key = bucket.get_key(filename)
-        if key.content_type != document.format:
-            key.set_remote_metadata({'Content-Type': document.format}, {}, True)
+    pass
 
 
 def get_file(request):
     tender_id = request.validated['tender_id']
     document = request.validated['document']
     key = request.params.get('download')
-    conn = getattr(request.registry, 's3_connection', None)
     filename = "{}_{}".format(document.id, key)
-    if conn and filename not in request.validated['tender']['_attachments']:
-        filename = "{}/{}/{}".format(tender_id, document.id, key)
-        url = conn.generate_url(method='GET', bucket=request.registry.bucket_name, key=filename, expires_in=300)
+    if request.registry.docservice_url and filename not in request.validated['tender']['_attachments']:
+        docservice_url = request.registry.docservice_url
+        docservice_key = getattr(request.registry, 'docservice_key', None)
+        parsed_url = urlparse(document.url)
+        doc_id = parsed_url.path.replace('/get/', '')
+        expires = int(ttime()) + 300  # EXPIRES
+        mess = "{}\0{}".format(doc_id, expires)
+        signature = quote(b64encode(docservice_key.sign(mess)))
+        key_id = docservice_key.get_pubkey().encode('hex')[2:10]
+        query = urlencode({'Signature': signature, 'Expires': expires, 'KeyID': key_id})
+        url = urlunsplit((parsed_url.scheme, parsed_url.netloc, parsed_url.path, query, ''))
         request.response.content_type = document.format.encode('utf-8')
         request.response.content_disposition = build_header(document.title, filename_compat=quote(document.title.encode('utf-8')))
         request.response.status = '302 Moved Temporarily'
         request.response.location = url
         return url
     else:
-        filename = "{}_{}".format(document.id, key)
         data = request.registry.db.get_attachment(tender_id, filename)
         if data:
             request.response.content_type = document.format.encode('utf-8')

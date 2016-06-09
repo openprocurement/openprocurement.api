@@ -343,13 +343,15 @@ class Item(Model):
 class Document(Model):
     class Options:
         roles = {
-            'edit': blacklist('id', 'url', 'datePublished', 'dateModified', ''),
+            'create': blacklist('id', 'datePublished', 'dateModified', 'author'),
+            'edit': blacklist('id', 'url', 'datePublished', 'dateModified', 'author', 'md5'),
             'embedded': schematics_embedded_role,
             'view': (blacklist('revisions') + schematics_default_role),
             'revisions': whitelist('url', 'dateModified'),
         }
 
     id = MD5Type(required=True, default=lambda: uuid4().hex)
+    md5 = MD5Type()
     documentType = StringType(choices=[
         'tenderNotice', 'awardNotice', 'contractNotice',
         'notice', 'biddingDocuments', 'technicalSpecifications',

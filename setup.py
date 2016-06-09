@@ -8,7 +8,6 @@ with open(os.path.join(here, 'README.rst')) as f:
 
 requires = [
     'barbecue',
-    'boto',
     'chaussette',
     'cornice',
     'couchdb-schematics',
@@ -17,10 +16,12 @@ requires = [
     'jsonpatch',
     'pbkdf2',
     'pycrypto',
+    'pyelliptic',
     'pyramid_exclog',
     'rfc6266',
     'setuptools',
     'tzlocal',
+    'requests',
 ]
 test_requires = requires + [
     'webtest',

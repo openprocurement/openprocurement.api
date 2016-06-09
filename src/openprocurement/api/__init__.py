@@ -4,7 +4,7 @@
 import gevent.monkey
 gevent.monkey.patch_all()
 import os
-from boto.s3.connection import S3Connection, Location
+from base64 import b64encode, b64decode
 from couchdb import Server as CouchdbServer, Session
 from couchdb.http import Unauthorized, extract_credentials
 from logging import getLogger
@@ -15,6 +15,7 @@ from openprocurement.api.models import Tender
 from openprocurement.api.utils import forbidden, add_logging_context, set_logging_context, extract_tender, request_params, isTender, set_renderer, beforerender, register_tender_procurementMethodType, tender_from_data, ROUTE_PREFIX
 from pbkdf2 import PBKDF2
 from pkg_resources import iter_entry_points
+from pyelliptic import ECC
 from pyramid.authorization import ACLAuthorizationPolicy as AuthorizationPolicy
 from pyramid.config import Configurator
 from pyramid.events import NewRequest, BeforeRender, ContextFound
@@ -160,14 +161,13 @@ def main(global_config, **settings):
     if not os.environ.get('MIGRATION_SKIP'):
         migrate_data(config.registry.db)
 
-    # S3 connection
-    if 'aws.access_key' in settings and 'aws.secret_key' in settings and 'aws.s3_bucket' in settings:
-        connection = S3Connection(settings['aws.access_key'], settings['aws.secret_key'])
-        config.registry.s3_connection = connection
-        bucket_name = settings['aws.s3_bucket']
-        if bucket_name not in [b.name for b in connection.get_all_buckets()]:
-            connection.create_bucket(bucket_name, location=Location.EU)
-        config.registry.bucket_name = bucket_name
+    # Document Service key
+    config.registry.docservice_url = settings.get('docservice_url')
+    curve = settings.get('curve', 'secp384r1')
+    privkey = b64decode(settings.get('privkey')) if 'privkey' in settings else None
+    pubkey = b64decode(settings.get('pubkey')) if 'pubkey' in settings else None
+    config.registry.docservice_key = ECC(pubkey=pubkey, privkey=privkey, curve=curve)
+
     config.registry.server_id = settings.get('id', '')
     config.registry.health_threshold = float(settings.get('health_threshold', 99))
     config.registry.update_after = asbool(settings.get('update_after', True))
