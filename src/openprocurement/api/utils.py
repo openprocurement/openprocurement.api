@@ -108,10 +108,6 @@ def upload_file(request, blacklisted_fields=DOCUMENT_BLACKLISTED_FIELDS):
         for attr_name in type(first_document)._fields:
             if attr_name not in blacklisted_fields:
                 setattr(document, attr_name, getattr(first_document, attr_name))
-    key = generate_id()
-    document_route = request.matched_route.name.replace("collection_", "")
-    document_path = request.current_route_path(_route_name=document_route, document_id=document.id, _query={'download': key})
-    document.url = '/' + '/'.join(document_path.split('/')[3:])
     if request.registry.docservice_url:
         url = urljoin(request.registry.docservice_url, '/upload')
         files = {'file': (filename, in_file, content_type)}
@@ -135,9 +131,18 @@ def upload_file(request, blacklisted_fields=DOCUMENT_BLACKLISTED_FIELDS):
             request.errors.add('body', 'data', 'cant upload document')
             request.errors.status = 422
             raise error_handler(request.errors)
-        # TODO document url
-        document.url = doc_url
+        parsed_url = urlparse(doc_url)
+        doc_id = parsed_url.path.replace('/get/', '')
+        docservice_key = getattr(request.registry, 'docservice_key', None)
+        signature = quote(b64encode(docservice_key.sign(doc_id)))
+        key_id = docservice_key.get_pubkey().encode('hex')[2:10]
+        query = urlencode({'Signature': signature, 'KeyID': key_id})
+        document.url = urlunsplit((parsed_url.scheme, parsed_url.netloc, parsed_url.path, query, ''))
     else:
+        key = generate_id()
+        document_route = request.matched_route.name.replace("collection_", "")
+        document_path = request.current_route_path(_route_name=document_route, document_id=document.id, _query={'download': key})
+        document.url = '/' + '/'.join(document_path.split('/')[3:])
         filename = "{}_{}".format(document.id, key)
         request.validated['tender']['_attachments'][filename] = {
             "content_type": document.format,

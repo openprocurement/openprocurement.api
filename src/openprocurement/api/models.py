@@ -14,7 +14,7 @@ from schematics.types.serializable import serializable
 from uuid import uuid4
 from barbecue import vnmax
 from zope.interface import implementer, Interface
-
+from urlparse import urlparse
 
 STAND_STILL_TIME = timedelta(days=2)
 COMPLAINT_STAND_STILL_TIME = timedelta(days=3)
@@ -343,9 +343,10 @@ class Item(Model):
 class Document(Model):
     class Options:
         roles = {
-            'create': blacklist('id', 'datePublished', 'dateModified', 'author'),
-            'edit': blacklist('id', 'url', 'datePublished', 'dateModified', 'author', 'md5'),
-            'embedded': schematics_embedded_role,
+            'create': blacklist('id', 'datePublished', 'dateModified', 'author', 'download_url'),
+            'edit': blacklist('id', 'url', 'datePublished', 'dateModified', 'author', 'md5', 'download_url'),
+            'embedded': (blacklist('url', 'download_url') + schematics_embedded_role),
+            'default': blacklist("__parent__", 'download_url'),
             'view': (blacklist('revisions') + schematics_default_role),
             'revisions': whitelist('url', 'dateModified'),
         }
@@ -377,6 +378,20 @@ class Document(Model):
     documentOf = StringType(required=True, choices=['tender', 'item', 'lot'], default='tender')
     relatedItem = MD5Type()
     author = StringType()
+
+    @serializable(serialized_name="url")
+    def download_url(self):
+        url = self.url
+        if '?download=' in self.url:
+            return self.url
+        parsed_url = urlparse(self.url)
+        doc_id = parsed_url.path.replace('/get/', '')
+        url = '/documents/{}?download={}'.format(self.id, doc_id)
+        model = self
+        while not ITender.providedBy(model):
+            model = model.__parent__
+            url = '/{}s/{}{}'.format(type(model).__name__.lower(), model.id, url)
+        return url
 
     def import_data(self, raw_data, **kw):
         """

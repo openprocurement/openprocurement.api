@@ -361,7 +361,7 @@ class TenderDocumentWithS3ResourceTest(TenderDocumentResourceTest):
                 response = Response()
                 response.status_code = 200
                 response.encoding = 'application/json'
-                response._content = '"http://localhost/get/{}"'.format(uuid4().hex)
+                response._content = '"http://localhost/get/{}?Signature=Signature&KeyID=KeyID&Expires=Expires"'.format(uuid4().hex)
                 response.reason = '200 OK'
             return response
 
