@@ -243,7 +243,7 @@ class TenderAuctionPeriod(Period):
             start_after = calc_auction_end_time(tender.numberOfBids, self.startDate)
         else:
             start_after = tender.tenderPeriod.endDate
-        if not (SANDBOX_MODE and u'quick' in tender.get('submissionMethodDetails', '')):
+        if not (SANDBOX_MODE and tender.submissionMethodDetails and u'quick' in tender.submissionMethodDetails):
             midnigth = datetime.combine(start_after.date(), time(0, tzinfo=start_after.tzinfo))
             if start_after > midnigth:
                 start_after = midnigth + timedelta(1)
@@ -267,7 +267,7 @@ class LotAuctionPeriod(Period):
             start_after = calc_auction_end_time(tender.numberOfBids, self.startDate)
         else:
             start_after = tender.tenderPeriod.endDate
-        if not (SANDBOX_MODE and u'quick' in tender.get('submissionMethodDetails', '')):
+        if not (SANDBOX_MODE and tender.submissionMethodDetails and u'quick' in tender.submissionMethodDetails):
             midnigth = datetime.combine(start_after.date(), time(0, tzinfo=start_after.tzinfo))
             if start_after > midnigth:
                 start_after = midnigth + timedelta(1)
