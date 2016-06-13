@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 import os
 from couchdb_schematics.document import SchematicsDocument
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, time
 from iso8601 import parse_date, ParseError
 from pytz import timezone
 from pyramid.security import Allow
@@ -240,9 +240,14 @@ class TenderAuctionPeriod(Period):
         if tender.lots or tender.status not in ['active.tendering', 'active.auction']:
             return
         if self.startDate and get_now() > calc_auction_end_time(tender.numberOfBids, self.startDate):
-            return calc_auction_end_time(tender.numberOfBids, self.startDate).isoformat()
+            start_after = calc_auction_end_time(tender.numberOfBids, self.startDate)
         else:
-            return tender.tenderPeriod.endDate.isoformat()
+            start_after = tender.tenderPeriod.endDate
+        if not (SANDBOX_MODE and u'quick' in tender.get('submissionMethodDetails', '')):
+            midnigth = datetime.combine(start_after.date(), time(0, tzinfo=start_after.tzinfo))
+            if start_after > midnigth:
+                start_after = midnigth + timedelta(1)
+        return start_after.isoformat()
 
 
 class LotAuctionPeriod(Period):
@@ -259,9 +264,14 @@ class LotAuctionPeriod(Period):
         if tender.status == 'active.auction' and lot.numberOfBids < 2:
             return
         if self.startDate and get_now() > calc_auction_end_time(lot.numberOfBids, self.startDate):
-            return calc_auction_end_time(lot.numberOfBids, self.startDate).isoformat()
+            start_after = calc_auction_end_time(tender.numberOfBids, self.startDate)
         else:
-            return tender.tenderPeriod.endDate.isoformat()
+            start_after = tender.tenderPeriod.endDate
+        if not (SANDBOX_MODE and u'quick' in tender.get('submissionMethodDetails', '')):
+            midnigth = datetime.combine(start_after.date(), time(0, tzinfo=start_after.tzinfo))
+            if start_after > midnigth:
+                start_after = midnigth + timedelta(1)
+        return start_after.isoformat()
 
 
 class PeriodEndRequired(Period):
