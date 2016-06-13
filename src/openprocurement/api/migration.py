@@ -583,7 +583,7 @@ def from16to17(db):
 
 
 def from17to18(db):
-    results = db.view('tenders/all', include_docs=True)
+    results = db.iterview('tenders/all', 2**10, include_docs=True)
     for i in results:
         doc = i.doc
         contracts = []

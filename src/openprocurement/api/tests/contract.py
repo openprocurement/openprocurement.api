@@ -285,7 +285,6 @@ class TenderContractResourceTest(BaseTenderWebTest):
         self.assertEqual(response.json['data']['suppliers'], contract['suppliers'])
         self.assertEqual(response.json['data']['dateSigned'], custom_signature_date)
 
-
     def test_get_tender_contract(self):
         response = self.app.post_json('/tenders/{}/contracts'.format(
             self.tender_id), {'data': {'title': 'contract title', 'description': 'contract description', 'awardID': self.award_id}})

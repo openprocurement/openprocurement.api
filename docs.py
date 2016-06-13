@@ -607,6 +607,14 @@ class TenderResourceTest(BaseTenderWebTest):
                 self.tender_id, self.contract_id))
         self.assertEqual(response.status, '200 OK')
 
+        #### Setting contract signature date
+        #
+
+        with open('docs/source/tutorial/tender-contract-sign-date.http', 'w') as self.app.file_obj:
+            response = self.app.patch_json('/tenders/{}/contracts/{}?acc_token={}'.format(
+                self.tender_id, self.contract_id, owner_token), {'data': {"dateSigned": get_now().isoformat()} })
+            self.assertEqual(response.status, '200 OK')
+
         #### Contract signing
         #
 
