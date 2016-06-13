@@ -229,6 +229,14 @@ def calc_auction_end_time(bids, start):
     return start + bids * BIDDER_TIME + SERVICE_TIME + AUCTION_STAND_STILL_TIME
 
 
+def rounding_shouldStartAfter(start_after, tender, use_from=datetime(2016, 4, 1, tzinfo=TZ)):
+    if (tender.enquiryPeriod.startDate or get_now()) > use_from and not (SANDBOX_MODE and tender.submissionMethodDetails and u'quick' in tender.submissionMethodDetails):
+        midnigth = datetime.combine(start_after.date(), time(0, tzinfo=start_after.tzinfo))
+        if start_after > midnigth:
+            start_after = midnigth + timedelta(1)
+    return start_after
+
+
 class TenderAuctionPeriod(Period):
     """The auction period."""
 
@@ -243,11 +251,7 @@ class TenderAuctionPeriod(Period):
             start_after = calc_auction_end_time(tender.numberOfBids, self.startDate)
         else:
             start_after = tender.tenderPeriod.endDate
-        if not (SANDBOX_MODE and tender.submissionMethodDetails and u'quick' in tender.submissionMethodDetails):
-            midnigth = datetime.combine(start_after.date(), time(0, tzinfo=start_after.tzinfo))
-            if start_after > midnigth:
-                start_after = midnigth + timedelta(1)
-        return start_after.isoformat()
+        return rounding_shouldStartAfter(start_after, tender).isoformat()
 
 
 class LotAuctionPeriod(Period):
@@ -267,11 +271,7 @@ class LotAuctionPeriod(Period):
             start_after = calc_auction_end_time(tender.numberOfBids, self.startDate)
         else:
             start_after = tender.tenderPeriod.endDate
-        if not (SANDBOX_MODE and tender.submissionMethodDetails and u'quick' in tender.submissionMethodDetails):
-            midnigth = datetime.combine(start_after.date(), time(0, tzinfo=start_after.tzinfo))
-            if start_after > midnigth:
-                start_after = midnigth + timedelta(1)
-        return start_after.isoformat()
+        return rounding_shouldStartAfter(start_after, tender).isoformat()
 
 
 class PeriodEndRequired(Period):
