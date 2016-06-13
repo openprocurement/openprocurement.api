@@ -267,6 +267,12 @@ def cleanup_bids_for_cancelled_lots(tender):
         if not bid.lotValues:
             tender.bids.remove(bid)
 
+def remove_draft_bids(request):
+    tender = request.validated['tender']
+    if [bid for bid in tender.bids if getattr(bid, "status", "active") == "draft"]:
+        LOGGER.info('Remove draft bids',
+                    extra=context_unpack(request, {'MESSAGE_ID': 'remove_draft_bids'}))
+        tender.bids = [bid for bid in tender.bids if getattr(bid, "status", "active") != "draft"]
 
 def check_bids(request):
     tender = request.validated['tender']
@@ -322,6 +328,7 @@ def check_status(request):
         LOGGER.info('Switched tender {} to {}'.format(tender['id'], 'active.auction'),
                     extra=context_unpack(request, {'MESSAGE_ID': 'switched_tender_active.auction'}))
         tender.status = 'active.auction'
+        remove_draft_bids(request)
         check_bids(request)
         if tender.numberOfBids < 2 and tender.auctionPeriod:
             tender.auctionPeriod.startDate = None
@@ -330,6 +337,7 @@ def check_status(request):
         LOGGER.info('Switched tender {} to {}'.format(tender['id'], 'active.auction'),
                     extra=context_unpack(request, {'MESSAGE_ID': 'switched_tender_active.auction'}))
         tender.status = 'active.auction'
+        remove_draft_bids(request)
         check_bids(request)
         [setattr(i.auctionPeriod, 'startDate', None) for i in tender.lots if i.numberOfBids < 2 and i.auctionPeriod]
         return
