@@ -616,6 +616,14 @@
          "url":"http://gsxt.saic.gov.cn/",
          "public-database":true,
          "description":"The database is only available in Chinese language."
+      },
+      {
+         "category":"LV",
+         "code":"LV-RE",
+         "name":"Register of Enterprises of the Republic of Latvia",
+         "url":"http://www.ur.gov.lv/",
+         "public-database":true,
+         "description":"Free of charge information includes type of legal entity; registered office; new or current name or trade name and previously registered or historical name or trade name; registration number; Single Euro Payment Area beneficiary identification code (if allocated); registration date; date of deletion of the legal entity from the register (or the date of reorganisation if the reason for the deletion is a reorganisation); deadline for registration of religious organisations that are subject to re-registration."
       }
    ],
    "metadata":{
