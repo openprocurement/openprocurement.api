@@ -114,6 +114,7 @@ class TenderBidResource(APIResource):
             self.request.errors.status = 403
             return
         bid = self.request.validated['bid']
+        transfer = bid.transfer_token
         set_ownership(bid, self.request)
         tender.bids.append(bid)
         tender.modified = False
@@ -125,7 +126,8 @@ class TenderBidResource(APIResource):
             return {
                 'data': bid.serialize('view'),
                 'access': {
-                    'token': bid.owner_token
+                    'token': bid.owner_token,
+                    'transfer': transfer
                 }
             }
 

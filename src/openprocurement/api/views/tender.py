@@ -352,6 +352,7 @@ class TendersResource(APIResource):
             tender.initialize()
         if self.request.json_body['data'].get('status') == 'draft':
             tender.status = 'draft'
+        transfer = tender.transfer_token
         set_ownership(tender, self.request)
         self.request.validated['tender'] = tender
         self.request.validated['tender_src'] = {}
@@ -364,7 +365,8 @@ class TendersResource(APIResource):
             return {
                 'data': tender.serialize(tender.status),
                 'access': {
-                    'token': tender.owner_token
+                    'token': tender.owner_token,
+                    'transfer': transfer
                 }
             }
 

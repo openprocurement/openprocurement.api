@@ -516,7 +516,7 @@ class LotValue(Model):
             raise ValidationError(u"relatedLot should be one of lots")
 
 
-view_bid_role = (blacklist('owner_token', 'owner') + schematics_default_role)
+view_bid_role = (blacklist('owner_token', 'owner', 'transfer_token') + schematics_default_role)
 Administrator_bid_role = whitelist('tenderers')
 
 
@@ -554,6 +554,7 @@ class Bid(Model):
     documents = ListType(ModelType(Document), default=list())
     participationUrl = URLType()
     owner_token = StringType()
+    transfer_token = StringType(default=lambda: uuid4().hex)
     owner = StringType()
 
     __name__ = ''
@@ -681,6 +682,7 @@ class Complaint(Model):
     documents = ListType(ModelType(Document), default=list())
     type = StringType(choices=['claim', 'complaint'], default='claim')  # 'complaint' if status in ['pending'] or 'claim' if status in ['draft', 'claim', 'answered']
     owner_token = StringType()
+    transfer_token = StringType(default=lambda: uuid4().hex)
     owner = StringType()
     relatedLot = MD5Type()
     # complainant
@@ -995,15 +997,15 @@ def validate_cpv_group(items, *args):
 
 
 plain_role = (blacklist('_attachments', 'revisions', 'dateModified') + schematics_embedded_role)
-create_role = (blacklist('owner_token', 'owner', '_attachments', 'revisions', 'dateModified', 'doc_id', 'tenderID', 'bids', 'documents', 'awards', 'questions', 'complaints', 'auctionUrl', 'status', 'auctionPeriod', 'awardPeriod', 'procurementMethod', 'awardCriteria', 'submissionMethod', 'cancellations') + schematics_embedded_role)
+create_role = (blacklist('transfer_token', 'owner_token', 'owner', '_attachments', 'revisions', 'dateModified', 'doc_id', 'tenderID', 'bids', 'documents', 'awards', 'questions', 'complaints', 'auctionUrl', 'status', 'auctionPeriod', 'awardPeriod', 'procurementMethod', 'awardCriteria', 'submissionMethod', 'cancellations') + schematics_embedded_role)
 draft_role = whitelist('status')
-edit_role = (blacklist('status', 'procurementMethodType', 'lots', 'owner_token', 'owner', '_attachments', 'revisions', 'dateModified', 'doc_id', 'tenderID', 'bids', 'documents', 'awards', 'questions', 'complaints', 'auctionUrl', 'auctionPeriod', 'awardPeriod', 'procurementMethod', 'awardCriteria', 'submissionMethod', 'mode', 'cancellations') + schematics_embedded_role)
+edit_role = (blacklist('status', 'procurementMethodType', 'lots', 'transfer_token', 'owner_token', 'owner', '_attachments', 'revisions', 'dateModified', 'doc_id', 'tenderID', 'bids', 'documents', 'awards', 'questions', 'complaints', 'auctionUrl', 'auctionPeriod', 'awardPeriod', 'procurementMethod', 'awardCriteria', 'submissionMethod', 'mode', 'cancellations') + schematics_embedded_role)
 view_role = (blacklist('owner_token', '_attachments', 'revisions') + schematics_embedded_role)
 listing_role = whitelist('dateModified', 'doc_id')
 auction_view_role = whitelist('tenderID', 'dateModified', 'bids', 'auctionPeriod', 'minimalStep', 'auctionUrl', 'features', 'lots')
 auction_post_role = whitelist('bids')
 auction_patch_role = whitelist('auctionUrl', 'bids', 'lots')
-enquiries_role = (blacklist('owner_token', '_attachments', 'revisions', 'bids', 'numberOfBids') + schematics_embedded_role)
+enquiries_role = (blacklist('transfer_token', 'owner_token', '_attachments', 'revisions', 'bids', 'numberOfBids') + schematics_embedded_role)
 auction_role = (blacklist('owner_token', '_attachments', 'revisions', 'bids', 'numberOfBids') + schematics_embedded_role)
 #chronograph_role = whitelist('status', 'enquiryPeriod', 'tenderPeriod', 'auctionPeriod', 'awardPeriod', 'lots')
 chronograph_role = whitelist('auctionPeriod', 'lots', 'next_check')
@@ -1108,6 +1110,7 @@ class Tender(SchematicsDocument, Model):
     _attachments = DictType(DictType(BaseType), default=dict())  # couchdb attachments
     dateModified = IsoDateTimeType()
     owner_token = StringType()
+    transfer_token = StringType(default=lambda: uuid4().hex)
     owner = StringType()
 
     procurementMethodType = StringType(default="belowThreshold")
