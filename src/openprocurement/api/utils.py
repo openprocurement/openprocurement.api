@@ -36,6 +36,10 @@ ACCELERATOR_RE = compile(r'.accelerator=(?P<accelerator>\d+)')
 json_view = partial(view, renderer='json')
 
 
+def route_prefix(settings={}):
+    return '/api/{}'.format(settings.get('api_version', VERSION))
+
+
 def generate_id():
     return uuid4().hex
 
@@ -615,7 +619,7 @@ def forbidden(request):
 def add_logging_context(event):
     request = event.request
     params = {
-        'API_VERSION': VERSION,
+        'API_VERSION': request.registry.settings.get('api_version', VERSION),
         'TAGS': 'python,api',
         'USER': str(request.authenticated_userid or ''),
         #'ROLE': str(request.authenticated_role),
@@ -731,20 +735,20 @@ def set_renderer(event):
         return True
 
 
-def fix_url(item, app_url):
+def fix_url(item, app_url, settings={}):
     if isinstance(item, list):
         [
-            fix_url(i, app_url)
+            fix_url(i, app_url, settings)
             for i in item
             if isinstance(i, dict) or isinstance(i, list)
         ]
     elif isinstance(item, dict):
         if "format" in item and "url" in item and '?download=' in item['url']:
             path = item["url"] if item["url"].startswith('/') else '/' + '/'.join(item['url'].split('/')[5:])
-            item["url"] = app_url + ROUTE_PREFIX + path
+            item["url"] = app_url + route_prefix(settings) + path
             return
         [
-            fix_url(item[i], app_url)
+            fix_url(item[i], app_url, settings)
             for i in item
             if isinstance(item[i], dict) or isinstance(item[i], list)
         ]
@@ -752,7 +756,7 @@ def fix_url(item, app_url):
 
 def beforerender(event):
     if event.rendering_val and isinstance(event.rendering_val, dict) and 'data' in event.rendering_val:
-        fix_url(event.rendering_val['data'], event['request'].application_url)
+        fix_url(event.rendering_val['data'], event['request'].application_url, event['request'].registry.settings)
 
 
 def register_tender_procurementMethodType(config, model):
