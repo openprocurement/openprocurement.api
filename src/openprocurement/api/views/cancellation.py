@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+from openprocurement.api.models import get_now
 from openprocurement.api.utils import (
     apply_patch,
     save_tender,
@@ -26,12 +27,14 @@ class TenderCancellationResource(APIResource):
         if tender.status in ['active.tendering', 'active.auction']:
             tender.bids = []
         tender.status = 'cancelled'
+        tender.date = get_now()
 
     def cancel_lot(self, cancellation=None):
         if not cancellation:
             cancellation = self.context
         tender = self.request.validated['tender']
         [setattr(i, 'status', 'cancelled') for i in tender.lots if i.id == cancellation.relatedLot]
+        [setattr(i, 'date', get_now()) for i in tender.lots if i.id == cancellation.relatedLot]
         statuses = set([lot.status for lot in tender.lots])
         if statuses == set(['cancelled']):
             self.cancel_tender()
@@ -45,6 +48,8 @@ class TenderCancellationResource(APIResource):
             if i.numberOfBids > 1 and i.status == 'active'
         ]):
             add_next_award(self.request)
+        if tender.status in ['complete', 'cancelled', 'unsuccessful']:
+            tender.date = get_now()
 
     @json_view(content_type="application/json", validators=(validate_cancellation_data,), permission='edit_tender')
     def collection_post(self):
