@@ -32,7 +32,7 @@ PKG = get_distribution(__package__)
 LOGGER = getLogger(PKG.project_name)
 VERSION = '{}.{}'.format(int(PKG.parsed_version[0]), int(PKG.parsed_version[1]) if PKG.parsed_version[1].isdigit() else 0)
 ROUTE_PREFIX = '/api/{}'.format(VERSION)
-DOCUMENT_BLACKLISTED_FIELDS = ('title', 'format', '__parent__', 'id', 'url', 'dateModified', 'md5')
+DOCUMENT_BLACKLISTED_FIELDS = ('title', 'format', 'id', 'url', 'dateModified', 'md5')
 ACCELERATOR_RE = compile(r'.accelerator=(?P<accelerator>\d+)')
 SESSION = Session()
 json_view = partial(view, renderer='json')
@@ -98,6 +98,11 @@ def upload_file(request, blacklisted_fields=DOCUMENT_BLACKLISTED_FIELDS):
                 if attr_name not in blacklisted_fields:
                     setattr(document, attr_name, getattr(first_document, attr_name))
         #docservice_url = request.registry.docservice_url
+        parsed_url = urlparse(document.url)
+        key = parsed_url.path.replace('/get/', '')
+        document_route = request.matched_route.name.replace("collection_", "")
+        document_path = request.current_route_path(_route_name=document_route, document_id=document.id, _query={'download': key})
+        document.url = '/' + '/'.join(document_path.split('/')[3:])
         return document
     if request.content_type == 'multipart/form-data':
         data = request.validated['file']

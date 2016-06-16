@@ -197,6 +197,10 @@ test_features = [
 ]
 
 
+def generate_docservice_url():
+    return "http://localhost/get/{}?Signature=Signature&KeyID=KeyID&Expires=Expires".format(uuid4().hex)
+
+
 class PrefixedRequestClass(webtest.app.TestRequest):
 
     @classmethod
@@ -400,7 +404,7 @@ class BaseTenderWebTest(BaseWebTest):
                     response = Response()
                     response.status_code = 200
                     response.encoding = 'application/json'
-                    response._content = '"http://localhost/get/{}?Signature=Signature&KeyID=KeyID&Expires=Expires"'.format(uuid4().hex)
+                    response._content = '"{}"'.format(generate_docservice_url())
                     response.reason = '200 OK'
                 return response
 

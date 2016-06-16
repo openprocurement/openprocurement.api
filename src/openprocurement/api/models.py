@@ -382,30 +382,24 @@ class Document(Model):
     @serializable(serialized_name="url")
     def download_url(self):
         url = self.url
-        if 'Signature=' in url and 'KeyID=' in url and 'Expires=' not in url:
+        if '?download=' not in url:
             return url
-        if '?download=' in url:
-            doc_id = parse_qs(urlparse(url).query)['download'][-1]
-        else:
-            doc_id = urlparse(url).path.replace('/get/', '')
-        hidden = False
+        doc_id = parse_qs(urlparse(url).query)['download'][-1]
         root = self.__parent__
         parents = []
         while root.__parent__ is not None:
-            if type(self) != type(root):
-                parents[0:0] = [root]
+            parents[0:0] = [root]
             root = root.__parent__
+        request = root.request
+        if not request.registry.docservice_url:
+            return url
         role = parents[0].status
         if role in type(parents[0])._options.roles:
             for index, obj in enumerate(parents):
                 field = url.split('/')[index * 2 + 3]
                 roles = type(obj)._options.roles
                 if roles[role if role in roles else 'default'](field, []):
-                    hidden = True
-                    break
-        request = root.request
-        if not request.registry.docservice_url or hidden:
-            return url
+                    return url
         from openprocurement.api.utils import generate_docservice_url
         return generate_docservice_url(request, doc_id, False)
 

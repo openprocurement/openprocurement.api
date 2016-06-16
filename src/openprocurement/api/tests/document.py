@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 import unittest
 from email.header import Header
-from openprocurement.api.tests.base import BaseTenderWebTest
+from openprocurement.api.tests.base import BaseTenderWebTest, generate_docservice_url
 
 
 class TenderDocumentResourceTest(BaseTenderWebTest):
@@ -184,6 +184,7 @@ class TenderDocumentResourceTest(BaseTenderWebTest):
         self.assertEqual(u'укр.doc', response.json["data"]["title"])
         doc_id = response.json["data"]['id']
         dateModified = response.json["data"]['dateModified']
+        datePublished = response.json["data"]['datePublished']
         self.assertIn(doc_id, response.headers['Location'])
 
         response = self.app.put('/tenders/{}/documents/{}'.format(
@@ -229,6 +230,7 @@ class TenderDocumentResourceTest(BaseTenderWebTest):
         dateModified2 = response.json["data"]['dateModified']
         self.assertTrue(dateModified < dateModified2)
         self.assertEqual(dateModified, response.json["data"]["previousVersions"][0]['dateModified'])
+        self.assertEqual(response.json["data"]['datePublished'], datePublished)
 
         response = self.app.get('/tenders/{}/documents?all=true'.format(self.tender_id))
         self.assertEqual(response.status, '200 OK')
@@ -380,6 +382,188 @@ class TenderDocumentResourceTest(BaseTenderWebTest):
 
 class TenderDocumentWithDSResourceTest(TenderDocumentResourceTest):
     docservice = True
+
+    def test_create_tender_document_json(self):
+        response = self.app.post_json('/tenders/{}/documents'.format(self.tender_id),
+            {'data': {
+                'title': u'укр.doc',
+                'url': generate_docservice_url(),
+                'md5': '0' * 32,
+                'format': 'application/msword',
+            }})
+        self.assertEqual(response.status, '201 Created')
+        self.assertEqual(response.content_type, 'application/json')
+        doc_id = response.json["data"]['id']
+        self.assertIn(doc_id, response.headers['Location'])
+        self.assertEqual(u'укр.doc', response.json["data"]["title"])
+        self.assertIn('Signature=', response.json["data"]["url"])
+        self.assertIn('KeyID=', response.json["data"]["url"])
+        self.assertNotIn('Expires=', response.json["data"]["url"])
+        key = response.json["data"]["url"].split('/')[-1].split('?')[0]
+        tender = self.db.get(self.tender_id)
+        self.assertIn(key, tender['documents'][-1]["url"])
+        self.assertIn('Signature=', tender['documents'][-1]["url"])
+        self.assertIn('KeyID=', tender['documents'][-1]["url"])
+        self.assertNotIn('Expires=', response.json["data"]["url"])
+
+        response = self.app.get('/tenders/{}/documents'.format(self.tender_id))
+        self.assertEqual(response.status, '200 OK')
+        self.assertEqual(response.content_type, 'application/json')
+        self.assertEqual(doc_id, response.json["data"][0]["id"])
+        self.assertEqual(u'укр.doc', response.json["data"][0]["title"])
+
+        response = self.app.get('/tenders/{}/documents/{}?download=some_id'.format(
+            self.tender_id, doc_id), status=404)
+        self.assertEqual(response.status, '404 Not Found')
+        self.assertEqual(response.content_type, 'application/json')
+        self.assertEqual(response.json['status'], 'error')
+        self.assertEqual(response.json['errors'], [
+            {u'description': u'Not Found', u'location': u'url', u'name': u'download'}
+        ])
+
+        response = self.app.get('/tenders/{}/documents/{}?download={}'.format(
+            self.tender_id, doc_id, key))
+        self.assertEqual(response.status, '302 Moved Temporarily')
+        self.assertIn('http://localhost/get/', response.location)
+        self.assertIn('Signature=', response.location)
+        self.assertIn('KeyID=', response.location)
+        self.assertNotIn('Expires=', response.location)
+
+        response = self.app.get('/tenders/{}/documents/{}'.format(
+            self.tender_id, doc_id))
+        self.assertEqual(response.status, '200 OK')
+        self.assertEqual(response.content_type, 'application/json')
+        self.assertEqual(doc_id, response.json["data"]["id"])
+        self.assertEqual(u'укр.doc', response.json["data"]["title"])
+
+        self.set_status('active.tendering')
+
+        response = self.app.post_json('/tenders/{}/documents'.format(self.tender_id),
+            {'data': {
+                'title': u'укр.doc',
+                'url': generate_docservice_url(),
+                'md5': '0' * 32,
+                'format': 'application/msword',
+            }}, status=403)
+        self.assertEqual(response.status, '403 Forbidden')
+        self.assertEqual(response.content_type, 'application/json')
+        self.assertEqual(response.json['errors'][0]["description"], "Can't add document in current (active.tendering) tender status")
+
+    def test_put_tender_document_json(self):
+        response = self.app.post_json('/tenders/{}/documents'.format(self.tender_id),
+            {'data': {
+                'title': u'укр.doc',
+                'url': generate_docservice_url(),
+                'md5': '0' * 32,
+                'format': 'application/msword',
+            }})
+        self.assertEqual(response.status, '201 Created')
+        self.assertEqual(response.content_type, 'application/json')
+        self.assertEqual(u'укр.doc', response.json["data"]["title"])
+        doc_id = response.json["data"]['id']
+        dateModified = response.json["data"]['dateModified']
+        datePublished = response.json["data"]['datePublished']
+        self.assertIn(doc_id, response.headers['Location'])
+
+        response = self.app.put_json('/tenders/{}/documents/{}'.format(self.tender_id, doc_id),
+            {'data': {
+                'title': u'name.doc',
+                'url': generate_docservice_url(),
+                'md5': '0' * 32,
+                'format': 'application/msword',
+            }})
+        self.assertEqual(response.status, '200 OK')
+        self.assertEqual(response.content_type, 'application/json')
+        self.assertEqual(doc_id, response.json["data"]["id"])
+        self.assertIn('Signature=', response.json["data"]["url"])
+        self.assertIn('KeyID=', response.json["data"]["url"])
+        self.assertNotIn('Expires=', response.json["data"]["url"])
+        key = response.json["data"]["url"].split('/')[-1].split('?')[0]
+        tender = self.db.get(self.tender_id)
+        self.assertIn(key, tender['documents'][-1]["url"])
+        self.assertIn('Signature=', tender['documents'][-1]["url"])
+        self.assertIn('KeyID=', tender['documents'][-1]["url"])
+        self.assertNotIn('Expires=', response.json["data"]["url"])
+
+        response = self.app.get('/tenders/{}/documents/{}?download={}'.format(
+            self.tender_id, doc_id, key))
+        self.assertEqual(response.status, '302 Moved Temporarily')
+        self.assertIn('http://localhost/get/', response.location)
+        self.assertIn('Signature=', response.location)
+        self.assertIn('KeyID=', response.location)
+        self.assertNotIn('Expires=', response.location)
+
+        response = self.app.get('/tenders/{}/documents/{}'.format(
+            self.tender_id, doc_id))
+        self.assertEqual(response.status, '200 OK')
+        self.assertEqual(response.content_type, 'application/json')
+        self.assertEqual(doc_id, response.json["data"]["id"])
+        self.assertEqual(u'укр.doc', response.json["data"]["title"])
+        dateModified2 = response.json["data"]['dateModified']
+        self.assertTrue(dateModified < dateModified2)
+        self.assertEqual(dateModified, response.json["data"]["previousVersions"][0]['dateModified'])
+        self.assertEqual(response.json["data"]['datePublished'], datePublished)
+
+        response = self.app.get('/tenders/{}/documents?all=true'.format(self.tender_id))
+        self.assertEqual(response.status, '200 OK')
+        self.assertEqual(response.content_type, 'application/json')
+        self.assertEqual(dateModified, response.json["data"][0]['dateModified'])
+        self.assertEqual(dateModified2, response.json["data"][1]['dateModified'])
+
+        response = self.app.post_json('/tenders/{}/documents'.format(self.tender_id, doc_id),
+            {'data': {
+                'title': 'name.doc',
+                'url': generate_docservice_url(),
+                'md5': '0' * 32,
+                'format': 'application/msword',
+            }})
+        self.assertEqual(response.status, '201 Created')
+        self.assertEqual(response.content_type, 'application/json')
+        doc_id = response.json["data"]['id']
+        dateModified = response.json["data"]['dateModified']
+        self.assertIn(doc_id, response.headers['Location'])
+
+        response = self.app.get('/tenders/{}/documents'.format(self.tender_id))
+        self.assertEqual(response.status, '200 OK')
+        self.assertEqual(response.content_type, 'application/json')
+        self.assertEqual(dateModified2, response.json["data"][0]['dateModified'])
+        self.assertEqual(dateModified, response.json["data"][1]['dateModified'])
+
+        response = self.app.put_json('/tenders/{}/documents/{}'.format(self.tender_id, doc_id),
+            {'data': {
+                'title': u'укр.doc',
+                'url': generate_docservice_url(),
+                'md5': '0' * 32,
+                'format': 'application/msword',
+            }})
+        self.assertEqual(response.status, '200 OK')
+        self.assertEqual(response.content_type, 'application/json')
+        self.assertEqual(doc_id, response.json["data"]["id"])
+        self.assertIn('Signature=', response.json["data"]["url"])
+        self.assertIn('KeyID=', response.json["data"]["url"])
+        self.assertNotIn('Expires=', response.json["data"]["url"])
+        key = response.json["data"]["url"].split('/')[-1].split('?')[0]
+        tender = self.db.get(self.tender_id)
+        self.assertIn(key, tender['documents'][-1]["url"])
+        self.assertIn('Signature=', tender['documents'][-1]["url"])
+        self.assertIn('KeyID=', tender['documents'][-1]["url"])
+        self.assertNotIn('Expires=', response.json["data"]["url"])
+
+        response = self.app.get('/tenders/{}/documents/{}?download={}'.format(
+            self.tender_id, doc_id, key))
+        self.assertEqual(response.status, '302 Moved Temporarily')
+        self.assertIn('http://localhost/get/', response.location)
+        self.assertIn('Signature=', response.location)
+        self.assertIn('KeyID=', response.location)
+        self.assertNotIn('Expires=', response.location)
+
+        self.set_status('active.tendering')
+
+        response = self.app.put('/tenders/{}/documents/{}'.format(
+            self.tender_id, doc_id), upload_files=[('file', 'name.doc', 'content3')], status=403)
+        self.assertEqual(response.status, '403 Forbidden')
+        self.assertEqual(response.content_type, 'application/json')
+        self.assertEqual(response.json['errors'][0]["description"], "Can't update document in current (active.tendering) tender status")
 
 
 def suite():

@@ -280,15 +280,16 @@ def validate_patch_lot_data(request):
 
 def validate_file_upload(request):
     update_logging_context(request, {'document_id': '__new__'})
-    try:
-        request.json_body
-    except ValueError:
-        pass
-    else:
-        data = validate_json_data(request)
-        if data:
-            model = type(request.tender).documents.model_class
-            return validate_data(request, model)
+    if request.registry.docservice_url:
+        try:
+            request.json_body
+        except ValueError:
+            pass
+        else:
+            data = validate_json_data(request)
+            if data:
+                model = type(request.tender).documents.model_class
+                return validate_data(request, model)
     if 'file' not in request.POST or not hasattr(request.POST['file'], 'filename'):
         request.errors.add('body', 'file', 'Not Found')
         request.errors.status = 404
