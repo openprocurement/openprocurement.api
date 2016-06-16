@@ -4,7 +4,7 @@
 import gevent.monkey
 gevent.monkey.patch_all()
 import os
-from base64 import b64encode, b64decode
+from base64 import b64decode
 from couchdb import Server as CouchdbServer, Session
 from couchdb.http import Unauthorized, extract_credentials
 from logging import getLogger

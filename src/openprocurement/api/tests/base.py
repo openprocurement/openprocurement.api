@@ -5,9 +5,10 @@ import os
 from copy import deepcopy
 from datetime import datetime, timedelta
 from uuid import uuid4
+from requests.models import Response
 
 from openprocurement.api.models import SANDBOX_MODE
-from openprocurement.api.utils import VERSION, apply_data_patch
+from openprocurement.api.utils import VERSION, SESSION, apply_data_patch
 
 
 now = datetime.now()
@@ -229,6 +230,7 @@ class BaseTenderWebTest(BaseWebTest):
     initial_status = None
     initial_bids = None
     initial_lots = None
+    docservice = False
 
     def set_status(self, status, extra=None):
         data = {'status': status}
@@ -390,6 +392,20 @@ class BaseTenderWebTest(BaseWebTest):
     def setUp(self):
         super(BaseTenderWebTest, self).setUp()
         self.create_tender()
+        if self.docservice:
+            self.app.app.registry.docservice_url = 'http://localhost'
+            def request(method, url, **kwargs):
+                response = Response()
+                if method == 'POST' and '/upload' in url:
+                    response = Response()
+                    response.status_code = 200
+                    response.encoding = 'application/json'
+                    response._content = '"http://localhost/get/{}?Signature=Signature&KeyID=KeyID&Expires=Expires"'.format(uuid4().hex)
+                    response.reason = '200 OK'
+                return response
+
+            self._srequest = SESSION.request
+            SESSION.request = request
 
     def create_tender(self):
         data = deepcopy(self.initial_data)
@@ -432,5 +448,7 @@ class BaseTenderWebTest(BaseWebTest):
             self.set_status(self.initial_status)
 
     def tearDown(self):
+        if self.docservice:
+            SESSION.request = self._srequest
         del self.db[self.tender_id]
         super(BaseTenderWebTest, self).tearDown()

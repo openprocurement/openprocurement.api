@@ -2,12 +2,9 @@
 import unittest
 from email.header import Header
 from openprocurement.api.tests.base import BaseTenderWebTest
-from openprocurement.api.utils import SESSION
-from uuid import uuid4
 
 
 class TenderDocumentResourceTest(BaseTenderWebTest):
-    docservice = False
 
     def test_not_found(self):
         response = self.app.get('/tenders/some_id/documents', status=404)
@@ -89,13 +86,33 @@ class TenderDocumentResourceTest(BaseTenderWebTest):
         doc_id = response.json["data"]['id']
         self.assertIn(doc_id, response.headers['Location'])
         self.assertEqual(u'укр.doc', response.json["data"]["title"])
-        key = response.json["data"]["url"].split('?')[-1].split('=')[-1]
+        if self.docservice:
+            self.assertIn('Signature=', response.json["data"]["url"])
+            self.assertIn('KeyID=', response.json["data"]["url"])
+            self.assertNotIn('Expires=', response.json["data"]["url"])
+            key = response.json["data"]["url"].split('/')[-1].split('?')[0]
+            tender = self.db.get(self.tender_id)
+            self.assertIn(key, tender['documents'][-1]["url"])
+            self.assertIn('Signature=', tender['documents'][-1]["url"])
+            self.assertIn('KeyID=', tender['documents'][-1]["url"])
+            self.assertNotIn('Expires=', response.json["data"]["url"])
+        else:
+            key = response.json["data"]["url"].split('?')[-1].split('=')[-1]
 
         response = self.app.get('/tenders/{}/documents'.format(self.tender_id))
         self.assertEqual(response.status, '200 OK')
         self.assertEqual(response.content_type, 'application/json')
         self.assertEqual(doc_id, response.json["data"][0]["id"])
         self.assertEqual(u'укр.doc', response.json["data"][0]["title"])
+
+        response = self.app.get('/tenders/{}/documents/{}?download=some_id'.format(
+            self.tender_id, doc_id), status=404)
+        self.assertEqual(response.status, '404 Not Found')
+        self.assertEqual(response.content_type, 'application/json')
+        self.assertEqual(response.json['status'], 'error')
+        self.assertEqual(response.json['errors'], [
+            {u'description': u'Not Found', u'location': u'url', u'name': u'download'}
+        ])
 
         if self.docservice:
             response = self.app.get('/tenders/{}/documents/{}?download={}'.format(
@@ -104,17 +121,8 @@ class TenderDocumentResourceTest(BaseTenderWebTest):
             self.assertIn('http://localhost/get/', response.location)
             self.assertIn('Signature=', response.location)
             self.assertIn('KeyID=', response.location)
-            self.assertIn('Expires=', response.location)
+            self.assertNotIn('Expires=', response.location)
         else:
-            response = self.app.get('/tenders/{}/documents/{}?download=some_id'.format(
-                self.tender_id, doc_id), status=404)
-            self.assertEqual(response.status, '404 Not Found')
-            self.assertEqual(response.content_type, 'application/json')
-            self.assertEqual(response.json['status'], 'error')
-            self.assertEqual(response.json['errors'], [
-                {u'description': u'Not Found', u'location': u'url', u'name': u'download'}
-            ])
-
             response = self.app.get('/tenders/{}/documents/{}?download={}'.format(
                 self.tender_id, doc_id, key))
             self.assertEqual(response.status, '200 OK')
@@ -183,7 +191,18 @@ class TenderDocumentResourceTest(BaseTenderWebTest):
         self.assertEqual(response.status, '200 OK')
         self.assertEqual(response.content_type, 'application/json')
         self.assertEqual(doc_id, response.json["data"]["id"])
-        key = response.json["data"]["url"].split('?')[-1].split('=')[-1]
+        if self.docservice:
+            self.assertIn('Signature=', response.json["data"]["url"])
+            self.assertIn('KeyID=', response.json["data"]["url"])
+            self.assertNotIn('Expires=', response.json["data"]["url"])
+            key = response.json["data"]["url"].split('/')[-1].split('?')[0]
+            tender = self.db.get(self.tender_id)
+            self.assertIn(key, tender['documents'][-1]["url"])
+            self.assertIn('Signature=', tender['documents'][-1]["url"])
+            self.assertIn('KeyID=', tender['documents'][-1]["url"])
+            self.assertNotIn('Expires=', response.json["data"]["url"])
+        else:
+            key = response.json["data"]["url"].split('?')[-1].split('=')[-1]
 
         if self.docservice:
             response = self.app.get('/tenders/{}/documents/{}?download={}'.format(
@@ -192,7 +211,7 @@ class TenderDocumentResourceTest(BaseTenderWebTest):
             self.assertIn('http://localhost/get/', response.location)
             self.assertIn('Signature=', response.location)
             self.assertIn('KeyID=', response.location)
-            self.assertIn('Expires=', response.location)
+            self.assertNotIn('Expires=', response.location)
         else:
             response = self.app.get('/tenders/{}/documents/{}?download={}'.format(
                 self.tender_id, doc_id, key))
@@ -246,7 +265,18 @@ class TenderDocumentResourceTest(BaseTenderWebTest):
         self.assertEqual(response.status, '200 OK')
         self.assertEqual(response.content_type, 'application/json')
         self.assertEqual(doc_id, response.json["data"]["id"])
-        key = response.json["data"]["url"].split('?')[-1].split('=')[-1]
+        if self.docservice:
+            self.assertIn('Signature=', response.json["data"]["url"])
+            self.assertIn('KeyID=', response.json["data"]["url"])
+            self.assertNotIn('Expires=', response.json["data"]["url"])
+            key = response.json["data"]["url"].split('/')[-1].split('?')[0]
+            tender = self.db.get(self.tender_id)
+            self.assertIn(key, tender['documents'][-1]["url"])
+            self.assertIn('Signature=', tender['documents'][-1]["url"])
+            self.assertIn('KeyID=', tender['documents'][-1]["url"])
+            self.assertNotIn('Expires=', response.json["data"]["url"])
+        else:
+            key = response.json["data"]["url"].split('?')[-1].split('=')[-1]
 
         if self.docservice:
             response = self.app.get('/tenders/{}/documents/{}?download={}'.format(
@@ -255,7 +285,7 @@ class TenderDocumentResourceTest(BaseTenderWebTest):
             self.assertIn('http://localhost/get/', response.location)
             self.assertIn('Signature=', response.location)
             self.assertIn('KeyID=', response.location)
-            self.assertIn('Expires=', response.location)
+            self.assertNotIn('Expires=', response.location)
         else:
             response = self.app.get('/tenders/{}/documents/{}?download={}'.format(
                 self.tender_id, doc_id, key))
@@ -348,35 +378,14 @@ class TenderDocumentResourceTest(BaseTenderWebTest):
         self.assertEqual(response.json['errors'][0]["description"], "Can't update document in current (active.tendering) tender status")
 
 
-class TenderDocumentWithS3ResourceTest(TenderDocumentResourceTest):
+class TenderDocumentWithDSResourceTest(TenderDocumentResourceTest):
     docservice = True
-
-    def setUp(self):
-        super(TenderDocumentWithS3ResourceTest, self).setUp()
-        self.app.app.registry.docservice_url = 'http://localhost'
-        def request(method, url, **kwargs):
-            from requests.models import Response
-            response = Response()
-            if method == 'POST' and '/upload' in url:
-                response = Response()
-                response.status_code = 200
-                response.encoding = 'application/json'
-                response._content = '"http://localhost/get/{}?Signature=Signature&KeyID=KeyID&Expires=Expires"'.format(uuid4().hex)
-                response.reason = '200 OK'
-            return response
-
-        self._srequest = SESSION.request
-        SESSION.request = request
-
-    def tearDown(self):
-        SESSION.request = self._srequest
-        super(TenderDocumentWithS3ResourceTest, self).tearDown()
 
 
 def suite():
     suite = unittest.TestSuite()
     suite.addTest(unittest.makeSuite(TenderDocumentResourceTest))
-    suite.addTest(unittest.makeSuite(TenderDocumentWithS3ResourceTest))
+    suite.addTest(unittest.makeSuite(TenderDocumentWithDSResourceTest))
     return suite
 
 

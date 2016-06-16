@@ -14,7 +14,7 @@ from schematics.types.serializable import serializable
 from uuid import uuid4
 from barbecue import vnmax
 from zope.interface import implementer, Interface
-from urlparse import urlparse
+from urlparse import urlparse, parse_qs
 
 STAND_STILL_TIME = timedelta(days=2)
 COMPLAINT_STAND_STILL_TIME = timedelta(days=3)
@@ -346,7 +346,7 @@ class Document(Model):
             'create': blacklist('id', 'datePublished', 'dateModified', 'author', 'download_url'),
             'edit': blacklist('id', 'url', 'datePublished', 'dateModified', 'author', 'md5', 'download_url'),
             'embedded': (blacklist('url', 'download_url') + schematics_embedded_role),
-            'default': blacklist("__parent__", 'download_url'),
+            'default': blacklist("__parent__"),
             'view': (blacklist('revisions') + schematics_default_role),
             'revisions': whitelist('url', 'dateModified'),
         }
@@ -382,16 +382,32 @@ class Document(Model):
     @serializable(serialized_name="url")
     def download_url(self):
         url = self.url
-        if '?download=' in self.url:
-            return self.url
-        parsed_url = urlparse(self.url)
-        doc_id = parsed_url.path.replace('/get/', '')
-        url = '/documents/{}?download={}'.format(self.id, doc_id)
-        model = self
-        while not ITender.providedBy(model):
-            model = model.__parent__
-            url = '/{}s/{}{}'.format(type(model).__name__.lower(), model.id, url)
-        return url
+        if 'Signature=' in url and 'KeyID=' in url and 'Expires=' not in url:
+            return url
+        if '?download=' in url:
+            doc_id = parse_qs(urlparse(url).query)['download'][-1]
+        else:
+            doc_id = urlparse(url).path.replace('/get/', '')
+        hidden = False
+        root = self.__parent__
+        parents = []
+        while root.__parent__ is not None:
+            if type(self) != type(root):
+                parents[0:0] = [root]
+            root = root.__parent__
+        role = parents[0].status
+        if role in type(parents[0])._options.roles:
+            for index, obj in enumerate(parents):
+                field = url.split('/')[index * 2 + 3]
+                roles = type(obj)._options.roles
+                if roles[role if role in roles else 'default'](field, []):
+                    hidden = True
+                    break
+        request = root.request
+        if not request.registry.docservice_url or hidden:
+            return url
+        from openprocurement.api.utils import generate_docservice_url
+        return generate_docservice_url(request, doc_id, False)
 
     def import_data(self, raw_data, **kw):
         """

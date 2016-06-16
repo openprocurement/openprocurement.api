@@ -580,7 +580,7 @@ class TenderBidderDocumentResourceTest(BaseTenderWebTest):
         doc_id = response.json["data"]['id']
         self.assertIn(doc_id, response.headers['Location'])
         self.assertEqual('name.doc', response.json["data"]["title"])
-        key = response.json["data"]["url"].split('?')[-1]
+        key = response.json["data"]["url"].split('?')[-1].split('=')[-1]
 
         response = self.app.get('/tenders/{}/bids/{}/documents'.format(self.tender_id, self.bid_id), status=403)
         self.assertEqual(response.status, '403 Forbidden')
@@ -608,18 +608,27 @@ class TenderBidderDocumentResourceTest(BaseTenderWebTest):
             {u'description': u'Not Found', u'location': u'url', u'name': u'download'}
         ])
 
-        response = self.app.get('/tenders/{}/bids/{}/documents/{}?{}'.format(
+        response = self.app.get('/tenders/{}/bids/{}/documents/{}?download={}'.format(
             self.tender_id, self.bid_id, doc_id, key), status=403)
         self.assertEqual(response.status, '403 Forbidden')
         self.assertEqual(response.content_type, 'application/json')
         self.assertEqual(response.json['errors'][0]["description"], "Can't view bid document in current (active.tendering) tender status")
 
-        response = self.app.get('/tenders/{}/bids/{}/documents/{}?{}&acc_token={}'.format(
-            self.tender_id, self.bid_id, doc_id, key, self.bid_token))
-        self.assertEqual(response.status, '200 OK')
-        self.assertEqual(response.content_type, 'application/msword')
-        self.assertEqual(response.content_length, 7)
-        self.assertEqual(response.body, 'content')
+        if self.docservice:
+            response = self.app.get('/tenders/{}/bids/{}/documents/{}?download={}&acc_token={}'.format(
+                self.tender_id, self.bid_id, doc_id, key, self.bid_token))
+            self.assertEqual(response.status, '302 Moved Temporarily')
+            self.assertIn('http://localhost/get/', response.location)
+            self.assertIn('Signature=', response.location)
+            self.assertIn('KeyID=', response.location)
+            self.assertIn('Expires=', response.location)
+        else:
+            response = self.app.get('/tenders/{}/bids/{}/documents/{}?download={}&acc_token={}'.format(
+                self.tender_id, self.bid_id, doc_id, key, self.bid_token))
+            self.assertEqual(response.status, '200 OK')
+            self.assertEqual(response.content_type, 'application/msword')
+            self.assertEqual(response.content_length, 7)
+            self.assertEqual(response.body, 'content')
 
         response = self.app.get('/tenders/{}/bids/{}/documents/{}'.format(
             self.tender_id, self.bid_id, doc_id), status=403)
@@ -641,6 +650,29 @@ class TenderBidderDocumentResourceTest(BaseTenderWebTest):
         self.assertEqual(response.status, '403 Forbidden')
         self.assertEqual(response.content_type, 'application/json')
         self.assertEqual(response.json['errors'][0]["description"], "Can't add document in current (active.awarded) tender status")
+
+        response = self.app.get('/tenders/{}/bids/{}/documents/{}'.format(self.tender_id, self.bid_id, doc_id))
+        self.assertEqual(response.status, '200 OK')
+        if self.docservice:
+            self.assertIn('http://localhost/get/', response.json['data']['url'])
+            self.assertIn('Signature=', response.json['data']['url'])
+            self.assertIn('KeyID=', response.json['data']['url'])
+            self.assertNotIn('Expires=', response.json['data']['url'])
+        else:
+            self.assertIn('download=', response.json['data']['url'])
+
+        response = self.app.get('/tenders/{}/bids/{}/documents/{}?download={}&acc_token={}'.format(
+            self.tender_id, self.bid_id, doc_id, key, self.bid_token))
+        if self.docservice:
+            self.assertIn('http://localhost/get/', response.location)
+            self.assertIn('Signature=', response.location)
+            self.assertIn('KeyID=', response.location)
+            self.assertIn('Expires=', response.location)
+        else:
+            self.assertEqual(response.status, '200 OK')
+            self.assertEqual(response.content_type, 'application/msword')
+            self.assertEqual(response.content_length, 7)
+            self.assertEqual(response.body, 'content')
 
     def test_put_tender_bidder_document(self):
         response = self.app.post('/tenders/{}/bids/{}/documents'.format(
@@ -670,10 +702,17 @@ class TenderBidderDocumentResourceTest(BaseTenderWebTest):
 
         response = self.app.get('/tenders/{}/bids/{}/documents/{}?{}&acc_token={}'.format(
             self.tender_id, self.bid_id, doc_id, key, self.bid_token))
-        self.assertEqual(response.status, '200 OK')
-        self.assertEqual(response.content_type, 'application/msword')
-        self.assertEqual(response.content_length, 8)
-        self.assertEqual(response.body, 'content2')
+        if self.docservice:
+            self.assertEqual(response.status, '302 Moved Temporarily')
+            self.assertIn('http://localhost/get/', response.location)
+            self.assertIn('Signature=', response.location)
+            self.assertIn('KeyID=', response.location)
+            self.assertIn('Expires=', response.location)
+        else:
+            self.assertEqual(response.status, '200 OK')
+            self.assertEqual(response.content_type, 'application/msword')
+            self.assertEqual(response.content_length, 8)
+            self.assertEqual(response.body, 'content2')
 
         response = self.app.get('/tenders/{}/bids/{}/documents/{}?acc_token={}'.format(
             self.tender_id, self.bid_id, doc_id, self.bid_token))
@@ -691,10 +730,17 @@ class TenderBidderDocumentResourceTest(BaseTenderWebTest):
 
         response = self.app.get('/tenders/{}/bids/{}/documents/{}?{}&acc_token={}'.format(
             self.tender_id, self.bid_id, doc_id, key, self.bid_token))
-        self.assertEqual(response.status, '200 OK')
-        self.assertEqual(response.content_type, 'application/msword')
-        self.assertEqual(response.content_length, 8)
-        self.assertEqual(response.body, 'content3')
+        if self.docservice:
+            self.assertEqual(response.status, '302 Moved Temporarily')
+            self.assertIn('http://localhost/get/', response.location)
+            self.assertIn('Signature=', response.location)
+            self.assertIn('KeyID=', response.location)
+            self.assertIn('Expires=', response.location)
+        else:
+            self.assertEqual(response.status, '200 OK')
+            self.assertEqual(response.content_type, 'application/msword')
+            self.assertEqual(response.content_length, 8)
+            self.assertEqual(response.body, 'content3')
 
         self.set_status('active.awarded')
 
@@ -786,9 +832,14 @@ class TenderBidderDocumentResourceTest(BaseTenderWebTest):
         self.assertEqual(response.json['errors'][0]["description"], "Can't add document because award of bid is not in pending state")
 
 
+class TenderBidderDocumentWithDSResourceTest(TenderBidderDocumentResourceTest):
+    docservice = True
+
+
 def suite():
     suite = unittest.TestSuite()
     suite.addTest(unittest.makeSuite(TenderBidderDocumentResourceTest))
+    suite.addTest(unittest.makeSuite(TenderBidderDocumentWithDSResourceTest))
     suite.addTest(unittest.makeSuite(TenderBidderFeaturesResourceTest))
     suite.addTest(unittest.makeSuite(TenderBidderResourceTest))
     return suite

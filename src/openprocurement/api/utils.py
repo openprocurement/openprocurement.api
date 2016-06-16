@@ -17,7 +17,7 @@ from rfc6266 import build_header
 from schematics.exceptions import ModelValidationError
 from time import sleep, time as ttime
 from urllib import quote, urlencode
-from urlparse import urlparse, parse_qs, urljoin, urlunsplit
+from urlparse import urlparse, urljoin, urlunsplit
 from uuid import uuid4
 from webob.multidict import NestedMultiDict
 from pyramid.exceptions import URLDecodeError
@@ -74,6 +74,21 @@ def get_filename(data):
         return header[0]
 
 
+def generate_docservice_url(request, doc_id, temporary=True):
+    docservice_key = getattr(request.registry, 'docservice_key', None)
+    parsed_url = urlparse(request.registry.docservice_url)
+    query = {}
+    if temporary:
+        expires = int(ttime()) + 300  # EXPIRES
+        mess = "{}\0{}".format(doc_id, expires)
+        query['Expires'] = expires
+    else:
+        mess = doc_id
+    query['Signature'] = quote(b64encode(docservice_key.sign(mess)))
+    query['KeyID'] = docservice_key.get_pubkey().encode('hex')[2:10]
+    return urlunsplit((parsed_url.scheme, parsed_url.netloc, '/get/{}'.format(doc_id), urlencode(query), ''))
+
+
 def upload_file(request, blacklisted_fields=DOCUMENT_BLACKLISTED_FIELDS):
     first_document = request.validated['documents'][0] if 'documents' in request.validated and request.validated['documents'] else None
     if 'data' in request.validated and request.validated['data']:
@@ -82,7 +97,7 @@ def upload_file(request, blacklisted_fields=DOCUMENT_BLACKLISTED_FIELDS):
             for attr_name in type(first_document)._fields:
                 if attr_name not in blacklisted_fields:
                     setattr(document, attr_name, getattr(first_document, attr_name))
-        docservice_url = request.registry.docservice_url
+        #docservice_url = request.registry.docservice_url
         return document
     if request.content_type == 'multipart/form-data':
         data = request.validated['file']
@@ -132,12 +147,10 @@ def upload_file(request, blacklisted_fields=DOCUMENT_BLACKLISTED_FIELDS):
             request.errors.status = 422
             raise error_handler(request.errors)
         parsed_url = urlparse(doc_url)
-        doc_id = parsed_url.path.replace('/get/', '')
-        docservice_key = getattr(request.registry, 'docservice_key', None)
-        signature = quote(b64encode(docservice_key.sign(doc_id)))
-        key_id = docservice_key.get_pubkey().encode('hex')[2:10]
-        query = urlencode({'Signature': signature, 'KeyID': key_id})
-        document.url = urlunsplit((parsed_url.scheme, parsed_url.netloc, parsed_url.path, query, ''))
+        key = parsed_url.path.replace('/get/', '')
+        document_route = request.matched_route.name.replace("collection_", "")
+        document_path = request.current_route_path(_route_name=document_route, document_id=document.id, _query={'download': key})
+        document.url = '/' + '/'.join(document_path.split('/')[3:])
     else:
         key = generate_id()
         document_route = request.matched_route.name.replace("collection_", "")
@@ -160,18 +173,19 @@ def get_file(request):
     tender_id = request.validated['tender_id']
     document = request.validated['document']
     key = request.params.get('download')
+    if not any([key in i.url for i in request.validated['documents']]):
+        request.errors.add('url', 'download', 'Not Found')
+        request.errors.status = 404
+        return
     filename = "{}_{}".format(document.id, key)
     if request.registry.docservice_url and filename not in request.validated['tender']['_attachments']:
-        docservice_url = request.registry.docservice_url
-        docservice_key = getattr(request.registry, 'docservice_key', None)
-        parsed_url = urlparse(document.url)
-        doc_id = parsed_url.path.replace('/get/', '')
-        expires = int(ttime()) + 300  # EXPIRES
-        mess = "{}\0{}".format(doc_id, expires)
-        signature = quote(b64encode(docservice_key.sign(mess)))
-        key_id = docservice_key.get_pubkey().encode('hex')[2:10]
-        query = urlencode({'Signature': signature, 'Expires': expires, 'KeyID': key_id})
-        url = urlunsplit((parsed_url.scheme, parsed_url.netloc, parsed_url.path, query, ''))
+        document = [i for i in request.validated['documents'] if key in i.url][-1]
+        if 'Signature=' in document.url and 'KeyID' in document.url:
+            url = document.url
+        else:
+            if 'download=' not in document.url:
+                key = urlparse(document.url).path.replace('/get/', '')
+            url = generate_docservice_url(request, key)
         request.response.content_type = document.format.encode('utf-8')
         request.response.content_disposition = build_header(document.title, filename_compat=quote(document.title.encode('utf-8')))
         request.response.status = '302 Moved Temporarily'
@@ -820,7 +834,6 @@ def calculate_business_date(date_obj, timedelta_obj, context=None, working_days=
         if re_obj and 'accelerator' in re_obj.groupdict():
             return date_obj + (timedelta_obj / int(re_obj.groupdict()['accelerator']))
     if working_days:
-        date = date_obj
         if timedelta_obj > timedelta():
             if date_obj.weekday() in [5, 6] and WORKING_DAYS.get(date_obj.date().isoformat(), True) or WORKING_DAYS.get(date_obj.date().isoformat(), False):
                 date_obj = datetime.combine(date_obj.date(), time(0, tzinfo=date_obj.tzinfo)) + timedelta(1)
