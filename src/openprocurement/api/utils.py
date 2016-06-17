@@ -74,7 +74,7 @@ def get_filename(data):
         return header[0]
 
 
-def generate_docservice_url(request, doc_id, temporary=True):
+def generate_docservice_url(request, doc_id, temporary=True, prefix=None):
     docservice_key = getattr(request.registry, 'docservice_key', None)
     parsed_url = urlparse(request.registry.docservice_url)
     query = {}
@@ -84,6 +84,9 @@ def generate_docservice_url(request, doc_id, temporary=True):
         query['Expires'] = expires
     else:
         mess = doc_id
+    if prefix:
+        mess = '{}/{}'.format(prefix, mess)
+        query['Prefix'] = prefix
     query['Signature'] = quote(b64encode(docservice_key.sign(mess)))
     query['KeyID'] = docservice_key.get_pubkey().encode('hex')[2:10]
     return urlunsplit((parsed_url.scheme, parsed_url.netloc, '/get/{}'.format(doc_id), urlencode(query), ''))
@@ -93,13 +96,19 @@ def upload_file(request, blacklisted_fields=DOCUMENT_BLACKLISTED_FIELDS):
     first_document = request.validated['documents'][0] if 'documents' in request.validated and request.validated['documents'] else None
     if 'data' in request.validated and request.validated['data']:
         document = request.validated['document']
+        if not document.url or not document.url.startswith(request.registry.docservice_url) or len(urlparse(document.url).path.split('/')) != 3:
+            request.errors.add('body', 'url', "Can add document only from document service.")
+            request.errors.status = 403
+            raise error_handler(request.errors)
+        if not document.md5:
+            request.errors.add('body', 'md5', "This field is required.")
+            request.errors.status = 422
+            raise error_handler(request.errors)
         if first_document:
             for attr_name in type(first_document)._fields:
                 if attr_name not in blacklisted_fields:
                     setattr(document, attr_name, getattr(first_document, attr_name))
-        #docservice_url = request.registry.docservice_url
-        parsed_url = urlparse(document.url)
-        key = parsed_url.path.replace('/get/', '')
+        key = urlparse(document.url).path.split('/')[-1]
         document_route = request.matched_route.name.replace("collection_", "")
         document_path = request.current_route_path(_route_name=document_route, document_id=document.id, _query={'download': key})
         document.url = '/' + '/'.join(document_path.split('/')[3:])
@@ -133,26 +142,26 @@ def upload_file(request, blacklisted_fields=DOCUMENT_BLACKLISTED_FIELDS):
         files = {'file': (filename, in_file, content_type)}
         doc_url = None
         index = 10
-        while not doc_url and index:
+        while index:
             try:
                 r = SESSION.post(url,
                                 files=files,
                                 headers={'X-Client-Request-ID': request.environ.get('REQUEST_ID', '')},
                                 #auth=(api_token, '')
                                 )
+                json_data = r.json()
             except:
                 pass
             else:
-                if r.status_code == 200:
-                    doc_url = r.json()
+                if r.status_code == 200 and json_data.get('data', {}).get('url'):
+                    doc_url = json_data['data']['url']
                     break
             index -= 1
         else:
-            request.errors.add('body', 'data', 'cant upload document')
+            request.errors.add('body', 'data', "Can't upload document to document service.")
             request.errors.status = 422
             raise error_handler(request.errors)
-        parsed_url = urlparse(doc_url)
-        key = parsed_url.path.replace('/get/', '')
+        key = urlparse(doc_url).path.split('/')[-1]
         document_route = request.matched_route.name.replace("collection_", "")
         document_path = request.current_route_path(_route_name=document_route, document_id=document.id, _query={'download': key})
         document.url = '/' + '/'.join(document_path.split('/')[3:])
@@ -190,7 +199,10 @@ def get_file(request):
         else:
             if 'download=' not in document.url:
                 key = urlparse(document.url).path.replace('/get/', '')
-            url = generate_docservice_url(request, key)
+            if not document.md5:
+                url = generate_docservice_url(request, key, prefix='{}/{}'.format(request.validated['tender_id'], document.id))
+            else:
+                url = generate_docservice_url(request, key)
         request.response.content_type = document.format.encode('utf-8')
         request.response.content_disposition = build_header(document.title, filename_compat=quote(document.title.encode('utf-8')))
         request.response.status = '302 Moved Temporarily'

@@ -383,11 +383,43 @@ class TenderDocumentResourceTest(BaseTenderWebTest):
 class TenderDocumentWithDSResourceTest(TenderDocumentResourceTest):
     docservice = True
 
-    def test_create_tender_document_json(self):
+    def test_create_tender_document_json_invalid(self):
         response = self.app.post_json('/tenders/{}/documents'.format(self.tender_id),
             {'data': {
                 'title': u'укр.doc',
                 'url': generate_docservice_url(),
+                'format': 'application/msword',
+            }}, status=422)
+        self.assertEqual(response.status, '422 Unprocessable Entity')
+        self.assertEqual(response.content_type, 'application/json')
+        self.assertEqual(response.json['errors'][0]["description"], "This field is required.")
+
+        response = self.app.post_json('/tenders/{}/documents'.format(self.tender_id),
+            {'data': {
+                'title': u'укр.doc',
+                'md5': '0' * 32,
+                'format': 'application/msword',
+            }}, status=403)
+        self.assertEqual(response.status, '403 Forbidden')
+        self.assertEqual(response.content_type, 'application/json')
+        self.assertEqual(response.json['errors'][0]["description"], "Can add document only from document service.")
+
+        response = self.app.post_json('/tenders/{}/documents'.format(self.tender_id),
+            {'data': {
+                'title': u'укр.doc',
+                'url': '/'.join(generate_docservice_url().split('/')[:4]),
+                'md5': '0' * 32,
+                'format': 'application/msword',
+            }}, status=403)
+        self.assertEqual(response.status, '403 Forbidden')
+        self.assertEqual(response.content_type, 'application/json')
+        self.assertEqual(response.json['errors'][0]["description"], "Can add document only from document service.")
+
+    def test_create_tender_document_json(self):
+        response = self.app.post_json('/tenders/{}/documents'.format(self.tender_id),
+            {'data': {
+                'title': u'укр.doc',
+                'url': generate_docservice_url().replace('/get/', '/upload/'),
                 'md5': '0' * 32,
                 'format': 'application/msword',
             }})
@@ -559,8 +591,13 @@ class TenderDocumentWithDSResourceTest(TenderDocumentResourceTest):
 
         self.set_status('active.tendering')
 
-        response = self.app.put('/tenders/{}/documents/{}'.format(
-            self.tender_id, doc_id), upload_files=[('file', 'name.doc', 'content3')], status=403)
+        response = self.app.put_json('/tenders/{}/documents/{}'.format(self.tender_id, doc_id),
+            {'data': {
+                'title': u'укр.doc',
+                'url': generate_docservice_url(),
+                'md5': '0' * 32,
+                'format': 'application/msword',
+            }}, status=403)
         self.assertEqual(response.status, '403 Forbidden')
         self.assertEqual(response.content_type, 'application/json')
         self.assertEqual(response.json['errors'][0]["description"], "Can't update document in current (active.tendering) tender status")

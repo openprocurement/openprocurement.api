@@ -1004,8 +1004,13 @@ class TenderBidderDocumentWithDSResourceTest(TenderBidderDocumentResourceTest):
 
         self.set_status('active.awarded')
 
-        response = self.app.put('/tenders/{}/bids/{}/documents/{}'.format(
-            self.tender_id, self.bid_id, doc_id), upload_files=[('file', 'name.doc', 'content3')], status=403)
+        response = self.app.put_json('/tenders/{}/bids/{}/documents/{}'.format(self.tender_id, self.bid_id, doc_id),
+            {'data': {
+                'title': 'name.doc',
+                'url': generate_docservice_url().split('?')[0],
+                'md5': '0' * 32,
+                'format': 'application/msword',
+            }}, status=403)
         self.assertEqual(response.status, '403 Forbidden')
         self.assertEqual(response.content_type, 'application/json')
         self.assertEqual(response.json['errors'][0]["description"], "Can't update document in current (active.awarded) tender status")

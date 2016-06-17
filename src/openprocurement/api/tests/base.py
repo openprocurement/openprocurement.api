@@ -401,10 +401,11 @@ class BaseTenderWebTest(BaseWebTest):
             def request(method, url, **kwargs):
                 response = Response()
                 if method == 'POST' and '/upload' in url:
+                    url = generate_docservice_url()
                     response = Response()
                     response.status_code = 200
                     response.encoding = 'application/json'
-                    response._content = '"{}"'.format(generate_docservice_url())
+                    response._content = '{{"data":{{"url":"{url}","md5":"{md5}"}},"get_url":"{url}"}}'.format(url=url, md5='0'*32)
                     response.reason = '200 OK'
                 return response
 

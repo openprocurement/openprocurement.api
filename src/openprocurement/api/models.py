@@ -382,7 +382,7 @@ class Document(Model):
     @serializable(serialized_name="url")
     def download_url(self):
         url = self.url
-        if '?download=' not in url:
+        if not url or '?download=' not in url:
             return url
         doc_id = parse_qs(urlparse(url).query)['download'][-1]
         root = self.__parent__
@@ -401,6 +401,8 @@ class Document(Model):
                 if roles[role if role in roles else 'default'](field, []):
                     return url
         from openprocurement.api.utils import generate_docservice_url
+        if not self.md5:
+            return generate_docservice_url(request, doc_id, False, '{}/{}'.format(parents[0].id, self.id))
         return generate_docservice_url(request, doc_id, False)
 
     def import_data(self, raw_data, **kw):
