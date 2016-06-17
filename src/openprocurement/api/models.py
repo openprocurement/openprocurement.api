@@ -554,7 +554,7 @@ class Bid(Model):
     documents = ListType(ModelType(Document), default=list())
     participationUrl = URLType()
     owner_token = StringType()
-    transfer_token = StringType(default=lambda: uuid4().hex)
+    transfer_token = StringType()
     owner = StringType()
 
     __name__ = ''
@@ -682,7 +682,7 @@ class Complaint(Model):
     documents = ListType(ModelType(Document), default=list())
     type = StringType(choices=['claim', 'complaint'], default='claim')  # 'complaint' if status in ['pending'] or 'claim' if status in ['draft', 'claim', 'answered']
     owner_token = StringType()
-    transfer_token = StringType(default=lambda: uuid4().hex)
+    transfer_token = StringType()
     owner = StringType()
     relatedLot = MD5Type()
     # complainant
@@ -1006,7 +1006,7 @@ auction_view_role = whitelist('tenderID', 'dateModified', 'bids', 'auctionPeriod
 auction_post_role = whitelist('bids')
 auction_patch_role = whitelist('auctionUrl', 'bids', 'lots')
 enquiries_role = (blacklist('transfer_token', 'owner_token', '_attachments', 'revisions', 'bids', 'numberOfBids') + schematics_embedded_role)
-auction_role = (blacklist('owner_token', '_attachments', 'revisions', 'bids', 'numberOfBids') + schematics_embedded_role)
+auction_role = (blacklist('transfer_token', 'owner_token', '_attachments', 'revisions', 'bids', 'numberOfBids') + schematics_embedded_role)
 #chronograph_role = whitelist('status', 'enquiryPeriod', 'tenderPeriod', 'auctionPeriod', 'awardPeriod', 'lots')
 chronograph_role = whitelist('auctionPeriod', 'lots', 'next_check')
 chronograph_view_role = whitelist('status', 'enquiryPeriod', 'tenderPeriod', 'auctionPeriod', 'awardPeriod', 'awards', 'lots', 'doc_id', 'submissionMethodDetails', 'mode', 'numberOfBids', 'complaints')
@@ -1110,7 +1110,7 @@ class Tender(SchematicsDocument, Model):
     _attachments = DictType(DictType(BaseType), default=dict())  # couchdb attachments
     dateModified = IsoDateTimeType()
     owner_token = StringType()
-    transfer_token = StringType(default=lambda: uuid4().hex)
+    transfer_token = StringType()
     owner = StringType()
 
     procurementMethodType = StringType(default="belowThreshold")
