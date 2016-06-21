@@ -107,6 +107,7 @@ class TenderCancellationResourceTest(BaseTenderWebTest):
         cancellation = response.json['data']
         self.assertEqual(cancellation['reason'], 'cancellation reason')
         self.assertIn('id', cancellation)
+        self.assertIn('date', cancellation)
         self.assertIn(cancellation['id'], response.headers['Location'])
 
         response = self.app.get('/tenders/{}'.format(self.tender_id))
@@ -122,6 +123,7 @@ class TenderCancellationResourceTest(BaseTenderWebTest):
         self.assertEqual(cancellation['reason'], 'cancellation reason')
         self.assertEqual(cancellation['status'], 'active')
         self.assertIn('id', cancellation)
+        self.assertIn('date', cancellation)
         self.assertIn(cancellation['id'], response.headers['Location'])
 
         response = self.app.get('/tenders/{}'.format(self.tender_id))
@@ -142,11 +144,14 @@ class TenderCancellationResourceTest(BaseTenderWebTest):
         self.assertEqual(response.status, '201 Created')
         self.assertEqual(response.content_type, 'application/json')
         cancellation = response.json['data']
+        cancellation_create_date = cancellation['date']
 
         response = self.app.patch_json('/tenders/{}/cancellations/{}'.format(self.tender_id, cancellation['id']), {"data": {"status": "active"}})
+        cancellation_activate_date = response.json['data']['date']
         self.assertEqual(response.status, '200 OK')
         self.assertEqual(response.content_type, 'application/json')
         self.assertEqual(response.json['data']["status"], "active")
+        self.assertTrue(cancellation_create_date < cancellation_activate_date)
 
         response = self.app.get('/tenders/{}'.format(self.tender_id))
         self.assertEqual(response.status, '200 OK')
@@ -182,6 +187,7 @@ class TenderCancellationResourceTest(BaseTenderWebTest):
         self.assertEqual(response.content_type, 'application/json')
         self.assertEqual(response.json['data']["status"], "active")
         self.assertEqual(response.json['data']["reason"], "cancellation reason")
+        self.assertEqual(response.json['data']["date"], cancellation_activate_date)
 
     def test_get_tender_cancellation(self):
         response = self.app.post_json('/tenders/{}/cancellations'.format(
@@ -252,6 +258,7 @@ class TenderLotCancellationResourceTest(BaseTenderWebTest):
         cancellation = response.json['data']
         self.assertEqual(cancellation['reason'], 'cancellation reason')
         self.assertIn('id', cancellation)
+        self.assertIn('date', cancellation)
         self.assertIn(cancellation['id'], response.headers['Location'])
 
         response = self.app.get('/tenders/{}'.format(self.tender_id))
@@ -272,6 +279,7 @@ class TenderLotCancellationResourceTest(BaseTenderWebTest):
         self.assertEqual(cancellation['reason'], 'cancellation reason')
         self.assertEqual(cancellation['status'], 'active')
         self.assertIn('id', cancellation)
+        self.assertIn('date', cancellation)
         self.assertIn(cancellation['id'], response.headers['Location'])
 
         response = self.app.get('/tenders/{}'.format(self.tender_id))
@@ -279,6 +287,7 @@ class TenderLotCancellationResourceTest(BaseTenderWebTest):
         self.assertEqual(response.content_type, 'application/json')
         self.assertEqual(response.json['data']['lots'][0]["status"], 'cancelled')
         self.assertEqual(response.json['data']["status"], 'cancelled')
+        self.assertEqual(response.json['data']["cancellations"][-1]['date'], cancellation['date'])
 
         response = self.app.post_json('/tenders/{}/cancellations'.format(
             self.tender_id), {'data': {'reason': 'cancellation reason'}}, status=403)
@@ -296,17 +305,24 @@ class TenderLotCancellationResourceTest(BaseTenderWebTest):
         self.assertEqual(response.status, '201 Created')
         self.assertEqual(response.content_type, 'application/json')
         cancellation = response.json['data']
+        self.assertIn('date', cancellation)
+        cancellation_create_date = cancellation['date']
 
         response = self.app.patch_json('/tenders/{}/cancellations/{}'.format(self.tender_id, cancellation['id']), {"data": {"status": "active"}})
         self.assertEqual(response.status, '200 OK')
         self.assertEqual(response.content_type, 'application/json')
         self.assertEqual(response.json['data']["status"], "active")
+        self.assertIn('date', response.json['data'])
+        cancellation_activate_date = response.json['data']['date']
+        self.assertTrue(cancellation_create_date < cancellation_activate_date)
 
         response = self.app.get('/tenders/{}'.format(self.tender_id))
         self.assertEqual(response.status, '200 OK')
         self.assertEqual(response.content_type, 'application/json')
         self.assertEqual(response.json['data']['lots'][0]["status"], 'cancelled')
         self.assertEqual(response.json['data']["status"], 'cancelled')
+        cancellation_date = response.json['data']['cancellations'][0]['date']
+        self.assertEqual(cancellation_date, cancellation_activate_date)
 
         response = self.app.patch_json('/tenders/{}/cancellations/{}'.format(self.tender_id, cancellation['id']), {"data": {"status": "pending"}}, status=403)
         self.assertEqual(response.status, '403 Forbidden')
@@ -337,6 +353,7 @@ class TenderLotsCancellationResourceTest(BaseTenderWebTest):
         cancellation = response.json['data']
         self.assertEqual(cancellation['reason'], 'cancellation reason')
         self.assertIn('id', cancellation)
+        self.assertIn('date', cancellation)
         self.assertIn(cancellation['id'], response.headers['Location'])
 
         response = self.app.get('/tenders/{}'.format(self.tender_id))
@@ -344,6 +361,10 @@ class TenderLotsCancellationResourceTest(BaseTenderWebTest):
         self.assertEqual(response.content_type, 'application/json')
         self.assertEqual(response.json['data']['lots'][0]["status"], 'active')
         self.assertEqual(response.json['data']["status"], 'active.tendering')
+        self.assertEqual(
+            response.json['data']["cancellations"][0]['date'],
+            cancellation['date']
+        )
 
         response = self.app.post_json('/tenders/{}/cancellations'.format(self.tender_id), {'data': {
             'reason': 'cancellation reason',
@@ -357,6 +378,7 @@ class TenderLotsCancellationResourceTest(BaseTenderWebTest):
         self.assertEqual(cancellation['reason'], 'cancellation reason')
         self.assertEqual(cancellation['status'], 'active')
         self.assertIn('id', cancellation)
+        self.assertIn('date', cancellation)
         self.assertIn(cancellation['id'], response.headers['Location'])
 
         response = self.app.get('/tenders/{}'.format(self.tender_id))
@@ -364,6 +386,10 @@ class TenderLotsCancellationResourceTest(BaseTenderWebTest):
         self.assertEqual(response.content_type, 'application/json')
         self.assertEqual(response.json['data']['lots'][0]["status"], 'cancelled')
         self.assertNotEqual(response.json['data']["status"], 'cancelled')
+        self.assertEqual(
+            response.json['data']["cancellations"][1]['date'],
+            cancellation['date']
+        )
 
         response = self.app.post_json('/tenders/{}/cancellations'.format(self.tender_id), {'data': {
             'reason': 'cancellation reason',
@@ -385,17 +411,22 @@ class TenderLotsCancellationResourceTest(BaseTenderWebTest):
         self.assertEqual(response.status, '201 Created')
         self.assertEqual(response.content_type, 'application/json')
         cancellation = response.json['data']
+        cancellation_date_create = cancellation['date'] 
 
         response = self.app.patch_json('/tenders/{}/cancellations/{}'.format(self.tender_id, cancellation['id']), {"data": {"status": "active"}})
         self.assertEqual(response.status, '200 OK')
         self.assertEqual(response.content_type, 'application/json')
         self.assertEqual(response.json['data']["status"], "active")
+        cancellation_date_activate = response.json['data']['date']
+        self.assertTrue(cancellation_date_create < cancellation_date_activate)
 
         response = self.app.get('/tenders/{}'.format(self.tender_id))
         self.assertEqual(response.status, '200 OK')
         self.assertEqual(response.content_type, 'application/json')
         self.assertEqual(response.json['data']['lots'][0]["status"], 'cancelled')
         self.assertNotEqual(response.json['data']["status"], 'cancelled')
+        tender_cancellation_date = response.json['data']['cancellations'][0]['date']
+        self.assertEqual(cancellation_date_activate, tender_cancellation_date)
 
         response = self.app.patch_json('/tenders/{}/cancellations/{}'.format(self.tender_id, cancellation['id']), {"data": {"status": "pending"}}, status=403)
         self.assertEqual(response.status, '403 Forbidden')
