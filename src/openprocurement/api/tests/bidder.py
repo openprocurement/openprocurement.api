@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 import unittest
 
-from openprocurement.api.tests.base import BaseTenderWebTest, test_tender_data, test_features_tender_data, test_organization, generate_docservice_url
+from openprocurement.api.tests.base import BaseTenderWebTest, test_tender_data, test_features_tender_data, test_organization
 
 
 class TenderBidderResourceTest(BaseTenderWebTest):
@@ -839,7 +839,7 @@ class TenderBidderDocumentWithDSResourceTest(TenderBidderDocumentResourceTest):
         response = self.app.post_json('/tenders/{}/bids/{}/documents'.format(self.tender_id, self.bid_id),
             {'data': {
                 'title': 'name.doc',
-                'url': generate_docservice_url().split('?')[0],
+                'url': self.generate_docservice_url(),
                 'md5': '0' * 32,
                 'format': 'application/msword',
             }})
@@ -906,7 +906,7 @@ class TenderBidderDocumentWithDSResourceTest(TenderBidderDocumentResourceTest):
         response = self.app.post_json('/tenders/{}/bids/{}/documents'.format(self.tender_id, self.bid_id),
             {'data': {
                 'title': 'name.doc',
-                'url': generate_docservice_url(),
+                'url': self.generate_docservice_url(),
                 'md5': '0' * 32,
                 'format': 'application/msword',
             }})
@@ -920,7 +920,7 @@ class TenderBidderDocumentWithDSResourceTest(TenderBidderDocumentResourceTest):
         response = self.app.post_json('/tenders/{}/bids/{}/documents'.format(self.tender_id, self.bid_id),
             {'data': {
                 'title': 'name.doc',
-                'url': generate_docservice_url().split('?')[0],
+                'url': self.generate_docservice_url(),
                 'md5': '0' * 32,
                 'format': 'application/msword',
             }}, status=403)
@@ -946,7 +946,7 @@ class TenderBidderDocumentWithDSResourceTest(TenderBidderDocumentResourceTest):
         response = self.app.post_json('/tenders/{}/bids/{}/documents'.format(self.tender_id, self.bid_id),
             {'data': {
                 'title': 'name.doc',
-                'url': generate_docservice_url().split('?')[0],
+                'url': self.generate_docservice_url(),
                 'md5': '0' * 32,
                 'format': 'application/msword',
             }})
@@ -958,7 +958,7 @@ class TenderBidderDocumentWithDSResourceTest(TenderBidderDocumentResourceTest):
         response = self.app.put_json('/tenders/{}/bids/{}/documents/{}'.format(self.tender_id, self.bid_id, doc_id),
             {'data': {
                 'title': 'name.doc',
-                'url': generate_docservice_url().split('?')[0],
+                'url': self.generate_docservice_url(),
                 'md5': '0' * 32,
                 'format': 'application/msword',
             }})
@@ -985,7 +985,7 @@ class TenderBidderDocumentWithDSResourceTest(TenderBidderDocumentResourceTest):
         response = self.app.put_json('/tenders/{}/bids/{}/documents/{}'.format(self.tender_id, self.bid_id, doc_id),
             {'data': {
                 'title': 'name.doc',
-                'url': generate_docservice_url().split('?')[0],
+                'url': self.generate_docservice_url(),
                 'md5': '0' * 32,
                 'format': 'application/msword',
             }})
@@ -1007,7 +1007,7 @@ class TenderBidderDocumentWithDSResourceTest(TenderBidderDocumentResourceTest):
         response = self.app.put_json('/tenders/{}/bids/{}/documents/{}'.format(self.tender_id, self.bid_id, doc_id),
             {'data': {
                 'title': 'name.doc',
-                'url': generate_docservice_url().split('?')[0],
+                'url': self.generate_docservice_url(),
                 'md5': '0' * 32,
                 'format': 'application/msword',
             }}, status=403)

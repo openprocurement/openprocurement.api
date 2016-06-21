@@ -4,7 +4,7 @@
 import gevent.monkey
 gevent.monkey.patch_all()
 import os
-from base64 import b64decode
+from base64 import b64decode, b64encode
 from couchdb import Server as CouchdbServer, Session
 from couchdb.http import Unauthorized, extract_credentials
 from logging import getLogger
@@ -167,6 +167,15 @@ def main(global_config, **settings):
     privkey = b64decode(settings.get('privkey')) if 'privkey' in settings else None
     pubkey = b64decode(settings.get('pubkey')) if 'pubkey' in settings else None
     config.registry.docservice_key = ECC(pubkey=pubkey, privkey=privkey, curve=curve)
+    if 'dockeys' in settings:
+        dockeys = settings.get('dockeys')
+        config.registry.keyring = keyring = {}
+        for key in dockeys.split('\0'):
+            decoded_key = b64decode(key)
+            keyring[decoded_key.encode('hex')[2:10]] = ECC(pubkey=decoded_key, curve=curve)
+    else:
+        key = ECC(curve=curve)
+        config.registry.keyring = {key.get_pubkey().encode('hex')[2:10]: key}
 
     config.registry.server_id = settings.get('id', '')
     config.registry.health_threshold = float(settings.get('health_threshold', 99))

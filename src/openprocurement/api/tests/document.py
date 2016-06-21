@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 import unittest
 from email.header import Header
-from openprocurement.api.tests.base import BaseTenderWebTest, generate_docservice_url
+from openprocurement.api.tests.base import BaseTenderWebTest
 
 
 class TenderDocumentResourceTest(BaseTenderWebTest):
@@ -387,7 +387,7 @@ class TenderDocumentWithDSResourceTest(TenderDocumentResourceTest):
         response = self.app.post_json('/tenders/{}/documents'.format(self.tender_id),
             {'data': {
                 'title': u'укр.doc',
-                'url': generate_docservice_url(),
+                'url': self.generate_docservice_url(),
                 'format': 'application/msword',
             }}, status=422)
         self.assertEqual(response.status, '422 Unprocessable Entity')
@@ -397,6 +397,7 @@ class TenderDocumentWithDSResourceTest(TenderDocumentResourceTest):
         response = self.app.post_json('/tenders/{}/documents'.format(self.tender_id),
             {'data': {
                 'title': u'укр.doc',
+                'url': 'http://invalid.docservice.url/get/uuid',
                 'md5': '0' * 32,
                 'format': 'application/msword',
             }}, status=403)
@@ -407,19 +408,63 @@ class TenderDocumentWithDSResourceTest(TenderDocumentResourceTest):
         response = self.app.post_json('/tenders/{}/documents'.format(self.tender_id),
             {'data': {
                 'title': u'укр.doc',
-                'url': '/'.join(generate_docservice_url().split('/')[:4]),
+                'url': '/'.join(self.generate_docservice_url().split('/')[:4]),
                 'md5': '0' * 32,
                 'format': 'application/msword',
             }}, status=403)
         self.assertEqual(response.status, '403 Forbidden')
         self.assertEqual(response.content_type, 'application/json')
         self.assertEqual(response.json['errors'][0]["description"], "Can add document only from document service.")
+
+        response = self.app.post_json('/tenders/{}/documents'.format(self.tender_id),
+            {'data': {
+                'title': u'укр.doc',
+                'url': self.generate_docservice_url().split('?')[0],
+                'md5': '0' * 32,
+                'format': 'application/msword',
+            }}, status=403)
+        self.assertEqual(response.status, '403 Forbidden')
+        self.assertEqual(response.content_type, 'application/json')
+        self.assertEqual(response.json['errors'][0]["description"], "Can add document only from document service.")
+
+        response = self.app.post_json('/tenders/{}/documents'.format(self.tender_id),
+            {'data': {
+                'title': u'укр.doc',
+                'url': self.generate_docservice_url().replace(self.app.app.registry.keyring.keys()[-1], '0' * 8),
+                'md5': '0' * 32,
+                'format': 'application/msword',
+            }}, status=422)
+        self.assertEqual(response.status, '422 Unprocessable Entity')
+        self.assertEqual(response.content_type, 'application/json')
+        self.assertEqual(response.json['errors'][0]["description"], "Document url expired.")
+
+        response = self.app.post_json('/tenders/{}/documents'.format(self.tender_id),
+            {'data': {
+                'title': u'укр.doc',
+                'url': self.generate_docservice_url().replace("Signature=", "Signature=ABC"),
+                'md5': '0' * 32,
+                'format': 'application/msword',
+            }}, status=422)
+        self.assertEqual(response.status, '422 Unprocessable Entity')
+        self.assertEqual(response.content_type, 'application/json')
+        self.assertEqual(response.json['errors'][0]["description"], "Document url signature invalid.")
+
+        response = self.app.post_json('/tenders/{}/documents'.format(self.tender_id),
+            {'data': {
+                'title': u'укр.doc',
+                'url': self.generate_docservice_url().replace("Signature=", "Signature=bw%3D%3D"),
+                'md5': '0' * 32,
+                'format': 'application/msword',
+            }}, status=422)
+        self.assertEqual(response.status, '422 Unprocessable Entity')
+        self.assertEqual(response.content_type, 'application/json')
+        self.assertEqual(response.json['errors'][0]["description"], "Document url invalid.")
 
     def test_create_tender_document_json(self):
         response = self.app.post_json('/tenders/{}/documents'.format(self.tender_id),
             {'data': {
                 'title': u'укр.doc',
-                'url': generate_docservice_url().replace('/get/', '/upload/'),
+                'url': self.generate_docservice_url().replace('/get/', '/upload/'),
                 'md5': '0' * 32,
                 'format': 'application/msword',
             }})
@@ -473,7 +518,7 @@ class TenderDocumentWithDSResourceTest(TenderDocumentResourceTest):
         response = self.app.post_json('/tenders/{}/documents'.format(self.tender_id),
             {'data': {
                 'title': u'укр.doc',
-                'url': generate_docservice_url(),
+                'url': self.generate_docservice_url(),
                 'md5': '0' * 32,
                 'format': 'application/msword',
             }}, status=403)
@@ -485,7 +530,7 @@ class TenderDocumentWithDSResourceTest(TenderDocumentResourceTest):
         response = self.app.post_json('/tenders/{}/documents'.format(self.tender_id),
             {'data': {
                 'title': u'укр.doc',
-                'url': generate_docservice_url(),
+                'url': self.generate_docservice_url(),
                 'md5': '0' * 32,
                 'format': 'application/msword',
             }})
@@ -500,7 +545,7 @@ class TenderDocumentWithDSResourceTest(TenderDocumentResourceTest):
         response = self.app.put_json('/tenders/{}/documents/{}'.format(self.tender_id, doc_id),
             {'data': {
                 'title': u'name.doc',
-                'url': generate_docservice_url(),
+                'url': self.generate_docservice_url(),
                 'md5': '0' * 32,
                 'format': 'application/msword',
             }})
@@ -545,7 +590,7 @@ class TenderDocumentWithDSResourceTest(TenderDocumentResourceTest):
         response = self.app.post_json('/tenders/{}/documents'.format(self.tender_id, doc_id),
             {'data': {
                 'title': 'name.doc',
-                'url': generate_docservice_url(),
+                'url': self.generate_docservice_url(),
                 'md5': '0' * 32,
                 'format': 'application/msword',
             }})
@@ -564,7 +609,7 @@ class TenderDocumentWithDSResourceTest(TenderDocumentResourceTest):
         response = self.app.put_json('/tenders/{}/documents/{}'.format(self.tender_id, doc_id),
             {'data': {
                 'title': u'укр.doc',
-                'url': generate_docservice_url(),
+                'url': self.generate_docservice_url(),
                 'md5': '0' * 32,
                 'format': 'application/msword',
             }})
@@ -594,7 +639,7 @@ class TenderDocumentWithDSResourceTest(TenderDocumentResourceTest):
         response = self.app.put_json('/tenders/{}/documents/{}'.format(self.tender_id, doc_id),
             {'data': {
                 'title': u'укр.doc',
-                'url': generate_docservice_url(),
+                'url': self.generate_docservice_url(),
                 'md5': '0' * 32,
                 'format': 'application/msword',
             }}, status=403)

@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 from barbecue import chef
-from base64 import b64encode
+from base64 import b64encode, b64decode
 from datetime import datetime, time, timedelta
 from cornice.resource import resource, view
 from cornice.util import json_error
@@ -16,8 +16,8 @@ from pkg_resources import get_distribution
 from rfc6266 import build_header
 from schematics.exceptions import ModelValidationError
 from time import sleep, time as ttime
-from urllib import quote, urlencode
-from urlparse import urlparse, urljoin, urlunsplit
+from urllib import quote, unquote, urlencode
+from urlparse import urlparse, urljoin, urlunsplit, parse_qsl
 from uuid import uuid4
 from webob.multidict import NestedMultiDict
 from pyramid.exceptions import URLDecodeError
@@ -96,7 +96,12 @@ def upload_file(request, blacklisted_fields=DOCUMENT_BLACKLISTED_FIELDS):
     first_document = request.validated['documents'][0] if 'documents' in request.validated and request.validated['documents'] else None
     if 'data' in request.validated and request.validated['data']:
         document = request.validated['document']
-        if not document.url or not document.url.startswith(request.registry.docservice_url) or len(urlparse(document.url).path.split('/')) != 3:
+        url = document.url
+        parsed_url = urlparse(url)
+        parsed_query = dict(parse_qsl(parsed_url.query))
+        if not url.startswith(request.registry.docservice_url) or \
+                len(parsed_url.path.split('/')) != 3 or \
+                set(['Signature', 'KeyID']) != set(parsed_query):
             request.errors.add('body', 'url', "Can add document only from document service.")
             request.errors.status = 403
             raise error_handler(request.errors)
@@ -104,11 +109,28 @@ def upload_file(request, blacklisted_fields=DOCUMENT_BLACKLISTED_FIELDS):
             request.errors.add('body', 'md5', "This field is required.")
             request.errors.status = 422
             raise error_handler(request.errors)
+        keyid = parsed_query['KeyID']
+        if keyid not in request.registry.keyring:
+            request.errors.add('body', 'url', "Document url expired.")
+            request.errors.status = 422
+            raise error_handler(request.errors)
+        dockey = request.registry.keyring[keyid]
+        signature = parsed_query['Signature']
+        key = urlparse(url).path.split('/')[-1]
+        try:
+            signature = b64decode(unquote(signature))
+        except TypeError:
+            request.errors.add('body', 'url', "Document url signature invalid.")
+            request.errors.status = 422
+            raise error_handler(request.errors)
+        if not dockey.verify(signature, "{}\0{}".format(key, document.md5)):
+            request.errors.add('body', 'url', "Document url invalid.")
+            request.errors.status = 422
+            raise error_handler(request.errors)
         if first_document:
             for attr_name in type(first_document)._fields:
                 if attr_name not in blacklisted_fields:
                     setattr(document, attr_name, getattr(first_document, attr_name))
-        key = urlparse(document.url).path.split('/')[-1]
         document_route = request.matched_route.name.replace("collection_", "")
         document_path = request.current_route_path(_route_name=document_route, document_id=document.id, _query={'download': key})
         document.url = '/' + '/'.join(document_path.split('/')[3:])

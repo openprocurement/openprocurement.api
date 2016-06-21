@@ -6,6 +6,8 @@ from copy import deepcopy
 from datetime import datetime, timedelta
 from uuid import uuid4
 from requests.models import Response
+from base64 import b64encode
+from urllib import urlencode
 
 from openprocurement.api.models import SANDBOX_MODE
 from openprocurement.api.utils import VERSION, SESSION, apply_data_patch
@@ -195,10 +197,6 @@ test_features = [
         ]
     }
 ]
-
-
-def generate_docservice_url():
-    return "http://localhost/get/{}?Signature=Signature&KeyID=KeyID&Expires=Expires".format(uuid4().hex)
 
 
 class PrefixedRequestClass(webtest.app.TestRequest):
@@ -398,19 +396,28 @@ class BaseTenderWebTest(BaseWebTest):
         self.create_tender()
         if self.docservice:
             self.app.app.registry.docservice_url = 'http://localhost'
+            test = self
             def request(method, url, **kwargs):
                 response = Response()
                 if method == 'POST' and '/upload' in url:
-                    url = generate_docservice_url()
+                    url = test.generate_docservice_url()
                     response = Response()
                     response.status_code = 200
                     response.encoding = 'application/json'
-                    response._content = '{{"data":{{"url":"{url}","md5":"{md5}"}},"get_url":"{url}"}}'.format(url=url, md5='0'*32)
+                    response._content = '{{"data":{{"url":"{url}","md5":"{md5}","format":"application/msword","title":"name.doc"}},"get_url":"{url}"}}'.format(url=url, md5='0'*32)
                     response.reason = '200 OK'
                 return response
 
             self._srequest = SESSION.request
             SESSION.request = request
+
+    def generate_docservice_url(self):
+        uuid = uuid4().hex
+        keyid = self.app.app.registry.keyring.keys()[-1]
+        key = self.app.app.registry.keyring[keyid]
+        signature = b64encode(key.sign("{}\0{}".format(uuid, '0' * 32)))
+        query = {'Signature': signature, 'KeyID': keyid}
+        return "http://localhost/get/{}?{}".format(uuid, urlencode(query))
 
     def create_tender(self):
         data = deepcopy(self.initial_data)

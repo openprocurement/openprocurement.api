@@ -364,14 +364,14 @@ class Document(Model):
         'eligibilityCriteria', 'contractProforma', 'commercialProposal',
         'qualificationDocuments', 'eligibilityDocuments',
     ])
-    title = StringType()  # A title of the document.
+    title = StringType(required=True)  # A title of the document.
     title_en = StringType()
     title_ru = StringType()
     description = StringType()  # A description of the document.
     description_en = StringType()
     description_ru = StringType()
-    format = StringType(regex='^[-\w]+/[-\.\w\+]+$')
-    url = StringType()  # Link to the document or attachment.
+    format = StringType(required=True, regex='^[-\w]+/[-\.\w\+]+$')
+    url = StringType(required=True)  # Link to the document or attachment.
     datePublished = IsoDateTimeType(default=get_now)
     dateModified = IsoDateTimeType(default=get_now)  # Date that the document was last dateModified
     language = StringType()
