@@ -971,7 +971,9 @@ class TenderLotProcessTest(BaseTenderWebTest):
         self.app.authorization = ('Basic', ('chronograph', ''))
         response = self.app.patch_json('/tenders/{}'.format(tender_id), {"data": {"id": tender_id}})
         self.assertEqual(response.json['data']["lots"][0]['status'], 'unsuccessful')
+        self.assertIn('date', response.json['data']["lots"][0])
         self.assertEqual(response.json['data']['status'], 'unsuccessful')
+        self.assertIn('date', response.json['data'])
 
     def test_1lot_1bid(self):
         self.app.authorization = ('Basic', ('broker', ''))
@@ -1021,7 +1023,9 @@ class TenderLotProcessTest(BaseTenderWebTest):
         self.app.authorization = ('Basic', ('broker', ''))
         response = self.app.get('/tenders/{}'.format(tender_id))
         self.assertEqual(response.json['data']["lots"][0]['status'], 'complete')
+        self.assertIn('date', response.json['data']["lots"][0])
         self.assertEqual(response.json['data']['status'], 'complete')
+        self.assertIn('date', response.json['data'])
 
     def test_1lot_2bid(self):
         self.app.authorization = ('Basic', ('broker', ''))
@@ -1112,7 +1116,9 @@ class TenderLotProcessTest(BaseTenderWebTest):
         self.app.authorization = ('Basic', ('broker', ''))
         response = self.app.get('/tenders/{}'.format(tender_id))
         self.assertEqual(response.json['data']["lots"][0]['status'], 'complete')
+        self.assertIn('date', response.json['data']["lots"][0])
         self.assertEqual(response.json['data']['status'], 'complete')
+        self.assertIn('date', response.json['data'])
 
     def test_2lot_0bid(self):
         self.app.authorization = ('Basic', ('broker', ''))
