@@ -169,7 +169,7 @@ def upload_file(request, blacklisted_fields=DOCUMENT_BLACKLISTED_FIELDS):
                 r = SESSION.post(url,
                                 files=files,
                                 headers={'X-Client-Request-ID': request.environ.get('REQUEST_ID', '')},
-                                #auth=(api_token, '')
+                                auth=(request.registry.docservice_username, request.registry.docservice_password)
                                 )
                 json_data = r.json()
             except:

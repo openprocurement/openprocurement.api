@@ -163,6 +163,8 @@ def main(global_config, **settings):
 
     # Document Service key
     config.registry.docservice_url = settings.get('docservice_url')
+    config.registry.docservice_username = settings.get('docservice_username')
+    config.registry.docservice_password = settings.get('docservice_password')
     curve = settings.get('curve', 'secp384r1')
     privkey = b64decode(settings.get('privkey')) if 'privkey' in settings else None
     pubkey = b64decode(settings.get('pubkey')) if 'pubkey' in settings else None
