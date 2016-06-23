@@ -62,7 +62,7 @@ def factory(request):
     request.validated['tender_id'] = request.matchdict['tender_id']
     tender = request.tender
     tender.__parent__ = root
-    request.validated['tender'] = tender
+    request.validated['tender'] = request.validated['db_doc'] = tender
     request.validated['tender_status'] = tender.status
     if request.method != 'GET':
         request.validated['tender_src'] = tender.serialize('plain')

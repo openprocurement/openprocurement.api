@@ -395,21 +395,24 @@ class BaseTenderWebTest(BaseWebTest):
         super(BaseTenderWebTest, self).setUp()
         self.create_tender()
         if self.docservice:
-            self.app.app.registry.docservice_url = 'http://localhost'
-            test = self
-            def request(method, url, **kwargs):
-                response = Response()
-                if method == 'POST' and '/upload' in url:
-                    url = test.generate_docservice_url()
-                    response = Response()
-                    response.status_code = 200
-                    response.encoding = 'application/json'
-                    response._content = '{{"data":{{"url":"{url}","md5":"{md5}","format":"application/msword","title":"name.doc"}},"get_url":"{url}"}}'.format(url=url, md5='0'*32)
-                    response.reason = '200 OK'
-                return response
+            self.setUpDS()
 
-            self._srequest = SESSION.request
-            SESSION.request = request
+    def setUpDS(self):
+        self.app.app.registry.docservice_url = 'http://localhost'
+        test = self
+        def request(method, url, **kwargs):
+            response = Response()
+            if method == 'POST' and '/upload' in url:
+                url = test.generate_docservice_url()
+                response = Response()
+                response.status_code = 200
+                response.encoding = 'application/json'
+                response._content = '{{"data":{{"url":"{url}","md5":"{md5}","format":"application/msword","title":"name.doc"}},"get_url":"{url}"}}'.format(url=url, md5='0'*32)
+                response.reason = '200 OK'
+            return response
+
+        self._srequest = SESSION.request
+        SESSION.request = request
 
     def generate_docservice_url(self):
         uuid = uuid4().hex
@@ -459,8 +462,11 @@ class BaseTenderWebTest(BaseWebTest):
         if self.initial_status != status:
             self.set_status(self.initial_status)
 
+    def tearDownDS(self):
+        SESSION.request = self._srequest
+
     def tearDown(self):
         if self.docservice:
-            SESSION.request = self._srequest
+            self.tearDownDS()
         del self.db[self.tender_id]
         super(BaseTenderWebTest, self).tearDown()

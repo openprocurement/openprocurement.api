@@ -184,19 +184,16 @@ def upload_file(request, blacklisted_fields=DOCUMENT_BLACKLISTED_FIELDS):
             request.errors.status = 422
             raise error_handler(request.errors)
         key = urlparse(doc_url).path.split('/')[-1]
-        document_route = request.matched_route.name.replace("collection_", "")
-        document_path = request.current_route_path(_route_name=document_route, document_id=document.id, _query={'download': key})
-        document.url = '/' + '/'.join(document_path.split('/')[3:])
     else:
         key = generate_id()
-        document_route = request.matched_route.name.replace("collection_", "")
-        document_path = request.current_route_path(_route_name=document_route, document_id=document.id, _query={'download': key})
-        document.url = '/' + '/'.join(document_path.split('/')[3:])
         filename = "{}_{}".format(document.id, key)
-        request.validated['tender']['_attachments'][filename] = {
+        request.validated['db_doc']['_attachments'][filename] = {
             "content_type": document.format,
             "data": b64encode(in_file.read())
         }
+    document_route = request.matched_route.name.replace("collection_", "")
+    document_path = request.current_route_path(_route_name=document_route, document_id=document.id, _query={'download': key})
+    document.url = '/' + '/'.join(document_path.split('/')[3:])
     update_logging_context(request, {'file_size': in_file.tell()})
     return document
 
@@ -206,7 +203,7 @@ def update_file_content_type(request):
 
 
 def get_file(request):
-    tender_id = request.validated['tender_id']
+    db_doc_id = request.validated['db_doc'].id
     document = request.validated['document']
     key = request.params.get('download')
     if not any([key in i.url for i in request.validated['documents']]):
@@ -214,7 +211,7 @@ def get_file(request):
         request.errors.status = 404
         return
     filename = "{}_{}".format(document.id, key)
-    if request.registry.docservice_url and filename not in request.validated['tender']['_attachments']:
+    if request.registry.docservice_url and filename not in request.validated['db_doc']['_attachments']:
         document = [i for i in request.validated['documents'] if key in i.url][-1]
         if 'Signature=' in document.url and 'KeyID' in document.url:
             url = document.url
@@ -222,7 +219,7 @@ def get_file(request):
             if 'download=' not in document.url:
                 key = urlparse(document.url).path.replace('/get/', '')
             if not document.md5:
-                url = generate_docservice_url(request, key, prefix='{}/{}'.format(request.validated['tender_id'], document.id))
+                url = generate_docservice_url(request, key, prefix='{}/{}'.format(db_doc_id, document.id))
             else:
                 url = generate_docservice_url(request, key)
         request.response.content_type = document.format.encode('utf-8')
@@ -231,7 +228,7 @@ def get_file(request):
         request.response.location = url
         return url
     else:
-        data = request.registry.db.get_attachment(tender_id, filename)
+        data = request.registry.db.get_attachment(db_doc_id, filename)
         if data:
             request.response.content_type = document.format.encode('utf-8')
             request.response.content_disposition = build_header(document.title, filename_compat=quote(document.title.encode('utf-8')))

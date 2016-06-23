@@ -464,7 +464,7 @@ class TenderDocumentWithDSResourceTest(TenderDocumentResourceTest):
         response = self.app.post_json('/tenders/{}/documents'.format(self.tender_id),
             {'data': {
                 'title': u'укр.doc',
-                'url': self.generate_docservice_url().replace('/get/', '/upload/'),
+                'url': self.generate_docservice_url(),
                 'md5': '0' * 32,
                 'format': 'application/msword',
             }})
