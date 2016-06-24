@@ -2037,7 +2037,7 @@ class TenderAwardDocumentResourceTest(BaseTenderWebTest):
             self.assertIn(key, tender['awards'][-1]['documents'][-1]["url"])
             self.assertIn('Signature=', tender['awards'][-1]['documents'][-1]["url"])
             self.assertIn('KeyID=', tender['awards'][-1]['documents'][-1]["url"])
-            self.assertNotIn('Expires=', response.json["data"]["url"])
+            self.assertNotIn('Expires=', tender['awards'][-1]['documents'][-1]["url"])
         else:
             key = response.json["data"]["url"].split('?')[-1].split('=')[-1]
 
@@ -2126,7 +2126,7 @@ class TenderAwardDocumentResourceTest(BaseTenderWebTest):
             self.assertIn(key, tender['awards'][-1]['documents'][-1]["url"])
             self.assertIn('Signature=', tender['awards'][-1]['documents'][-1]["url"])
             self.assertIn('KeyID=', tender['awards'][-1]['documents'][-1]["url"])
-            self.assertNotIn('Expires=', response.json["data"]["url"])
+            self.assertNotIn('Expires=', tender['awards'][-1]['documents'][-1]["url"])
         else:
             key = response.json["data"]["url"].split('?')[-1].split('=')[-1]
 
@@ -2165,7 +2165,7 @@ class TenderAwardDocumentResourceTest(BaseTenderWebTest):
             self.assertIn(key, tender['awards'][-1]['documents'][-1]["url"])
             self.assertIn('Signature=', tender['awards'][-1]['documents'][-1]["url"])
             self.assertIn('KeyID=', tender['awards'][-1]['documents'][-1]["url"])
-            self.assertNotIn('Expires=', response.json["data"]["url"])
+            self.assertNotIn('Expires=', tender['awards'][-1]['documents'][-1]["url"])
         else:
             key = response.json["data"]["url"].split('?')[-1].split('=')[-1]
 
@@ -2254,7 +2254,7 @@ class Tender2LotAwardDocumentResourceTest(BaseTenderWebTest):
             self.assertIn(key, tender['awards'][-1]['documents'][-1]["url"])
             self.assertIn('Signature=', tender['awards'][-1]['documents'][-1]["url"])
             self.assertIn('KeyID=', tender['awards'][-1]['documents'][-1]["url"])
-            self.assertNotIn('Expires=', response.json["data"]["url"])
+            self.assertNotIn('Expires=', tender['awards'][-1]['documents'][-1]["url"])
         else:
             key = response.json["data"]["url"].split('?')[-1].split('=')[-1]
 
@@ -2347,7 +2347,7 @@ class Tender2LotAwardDocumentResourceTest(BaseTenderWebTest):
             self.assertIn(key, tender['awards'][-1]['documents'][-1]["url"])
             self.assertIn('Signature=', tender['awards'][-1]['documents'][-1]["url"])
             self.assertIn('KeyID=', tender['awards'][-1]['documents'][-1]["url"])
-            self.assertNotIn('Expires=', response.json["data"]["url"])
+            self.assertNotIn('Expires=', tender['awards'][-1]['documents'][-1]["url"])
         else:
             key = response.json["data"]["url"].split('?')[-1].split('=')[-1]
 
@@ -2386,7 +2386,7 @@ class Tender2LotAwardDocumentResourceTest(BaseTenderWebTest):
             self.assertIn(key, tender['awards'][-1]['documents'][-1]["url"])
             self.assertIn('Signature=', tender['awards'][-1]['documents'][-1]["url"])
             self.assertIn('KeyID=', tender['awards'][-1]['documents'][-1]["url"])
-            self.assertNotIn('Expires=', response.json["data"]["url"])
+            self.assertNotIn('Expires=', tender['awards'][-1]['documents'][-1]["url"])
         else:
             key = response.json["data"]["url"].split('?')[-1].split('=')[-1]
 

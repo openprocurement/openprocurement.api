@@ -95,7 +95,7 @@ class TenderDocumentResourceTest(BaseTenderWebTest):
             self.assertIn(key, tender['documents'][-1]["url"])
             self.assertIn('Signature=', tender['documents'][-1]["url"])
             self.assertIn('KeyID=', tender['documents'][-1]["url"])
-            self.assertNotIn('Expires=', response.json["data"]["url"])
+            self.assertNotIn('Expires=', tender['documents'][-1]["url"])
         else:
             key = response.json["data"]["url"].split('?')[-1].split('=')[-1]
 
@@ -201,7 +201,7 @@ class TenderDocumentResourceTest(BaseTenderWebTest):
             self.assertIn(key, tender['documents'][-1]["url"])
             self.assertIn('Signature=', tender['documents'][-1]["url"])
             self.assertIn('KeyID=', tender['documents'][-1]["url"])
-            self.assertNotIn('Expires=', response.json["data"]["url"])
+            self.assertNotIn('Expires=', tender['documents'][-1]["url"])
         else:
             key = response.json["data"]["url"].split('?')[-1].split('=')[-1]
 
@@ -276,7 +276,7 @@ class TenderDocumentResourceTest(BaseTenderWebTest):
             self.assertIn(key, tender['documents'][-1]["url"])
             self.assertIn('Signature=', tender['documents'][-1]["url"])
             self.assertIn('KeyID=', tender['documents'][-1]["url"])
-            self.assertNotIn('Expires=', response.json["data"]["url"])
+            self.assertNotIn('Expires=', tender['documents'][-1]["url"])
         else:
             key = response.json["data"]["url"].split('?')[-1].split('=')[-1]
 
@@ -481,7 +481,7 @@ class TenderDocumentWithDSResourceTest(TenderDocumentResourceTest):
         self.assertIn(key, tender['documents'][-1]["url"])
         self.assertIn('Signature=', tender['documents'][-1]["url"])
         self.assertIn('KeyID=', tender['documents'][-1]["url"])
-        self.assertNotIn('Expires=', response.json["data"]["url"])
+        self.assertNotIn('Expires=', tender['documents'][-1]["url"])
 
         response = self.app.get('/tenders/{}/documents'.format(self.tender_id))
         self.assertEqual(response.status, '200 OK')
@@ -560,7 +560,7 @@ class TenderDocumentWithDSResourceTest(TenderDocumentResourceTest):
         self.assertIn(key, tender['documents'][-1]["url"])
         self.assertIn('Signature=', tender['documents'][-1]["url"])
         self.assertIn('KeyID=', tender['documents'][-1]["url"])
-        self.assertNotIn('Expires=', response.json["data"]["url"])
+        self.assertNotIn('Expires=', tender['documents'][-1]["url"])
 
         response = self.app.get('/tenders/{}/documents/{}?download={}'.format(
             self.tender_id, doc_id, key))
@@ -624,7 +624,7 @@ class TenderDocumentWithDSResourceTest(TenderDocumentResourceTest):
         self.assertIn(key, tender['documents'][-1]["url"])
         self.assertIn('Signature=', tender['documents'][-1]["url"])
         self.assertIn('KeyID=', tender['documents'][-1]["url"])
-        self.assertNotIn('Expires=', response.json["data"]["url"])
+        self.assertNotIn('Expires=', tender['documents'][-1]["url"])
 
         response = self.app.get('/tenders/{}/documents/{}?download={}'.format(
             self.tender_id, doc_id, key))
