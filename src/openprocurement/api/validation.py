@@ -288,7 +288,7 @@ def validate_file_upload(request):
         else:
             data = validate_json_data(request)
             if data:
-                model = type(request.tender).documents.model_class
+                model = type(request.validated['db_doc']).documents.model_class
                 return validate_data(request, model)
     if 'file' not in request.POST or not hasattr(request.POST['file'], 'filename'):
         request.errors.add('body', 'file', 'Not Found')

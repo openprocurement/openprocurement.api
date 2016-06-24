@@ -404,7 +404,6 @@ class BaseTenderWebTest(BaseWebTest):
             response = Response()
             if method == 'POST' and '/upload' in url:
                 url = test.generate_docservice_url()
-                response = Response()
                 response.status_code = 200
                 response.encoding = 'application/json'
                 response._content = '{{"data":{{"url":"{url}","md5":"{md5}","format":"application/msword","title":"name.doc"}},"get_url":"{url}"}}'.format(url=url, md5='0'*32)

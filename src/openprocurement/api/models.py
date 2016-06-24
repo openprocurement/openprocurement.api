@@ -393,8 +393,8 @@ class Document(Model):
         request = root.request
         if not request.registry.docservice_url:
             return url
-        role = parents[0].status
-        if role in type(parents[0])._options.roles:
+        if 'status' in parents[0] and parents[0].status in type(parents[0])._options.roles:
+            role = parents[0].status
             for index, obj in enumerate(parents):
                 field = url.split('/')[index * 2 + 3]
                 roles = type(obj)._options.roles
