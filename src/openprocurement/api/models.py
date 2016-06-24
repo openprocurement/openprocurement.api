@@ -15,6 +15,7 @@ from uuid import uuid4
 from barbecue import vnmax
 from zope.interface import implementer, Interface
 from urlparse import urlparse, parse_qs
+from string import hexdigits
 
 STAND_STILL_TIME = timedelta(days=2)
 COMPLAINT_STAND_STILL_TIME = timedelta(days=3)
@@ -396,13 +397,16 @@ class Document(Model):
         if 'status' in parents[0] and parents[0].status in type(parents[0])._options.roles:
             role = parents[0].status
             for index, obj in enumerate(parents):
-                field = url.split('/')[index * 2 + 3]
+                if obj.id != url.split('/')[(index - len(parents)) * 2 - 1]:
+                    break
+                field = url.split('/')[(index - len(parents)) * 2]
                 roles = type(obj)._options.roles
                 if roles[role if role in roles else 'default'](field, []):
                     return url
         from openprocurement.api.utils import generate_docservice_url
         if not self.md5:
-            return generate_docservice_url(request, doc_id, False, '{}/{}'.format(parents[0].id, self.id))
+            path = [i for i in urlparse(url).path.split('/') if len(i) == 32 and not set(i).difference(hexdigits)]
+            return generate_docservice_url(request, doc_id, False, '{}/{}'.format(path[0], path[-1]))
         return generate_docservice_url(request, doc_id, False)
 
     def import_data(self, raw_data, **kw):
