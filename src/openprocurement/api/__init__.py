@@ -159,7 +159,9 @@ def main(global_config, **settings):
 
     # migrate data
     if not os.environ.get('MIGRATION_SKIP'):
-        migrate_data(config.registry.db)
+        for entry_point in iter_entry_points('openprocurement.api.migrations'):
+            plugin = entry_point.load()
+            plugin(config.registry.db)
 
     # S3 connection
     if 'aws.access_key' in settings and 'aws.secret_key' in settings and 'aws.s3_bucket' in settings:
