@@ -161,7 +161,7 @@ def main(global_config, **settings):
     if not os.environ.get('MIGRATION_SKIP'):
         for entry_point in iter_entry_points('openprocurement.api.migrations'):
             plugin = entry_point.load()
-            plugin(config.registry.db)
+            plugin(config.registry)
 
     # Document Service key
     config.registry.docservice_url = settings.get('docservice_url')

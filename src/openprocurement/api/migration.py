@@ -3,11 +3,12 @@ import logging
 from datetime import timedelta
 from iso8601 import parse_date
 from openprocurement.api.models import CPV_CODES, STAND_STILL_TIME, TZ, get_now
+from openprocurement.api.traversal import Root
 from email.header import decode_header
 
 
 LOGGER = logging.getLogger(__name__)
-SCHEMA_VERSION = 21
+SCHEMA_VERSION = 22
 SCHEMA_DOC = 'openprocurement_schema'
 
 
@@ -22,29 +23,29 @@ def set_db_schema_version(db, version):
     db.save(schema_doc)
 
 
-def migrate_data(db, destination=None):
-    cur_version = get_db_schema_version(db)
+def migrate_data(registry, destination=None):
+    cur_version = get_db_schema_version(registry.db)
     if cur_version == SCHEMA_VERSION:
         return cur_version
     for step in xrange(cur_version, destination or SCHEMA_VERSION):
         LOGGER.info("Migrate openprocurement schema from {} to {}".format(step, step + 1), extra={'MESSAGE_ID': 'migrate_data'})
         migration_func = globals().get('from{}to{}'.format(step, step + 1))
         if migration_func:
-            migration_func(db)
-        set_db_schema_version(db, step + 1)
+            migration_func(registry)
+        set_db_schema_version(registry.db, step + 1)
 
 
-def from0to1(db):
-    results = db.view('tenders/all', include_docs=True)
+def from0to1(registry):
+    results = registry.db.view('tenders/all', include_docs=True)
     for i in results:
         doc = i.doc
         if 'modifiedAt' in doc and 'modified' not in doc:
             doc['modified'] = doc.pop('modifiedAt')
-            db.save(doc)
+            registry.db.save(doc)
 
 
-def from1to2(db):
-    results = db.view('tenders/all', include_docs=True)
+def from1to2(registry):
+    results = registry.db.view('tenders/all', include_docs=True)
     for i in results:
         doc = i.doc
         if 'bidders' in doc or 'procuringEntity' in doc:
@@ -66,11 +67,11 @@ def from1to2(db):
                             address['streetAddress'] = address.pop('street-address')
                         if 'postal-code' in address:
                             address['postalCode'] = address.pop('postal-code')
-            db.save(doc)
+            registry.db.save(doc)
 
 
-def from2to3(db):
-    results = db.view('tenders/all', include_docs=True)
+def from2to3(registry):
+    results = registry.db.view('tenders/all', include_docs=True)
     for i in results:
         doc = i.doc
         if 'bidders' in doc:
@@ -80,11 +81,11 @@ def from2to3(db):
                 bids.append({'id': uuid, 'bidders': [bidder]})
             del doc['bidders']
             doc['bids'] = bids
-            db.save(doc)
+            registry.db.save(doc)
 
 
-def from3to4(db):
-    results = db.view('tenders/all', include_docs=True)
+def from3to4(registry):
+    results = registry.db.view('tenders/all', include_docs=True)
     for i in results:
         doc = i.doc
         if 'itemsToBeProcured' in doc:
@@ -99,11 +100,11 @@ def from3to4(db):
                 }
                 items.append(item)
             doc['itemsToBeProcured'] = items
-            db.save(doc)
+            registry.db.save(doc)
 
 
-def from4to5(db):
-    results = db.view('tenders/all', include_docs=True)
+def from4to5(registry):
+    results = registry.db.view('tenders/all', include_docs=True)
     for i in results:
         doc = i.doc
         changed = False
@@ -114,11 +115,11 @@ def from4to5(db):
             doc['hasEnquiries'] = doc.pop('clarifications')
             changed = True
         if changed:
-            db.save(doc)
+            registry.db.save(doc)
 
 
-def from5to6(db):
-    results = db.view('tenders/all', include_docs=True)
+def from5to6(registry):
+    results = registry.db.view('tenders/all', include_docs=True)
     for i in results:
         doc = i.doc
         changed = False
@@ -149,11 +150,11 @@ def from5to6(db):
                     bid['documents'] = items
                     changed = True
         if changed:
-            db.save(doc)
+            registry.db.save(doc)
 
 
-def from10to11(db):
-    results = db.view('tenders/all', include_docs=True)
+def from10to11(registry):
+    results = registry.db.view('tenders/all', include_docs=True)
     for i in results:
         doc = i.doc
         changed = False
@@ -184,7 +185,7 @@ def from10to11(db):
                     i["author"]["identifier"]["scheme"] = 'UA-EDR'
         if changed:
             doc['dateModified'] = get_now().isoformat()
-            db.save(doc)
+            registry.db.save(doc)
 
 
 def fix_org(x, changed):
@@ -237,8 +238,8 @@ def fix_value(item, value, changed):
     return item, changed
 
 
-def from11to12(db):
-    results = db.view('tenders/all', include_docs=True)
+def from11to12(registry):
+    results = registry.db.view('tenders/all', include_docs=True)
     for i in results:
         doc = i.doc
         changed = False
@@ -460,18 +461,18 @@ def from11to12(db):
                 })
         if changed:
             doc['dateModified'] = get_now().isoformat()
-            db.save(doc)
+            registry.db.save(doc)
 
 
-def from12to13(db):
-    results = db.view('tenders/all', include_docs=True)
+def from12to13(registry):
+    results = registry.db.view('tenders/all', include_docs=True)
     for i in results:
         doc = i.doc
         doc['procurementMethod'] = 'open'
         doc['awardCriteria'] = 'lowestCost'
         doc['submissionMethod'] = 'electronicAuction'
         doc['dateModified'] = get_now().isoformat()
-        db.save(doc)
+        registry.db.save(doc)
 
 
 def fix_rfc2047(item, changed):
@@ -491,8 +492,8 @@ def fix_rfc2047(item, changed):
     return changed
 
 
-def from13to14(db):
-    results = db.view('tenders/all', include_docs=True)
+def from13to14(registry):
+    results = registry.db.view('tenders/all', include_docs=True)
     for i in results:
         doc = i.doc
         changed = False
@@ -515,11 +516,11 @@ def from13to14(db):
                     changed = fix_rfc2047(i, changed)
         if changed:
             doc['dateModified'] = get_now().isoformat()
-            db.save(doc)
+            registry.db.save(doc)
 
 
-def from14to15(db):
-    results = db.view('tenders/all', include_docs=True)
+def from14to15(registry):
+    results = registry.db.view('tenders/all', include_docs=True)
     for i in results:
         doc = i.doc
         changed = False
@@ -545,11 +546,11 @@ def from14to15(db):
                 ]
         if changed:
             doc['dateModified'] = get_now().isoformat()
-            db.save(doc)
+            registry.db.save(doc)
 
 
-def from15to16(db):
-    results = db.view('tenders/all', include_docs=True)
+def from15to16(registry):
+    results = registry.db.view('tenders/all', include_docs=True)
     for i in results:
         doc = i.doc
         changed = False
@@ -559,11 +560,11 @@ def from15to16(db):
                 item['deliveryLocation']['longitude'] = item['deliveryLocation'].pop('longitudee')
         if changed:
             doc['dateModified'] = get_now().isoformat()
-            db.save(doc)
+            registry.db.save(doc)
 
 
-def from16to17(db):
-    results = db.view('tenders/all', include_docs=True)
+def from16to17(registry):
+    results = registry.db.view('tenders/all', include_docs=True)
     for i in results:
         doc = i.doc
         changed = False
@@ -579,11 +580,11 @@ def from16to17(db):
             changed = True
         if changed:
             doc['dateModified'] = get_now().isoformat()
-            db.save(doc)
+            registry.db.save(doc)
 
 
-def from17to18(db):
-    results = db.iterview('tenders/all', 2**10, include_docs=True)
+def from17to18(registry):
+    results = registry.db.iterview('tenders/all', 2**10, include_docs=True)
     for i in results:
         doc = i.doc
         contracts = []
@@ -592,10 +593,10 @@ def from17to18(db):
         if contracts:
             doc['contracts'] = contracts
             doc['dateModified'] = get_now().isoformat()
-            db.save(doc)
+            registry.db.save(doc)
 
 
-def from18to19(db):
+def from18to19(registry):
 
     def update_documents_type(item, changed):
         for document in item.get('documents', []):
@@ -604,7 +605,7 @@ def from18to19(db):
                 changed = True
         return changed
 
-    results = db.iterview('tenders/all', 2 ** 10, include_docs=True)
+    results = registry.db.iterview('tenders/all', 2 ** 10, include_docs=True)
     docs = []
     for i in results:
         doc = i.doc
@@ -620,14 +621,14 @@ def from18to19(db):
             doc['dateModified'] = get_now().isoformat()
             docs.append(doc)
         if len(docs) >= 2 ** 7:
-            db.update(docs)
+            registry.db.update(docs)
             docs = []
     if docs:
-        db.update(docs)
+        registry.db.update(docs)
 
 
-def from19to20(db):
-    results = db.iterview('tenders/all', 2 ** 10, include_docs=True)
+def from19to20(registry):
+    results = registry.db.iterview('tenders/all', 2 ** 10, include_docs=True)
     docs = []
     for i in results:
         doc = i.doc
@@ -642,14 +643,14 @@ def from19to20(db):
             doc['dateModified'] = get_now().isoformat()
             docs.append(doc)
         if len(docs) >= 2 ** 7:
-            result = db.update(docs)
+            result = registry.db.update(docs)
             docs = []
     if docs:
-        db.update(docs)
+        registry.db.update(docs)
 
 
-def from20to21(db):
-    results = db.iterview('tenders/all', 2 ** 10, include_docs=True)
+def from20to21(registry):
+    results = registry.db.iterview('tenders/all', 2 ** 10, include_docs=True)
     docs = []
     for i in results:
         doc = i.doc
@@ -657,7 +658,30 @@ def from20to21(db):
             doc['next_check'] = get_now().isoformat()
             docs.append(doc)
         if len(docs) >= 2 ** 7:
-            result = db.update(docs)
+            result = registry.db.update(docs)
             docs = []
     if docs:
-        db.update(docs)
+        registry.db.update(docs)
+
+
+def from21to22(registry):
+    class Request(object):
+        def __init__(self, registry):
+            self.registry = registry
+    results = registry.db.iterview('tenders/all', 2 ** 10, include_docs=True)
+    docs = []
+    request = Request(registry)
+    root = Root(request)
+    for i in results:
+        doc = i.doc
+        model = registry.tender_procurementMethodTypes.get(doc['procurementMethodType'])
+        if model:
+            tender = model(doc)
+            tender.__parent__ = root
+            doc = tender.to_primitive()
+            docs.append(doc)
+        if len(docs) >= 2 ** 7:
+            result = registry.db.update(docs)
+            docs = []
+    if docs:
+        registry.db.update(docs)
