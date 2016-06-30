@@ -783,8 +783,8 @@ class Cancellation(Model):
 class Contract(Model):
     class Options:
         roles = {
-            'create': blacklist('id', 'status', 'documents', 'dateSigned'),
-            'edit': blacklist('id', 'documents', 'awardID', 'suppliers', 'items', 'contractID'),
+            'create': blacklist('id', 'status', 'date', 'documents', 'dateSigned'),
+            'edit': blacklist('id', 'documents', 'date', 'awardID', 'suppliers', 'items', 'contractID'),
             'embedded': schematics_embedded_role,
             'view': schematics_default_role,
         }
@@ -926,6 +926,7 @@ class Lot(Model):
     description = StringType()
     description_en = StringType()
     description_ru = StringType()
+    date = IsoDateTimeType()
     value = ModelType(Value, required=True)
     minimalStep = ModelType(Value, required=True)
     auctionPeriod = ModelType(LotAuctionPeriod, default={})
@@ -995,9 +996,9 @@ def validate_cpv_group(items, *args):
 
 
 plain_role = (blacklist('_attachments', 'revisions', 'dateModified') + schematics_embedded_role)
-create_role = (blacklist('owner_token', 'owner', '_attachments', 'revisions', 'dateModified', 'doc_id', 'tenderID', 'bids', 'documents', 'awards', 'questions', 'complaints', 'auctionUrl', 'status', 'auctionPeriod', 'awardPeriod', 'procurementMethod', 'awardCriteria', 'submissionMethod', 'cancellations') + schematics_embedded_role)
+create_role = (blacklist('owner_token', 'owner', '_attachments', 'revisions', 'date', 'dateModified', 'doc_id', 'tenderID', 'bids', 'documents', 'awards', 'questions', 'complaints', 'auctionUrl', 'status', 'auctionPeriod', 'awardPeriod', 'procurementMethod', 'awardCriteria', 'submissionMethod', 'cancellations') + schematics_embedded_role)
 draft_role = whitelist('status')
-edit_role = (blacklist('status', 'procurementMethodType', 'lots', 'owner_token', 'owner', '_attachments', 'revisions', 'dateModified', 'doc_id', 'tenderID', 'bids', 'documents', 'awards', 'questions', 'complaints', 'auctionUrl', 'auctionPeriod', 'awardPeriod', 'procurementMethod', 'awardCriteria', 'submissionMethod', 'mode', 'cancellations') + schematics_embedded_role)
+edit_role = (blacklist('status', 'procurementMethodType', 'lots', 'owner_token', 'owner', '_attachments', 'revisions', 'date', 'dateModified', 'doc_id', 'tenderID', 'bids', 'documents', 'awards', 'questions', 'complaints', 'auctionUrl', 'auctionPeriod', 'awardPeriod', 'procurementMethod', 'awardCriteria', 'submissionMethod', 'mode', 'cancellations') + schematics_embedded_role)
 view_role = (blacklist('owner_token', '_attachments', 'revisions') + schematics_embedded_role)
 listing_role = whitelist('dateModified', 'doc_id')
 auction_view_role = whitelist('tenderID', 'dateModified', 'bids', 'auctionPeriod', 'minimalStep', 'auctionUrl', 'features', 'lots')
@@ -1061,6 +1062,7 @@ class Tender(SchematicsDocument, Model):
     description = StringType()
     description_en = StringType()
     description_ru = StringType()
+    date = IsoDateTimeType()
     tenderID = StringType()  # TenderID should always be the same as the OCID. It is included to make the flattened data structure more convenient.
     items = ListType(ModelType(Item), required=True, min_size=1, validators=[validate_cpv_group, validate_items_uniq])  # The goods and services to be purchased, broken into line items wherever possible. Items should not be duplicated, but a quantity of 2 specified instead.
     value = ModelType(Value, required=True)  # The total estimated value of the procurement.
@@ -1153,6 +1155,11 @@ class Tender(SchematicsDocument, Model):
             self.enquiryPeriod.startDate = get_now()
         if not self.tenderPeriod.startDate:
             self.tenderPeriod.startDate = self.enquiryPeriod.endDate
+        now = get_now()
+        self.date = now
+        if self.lots:
+            for lot in self.lots:
+                lot.date = now
 
     @serializable(serialize_when_none=False)
     def next_check(self):

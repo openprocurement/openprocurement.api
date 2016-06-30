@@ -9,6 +9,7 @@ from email.header import decode_header
 from functools import partial
 from json import dumps
 from jsonpatch import make_patch, apply_patch as _apply_patch
+from jsonpointer import resolve_pointer
 from logging import getLogger
 from openprocurement.api.models import get_now, TZ, COMPLAINT_STAND_STILL_TIME, WORKING_DAYS
 from openprocurement.api.traversal import factory
@@ -220,10 +221,17 @@ def save_tender(request):
         set_modetest_titles(tender)
     patch = get_revision_changes(tender.serialize("plain"), request.validated['tender_src'])
     if patch:
+        now = get_now()
+        status_changes = [p for p in patch if p['path'].endswith("/status")]
+        for change in status_changes:
+            obj = resolve_pointer(tender, change['path'].replace('/status', ''))
+            if obj and hasattr(obj, "date"):
+                obj.date = now
+        patch = get_revision_changes(tender.serialize("plain"), request.validated['tender_src'])
         tender.revisions.append(type(tender).revisions.model_class({'author': request.authenticated_userid, 'changes': patch, 'rev': tender.rev}))
         old_dateModified = tender.dateModified
         if getattr(tender, 'modified', True):
-            tender.dateModified = get_now()
+            tender.dateModified = now
         try:
             tender.store(request.registry.db)
         except ModelValidationError, e:
@@ -510,6 +518,7 @@ def add_next_award(request):
                     'lotID': lot.id,
                     'status': 'pending',
                     'value': bid['value'],
+                    'date': get_now(),
                     'suppliers': bid['tenderers'],
                     'complaintPeriod': {
                         'startDate': now.isoformat()
@@ -535,6 +544,7 @@ def add_next_award(request):
                 award = type(tender).awards.model_class({
                     'bid_id': bid['id'],
                     'status': 'pending',
+                    'date': get_now(),
                     'value': bid['value'],
                     'suppliers': bid['tenderers'],
                     'complaintPeriod': {
