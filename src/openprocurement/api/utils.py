@@ -225,7 +225,7 @@ def save_tender(request):
         status_changes = [p for p in patch if p['path'].endswith("/status")]
         for change in status_changes:
             obj = resolve_pointer(tender, change['path'].replace('/status', ''))
-            if obj and hasattr(obj, "date"):
+            if obj and hasattr(obj, "date") and not change['path'].startswith('/bids/'):
                 obj.date = now
         patch = get_revision_changes(tender.serialize("plain"), request.validated['tender_src'])
         tender.revisions.append(type(tender).revisions.model_class({'author': request.authenticated_userid, 'changes': patch, 'rev': tender.rev}))
