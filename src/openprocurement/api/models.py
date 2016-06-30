@@ -932,6 +932,7 @@ class Lot(Model):
     auctionUrl = URLType()
     status = StringType(choices=['active', 'cancelled', 'unsuccessful', 'complete'], default='active')
     guarantee = ModelType(Guarantee)
+    date = IsoDateTimeType()
 
     @serializable
     def numberOfBids(self):
@@ -1107,6 +1108,7 @@ class Tender(SchematicsDocument, Model):
 
     _attachments = DictType(DictType(BaseType), default=dict())  # couchdb attachments
     dateModified = IsoDateTimeType()
+    date = IsoDateTimeType()
     owner_token = StringType()
     owner = StringType()
 

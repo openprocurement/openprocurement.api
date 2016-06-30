@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+from openprocurement.api.models import get_now
 from openprocurement.api.utils import (
     apply_patch,
     save_tender,
@@ -26,19 +27,23 @@ class TenderCancellationResource(APIResource):
         if tender.status in ['active.tendering', 'active.auction']:
             tender.bids = []
         tender.status = 'cancelled'
+        tender.date = get_now()
 
     def cancel_lot(self, cancellation=None):
         if not cancellation:
             cancellation = self.context
         tender = self.request.validated['tender']
         [setattr(i, 'status', 'cancelled') for i in tender.lots if i.id == cancellation.relatedLot]
+        [setattr(i, 'date', get_now()) for i in tender.lots if i.id == cancellation.relatedLot]
         statuses = set([lot.status for lot in tender.lots])
         if statuses == set(['cancelled']):
             self.cancel_tender()
         elif not statuses.difference(set(['unsuccessful', 'cancelled'])):
             tender.status = 'unsuccessful'
+            tender.date = get_now()
         elif not statuses.difference(set(['complete', 'unsuccessful', 'cancelled'])):
             tender.status = 'complete'
+            tender.date = get_now()
         if tender.status == 'active.auction' and all([
             i.auctionPeriod and i.auctionPeriod.endDate
             for i in self.request.validated['tender'].lots

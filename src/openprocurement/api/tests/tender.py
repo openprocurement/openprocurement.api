@@ -1159,6 +1159,7 @@ class TenderProcessTest(BaseTenderWebTest):
         # check status
         response = self.app.get('/tenders/{}'.format(tender_id))
         self.assertEqual(response.json['data']['status'], 'cancelled')
+        self.assertIn('date', response.json['data'])
 
     def test_one_valid_bid_tender(self):
         self.app.authorization = ('Basic', ('broker', ''))
@@ -1210,6 +1211,7 @@ class TenderProcessTest(BaseTenderWebTest):
         self.app.authorization = ('Basic', ('broker', ''))
         response = self.app.get('/tenders/{}'.format(tender_id))
         self.assertEqual(response.json['data']['status'], 'complete')
+        self.assertIn('date', response.json['data'])
 
     def test_one_invalid_bid_tender(self):
         self.app.authorization = ('Basic', ('broker', ''))
@@ -1251,6 +1253,7 @@ class TenderProcessTest(BaseTenderWebTest):
         self.app.authorization = ('Basic', ('broker', ''))
         response = self.app.get('/tenders/{}'.format(tender_id))
         self.assertEqual(response.json['data']['status'], 'unsuccessful')
+        self.assertIn('date', response.json['data'])
 
     def test_first_bid_tender(self):
         self.app.authorization = ('Basic', ('broker', ''))
@@ -1369,6 +1372,7 @@ class TenderProcessTest(BaseTenderWebTest):
         self.app.authorization = ('Basic', ('broker', ''))
         response = self.app.get('/tenders/{}'.format(tender_id))
         self.assertEqual(response.json['data']['status'], 'complete')
+        self.assertIn('date', response.json['data'])
 
         response = self.app.post('/tenders/{}/contracts/{}/documents?acc_token={}'.format(tender_id, contract_id, owner_token), upload_files=[('file', 'name.doc', 'content')], status=403)
         self.assertEqual(response.status, '403 Forbidden')

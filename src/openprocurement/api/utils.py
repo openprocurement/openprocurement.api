@@ -273,6 +273,7 @@ def check_bids(request):
     if tender.lots:
         [setattr(i.auctionPeriod, 'startDate', None) for i in tender.lots if i.numberOfBids < 2 and i.auctionPeriod and i.auctionPeriod.startDate]
         [setattr(i, 'status', 'unsuccessful') for i in tender.lots if i.numberOfBids == 0 and i.status == 'active']
+        [setattr(i, 'date', get_now()) for i in tender.lots if i.numberOfBids == 0 and i.status == 'unsuccessful']
         cleanup_bids_for_cancelled_lots(tender)
         if max([i.numberOfBids for i in tender.lots]) < 2:
             #tender.status = 'active.qualification'
@@ -287,6 +288,8 @@ def check_bids(request):
         if tender.numberOfBids == 1:
             #tender.status = 'active.qualification'
             add_next_award(request)
+    if tender.status == 'unsuccessful':
+        tender.date = get_now()
 
 
 def check_complaint_status(request, complaint, now=None):
@@ -426,8 +429,10 @@ def check_tender_status(request):
                 continue
             elif last_award.status == 'unsuccessful':
                 lot.status = 'unsuccessful'
+                lot.date = get_now()
                 continue
             elif last_award.status == 'active' and any([i.status == 'active' and i.awardID == last_award.id for i in tender.contracts]):
+                lot.date = get_now()
                 lot.status = 'complete'
         statuses = set([lot.status for lot in tender.lots])
         if statuses == set(['cancelled']):
@@ -461,6 +466,8 @@ def check_tender_status(request):
             tender.status = 'unsuccessful'
         if tender.contracts and tender.contracts[-1].status == 'active':
             tender.status = 'complete'
+    if tender.status in ['complete', 'unsuccessful', 'cancelled']:
+        tender.date = get_now()
 
 
 def add_next_award(request):
