@@ -3,6 +3,7 @@ from openprocurement.api.models import get_now
 from openprocurement.api.utils import (
     save_tender,
     set_ownership,
+    generate_id,
     apply_patch,
     opresource,
     json_view,
@@ -114,7 +115,8 @@ class TenderBidResource(APIResource):
             self.request.errors.status = 403
             return
         bid = self.request.validated['bid']
-        transfer = bid.transfer_token
+        transfer = generate_id()
+        bid.transfer_token = transfer
         set_ownership(bid, self.request)
         tender.bids.append(bid)
         tender.modified = False
