@@ -201,7 +201,9 @@ def get_revision_changes(dst, src):
 
 
 def set_ownership(item, request):
-    item.owner = request.authenticated_userid
+    # for competitive dialogue bridge role should not change tender owner
+    if request.authenticated_role != 'competitive_dialogue':
+        item.owner = request.authenticated_userid
     item.owner_token = generate_id()
 
 
