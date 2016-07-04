@@ -345,7 +345,7 @@ class Document(Model):
     class Options:
         roles = {
             'create': blacklist('id', 'datePublished', 'dateModified', 'author', 'download_url'),
-            'edit': blacklist('id', 'url', 'datePublished', 'dateModified', 'author', 'md5', 'download_url'),
+            'edit': blacklist('id', 'url', 'datePublished', 'dateModified', 'author', 'hash', 'download_url'),
             'embedded': (blacklist('url', 'download_url') + schematics_embedded_role),
             'default': blacklist("__parent__"),
             'view': (blacklist('revisions') + schematics_default_role),
@@ -353,7 +353,7 @@ class Document(Model):
         }
 
     id = MD5Type(required=True, default=lambda: uuid4().hex)
-    md5 = MD5Type()
+    hash = MD5Type()
     documentType = StringType(choices=[
         'tenderNotice', 'awardNotice', 'contractNotice',
         'notice', 'biddingDocuments', 'technicalSpecifications',
@@ -404,7 +404,7 @@ class Document(Model):
                 if roles[role if role in roles else 'default'](field, []):
                     return url
         from openprocurement.api.utils import generate_docservice_url
-        if not self.md5:
+        if not self.hash:
             path = [i for i in urlparse(url).path.split('/') if len(i) == 32 and not set(i).difference(hexdigits)]
             return generate_docservice_url(request, doc_id, False, '{}/{}'.format(path[0], path[-1]))
         return generate_docservice_url(request, doc_id, False)

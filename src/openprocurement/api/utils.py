@@ -32,7 +32,7 @@ PKG = get_distribution(__package__)
 LOGGER = getLogger(PKG.project_name)
 VERSION = '{}.{}'.format(int(PKG.parsed_version[0]), int(PKG.parsed_version[1]) if PKG.parsed_version[1].isdigit() else 0)
 ROUTE_PREFIX = '/api/{}'.format(VERSION)
-DOCUMENT_BLACKLISTED_FIELDS = ('title', 'format', 'id', 'url', 'dateModified', 'md5')
+DOCUMENT_BLACKLISTED_FIELDS = ('title', 'format', 'id', 'url', 'dateModified', 'hash')
 ACCELERATOR_RE = compile(r'.accelerator=(?P<accelerator>\d+)')
 SESSION = Session()
 json_view = partial(view, renderer='json')
@@ -105,8 +105,8 @@ def upload_file(request, blacklisted_fields=DOCUMENT_BLACKLISTED_FIELDS):
             request.errors.add('body', 'url', "Can add document only from document service.")
             request.errors.status = 403
             raise error_handler(request.errors)
-        if not document.md5:
-            request.errors.add('body', 'md5', "This field is required.")
+        if not document.hash:
+            request.errors.add('body', 'hash', "This field is required.")
             request.errors.status = 422
             raise error_handler(request.errors)
         keyid = parsed_query['KeyID']
@@ -123,7 +123,7 @@ def upload_file(request, blacklisted_fields=DOCUMENT_BLACKLISTED_FIELDS):
             request.errors.add('body', 'url', "Document url signature invalid.")
             request.errors.status = 422
             raise error_handler(request.errors)
-        if not dockey.verify(signature, "{}\0{}".format(key, document.md5)):
+        if not dockey.verify(signature, "{}\0{}".format(key, document.hash)):
             request.errors.add('body', 'url', "Document url invalid.")
             request.errors.status = 422
             raise error_handler(request.errors)
@@ -218,7 +218,7 @@ def get_file(request):
         else:
             if 'download=' not in document.url:
                 key = urlparse(document.url).path.replace('/get/', '')
-            if not document.md5:
+            if not document.hash:
                 url = generate_docservice_url(request, key, prefix='{}/{}'.format(db_doc_id, document.id))
             else:
                 url = generate_docservice_url(request, key)
