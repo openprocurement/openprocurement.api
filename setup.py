@@ -14,14 +14,14 @@ requires = [
     'gevent',
     'iso8601',
     'jsonpatch',
+    'libnacl',
     'pbkdf2',
     'pycrypto',
-    'pyelliptic',
     'pyramid_exclog',
+    'requests',
     'rfc6266',
     'setuptools',
     'tzlocal',
-    'requests',
 ]
 test_requires = requires + [
     'webtest',

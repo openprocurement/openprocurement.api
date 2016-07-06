@@ -406,7 +406,7 @@ class BaseTenderWebTest(BaseWebTest):
                 url = test.generate_docservice_url()
                 response.status_code = 200
                 response.encoding = 'application/json'
-                response._content = '{{"data":{{"url":"{url}","md5":"{md5}","format":"application/msword","title":"name.doc"}},"get_url":"{url}"}}'.format(url=url, md5='0'*32)
+                response._content = '{{"data":{{"url":"{url}","hash":"{md5}","format":"application/msword","title":"name.doc"}},"get_url":"{url}"}}'.format(url=url, md5='0'*32)
                 response.reason = '200 OK'
             return response
 
@@ -415,9 +415,9 @@ class BaseTenderWebTest(BaseWebTest):
 
     def generate_docservice_url(self):
         uuid = uuid4().hex
-        keyid = self.app.app.registry.keyring.keys()[-1]
-        key = self.app.app.registry.keyring[keyid]
-        signature = b64encode(key.sign("{}\0{}".format(uuid, '0' * 32)))
+        key = self.app.app.registry.docservice_key
+        keyid = key.hex_vk()[:8]
+        signature = b64encode(key.signature("{}\0{}".format(uuid, '0' * 32)))
         query = {'Signature': signature, 'KeyID': keyid}
         return "http://localhost/get/{}?{}".format(uuid, urlencode(query))
 

@@ -7,6 +7,7 @@ import os
 from base64 import b64decode, b64encode
 from couchdb import Server as CouchdbServer, Session
 from couchdb.http import Unauthorized, extract_credentials
+from libnacl.sign import Signer, Verifier
 from logging import getLogger
 from openprocurement.api.auth import AuthenticationPolicy, authenticated_role, check_accreditation
 from openprocurement.api.design import sync_design
@@ -15,7 +16,6 @@ from openprocurement.api.models import Tender
 from openprocurement.api.utils import forbidden, add_logging_context, set_logging_context, extract_tender, request_params, isTender, set_renderer, beforerender, register_tender_procurementMethodType, tender_from_data, ROUTE_PREFIX
 from pbkdf2 import PBKDF2
 from pkg_resources import iter_entry_points
-from pyelliptic import ECC
 from pyramid.authorization import ACLAuthorizationPolicy as AuthorizationPolicy
 from pyramid.config import Configurator
 from pyramid.events import NewRequest, BeforeRender, ContextFound
@@ -167,19 +167,11 @@ def main(global_config, **settings):
     config.registry.docservice_url = settings.get('docservice_url')
     config.registry.docservice_username = settings.get('docservice_username')
     config.registry.docservice_password = settings.get('docservice_password')
-    curve = settings.get('curve', 'secp384r1')
-    privkey = b64decode(settings.get('privkey')) if 'privkey' in settings else None
-    pubkey = b64decode(settings.get('pubkey')) if 'pubkey' in settings else None
-    config.registry.docservice_key = ECC(pubkey=pubkey, privkey=privkey, curve=curve)
-    if 'dockeys' in settings:
-        dockeys = settings.get('dockeys')
-        config.registry.keyring = keyring = {}
-        for key in dockeys.split('\0'):
-            decoded_key = b64decode(key)
-            keyring[decoded_key.encode('hex')[2:10]] = ECC(pubkey=decoded_key, curve=curve)
-    else:
-        key = ECC(curve=curve)
-        config.registry.keyring = {key.get_pubkey().encode('hex')[2:10]: key}
+    config.registry.docservice_key = dockey = Signer(settings.get('dockey', '').decode('hex'))
+    config.registry.keyring = keyring = {}
+    dockeys = settings.get('dockeys') if 'dockeys' in settings else dockey.hex_vk()
+    for key in dockeys.split('\0'):
+        keyring[key[:8]] = Verifier(key)
 
     config.registry.server_id = settings.get('id', '')
     config.registry.health_threshold = float(settings.get('health_threshold', 99))
