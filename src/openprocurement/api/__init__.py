@@ -167,6 +167,7 @@ def main(global_config, **settings):
     config.registry.docservice_url = settings.get('docservice_url')
     config.registry.docservice_username = settings.get('docservice_username')
     config.registry.docservice_password = settings.get('docservice_password')
+    config.registry.docservice_upload_url = settings.get('docservice_upload_url')
     config.registry.docservice_key = dockey = Signer(settings.get('dockey', '').decode('hex'))
     config.registry.keyring = keyring = {}
     dockeys = settings.get('dockeys') if 'dockeys' in settings else dockey.hex_vk()

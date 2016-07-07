@@ -164,7 +164,8 @@ def upload_file(request, blacklisted_fields=DOCUMENT_BLACKLISTED_FIELDS):
             if attr_name not in blacklisted_fields:
                 setattr(document, attr_name, getattr(first_document, attr_name))
     if request.registry.docservice_url:
-        url = urljoin(request.registry.docservice_url, '/upload')
+        parsed_url = urlparse(request.registry.docservice_url)
+        url = request.registry.docservice_upload_url or urlunsplit((parsed_url.scheme, parsed_url.netloc, '/upload', '', ''))
         files = {'file': (filename, in_file, content_type)}
         doc_url = None
         index = 10
