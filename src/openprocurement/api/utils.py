@@ -231,7 +231,7 @@ def save_tender(request):
             obj = resolve_pointer(tender, change['path'].replace('/status', ''))
             if obj and hasattr(obj, "date"):
                 date_path = change['path'].replace('/status', '/date')
-                if obj.date and any([p for p in patch if date_path == p['path']]):
+                if obj.date and not any([p for p in patch if date_path == p['path']]):
                     patch.append({"op": "replace", "path": date_path, "value": obj.date.isoformat()})
                 elif not obj.date:
                     patch.append({"op": "remove", "path": date_path})
