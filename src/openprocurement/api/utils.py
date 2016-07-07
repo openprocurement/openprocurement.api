@@ -222,12 +222,20 @@ def save_tender(request):
     patch = get_revision_changes(tender.serialize("plain"), request.validated['tender_src'])
     if patch:
         now = get_now()
-        status_changes = [p for p in patch if p['path'].endswith("/status")]
+        status_changes = [
+            p
+            for p in patch
+            if not p['path'].startswith('/bids/') and p['path'].endswith("/status") and p['op'] == "replace"
+        ]
         for change in status_changes:
             obj = resolve_pointer(tender, change['path'].replace('/status', ''))
-            if obj and hasattr(obj, "date") and not change['path'].startswith('/bids/'):
+            if obj and hasattr(obj, "date"):
+                date_path = change['path'].replace('/status', '/date')
+                if obj.date and any([p for p in patch if date_path == p['path']]):
+                    patch.append({"op": "replace", "path": date_path, "value": obj.date.isoformat()})
+                elif not obj.date:
+                    patch.append({"op": "remove", "path": date_path})
                 obj.date = now
-        patch = get_revision_changes(tender.serialize("plain"), request.validated['tender_src'])
         tender.revisions.append(type(tender).revisions.model_class({'author': request.authenticated_userid, 'changes': patch, 'rev': tender.rev}))
         old_dateModified = tender.dateModified
         if getattr(tender, 'modified', True):
