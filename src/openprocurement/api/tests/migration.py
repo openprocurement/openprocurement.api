@@ -710,6 +710,28 @@ class MigrateTest(BaseWebTest):
         migrated_item = self.db.get(_id)
         self.assertEqual('/tenders/13fcd78ee62e40dda3a89dc930e5bac9/contracts/3e9b292b2a7540a89797de335bf053ce/documents/ebcb5dd7f7384b0fbfbed2dc4252fa6e?download=10367238a2964ee18513f209d9b6d1d3', migrated_item['contracts'][0]['documents'][0]['url'])
 
+    def test_migrate_from21to22(self):
+        set_db_schema_version(self.db, 21)
+        data = {
+            'doc_type': 'Tender',
+            "awards": [
+                {
+                    "id": "award_id",
+                    "complaints": [
+                        {
+                            "id": "complaint_id",
+                            "type": "claim",
+                            "dateEscalated": "2016-05-11T15:09:53.751926+03:00"
+                        }
+                    ]
+                }
+            ]
+        }
+        _id, _rev = self.db.save(data)
+        migrate_data(self.db, 22)
+        migrated_item = self.db.get(_id)
+        self.assertEqual(migrated_item['awards'][0]['complaints'][0]['type'], 'complaint')
+
 
 def suite():
     suite = unittest.TestSuite()
