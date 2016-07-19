@@ -271,6 +271,7 @@ class DumpsTestAppwebtest(TestApp):
 class TenderResourceTest(BaseTenderWebTest):
     initial_data = test_tender_data
     initial_bids = test_bids
+    docservice = True
 
     def setUp(self):
         self.app = DumpsTestAppwebtest(
@@ -279,6 +280,12 @@ class TenderResourceTest(BaseTenderWebTest):
         self.app.authorization = ('Basic', ('broker', ''))
         self.couchdb_server = self.app.app.registry.couchdb_server
         self.db = self.app.app.registry.db
+        if self.docservice:
+            self.setUpDS()
+            self.app.app.registry.docservice_url = 'http://public.docs-sandbox.openprocurement.org'
+
+    def generate_docservice_url(self):
+        return super(TenderResourceTest, self).generate_docservice_url().replace('/localhost/', '/public.docs-sandbox.openprocurement.org/')
 
     def test_docs_2pc(self):
         # Creating tender in draft status

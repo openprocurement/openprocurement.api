@@ -1,4 +1,4 @@
-POST /api/2.3/tenders/cf18944f39e64959b68050125c8d0ce5/cancellations?acc_token=3ced854f7d5b4da0aac9cf653f84618b HTTP/1.0
+POST /api/2.3/tenders/e2cec5ad28bd4c3a8fe3364457b0ece8/cancellations?acc_token=9af449b524a647ff9b25b441219a2a7d HTTP/1.0
 Authorization: Basic YnJva2VyOg==
 Content-Length: 43
 Content-Type: application/json
@@ -13,15 +13,15 @@ Host: api-sandbox.openprocurement.org
 
 201 Created
 Content-Type: application/json; charset=UTF-8
-Location: http://api-sandbox.openprocurement.org/api/2.3/tenders/cf18944f39e64959b68050125c8d0ce5/cancellations/98f4c346546e45f7b0772e5d42a6ff7b
+Location: http://api-sandbox.openprocurement.org/api/2.3/tenders/e2cec5ad28bd4c3a8fe3364457b0ece8/cancellations/8e0c548aa7174612a3b933019d823fa7
 
 {
   "data": {
-    "date": "2016-05-12T18:08:26.358907+03:00", 
+    "date": "2016-07-19T16:09:40.324185+03:00", 
     "status": "pending", 
     "reason": "cancellation reason", 
     "cancellationOf": "tender", 
-    "id": "98f4c346546e45f7b0772e5d42a6ff7b"
+    "id": "8e0c548aa7174612a3b933019d823fa7"
   }
 }
 

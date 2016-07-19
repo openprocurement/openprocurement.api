@@ -1,4 +1,4 @@
-PATCH /api/2.3/tenders/cf18944f39e64959b68050125c8d0ce5/cancellations/98f4c346546e45f7b0772e5d42a6ff7b?acc_token=3ced854f7d5b4da0aac9cf653f84618b HTTP/1.0
+PATCH /api/2.3/tenders/e2cec5ad28bd4c3a8fe3364457b0ece8/cancellations/8e0c548aa7174612a3b933019d823fa7?acc_token=9af449b524a647ff9b25b441219a2a7d HTTP/1.0
 Authorization: Basic YnJva2VyOg==
 Content-Length: 30
 Content-Type: application/json
@@ -19,30 +19,32 @@ Content-Type: application/json; charset=UTF-8
     "status": "active", 
     "documents": [
       {
+        "hash": "00000000000000000000000000000000", 
         "description": "Changed description", 
         "title": "Notice.pdf", 
-        "url": "http://api-sandbox.openprocurement.org/api/2.3/tenders/cf18944f39e64959b68050125c8d0ce5/cancellations/98f4c346546e45f7b0772e5d42a6ff7b/documents/07d2699cf4a74e84803e074aedd74a56?download=ef53296831cf4fe68a9535968d589a08", 
+        "url": "http://public.docs-sandbox.openprocurement.org/get/c6ee11210ce6411080d733dd8e15564f?KeyID=f183a4c7&Signature=pJ67o5mrEUqwKIJv%2FitvUBWE%252BFl7vhPINBLnMNqDRpzJMYZMlyfrXwk0GpIHh6%252BvZk%252BeUOD0F2jCJMozfiAKCWMAAAA2AAAAZQAAAGUAAAAxAAAAMQAAADIAAAAxAAAA", 
         "format": "application/pdf", 
         "documentOf": "tender", 
-        "datePublished": "2016-05-12T18:08:26.601251+03:00", 
-        "id": "07d2699cf4a74e84803e074aedd74a56", 
-        "dateModified": "2016-05-12T18:08:26.601295+03:00"
+        "datePublished": "2016-07-19T16:09:40.517953+03:00", 
+        "id": "0db27f40dbb445e29756fbd2a70087bf", 
+        "dateModified": "2016-07-19T16:09:40.517994+03:00"
       }, 
       {
+        "hash": "00000000000000000000000000000000", 
         "description": "Changed description", 
         "title": "Notice-2.pdf", 
-        "url": "http://api-sandbox.openprocurement.org/api/2.3/tenders/cf18944f39e64959b68050125c8d0ce5/cancellations/98f4c346546e45f7b0772e5d42a6ff7b/documents/07d2699cf4a74e84803e074aedd74a56?download=d2cda14617f7480fbe760d9d62461e3b", 
+        "url": "http://public.docs-sandbox.openprocurement.org/get/215dc357e63d4b21be39517321703c18?KeyID=f183a4c7&Signature=uh5nwMQDGg8cHtGh0%2FoAkB081SvoBqGkvDfoVLFt%252B7Gxxxuk8RsyVVmX39ybaRdfywMjh%252BY%2F2LN1anzj%2FRPDDDIAAAAxAAAANQAAAGQAAABjAAAAMwAAADUAAAA3AAAA", 
         "format": "application/pdf", 
         "documentOf": "tender", 
-        "datePublished": "2016-05-12T18:08:26.601251+03:00", 
-        "id": "07d2699cf4a74e84803e074aedd74a56", 
-        "dateModified": "2016-05-12T18:08:27.101227+03:00"
+        "datePublished": "2016-07-19T16:09:40.517953+03:00", 
+        "id": "0db27f40dbb445e29756fbd2a70087bf", 
+        "dateModified": "2016-07-19T16:09:41.018989+03:00"
       }
     ], 
     "reason": "cancellation reason", 
-    "date": "2016-05-12T18:08:26.358907+03:00", 
+    "date": "2016-07-19T16:09:40.324185+03:00", 
     "cancellationOf": "tender", 
-    "id": "98f4c346546e45f7b0772e5d42a6ff7b"
+    "id": "8e0c548aa7174612a3b933019d823fa7"
   }
 }
 
