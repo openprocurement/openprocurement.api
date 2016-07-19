@@ -182,12 +182,14 @@ def upload_file(request, blacklisted_fields=DOCUMENT_BLACKLISTED_FIELDS):
             else:
                 if r.status_code == 200 and json_data.get('data', {}).get('url'):
                     doc_url = json_data['data']['url']
+                    doc_hash = json_data['data']['hash']
                     break
             index -= 1
         else:
             request.errors.add('body', 'data', "Can't upload document to document service.")
             request.errors.status = 422
             raise error_handler(request.errors)
+        document.hash = doc_hash
         key = urlparse(doc_url).path.split('/')[-1]
     else:
         key = generate_id()
