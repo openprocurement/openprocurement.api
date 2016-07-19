@@ -6,6 +6,110 @@
    },
    "data":[
       {
+         "category":"AE",
+         "code":"AE-ACCI",
+         "name":"Ajman Chamber of Commerce and Industry",
+         "url":"https://www.ajmanchamber.ae/en/Pages/default.aspx",
+         "public-database":false,
+         "description":"There is Commercial and Industrial search. You can also use an online enquiry form to find necessary data. There are contact details of Ajman Chamber and heads of its sectors."
+      },
+      {
+         "category":"AE",
+         "code":"AE-ADCD",
+         "name":"Abu Dhabi Commercial Directory",
+         "url":"http://www.abudhabichamber.ae/English/E-Services/Pages/EServices-Page.aspx?sm=1&ty=s",
+         "public-database":true,
+         "description":"Register includes Unified, Mem No, company name, city, telephone, email."
+      },
+      {
+         "category":"AE",
+         "code":"AE-AFZ",
+         "name":"Ajman Free Zone Authority",
+         "url":"http://www.afz.gov.ae/",
+         "description":"Use Authority's website to find its address, email and call center contacts.",
+         "public-database":false
+      },
+      {
+         "category":"AE",
+         "code":"AE-DCCI",
+         "name":"Dubai Chamber of Commerce and Industry - Commercial Directory",
+         "url":"http://www.dcciinfo.com/",
+         "public-database":true,
+         "description":"Register includes company name, P.O. box number, address, telephone."
+      },
+      {
+         "category":"AE",
+         "code":"AE-DFSA",
+         "name":"Dubai Financial Services Authority - Public Register",
+         "url":"https://www.dfsa.ae/Public-Register/Firm",
+         "public-database":true,
+         "description":"Includes DFSA reference number, address, telephone."
+      },
+      {
+         "category":"AE",
+         "code":"AE-DIFC",
+         "name":"Dubai International Financial Centre",
+         "url":"https://www.difc.ae/public-register",
+         "public-database":true,
+         "description":"Register includes Reg Number, Activity, Company Name, Telephone, Address, etc."
+      },
+      {
+         "category":"AE",
+         "code":"AE-FFZ",
+         "name":"Fujairah Free Zone Company Listing",
+         "url":"http://www.fujairahfreetradezone.com/appdir/company-listing.php",
+         "public-database":true,
+         "description":"There is no search available, but there is a listing of companies with telephone and fax numbers"
+      },
+      {
+         "category":"AE",
+         "code":"AE-FUJCCI",
+         "name":"Fujairah Chamber of Commerce and Industry",
+         "url":"http://www.fujcci.ae/",
+         "public-database":false,
+         "description":"Chamber of Commerce and Industry can be contacted via form on the website, phone, fax, email, address."
+      },
+      {
+         "category":"AE",
+         "code":"AE-HFZA",
+         "name":"Hamriyah Free Zone Authority",
+         "url":"http://www.hfza.ae/en-us/directory.aspx",
+         "public-database":true,
+         "description":"Register contains company name, PO box, telephone, email, license number, activity, etc."
+      },
+      {
+         "category":"AE",
+         "code":"AE-RAKIA",
+         "name":"RAK Investment Authority",
+         "url":"http://www.rakia.ae/",
+         "public-database":false,
+         "description":"There is no open registry but you can make an enquiry via contact form or telephone call."
+      },
+      {
+         "category":"AE",
+         "code":"AE-SAIF",
+         "name":"Sharjah Airport International Free Zone",
+         "url":"http://www.saif-zone.com/en/InvestorLounge/Pages/Investors.aspx",
+         "public-database":true,
+         "description":"Register contains company name, business type, telephone, email, PO box."
+      },
+      {
+         "category":"AE",
+         "code":"AE-SCCI",
+         "name":"Sharjah Chamber of Commerce and Industry:Business Directory",
+         "url":"http://www.sharjah.gov.ae/EN/Services/Pages/BusinessDirectory.aspx",
+         "public-database":false,
+         "description":"Use business directory search or make an inquiry via form on the website."
+      },
+      {
+         "category":"AE",
+         "code":"AE-UAQCCI",
+         "name":"Umm al-Quwain Chamber of Commerce and Industry",
+         "url":"http://www.uaqchamber.ae/",
+         "public-database":true,
+         "description":"Register includes company name, P.O. box, address, activity, registration date."
+      },
+      {
          "category":"AF",
          "code":"AF-CBR",
          "name":"Afghanistan Central Business Registry",
@@ -54,12 +158,28 @@
          "description":null
       },
       {
+         "category":"BE",
+         "code":"BE-GTCF",
+         "name":"Au Greffe du Tribunal de Commerce Francophone de Bruxelles",
+         "url":"http://www.juridat.be/tribunal_commerce/bruxelles/index.htm",
+         "public-database":false,
+         "description":"The Registry of the Francophone Brussels Commercial Court"
+      },
+      {
          "category":"CA",
          "code":"CA-CRA_ACR",
          "name":"Canadian Revenue Agency / Agence du revenu du Canada",
          "url":"http://www.cra-arc.gc.ca/",
          "public-database":true,
          "description":"CRA_ACR is legal requirement for bilingual use"
+      },
+      {
+         "category":"CN",
+         "code":"CN-SAIC",
+         "name":"State Administration for Industry and Commerce (SAIC)",
+         "url":"http://gsxt.saic.gov.cn/",
+         "public-database":true,
+         "description":"The database is only available in Chinese language"
       },
       {
          "category":"CO",
@@ -70,6 +190,30 @@
          "description":"The Bogota Chamber of Commerce is a private, non-for-profit organization whose goal is to foster a sustainable Bogota-Region in the long term, by promoting its residents' prosperity, through services which enhance and strengthen the enterprise capabilities present in the region, and which improve the business environment with an impact over public policies."
       },
       {
+         "category":"CY",
+         "code":"CY-DRCOR",
+         "name":"Cyprus Department of Registrar of Companies and Official Receiver (DRCOR)",
+         "url":"https://efiling.drcor.mcit.gov.cy/DrcorPublic/Default.aspx?cultureInfo=en-AU",
+         "public-database":true,
+         "description":"Data includes:Name, Reg. Number, Type, Registration Date, Organisation Status"
+      },
+      {
+         "category":"CZ",
+         "code":"CZ-ICO",
+         "name":"Access to Registers of Economic Subjects / Entities (ARES)",
+         "url":"http://wwwinfo.mfcr.cz/ares/ares_es.html.en",
+         "public-database":true,
+         "description":"Public registers comprising:the Commercial Register, the Federal Register, the Register of Foundations, the Register\u2019s Institute, and the Register of Public Service Companies. Information on companies is searchable in English and is free-of-charge."
+      },
+      {
+         "category":"DE",
+         "code":"DE-CRP",
+         "name":"Common Register Portal of the German Federal States (CRP)",
+         "url":"https://www.handelsregister.de/rp_web/welcome.do",
+         "public-database":true,
+         "description":"Any search for a company and retrieving of published information is free of charge. For any other information you will be charged a fee upon a respective notice."
+      },
+      {
          "category":"DK",
          "code":"DK-CVR",
          "name":"Danish Central Business Register",
@@ -78,12 +222,28 @@
          "description":"The Central Business Register at Virk is available with English headings and categories. It can be used to search for information on all Danish businesses."
       },
       {
+         "category":"EE",
+         "code":"EE-RIK",
+         "name":"Centre of Registers and Information Systems (RIK)",
+         "url":"http://www.rik.ee/en/e-business-register",
+         "public-database":true,
+         "description":"You can view the data related to you free-of-charge by logging in with your ID-card."
+      },
+      {
          "category":"ES",
          "code":"ES-DIR3",
          "name":"Common Directory of Organizational Units and Offices - DIR3",
          "url":"http://administracionelectronica.gob.es/ctt/dir3/descargas",
          "public-database":true,
          "description":"EXCEL Tables: http://administracionelectronica.gob.es/ctt/resources/Soluciones/238/Area%20descargas/Listado%20Oficinas%20AGE.xlsx?idIniciativa=238&idElemento=2745"
+      },
+      {
+         "category":"ES",
+         "code":"ES-RMS",
+         "name":"Commercial Register of the Kingdom of Spain",
+         "url":"http://www.rmc.es/Home.aspx",
+         "public-database":true,
+         "description":"The Central Mercantile Register offers two methods of obtaining information about registered companies and/or company names:1) USERS WITHOUT AGREEMENT. - They should pay the corresponding legal tax by credit card. 2) USERS WITH AGREEMENT.- They must use the password assigned by the Central Mercantile Register after the Agreement has been signed."
       },
       {
          "category":"ET",
@@ -100,6 +260,14 @@
          "url":"http://www.prh.fi/en/index.html",
          "public-database":true,
          "description":null
+      },
+      {
+         "category":"FR",
+         "code":"FR-INSEE",
+         "name":"The National Institute of Statistics and Economic Studies / Institute National de la Statistique et des etudes economiques",
+         "url":"http://www.insee.fr/fr/service/default.asp?page=entreprises/entreprise.htm",
+         "public-database":false,
+         "description":"The National Institute of Statistics and Economic Studies provide a registration service for companies and associations with details being held on the SIRENE database"
       },
       {
          "category":"FR",
@@ -124,6 +292,14 @@
          "url":"http://www.companieshouse.gov.uk/",
          "public-database":true,
          "description":null
+      },
+      {
+         "category":"GB",
+         "code":"GB-EDU",
+         "name":"Edubase, by the Department of Education",
+         "url":"http://www.education.gov.uk/edubase/home.xhtml",
+         "public-database":true,
+         "description":"Edubase is provided by the Department of Education and provides a URN for each school, university and other educational establishment in England and Wales"
       },
       {
          "category":"GB",
@@ -238,6 +414,14 @@
          "description":null
       },
       {
+         "category":"IL",
+         "code":"IL-ROC",
+         "name":"Israeli Corporations Authority (Department of Justice) also known as The Registrar of Companies (ROC)",
+         "url":"http://havarot.justice.gov.il/",
+         "public-database":true,
+         "description":"The register can be searched at http://havarot.justice.gov.il/ using part or all of a company name in English or Hebrew, or by entering the company number. The search interface and the results are in Hebrew. Free information on a company includes type of company, address, legal status and purpose of the company. Additional information such as details of directors, total authorized capital, division of share capital, shareholders, charges and liabilities is priced."
+      },
+      {
          "category":"IM",
          "code":"IM-CR",
          "name":"Isle of Man Companies Registry",
@@ -260,6 +444,14 @@
          "url":"http://www.mca.gov.in/",
          "public-database":true,
          "description":"MCA regulates corporate affairs in India through the Companies Act, 1956, 2013 and other allied Acts, Bills and Rules."
+      },
+      {
+         "category":"IT",
+         "code":"IT-RI",
+         "name":"The business register of the Italian Chambers of Commerce",
+         "url":"http://www.registroimprese.it/en/web/guest/home",
+         "public-database":true,
+         "description":"Access to the register and to limited information (such as name and address of company) is free of charge. Registration is also free of charge. However, on-line access to complete information is available only by pay on demand."
       },
       {
          "category":"JE",
@@ -308,6 +500,14 @@
          "url":"http://www.lcn.org.ls/",
          "public-database":false,
          "description":null
+      },
+      {
+         "category":"LV",
+         "code":"LV-RE",
+         "name":"Register of Enterprises of the Republic of Latvia",
+         "url":"http://www.ur.gov.lv/",
+         "public-database":true,
+         "description":"Free of charge information includes type of legal entity; registered office; new or current name or trade name and previously registered or historical name or trade name; registration number; Single Euro Payment Area beneficiary identification code (if allocated); registration date; date of deletion of the legal entity from the register (or the date of reorganisation if the reason for the deletion is a reorganisation); deadline for registration of religious organisations that are subject to re-registration."
       },
       {
          "category":"MM",
@@ -386,7 +586,7 @@
          "code":"NP-CRO",
          "name":"Company Registrar Office",
          "url":"http://www.cro.gov.np/",
-         "public-database":false,
+         "public-database":true,
          "description":null
       },
       {
@@ -406,12 +606,60 @@
          "description":"The PCP Certification Programme seeks to bring transparency, accountability and good governance in the nonprofit sector in Pakistan. The first initiative of its kind in South Asia; it involves the evaluation of a nonprofit organisation on standardised parameters of internal governance, financial management and programme delivery."
       },
       {
+         "category":"PK",
+         "code":"PK-VSWA",
+         "name":"Pakistan Voluntary Social Welfare Agency",
+         "url":"No Website available",
+         "public-database":false,
+         "description":"All NGOs are required to register with their local Voluntary Social Welfare department"
+      },
+      {
+         "category":"PL",
+         "code":"PL-REGON",
+         "name":"National Official Business Register",
+         "url":"http://www.stat.gov.pl/regon/, http://bip.stat.gov.pl/en/regon/",
+         "public-database":true,
+         "description":"Every business entry in Poland is assigned an ID in 3 different registries:business, court, and tax. This is the business register."
+      },
+      {
+         "category":"PL",
+         "code":"PL-NIP",
+         "name":"Tax Identification Number",
+         "url":"https://ems.ms.gov.pl/krs/wyszukiwaniepodmiotu, https://wyszukiwarkaregon.stat.gov.pl/appBIR/index.aspx",
+         "public-database":true,
+         "description":"Every business entry in Poland is assigned an ID in 3 different registries:business, court, and tax. This is the tax register."
+      },
+      {
+         "category":"PL",
+         "code":"PL-KRS",
+         "name":"The National Court Register",
+         "url":"https://ems.ms.gov.pl/krs/wyszukiwaniepodmiotu",
+         "public-database":true,
+         "description":"Every business entry in Poland is assigned an ID in 3 different registries:business, court, and tax. This is the court register."
+      },
+      {
+         "category":"RS",
+         "code":"RS-APR",
+         "name":"Serbian Business Registrations Agency (APR)",
+         "url":"http://www.apr.gov.rs/eng/Home.aspx",
+         "public-database":true,
+         "description":"The SBRA runs business registers as single, centralized, public electronic databases."
+      },
+      {
          "category":"SE",
          "code":"SE-BLV",
          "name":"Bolagsverket / Swedish Companies Registration Office",
          "url":"http://www.bolagsverket.se/",
          "public-database":true,
          "description":null
+      },
+      {
+         "category":"SG",
+         "code":"SG-ACRA",
+         "name":"Accounting and Corporate Regulatory Authority (ACRA)",
+         "url":"http://www.acra.gov.sg/",
+         "public-database":true,
+         "description":"The Accounting and Corporate Regulatory Authority (ACRA) is the national regulator of business entities, public accountants and corporate service providers in Singapore"
       },
       {
          "category":"SK",
@@ -450,7 +698,7 @@
          "code":"UG-RSB",
          "name":"Registration Services Bureau",
          "url":"http://www.ursb.go.ug/",
-         "public-database":false,
+         "public-database":true,
          "description":null
       },
       {
@@ -502,6 +750,14 @@
          "description":"See Donor, Agency, and Delivery Channel codes"
       },
       {
+         "category":"AD",
+         "code":"XM-EORI",
+         "name":"Economic Operators Identification and Registration system",
+         "url":"http://ec.europa.eu/taxation_customs/dds2/eos/eori_validation.jsp",
+         "public-database":true,
+         "description":"This site allows to validate EORI numbers and provides access to the information related to Authorised Economic Operators (AEO). An EORI number is unique throughout the EU, assigned by a customs authority in a member state to economic operators (businesses) or persons."
+      },
+      {
          "category":"XM",
          "code":"XM-OCHA",
          "name":"United Nations Office for the Coordination of Humanitarian Affairs",
@@ -520,10 +776,10 @@
       {
          "category":"ZA",
          "code":"ZA-NPO",
-         "description":null,
+         "name":"Association for Non-Profit Organisations",
          "url":"http://www.npo.gov.za/",
          "public-database":true,
-         "name":"Association for Non-Profit Organisations"
+         "description":null
       },
       {
          "category":"ZA",
@@ -564,66 +820,6 @@
          "url":null,
          "public-database":false,
          "description":null
-      },
-      {
-         "category":"PL",
-         "code":"PL-REGON"
-      },
-      {
-         "category":"PL",
-         "code":"PL-KRS"
-      },
-      {
-         "category":"PL",
-         "code":"PL-NIP"
-      },
-      {
-         "category":"RS",
-         "code":"RS-APR",
-         "name":"Serbian Business Registrations Agency (APR)",
-         "url":"http://www.apr.gov.rs/eng/Home.aspx",
-         "public-database":true,
-         "description":"The SBRA runs business registers as single, centralized, public electronic databases."
-      },
-      {
-         "category":"IL",
-         "code":"IL-ROC",
-         "name":"Israeli Corporations Authority (Department of Justice) also known as The Registrar of Companies (ROC)",
-         "url":"http://havarot.justice.gov.il/",
-         "public-database":true,
-         "description":"The register can be searched at http://havarot.justice.gov.il/ using part or all of a company name in English or Hebrew, or by entering the company number. The search interface and the results are in Hebrew. Free information on a company includes type of company, address, legal status and purpose of the company. Additional information such as details of directors, total authorized capital, division of share capital, shareholders, charges and liabilities is priced."
-      },
-      {
-         "category":"CZ",
-         "code":"CZ-ICO",
-         "name":"Access to Registers of Economic Subjects / Entities (ARES)",
-         "url":"http://wwwinfo.mfcr.cz/ares/ares_es.html.en",
-         "public-database":true,
-         "description":"Public registers comprising: the Commercial Register, the Federal Register, the Register of Foundations, the Register\u2019s Institute, and the Register of Public Service Companies. Information on companies is searchable in English and is free-of-charge."
-      },
-      {
-         "category":"EE",
-         "code":"EE-RIK",
-         "name":"Centre of Registers and Information Systems (RIK)",
-         "url":"http://www.rik.ee/en/e-business-register",
-         "public-database":true,
-         "description":"You can view the data related to you free-of-charge by logging in with your ID-card."
-      },
-      {
-         "category":"CN",
-         "code":"CN-SAIC",
-         "name":"State Administration for Industry and Commerce (SAIC)",
-         "url":"http://gsxt.saic.gov.cn/",
-         "public-database":true,
-         "description":"The database is only available in Chinese language."
-      },
-      {
-         "category":"LV",
-         "code":"LV-RE",
-         "name":"Register of Enterprises of the Republic of Latvia",
-         "url":"http://www.ur.gov.lv/",
-         "public-database":true,
-         "description":"Free of charge information includes type of legal entity; registered office; new or current name or trade name and previously registered or historical name or trade name; registration number; Single Euro Payment Area beneficiary identification code (if allocated); registration date; date of deletion of the legal entity from the register (or the date of reorganisation if the reason for the deletion is a reorganisation); deadline for registration of religious organisations that are subject to re-registration."
       }
    ],
    "metadata":{
