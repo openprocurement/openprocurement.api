@@ -1,4 +1,4 @@
-GET /api/2.3/tenders/e2cec5ad28bd4c3a8fe3364457b0ece8/documents HTTP/1.0
+GET /api/2.3/tenders/3302890835e145a28b553588bc630590/documents HTTP/1.0
 Authorization: Basic YnJva2VyOg==
 Host: api-sandbox.openprocurement.org
 
@@ -12,23 +12,23 @@ Content-Type: application/json; charset=UTF-8
       "hash": "00000000000000000000000000000000", 
       "description": "document description modified", 
       "title": "Notice.pdf", 
-      "url": "http://public.docs-sandbox.openprocurement.org/get/c3a8138ee4814806839e195d3ff587d4?KeyID=f183a4c7&Signature=15Q%2FnbKz39ltZexBN1I3ukGA9jv1qPsje54QMno9N%252BIfqhd1%2FRVr99PuE5FrDgf%2FnBOswbpmOyb4KrI7AY6WBGMAAAAzAAAAYQAAADgAAAAxAAAAMwAAADgAAABlAAAA", 
+      "url": "http://public.docs-sandbox.openprocurement.org/get/d551ecb3e2814e839b8a9acfe77a922b?KeyID=1a692c8c&Signature=GxU%2FZoyZlfIuxZU6SYZOslxugg1zUuq4gERA0veDqA1hSKf3BwaPU%2F7rkEWI7suP2YU%2FUoDaKW0vF6BuRZcSA2QAAAA1AAAANQAAADEAAABlAAAAYwAAAGIAAAAzAAAA", 
       "format": "application/pdf", 
       "documentOf": "tender", 
-      "datePublished": "2016-07-19T16:09:34.974354+03:00", 
+      "datePublished": "2016-07-20T17:17:33.801907+03:00", 
       "documentType": "technicalSpecifications", 
-      "id": "37294fd61f974766b01b673ebe845db0", 
-      "dateModified": "2016-07-19T16:09:34.974395+03:00"
+      "id": "dd616e6144554de68c2871e7abfb2326", 
+      "dateModified": "2016-07-20T17:17:33.801947+03:00"
     }, 
     {
       "hash": "00000000000000000000000000000000", 
       "title": "AwardCriteria-2.pdf", 
-      "url": "http://public.docs-sandbox.openprocurement.org/get/8b4db4990d424c93ab0359bb8e68e197?KeyID=f183a4c7&Signature=b%2FgqVyRoKyHdmgRvlbK7UoZb5HgoY3SCZ9HxZejWr%252Bo8%252BvSXlP9hrdGoIS2c3yQoGMn9rFWKHlojLhnMk00QBzgAAABiAAAANAAAAGQAAABiAAAANAAAADkAAAA5AAAA", 
+      "url": "http://public.docs-sandbox.openprocurement.org/get/89d55a1336c44f6ebc3bdd1239119716?KeyID=1a692c8c&Signature=RS13Nqw%252BNxA3twoLDSnpNEOfPk3AMXRlzsguL1Ve4vTMAumCe%2Fd87LekwyfGVrla3A6TAL62s%2FwtmxDPg5U9ATgAAAA5AAAAZAAAADUAAAA1AAAAYQAAADEAAAAzAAAA", 
       "format": "application/pdf", 
       "documentOf": "tender", 
-      "datePublished": "2016-07-19T16:09:35.395268+03:00", 
-      "id": "6006d472bbd54c29831b66c872ef2cd0", 
-      "dateModified": "2016-07-19T16:09:35.590270+03:00"
+      "datePublished": "2016-07-20T17:17:34.219863+03:00", 
+      "id": "95bccf9d76724dd987ae67e3ab8bdb07", 
+      "dateModified": "2016-07-20T17:17:34.381877+03:00"
     }
   ]
 }

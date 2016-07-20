@@ -1,8 +1,17 @@
-PUT /api/2.3/tenders/e2cec5ad28bd4c3a8fe3364457b0ece8/documents/6006d472bbd54c29831b66c872ef2cd0?acc_token=9af449b524a647ff9b25b441219a2a7d HTTP/1.0
+PUT /api/2.3/tenders/3302890835e145a28b553588bc630590/documents/95bccf9d76724dd987ae67e3ab8bdb07?acc_token=33c91d872a85435089b156e3fc93edb6 HTTP/1.0
 Authorization: Basic YnJva2VyOg==
-Content-Length: 196
-Content-Type: multipart/form-data; boundary=----------a_BoUnDaRy758518409386$
+Content-Length: 335
+Content-Type: application/json
 Host: api-sandbox.openprocurement.org
+
+{
+  "data": {
+    "url": "http://public.docs-sandbox.openprocurement.org/get/89d55a1336c44f6ebc3bdd1239119716?KeyID=1a692c8c&Signature=bHZsybNOvy085ODmMGLBb%2B1JKUED2HA8kvHGn2keR5CDb3pOheNVjtLs%2F%2FyophF9b3q8t0hr%2BHSq4YXA380TDg%3D%3D", 
+    "title": "AwardCriteria-2.pdf", 
+    "hash": "00000000000000000000000000000000", 
+    "format": "application/pdf"
+  }
+}
 
 
 200 OK
@@ -12,12 +21,12 @@ Content-Type: application/json; charset=UTF-8
   "data": {
     "hash": "00000000000000000000000000000000", 
     "title": "AwardCriteria-2.pdf", 
-    "url": "http://public.docs-sandbox.openprocurement.org/get/8b4db4990d424c93ab0359bb8e68e197?KeyID=f183a4c7&Signature=b%2FgqVyRoKyHdmgRvlbK7UoZb5HgoY3SCZ9HxZejWr%252Bo8%252BvSXlP9hrdGoIS2c3yQoGMn9rFWKHlojLhnMk00QBzgAAABiAAAANAAAAGQAAABiAAAANAAAADkAAAA5AAAA", 
+    "url": "http://public.docs-sandbox.openprocurement.org/get/89d55a1336c44f6ebc3bdd1239119716?KeyID=1a692c8c&Signature=RS13Nqw%252BNxA3twoLDSnpNEOfPk3AMXRlzsguL1Ve4vTMAumCe%2Fd87LekwyfGVrla3A6TAL62s%2FwtmxDPg5U9ATgAAAA5AAAAZAAAADUAAAA1AAAAYQAAADEAAAAzAAAA", 
     "format": "application/pdf", 
     "documentOf": "tender", 
-    "datePublished": "2016-07-19T16:09:35.395268+03:00", 
-    "id": "6006d472bbd54c29831b66c872ef2cd0", 
-    "dateModified": "2016-07-19T16:09:35.590270+03:00"
+    "datePublished": "2016-07-20T17:17:34.219863+03:00", 
+    "id": "95bccf9d76724dd987ae67e3ab8bdb07", 
+    "dateModified": "2016-07-20T17:17:34.381877+03:00"
   }
 }
 

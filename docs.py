@@ -400,8 +400,13 @@ class TenderResourceTest(BaseTenderWebTest):
         #
 
         with open('docs/source/tutorial/upload-tender-notice.http', 'w') as self.app.file_obj:
-            response = self.app.post('/tenders/{}/documents?acc_token={}'.format(
-                self.tender_id, owner_token), upload_files=[('file', u'Notice.pdf', 'content')])
+            response = self.app.post_json('/tenders/{}/documents?acc_token={}'.format(self.tender_id, owner_token),
+                {'data': {
+                    'title': u'Notice.pdf',
+                    'url': self.generate_docservice_url(),
+                    'hash': '0' * 32,
+                    'format': 'application/pdf',
+                }})
             self.assertEqual(response.status, '201 Created')
 
         doc_id = response.json["data"]["id"]
@@ -421,8 +426,13 @@ class TenderResourceTest(BaseTenderWebTest):
             self.assertEqual(response.status, '200 OK')
 
         with open('docs/source/tutorial/upload-award-criteria.http', 'w') as self.app.file_obj:
-            response = self.app.post('/tenders/{}/documents?acc_token={}'.format(
-                self.tender_id, owner_token), upload_files=[('file', u'AwardCriteria.pdf', 'content')])
+            response = self.app.post_json('/tenders/{}/documents?acc_token={}'.format(self.tender_id, owner_token),
+                {'data': {
+                    'title': u'AwardCriteria.pdf',
+                    'url': self.generate_docservice_url(),
+                    'hash': '0' * 32,
+                    'format': 'application/pdf',
+                }})
             self.assertEqual(response.status, '201 Created')
 
         doc_id = response.json["data"]["id"]
@@ -433,8 +443,13 @@ class TenderResourceTest(BaseTenderWebTest):
             self.assertEqual(response.status, '200 OK')
 
         with open('docs/source/tutorial/update-award-criteria.http', 'w') as self.app.file_obj:
-            response = self.app.put('/tenders/{}/documents/{}?acc_token={}'.format(
-                self.tender_id, doc_id, owner_token), upload_files=[('file', 'AwardCriteria-2.pdf', 'content2')])
+            response = self.app.put_json('/tenders/{}/documents/{}?acc_token={}'.format(self.tender_id, doc_id, owner_token),
+                {'data': {
+                    'title': u'AwardCriteria-2.pdf',
+                    'url': self.generate_docservice_url(),
+                    'hash': '0' * 32,
+                    'format': 'application/pdf',
+                }})
             self.assertEqual(response.status, '200 OK')
 
         with open('docs/source/tutorial/tender-documents-3.http', 'w') as self.app.file_obj:
@@ -483,8 +498,13 @@ class TenderResourceTest(BaseTenderWebTest):
         #
 
         with open('docs/source/tutorial/upload-bid-proposal.http', 'w') as self.app.file_obj:
-            response = self.app.post('/tenders/{}/bids/{}/documents?acc_token={}'.format(
-                self.tender_id, bid1_id, bids_access[bid1_id]), upload_files=[('file', 'Proposal.pdf', 'content')])
+            response = self.app.post_json('/tenders/{}/bids/{}/documents?acc_token={}'.format(self.tender_id, bid1_id, bids_access[bid1_id]),
+                {'data': {
+                    'title': u'Proposal.pdf',
+                    'url': self.generate_docservice_url(),
+                    'hash': '0' * 32,
+                    'format': 'application/pdf',
+                }})
             self.assertEqual(response.status, '201 Created')
 
         with open('docs/source/tutorial/bidder-documents.http', 'w') as self.app.file_obj:
@@ -595,8 +615,13 @@ class TenderResourceTest(BaseTenderWebTest):
         #
 
         with open('docs/source/tutorial/tender-contract-upload-document.http', 'w') as self.app.file_obj:
-            response = self.app.post('/tenders/{}/contracts/{}/documents?acc_token={}'.format(
-                self.tender_id, self.contract_id, owner_token), upload_files=[('file', 'contract_first_document.doc', 'content')])
+            response = self.app.post_json('/tenders/{}/contracts/{}/documents?acc_token={}'.format(self.tender_id, self.contract_id, owner_token),
+                {'data': {
+                    'title': u'contract_first_document.doc',
+                    'url': self.generate_docservice_url(),
+                    'hash': '0' * 32,
+                    'format': 'application/msword',
+                }})
             self.assertEqual(response.status, '201 Created')
 
         with open('docs/source/tutorial/tender-contract-get-documents.http', 'w') as self.app.file_obj:
@@ -605,8 +630,13 @@ class TenderResourceTest(BaseTenderWebTest):
         self.assertEqual(response.status, '200 OK')
 
         with open('docs/source/tutorial/tender-contract-upload-second-document.http', 'w') as self.app.file_obj:
-            response = self.app.post('/tenders/{}/contracts/{}/documents?acc_token={}'.format(
-                self.tender_id, self.contract_id, owner_token), upload_files=[('file', 'contract_second_document.doc', 'content')])
+            response = self.app.post_json('/tenders/{}/contracts/{}/documents?acc_token={}'.format(self.tender_id, self.contract_id, owner_token),
+                {'data': {
+                    'title': u'contract_second_document.doc',
+                    'url': self.generate_docservice_url(),
+                    'hash': '0' * 32,
+                    'format': 'application/msword',
+                }})
             self.assertEqual(response.status, '201 Created')
 
         with open('docs/source/tutorial/tender-contract-get-documents-again.http', 'w') as self.app.file_obj:
@@ -651,8 +681,13 @@ class TenderResourceTest(BaseTenderWebTest):
         #
 
         with open('docs/source/tutorial/upload-cancellation-doc.http', 'w') as self.app.file_obj:
-            response = self.app.post('/tenders/{}/cancellations/{}/documents?acc_token={}'.format(
-                self.tender_id, cancellation_id, owner_token), upload_files=[('file', u'Notice.pdf', 'content')])
+            response = self.app.post_json('/tenders/{}/cancellations/{}/documents?acc_token={}'.format(self.tender_id, cancellation_id, owner_token),
+                {'data': {
+                    'title': u'Notice.pdf',
+                    'url': self.generate_docservice_url(),
+                    'hash': '0' * 32,
+                    'format': 'application/pdf',
+                }})
             cancellation_doc_id = response.json['data']['id']
             self.assertEqual(response.status, '201 Created')
 
@@ -662,8 +697,13 @@ class TenderResourceTest(BaseTenderWebTest):
             self.assertEqual(response.status, '200 OK')
 
         with open('docs/source/tutorial/update-cancellation-doc.http', 'w') as self.app.file_obj:
-            response = self.app.put('/tenders/{}/cancellations/{}/documents/{}?acc_token={}'.format(
-                self.tender_id, cancellation_id, cancellation_doc_id, owner_token), upload_files=[('file', 'Notice-2.pdf', 'content2')])
+            response = self.app.put_json('/tenders/{}/cancellations/{}/documents/{}?acc_token={}'.format(self.tender_id, cancellation_id, cancellation_doc_id, owner_token),
+                {'data': {
+                    'title': u'Notice-2.pdf',
+                    'url': self.generate_docservice_url(),
+                    'hash': '0' * 32,
+                    'format': 'application/pdf',
+                }})
             self.assertEqual(response.status, '200 OK')
 
         # Activating the request and cancelling tender
@@ -693,8 +733,13 @@ class TenderResourceTest(BaseTenderWebTest):
         complaint1_token = response.json['access']['token']
 
         with open('docs/source/complaints/complaint-submission-upload.http', 'w') as self.app.file_obj:
-            response = self.app.post('/tenders/{}/complaints/{}/documents?acc_token={}'.format(
-                    self.tender_id, complaint1_id, complaint1_token), upload_files=[('file', u'Complaint_Attachement.pdf', 'content')])
+            response = self.app.post_json('/tenders/{}/complaints/{}/documents?acc_token={}'.format(
+                    self.tender_id, complaint1_id, complaint1_token), {'data': {
+                    'title': u'Complaint_Attachement.pdf',
+                    'url': self.generate_docservice_url(),
+                    'hash': '0' * 32,
+                    'format': 'application/pdf',
+                }})
             self.assertEqual(response.status, '201 Created')
 
         with open('docs/source/complaints/complaint-claim.http', 'w') as self.app.file_obj:
@@ -808,8 +853,13 @@ class TenderResourceTest(BaseTenderWebTest):
         self.app.authorization = ('Basic', ('reviewer', ''))
 
         with open('docs/source/complaints/complaint-resolution-upload.http', 'w') as self.app.file_obj:
-            response = self.app.post('/tenders/{}/complaints/{}/documents'.format(
-                    self.tender_id, complaint3_id), upload_files=[('file', u'ComplaintResolution.pdf', 'content')])
+            response = self.app.post_json('/tenders/{}/complaints/{}/documents'.format(
+                    self.tender_id, complaint3_id), {'data': {
+                    'title': u'ComplaintResolution.pdf',
+                    'url': self.generate_docservice_url(),
+                    'hash': '0' * 32,
+                    'format': 'application/pdf',
+                }})
             self.assertEqual(response.status, '201 Created')
 
         with open('docs/source/complaints/complaint-resolve.http', 'w') as self.app.file_obj:
@@ -865,8 +915,13 @@ class TenderResourceTest(BaseTenderWebTest):
         award_id = [i['id'] for i in response.json['data'] if i['status'] == 'pending'][0]
 
         with open('docs/source/qualification/award-pending-upload.http', 'w') as self.app.file_obj:
-            response = self.app.post('/tenders/{}/awards/{}/documents?acc_token={}'.format(
-                self.tender_id, award_id, self.tender_token), upload_files=[('file', u'Unsuccessful_Reason.pdf', 'content')])
+            response = self.app.post_json('/tenders/{}/awards/{}/documents?acc_token={}'.format(
+                self.tender_id, award_id, self.tender_token), {'data': {
+                    'title': u'Unsuccessful_Reason.pdf',
+                    'url': self.generate_docservice_url(),
+                    'hash': '0' * 32,
+                    'format': 'application/pdf',
+                }})
             self.assertEqual(response.status, '201 Created')
 
         with open('docs/source/qualification/award-pending-unsuccessful.http', 'w') as self.app.file_obj:
@@ -896,8 +951,13 @@ class TenderResourceTest(BaseTenderWebTest):
         award_id3 = [i['id'] for i in response.json['data'] if i['status'] == 'pending'][0]
 
         with open('docs/source/qualification/award-active-cancel-upload.http', 'w') as self.app.file_obj:
-            response = self.app.post('/tenders/{}/awards/{}/documents?acc_token={}'.format(
-                self.tender_id, award_id3, self.tender_token), upload_files=[('file', u'Cancellation_Reason.pdf', 'content')])
+            response = self.app.post_json('/tenders/{}/awards/{}/documents?acc_token={}'.format(
+                self.tender_id, award_id3, self.tender_token), {'data': {
+                    'title': u'Cancellation_Reason.pdf',
+                    'url': self.generate_docservice_url(),
+                    'hash': '0' * 32,
+                    'format': 'application/pdf',
+                }})
             self.assertEqual(response.status, '201 Created')
 
         with open('docs/source/qualification/award-active-cancel-disqualify.http', 'w') as self.app.file_obj:
@@ -920,8 +980,13 @@ class TenderResourceTest(BaseTenderWebTest):
         complaint1_token = response.json['access']['token']
 
         with open('docs/source/complaints/award-complaint-submission-upload.http', 'w') as self.app.file_obj:
-            response = self.app.post('/tenders/{}/awards/{}/complaints/{}/documents?acc_token={}'.format(
-                    self.tender_id, award_id, complaint1_id, complaint1_token), upload_files=[('file', u'Complaint_Attachement.pdf', 'content')])
+            response = self.app.post_json('/tenders/{}/awards/{}/complaints/{}/documents?acc_token={}'.format(
+                    self.tender_id, award_id, complaint1_id, complaint1_token), {'data': {
+                    'title': u'Complaint_Attachement.pdf',
+                    'url': self.generate_docservice_url(),
+                    'hash': '0' * 32,
+                    'format': 'application/pdf',
+                }})
             self.assertEqual(response.status, '201 Created')
 
         with open('docs/source/complaints/award-complaint-claim.http', 'w') as self.app.file_obj:
@@ -1031,8 +1096,13 @@ class TenderResourceTest(BaseTenderWebTest):
         self.app.authorization = ('Basic', ('reviewer', ''))
 
         with open('docs/source/complaints/award-complaint-resolution-upload.http', 'w') as self.app.file_obj:
-            response = self.app.post('/tenders/{}/awards/{}/complaints/{}/documents'.format(
-                    self.tender_id, award_id, complaint3_id), upload_files=[('file', u'ComplaintResolution.pdf', 'content')])
+            response = self.app.post_json('/tenders/{}/awards/{}/complaints/{}/documents'.format(
+                    self.tender_id, award_id, complaint3_id), {'data': {
+                    'title': u'ComplaintResolution.pdf',
+                    'url': self.generate_docservice_url(),
+                    'hash': '0' * 32,
+                    'format': 'application/pdf',
+                }})
             self.assertEqual(response.status, '201 Created')
 
         with open('docs/source/complaints/award-complaint-resolve.http', 'w') as self.app.file_obj:

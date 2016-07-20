@@ -1,4 +1,4 @@
-GET /api/2.3/tenders/e2cec5ad28bd4c3a8fe3364457b0ece8/bids/00a3846d66e8460a9f4de0823dd7355a?acc_token=e08896d8bfc44083bbe0d63007cfdd40 HTTP/1.0
+GET /api/2.3/tenders/3302890835e145a28b553588bc630590/bids/840dfb0ce72b4dea81c31b6f143aa94d?acc_token=cf2e0637c39f41598289ed6a36867ee9 HTTP/1.0
 Authorization: Basic YnJva2VyOg==
 Host: api-sandbox.openprocurement.org
 
@@ -12,12 +12,12 @@ Content-Type: application/json; charset=UTF-8
       {
         "hash": "00000000000000000000000000000000", 
         "title": "Proposal.pdf", 
-        "url": "http://api-sandbox.openprocurement.org/api/2.3/tenders/e2cec5ad28bd4c3a8fe3364457b0ece8/bids/00a3846d66e8460a9f4de0823dd7355a/documents/189d40e4ebf145cd8e65c359f7df9ad3?download=ecdc7f4d15ed4297b59e2d77ca57fba6", 
+        "url": "http://api-sandbox.openprocurement.org/api/2.3/tenders/3302890835e145a28b553588bc630590/bids/840dfb0ce72b4dea81c31b6f143aa94d/documents/8db14731123740e7a15dbe9cb7fa36c0?download=e6450719a4dc46f2bdbb0e0f2bfc40de", 
         "format": "application/pdf", 
         "documentOf": "tender", 
-        "datePublished": "2016-07-19T16:09:36.325784+03:00", 
-        "id": "189d40e4ebf145cd8e65c359f7df9ad3", 
-        "dateModified": "2016-07-19T16:09:36.325818+03:00"
+        "datePublished": "2016-07-20T17:17:35.098560+03:00", 
+        "id": "8db14731123740e7a15dbe9cb7fa36c0", 
+        "dateModified": "2016-07-20T17:17:35.098593+03:00"
       }
     ], 
     "value": {
@@ -47,9 +47,9 @@ Content-Type: application/json; charset=UTF-8
         }
       }
     ], 
-    "date": "2016-07-19T16:09:36.178881+03:00", 
-    "id": "00a3846d66e8460a9f4de0823dd7355a", 
-    "participationUrl": "http://auction-sandbox.openprocurement.org/tenders/e2cec5ad28bd4c3a8fe3364457b0ece8?key_for_bid=00a3846d66e8460a9f4de0823dd7355a"
+    "date": "2016-07-20T17:17:34.974822+03:00", 
+    "id": "840dfb0ce72b4dea81c31b6f143aa94d", 
+    "participationUrl": "http://auction-sandbox.openprocurement.org/tenders/3302890835e145a28b553588bc630590?key_for_bid=840dfb0ce72b4dea81c31b6f143aa94d"
   }
 }
 

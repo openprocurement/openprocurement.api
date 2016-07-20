@@ -1,24 +1,34 @@
-POST /api/2.3/tenders/6a4c5d69d2524ac797a4f0e59661ee01/awards/ad5615dcee1d4d1296039b9da0eba5a6/complaints/ca94fef2c5634b49ab0a3931ab12a6c3/documents?acc_token=8120d745c6c746d8bb52928b80bcc165 HTTP/1.0
+POST /api/2.3/tenders/fdc75be18cf448aa828b4e28cd617a1b/awards/ff80bf55091444faa73c25f354808df8/complaints/68e08038691f4754bef8c51be8107d6f/documents?acc_token=9f34820f3e16404e89d27dd35daf7440 HTTP/1.0
 Authorization: Basic YnJva2VyOg==
-Content-Length: 201
-Content-Type: multipart/form-data; boundary=----------a_BoUnDaRy794207283095$
+Content-Length: 341
+Content-Type: application/json
 Host: api-sandbox.openprocurement.org
+
+{
+  "data": {
+    "url": "http://public.docs-sandbox.openprocurement.org/get/789efdb8790740caafea08136168bc39?KeyID=9f98b41e&Signature=ZJMZKjJ7hER34d2WlXq19Fgs9L5aL7UGHhU4LVnPAsS%2F%2F%2BJa1MdKOjQxWwc%2BKTjvPmibyLMmLs8xlcAO8uByBQ%3D%3D", 
+    "title": "Complaint_Attachement.pdf", 
+    "hash": "00000000000000000000000000000000", 
+    "format": "application/pdf"
+  }
+}
 
 
 201 Created
 Content-Type: application/json; charset=UTF-8
-Location: http://api-sandbox.openprocurement.org/api/2.3/tenders/6a4c5d69d2524ac797a4f0e59661ee01/awards/ad5615dcee1d4d1296039b9da0eba5a6/complaints/ca94fef2c5634b49ab0a3931ab12a6c3/documents/6702e77557f947b1aebc28018d5185f8
+Location: http://api-sandbox.openprocurement.org/api/2.3/tenders/fdc75be18cf448aa828b4e28cd617a1b/awards/ff80bf55091444faa73c25f354808df8/complaints/68e08038691f4754bef8c51be8107d6f/documents/95a16d9b3ea44bcc8cefee9d67eaf3f4
 
 {
   "data": {
+    "hash": "00000000000000000000000000000000", 
     "author": "complaint_owner", 
     "title": "Complaint_Attachement.pdf", 
-    "url": "http://api-sandbox.openprocurement.org/api/2.3/tenders/6a4c5d69d2524ac797a4f0e59661ee01/awards/ad5615dcee1d4d1296039b9da0eba5a6/complaints/ca94fef2c5634b49ab0a3931ab12a6c3/documents/6702e77557f947b1aebc28018d5185f8?download=6b4a9c2f346947b59a91b899a25862e5", 
+    "url": "http://public.docs-sandbox.openprocurement.org/get/789efdb8790740caafea08136168bc39?KeyID=9f98b41e&Signature=l2FVZ8%252BMULF%252BWZldkJAOazXppZKrK74%2FEUd4yhXEGXj2eUdWnhjludvKG4CWDRk5PIsNuD1bVHLoWf%2FPvq7FAjcAAAA4AAAAOQAAAGUAAABmAAAAZAAAAGIAAAA4AAAA", 
     "format": "application/pdf", 
     "documentOf": "tender", 
-    "datePublished": "2016-05-12T18:08:10.851960+03:00", 
-    "id": "6702e77557f947b1aebc28018d5185f8", 
-    "dateModified": "2016-05-12T18:08:10.852003+03:00"
+    "datePublished": "2016-07-20T17:17:25.316636+03:00", 
+    "id": "95a16d9b3ea44bcc8cefee9d67eaf3f4", 
+    "dateModified": "2016-07-20T17:17:25.316666+03:00"
   }
 }
 
