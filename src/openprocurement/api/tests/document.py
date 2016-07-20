@@ -575,7 +575,7 @@ class TenderDocumentWithDSResourceTest(TenderDocumentResourceTest):
         self.assertEqual(response.status, '200 OK')
         self.assertEqual(response.content_type, 'application/json')
         self.assertEqual(doc_id, response.json["data"]["id"])
-        self.assertEqual(u'укр.doc', response.json["data"]["title"])
+        self.assertEqual(u'name.doc', response.json["data"]["title"])
         dateModified2 = response.json["data"]['dateModified']
         self.assertTrue(dateModified < dateModified2)
         self.assertEqual(dateModified, response.json["data"]["previousVersions"][0]['dateModified'])
