@@ -123,7 +123,7 @@ def upload_file(request, blacklisted_fields=DOCUMENT_BLACKLISTED_FIELDS):
             request.errors.add('body', 'url', "Document url signature invalid.")
             request.errors.status = 422
             raise error_handler(request.errors)
-        mess = "{}\0{}".format(key, document.hash)
+        mess = "{}\0{}".format(key, document.hash.split(':', 1)[-1])
         try:
             if mess != dockey.verify(signature + mess):
                 raise ValueError

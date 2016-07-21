@@ -16,6 +16,7 @@ from barbecue import vnmax
 from zope.interface import implementer, Interface
 from urlparse import urlparse, parse_qs
 from string import hexdigits
+from hashlib import algorithms, new as hash_new
 
 STAND_STILL_TIME = timedelta(days=2)
 COMPLAINT_STAND_STILL_TIME = timedelta(days=3)
@@ -350,6 +351,33 @@ class Item(Model):
         if relatedLot and isinstance(data['__parent__'], Model) and relatedLot not in [i.id for i in get_tender(data['__parent__']).lots]:
             raise ValidationError(u"relatedLot should be one of lots")
 
+class HashType(StringType):
+
+    MESSAGES = {
+        'hash_invalid': "Hash type is not supported.",
+        'hash_length': "Hash value is wrong length.",
+        'hash_hex': "Hash value is not hexadecimal.",
+    }
+
+    def to_native(self, value, context=None):
+        value = super(HashType, self).to_native(value, context)
+
+        if ':' not in value:
+            raise ValidationError(self.messages['hash_invalid'])
+
+        hash_type, hash_value = value.split(':', 1)
+
+        if hash_type not in algorithms:
+            raise ValidationError(self.messages['hash_invalid'])
+
+        if len(hash_value) != hash_new(hash_type).digest_size * 2:
+            raise ValidationError(self.messages['hash_length'])
+        try:
+            int(hash_value, 16)
+        except ValueError:
+            raise ConversionError(self.messages['hash_hex'])
+        return value
+
 
 class Document(Model):
     class Options:
@@ -363,7 +391,7 @@ class Document(Model):
         }
 
     id = MD5Type(required=True, default=lambda: uuid4().hex)
-    hash = MD5Type()
+    hash = HashType()
     documentType = StringType(choices=[
         'tenderNotice', 'awardNotice', 'contractNotice',
         'notice', 'biddingDocuments', 'technicalSpecifications',

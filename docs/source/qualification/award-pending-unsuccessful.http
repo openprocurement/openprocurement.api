@@ -1,4 +1,4 @@
-PATCH /api/2.3/tenders/fdc75be18cf448aa828b4e28cd617a1b/awards/ff80bf55091444faa73c25f354808df8?acc_token=4da0724e470d4e789536733278fd4bcd HTTP/1.0
+PATCH /api/2.3/tenders/8c7840a135e342abb80894985f570f06/awards/5ed2003616f640bd8c0dbc037567908f?acc_token=cb1f23460fc94939a34007cdd52598cf HTTP/1.0
 Authorization: Basic YnJva2VyOg==
 Content-Length: 36
 Content-Type: application/json
@@ -13,26 +13,26 @@ Host: api-sandbox.openprocurement.org
 
 200 OK
 Content-Type: application/json; charset=UTF-8
-Location: http://api-sandbox.openprocurement.org/api/2.3/tenders/fdc75be18cf448aa828b4e28cd617a1b/awards/28e7c39d1b7148c2ae8063e14f31b1d2
+Location: http://api-sandbox.openprocurement.org/api/2.3/tenders/8c7840a135e342abb80894985f570f06/awards/6cb65764e32c4ef5a3c8818bafa8b6ba
 
 {
   "data": {
     "status": "unsuccessful", 
     "documents": [
       {
-        "hash": "00000000000000000000000000000000", 
+        "hash": "md5:00000000000000000000000000000000", 
         "title": "Unsuccessful_Reason.pdf", 
-        "url": "http://public.docs-sandbox.openprocurement.org/get/a0acf1be8fca43e398f6e04ae6301a89?KeyID=9f98b41e&Signature=Ac3Rl098BHAqIBRWXdZFagkcMzXiXWSlklLIwhHCKWY73v263yUSf8DczWEIqyP%252B0T98gwu670KNahTi1XWaDWEAAAAwAAAAYQAAAGMAAABmAAAAMQAAAGIAAABlAAAA", 
+        "url": "http://public.docs-sandbox.openprocurement.org/get/47487c5a75174965b639729223239b61?KeyID=9d50f426&Signature=0ACwOEehd7lO1Urq6iQX8nF4wXlFpEWHLpnPfnzoYgW2Rg7lgBGIJ5kGRxmhHKomAmFEbUubxNKOWE%252BKBHAmBDQAAAA3AAAANAAAADgAAAA3AAAAYwAAADUAAABhAAAA", 
         "format": "application/pdf", 
         "documentOf": "tender", 
-        "datePublished": "2016-07-20T17:17:23.100581+03:00", 
-        "id": "a0eb9c9456de4cb8a695a8c83af4f67a", 
-        "dateModified": "2016-07-20T17:17:23.100614+03:00"
+        "datePublished": "2016-07-21T17:14:40.018144+03:00", 
+        "id": "1c8010d304e9415baa9ddc3c378ad154", 
+        "dateModified": "2016-07-21T17:14:40.018174+03:00"
       }
     ], 
     "complaintPeriod": {
-      "startDate": "2016-07-20T17:17:22.795410+03:00", 
-      "endDate": "2016-07-22T17:17:23.336964+03:00"
+      "startDate": "2016-07-21T17:14:39.753797+03:00", 
+      "endDate": "2016-07-25T17:14:40.279333+03:00"
     }, 
     "suppliers": [
       {
@@ -56,14 +56,14 @@ Location: http://api-sandbox.openprocurement.org/api/2.3/tenders/fdc75be18cf448a
         }
       }
     ], 
-    "bid_id": "0039030d31dc4861a97a819bbaf06738", 
+    "bid_id": "afe31fef22b4405cb977030cbfd9be57", 
     "value": {
       "currency": "UAH", 
       "amount": 450.0, 
       "valueAddedTaxIncluded": true
     }, 
-    "date": "2016-07-20T17:17:23.336921+03:00", 
-    "id": "ff80bf55091444faa73c25f354808df8"
+    "date": "2016-07-21T17:14:40.279292+03:00", 
+    "id": "5ed2003616f640bd8c0dbc037567908f"
   }
 }
 

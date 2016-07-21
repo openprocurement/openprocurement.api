@@ -1,4 +1,4 @@
-PATCH /api/2.3/tenders/fdc75be18cf448aa828b4e28cd617a1b/awards/ff80bf55091444faa73c25f354808df8/complaints/fc922078de2b473f90db0ddade5f2951 HTTP/1.0
+PATCH /api/2.3/tenders/8c7840a135e342abb80894985f570f06/awards/5ed2003616f640bd8c0dbc037567908f/complaints/1e8f2fae79e34a429977978e76765005 HTTP/1.0
 Authorization: Basic cmV2aWV3ZXI6
 Content-Length: 32
 Content-Type: application/json
@@ -17,18 +17,18 @@ Content-Type: application/json; charset=UTF-8
 {
   "data": {
     "status": "resolved", 
-    "dateDecision": "2016-07-20T17:17:30.650495+03:00", 
+    "dateDecision": "2016-07-21T17:14:47.159319+03:00", 
     "documents": [
       {
-        "hash": "00000000000000000000000000000000", 
+        "hash": "md5:00000000000000000000000000000000", 
         "author": "reviewers", 
         "title": "ComplaintResolution.pdf", 
-        "url": "http://public.docs-sandbox.openprocurement.org/get/45ec8ed6a58c4a3b9420da8f1f9dff53?KeyID=9f98b41e&Signature=lyo%252B2prOw9CVFY2o1TFeE6ppvC7cCj5vNnumNiS%2F%252B4UmCNPng4r6oHCAsoTGBPgl9Q65lzKLIVypKlc8dpEWDTQAAAA1AAAAZQAAAGMAAAA4AAAAZQAAAGQAAAA2AAAA", 
+        "url": "http://public.docs-sandbox.openprocurement.org/get/2556a45a3df94fe784363dbaac50743b?KeyID=9d50f426&Signature=vS8zZVaOnLIgDgjooQlBTtnSr%2F9xjFe76oPevnvocz8QBB%252Bdf3ljsP%2FmlA%2FyyDHX%252Bft9ObY0wCVDTdKKbspzBjIAAAA1AAAANQAAADYAAABhAAAANAAAADUAAABhAAAA", 
         "format": "application/pdf", 
         "documentOf": "tender", 
-        "datePublished": "2016-07-20T17:17:30.276530+03:00", 
-        "id": "06fcfda677e947db92b963ce15ef6b2d", 
-        "dateModified": "2016-07-20T17:17:30.276593+03:00"
+        "datePublished": "2016-07-21T17:14:46.810575+03:00", 
+        "id": "13f4f7d9172243b5a2903243419099b3", 
+        "dateModified": "2016-07-21T17:14:46.810606+03:00"
       }
     ], 
     "description": "complaint description", 
@@ -56,13 +56,13 @@ Content-Type: application/json; charset=UTF-8
     "type": "complaint", 
     "title": "complaint title", 
     "satisfied": false, 
-    "dateEscalated": "2016-07-20T17:17:28.886248+03:00", 
-    "dateAnswered": "2016-07-20T17:17:28.536328+03:00", 
-    "dateSubmitted": "2016-07-20T17:17:28.212588+03:00", 
-    "complaintID": "UA-2016-07-20-000001.7", 
-    "date": "2016-07-20T17:17:28.211112+03:00", 
+    "dateEscalated": "2016-07-21T17:14:45.468978+03:00", 
+    "dateAnswered": "2016-07-21T17:14:45.149922+03:00", 
+    "dateSubmitted": "2016-07-21T17:14:44.830072+03:00", 
+    "complaintID": "UA-2016-07-21-000001.7", 
+    "date": "2016-07-21T17:14:44.828567+03:00", 
     "resolution": "Виправлено неконкурентні умови", 
-    "id": "fc922078de2b473f90db0ddade5f2951"
+    "id": "1e8f2fae79e34a429977978e76765005"
   }
 }
 

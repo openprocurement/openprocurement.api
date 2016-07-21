@@ -1,4 +1,4 @@
-GET /api/2.3/tenders/fdc75be18cf448aa828b4e28cd617a1b/complaints HTTP/1.0
+GET /api/2.3/tenders/8c7840a135e342abb80894985f570f06/complaints HTTP/1.0
 Host: api-sandbox.openprocurement.org
 
 
@@ -11,34 +11,34 @@ Content-Type: application/json; charset=UTF-8
       "status": "claim", 
       "documents": [
         {
-          "hash": "00000000000000000000000000000000", 
+          "hash": "md5:00000000000000000000000000000000", 
           "author": "complaint_owner", 
           "title": "Complaint_Attachement.pdf", 
-          "url": "http://public.docs-sandbox.openprocurement.org/get/1064d39e672d40ad8f03def8c83bd1aa?KeyID=9f98b41e&Signature=%2FPJ53D64VaeM6qBJ9x5T8Tliij6VAbC%2FJ%2FcxZNRQdcGpeXKAgdINABtfpyWHZQDYiJRjyUi01a9yFtJmxVZIDDEAAAAwAAAANgAAADQAAABkAAAAMwAAADkAAABlAAAA", 
+          "url": "http://public.docs-sandbox.openprocurement.org/get/d33f9cd094064dc287305d9853f9dcef?KeyID=9d50f426&Signature=ZkglGYDIAMToBoH7Tx6ZOtSs1I3AkeeS73KScTH0yHVgHuNAKAx%252Bc2SPClY0XuJbbeIdYX6yzyJY5Io0KkdyDWQAAAAzAAAAMwAAAGYAAAA5AAAAYwAAAGQAAAAwAAAA", 
           "format": "application/pdf", 
           "documentOf": "tender", 
-          "datePublished": "2016-07-20T17:17:18.499138+03:00", 
-          "id": "4b97605a1140413186b9fcc6cc7e4889", 
-          "dateModified": "2016-07-20T17:17:18.499171+03:00"
+          "datePublished": "2016-07-21T17:14:35.523312+03:00", 
+          "id": "7ce762e11dcf4b2485eba02b658f8904", 
+          "dateModified": "2016-07-21T17:14:35.523348+03:00"
         }
       ], 
       "description": "complaint description", 
       "title": "complaint title", 
-      "dateSubmitted": "2016-07-20T17:17:18.669183+03:00", 
-      "complaintID": "UA-2016-07-20-000001.1", 
-      "date": "2016-07-20T17:17:18.383602+03:00", 
+      "dateSubmitted": "2016-07-21T17:14:35.699969+03:00", 
+      "complaintID": "UA-2016-07-21-000001.1", 
+      "date": "2016-07-21T17:14:35.403381+03:00", 
       "type": "claim", 
-      "id": "32f9a0921f5c4e8b9df291558c9278ff"
+      "id": "6d959a6da5e345a895d18a8126c2ff6d"
     }, 
     {
       "status": "claim", 
       "description": "complaint description", 
       "title": "complaint title", 
-      "dateSubmitted": "2016-07-20T17:17:18.837503+03:00", 
-      "complaintID": "UA-2016-07-20-000001.2", 
-      "date": "2016-07-20T17:17:18.836087+03:00", 
+      "dateSubmitted": "2016-07-21T17:14:35.827319+03:00", 
+      "complaintID": "UA-2016-07-21-000001.2", 
+      "date": "2016-07-21T17:14:35.825586+03:00", 
       "type": "claim", 
-      "id": "d67da1ce96b049a2b1f7482309fd882e"
+      "id": "84f472c076104c648b9a634b471521a5"
     }
   ]
 }

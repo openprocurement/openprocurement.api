@@ -1,4 +1,4 @@
-GET /api/2.3/tenders/fdc75be18cf448aa828b4e28cd617a1b/awards/ff80bf55091444faa73c25f354808df8/complaints/68e08038691f4754bef8c51be8107d6f HTTP/1.0
+GET /api/2.3/tenders/8c7840a135e342abb80894985f570f06/awards/5ed2003616f640bd8c0dbc037567908f/complaints/152df6bf4df0461e953ea0ed96319858 HTTP/1.0
 Host: api-sandbox.openprocurement.org
 
 
@@ -10,15 +10,15 @@ Content-Type: application/json; charset=UTF-8
     "status": "claim", 
     "documents": [
       {
-        "hash": "00000000000000000000000000000000", 
+        "hash": "md5:00000000000000000000000000000000", 
         "author": "complaint_owner", 
         "title": "Complaint_Attachement.pdf", 
-        "url": "http://public.docs-sandbox.openprocurement.org/get/789efdb8790740caafea08136168bc39?KeyID=9f98b41e&Signature=l2FVZ8%252BMULF%252BWZldkJAOazXppZKrK74%2FEUd4yhXEGXj2eUdWnhjludvKG4CWDRk5PIsNuD1bVHLoWf%2FPvq7FAjcAAAA4AAAAOQAAAGUAAABmAAAAZAAAAGIAAAA4AAAA", 
+        "url": "http://public.docs-sandbox.openprocurement.org/get/9bb44b4e53df423c91366f60e1ec84e2?KeyID=9d50f426&Signature=NlJ9xMajG%2FjBKtSh1C0um%252BYfq6%2FNUGHc3bBAv3%2FijWu1zkw58Zrm53Uqm5AT%252BZ7jWTovn%252BvKWQFPVNASnYxtCTkAAABiAAAAYgAAADQAAAA0AAAAYgAAADQAAABlAAAA", 
         "format": "application/pdf", 
         "documentOf": "tender", 
-        "datePublished": "2016-07-20T17:17:25.316636+03:00", 
-        "id": "95a16d9b3ea44bcc8cefee9d67eaf3f4", 
-        "dateModified": "2016-07-20T17:17:25.316666+03:00"
+        "datePublished": "2016-07-21T17:14:42.145284+03:00", 
+        "id": "ed9b23275c3d4375a1f550d986387008", 
+        "dateModified": "2016-07-21T17:14:42.145327+03:00"
       }
     ], 
     "description": "complaint description", 
@@ -43,11 +43,11 @@ Content-Type: application/json; charset=UTF-8
         "locality": "м. Вінниця"
       }
     }, 
-    "dateSubmitted": "2016-07-20T17:17:25.648130+03:00", 
-    "complaintID": "UA-2016-07-20-000001.5", 
-    "date": "2016-07-20T17:17:24.943987+03:00", 
+    "dateSubmitted": "2016-07-21T17:14:42.445458+03:00", 
+    "complaintID": "UA-2016-07-21-000001.5", 
+    "date": "2016-07-21T17:14:41.819478+03:00", 
     "type": "claim", 
-    "id": "68e08038691f4754bef8c51be8107d6f"
+    "id": "152df6bf4df0461e953ea0ed96319858"
   }
 }
 

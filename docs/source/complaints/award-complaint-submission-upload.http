@@ -1,14 +1,14 @@
-POST /api/2.3/tenders/fdc75be18cf448aa828b4e28cd617a1b/awards/ff80bf55091444faa73c25f354808df8/complaints/68e08038691f4754bef8c51be8107d6f/documents?acc_token=9f34820f3e16404e89d27dd35daf7440 HTTP/1.0
+POST /api/2.3/tenders/8c7840a135e342abb80894985f570f06/awards/5ed2003616f640bd8c0dbc037567908f/complaints/152df6bf4df0461e953ea0ed96319858/documents?acc_token=c5b50c2046ef4b69a0cdb4364b9fe0a4 HTTP/1.0
 Authorization: Basic YnJva2VyOg==
-Content-Length: 341
+Content-Length: 351
 Content-Type: application/json
 Host: api-sandbox.openprocurement.org
 
 {
   "data": {
-    "url": "http://public.docs-sandbox.openprocurement.org/get/789efdb8790740caafea08136168bc39?KeyID=9f98b41e&Signature=ZJMZKjJ7hER34d2WlXq19Fgs9L5aL7UGHhU4LVnPAsS%2F%2F%2BJa1MdKOjQxWwc%2BKTjvPmibyLMmLs8xlcAO8uByBQ%3D%3D", 
+    "url": "http://public.docs-sandbox.openprocurement.org/get/9bb44b4e53df423c91366f60e1ec84e2?KeyID=9d50f426&Signature=Kh5h1j%2FYBJina%2BB6reDBYPCjZLgimEJfrGda6vAye7G%2FP%2FIwb0BL5afQts3eMw4JrD%2FTFuDStiisE8p3o%2Fo%2BCA%3D%3D", 
     "title": "Complaint_Attachement.pdf", 
-    "hash": "00000000000000000000000000000000", 
+    "hash": "md5:00000000000000000000000000000000", 
     "format": "application/pdf"
   }
 }
@@ -16,19 +16,19 @@ Host: api-sandbox.openprocurement.org
 
 201 Created
 Content-Type: application/json; charset=UTF-8
-Location: http://api-sandbox.openprocurement.org/api/2.3/tenders/fdc75be18cf448aa828b4e28cd617a1b/awards/ff80bf55091444faa73c25f354808df8/complaints/68e08038691f4754bef8c51be8107d6f/documents/95a16d9b3ea44bcc8cefee9d67eaf3f4
+Location: http://api-sandbox.openprocurement.org/api/2.3/tenders/8c7840a135e342abb80894985f570f06/awards/5ed2003616f640bd8c0dbc037567908f/complaints/152df6bf4df0461e953ea0ed96319858/documents/ed9b23275c3d4375a1f550d986387008
 
 {
   "data": {
-    "hash": "00000000000000000000000000000000", 
+    "hash": "md5:00000000000000000000000000000000", 
     "author": "complaint_owner", 
     "title": "Complaint_Attachement.pdf", 
-    "url": "http://public.docs-sandbox.openprocurement.org/get/789efdb8790740caafea08136168bc39?KeyID=9f98b41e&Signature=l2FVZ8%252BMULF%252BWZldkJAOazXppZKrK74%2FEUd4yhXEGXj2eUdWnhjludvKG4CWDRk5PIsNuD1bVHLoWf%2FPvq7FAjcAAAA4AAAAOQAAAGUAAABmAAAAZAAAAGIAAAA4AAAA", 
+    "url": "http://public.docs-sandbox.openprocurement.org/get/9bb44b4e53df423c91366f60e1ec84e2?KeyID=9d50f426&Signature=NlJ9xMajG%2FjBKtSh1C0um%252BYfq6%2FNUGHc3bBAv3%2FijWu1zkw58Zrm53Uqm5AT%252BZ7jWTovn%252BvKWQFPVNASnYxtCTkAAABiAAAAYgAAADQAAAA0AAAAYgAAADQAAABlAAAA", 
     "format": "application/pdf", 
     "documentOf": "tender", 
-    "datePublished": "2016-07-20T17:17:25.316636+03:00", 
-    "id": "95a16d9b3ea44bcc8cefee9d67eaf3f4", 
-    "dateModified": "2016-07-20T17:17:25.316666+03:00"
+    "datePublished": "2016-07-21T17:14:42.145284+03:00", 
+    "id": "ed9b23275c3d4375a1f550d986387008", 
+    "dateModified": "2016-07-21T17:14:42.145327+03:00"
   }
 }
 
