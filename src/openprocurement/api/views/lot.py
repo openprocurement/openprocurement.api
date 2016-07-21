@@ -6,6 +6,7 @@ from openprocurement.api.utils import (
     json_view,
     context_unpack,
     APIResource,
+    get_now
 )
 from openprocurement.api.validation import (
     validate_lot_data,
@@ -30,6 +31,7 @@ class TenderLotResource(APIResource):
             self.request.errors.status = 403
             return
         lot = self.request.validated['lot']
+        lot.date = get_now()
         tender.lots.append(lot)
         if save_tender(self.request):
             self.LOGGER.info('Created tender lot {}'.format(lot.id),
