@@ -536,8 +536,8 @@ class Bid(Model):
             'Administrator': Administrator_bid_role,
             'embedded': view_bid_role,
             'view': view_bid_role,
-            'create': whitelist('value', 'tenderers', 'parameters', 'lotValues'),
-            'edit': whitelist('value', 'tenderers', 'parameters', 'lotValues'),
+            'create': whitelist('value', 'status', 'tenderers', 'parameters', 'lotValues'),
+            'edit': whitelist('value', 'status', 'tenderers', 'parameters', 'lotValues'),
             'auction_view': whitelist('value', 'lotValues', 'id', 'date', 'parameters', 'participationUrl'),
             'auction_post': whitelist('value', 'lotValues', 'id', 'date'),
             'auction_patch': whitelist('id', 'lotValues', 'participationUrl'),
@@ -559,7 +559,7 @@ class Bid(Model):
     lotValues = ListType(ModelType(LotValue), default=list())
     date = IsoDateTimeType(default=get_now)
     id = MD5Type(required=True, default=lambda: uuid4().hex)
-    status = StringType(choices=['registration', 'validBid', 'invalidBid'])
+    status = StringType(choices=['active', 'draft'], default='active')
     value = ModelType(Value)
     documents = ListType(ModelType(Document), default=list())
     participationUrl = URLType()
@@ -567,6 +567,22 @@ class Bid(Model):
     owner = StringType()
 
     __name__ = ''
+
+    def import_data(self, raw_data, **kw):
+        """
+        Converts and imports the raw data into the instance of the model
+        according to the fields in the model.
+
+        :param raw_data:
+            The data to be imported.
+        """
+        data = self.convert(raw_data, **kw)
+        del_keys = [ k for k in data.keys() if k != "value" and data[k] is None]
+        for k in del_keys:
+            del data[k]
+
+        self._data.update(data)
+        return self
 
     def __acl__(self):
         return [
@@ -793,8 +809,8 @@ class Cancellation(Model):
 class Contract(Model):
     class Options:
         roles = {
-            'create': blacklist('id', 'status', 'documents', 'dateSigned'),
-            'edit': blacklist('id', 'documents', 'awardID', 'suppliers', 'items', 'contractID'),
+            'create': blacklist('id', 'status', 'date', 'documents', 'dateSigned'),
+            'edit': blacklist('id', 'documents', 'date', 'awardID', 'suppliers', 'items', 'contractID'),
             'embedded': schematics_embedded_role,
             'view': schematics_default_role,
         }
@@ -816,7 +832,7 @@ class Contract(Model):
     documents = ListType(ModelType(Document), default=list())
     items = ListType(ModelType(Item))
     suppliers = ListType(ModelType(Organization), min_size=1, max_size=1)
-    date = IsoDateTimeType(default=get_now)
+    date = IsoDateTimeType()
 
     def validate_awardID(self, data, awardID):
         if awardID and isinstance(data['__parent__'], Model) and awardID not in [i.id for i in data['__parent__'].awards]:
@@ -936,6 +952,7 @@ class Lot(Model):
     description = StringType()
     description_en = StringType()
     description_ru = StringType()
+    date = IsoDateTimeType()
     value = ModelType(Value, required=True)
     minimalStep = ModelType(Value, required=True)
     auctionPeriod = ModelType(LotAuctionPeriod, default={})
@@ -949,7 +966,7 @@ class Lot(Model):
         bids = [
             bid
             for bid in self.__parent__.bids
-            if self.id in [i.relatedLot for i in bid.lotValues]
+            if self.id in [i.relatedLot for i in bid.lotValues] and getattr(bid, "status", "active") == "active"
         ]
         return len(bids)
 
@@ -1005,9 +1022,9 @@ def validate_cpv_group(items, *args):
 
 
 plain_role = (blacklist('_attachments', 'revisions', 'dateModified') + schematics_embedded_role)
-create_role = (blacklist('owner_token', 'owner', '_attachments', 'revisions', 'dateModified', 'doc_id', 'tenderID', 'bids', 'documents', 'awards', 'questions', 'complaints', 'auctionUrl', 'status', 'auctionPeriod', 'awardPeriod', 'procurementMethod', 'awardCriteria', 'submissionMethod', 'cancellations') + schematics_embedded_role)
+create_role = (blacklist('owner_token', 'owner', '_attachments', 'revisions', 'date', 'dateModified', 'doc_id', 'tenderID', 'bids', 'documents', 'awards', 'questions', 'complaints', 'auctionUrl', 'status', 'auctionPeriod', 'awardPeriod', 'procurementMethod', 'awardCriteria', 'submissionMethod', 'cancellations') + schematics_embedded_role)
 draft_role = whitelist('status')
-edit_role = (blacklist('status', 'procurementMethodType', 'lots', 'owner_token', 'owner', '_attachments', 'revisions', 'dateModified', 'doc_id', 'tenderID', 'bids', 'documents', 'awards', 'questions', 'complaints', 'auctionUrl', 'auctionPeriod', 'awardPeriod', 'procurementMethod', 'awardCriteria', 'submissionMethod', 'mode', 'cancellations') + schematics_embedded_role)
+edit_role = (blacklist('status', 'procurementMethodType', 'lots', 'owner_token', 'owner', '_attachments', 'revisions', 'date', 'dateModified', 'doc_id', 'tenderID', 'bids', 'documents', 'awards', 'questions', 'complaints', 'auctionUrl', 'auctionPeriod', 'awardPeriod', 'procurementMethod', 'awardCriteria', 'submissionMethod', 'mode', 'cancellations') + schematics_embedded_role)
 view_role = (blacklist('owner_token', '_attachments', 'revisions') + schematics_embedded_role)
 listing_role = whitelist('dateModified', 'doc_id')
 auction_view_role = whitelist('tenderID', 'dateModified', 'bids', 'auctionPeriod', 'minimalStep', 'auctionUrl', 'features', 'lots')
@@ -1071,6 +1088,7 @@ class Tender(SchematicsDocument, Model):
     description = StringType()
     description_en = StringType()
     description_ru = StringType()
+    date = IsoDateTimeType()
     tenderID = StringType()  # TenderID should always be the same as the OCID. It is included to make the flattened data structure more convenient.
     items = ListType(ModelType(Item), required=True, min_size=1, validators=[validate_cpv_group, validate_items_uniq])  # The goods and services to be purchased, broken into line items wherever possible. Items should not be duplicated, but a quantity of 2 specified instead.
     value = ModelType(Value, required=True)  # The total estimated value of the procurement.
@@ -1163,6 +1181,11 @@ class Tender(SchematicsDocument, Model):
             self.enquiryPeriod.startDate = get_now()
         if not self.tenderPeriod.startDate:
             self.tenderPeriod.startDate = self.enquiryPeriod.endDate
+        now = get_now()
+        self.date = now
+        if self.lots:
+            for lot in self.lots:
+                lot.date = now
 
     @serializable(serialize_when_none=False)
     def next_check(self):
