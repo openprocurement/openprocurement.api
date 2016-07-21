@@ -117,6 +117,7 @@ class TenderComplaintResourceTest(BaseTenderWebTest):
         self.assertEqual(response.status, '201 Created')
         self.assertEqual(response.content_type, 'application/json')
         complaint = response.json['data']
+        status_date = response.json['data']['date']
         owner_token = response.json['access']['token']
         self.assertEqual(complaint['author']['name'], test_organization['name'])
         self.assertIn('id', complaint)
@@ -144,6 +145,8 @@ class TenderComplaintResourceTest(BaseTenderWebTest):
         self.assertEqual(response.status, '200 OK')
         self.assertEqual(response.content_type, 'application/json')
         self.assertEqual(response.json['data']["status"], "answered")
+        self.assertNotEqual(response.json['data']['date'], status_date)
+        status_date = response.json['data']['date']
         self.assertEqual(response.json['data']["resolutionType"], "invalid")
         self.assertEqual(response.json['data']["resolution"], "spam 100% " * 3)
 
@@ -154,6 +157,7 @@ class TenderComplaintResourceTest(BaseTenderWebTest):
         self.assertEqual(response.status, '200 OK')
         self.assertEqual(response.content_type, 'application/json')
         self.assertEqual(response.json['data']["status"], "resolved")
+        self.assertNotEqual(response.json['data']['date'], status_date)
 
         response = self.app.patch_json('/tenders/{}/complaints/{}?acc_token={}'.format(self.tender_id, complaint['id'], owner_token), {"data": {"status": "cancelled", "cancellationReason": "reason"}}, status=403)
         self.assertEqual(response.status, '403 Forbidden')
