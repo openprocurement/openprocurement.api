@@ -1,4 +1,4 @@
-GET /api/2.3/tenders/739500f065ae48a2803388f9b10d3e6e HTTP/1.0
+GET /api/2.3/tenders/b74c14bbee6f44a9a0c8408c13a4c1a8 HTTP/1.0
 Authorization: Basic YnJva2VyOg==
 Host: api-sandbox.openprocurement.org
 
@@ -9,26 +9,45 @@ Content-Type: application/json; charset=UTF-8
 {
   "data": {
     "procurementMethod": "open", 
-    "auctionUrl": "http://auction-sandbox.openprocurement.org/tenders/739500f065ae48a2803388f9b10d3e6e", 
+    "auctionUrl": "http://auction-sandbox.openprocurement.org/tenders/b74c14bbee6f44a9a0c8408c13a4c1a8", 
     "enquiryPeriod": {
-      "startDate": "2016-07-07T17:14:32.682336+03:00", 
-      "endDate": "2016-07-14T17:14:32.682336+03:00"
+      "startDate": "2016-07-07T17:17:48.184527+03:00", 
+      "endDate": "2016-07-14T17:17:48.184527+03:00"
     }, 
     "submissionMethod": "electronicAuction", 
-    "next_check": "2016-07-21T17:50:32.682336+03:00", 
-    "awardCriteria": "lowestCost", 
+    "next_check": "2016-07-21T17:53:48.184527+03:00", 
+    "procuringEntity": {
+      "contactPoint": {
+        "name": "Державне управління справами", 
+        "telephone": "0440000000"
+      }, 
+      "identifier": {
+        "scheme": "UA-EDR", 
+        "id": "00037256", 
+        "uri": "http://www.dus.gov.ua/"
+      }, 
+      "name": "Державне управління справами", 
+      "kind": "general", 
+      "address": {
+        "postalCode": "01220", 
+        "countryName": "Україна", 
+        "streetAddress": "вул. Банкова, 11, корпус 1", 
+        "region": "м. Київ", 
+        "locality": "м. Київ"
+      }
+    }, 
     "questions": [
       {
         "description": "Просимо додати таблицю потрібної калорійності харчування", 
         "title": "Калорійність", 
-        "date": "2016-07-21T17:14:50.784535+03:00", 
+        "date": "2016-07-21T17:18:06.401199+03:00", 
         "answer": "Таблицю додано в файлі \"Kalorijnist.xslx\"", 
-        "id": "dd23eaabc5c948bb81b2938838f2d21c", 
+        "id": "0c1deab8530d4f638f05c63e8cd39622", 
         "questionOf": "tender"
       }
     ], 
     "owner": "broker", 
-    "id": "739500f065ae48a2803388f9b10d3e6e", 
+    "id": "b74c14bbee6f44a9a0c8408c13a4c1a8", 
     "guarantee": {
       "currency": "USD", 
       "amount": 8.0
@@ -38,48 +57,49 @@ Content-Type: application/json; charset=UTF-8
         "hash": "md5:00000000000000000000000000000000", 
         "description": "document description modified", 
         "title": "Notice.pdf", 
-        "url": "http://public.docs-sandbox.openprocurement.org/get/2df69e062d094bb4b9ad55c5c33a2594?KeyID=0eb4ace4&Signature=WjcL3%252BnVhegsEKbzwXjphfCr1zhhCBxpVkFpG4OzVFETNSE5wWFEQQZHAupLSR1eHH9NHR8d15%2F0zTLRjHB%2FBDIAAABkAAAAZgAAADYAAAA5AAAAZQAAADAAAAA2AAAA", 
+        "url": "http://public.docs-sandbox.openprocurement.org/get/4ff4633a89034136ab1ed3b77a7e9fc7?KeyID=ef5aa287&Signature=z3ShJ3uzAcIFGzln4nWGwSnz1SwQI9HS7HRzIpPgeLF5iOUMVjJr0WSRbIU1etZkTgrRq36rIFAmCHZHJRpAATQAAABmAAAAZgAAADQAAAA2AAAAMwAAADMAAABhAAAA", 
         "format": "application/pdf", 
         "documentOf": "tender", 
-        "datePublished": "2016-07-21T17:14:50.100511+03:00", 
+        "datePublished": "2016-07-21T17:18:05.687403+03:00", 
         "documentType": "technicalSpecifications", 
-        "id": "fb6de9e34bb942cb880accd1f89b9abf", 
-        "dateModified": "2016-07-21T17:14:50.100546+03:00"
+        "id": "73edadd66f2a4178917993081ea1be10", 
+        "dateModified": "2016-07-21T17:18:05.687435+03:00"
       }, 
       {
         "hash": "md5:00000000000000000000000000000000", 
         "title": "AwardCriteria.pdf", 
-        "url": "http://public.docs-sandbox.openprocurement.org/get/b751b0d7b21e416192bb8edd6c78d621?KeyID=0eb4ace4&Signature=SWAxlH3q1dgdDfUmeQ%2FODFGN6Qs5wOiBhSnsYWMCZQg6DowhfUZ64Uno9niQ%2FEyeBhkoB3lqcfGJljaOExvGC2IAAAA3AAAANQAAADEAAABiAAAAMAAAAGQAAAA3AAAA", 
+        "url": "http://public.docs-sandbox.openprocurement.org/get/9cd76c39b44a46498898025570db2549?KeyID=ef5aa287&Signature=B4Gsqg25U743USAcQ1aQP3VoOogQqOL9aYcXms%2FKwZBuHPPVano%2F%2F9nkpqz6C8tltqbQjJvsd7In0O05tQAKCzkAAABjAAAAZAAAADcAAAA2AAAAYwAAADMAAAA5AAAA", 
         "format": "application/pdf", 
         "documentOf": "tender", 
-        "datePublished": "2016-07-21T17:14:50.482384+03:00", 
-        "id": "d988dacddfc54cf6bb1af71773b8cb16", 
-        "dateModified": "2016-07-21T17:14:50.482417+03:00"
+        "datePublished": "2016-07-21T17:18:06.086634+03:00", 
+        "id": "4c37fa0aee1348a1abe668a015e475c9", 
+        "dateModified": "2016-07-21T17:18:06.086671+03:00"
       }, 
       {
         "hash": "md5:00000000000000000000000000000000", 
         "title": "AwardCriteria-2.pdf", 
-        "url": "http://public.docs-sandbox.openprocurement.org/get/865cbd3913dc4ed78e7f26742f6613c1?KeyID=0eb4ace4&Signature=52TkSy%2F%252B8w1o0byICaR1nBvReCCVdhA%2FCf%2FWlJwwc5%252B0HCE9dMbefd3eyeUhQ0%2FFkZl1PzEyv07ty3KlS%2FzmBDgAAAA2AAAANQAAAGMAAABiAAAAZAAAADMAAAA5AAAA", 
+        "url": "http://public.docs-sandbox.openprocurement.org/get/dbed15c868604bf99984907efa669c1b?KeyID=ef5aa287&Signature=jfTlZ0XuxAr2JdMjc2WjKBPwd8fYIg6PN1maCvuof1WhyrqY4EdY9atyM2RkFbc3lVnPeTRFfqqbsEUBG9PDAmQAAABiAAAAZQAAAGQAAAAxAAAANQAAAGMAAAA4AAAA", 
         "format": "application/pdf", 
         "documentOf": "tender", 
-        "datePublished": "2016-07-21T17:14:50.482384+03:00", 
-        "id": "d988dacddfc54cf6bb1af71773b8cb16", 
-        "dateModified": "2016-07-21T17:14:50.645511+03:00"
+        "datePublished": "2016-07-21T17:18:06.086634+03:00", 
+        "id": "4c37fa0aee1348a1abe668a015e475c9", 
+        "dateModified": "2016-07-21T17:18:06.260877+03:00"
       }
     ], 
     "title": "футляри до державних нагород", 
     "tenderID": "UA-2016-07-21-000001", 
-    "dateModified": "2016-07-21T17:14:52.001502+03:00", 
+    "dateModified": "2016-07-21T17:18:07.776123+03:00", 
     "status": "active.auction", 
     "tenderPeriod": {
-      "startDate": "2016-07-14T17:14:32.682336+03:00", 
-      "endDate": "2016-07-21T17:14:32.682336+03:00"
+      "startDate": "2016-07-14T17:17:48.184527+03:00", 
+      "endDate": "2016-07-21T17:17:48.184527+03:00"
     }, 
     "auctionPeriod": {
-      "startDate": "2016-07-21T17:14:32.682336+03:00", 
-      "shouldStartAfter": "2016-07-21T17:14:32.682336+03:00"
+      "startDate": "2016-07-21T17:17:48.184527+03:00", 
+      "shouldStartAfter": "2016-07-21T17:17:48.184527+03:00"
     }, 
     "procurementMethodType": "belowThreshold", 
+    "date": "2016-07-21T17:18:04.728611+03:00", 
     "minimalStep": {
       "currency": "UAH", 
       "amount": 35.0, 
@@ -108,10 +128,10 @@ Content-Type: application/json; charset=UTF-8
           "locality": "м. Київ"
         }, 
         "deliveryDate": {
-          "startDate": "2016-07-23T17:14:32.682336+03:00", 
-          "endDate": "2016-07-26T17:14:32.682336+03:00"
+          "startDate": "2016-07-23T17:17:48.184527+03:00", 
+          "endDate": "2016-07-26T17:17:48.184527+03:00"
         }, 
-        "id": "e5750f26ed7145fbaf0d9db217998658", 
+        "id": "93b5e35b0ece40b88af4114d4c8017fe", 
         "unit": {
           "code": "44617100-9", 
           "name": "item"
@@ -124,26 +144,7 @@ Content-Type: application/json; charset=UTF-8
       "amount": 500.0, 
       "valueAddedTaxIncluded": true
     }, 
-    "procuringEntity": {
-      "contactPoint": {
-        "name": "Державне управління справами", 
-        "telephone": "0440000000"
-      }, 
-      "identifier": {
-        "scheme": "UA-EDR", 
-        "id": "00037256", 
-        "uri": "http://www.dus.gov.ua/"
-      }, 
-      "name": "Державне управління справами", 
-      "kind": "general", 
-      "address": {
-        "postalCode": "01220", 
-        "countryName": "Україна", 
-        "streetAddress": "вул. Банкова, 11, корпус 1", 
-        "region": "м. Київ", 
-        "locality": "м. Київ"
-      }
-    }
+    "awardCriteria": "lowestCost"
   }
 }
 

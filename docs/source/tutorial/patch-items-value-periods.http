@@ -1,4 +1,4 @@
-PATCH /api/2.3/tenders/739500f065ae48a2803388f9b10d3e6e?acc_token=6a42c69b4d5849aeaa171f6119fb1b9c HTTP/1.0
+PATCH /api/2.3/tenders/b74c14bbee6f44a9a0c8408c13a4c1a8?acc_token=6241dc3adcf04c33b4f86f08e8e6e591 HTTP/1.0
 Authorization: Basic YnJva2VyOg==
 Content-Length: 75
 Content-Type: application/json
@@ -7,7 +7,7 @@ Host: api-sandbox.openprocurement.org
 {
   "data": {
     "tenderPeriod": {
-      "endDate": "2016-08-05T17:14:59.791213+03:00"
+      "endDate": "2016-08-05T17:18:15.342263+03:00"
     }
   }
 }
@@ -20,10 +20,10 @@ Content-Type: application/json; charset=UTF-8
   "data": {
     "procurementMethod": "open", 
     "status": "active.enquiries", 
-    "tenderID": "UA-2016-07-21-000001", 
+    "awardCriteria": "lowestCost", 
     "tenderPeriod": {
-      "startDate": "2016-07-28T17:14:32.682336+03:00", 
-      "endDate": "2016-08-05T17:14:59.791213+03:00"
+      "startDate": "2016-07-28T17:17:48.184527+03:00", 
+      "endDate": "2016-08-05T17:18:15.342263+03:00"
     }, 
     "title": "футляри до державних нагород", 
     "minimalStep": {
@@ -54,10 +54,10 @@ Content-Type: application/json; charset=UTF-8
           "locality": "м. Київ"
         }, 
         "deliveryDate": {
-          "startDate": "2016-07-23T17:14:32.682336+03:00", 
-          "endDate": "2016-07-26T17:14:32.682336+03:00"
+          "startDate": "2016-07-23T17:17:48.184527+03:00", 
+          "endDate": "2016-07-26T17:17:48.184527+03:00"
         }, 
-        "id": "e5750f26ed7145fbaf0d9db217998658", 
+        "id": "93b5e35b0ece40b88af4114d4c8017fe", 
         "unit": {
           "code": "44617100-9", 
           "name": "item"
@@ -72,7 +72,8 @@ Content-Type: application/json; charset=UTF-8
       "valueAddedTaxIncluded": true
     }, 
     "submissionMethod": "electronicAuction", 
-    "next_check": "2016-07-28T17:14:32.682336+03:00", 
+    "date": "2016-07-21T17:18:04.728611+03:00", 
+    "next_check": "2016-07-28T17:17:48.184527+03:00", 
     "procuringEntity": {
       "contactPoint": {
         "name": "Державне управління справами", 
@@ -94,13 +95,13 @@ Content-Type: application/json; charset=UTF-8
       }
     }, 
     "enquiryPeriod": {
-      "startDate": "2016-07-21T17:14:49.206417+03:00", 
-      "endDate": "2016-07-28T17:14:32.682336+03:00"
+      "startDate": "2016-07-21T17:18:04.728536+03:00", 
+      "endDate": "2016-07-28T17:17:48.184527+03:00"
     }, 
     "owner": "broker", 
-    "dateModified": "2016-07-21T17:14:49.845881+03:00", 
-    "id": "739500f065ae48a2803388f9b10d3e6e", 
-    "awardCriteria": "lowestCost"
+    "dateModified": "2016-07-21T17:18:05.412860+03:00", 
+    "id": "b74c14bbee6f44a9a0c8408c13a4c1a8", 
+    "tenderID": "UA-2016-07-21-000001"
   }
 }
 

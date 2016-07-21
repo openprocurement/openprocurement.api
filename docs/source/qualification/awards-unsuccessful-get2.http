@@ -1,4 +1,4 @@
-GET /api/2.3/tenders/8c7840a135e342abb80894985f570f06/awards HTTP/1.0
+GET /api/2.3/tenders/eeb9177097a14a8c80ca0d1c8b202a00/awards HTTP/1.0
 Authorization: Basic YnJva2VyOg==
 Host: api-sandbox.openprocurement.org
 
@@ -14,17 +14,17 @@ Content-Type: application/json; charset=UTF-8
         {
           "hash": "md5:00000000000000000000000000000000", 
           "title": "Unsuccessful_Reason.pdf", 
-          "url": "http://public.docs-sandbox.openprocurement.org/get/47487c5a75174965b639729223239b61?KeyID=9d50f426&Signature=0ACwOEehd7lO1Urq6iQX8nF4wXlFpEWHLpnPfnzoYgW2Rg7lgBGIJ5kGRxmhHKomAmFEbUubxNKOWE%252BKBHAmBDQAAAA3AAAANAAAADgAAAA3AAAAYwAAADUAAABhAAAA", 
+          "url": "http://public.docs-sandbox.openprocurement.org/get/d9f9cff141e9459daed074c56155676c?KeyID=a1a42480&Signature=rouGILe%2F%2FpZ8%2FhqYoXiGkMRAkP9EjjC5Y14mea%2Fm%2FJb1AjFSxXytafd3qovtPIm08XDJAwHv0wsJfk9hwoO8DmQAAAA5AAAAZgAAADkAAABjAAAAZgAAAGYAAAAxAAAA", 
           "format": "application/pdf", 
           "documentOf": "tender", 
-          "datePublished": "2016-07-21T17:14:40.018144+03:00", 
-          "id": "1c8010d304e9415baa9ddc3c378ad154", 
-          "dateModified": "2016-07-21T17:14:40.018174+03:00"
+          "datePublished": "2016-07-21T17:17:55.311634+03:00", 
+          "id": "acfbcdc5e39d4492b43af0cfa2db1a51", 
+          "dateModified": "2016-07-21T17:17:55.311664+03:00"
         }
       ], 
       "complaintPeriod": {
-        "startDate": "2016-07-21T17:14:39.753797+03:00", 
-        "endDate": "2016-07-21T17:14:48.032606+03:00"
+        "startDate": "2016-07-21T17:17:55.039093+03:00", 
+        "endDate": "2016-07-21T17:18:03.564901+03:00"
       }, 
       "suppliers": [
         {
@@ -48,13 +48,13 @@ Content-Type: application/json; charset=UTF-8
           }
         }
       ], 
-      "bid_id": "afe31fef22b4405cb977030cbfd9be57", 
+      "bid_id": "3074dddf0f8f4f3f88f21224d7898243", 
       "value": {
         "currency": "UAH", 
         "amount": 450.0, 
         "valueAddedTaxIncluded": true
       }, 
-      "date": "2016-07-21T17:14:48.032562+03:00", 
+      "date": "2016-07-21T17:18:03.584814+03:00", 
       "complaints": [
         {
           "status": "resolved", 
@@ -63,12 +63,12 @@ Content-Type: application/json; charset=UTF-8
               "hash": "md5:00000000000000000000000000000000", 
               "author": "complaint_owner", 
               "title": "Complaint_Attachement.pdf", 
-              "url": "http://public.docs-sandbox.openprocurement.org/get/9bb44b4e53df423c91366f60e1ec84e2?KeyID=9d50f426&Signature=NlJ9xMajG%2FjBKtSh1C0um%252BYfq6%2FNUGHc3bBAv3%2FijWu1zkw58Zrm53Uqm5AT%252BZ7jWTovn%252BvKWQFPVNASnYxtCTkAAABiAAAAYgAAADQAAAA0AAAAYgAAADQAAABlAAAA", 
+              "url": "http://public.docs-sandbox.openprocurement.org/get/b1d288ec9d35491c83d5953a79d45071?KeyID=a1a42480&Signature=twSUg3Pm7UJJUoKW0E5lJ9fyDBuGXW3VHAKfq8j7q%252B8ysx%2FjgW1Q9B3mLNrHDS3UGm0rNjbKeZcGbGylCQvCDWIAAAAxAAAAZAAAADIAAAA4AAAAOAAAAGUAAABjAAAA", 
               "format": "application/pdf", 
               "documentOf": "tender", 
-              "datePublished": "2016-07-21T17:14:42.145284+03:00", 
-              "id": "ed9b23275c3d4375a1f550d986387008", 
-              "dateModified": "2016-07-21T17:14:42.145327+03:00"
+              "datePublished": "2016-07-21T17:17:57.441970+03:00", 
+              "id": "ae2cd7a20eab46c0b2d62cf2510936ca", 
+              "dateModified": "2016-07-21T17:17:57.442018+03:00"
             }
           ], 
           "description": "complaint description", 
@@ -97,17 +97,17 @@ Content-Type: application/json; charset=UTF-8
           "title": "complaint title", 
           "satisfied": true, 
           "tendererAction": "Виправлено неконкурентні умови", 
-          "dateAnswered": "2016-07-21T17:14:43.218560+03:00", 
-          "tendererActionDate": "2016-07-21T17:14:43.218588+03:00", 
-          "dateSubmitted": "2016-07-21T17:14:42.445458+03:00", 
+          "dateAnswered": "2016-07-21T17:17:58.552718+03:00", 
+          "tendererActionDate": "2016-07-21T17:17:58.552758+03:00", 
+          "dateSubmitted": "2016-07-21T17:17:57.747245+03:00", 
           "complaintID": "UA-2016-07-21-000001.5", 
-          "date": "2016-07-21T17:14:41.819478+03:00", 
+          "date": "2016-07-21T17:17:58.874448+03:00", 
           "resolution": "Виправлено неконкурентні умови", 
-          "id": "152df6bf4df0461e953ea0ed96319858"
+          "id": "523f13eba5464cf1a5fe165009f78f3a"
         }, 
         {
           "status": "invalid", 
-          "dateDecision": "2016-07-21T17:14:44.530721+03:00", 
+          "dateDecision": "2016-07-21T17:17:59.880278+03:00", 
           "description": "complaint description", 
           "author": {
             "contactPoint": {
@@ -133,28 +133,28 @@ Content-Type: application/json; charset=UTF-8
           "type": "complaint", 
           "title": "complaint title", 
           "satisfied": false, 
-          "dateEscalated": "2016-07-21T17:14:44.173585+03:00", 
-          "dateAnswered": "2016-07-21T17:14:43.846527+03:00", 
-          "dateSubmitted": "2016-07-21T17:14:42.737568+03:00", 
+          "dateEscalated": "2016-07-21T17:17:59.510382+03:00", 
+          "dateAnswered": "2016-07-21T17:17:59.180286+03:00", 
+          "dateSubmitted": "2016-07-21T17:17:58.023389+03:00", 
           "complaintID": "UA-2016-07-21-000001.6", 
-          "date": "2016-07-21T17:14:42.736071+03:00", 
+          "date": "2016-07-21T17:17:59.892951+03:00", 
           "resolution": "Виправлено неконкурентні умови", 
-          "id": "2f5e4b096414493c9c60514dcac5a087"
+          "id": "0734e80e7f554fe0a874c16a1c52e206"
         }, 
         {
           "status": "resolved", 
-          "dateDecision": "2016-07-21T17:14:47.159319+03:00", 
+          "dateDecision": "2016-07-21T17:18:02.667772+03:00", 
           "documents": [
             {
               "hash": "md5:00000000000000000000000000000000", 
               "author": "reviewers", 
               "title": "ComplaintResolution.pdf", 
-              "url": "http://public.docs-sandbox.openprocurement.org/get/2556a45a3df94fe784363dbaac50743b?KeyID=9d50f426&Signature=vS8zZVaOnLIgDgjooQlBTtnSr%2F9xjFe76oPevnvocz8QBB%252Bdf3ljsP%2FmlA%2FyyDHX%252Bft9ObY0wCVDTdKKbspzBjIAAAA1AAAANQAAADYAAABhAAAANAAAADUAAABhAAAA", 
+              "url": "http://public.docs-sandbox.openprocurement.org/get/fddb600727e24cbca910668c130af96f?KeyID=a1a42480&Signature=wB7r3gbiyuijB6Cv6lHHcFF4asw9kUgDSRV3Pz6cR1PUorYCaBYY8lkZADWEmqXBELB5LTlFFGawvMt6P2SBAGYAAABkAAAAZAAAAGIAAAA2AAAAMAAAADAAAAA3AAAA", 
               "format": "application/pdf", 
               "documentOf": "tender", 
-              "datePublished": "2016-07-21T17:14:46.810575+03:00", 
-              "id": "13f4f7d9172243b5a2903243419099b3", 
-              "dateModified": "2016-07-21T17:14:46.810606+03:00"
+              "datePublished": "2016-07-21T17:18:02.305563+03:00", 
+              "id": "9bb5ad67bfad43a9a58bc972b1b31613", 
+              "dateModified": "2016-07-21T17:18:02.305597+03:00"
             }
           ], 
           "description": "complaint description", 
@@ -182,17 +182,17 @@ Content-Type: application/json; charset=UTF-8
           "type": "complaint", 
           "title": "complaint title", 
           "satisfied": false, 
-          "dateEscalated": "2016-07-21T17:14:45.468978+03:00", 
-          "dateAnswered": "2016-07-21T17:14:45.149922+03:00", 
-          "dateSubmitted": "2016-07-21T17:14:44.830072+03:00", 
+          "dateEscalated": "2016-07-21T17:18:00.867577+03:00", 
+          "dateAnswered": "2016-07-21T17:18:00.516074+03:00", 
+          "dateSubmitted": "2016-07-21T17:18:00.195924+03:00", 
           "complaintID": "UA-2016-07-21-000001.7", 
-          "date": "2016-07-21T17:14:44.828567+03:00", 
+          "date": "2016-07-21T17:18:02.685259+03:00", 
           "resolution": "Виправлено неконкурентні умови", 
-          "id": "1e8f2fae79e34a429977978e76765005"
+          "id": "b5c19009d623453b93ac13f2f0fe0b78"
         }, 
         {
           "status": "declined", 
-          "dateDecision": "2016-07-21T17:14:47.522714+03:00", 
+          "dateDecision": "2016-07-21T17:18:03.008371+03:00", 
           "description": "complaint description", 
           "author": {
             "contactPoint": {
@@ -218,22 +218,22 @@ Content-Type: application/json; charset=UTF-8
           "type": "complaint", 
           "title": "complaint title", 
           "satisfied": false, 
-          "dateEscalated": "2016-07-21T17:14:46.485769+03:00", 
-          "dateAnswered": "2016-07-21T17:14:46.144563+03:00", 
-          "dateSubmitted": "2016-07-21T17:14:45.797831+03:00", 
+          "dateEscalated": "2016-07-21T17:18:01.933290+03:00", 
+          "dateAnswered": "2016-07-21T17:18:01.603001+03:00", 
+          "dateSubmitted": "2016-07-21T17:18:01.246311+03:00", 
           "complaintID": "UA-2016-07-21-000001.8", 
-          "date": "2016-07-21T17:14:45.795841+03:00", 
+          "date": "2016-07-21T17:18:03.022976+03:00", 
           "resolution": "Виправлено неконкурентні умови", 
-          "id": "b8b76757989e40dea42db72149b8ad59"
+          "id": "bec8a58fe2d54a6397977836d8577df4"
         }
       ], 
-      "id": "5ed2003616f640bd8c0dbc037567908f"
+      "id": "86d3f73dd7094865a9fd4966584c62ae"
     }, 
     {
       "status": "cancelled", 
       "complaintPeriod": {
-        "startDate": "2016-07-21T17:14:40.280308+03:00", 
-        "endDate": "2016-07-21T17:14:48.032606+03:00"
+        "startDate": "2016-07-21T17:17:55.522473+03:00", 
+        "endDate": "2016-07-21T17:18:03.564901+03:00"
       }, 
       "suppliers": [
         {
@@ -256,14 +256,14 @@ Content-Type: application/json; charset=UTF-8
           }
         }
       ], 
-      "bid_id": "3a06a3598e6c47179281d843e0f95a64", 
+      "bid_id": "f904bf65cfc14a93bb4af123ebb48b2a", 
       "value": {
         "currency": "UAH", 
         "amount": 469.0, 
         "valueAddedTaxIncluded": true
       }, 
-      "date": "2016-07-21T17:14:40.963049+03:00", 
-      "id": "6cb65764e32c4ef5a3c8818bafa8b6ba"
+      "date": "2016-07-21T17:17:56.209593+03:00", 
+      "id": "ee904f5b047c46f29e0d221a940100ea"
     }, 
     {
       "status": "cancelled", 
@@ -271,17 +271,17 @@ Content-Type: application/json; charset=UTF-8
         {
           "hash": "md5:00000000000000000000000000000000", 
           "title": "Cancellation_Reason.pdf", 
-          "url": "http://public.docs-sandbox.openprocurement.org/get/1a97d710c5e94114a330f2299550008a?KeyID=9d50f426&Signature=F2oc4WvTTEoAs6JEb1P6ySujTIFxw%2F7mL5kZJo5j6Rm%252Bo%252BO2NGybNROTz6v%2FQSIBJ4CIvFDZrWS2VbD%2FR8DDCTEAAABhAAAAOQAAADcAAABkAAAANwAAADEAAAAwAAAA", 
+          "url": "http://public.docs-sandbox.openprocurement.org/get/65c9de328cec4ff9ba8492038755f1cf?KeyID=a1a42480&Signature=AOwjLo%2F%252B2tTfq43K%252B6%252BAzVJ9x6qj%252BQ2YKs55hHvsowr8zKBdlEo12uWnXtfBuOVQIRIt8FmqywQ%2Fdr5WqUZkCjYAAAA1AAAAYwAAADkAAABkAAAAZQAAADMAAAAyAAAA", 
           "format": "application/pdf", 
           "documentOf": "tender", 
-          "datePublished": "2016-07-21T17:14:41.313976+03:00", 
-          "id": "cf8ac5c906e3498384be5618bd9fcb1a", 
-          "dateModified": "2016-07-21T17:14:41.314008+03:00"
+          "datePublished": "2016-07-21T17:17:56.532625+03:00", 
+          "id": "da1c73f1478f4186a83afe754bd06e89", 
+          "dateModified": "2016-07-21T17:17:56.532661+03:00"
         }
       ], 
       "complaintPeriod": {
-        "startDate": "2016-07-21T17:14:40.963770+03:00", 
-        "endDate": "2016-07-21T17:14:48.032606+03:00"
+        "startDate": "2016-07-21T17:17:56.195926+03:00", 
+        "endDate": "2016-07-21T17:18:03.564901+03:00"
       }, 
       "suppliers": [
         {
@@ -304,20 +304,20 @@ Content-Type: application/json; charset=UTF-8
           }
         }
       ], 
-      "bid_id": "3a06a3598e6c47179281d843e0f95a64", 
+      "bid_id": "f904bf65cfc14a93bb4af123ebb48b2a", 
       "value": {
         "currency": "UAH", 
         "amount": 469.0, 
         "valueAddedTaxIncluded": true
       }, 
-      "date": "2016-07-21T17:14:41.563302+03:00", 
-      "id": "be4cb0e0affc4d71a4f1bf64d5311bc9"
+      "date": "2016-07-21T17:18:03.584814+03:00", 
+      "id": "69f2611e848b4a83aa6f10c192dc1456"
     }, 
     {
       "status": "cancelled", 
       "complaintPeriod": {
-        "startDate": "2016-07-21T17:14:41.564065+03:00", 
-        "endDate": "2016-07-21T17:14:48.032606+03:00"
+        "startDate": "2016-07-21T17:17:56.801294+03:00", 
+        "endDate": "2016-07-21T17:18:03.564901+03:00"
       }, 
       "suppliers": [
         {
@@ -341,19 +341,19 @@ Content-Type: application/json; charset=UTF-8
           }
         }
       ], 
-      "bid_id": "441f09bcacca4fcf876e0e1886cebc86", 
+      "bid_id": "eacdcca5748646c3b1b40ab3754e561b", 
       "value": {
         "currency": "UAH", 
         "amount": 475.0, 
         "valueAddedTaxIncluded": true
       }, 
-      "date": "2016-07-21T17:14:41.564325+03:00", 
-      "id": "6dcc0fa176c5455db5973077862b2461"
+      "date": "2016-07-21T17:18:03.584814+03:00", 
+      "id": "423731db017b4cff9e48d477657534d6"
     }, 
     {
       "status": "pending", 
       "complaintPeriod": {
-        "startDate": "2016-07-21T17:14:48.033415+03:00"
+        "startDate": "2016-07-21T17:18:03.565711+03:00"
       }, 
       "suppliers": [
         {
@@ -377,14 +377,14 @@ Content-Type: application/json; charset=UTF-8
           }
         }
       ], 
-      "bid_id": "afe31fef22b4405cb977030cbfd9be57", 
+      "bid_id": "3074dddf0f8f4f3f88f21224d7898243", 
       "value": {
         "currency": "UAH", 
         "amount": 450.0, 
         "valueAddedTaxIncluded": true
       }, 
-      "date": "2016-07-21T17:14:48.033679+03:00", 
-      "id": "a94dcd4c1bd243838736f97063aa158e"
+      "date": "2016-07-21T17:18:03.565693+03:00", 
+      "id": "6d8fd45d991540a0bb759b06e58656cf"
     }
   ]
 }

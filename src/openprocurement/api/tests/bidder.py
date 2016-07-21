@@ -151,7 +151,7 @@ class TenderBidderResourceTest(BaseTenderWebTest):
 
     def test_patch_tender_bidder(self):
         response = self.app.post_json('/tenders/{}/bids'.format(
-            self.tender_id), {'data': {'tenderers': [test_organization], "value": {"amount": 500}}})
+            self.tender_id), {'data': {'tenderers': [test_organization], "status": "draft", "value": {"amount": 500}}})
         self.assertEqual(response.status, '201 Created')
         self.assertEqual(response.content_type, 'application/json')
         bidder = response.json['data']
@@ -181,6 +181,17 @@ class TenderBidderResourceTest(BaseTenderWebTest):
         self.assertEqual(response.content_type, 'application/json')
         self.assertEqual(response.json['data']["value"]["amount"], 400)
         self.assertNotEqual(response.json['data']['date'], bidder['date'])
+
+        response = self.app.patch_json('/tenders/{}/bids/{}'.format(self.tender_id, bidder['id']), {"data": {"status": "active"}})
+        self.assertEqual(response.status, '200 OK')
+        self.assertEqual(response.content_type, 'application/json')
+        self.assertEqual(response.json['data']["status"], "active")
+        self.assertNotEqual(response.json['data']['date'], bidder['date'])
+
+        response = self.app.patch_json('/tenders/{}/bids/{}'.format(self.tender_id, bidder['id']), {"data": {"status": "draft"}}, status=403)
+        self.assertEqual(response.status, '403 Forbidden')
+        self.assertEqual(response.content_type, 'application/json')
+        self.assertEqual(response.json['errors'][0]["description"], "Can\'t update bid to (draft) status")
 
         response = self.app.patch_json('/tenders/{}/bids/some_id'.format(self.tender_id), {"data": {"value": {"amount": 400}}}, status=404)
         self.assertEqual(response.status, '404 Not Found')
@@ -357,6 +368,7 @@ class TenderBidderFeaturesResourceTest(BaseTenderWebTest):
                     }
                     for i in self.initial_data['features']
                 ],
+                "status": "active",
                 "tenderers": [
                     test_organization
                 ],
@@ -377,6 +389,7 @@ class TenderBidderFeaturesResourceTest(BaseTenderWebTest):
                 "tenderers": [
                     test_organization
                 ],
+                "status": "draft",
                 "value": {
                     "amount": 479,
                     "currency": "UAH",
