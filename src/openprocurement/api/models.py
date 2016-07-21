@@ -536,8 +536,8 @@ class Bid(Model):
             'Administrator': Administrator_bid_role,
             'embedded': view_bid_role,
             'view': view_bid_role,
-            'create': whitelist('value', 'tenderers', 'parameters', 'lotValues'),
-            'edit': whitelist('value', 'tenderers', 'parameters', 'lotValues'),
+            'create': whitelist('value', 'status', 'tenderers', 'parameters', 'lotValues'),
+            'edit': whitelist('value', 'status', 'tenderers', 'parameters', 'lotValues'),
             'auction_view': whitelist('value', 'lotValues', 'id', 'date', 'parameters', 'participationUrl'),
             'auction_post': whitelist('value', 'lotValues', 'id', 'date'),
             'auction_patch': whitelist('id', 'lotValues', 'participationUrl'),
@@ -559,7 +559,7 @@ class Bid(Model):
     lotValues = ListType(ModelType(LotValue), default=list())
     date = IsoDateTimeType(default=get_now)
     id = MD5Type(required=True, default=lambda: uuid4().hex)
-    status = StringType(choices=['registration', 'validBid', 'invalidBid'])
+    status = StringType(choices=['active', 'draft'], default='active')
     value = ModelType(Value)
     documents = ListType(ModelType(Document), default=list())
     participationUrl = URLType()
@@ -950,7 +950,7 @@ class Lot(Model):
         bids = [
             bid
             for bid in self.__parent__.bids
-            if self.id in [i.relatedLot for i in bid.lotValues]
+            if self.id in [i.relatedLot for i in bid.lotValues] and getattr(bid, "status", "active") == "active"
         ]
         return len(bids)
 
