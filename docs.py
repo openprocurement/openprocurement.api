@@ -38,6 +38,7 @@ bid = {
                 "name": "ДКП «Школяр»"
             }
         ],
+        "status": "draft",
         "value": {
             "amount": 500
         }
@@ -404,7 +405,7 @@ class TenderResourceTest(BaseTenderWebTest):
                 {'data': {
                     'title': u'Notice.pdf',
                     'url': self.generate_docservice_url(),
-                    'hash': '0' * 32,
+                    'hash': 'md5:' + '0' * 32,
                     'format': 'application/pdf',
                 }})
             self.assertEqual(response.status, '201 Created')
@@ -430,7 +431,7 @@ class TenderResourceTest(BaseTenderWebTest):
                 {'data': {
                     'title': u'AwardCriteria.pdf',
                     'url': self.generate_docservice_url(),
-                    'hash': '0' * 32,
+                    'hash': 'md5:' + '0' * 32,
                     'format': 'application/pdf',
                 }})
             self.assertEqual(response.status, '201 Created')
@@ -447,7 +448,7 @@ class TenderResourceTest(BaseTenderWebTest):
                 {'data': {
                     'title': u'AwardCriteria-2.pdf',
                     'url': self.generate_docservice_url(),
-                    'hash': '0' * 32,
+                    'hash': 'md5:' + '0' * 32,
                     'format': 'application/pdf',
                 }})
             self.assertEqual(response.status, '200 OK')
@@ -494,6 +495,11 @@ class TenderResourceTest(BaseTenderWebTest):
             bids_access[bid1_id] = response.json['access']['token']
             self.assertEqual(response.status, '201 Created')
 
+        with open('docs/source/tutorial/activate-bidder.http', 'w') as self.app.file_obj:
+            response = self.app.patch_json('/tenders/{}/bids/{}?acc_token={}'.format(
+                self.tender_id, bid1_id, bids_access[bid1_id]), {"data": {"status": "active"}})
+            self.assertEqual(response.status, '200 OK')
+
         # Proposal Uploading
         #
 
@@ -502,7 +508,7 @@ class TenderResourceTest(BaseTenderWebTest):
                 {'data': {
                     'title': u'Proposal.pdf',
                     'url': self.generate_docservice_url(),
-                    'hash': '0' * 32,
+                    'hash': 'md5:' + '0' * 32,
                     'format': 'application/pdf',
                 }})
             self.assertEqual(response.status, '201 Created')
@@ -619,7 +625,7 @@ class TenderResourceTest(BaseTenderWebTest):
                 {'data': {
                     'title': u'contract_first_document.doc',
                     'url': self.generate_docservice_url(),
-                    'hash': '0' * 32,
+                    'hash': 'md5:' + '0' * 32,
                     'format': 'application/msword',
                 }})
             self.assertEqual(response.status, '201 Created')
@@ -634,7 +640,7 @@ class TenderResourceTest(BaseTenderWebTest):
                 {'data': {
                     'title': u'contract_second_document.doc',
                     'url': self.generate_docservice_url(),
-                    'hash': '0' * 32,
+                    'hash': 'md5:' + '0' * 32,
                     'format': 'application/msword',
                 }})
             self.assertEqual(response.status, '201 Created')
@@ -685,7 +691,7 @@ class TenderResourceTest(BaseTenderWebTest):
                 {'data': {
                     'title': u'Notice.pdf',
                     'url': self.generate_docservice_url(),
-                    'hash': '0' * 32,
+                    'hash': 'md5:' + '0' * 32,
                     'format': 'application/pdf',
                 }})
             cancellation_doc_id = response.json['data']['id']
@@ -701,7 +707,7 @@ class TenderResourceTest(BaseTenderWebTest):
                 {'data': {
                     'title': u'Notice-2.pdf',
                     'url': self.generate_docservice_url(),
-                    'hash': '0' * 32,
+                    'hash': 'md5:' + '0' * 32,
                     'format': 'application/pdf',
                 }})
             self.assertEqual(response.status, '200 OK')
@@ -737,7 +743,7 @@ class TenderResourceTest(BaseTenderWebTest):
                     self.tender_id, complaint1_id, complaint1_token), {'data': {
                     'title': u'Complaint_Attachement.pdf',
                     'url': self.generate_docservice_url(),
-                    'hash': '0' * 32,
+                    'hash': 'md5:' + '0' * 32,
                     'format': 'application/pdf',
                 }})
             self.assertEqual(response.status, '201 Created')
@@ -857,7 +863,7 @@ class TenderResourceTest(BaseTenderWebTest):
                     self.tender_id, complaint3_id), {'data': {
                     'title': u'ComplaintResolution.pdf',
                     'url': self.generate_docservice_url(),
-                    'hash': '0' * 32,
+                    'hash': 'md5:' + '0' * 32,
                     'format': 'application/pdf',
                 }})
             self.assertEqual(response.status, '201 Created')
@@ -919,7 +925,7 @@ class TenderResourceTest(BaseTenderWebTest):
                 self.tender_id, award_id, self.tender_token), {'data': {
                     'title': u'Unsuccessful_Reason.pdf',
                     'url': self.generate_docservice_url(),
-                    'hash': '0' * 32,
+                    'hash': 'md5:' + '0' * 32,
                     'format': 'application/pdf',
                 }})
             self.assertEqual(response.status, '201 Created')
@@ -955,7 +961,7 @@ class TenderResourceTest(BaseTenderWebTest):
                 self.tender_id, award_id3, self.tender_token), {'data': {
                     'title': u'Cancellation_Reason.pdf',
                     'url': self.generate_docservice_url(),
-                    'hash': '0' * 32,
+                    'hash': 'md5:' + '0' * 32,
                     'format': 'application/pdf',
                 }})
             self.assertEqual(response.status, '201 Created')
@@ -984,7 +990,7 @@ class TenderResourceTest(BaseTenderWebTest):
                     self.tender_id, award_id, complaint1_id, complaint1_token), {'data': {
                     'title': u'Complaint_Attachement.pdf',
                     'url': self.generate_docservice_url(),
-                    'hash': '0' * 32,
+                    'hash': 'md5:' + '0' * 32,
                     'format': 'application/pdf',
                 }})
             self.assertEqual(response.status, '201 Created')
@@ -1100,7 +1106,7 @@ class TenderResourceTest(BaseTenderWebTest):
                     self.tender_id, award_id, complaint3_id), {'data': {
                     'title': u'ComplaintResolution.pdf',
                     'url': self.generate_docservice_url(),
-                    'hash': '0' * 32,
+                    'hash': 'md5:' + '0' * 32,
                     'format': 'application/pdf',
                 }})
             self.assertEqual(response.status, '201 Created')

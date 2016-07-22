@@ -397,8 +397,60 @@ class TenderDocumentWithDSResourceTest(TenderDocumentResourceTest):
         response = self.app.post_json('/tenders/{}/documents'.format(self.tender_id),
             {'data': {
                 'title': u'укр.doc',
-                'url': 'http://invalid.docservice.url/get/uuid',
+                'url': self.generate_docservice_url(),
                 'hash': '0' * 32,
+                'format': 'application/msword',
+            }}, status=422)
+        self.assertEqual(response.status, '422 Unprocessable Entity')
+        self.assertEqual(response.content_type, 'application/json')
+        self.assertEqual(response.json['errors'], [
+            {u'description': [u'Hash type is not supported.'], u'location': u'body', u'name': u'hash'}
+        ])
+
+        response = self.app.post_json('/tenders/{}/documents'.format(self.tender_id),
+            {'data': {
+                'title': u'укр.doc',
+                'url': self.generate_docservice_url(),
+                'hash': 'sha2048:' + '0' * 32,
+                'format': 'application/msword',
+            }}, status=422)
+        self.assertEqual(response.status, '422 Unprocessable Entity')
+        self.assertEqual(response.content_type, 'application/json')
+        self.assertEqual(response.json['errors'], [
+            {u'description': [u'Hash type is not supported.'], u'location': u'body', u'name': u'hash'}
+        ])
+
+        response = self.app.post_json('/tenders/{}/documents'.format(self.tender_id),
+            {'data': {
+                'title': u'укр.doc',
+                'url': self.generate_docservice_url(),
+                'hash': 'sha512:' + '0' * 32,
+                'format': 'application/msword',
+            }}, status=422)
+        self.assertEqual(response.status, '422 Unprocessable Entity')
+        self.assertEqual(response.content_type, 'application/json')
+        self.assertEqual(response.json['errors'], [
+            {u'description': [u'Hash value is wrong length.'], u'location': u'body', u'name': u'hash'}
+        ])
+
+        response = self.app.post_json('/tenders/{}/documents'.format(self.tender_id),
+            {'data': {
+                'title': u'укр.doc',
+                'url': self.generate_docservice_url(),
+                'hash': 'md5:' + 'O' * 32,
+                'format': 'application/msword',
+            }}, status=422)
+        self.assertEqual(response.status, '422 Unprocessable Entity')
+        self.assertEqual(response.content_type, 'application/json')
+        self.assertEqual(response.json['errors'], [
+            {u'description': [u'Hash value is not hexadecimal.'], u'location': u'body', u'name': u'hash'}
+        ])
+
+        response = self.app.post_json('/tenders/{}/documents'.format(self.tender_id),
+            {'data': {
+                'title': u'укр.doc',
+                'url': 'http://invalid.docservice.url/get/uuid',
+                'hash': 'md5:' + '0' * 32,
                 'format': 'application/msword',
             }}, status=403)
         self.assertEqual(response.status, '403 Forbidden')
@@ -409,7 +461,7 @@ class TenderDocumentWithDSResourceTest(TenderDocumentResourceTest):
             {'data': {
                 'title': u'укр.doc',
                 'url': '/'.join(self.generate_docservice_url().split('/')[:4]),
-                'hash': '0' * 32,
+                'hash': 'md5:' + '0' * 32,
                 'format': 'application/msword',
             }}, status=403)
         self.assertEqual(response.status, '403 Forbidden')
@@ -420,7 +472,7 @@ class TenderDocumentWithDSResourceTest(TenderDocumentResourceTest):
             {'data': {
                 'title': u'укр.doc',
                 'url': self.generate_docservice_url().split('?')[0],
-                'hash': '0' * 32,
+                'hash': 'md5:' + '0' * 32,
                 'format': 'application/msword',
             }}, status=403)
         self.assertEqual(response.status, '403 Forbidden')
@@ -431,7 +483,7 @@ class TenderDocumentWithDSResourceTest(TenderDocumentResourceTest):
             {'data': {
                 'title': u'укр.doc',
                 'url': self.generate_docservice_url().replace(self.app.app.registry.keyring.keys()[-1], '0' * 8),
-                'hash': '0' * 32,
+                'hash': 'md5:' + '0' * 32,
                 'format': 'application/msword',
             }}, status=422)
         self.assertEqual(response.status, '422 Unprocessable Entity')
@@ -442,7 +494,7 @@ class TenderDocumentWithDSResourceTest(TenderDocumentResourceTest):
             {'data': {
                 'title': u'укр.doc',
                 'url': self.generate_docservice_url().replace("Signature=", "Signature=ABC"),
-                'hash': '0' * 32,
+                'hash': 'md5:' + '0' * 32,
                 'format': 'application/msword',
             }}, status=422)
         self.assertEqual(response.status, '422 Unprocessable Entity')
@@ -453,7 +505,7 @@ class TenderDocumentWithDSResourceTest(TenderDocumentResourceTest):
             {'data': {
                 'title': u'укр.doc',
                 'url': self.generate_docservice_url().replace("Signature=", "Signature=bw%3D%3D"),
-                'hash': '0' * 32,
+                'hash': 'md5:' + '0' * 32,
                 'format': 'application/msword',
             }}, status=422)
         self.assertEqual(response.status, '422 Unprocessable Entity')
@@ -465,7 +517,7 @@ class TenderDocumentWithDSResourceTest(TenderDocumentResourceTest):
             {'data': {
                 'title': u'укр.doc',
                 'url': self.generate_docservice_url(),
-                'hash': '0' * 32,
+                'hash': 'md5:' + '0' * 32,
                 'format': 'application/msword',
             }})
         self.assertEqual(response.status, '201 Created')
@@ -519,7 +571,7 @@ class TenderDocumentWithDSResourceTest(TenderDocumentResourceTest):
             {'data': {
                 'title': u'укр.doc',
                 'url': self.generate_docservice_url(),
-                'hash': '0' * 32,
+                'hash': 'md5:' + '0' * 32,
                 'format': 'application/msword',
             }}, status=403)
         self.assertEqual(response.status, '403 Forbidden')
@@ -531,7 +583,7 @@ class TenderDocumentWithDSResourceTest(TenderDocumentResourceTest):
             {'data': {
                 'title': u'укр.doc',
                 'url': self.generate_docservice_url(),
-                'hash': '0' * 32,
+                'hash': 'md5:' + '0' * 32,
                 'format': 'application/msword',
             }})
         self.assertEqual(response.status, '201 Created')
@@ -546,7 +598,7 @@ class TenderDocumentWithDSResourceTest(TenderDocumentResourceTest):
             {'data': {
                 'title': u'name.doc',
                 'url': self.generate_docservice_url(),
-                'hash': '0' * 32,
+                'hash': 'md5:' + '0' * 32,
                 'format': 'application/msword',
             }})
         self.assertEqual(response.status, '200 OK')
@@ -591,7 +643,7 @@ class TenderDocumentWithDSResourceTest(TenderDocumentResourceTest):
             {'data': {
                 'title': 'name.doc',
                 'url': self.generate_docservice_url(),
-                'hash': '0' * 32,
+                'hash': 'md5:' + '0' * 32,
                 'format': 'application/msword',
             }})
         self.assertEqual(response.status, '201 Created')
@@ -610,7 +662,7 @@ class TenderDocumentWithDSResourceTest(TenderDocumentResourceTest):
             {'data': {
                 'title': u'укр.doc',
                 'url': self.generate_docservice_url(),
-                'hash': '0' * 32,
+                'hash': 'md5:' + '0' * 32,
                 'format': 'application/msword',
             }})
         self.assertEqual(response.status, '200 OK')
@@ -640,7 +692,7 @@ class TenderDocumentWithDSResourceTest(TenderDocumentResourceTest):
             {'data': {
                 'title': u'укр.doc',
                 'url': self.generate_docservice_url(),
-                'hash': '0' * 32,
+                'hash': 'md5:' + '0' * 32,
                 'format': 'application/msword',
             }}, status=403)
         self.assertEqual(response.status, '403 Forbidden')

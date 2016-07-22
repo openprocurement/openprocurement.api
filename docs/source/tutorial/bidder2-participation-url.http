@@ -1,4 +1,4 @@
-GET /api/2.3/tenders/3302890835e145a28b553588bc630590/bids/614cf1e7dcb548f9b60cc461c5293f64?acc_token=c64da03ffe334f6dba7a26a975925264 HTTP/1.0
+GET /api/2.3/tenders/b74c14bbee6f44a9a0c8408c13a4c1a8/bids/a25432c80ba7407fbedb2b16bbbbafc5?acc_token=48c3f0166a8548c696c757143c61a4b7 HTTP/1.0
 Authorization: Basic YnJva2VyOg==
 Host: api-sandbox.openprocurement.org
 
@@ -8,14 +8,12 @@ Content-Type: application/json; charset=UTF-8
 
 {
   "data": {
-    "date": "2016-07-20T17:17:35.340466+03:00", 
+    "status": "active", 
     "value": {
       "currency": "UAH", 
       "amount": 499.0, 
       "valueAddedTaxIncluded": true
     }, 
-    "id": "614cf1e7dcb548f9b60cc461c5293f64", 
-    "participationUrl": "http://auction-sandbox.openprocurement.org/tenders/3302890835e145a28b553588bc630590?key_for_bid=614cf1e7dcb548f9b60cc461c5293f64", 
     "tenderers": [
       {
         "contactPoint": {
@@ -37,7 +35,10 @@ Content-Type: application/json; charset=UTF-8
           "locality": "м. Львів"
         }
       }
-    ]
+    ], 
+    "date": "2016-07-21T17:18:07.358915+03:00", 
+    "id": "a25432c80ba7407fbedb2b16bbbbafc5", 
+    "participationUrl": "http://auction-sandbox.openprocurement.org/tenders/b74c14bbee6f44a9a0c8408c13a4c1a8?key_for_bid=a25432c80ba7407fbedb2b16bbbbafc5"
   }
 }
 

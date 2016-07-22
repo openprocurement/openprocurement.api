@@ -11,11 +11,13 @@ class TenderSwitchTenderingResourceTest(BaseTenderWebTest):
         self.app.authorization = ('Basic', ('chronograph', ''))
         response = self.app.patch_json('/tenders/{}'.format(self.tender_id), {'data': {'id': self.tender_id}})
         self.assertEqual(response.status, '200 OK')
+        date_1 = response.json['data']['date']
         self.assertNotEqual(response.json['data']["status"], "active.tendering")
         self.set_status('active.tendering', {'status': 'active.enquiries', "tenderPeriod": {"startDate": None}})
         response = self.app.patch_json('/tenders/{}'.format(self.tender_id), {'data': {'id': self.tender_id}})
         self.assertEqual(response.status, '200 OK')
         self.assertEqual(response.json['data']["status"], "active.tendering")
+        self.assertNotEqual(date_1, response.json['data']['date'])
 
     def test_switch_to_tendering_by_tenderPeriod_startDate(self):
         self.set_status('active.tendering', {'status': 'active.enquiries', "tenderPeriod": {}})

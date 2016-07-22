@@ -1,14 +1,14 @@
-POST /api/2.3/tenders/fdc75be18cf448aa828b4e28cd617a1b/complaints/67f8257e0b7b4de3b8c8b3ab9bf2c268/documents HTTP/1.0
+POST /api/2.3/tenders/eeb9177097a14a8c80ca0d1c8b202a00/complaints/75548aab79754e1886351dd4d29425b1/documents HTTP/1.0
 Authorization: Basic cmV2aWV3ZXI6
-Content-Length: 333
+Content-Length: 343
 Content-Type: application/json
 Host: api-sandbox.openprocurement.org
 
 {
   "data": {
-    "url": "http://public.docs-sandbox.openprocurement.org/get/feb7df18de514441bb93fd7e522e6374?KeyID=9f98b41e&Signature=CNt62LCGPmWcEpwnQxqUTjE44yJyWFBbogBRQGc%2BFkJvCxO7VQdUeuk6eHKJIvqqixJQxynMBbNPxixgNk3RBg%3D%3D", 
+    "url": "http://public.docs-sandbox.openprocurement.org/get/5edda28875654b50a4c21d5e1fd406d3?KeyID=a1a42480&Signature=SdXQsTWSgL%2Bk5jnE4qwrajLCBVNLc41vylXN6cR63%2BU2K6wI1%2Bs1IW8dL4WoWEk37DP%2FfVwDiJryPzPdxkPDBA%3D%3D", 
     "title": "ComplaintResolution.pdf", 
-    "hash": "00000000000000000000000000000000", 
+    "hash": "md5:00000000000000000000000000000000", 
     "format": "application/pdf"
   }
 }
@@ -16,19 +16,19 @@ Host: api-sandbox.openprocurement.org
 
 201 Created
 Content-Type: application/json; charset=UTF-8
-Location: http://api-sandbox.openprocurement.org/api/2.3/tenders/fdc75be18cf448aa828b4e28cd617a1b/complaints/67f8257e0b7b4de3b8c8b3ab9bf2c268/documents/6b071c7e74f0490d9adffcb720a6cb2e
+Location: http://api-sandbox.openprocurement.org/api/2.3/tenders/eeb9177097a14a8c80ca0d1c8b202a00/complaints/75548aab79754e1886351dd4d29425b1/documents/2014c0f3de1945fca7b07dd6b0bc4573
 
 {
   "data": {
-    "hash": "00000000000000000000000000000000", 
+    "hash": "md5:00000000000000000000000000000000", 
     "author": "reviewers", 
     "title": "ComplaintResolution.pdf", 
-    "url": "http://public.docs-sandbox.openprocurement.org/get/feb7df18de514441bb93fd7e522e6374?KeyID=9f98b41e&Signature=SVvgELUIKbfEiW8STpforS3dd%2FgzWgeCg9Q3HQGm2x9AzSTNBdR010oji0Lr9xPrk861xBloqvQeMaDHmzTBBWYAAABlAAAAYgAAADcAAABkAAAAZgAAADEAAAA4AAAA", 
+    "url": "http://public.docs-sandbox.openprocurement.org/get/5edda28875654b50a4c21d5e1fd406d3?KeyID=a1a42480&Signature=E9gM5PLcl9gqPhKL%252B%2FVJ%2FlG2ORbUx0XCXwDJWGAjwOHIuz3lZrkE11pF5wev6PDziSQefI6WlADuw95Ai8R4BDUAAABlAAAAZAAAAGQAAABhAAAAMgAAADgAAAA4AAAA", 
     "format": "application/pdf", 
     "documentOf": "tender", 
-    "datePublished": "2016-07-20T17:17:20.804730+03:00", 
-    "id": "6b071c7e74f0490d9adffcb720a6cb2e", 
-    "dateModified": "2016-07-20T17:17:20.804769+03:00"
+    "datePublished": "2016-07-21T17:17:53.120349+03:00", 
+    "id": "2014c0f3de1945fca7b07dd6b0bc4573", 
+    "dateModified": "2016-07-21T17:17:53.120387+03:00"
   }
 }
 
