@@ -34,6 +34,7 @@ class TenderComplaintResource(APIResource):
             self.request.errors.status = 403
             return
         complaint = self.request.validated['complaint']
+        complaint.date = get_now()
         if complaint.status == 'claim':
             complaint.dateSubmitted = get_now()
         else:

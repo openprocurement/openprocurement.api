@@ -24,9 +24,8 @@ Schema
 
     Possible values are:
 
-    * `registration`
-    * `validBid`
-    * `invalidBid`
+    * `draft`
+    * `active`
 
 :value:
     :ref:`Value`, required
