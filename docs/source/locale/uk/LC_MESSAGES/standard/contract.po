@@ -1,4 +1,4 @@
-#
+# 
 msgid ""
 msgstr ""
 "Project-Id-Version: openprocurement.api 0.5\n"
@@ -11,8 +11,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Language: uk\n"
-"Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<"
-"=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
+"Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
 "X-Generator: Lokalize 1.5\n"
 
 #: ../../source/standard/contract.rst:8
@@ -80,11 +79,11 @@ msgstr ""
 "|ocdsDescription| Дата підписання договору. Якщо було декілька підписань, то"
 " береться дата останнього підписання."
 
-#: ../../source/standard/contract.rst:88
+#: ../../source/standard/contract.rst:93
 msgid "List of :ref:`Document` objects"
 msgstr "Список об’єктів :ref:`Document`"
 
-#: ../../source/standard/contract.rst:90
+#: ../../source/standard/contract.rst:95
 msgid ""
 "|ocdsDescription| All documents and attachments related to the contract, "
 "including any notices."
@@ -136,7 +135,8 @@ msgstr "Об’єкт `Value`, генерується автоматично, л
 
 #: ../../source/standard/contract.rst:50
 msgid "List of :ref:`Item` objects, auto-generated, read-only"
-msgstr "Список об’єктів :ref:`Item`, генерується автоматично, лише для читання"
+msgstr ""
+"Список об’єктів :ref:`Item`, генерується автоматично, лише для читання"
 
 #: ../../source/standard/contract.rst:52
 msgid ""
@@ -153,7 +153,10 @@ msgstr ""
 "Список об’єктів :ref:`Organization`, генерується автоматично, лише для "
 "читання"
 
-#: ../../source/standard/contract.rst:82
+#: ../../source/standard/contract.rst:82 ../../source/standard/contract.rst:88
 msgid "string, :ref:`date`"
 msgstr "рядок, :ref:`date`"
 
+#: ../../source/standard/contract.rst:90
+msgid "The date when the contract was changed or activated."
+msgstr "Дата, коли договір був змінений або активований."

@@ -187,9 +187,14 @@ Registering bid
 
 When ``Tender.tenderingPeriod.startDate`` comes, Tender switches to `active.tendering` status that allows registration of bids.
 
-Bidder can register a bid:
+Bidder can register a bid in `draft` status:
 
 .. include:: tutorial/register-bidder.http
+   :code:
+
+And activate a bid:
+
+.. include:: tutorial/activate-bidder.http
    :code:
 
 And upload proposal document:

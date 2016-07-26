@@ -7,6 +7,7 @@ from openprocurement.api.utils import (
     json_view,
     context_unpack,
     APIResource,
+    get_now
 )
 from openprocurement.api.validation import (
     validate_cancellation_data,
@@ -56,6 +57,7 @@ class TenderCancellationResource(APIResource):
             self.request.errors.status = 403
             return
         cancellation = self.request.validated['cancellation']
+        cancellation.date = get_now()
         if any([i.status != 'active' for i in tender.lots if i.id == cancellation.relatedLot]):
             self.request.errors.add('body', 'data', 'Can add cancellation only in active lot status')
             self.request.errors.status = 403

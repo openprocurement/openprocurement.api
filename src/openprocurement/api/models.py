@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 import os
 from couchdb_schematics.document import SchematicsDocument
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, time
 from iso8601 import parse_date, ParseError
 from pytz import timezone
 from pyramid.security import Allow
@@ -229,6 +229,14 @@ def calc_auction_end_time(bids, start):
     return start + bids * BIDDER_TIME + SERVICE_TIME + AUCTION_STAND_STILL_TIME
 
 
+def rounding_shouldStartAfter(start_after, tender, use_from=datetime(2016, 7, 16, tzinfo=TZ)):
+    if (tender.enquiryPeriod and tender.enquiryPeriod.startDate or get_now()) > use_from and not (SANDBOX_MODE and tender.submissionMethodDetails and u'quick' in tender.submissionMethodDetails):
+        midnigth = datetime.combine(start_after.date(), time(0, tzinfo=start_after.tzinfo))
+        if start_after > midnigth:
+            start_after = midnigth + timedelta(1)
+    return start_after
+
+
 class TenderAuctionPeriod(Period):
     """The auction period."""
 
@@ -240,9 +248,10 @@ class TenderAuctionPeriod(Period):
         if tender.lots or tender.status not in ['active.tendering', 'active.auction']:
             return
         if self.startDate and get_now() > calc_auction_end_time(tender.numberOfBids, self.startDate):
-            return calc_auction_end_time(tender.numberOfBids, self.startDate).isoformat()
+            start_after = calc_auction_end_time(tender.numberOfBids, self.startDate)
         else:
-            return tender.tenderPeriod.endDate.isoformat()
+            start_after = tender.tenderPeriod.endDate
+        return rounding_shouldStartAfter(start_after, tender).isoformat()
 
 
 class LotAuctionPeriod(Period):
@@ -259,9 +268,10 @@ class LotAuctionPeriod(Period):
         if tender.status == 'active.auction' and lot.numberOfBids < 2:
             return
         if self.startDate and get_now() > calc_auction_end_time(lot.numberOfBids, self.startDate):
-            return calc_auction_end_time(lot.numberOfBids, self.startDate).isoformat()
+            start_after = calc_auction_end_time(tender.numberOfBids, self.startDate)
         else:
-            return tender.tenderPeriod.endDate.isoformat()
+            start_after = tender.tenderPeriod.endDate
+        return rounding_shouldStartAfter(start_after, tender).isoformat()
 
 
 class PeriodEndRequired(Period):
@@ -526,8 +536,8 @@ class Bid(Model):
             'Administrator': Administrator_bid_role,
             'embedded': view_bid_role,
             'view': view_bid_role,
-            'create': whitelist('value', 'tenderers', 'parameters', 'lotValues'),
-            'edit': whitelist('value', 'tenderers', 'parameters', 'lotValues'),
+            'create': whitelist('value', 'status', 'tenderers', 'parameters', 'lotValues'),
+            'edit': whitelist('value', 'status', 'tenderers', 'parameters', 'lotValues'),
             'auction_view': whitelist('value', 'lotValues', 'id', 'date', 'parameters', 'participationUrl'),
             'auction_post': whitelist('value', 'lotValues', 'id', 'date'),
             'auction_patch': whitelist('id', 'lotValues', 'participationUrl'),
@@ -549,7 +559,7 @@ class Bid(Model):
     lotValues = ListType(ModelType(LotValue), default=list())
     date = IsoDateTimeType(default=get_now)
     id = MD5Type(required=True, default=lambda: uuid4().hex)
-    status = StringType(choices=['registration', 'validBid', 'invalidBid'])
+    status = StringType(choices=['active', 'draft'], default='active')
     value = ModelType(Value)
     documents = ListType(ModelType(Document), default=list())
     participationUrl = URLType()
@@ -558,6 +568,22 @@ class Bid(Model):
     owner = StringType()
 
     __name__ = ''
+
+    def import_data(self, raw_data, **kw):
+        """
+        Converts and imports the raw data into the instance of the model
+        according to the fields in the model.
+
+        :param raw_data:
+            The data to be imported.
+        """
+        data = self.convert(raw_data, **kw)
+        del_keys = [ k for k in data.keys() if k != "value" and data[k] is None]
+        for k in del_keys:
+            del data[k]
+
+        self._data.update(data)
+        return self
 
     def __acl__(self):
         return [
@@ -785,8 +811,8 @@ class Cancellation(Model):
 class Contract(Model):
     class Options:
         roles = {
-            'create': blacklist('id', 'status', 'documents', 'dateSigned'),
-            'edit': blacklist('id', 'documents', 'awardID', 'suppliers', 'items', 'contractID'),
+            'create': blacklist('id', 'status', 'date', 'documents', 'dateSigned'),
+            'edit': blacklist('id', 'documents', 'date', 'awardID', 'suppliers', 'items', 'contractID'),
             'embedded': schematics_embedded_role,
             'view': schematics_default_role,
         }
@@ -808,7 +834,7 @@ class Contract(Model):
     documents = ListType(ModelType(Document), default=list())
     items = ListType(ModelType(Item))
     suppliers = ListType(ModelType(Organization), min_size=1, max_size=1)
-    date = IsoDateTimeType(default=get_now)
+    date = IsoDateTimeType()
 
     def validate_awardID(self, data, awardID):
         if awardID and isinstance(data['__parent__'], Model) and awardID not in [i.id for i in data['__parent__'].awards]:
@@ -928,6 +954,7 @@ class Lot(Model):
     description = StringType()
     description_en = StringType()
     description_ru = StringType()
+    date = IsoDateTimeType()
     value = ModelType(Value, required=True)
     minimalStep = ModelType(Value, required=True)
     auctionPeriod = ModelType(LotAuctionPeriod, default={})
@@ -941,7 +968,7 @@ class Lot(Model):
         bids = [
             bid
             for bid in self.__parent__.bids
-            if self.id in [i.relatedLot for i in bid.lotValues]
+            if self.id in [i.relatedLot for i in bid.lotValues] and getattr(bid, "status", "active") == "active"
         ]
         return len(bids)
 
@@ -997,9 +1024,9 @@ def validate_cpv_group(items, *args):
 
 
 plain_role = (blacklist('_attachments', 'revisions', 'dateModified') + schematics_embedded_role)
-create_role = (blacklist('transfer_token', 'owner_token', 'owner', '_attachments', 'revisions', 'dateModified', 'doc_id', 'tenderID', 'bids', 'documents', 'awards', 'questions', 'complaints', 'auctionUrl', 'status', 'auctionPeriod', 'awardPeriod', 'procurementMethod', 'awardCriteria', 'submissionMethod', 'cancellations') + schematics_embedded_role)
+create_role = (blacklist('transfer_token', 'owner_token', 'owner', '_attachments', 'revisions', 'date', 'dateModified', 'doc_id', 'tenderID', 'bids', 'documents', 'awards', 'questions', 'complaints', 'auctionUrl', 'status', 'auctionPeriod', 'awardPeriod', 'procurementMethod', 'awardCriteria', 'submissionMethod', 'cancellations') + schematics_embedded_role)
 draft_role = whitelist('status')
-edit_role = (blacklist('status', 'procurementMethodType', 'lots', 'transfer_token', 'owner_token', 'owner', '_attachments', 'revisions', 'dateModified', 'doc_id', 'tenderID', 'bids', 'documents', 'awards', 'questions', 'complaints', 'auctionUrl', 'auctionPeriod', 'awardPeriod', 'procurementMethod', 'awardCriteria', 'submissionMethod', 'mode', 'cancellations') + schematics_embedded_role)
+edit_role = (blacklist('status', 'procurementMethodType', 'lots', 'transfer_token', 'owner_token', 'owner', '_attachments', 'revisions', 'date', 'dateModified', 'doc_id', 'tenderID', 'bids', 'documents', 'awards', 'questions', 'complaints', 'auctionUrl', 'auctionPeriod', 'awardPeriod', 'procurementMethod', 'awardCriteria', 'submissionMethod', 'mode', 'cancellations') + schematics_embedded_role)
 view_role = (blacklist('transfer_token', 'owner_token', '_attachments', 'revisions') + schematics_embedded_role)
 listing_role = whitelist('dateModified', 'doc_id')
 auction_view_role = whitelist('tenderID', 'dateModified', 'bids', 'auctionPeriod', 'minimalStep', 'auctionUrl', 'features', 'lots')
@@ -1063,6 +1090,7 @@ class Tender(SchematicsDocument, Model):
     description = StringType()
     description_en = StringType()
     description_ru = StringType()
+    date = IsoDateTimeType()
     tenderID = StringType()  # TenderID should always be the same as the OCID. It is included to make the flattened data structure more convenient.
     items = ListType(ModelType(Item), required=True, min_size=1, validators=[validate_cpv_group, validate_items_uniq])  # The goods and services to be purchased, broken into line items wherever possible. Items should not be duplicated, but a quantity of 2 specified instead.
     value = ModelType(Value, required=True)  # The total estimated value of the procurement.
@@ -1156,6 +1184,11 @@ class Tender(SchematicsDocument, Model):
             self.enquiryPeriod.startDate = get_now()
         if not self.tenderPeriod.startDate:
             self.tenderPeriod.startDate = self.enquiryPeriod.endDate
+        now = get_now()
+        self.date = now
+        if self.lots:
+            for lot in self.lots:
+                lot.date = now
 
     @serializable(serialize_when_none=False)
     def next_check(self):
