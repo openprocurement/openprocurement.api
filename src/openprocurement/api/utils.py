@@ -88,7 +88,7 @@ def generate_docservice_url(request, doc_id, temporary=True, prefix=None):
     if prefix:
         mess = '{}/{}'.format(prefix, mess)
         query['Prefix'] = prefix
-    query['Signature'] = quote(b64encode(docservice_key.sign(mess)))
+    query['Signature'] = quote(b64encode(docservice_key.sign(mess.encode("utf-8"))))
     query['KeyID'] = docservice_key.hex_vk()[:8]
     return urlunsplit((parsed_url.scheme, parsed_url.netloc, '/get/{}'.format(doc_id), urlencode(query), ''))
 
@@ -126,7 +126,7 @@ def upload_file(request, blacklisted_fields=DOCUMENT_BLACKLISTED_FIELDS):
             raise error_handler(request.errors)
         mess = "{}\0{}".format(key, document.hash.split(':', 1)[-1])
         try:
-            if mess != dockey.verify(signature + mess):
+            if mess != dockey.verify(signature + mess.encode("utf-8")):
                 raise ValueError
         except ValueError:
             request.errors.add('body', 'url', "Document url invalid.")
