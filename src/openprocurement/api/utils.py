@@ -92,7 +92,7 @@ def generate_docservice_url(request, doc_id, temporary=True, prefix=None):
     if prefix:
         mess = '{}/{}'.format(prefix, mess)
         query['Prefix'] = prefix
-    query['Signature'] = quote(b64encode(docservice_key.sign(mess.encode("utf-8"))))
+    query['Signature'] = quote(b64encode(docservice_key.signature(mess.encode("utf-8"))))
     query['KeyID'] = docservice_key.hex_vk()[:8]
     return urlunsplit((parsed_url.scheme, parsed_url.netloc, '/get/{}'.format(doc_id), urlencode(query), ''))
 
