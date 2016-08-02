@@ -20,6 +20,7 @@ from time import sleep
 from urllib import quote
 from urlparse import urlparse, parse_qs
 from uuid import uuid4
+from hashlib import sha512
 from webob.multidict import NestedMultiDict
 from pyramid.exceptions import URLDecodeError
 from pyramid.compat import decode_path_info
@@ -208,6 +209,8 @@ def get_revision_changes(dst, src):
 def set_ownership(item, request):
     item.owner = request.authenticated_userid
     item.owner_token = generate_id()
+    if item.get('transfer_token'):
+        item.transfer_token = sha512(item.transfer_token).hexdigest()
 
 
 def set_modetest_titles(tender):
