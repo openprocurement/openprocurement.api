@@ -207,7 +207,8 @@ def get_revision_changes(dst, src):
 
 
 def set_ownership(item, request):
-    item.owner = request.authenticated_userid
+    if not item.get('owner'):
+        item.owner = request.authenticated_userid
     item.owner_token = generate_id()
     if item.get('transfer_token'):
         item.transfer_token = sha512(item.transfer_token).hexdigest()
