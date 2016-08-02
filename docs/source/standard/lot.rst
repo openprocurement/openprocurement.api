@@ -33,7 +33,10 @@ Schema
     :ref:`Guarantee`
 
     Bid guarantee
-
+    
+:date:
+    string, :ref:`date`, auto-generated
+    
 :minimalStep:
    :ref:`value`, required
 
