@@ -11,7 +11,7 @@ from json import dumps
 from jsonpatch import make_patch, apply_patch as _apply_patch
 from jsonpointer import resolve_pointer
 from logging import getLogger
-from openprocurement.api.models import get_now, TZ, COMPLAINT_STAND_STILL_TIME, WORKING_DAYS
+from openprocurement.api.models import get_now, TZ, COMPLAINT_STAND_STILL_TIME, WORKING_DAYS, BLOCK_COMPLAINT_STATUS
 from openprocurement.api.traversal import factory
 from pkg_resources import get_distribution
 from rfc6266 import build_header
@@ -367,26 +367,9 @@ def check_status(request):
             return
         standStillEnd = max(standStillEnds)
         if standStillEnd <= now:
-            pending_complaints = any([
-                i['status'] in ['claim', 'answered', 'pending']
-                for i in tender.complaints
-            ])
-            pending_awards_complaints = any([
-                i['status'] in ['claim', 'answered', 'pending']
-                for a in tender.awards
-                for i in a.complaints
-            ])
-            awarded = any([
-                i['status'] == 'active'
-                for i in tender.awards
-            ])
-            if not pending_complaints and not pending_awards_complaints and not awarded:
-                LOGGER.info('Switched tender {} to {}'.format(tender.id, 'unsuccessful'),
-                            extra=context_unpack(request, {'MESSAGE_ID': 'switched_tender_unsuccessful'}))
-                check_tender_status(request)
-                return
+            check_tender_status(request)
     elif tender.lots and tender.status in ['active.qualification', 'active.awarded']:
-        if any([i['status'] in ['claim', 'answered', 'pending'] and i.relatedLot is None for i in tender.complaints]):
+        if any([i['status'] in BLOCK_COMPLAINT_STATUS and i.relatedLot is None for i in tender.complaints]):
             return
         for lot in tender.lots:
             if lot['status'] != 'active':
@@ -401,30 +384,14 @@ def check_status(request):
                 continue
             standStillEnd = max(standStillEnds)
             if standStillEnd <= now:
-                pending_complaints = any([
-                    i['status'] in ['claim', 'answered', 'pending'] and i.relatedLot == lot.id
-                    for i in tender.complaints
-                ])
-                pending_awards_complaints = any([
-                    i['status'] in ['claim', 'answered', 'pending']
-                    for a in lot_awards
-                    for i in a.complaints
-                ])
-                awarded = any([
-                    i['status'] == 'active'
-                    for i in lot_awards
-                ])
-                if not pending_complaints and not pending_awards_complaints and not awarded:
-                    LOGGER.info('Switched lot {} of tender {} to {}'.format(lot['id'], tender.id, 'unsuccessful'),
-                                extra=context_unpack(request, {'MESSAGE_ID': 'switched_lot_unsuccessful'}, {'LOT_ID': lot['id']}))
-                    check_tender_status(request)
+                check_tender_status(request)
 
 
 def check_tender_status(request):
     tender = request.validated['tender']
     now = get_now()
     if tender.lots:
-        if any([i.status in ['claim', 'answered', 'pending'] and i.relatedLot is None for i in tender.complaints]):
+        if any([i.status in BLOCK_COMPLAINT_STATUS and i.relatedLot is None for i in tender.complaints]):
             return
         for lot in tender.lots:
             if lot.status != 'active':
@@ -434,11 +401,11 @@ def check_tender_status(request):
                 continue
             last_award = lot_awards[-1]
             pending_complaints = any([
-                i['status'] in ['claim', 'answered', 'pending'] and i.relatedLot == lot.id
+                i['status'] in BLOCK_COMPLAINT_STATUS and i.relatedLot == lot.id
                 for i in tender.complaints
             ])
             pending_awards_complaints = any([
-                i.status in ['claim', 'answered', 'pending']
+                i.status in BLOCK_COMPLAINT_STATUS
                 for a in lot_awards
                 for i in a.complaints
             ])
@@ -449,24 +416,34 @@ def check_tender_status(request):
             if pending_complaints or pending_awards_complaints or not stand_still_end <= now:
                 continue
             elif last_award.status == 'unsuccessful':
+                LOGGER.info('Switched lot {} of tender {} to {}'.format(lot.id, tender.id, 'unsuccessful'),
+                            extra=context_unpack(request, {'MESSAGE_ID': 'switched_lot_unsuccessful'}, {'LOT_ID': lot.id}))
                 lot.status = 'unsuccessful'
                 continue
             elif last_award.status == 'active' and any([i.status == 'active' and i.awardID == last_award.id for i in tender.contracts]):
+                LOGGER.info('Switched lot {} of tender {} to {}'.format(lot.id, tender.id, 'complete'),
+                            extra=context_unpack(request, {'MESSAGE_ID': 'switched_lot_complete'}, {'LOT_ID': lot.id}))
                 lot.status = 'complete'
         statuses = set([lot.status for lot in tender.lots])
         if statuses == set(['cancelled']):
+            LOGGER.info('Switched tender {} to {}'.format(tender.id, 'cancelled'),
+                        extra=context_unpack(request, {'MESSAGE_ID': 'switched_tender_cancelled'}))
             tender.status = 'cancelled'
         elif not statuses.difference(set(['unsuccessful', 'cancelled'])):
+            LOGGER.info('Switched tender {} to {}'.format(tender.id, 'unsuccessful'),
+                        extra=context_unpack(request, {'MESSAGE_ID': 'switched_tender_unsuccessful'}))
             tender.status = 'unsuccessful'
         elif not statuses.difference(set(['complete', 'unsuccessful', 'cancelled'])):
+            LOGGER.info('Switched tender {} to {}'.format(tender.id, 'complete'),
+                        extra=context_unpack(request, {'MESSAGE_ID': 'switched_tender_complete'}))
             tender.status = 'complete'
     else:
         pending_complaints = any([
-            i.status in ['claim', 'answered', 'pending']
+            i.status in BLOCK_COMPLAINT_STATUS
             for i in tender.complaints
         ])
         pending_awards_complaints = any([
-            i.status in ['claim', 'answered', 'pending']
+            i.status in BLOCK_COMPLAINT_STATUS
             for a in tender.awards
             for i in a.complaints
         ])
@@ -478,10 +455,12 @@ def check_tender_status(request):
         stand_still_end = max(stand_still_ends) if stand_still_ends else now
         stand_still_time_expired = stand_still_end < now
         active_awards = any([
-            a.status in ['active', 'pending']
+            a.status == 'active'
             for a in tender.awards
         ])
         if not active_awards and not pending_complaints and not pending_awards_complaints and stand_still_time_expired:
+            LOGGER.info('Switched tender {} to {}'.format(tender.id, 'unsuccessful'),
+                        extra=context_unpack(request, {'MESSAGE_ID': 'switched_tender_unsuccessful'}))
             tender.status = 'unsuccessful'
         if tender.contracts and tender.contracts[-1].status == 'active':
             tender.status = 'complete'
