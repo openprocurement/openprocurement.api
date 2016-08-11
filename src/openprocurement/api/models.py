@@ -1212,26 +1212,21 @@ class Tender(SchematicsDocument, Model):
                     checks.append(lot.auctionPeriod.startDate.astimezone(TZ))
                 elif now < calc_auction_end_time(lot.numberOfBids, lot.auctionPeriod.startDate).astimezone(TZ):
                     checks.append(calc_auction_end_time(lot.numberOfBids, lot.auctionPeriod.startDate).astimezone(TZ))
-        elif not self.lots and self.status == 'active.awarded':
-            pending_complaints = any([
+        elif not self.lots and self.status == 'active.awarded' and not any([
                 i.status in BLOCK_COMPLAINT_STATUS
                 for i in self.complaints
-            ])
-            pending_awards_complaints = any([
+            ]) and not any([
                 i.status in BLOCK_COMPLAINT_STATUS
                 for a in self.awards
                 for i in a.complaints
-            ])
-            active_awards = any([
-                a.status == 'active'
-                for a in self.awards
-            ])
+            ]):
             standStillEnds = [
                 a.complaintPeriod.endDate.astimezone(TZ)
                 for a in self.awards
                 if a.complaintPeriod.endDate
             ]
-            if not active_awards and not pending_complaints and not pending_awards_complaints and standStillEnds:
+            last_award_status = self.awards[-1].status if self.awards else ''
+            if standStillEnds and last_award_status == 'unsuccessful':
                 checks.append(max(standStillEnds))
         elif self.lots and self.status in ['active.qualification', 'active.awarded'] and not any([
                 i.status in BLOCK_COMPLAINT_STATUS and i.relatedLot is None
@@ -1250,16 +1245,13 @@ class Tender(SchematicsDocument, Model):
                     for a in lot_awards
                     for i in a.complaints
                 ])
-                active_awards = any([
-                    a.status in ['active', 'pending']
-                    for a in lot_awards
-                ])
                 standStillEnds = [
                     a.complaintPeriod.endDate.astimezone(TZ)
                     for a in lot_awards
                     if a.complaintPeriod.endDate
                 ]
-                if not active_awards and not pending_complaints and not pending_awards_complaints and standStillEnds:
+                last_award_status = lot_awards[-1].status if lot_awards else ''
+                if not pending_complaints and not pending_awards_complaints and standStillEnds and lot_awards and last_award_status == 'unsuccessful':
                     checks.append(max(standStillEnds))
         if self.status.startswith('active'):
             from openprocurement.api.utils import calculate_business_date

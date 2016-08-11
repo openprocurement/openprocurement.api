@@ -454,11 +454,8 @@ def check_tender_status(request):
         ]
         stand_still_end = max(stand_still_ends) if stand_still_ends else now
         stand_still_time_expired = stand_still_end < now
-        active_awards = any([
-            a.status == 'active'
-            for a in tender.awards
-        ])
-        if not active_awards and not pending_complaints and not pending_awards_complaints and stand_still_time_expired:
+        last_award_status = tender.awards[-1].status if tender.awards else ''
+        if not pending_complaints and not pending_awards_complaints and stand_still_time_expired and last_award_status == 'unsuccessful':
             LOGGER.info('Switched tender {} to {}'.format(tender.id, 'unsuccessful'),
                         extra=context_unpack(request, {'MESSAGE_ID': 'switched_tender_unsuccessful'}))
             tender.status = 'unsuccessful'
