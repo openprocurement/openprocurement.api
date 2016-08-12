@@ -24,6 +24,21 @@ from openprocurement.api.validation import (
             description="Tender contract documents")
 class TenderAwardContractDocumentResource(APIResource):
 
+    def validate_contract_document(self, operation):
+        if self.request.validated['tender_status'] not in ['active.qualification', 'active.awarded']:
+            self.request.errors.add('body', 'data', 'Can\'t {} document in current ({}) tender status'.format(operation, self.request.validated['tender_status']))
+            self.request.errors.status = 403
+            return
+        if any([i.status != 'active' for i in self.request.validated['tender'].lots if i.id in [a.lotID for a in self.request.validated['tender'].awards if a.id == self.request.validated['contract'].awardID]]):
+            self.request.errors.add('body', 'data', 'Can {} document only in active lot status'.format(operation))
+            self.request.errors.status = 403
+            return
+        if self.request.validated['contract'].status not in ['pending', 'active']:
+            self.request.errors.add('body', 'data', 'Can\'t {} document in current contract status'.format(operation))
+            self.request.errors.status = 403
+            return
+        return True
+
     @json_view(permission='view_tender')
     def collection_get(self):
         """Tender Contract Documents List"""
@@ -40,19 +55,7 @@ class TenderAwardContractDocumentResource(APIResource):
     def collection_post(self):
         """Tender Contract Document Upload
         """
-        if self.request.validated['tender_status'] not in ['active.qualification', 'active.awarded']:
-            self.request.errors.add('body', 'data', 'Can\'t add document in current ({}) tender status'.format(self.request.validated['tender_status']))
-            self.request.errors.status = 403
-            return
-        tender = self.request.validated['tender']
-        contract = self.request.validated['contract']
-        if any([i.status != 'active' for i in tender.lots if i.id in [a.lotID for a in tender.awards if a.id == contract.awardID]]):
-            self.request.errors.add('body', 'data', 'Can add document only in active lot status')
-            self.request.errors.status = 403
-            return
-        if contract.status not in ['pending', 'active']:
-            self.request.errors.add('body', 'data', 'Can\'t add document in current contract status')
-            self.request.errors.status = 403
+        if not self.validate_contract_document('add'):
             return
         document = upload_file(self.request)
         self.context.documents.append(document)
@@ -81,19 +84,7 @@ class TenderAwardContractDocumentResource(APIResource):
     @json_view(validators=(validate_file_update,), permission='edit_tender')
     def put(self):
         """Tender Contract Document Update"""
-        if self.request.validated['tender_status'] not in ['active.qualification', 'active.awarded']:
-            self.request.errors.add('body', 'data', 'Can\'t update document in current ({}) tender status'.format(self.request.validated['tender_status']))
-            self.request.errors.status = 403
-            return
-        tender = self.request.validated['tender']
-        contract = self.request.validated['contract']
-        if any([i.status != 'active' for i in tender.lots if i.id in [a.lotID for a in tender.awards if a.id == contract.awardID]]):
-            self.request.errors.add('body', 'data', 'Can update document only in active lot status')
-            self.request.errors.status = 403
-            return
-        if contract.status not in ['pending', 'active']:
-            self.request.errors.add('body', 'data', 'Can\'t update document in current contract status')
-            self.request.errors.status = 403
+        if not self.validate_contract_document('update'):
             return
         document = upload_file(self.request)
         self.request.validated['contract'].documents.append(document)
@@ -105,19 +96,7 @@ class TenderAwardContractDocumentResource(APIResource):
     @json_view(content_type="application/json", validators=(validate_patch_document_data,), permission='edit_tender')
     def patch(self):
         """Tender Contract Document Update"""
-        if self.request.validated['tender_status'] not in ['active.qualification', 'active.awarded']:
-            self.request.errors.add('body', 'data', 'Can\'t update document in current ({}) tender status'.format(self.request.validated['tender_status']))
-            self.request.errors.status = 403
-            return
-        tender = self.request.validated['tender']
-        contract = self.request.validated['contract']
-        if any([i.status != 'active' for i in tender.lots if i.id in [a.lotID for a in tender.awards if a.id == contract.awardID]]):
-            self.request.errors.add('body', 'data', 'Can update document only in active lot status')
-            self.request.errors.status = 403
-            return
-        if contract.status not in ['pending', 'active']:
-            self.request.errors.add('body', 'data', 'Can\'t update document in current contract status')
-            self.request.errors.status = 403
+        if not self.validate_contract_document('update'):
             return
         if apply_patch(self.request, src=self.request.context.serialize()):
             update_file_content_type(self.request)
