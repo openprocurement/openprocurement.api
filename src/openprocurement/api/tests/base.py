@@ -212,11 +212,13 @@ class BaseWebTest(unittest.TestCase):
     It setups the database before each test and delete it after.
     """
 
+    relative_to = os.path.dirname(__file__)
+
     @classmethod
     def setUpClass(cls):
         while True:
             try:
-                cls.app = webtest.TestApp("config:tests.ini", relative_to=os.path.dirname(__file__))
+                cls.app = webtest.TestApp("config:tests.ini", relative_to=cls.relative_to)
             except:
                 pass
             else:
