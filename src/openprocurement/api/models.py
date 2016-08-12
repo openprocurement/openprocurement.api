@@ -22,7 +22,6 @@ BIDDER_TIME = timedelta(minutes=6)
 SERVICE_TIME = timedelta(minutes=9)
 AUCTION_STAND_STILL_TIME = timedelta(minutes=15)
 SANDBOX_MODE = os.environ.get('SANDBOX_MODE', False)
-BLOCK_COMPLAINT_STATUS = ['claim', 'answered', 'pending']
 
 schematics_embedded_role = SchematicsDocument.Options.roles['embedded'] + blacklist("__parent__")
 schematics_default_role = SchematicsDocument.Options.roles['default'] + blacklist("__parent__")
@@ -1145,6 +1144,7 @@ class Tender(SchematicsDocument, Model):
     create_accreditation = 1
     edit_accreditation = 2
     procuring_entity_kinds = ['general', 'special', 'defense', 'other']
+    block_complaint_status = ['claim', 'answered', 'pending']
 
     __name__ = ''
 
@@ -1213,10 +1213,10 @@ class Tender(SchematicsDocument, Model):
                 elif now < calc_auction_end_time(lot.numberOfBids, lot.auctionPeriod.startDate).astimezone(TZ):
                     checks.append(calc_auction_end_time(lot.numberOfBids, lot.auctionPeriod.startDate).astimezone(TZ))
         elif not self.lots and self.status == 'active.awarded' and not any([
-                i.status in BLOCK_COMPLAINT_STATUS
+                i.status in self.block_complaint_status
                 for i in self.complaints
             ]) and not any([
-                i.status in BLOCK_COMPLAINT_STATUS
+                i.status in self.block_complaint_status
                 for a in self.awards
                 for i in a.complaints
             ]):
@@ -1229,7 +1229,7 @@ class Tender(SchematicsDocument, Model):
             if standStillEnds and last_award_status == 'unsuccessful':
                 checks.append(max(standStillEnds))
         elif self.lots and self.status in ['active.qualification', 'active.awarded'] and not any([
-                i.status in BLOCK_COMPLAINT_STATUS and i.relatedLot is None
+                i.status in self.block_complaint_status and i.relatedLot is None
                 for i in self.complaints
             ]):
             for lot in self.lots:
@@ -1237,11 +1237,11 @@ class Tender(SchematicsDocument, Model):
                     continue
                 lot_awards = [i for i in self.awards if i.lotID == lot.id]
                 pending_complaints = any([
-                    i['status'] in BLOCK_COMPLAINT_STATUS and i.relatedLot == lot.id
+                    i['status'] in self.block_complaint_status and i.relatedLot == lot.id
                     for i in self.complaints
                 ])
                 pending_awards_complaints = any([
-                    i.status in BLOCK_COMPLAINT_STATUS
+                    i.status in self.block_complaint_status
                     for a in lot_awards
                     for i in a.complaints
                 ])

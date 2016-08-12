@@ -11,7 +11,7 @@ from json import dumps
 from jsonpatch import make_patch, apply_patch as _apply_patch
 from jsonpointer import resolve_pointer
 from logging import getLogger
-from openprocurement.api.models import get_now, TZ, COMPLAINT_STAND_STILL_TIME, WORKING_DAYS, BLOCK_COMPLAINT_STATUS
+from openprocurement.api.models import get_now, TZ, COMPLAINT_STAND_STILL_TIME, WORKING_DAYS
 from openprocurement.api.traversal import factory
 from pkg_resources import get_distribution
 from rfc6266 import build_header
@@ -368,7 +368,7 @@ def check_status(request):
         if standStillEnd <= now:
             check_tender_status(request)
     elif tender.lots and tender.status in ['active.qualification', 'active.awarded']:
-        if any([i['status'] in BLOCK_COMPLAINT_STATUS and i.relatedLot is None for i in tender.complaints]):
+        if any([i['status'] in tender.block_complaint_status and i.relatedLot is None for i in tender.complaints]):
             return
         for lot in tender.lots:
             if lot['status'] != 'active':
@@ -384,13 +384,14 @@ def check_status(request):
             standStillEnd = max(standStillEnds)
             if standStillEnd <= now:
                 check_tender_status(request)
+                return
 
 
 def check_tender_status(request):
     tender = request.validated['tender']
     now = get_now()
     if tender.lots:
-        if any([i.status in BLOCK_COMPLAINT_STATUS and i.relatedLot is None for i in tender.complaints]):
+        if any([i.status in tender.block_complaint_status and i.relatedLot is None for i in tender.complaints]):
             return
         for lot in tender.lots:
             if lot.status != 'active':
@@ -400,11 +401,11 @@ def check_tender_status(request):
                 continue
             last_award = lot_awards[-1]
             pending_complaints = any([
-                i['status'] in BLOCK_COMPLAINT_STATUS and i.relatedLot == lot.id
+                i['status'] in tender.block_complaint_status and i.relatedLot == lot.id
                 for i in tender.complaints
             ])
             pending_awards_complaints = any([
-                i.status in BLOCK_COMPLAINT_STATUS
+                i.status in tender.block_complaint_status
                 for a in lot_awards
                 for i in a.complaints
             ])
@@ -438,11 +439,11 @@ def check_tender_status(request):
             tender.status = 'complete'
     else:
         pending_complaints = any([
-            i.status in BLOCK_COMPLAINT_STATUS
+            i.status in tender.block_complaint_status
             for i in tender.complaints
         ])
         pending_awards_complaints = any([
-            i.status in BLOCK_COMPLAINT_STATUS
+            i.status in tender.block_complaint_status
             for a in tender.awards
             for i in a.complaints
         ])
