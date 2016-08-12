@@ -296,11 +296,10 @@ def check_bids(request):
         [setattr(i.auctionPeriod, 'startDate', None) for i in tender.lots if i.numberOfBids < 2 and i.auctionPeriod and i.auctionPeriod.startDate]
         [setattr(i, 'status', 'unsuccessful') for i in tender.lots if i.numberOfBids == 0 and i.status == 'active']
         cleanup_bids_for_cancelled_lots(tender)
-        if max([i.numberOfBids for i in tender.lots]) < 2:
-            #tender.status = 'active.qualification'
-            add_next_award(request)
         if not set([i.status for i in tender.lots]).difference(set(['unsuccessful', 'cancelled'])):
             tender.status = 'unsuccessful'
+        elif max([i.numberOfBids for i in tender.lots if i.status == 'active']) < 2:
+            add_next_award(request)
     else:
         if tender.numberOfBids < 2 and tender.auctionPeriod and tender.auctionPeriod.startDate:
             tender.auctionPeriod.startDate = None
@@ -688,7 +687,7 @@ def context_unpack(request, msg, params=None):
 def extract_tender_adapter(request, tender_id):
     db = request.registry.db
     doc = db.get(tender_id)
-    if doc is None:
+    if doc is None or doc.get('doc_type') != 'Tender':
         request.errors.add('url', 'tender_id', 'Not Found')
         request.errors.status = 404
         raise error_handler(request.errors)
