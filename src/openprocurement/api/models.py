@@ -1251,7 +1251,7 @@ class Tender(SchematicsDocument, Model):
                     if a.complaintPeriod.endDate
                 ]
                 last_award_status = lot_awards[-1].status if lot_awards else ''
-                if not pending_complaints and not pending_awards_complaints and standStillEnds and lot_awards and last_award_status == 'unsuccessful':
+                if not pending_complaints and not pending_awards_complaints and standStillEnds and last_award_status == 'unsuccessful':
                     checks.append(max(standStillEnds))
         if self.status.startswith('active'):
             from openprocurement.api.utils import calculate_business_date
