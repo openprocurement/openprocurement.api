@@ -7,6 +7,7 @@ from datetime import timedelta
 from openprocurement.api.utils import ROUTE_PREFIX
 from openprocurement.api.models import Tender, get_now
 from openprocurement.api.tests.base import test_tender_data, test_organization, BaseWebTest, BaseTenderWebTest
+from uuid import uuid4
 
 
 class TenderTest(BaseWebTest):
@@ -1052,6 +1053,13 @@ class TenderResourceTest(BaseWebTest):
         self.assertEqual(response.json['errors'], [
             {u'description': u'Not Found', u'location': u'url', u'name': u'tender_id'}
         ])
+
+        # put custom document object into database to check tender construction on non-Tender data
+        data = {'contract': 'test', '_id': uuid4().hex}
+        self.db.save(data)
+
+        response = self.app.get('/tenders/{}'.format(data['_id']), status=404)
+        self.assertEqual(response.status, '404 Not Found')
 
 
     def test_guarantee(self):
