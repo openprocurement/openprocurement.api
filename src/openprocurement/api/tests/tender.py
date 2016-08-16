@@ -1,11 +1,13 @@
 # -*- coding: utf-8 -*-
 import unittest
+from pkg_resources import get_distribution
 from copy import deepcopy
 from datetime import timedelta
 
 from openprocurement.api import ROUTE_PREFIX
 from openprocurement.api.models import Tender, get_now
 from openprocurement.api.tests.base import test_tender_data, test_organization, BaseWebTest, BaseTenderWebTest
+from uuid import uuid4
 
 
 class TenderTest(BaseWebTest):
@@ -838,6 +840,37 @@ class TenderResourceTest(BaseWebTest):
         self.assertEqual(response.status, '200 OK')
         self.assertNotIn('features', response.json['data'])
 
+    @unittest.skip("this test requires fixed version of jsonpatch library")
+    def test_patch_tender_jsonpatch(self):
+        response = self.app.post_json('/tenders', {'data': test_tender_data})
+        self.assertEqual(response.status, '201 Created')
+        tender = response.json['data']
+        owner_token = response.json['access']['token']
+        dateModified = tender.pop('dateModified')
+
+        import random
+        response = self.app.patch_json('/tenders/{}'.format(tender['id']), {'data': {'items': [{"additionalClassifications": [
+            {
+                "scheme": "ДКПП",
+                "id": "{}".format(i),
+                "description": "description #{}".format(i)
+            }
+            for i in random.sample(range(30), 25)
+        ]}]}})
+        self.assertEqual(response.status, '200 OK')
+        self.assertEqual(response.content_type, 'application/json')
+
+        response = self.app.patch_json('/tenders/{}'.format(tender['id']), {'data': {'items': [{"additionalClassifications": [
+            {
+                "scheme": "ДКПП",
+                "id": "{}".format(i),
+                "description": "description #{}".format(i)
+            }
+            for i in random.sample(range(30), 20)
+        ]}]}})
+        self.assertEqual(response.status, '200 OK')
+        self.assertEqual(response.content_type, 'application/json')
+
     def test_patch_tender(self):
         response = self.app.get('/tenders')
         self.assertEqual(response.status, '200 OK')
@@ -924,29 +957,6 @@ class TenderResourceTest(BaseWebTest):
             "id": "55523100-3",
             "description": "Послуги з харчування у школах"
         }}]}})
-        self.assertEqual(response.status, '200 OK')
-        self.assertEqual(response.content_type, 'application/json')
-
-        import random
-        response = self.app.patch_json('/tenders/{}'.format(tender['id']), {'data': {'items': [{"additionalClassifications": [
-            {
-                "scheme": "ДКПП",
-                "id": "{}".format(i),
-                "description": "description #{}".format(i)
-            }
-            for i in random.sample(range(30), 25)
-        ]}]}})
-        self.assertEqual(response.status, '200 OK')
-        self.assertEqual(response.content_type, 'application/json')
-
-        response = self.app.patch_json('/tenders/{}'.format(tender['id']), {'data': {'items': [{"additionalClassifications": [
-            {
-                "scheme": "ДКПП",
-                "id": "{}".format(i),
-                "description": "description #{}".format(i)
-            }
-            for i in random.sample(range(30), 20)
-        ]}]}})
         self.assertEqual(response.status, '200 OK')
         self.assertEqual(response.content_type, 'application/json')
 
@@ -1043,6 +1053,13 @@ class TenderResourceTest(BaseWebTest):
         self.assertEqual(response.json['errors'], [
             {u'description': u'Not Found', u'location': u'url', u'name': u'tender_id'}
         ])
+
+        # put custom document object into database to check tender construction on non-Tender data
+        data = {'contract': 'test', '_id': uuid4().hex}
+        self.db.save(data)
+
+        response = self.app.get('/tenders/{}'.format(data['_id']), status=404)
+        self.assertEqual(response.status, '404 Not Found')
 
 
     def test_guarantee(self):
