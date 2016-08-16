@@ -1,8 +1,9 @@
 # -*- coding: utf-8 -*-
 """Main entry point
 """
-import gevent.monkey
-gevent.monkey.patch_all()
+if 'test' not in __import__('sys').argv[0]:
+    import gevent.monkey
+    gevent.monkey.patch_all()
 import os
 from boto.s3.connection import S3Connection, Location
 from couchdb import Server as CouchdbServer, Session
