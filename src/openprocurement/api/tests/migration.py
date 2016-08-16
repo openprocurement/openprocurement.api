@@ -8,6 +8,10 @@ from email.header import Header
 
 class MigrateTest(BaseWebTest):
 
+    def setUp(self):
+        super(MigrateTest, self).setUp()
+        migrate_data(self.couchdb_server[self.db_name])
+
     def test_migrate(self):
         self.assertEqual(get_db_schema_version(self.db), SCHEMA_VERSION)
         migrate_data(self.db, 1)
