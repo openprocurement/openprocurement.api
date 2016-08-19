@@ -1,4 +1,4 @@
-PATCH /api/2.3/tenders/cf18944f39e64959b68050125c8d0ce5?acc_token=3ced854f7d5b4da0aac9cf653f84618b HTTP/1.0
+PATCH /api/2.3/tenders/a4f89b85bdc041f080c73ca5b06ee953?acc_token=be391cdea4bf4d04b9794dc15d5f4b41 HTTP/1.0
 Authorization: Basic YnJva2VyOg==
 Content-Length: 75
 Content-Type: application/json
@@ -7,7 +7,7 @@ Host: api-sandbox.openprocurement.org
 {
   "data": {
     "tenderPeriod": {
-      "endDate": "2016-05-27T18:08:30.686843+03:00"
+      "endDate": "2016-06-25T15:29:59.225162+03:00"
     }
   }
 }
@@ -20,10 +20,10 @@ Content-Type: application/json; charset=UTF-8
   "data": {
     "procurementMethod": "open", 
     "status": "active.enquiries", 
-    "tenderID": "UA-2016-05-12-000001", 
+    "tenderID": "UA-2016-06-10-000001", 
     "tenderPeriod": {
-      "startDate": "2016-05-19T18:07:59.549219+03:00", 
-      "endDate": "2016-05-27T18:08:30.686843+03:00"
+      "startDate": "2016-06-17T15:29:31.511759+03:00", 
+      "endDate": "2016-06-25T15:29:59.225162+03:00"
     }, 
     "title": "футляри до державних нагород", 
     "minimalStep": {
@@ -54,10 +54,10 @@ Content-Type: application/json; charset=UTF-8
           "locality": "м. Київ"
         }, 
         "deliveryDate": {
-          "startDate": "2016-05-14T18:07:59.549219+03:00", 
-          "endDate": "2016-05-17T18:07:59.549219+03:00"
+          "startDate": "2016-06-12T15:29:31.511759+03:00", 
+          "endDate": "2016-06-15T15:29:31.511759+03:00"
         }, 
-        "id": "c48507ec8095479cafb0ffe6d52712d2", 
+        "id": "bc8a07adf2df4c98aa22e8d598eb06d3", 
         "unit": {
           "code": "44617100-9", 
           "name": "item"
@@ -72,7 +72,7 @@ Content-Type: application/json; charset=UTF-8
       "valueAddedTaxIncluded": true
     }, 
     "submissionMethod": "electronicAuction", 
-    "next_check": "2016-05-19T18:07:59.549219+03:00", 
+    "next_check": "2016-06-17T15:29:31.511759+03:00", 
     "procuringEntity": {
       "contactPoint": {
         "name": "Державне управління справами", 
@@ -94,12 +94,12 @@ Content-Type: application/json; charset=UTF-8
       }
     }, 
     "enquiryPeriod": {
-      "startDate": "2016-05-12T18:08:20.093673+03:00", 
-      "endDate": "2016-05-19T18:07:59.549219+03:00"
+      "startDate": "2016-06-10T15:29:48.639408+03:00", 
+      "endDate": "2016-06-17T15:29:31.511759+03:00"
     }, 
     "owner": "broker", 
-    "dateModified": "2016-05-12T18:08:20.762446+03:00", 
-    "id": "cf18944f39e64959b68050125c8d0ce5", 
+    "dateModified": "2016-06-10T15:29:49.285172+03:00", 
+    "id": "a4f89b85bdc041f080c73ca5b06ee953", 
     "awardCriteria": "lowestCost"
   }
 }

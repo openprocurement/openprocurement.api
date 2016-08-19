@@ -1,4 +1,4 @@
-PATCH /api/2.3/tenders/cf18944f39e64959b68050125c8d0ce5/contracts/50b345ba10e8497581a50c1032bf61ae?acc_token=3ced854f7d5b4da0aac9cf653f84618b HTTP/1.0
+PATCH /api/2.3/tenders/a4f89b85bdc041f080c73ca5b06ee953/contracts/80d26391f3474fe9bf390201639cca05?acc_token=be391cdea4bf4d04b9794dc15d5f4b41 HTTP/1.0
 Authorization: Basic YnJva2VyOg==
 Content-Length: 60
 Content-Type: application/json
@@ -6,7 +6,7 @@ Host: api-sandbox.openprocurement.org
 
 {
   "data": {
-    "dateSigned": "2016-05-12T18:08:24.521334+03:00"
+    "dateSigned": "2016-06-10T15:29:54.196737+03:00"
   }
 }
 
@@ -17,6 +17,26 @@ Content-Type: application/json; charset=UTF-8
 {
   "data": {
     "status": "pending", 
+    "documents": [
+      {
+        "title": "contract_first_document.doc", 
+        "url": "http://api-sandbox.openprocurement.org/api/2.3/tenders/a4f89b85bdc041f080c73ca5b06ee953/contracts/80d26391f3474fe9bf390201639cca05/documents/c2718742f2c64c21a734438905ad8b21?download=699b6834ead2453db19407dc7850ba27", 
+        "format": "application/msword", 
+        "documentOf": "tender", 
+        "datePublished": "2016-06-10T15:29:53.712743+03:00", 
+        "id": "c2718742f2c64c21a734438905ad8b21", 
+        "dateModified": "2016-06-10T15:29:53.712792+03:00"
+      }, 
+      {
+        "title": "contract_second_document.doc", 
+        "url": "http://api-sandbox.openprocurement.org/api/2.3/tenders/a4f89b85bdc041f080c73ca5b06ee953/contracts/80d26391f3474fe9bf390201639cca05/documents/430bef40925b4c1e87430cc1c977ce77?download=3536436229e14926b04121cbaa433b24", 
+        "format": "application/msword", 
+        "documentOf": "tender", 
+        "datePublished": "2016-06-10T15:29:54.005192+03:00", 
+        "id": "430bef40925b4c1e87430cc1c977ce77", 
+        "dateModified": "2016-06-10T15:29:54.005235+03:00"
+      }
+    ], 
     "items": [
       {
         "description": "футляри до державних нагород", 
@@ -40,10 +60,10 @@ Content-Type: application/json; charset=UTF-8
           "locality": "м. Київ"
         }, 
         "deliveryDate": {
-          "startDate": "2016-05-14T18:07:59.549219+03:00", 
-          "endDate": "2016-05-17T18:07:59.549219+03:00"
+          "startDate": "2016-06-12T15:29:31.511759+03:00", 
+          "endDate": "2016-06-15T15:29:31.511759+03:00"
         }, 
-        "id": "c48507ec8095479cafb0ffe6d52712d2", 
+        "id": "bc8a07adf2df4c98aa22e8d598eb06d3", 
         "unit": {
           "code": "44617100-9", 
           "name": "item"
@@ -74,16 +94,20 @@ Content-Type: application/json; charset=UTF-8
       }
     ], 
     "contractNumber": "contract #13111", 
-    "dateSigned": "2016-05-12T18:08:24.521334+03:00", 
+    "period": {
+      "startDate": "2016-06-10T15:29:31.512778+03:00", 
+      "endDate": "2017-06-10T15:29:31.512778+03:00"
+    }, 
     "value": {
       "currency": "UAH", 
       "amount": 238.0, 
       "valueAddedTaxIncluded": true
     }, 
-    "date": "2016-05-12T18:08:24.662796+03:00", 
-    "awardID": "d0ccbbef7c294017a473a8994c4d2e93", 
-    "id": "50b345ba10e8497581a50c1032bf61ae", 
-    "contractID": "UA-2016-05-12-000001-1"
+    "dateSigned": "2016-06-10T15:29:54.196737+03:00", 
+    "date": "2016-06-10T15:29:54.339565+03:00", 
+    "awardID": "a4f3a7ab4a2440a1ad986f6698050486", 
+    "id": "80d26391f3474fe9bf390201639cca05", 
+    "contractID": "UA-2016-06-10-000001-1"
   }
 }
 

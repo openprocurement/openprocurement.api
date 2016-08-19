@@ -38,6 +38,7 @@ bid = {
                 "name": "ДКП «Школяр»"
             }
         ],
+        "status": "draft",
         "value": {
             "amount": 500
         }
@@ -471,6 +472,11 @@ class TenderResourceTest(BaseTenderWebTest):
             bid1_id = response.json['data']['id']
             bids_access[bid1_id] = response.json['access']['token']
             self.assertEqual(response.status, '201 Created')
+
+        with open('docs/source/tutorial/activate-bidder.http', 'w') as self.app.file_obj:
+            response = self.app.patch_json('/tenders/{}/bids/{}?acc_token={}'.format(
+                self.tender_id, bid1_id, bids_access[bid1_id]), {"data": {"status": "active"}})
+            self.assertEqual(response.status, '200 OK')
 
         # Proposal Uploading
         #
