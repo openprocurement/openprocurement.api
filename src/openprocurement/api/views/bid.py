@@ -125,13 +125,10 @@ class TenderBidResource(APIResource):
                         extra=context_unpack(self.request, {'MESSAGE_ID': 'tender_bid_create'}, {'bid_id': bid.id}))
             self.request.response.status = 201
             self.request.response.headers['Location'] = self.request.route_url('Tender Bids', tender_id=tender.id, bid_id=bid['id'])
-            return {
-                'data': bid.serialize('view'),
-                'access': {
-                    'token': bid.owner_token,
-                    'transfer': transfer
-                }
-            }
+            acc = {'token': bid.owner_token}
+            if bid.transfer_token:
+                acc['transfer'] = transfer
+            return {'data': bid.serialize('view'), 'access': acc}
 
     @json_view(permission='view_tender')
     def collection_get(self):

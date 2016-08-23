@@ -49,13 +49,10 @@ class TenderComplaintResource(APIResource):
                         extra=context_unpack(self.request, {'MESSAGE_ID': 'tender_complaint_create'}, {'complaint_id': complaint.id}))
             self.request.response.status = 201
             self.request.response.headers['Location'] = self.request.route_url('Tender Complaints', tender_id=tender.id, complaint_id=complaint.id)
-            return {
-                'data': complaint.serialize(tender.status),
-                'access': {
-                    'token': complaint.owner_token,
-                    'transfer': transfer
-                }
-            }
+            acc = {'token': complaint.owner_token}
+            if complaint.transfer_token:
+                acc['transfer'] = transfer
+            return {'data': complaint.serialize(tender.status), 'access': acc}
 
     @json_view(permission='view_tender')
     def collection_get(self):

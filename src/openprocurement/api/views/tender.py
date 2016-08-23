@@ -363,13 +363,10 @@ class TendersResource(APIResource):
             self.request.response.status = 201
             self.request.response.headers[
                 'Location'] = self.request.route_url('Tender', tender_id=tender_id)
-            return {
-                'data': tender.serialize(tender.status),
-                'access': {
-                    'token': tender.owner_token,
-                    'transfer': transfer
-                }
-            }
+            acc = {'token': tender.owner_token}
+            if tender.transfer_token:
+                acc['transfer'] = transfer
+            return {'data': tender.serialize(tender.status), 'access': acc}
 
 
 @opresource(name='Tender',
