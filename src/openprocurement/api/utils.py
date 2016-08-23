@@ -16,6 +16,7 @@ from openprocurement.api.traversal import factory
 from pkg_resources import get_distribution
 from rfc6266 import build_header
 from schematics.exceptions import ModelValidationError
+from schematics.types.base import StringType
 from time import sleep
 from urllib import quote
 from urlparse import urlparse, parse_qs
@@ -206,7 +207,11 @@ def set_ownership(item, request):
     item.owner = request.authenticated_userid
     item.owner_token = generate_id()
     if item.get('transfer_token'):
-        item.transfer_token = sha512(item.transfer_token).hexdigest()
+        if isinstance(getattr(type(item), 'transfer_token', None), StringType):
+            item.transfer_token = sha512(item.transfer_token).hexdigest()
+        else:
+            # remote object attribute which is not schematics field
+            del item.transfer_token
 
 
 def set_modetest_titles(tender):
