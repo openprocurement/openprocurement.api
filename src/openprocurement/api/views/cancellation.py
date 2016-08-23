@@ -47,31 +47,38 @@ class TenderCancellationResource(APIResource):
         ]):
             add_next_award(self.request)
 
-    @json_view(content_type="application/json", validators=(validate_cancellation_data,), permission='edit_tender')
-    def collection_post(self):
-        """Post a cancellation
-        """
+    def validate_cancellation(self, operation):
         tender = self.request.validated['tender']
         if tender.status in ['complete', 'cancelled', 'unsuccessful']:
-            self.request.errors.add('body', 'data', 'Can\'t add cancellation in current ({}) tender status'.format(tender.status))
+            self.request.errors.add('body', 'data', 'Can\'t {} cancellation in current ({}) tender status'.format(operation, tender.status))
             self.request.errors.status = 403
             return
         cancellation = self.request.validated['cancellation']
         cancellation.date = get_now()
         if any([i.status != 'active' for i in tender.lots if i.id == cancellation.relatedLot]):
-            self.request.errors.add('body', 'data', 'Can add cancellation only in active lot status')
+            self.request.errors.add('body', 'data', 'Can {} cancellation only in active lot status'.format(operation))
             self.request.errors.status = 403
             return
+        return True
+
+    @json_view(content_type="application/json", validators=(validate_cancellation_data,), permission='edit_tender')
+    def collection_post(self):
+        """Post a cancellation
+        """
+        if not self.validate_cancellation('add'):
+            return
+        cancellation = self.request.validated['cancellation']
+        cancellation.date = get_now()
         if cancellation.relatedLot and cancellation.status == 'active':
             self.cancel_lot(cancellation)
         elif cancellation.status == 'active':
             self.cancel_tender()
-        tender.cancellations.append(cancellation)
+        self.request.context.cancellations.append(cancellation)
         if save_tender(self.request):
             self.LOGGER.info('Created tender cancellation {}'.format(cancellation.id),
                         extra=context_unpack(self.request, {'MESSAGE_ID': 'tender_cancellation_create'}, {'cancellation_id': cancellation.id}))
             self.request.response.status = 201
-            self.request.response.headers['Location'] = self.request.route_url('Tender Cancellations', tender_id=tender.id, cancellation_id=cancellation.id)
+            self.request.response.headers['Location'] = self.request.route_url('Tender Cancellations', tender_id=self.request.validated['tender_id'], cancellation_id=cancellation.id)
             return {'data': cancellation.serialize("view")}
 
     @json_view(permission='view_tender')
@@ -90,14 +97,7 @@ class TenderCancellationResource(APIResource):
     def patch(self):
         """Post a cancellation resolution
         """
-        tender = self.request.validated['tender']
-        if tender.status in ['complete', 'cancelled', 'unsuccessful']:
-            self.request.errors.add('body', 'data', 'Can\'t update cancellation in current ({}) tender status'.format(tender.status))
-            self.request.errors.status = 403
-            return
-        if any([i.status != 'active' for i in tender.lots if i.id == self.request.context.relatedLot]):
-            self.request.errors.add('body', 'data', 'Can update cancellation only in active lot status')
-            self.request.errors.status = 403
+        if not self.validate_cancellation('update'):
             return
         apply_patch(self.request, save=False, src=self.request.context.serialize())
         if self.request.context.relatedLot and self.request.context.status == 'active':
