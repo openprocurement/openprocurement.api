@@ -1142,6 +1142,7 @@ class Tender(SchematicsDocument, Model):
     procurementMethodType = StringType(default="belowThreshold")
 
     create_accreditation = 1
+    additional_create_accreditations = tuple()
     edit_accreditation = 2
     procuring_entity_kinds = ['general', 'special', 'defense', 'other']
 
