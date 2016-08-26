@@ -614,7 +614,7 @@ class TenderResourceTest(BaseWebTest):
         self.assertEqual(set(tender) - set(test_tender_data), set(
             [u'id', u'dateModified', u'tenderID', u'date', u'status', u'procurementMethod', u'awardCriteria', u'submissionMethod', u'next_check', u'owner']))
         self.assertIn(tender['id'], response.headers['Location'])
-        self.assertNotIn('transfer', tender)
+        self.assertNotIn('transfer_token', tender)
 
         response = self.app.get('/tenders/{}'.format(tender['id']))
         self.assertEqual(response.status, '200 OK')
@@ -660,8 +660,7 @@ class TenderResourceTest(BaseWebTest):
         self.assertEqual(response.status, '200 OK')
         self.assertEqual(response.content_type, 'application/json')
         self.assertEqual(response.json['data'], tender)
-        self.assertNotIn('transfer', response.json.get('access', ''))
-        self.assertNotIn('transfer', response.json['data'])
+        self.assertNotIn('transfer_token', response.json['data'])
 
         response = self.app.get('/tenders/{}?opt_jsonp=callback'.format(tender['id']))
         self.assertEqual(response.status, '200 OK')

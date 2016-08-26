@@ -206,12 +206,12 @@ def get_revision_changes(dst, src):
 def set_ownership(item, request):
     item.owner = request.authenticated_userid
     item.owner_token = generate_id()
-    if item.get('transfer_token'):
-        if isinstance(getattr(type(item), 'transfer_token', None), StringType):
-            item.transfer_token = sha512(item.transfer_token).hexdigest()
-        else:
-            # remote object attribute which is not schematics field
-            del item.transfer_token
+    acc = {'token': item.owner_token}
+    if isinstance(getattr(type(item), 'transfer_token', None), StringType):
+        transfer = generate_id()
+        item.transfer_token = sha512(transfer).hexdigest()
+        acc['transfer'] = transfer
+    return acc
 
 
 def set_modetest_titles(tender):
