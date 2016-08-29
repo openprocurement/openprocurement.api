@@ -27,6 +27,7 @@ schematics_embedded_role = SchematicsDocument.Options.roles['embedded'] + blackl
 schematics_default_role = SchematicsDocument.Options.roles['default'] + blacklist("__parent__")
 
 TZ = timezone(os.environ['TZ'] if 'TZ' in os.environ else 'Europe/Kiev')
+CANT_DELETE_PERIOD_START_DATE_FROM = datetime(2016, 8, 30, tzinfo=TZ)
 
 
 def get_now():
@@ -276,6 +277,13 @@ class LotAuctionPeriod(Period):
 
 class PeriodEndRequired(Period):
     endDate = IsoDateTimeType(required=True)  # The end date for the period.
+
+    def validate_startDate(self, data, period):
+        if period and data.get('endDate') and data.get('endDate') < period:
+            raise ValidationError(u"period should begin before its end")
+        tender = get_tender(data['__parent__'])
+        if tender.get('revisions') and tender['revisions'][0].date > CANT_DELETE_PERIOD_START_DATE_FROM and not period:
+            raise ValidationError([u'This field cannot be deleted'])
 
 
 class Classification(Model):
