@@ -11,7 +11,7 @@ class MigrateTest(BaseWebTest):
 
     def setUp(self):
         super(MigrateTest, self).setUp()
-        migrate_data(self.couchdb_server[self.db_name])
+        migrate_data(self.app.app.registry)
 
     def test_migrate(self):
         self.assertEqual(get_db_schema_version(self.db), SCHEMA_VERSION)
