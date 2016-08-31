@@ -1,4 +1,4 @@
-PATCH /api/2.3/tenders/a4f89b85bdc041f080c73ca5b06ee953/documents/6d900d7c8e584ff99c734991cfbb7137?acc_token=be391cdea4bf4d04b9794dc15d5f4b41 HTTP/1.0
+PATCH /api/2.3/tenders/b74c14bbee6f44a9a0c8408c13a4c1a8/documents/73edadd66f2a4178917993081ea1be10?acc_token=6241dc3adcf04c33b4f86f08e8e6e591 HTTP/1.0
 Authorization: Basic YnJva2VyOg==
 Content-Length: 58
 Content-Type: application/json
@@ -16,15 +16,16 @@ Content-Type: application/json; charset=UTF-8
 
 {
   "data": {
+    "hash": "md5:00000000000000000000000000000000", 
     "description": "document description modified", 
     "title": "Notice.pdf", 
-    "url": "http://api-sandbox.openprocurement.org/api/2.3/tenders/a4f89b85bdc041f080c73ca5b06ee953/documents/6d900d7c8e584ff99c734991cfbb7137?download=e498e2079def4c68b93b7f08cbb62743", 
+    "url": "http://public.docs-sandbox.openprocurement.org/get/4ff4633a89034136ab1ed3b77a7e9fc7?KeyID=ef5aa287&Signature=z3ShJ3uzAcIFGzln4nWGwSnz1SwQI9HS7HRzIpPgeLF5iOUMVjJr0WSRbIU1etZkTgrRq36rIFAmCHZHJRpAATQAAABmAAAAZgAAADQAAAA2AAAAMwAAADMAAABhAAAA", 
     "format": "application/pdf", 
     "documentOf": "tender", 
-    "datePublished": "2016-06-10T15:29:49.569824+03:00", 
+    "datePublished": "2016-07-21T17:18:05.687403+03:00", 
     "documentType": "technicalSpecifications", 
-    "id": "6d900d7c8e584ff99c734991cfbb7137", 
-    "dateModified": "2016-06-10T15:29:49.569872+03:00"
+    "id": "73edadd66f2a4178917993081ea1be10", 
+    "dateModified": "2016-07-21T17:18:05.687435+03:00"
   }
 }
 
