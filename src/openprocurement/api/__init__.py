@@ -159,12 +159,6 @@ def main(global_config, **settings):
         sync_design(db)
     config.registry.db = db
 
-    # migrate data
-    if not os.environ.get('MIGRATION_SKIP'):
-        for entry_point in iter_entry_points('openprocurement.api.migrations'):
-            plugin = entry_point.load()
-            plugin(config.registry)
-
     # Document Service key
     config.registry.docservice_url = settings.get('docservice_url')
     config.registry.docservice_username = settings.get('docservice_username')
@@ -175,6 +169,12 @@ def main(global_config, **settings):
     dockeys = settings.get('dockeys') if 'dockeys' in settings else dockey.hex_vk()
     for key in dockeys.split('\0'):
         keyring[key[:8]] = Verifier(key)
+
+    # migrate data
+    if not os.environ.get('MIGRATION_SKIP'):
+        for entry_point in iter_entry_points('openprocurement.api.migrations'):
+            plugin = entry_point.load()
+            plugin(config.registry)
 
     config.registry.server_id = settings.get('id', '')
     config.registry.health_threshold = float(settings.get('health_threshold', 99))
