@@ -157,12 +157,6 @@ def main(global_config, **settings):
         sync_design(db)
     config.registry.db = db
 
-    # migrate data
-    if not os.environ.get('MIGRATION_SKIP'):
-        for entry_point in iter_entry_points('openprocurement.api.migrations'):
-            plugin = entry_point.load()
-            plugin(config.registry)
-
     # S3 connection
     if 'aws.access_key' in settings and 'aws.secret_key' in settings and 'aws.s3_bucket' in settings:
         connection = S3Connection(settings['aws.access_key'], settings['aws.secret_key'])
@@ -171,6 +165,13 @@ def main(global_config, **settings):
         if bucket_name not in [b.name for b in connection.get_all_buckets()]:
             connection.create_bucket(bucket_name, location=Location.EU)
         config.registry.bucket_name = bucket_name
+
+    # migrate data
+    if not os.environ.get('MIGRATION_SKIP'):
+        for entry_point in iter_entry_points('openprocurement.api.migrations'):
+            plugin = entry_point.load()
+            plugin(config.registry)
+
     config.registry.server_id = settings.get('id', '')
     config.registry.health_threshold = float(settings.get('health_threshold', 99))
     config.registry.update_after = asbool(settings.get('update_after', True))
