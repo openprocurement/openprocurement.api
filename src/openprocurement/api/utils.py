@@ -382,11 +382,10 @@ def check_bids(request):
         [setattr(i.auctionPeriod, 'startDate', None) for i in tender.lots if i.numberOfBids < 2 and i.auctionPeriod and i.auctionPeriod.startDate]
         [setattr(i, 'status', 'unsuccessful') for i in tender.lots if i.numberOfBids == 0 and i.status == 'active']
         cleanup_bids_for_cancelled_lots(tender)
-        if max([i.numberOfBids for i in tender.lots]) < 2:
-            #tender.status = 'active.qualification'
-            add_next_award(request)
         if not set([i.status for i in tender.lots]).difference(set(['unsuccessful', 'cancelled'])):
             tender.status = 'unsuccessful'
+        elif max([i.numberOfBids for i in tender.lots if i.status == 'active']) < 2:
+            add_next_award(request)
     else:
         if tender.numberOfBids < 2 and tender.auctionPeriod and tender.auctionPeriod.startDate:
             tender.auctionPeriod.startDate = None
@@ -453,26 +452,9 @@ def check_status(request):
             return
         standStillEnd = max(standStillEnds)
         if standStillEnd <= now:
-            pending_complaints = any([
-                i['status'] in ['claim', 'answered', 'pending']
-                for i in tender.complaints
-            ])
-            pending_awards_complaints = any([
-                i['status'] in ['claim', 'answered', 'pending']
-                for a in tender.awards
-                for i in a.complaints
-            ])
-            awarded = any([
-                i['status'] == 'active'
-                for i in tender.awards
-            ])
-            if not pending_complaints and not pending_awards_complaints and not awarded:
-                LOGGER.info('Switched tender {} to {}'.format(tender.id, 'unsuccessful'),
-                            extra=context_unpack(request, {'MESSAGE_ID': 'switched_tender_unsuccessful'}))
-                check_tender_status(request)
-                return
+            check_tender_status(request)
     elif tender.lots and tender.status in ['active.qualification', 'active.awarded']:
-        if any([i['status'] in ['claim', 'answered', 'pending'] and i.relatedLot is None for i in tender.complaints]):
+        if any([i['status'] in tender.block_complaint_status and i.relatedLot is None for i in tender.complaints]):
             return
         for lot in tender.lots:
             if lot['status'] != 'active':
@@ -487,30 +469,15 @@ def check_status(request):
                 continue
             standStillEnd = max(standStillEnds)
             if standStillEnd <= now:
-                pending_complaints = any([
-                    i['status'] in ['claim', 'answered', 'pending'] and i.relatedLot == lot.id
-                    for i in tender.complaints
-                ])
-                pending_awards_complaints = any([
-                    i['status'] in ['claim', 'answered', 'pending']
-                    for a in lot_awards
-                    for i in a.complaints
-                ])
-                awarded = any([
-                    i['status'] == 'active'
-                    for i in lot_awards
-                ])
-                if not pending_complaints and not pending_awards_complaints and not awarded:
-                    LOGGER.info('Switched lot {} of tender {} to {}'.format(lot['id'], tender.id, 'unsuccessful'),
-                                extra=context_unpack(request, {'MESSAGE_ID': 'switched_lot_unsuccessful'}, {'LOT_ID': lot['id']}))
-                    check_tender_status(request)
+                check_tender_status(request)
+                return
 
 
 def check_tender_status(request):
     tender = request.validated['tender']
     now = get_now()
     if tender.lots:
-        if any([i.status in ['claim', 'answered', 'pending'] and i.relatedLot is None for i in tender.complaints]):
+        if any([i.status in tender.block_complaint_status and i.relatedLot is None for i in tender.complaints]):
             return
         for lot in tender.lots:
             if lot.status != 'active':
@@ -520,11 +487,11 @@ def check_tender_status(request):
                 continue
             last_award = lot_awards[-1]
             pending_complaints = any([
-                i['status'] in ['claim', 'answered', 'pending'] and i.relatedLot == lot.id
+                i['status'] in tender.block_complaint_status and i.relatedLot == lot.id
                 for i in tender.complaints
             ])
             pending_awards_complaints = any([
-                i.status in ['claim', 'answered', 'pending']
+                i.status in tender.block_complaint_status
                 for a in lot_awards
                 for i in a.complaints
             ])
@@ -535,24 +502,34 @@ def check_tender_status(request):
             if pending_complaints or pending_awards_complaints or not stand_still_end <= now:
                 continue
             elif last_award.status == 'unsuccessful':
+                LOGGER.info('Switched lot {} of tender {} to {}'.format(lot.id, tender.id, 'unsuccessful'),
+                            extra=context_unpack(request, {'MESSAGE_ID': 'switched_lot_unsuccessful'}, {'LOT_ID': lot.id}))
                 lot.status = 'unsuccessful'
                 continue
             elif last_award.status == 'active' and any([i.status == 'active' and i.awardID == last_award.id for i in tender.contracts]):
+                LOGGER.info('Switched lot {} of tender {} to {}'.format(lot.id, tender.id, 'complete'),
+                            extra=context_unpack(request, {'MESSAGE_ID': 'switched_lot_complete'}, {'LOT_ID': lot.id}))
                 lot.status = 'complete'
         statuses = set([lot.status for lot in tender.lots])
         if statuses == set(['cancelled']):
+            LOGGER.info('Switched tender {} to {}'.format(tender.id, 'cancelled'),
+                        extra=context_unpack(request, {'MESSAGE_ID': 'switched_tender_cancelled'}))
             tender.status = 'cancelled'
         elif not statuses.difference(set(['unsuccessful', 'cancelled'])):
+            LOGGER.info('Switched tender {} to {}'.format(tender.id, 'unsuccessful'),
+                        extra=context_unpack(request, {'MESSAGE_ID': 'switched_tender_unsuccessful'}))
             tender.status = 'unsuccessful'
         elif not statuses.difference(set(['complete', 'unsuccessful', 'cancelled'])):
+            LOGGER.info('Switched tender {} to {}'.format(tender.id, 'complete'),
+                        extra=context_unpack(request, {'MESSAGE_ID': 'switched_tender_complete'}))
             tender.status = 'complete'
     else:
         pending_complaints = any([
-            i.status in ['claim', 'answered', 'pending']
+            i.status in tender.block_complaint_status
             for i in tender.complaints
         ])
         pending_awards_complaints = any([
-            i.status in ['claim', 'answered', 'pending']
+            i.status in tender.block_complaint_status
             for a in tender.awards
             for i in a.complaints
         ])
@@ -563,11 +540,10 @@ def check_tender_status(request):
         ]
         stand_still_end = max(stand_still_ends) if stand_still_ends else now
         stand_still_time_expired = stand_still_end < now
-        active_awards = any([
-            a.status in ['active', 'pending']
-            for a in tender.awards
-        ])
-        if not active_awards and not pending_complaints and not pending_awards_complaints and stand_still_time_expired:
+        last_award_status = tender.awards[-1].status if tender.awards else ''
+        if not pending_complaints and not pending_awards_complaints and stand_still_time_expired and last_award_status == 'unsuccessful':
+            LOGGER.info('Switched tender {} to {}'.format(tender.id, 'unsuccessful'),
+                        extra=context_unpack(request, {'MESSAGE_ID': 'switched_tender_unsuccessful'}))
             tender.status = 'unsuccessful'
         if tender.contracts and tender.contracts[-1].status == 'active':
             tender.status = 'complete'
@@ -774,7 +750,7 @@ def context_unpack(request, msg, params=None):
 def extract_tender_adapter(request, tender_id):
     db = request.registry.db
     doc = db.get(tender_id)
-    if doc is None:
+    if doc is None or doc.get('doc_type') != 'Tender':
         request.errors.add('url', 'tender_id', 'Not Found')
         request.errors.status = 404
         raise error_handler(request.errors)
