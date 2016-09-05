@@ -9,9 +9,9 @@ from requests.models import Response
 from base64 import b64encode
 from urllib import urlencode
 
-from openprocurement.api.design import sync_design
 from openprocurement.api.models import SANDBOX_MODE
 from openprocurement.api.utils import VERSION, SESSION, apply_data_patch
+from openprocurement.api.design import sync_design
 
 
 now = datetime.now()
@@ -493,4 +493,5 @@ class BaseTenderWebTest(BaseWebTest):
     def tearDown(self):
         if self.docservice:
             self.tearDownDS()
+        del self.db[self.tender_id]
         super(BaseTenderWebTest, self).tearDown()

@@ -446,6 +446,8 @@ class Document(Model):
                 if obj.id != url.split('/')[(index - len(parents)) * 2 - 1]:
                     break
                 field = url.split('/')[(index - len(parents)) * 2]
+                if "_" in field:
+                    field = field[0] + field.title().replace("_", "")[1:]
                 roles = type(obj)._options.roles
                 if roles[role if role in roles else 'default'](field, []):
                     return url
