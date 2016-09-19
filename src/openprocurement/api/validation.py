@@ -81,12 +81,6 @@ def validate_tender_data(request):
         request.errors.add('procurementMethodType', 'mode', 'Broker Accreditation level does not permit tender creation')
         request.errors.status = 403
         return
-    if data and data.get('procuringEntity', {}).get('kind', '') not in model.procuring_entity_kinds:
-        request.errors.add('procuringEntity',
-                           'kind',
-                           '{kind!r} procuringEntity cannot publish this type of procedure. '
-                           'Only {kinds} are allowed.'.format(kind=data.get('procuringEntity', {}).get('kind', ''), kinds=', '.join(model.procuring_entity_kinds)))
-        request.errors.status = 403
 
 
 def validate_patch_tender_data(request):

@@ -543,19 +543,6 @@ class TenderResourceTest(BaseWebTest):
             {u'description': [u'CPV group of items be identical'], u'location': u'body', u'name': u'items'}
         ])
 
-        procuringEntity = test_tender_data["procuringEntity"]
-        data = test_tender_data["procuringEntity"].copy()
-        del data['kind']
-        test_tender_data["procuringEntity"] = data
-        response = self.app.post_json(request_path, {'data': test_tender_data}, status=403)
-        test_tender_data["procuringEntity"] = procuringEntity
-        self.assertEqual(response.status, '403 Forbidden')
-        self.assertEqual(response.content_type, 'application/json')
-        self.assertEqual(response.json['status'], 'error')
-        self.assertEqual(response.json['errors'], [
-            {u'description': u"'' procuringEntity cannot publish this type of procedure. Only general, special, defense, other are allowed.", u'location': u'procuringEntity', u'name': u'kind'}
-        ])
-
     def test_create_tender_generated(self):
         data = test_tender_data.copy()
         #del data['awardPeriod']
@@ -899,7 +886,7 @@ class TenderResourceTest(BaseWebTest):
         response = self.app.patch_json('/tenders/{}?acc_token={}'.format(tender['id'], owner_token), {'data': {'procuringEntity': {'kind': 'defense'}}})
         self.assertEqual(response.status, '200 OK')
         self.assertEqual(response.content_type, 'application/json')
-        self.assertNotEqual(response.json['data']['procuringEntity']['kind'], 'defense')
+        self.assertNotEqual(response.json['data']['procuringEntity'].get('kind'), 'defense')
 
         response = self.app.patch_json('/tenders/{}'.format(
             tender['id']), {'data': {'procuringEntity': {'contactPoint': {'faxNumber': None}}}})
