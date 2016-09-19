@@ -5,9 +5,10 @@ if 'test' not in __import__('sys').argv[0]:
     import gevent.monkey
     gevent.monkey.patch_all()
 import os
-from boto.s3.connection import S3Connection, Location
+from base64 import b64decode, b64encode
 from couchdb import Server as CouchdbServer, Session
 from couchdb.http import Unauthorized, extract_credentials
+from libnacl.sign import Signer, Verifier
 from logging import getLogger
 from openprocurement.api.auth import AuthenticationPolicy, authenticated_role, check_accreditation
 from openprocurement.api.design import sync_design
@@ -158,18 +159,23 @@ def main(global_config, **settings):
         sync_design(db)
     config.registry.db = db
 
+    # Document Service key
+    config.registry.docservice_url = settings.get('docservice_url')
+    config.registry.docservice_username = settings.get('docservice_username')
+    config.registry.docservice_password = settings.get('docservice_password')
+    config.registry.docservice_upload_url = settings.get('docservice_upload_url')
+    config.registry.docservice_key = dockey = Signer(settings.get('dockey', '').decode('hex'))
+    config.registry.keyring = keyring = {}
+    dockeys = settings.get('dockeys') if 'dockeys' in settings else dockey.hex_vk()
+    for key in dockeys.split('\0'):
+        keyring[key[:8]] = Verifier(key)
+
     # migrate data
     if not os.environ.get('MIGRATION_SKIP'):
-        migrate_data(config.registry.db)
+        for entry_point in iter_entry_points('openprocurement.api.migrations'):
+            plugin = entry_point.load()
+            plugin(config.registry)
 
-    # S3 connection
-    if 'aws.access_key' in settings and 'aws.secret_key' in settings and 'aws.s3_bucket' in settings:
-        connection = S3Connection(settings['aws.access_key'], settings['aws.secret_key'])
-        config.registry.s3_connection = connection
-        bucket_name = settings['aws.s3_bucket']
-        if bucket_name not in [b.name for b in connection.get_all_buckets()]:
-            connection.create_bucket(bucket_name, location=Location.EU)
-        config.registry.bucket_name = bucket_name
     config.registry.server_id = settings.get('id', '')
     config.registry.health_threshold = float(settings.get('health_threshold', 99))
     config.registry.update_after = asbool(settings.get('update_after', True))

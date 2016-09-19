@@ -270,4 +270,6 @@ gettext_compact = False     # optional.
 intersphinx_mapping = {
     'python': ('http://docs.python.org/dev', None),
     'openprocurementtenderlimited': ('http://openprocurementtenderlimited.readthedocs.org/en/latest/', None),
+    'documentservice': ('http://documentservice.api-docs.openprocurement.org/en/latest', None),
 }
+intersphinx_cache_limit = 0
