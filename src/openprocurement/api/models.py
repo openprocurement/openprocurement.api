@@ -330,14 +330,6 @@ class Location(Model):
     elevation = BaseType()
 
 
-ADDITIONAL_CLASSIFICATIONS_SCHEMES = [u'ДКПП', u'NONE', u'ДК003', u'ДК015', u'ДК018']
-
-
-def validate_dkpp(items, *args):
-    if items and not any([i.scheme in ADDITIONAL_CLASSIFICATIONS_SCHEMES for i in items]):
-        raise ValidationError(u"One of additional classifications should be one of [{0}].".format(', '.join(ADDITIONAL_CLASSIFICATIONS_SCHEMES)))
-
-
 class Item(Model):
     """A good, service, or work to be contracted."""
 
@@ -346,7 +338,7 @@ class Item(Model):
     description_en = StringType()
     description_ru = StringType()
     classification = ModelType(CPVClassification, required=True)
-    additionalClassifications = ListType(ModelType(Classification), default=list(), required=True, min_size=1, validators=[validate_dkpp])
+    additionalClassifications = ListType(ModelType(Classification), default=list(), required=True, min_size=1)
     unit = ModelType(Unit)  # Description of the unit which the good comes in e.g. hours, kilograms
     quantity = IntType()  # The number of units required
     deliveryDate = ModelType(Period)
