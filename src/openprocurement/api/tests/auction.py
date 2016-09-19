@@ -1,13 +1,14 @@
 # -*- coding: utf-8 -*-
 import unittest
 from datetime import timedelta
-
 from openprocurement.api.models import get_now
 from openprocurement.api.tests.base import BaseTenderWebTest, test_tender_data, test_features_tender_data, test_bids, test_lots, test_organization
 
+auction_test_tender_data = test_tender_data.copy()
+auction_test_tender_data['submissionMethodDetails'] = 'test submissionMethodDetails'
 
 class TenderAuctionResourceTest(BaseTenderWebTest):
-    #initial_data = tender_data
+    initial_data = auction_test_tender_data
     initial_status = 'active.tendering'
     initial_bids = test_bids
 
@@ -54,6 +55,7 @@ class TenderAuctionResourceTest(BaseTenderWebTest):
         self.assertNotEqual(auction, self.initial_data)
         self.assertIn('dateModified', auction)
         self.assertIn('minimalStep', auction)
+        self.assertIn('submissionMethodDetails', auction)
         self.assertNotIn("procuringEntity", auction)
         self.assertNotIn("tenderers", auction["bids"][0])
         self.assertEqual(auction["bids"][0]['value']['amount'], self.initial_bids[0]['value']['amount'])
