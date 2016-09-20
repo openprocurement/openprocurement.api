@@ -3,6 +3,7 @@ from openprocurement.api.models import get_now
 from openprocurement.api.utils import (
     save_tender,
     set_ownership,
+    generate_id,
     apply_patch,
     opresource,
     json_view,
@@ -114,7 +115,7 @@ class TenderBidResource(APIResource):
             self.request.errors.status = 403
             return
         bid = self.request.validated['bid']
-        set_ownership(bid, self.request)
+        acc = set_ownership(bid, self.request)
         tender.bids.append(bid)
         tender.modified = False
         if save_tender(self.request):
@@ -122,12 +123,7 @@ class TenderBidResource(APIResource):
                         extra=context_unpack(self.request, {'MESSAGE_ID': 'tender_bid_create'}, {'bid_id': bid.id}))
             self.request.response.status = 201
             self.request.response.headers['Location'] = self.request.route_url('Tender Bids', tender_id=tender.id, bid_id=bid['id'])
-            return {
-                'data': bid.serialize('view'),
-                'access': {
-                    'token': bid.owner_token
-                }
-            }
+            return {'data': bid.serialize('view'), 'access': acc}
 
     @json_view(permission='view_tender')
     def collection_get(self):

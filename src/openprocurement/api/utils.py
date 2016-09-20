@@ -16,10 +16,12 @@ from openprocurement.api.traversal import factory
 from pkg_resources import get_distribution
 from rfc6266 import build_header
 from schematics.exceptions import ModelValidationError
+from schematics.types.base import StringType
 from time import sleep, time as ttime
 from urllib import quote, unquote, urlencode
 from urlparse import urlparse, urljoin, urlunsplit, parse_qsl
 from uuid import uuid4
+from hashlib import sha512
 from webob.multidict import NestedMultiDict
 from pyramid.exceptions import URLDecodeError
 from pyramid.compat import decode_path_info
@@ -295,6 +297,12 @@ def set_ownership(item, request):
     if not item.get('owner'):
         item.owner = request.authenticated_userid
     item.owner_token = generate_id()
+    acc = {'token': item.owner_token}
+    if isinstance(getattr(type(item), 'transfer_token', None), StringType):
+        transfer = generate_id()
+        item.transfer_token = sha512(transfer).hexdigest()
+        acc['transfer'] = transfer
+    return acc
 
 
 def set_modetest_titles(tender):
