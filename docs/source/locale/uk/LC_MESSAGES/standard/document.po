@@ -1,10 +1,11 @@
 #
+# Zoriana Zaiats <sorenabell@quintagroup.com>, 2016.
 msgid ""
 msgstr ""
 "Project-Id-Version: openprocurement.api 0.3\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2014-11-24 18:25+0200\n"
-"PO-Revision-Date: 2016-03-24 17:10+0200\n"
+"PO-Revision-Date: 2016-09-13 14:50+0200\n"
 "Last-Translator: Zoriana Zaiats <sorenabell@quintagroup.com>\n"
 "Language-Team: Ukrainian <info@quintagroup.com>\n"
 "MIME-Version: 1.0\n"
@@ -13,7 +14,7 @@ msgstr ""
 "Language: uk\n"
 "Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<"
 "=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
-"X-Generator: Lokalize 1.5\n"
+"X-Generator: Lokalize 2.0\n"
 
 #: ../../source/standard/document.rst:9
 msgid "Document"
@@ -233,7 +234,7 @@ msgid ""
 " start implementation. This may be a link to a downloadable document, to a "
 "web page, or to an official gazette in which the notice is contained."
 msgstr ""
-"Офіційне повідомлення, що містить деталі підписання доовору та початку його "
+"Офіційне повідомлення, що містить деталі підписання договору та початку його "
 "реалізації. Це може бути посилання на документ, веб-сторінку, чи на "
 "офіційний бюлетень, де розміщено повідомлення."
 
@@ -316,4 +317,5 @@ msgstr ""
 msgid "`qualificationDocuments` - **Qualification documents**"
 msgstr ""
 "`qualificationDocuments` - **Документи, що підтверджують кваліфікацію**"
+
 
