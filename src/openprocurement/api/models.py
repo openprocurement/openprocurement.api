@@ -806,6 +806,19 @@ class Cancellation(Model):
             raise ValidationError(u"relatedLot should be one of lots")
 
 
+class AwardID(Model):
+
+    id = MD5Type(required=True, default=lambda: uuid4().hex)
+
+    def validate_id(self, data, awardID):
+        awards = [award for award in data['__parent__'].awards if award['id'] == awardID]
+        if not awards:
+            raise ValidationError(u"id must be one of awards id")
+        else:
+            if awards[0]['status'] != 'active':
+                raise ValidationError(u"awards must has status active")
+
+
 class Contract(Model):
     class Options:
         roles = {
@@ -825,7 +838,7 @@ class Contract(Model):
     description = StringType()  # Contract description
     description_en = StringType()
     description_ru = StringType()
-    status = StringType(choices=['pending', 'terminated', 'active', 'cancelled'], default='pending')
+    status = StringType(choices=['pending', 'terminated', 'active', 'cancelled', 'merged'], default='pending')
     period = ModelType(Period)
     value = ModelType(Value)
     dateSigned = IsoDateTimeType()
@@ -833,6 +846,32 @@ class Contract(Model):
     items = ListType(ModelType(Item))
     suppliers = ListType(ModelType(Organization), min_size=1, max_size=1)
     date = IsoDateTimeType()
+    additionalAwardIDs = ListType(ModelType(AwardID), default=list())
+    mergedInto = MD5Type()
+
+    def validate_mergedInto(self, data, value):
+        if data['status'] == 'merged':
+            if value not in [contract['id'] for contract in data['__parent__'].contracts]:
+                raise ValueError(u"mergedInto must be id one of tender contract")
+            if value == data['id']:
+                raise ValueError(u"mergedInto can't be id of current contract")
+        raise ValueError(u"Can set only when contract status is merged")
+
+    def validate_additionalAwardIDs(self, data, value):
+        awards = [award for award in data['__parent__'].awards if a['id'] in [v['id'] for v in value]]
+        for additional_award in value:
+            contracts = [c for c in data['__parent__'].contracts if c['awardID'] == additional_award]
+            if not contracts:  # if we don't find contract by award
+                raise ValueError(u"Contract for this award didn't create yet")
+            contract = contracts[0]
+            if contract['id'] == 'merged':  # when someone try add contract which already merged
+                raise ValueError(u"Can't add contract which already merged")
+            if contract['id'] != 'pending' and contract['mergedInto'] != data['id']:
+                raise ValidationError(u"Contracts must have status pending")
+        if len(set([award['suppliers'][0]['identifier']['id'] for award in awards])) > 1:
+            raise ValidationError(u"Awards must have same suppliers id")
+        if len(set([award['suppliers'][0]['identifier']['schema'] for award in awards])) > 1:
+            raise ValidationError(u"Awards must have same suppliers schema")
 
     def validate_awardID(self, data, awardID):
         if awardID and isinstance(data['__parent__'], Model) and awardID not in [i.id for i in data['__parent__'].awards]:
