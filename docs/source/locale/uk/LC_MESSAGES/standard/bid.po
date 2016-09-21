@@ -1,25 +1,28 @@
 #
+# Zoriana Zaiats <sorenabell@quintagroup.com>, 2016.
 msgid ""
 msgstr ""
 "Project-Id-Version: openprocurement.api 0.3\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2014-11-24 18:25+0200\n"
-"PO-Revision-Date: 2016-03-17 10:58+0200\n"
+"POT-Creation-Date: 2016-09-21 15:42+0300\n"
+"PO-Revision-Date: 2016-09-21 16:20+0200\n"
 "Last-Translator: Zoriana Zaiats <sorenabell@quintagroup.com>\n"
 "Language-Team: Ukrainian <info@quintagroup.com>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.3.4\n"
 "Language: uk\n"
-"Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
-"X-Generator: Lokalize 1.5\n"
+"Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<"
+"=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
+"X-Generator: Lokalize 2.0\n"
 
 #: ../../source/standard/bid.rst:8
 msgid "Bid"
 msgstr "Bid"
 
-#: ../../source/standard/bid.rst:11 ../../source/standard/bid.rst:60
-#: ../../source/standard/bid.rst:78
+#: ../../source/standard/bid.rst:11 ../../source/standard/bid.rst:59
+#: ../../source/standard/bid.rst:77
 msgid "Schema"
 msgstr "Схема"
 
@@ -27,7 +30,15 @@ msgstr "Схема"
 msgid "List of :ref:`Organization` objects"
 msgstr "Список об’єктів :ref:`Organization` "
 
-#: ../../source/standard/bid.rst:23 ../../source/standard/bid.rst:90
+#: ../../source/standard/bid.rst:17 ../../source/standard/bid.rst:94
+msgid "string, :ref:`date`, auto-generated"
+msgstr "рядок, :ref:`date`, генерується автоматично"
+
+#: ../../source/standard/bid.rst:20
+msgid "uid, auto-generated"
+msgstr "uid, генерується автоматично"
+
+#: ../../source/standard/bid.rst:23 ../../source/standard/bid.rst:89
 msgid "string"
 msgstr "рядок"
 
@@ -36,97 +47,94 @@ msgid "Possible values are:"
 msgstr "Можливі значення:"
 
 #: ../../source/standard/bid.rst:27
-msgid "`registration`"
-msgstr "`registration` - реєстрація"
+msgid "`draft`"
+msgstr "`draft`"
 
 #: ../../source/standard/bid.rst:28
-msgid "`validBid`"
-msgstr "`validBid` - дійсна пропозиція"
+msgid "`active`"
+msgstr "`active`"
 
-#: ../../source/standard/bid.rst:29
-msgid "`invalidBid`"
-msgstr "`invalidBid` - недійсна пропозиція"
-
-#: ../../source/standard/bid.rst:41
-msgid "List of :ref:`Document` objects"
-msgstr "Список об’єктів :ref:`Document`"
-
-#: ../../source/standard/bid.rst:32 ../../source/standard/bid.rst:81
+#: ../../source/standard/bid.rst:31 ../../source/standard/bid.rst:80
 msgid ":ref:`Value`, required"
 msgstr ":ref:`Value`, обов’язково"
 
-#: ../../source/standard/bid.rst:34 ../../source/standard/bid.rst:83
+#: ../../source/standard/bid.rst:33 ../../source/standard/bid.rst:82
 msgid "Validation rules:"
 msgstr "Правила валідації:"
 
-#: ../../source/standard/bid.rst:36
+#: ../../source/standard/bid.rst:35
 msgid "`amount` should be less than `Tender.value.amout`"
 msgstr "Значення `amount` повинно бути меншим за `Tender.value.amout`"
 
-#: ../../source/standard/bid.rst:37
+#: ../../source/standard/bid.rst:36
 msgid "`currency` should either be absent or match `Tender.value.currency`"
 msgstr ""
 "Значення `currency` повинно бути або відсутнім, або співпадати з "
 "`Tender.value.currency`"
 
-#: ../../source/standard/bid.rst:38
+#: ../../source/standard/bid.rst:37
 msgid ""
 "`valueAddedTaxIncluded` should either be absent or match "
 "`Tender.value.valueAddedTaxIncluded`"
 msgstr ""
-"Значення `valueAddedTaxIncluded` повинно бути або відсутнім, або співпадати "
-"з `Tender.value.valueAddedTaxIncluded`"
+"Значення `valueAddedTaxIncluded` повинно бути або відсутнім, або "
+"співпадати з `Tender.value.valueAddedTaxIncluded`"
 
-#: ../../source/standard/bid.rst:44
+#: ../../source/standard/bid.rst:40
+msgid "List of :ref:`Document` objects"
+msgstr "Список об’єктів :ref:`Document`"
+
+#: ../../source/standard/bid.rst:43
 msgid "List of :ref:`Parameter` objects"
 msgstr "Список об’єктів :ref:`Parameter`"
 
-#: ../../source/standard/bid.rst:57
-msgid "Parameter"
-msgstr "Parameter"
-
-#: ../../source/standard/bid.rst:63
-msgid "string, required"
-msgstr "рядок, обов’язковий"
-
-#: ../../source/standard/bid.rst:65
-msgid "Code of the feature."
-msgstr "Код критерію."
-
-#: ../../source/standard/bid.rst:68
-msgid "float, required"
-msgstr "float, обов’язково"
-
-#: ../../source/standard/bid.rst:70
-msgid "Value of the feature."
-msgstr "Значення критерію."
-
-#: ../../source/standard/bid.rst:47
+#: ../../source/standard/bid.rst:46
 msgid "List of :ref:`LotValue` objects"
 msgstr "Список об’єктів :ref:`LotValue`"
 
-#: ../../source/standard/bid.rst:50 ../../source/standard/bid.rst:98
+#: ../../source/standard/bid.rst:49 ../../source/standard/bid.rst:97
 msgid "url"
 msgstr "URL-адреса"
 
-#: ../../source/standard/bid.rst:52 ../../source/standard/bid.rst:100
+#: ../../source/standard/bid.rst:51 ../../source/standard/bid.rst:99
 msgid "A web address for participation in auction."
 msgstr "Веб-адреса для участі в аукціоні."
 
-#: ../../source/standard/bid.rst:75
+#: ../../source/standard/bid.rst:56
+msgid "Parameter"
+msgstr "Parameter"
+
+#: ../../source/standard/bid.rst:62
+msgid "string, required"
+msgstr "рядок, обов’язковий"
+
+#: ../../source/standard/bid.rst:64
+msgid "Code of the feature."
+msgstr "Код критерію."
+
+#: ../../source/standard/bid.rst:67
+msgid "float, required"
+msgstr "float, обов’язково"
+
+#: ../../source/standard/bid.rst:69
+msgid "Value of the feature."
+msgstr "Значення критерію."
+
+#: ../../source/standard/bid.rst:74
 msgid "LotValue"
 msgstr "LotValue"
 
-#: ../../source/standard/bid.rst:85
+#: ../../source/standard/bid.rst:84
 msgid "`amount` should be less than `Lot.value.amout`"
 msgstr "`amount` повинно бути меншим, ніж `Lot.value.amount`"
 
-#: ../../source/standard/bid.rst:86
+#: ../../source/standard/bid.rst:85
 msgid "`currency` should either be absent or match `Lot.value.currency`"
 msgstr ""
-"`currency` повинно або бути відсутнім, або відповідати `Lot.value.currency`"
+"`currency` повинно або бути відсутнім, або відповідати "
+"`Lot.value.currency`"
 
-#: ../../source/standard/bid.rst:87
+#: ../../source/standard/bid.rst:86
 msgid ""
 "`valueAddedTaxIncluded` should either be absent or match "
 "`Lot.value.valueAddedTaxIncluded`"
@@ -134,15 +142,16 @@ msgstr ""
 "`valueAddedTaxIncluded` повинно або бути відсутнім, або відповідати "
 "`Lot.value.valueAddedTaxIncluded`"
 
-#: ../../source/standard/bid.rst:92
+#: ../../source/standard/bid.rst:91
 msgid "Id of related :ref:`lot`."
 msgstr "ID пов’язаного :ref:`lot`."
 
-#: ../../source/standard/bid.rst:17 ../../source/standard/bid.rst:95
-msgid "string, :ref:`date`, auto-generated"
-msgstr "рядок, :ref:`date`, генерується автоматично"
+#~ msgid "`registration`"
+#~ msgstr "`registration` - реєстрація"
 
-#: ../../source/standard/bid.rst:20
-msgid "uid, auto-generated"
-msgstr "uid, генерується автоматично"
+#~ msgid "`validBid`"
+#~ msgstr "`validBid` - дійсна пропозиція"
+
+#~ msgid "`invalidBid`"
+#~ msgstr "`invalidBid` - недійсна пропозиція"
 
