@@ -29,7 +29,7 @@ schematics_embedded_role = SchematicsDocument.Options.roles['embedded'] + blackl
 schematics_default_role = SchematicsDocument.Options.roles['default'] + blacklist("__parent__")
 
 TZ = timezone(os.environ['TZ'] if 'TZ' in os.environ else 'Europe/Kiev')
-CANT_DELETE_PERIOD_START_DATE_FROM = datetime(2016, 9, 1, tzinfo=TZ)
+CANT_DELETE_PERIOD_START_DATE_FROM = datetime(2016, 9, 23, tzinfo=TZ)
 
 
 def get_now():
@@ -1101,7 +1101,7 @@ draft_role = whitelist('status')
 edit_role = (blacklist('status', 'procurementMethodType', 'lots', 'transfer_token', 'owner_token', 'owner', '_attachments', 'revisions', 'date', 'dateModified', 'doc_id', 'tenderID', 'bids', 'documents', 'awards', 'questions', 'complaints', 'auctionUrl', 'auctionPeriod', 'awardPeriod', 'procurementMethod', 'awardCriteria', 'submissionMethod', 'mode', 'cancellations') + schematics_embedded_role)
 view_role = (blacklist('transfer_token', 'owner_token', '_attachments', 'revisions') + schematics_embedded_role)
 listing_role = whitelist('dateModified', 'doc_id')
-auction_view_role = whitelist('tenderID', 'dateModified', 'bids', 'items', 'auctionPeriod', 'minimalStep', 'auctionUrl', 'features', 'lots')
+auction_view_role = whitelist('tenderID', 'dateModified', 'bids', 'items', 'auctionPeriod', 'minimalStep', 'auctionUrl', 'features', 'lots', 'submissionMethodDetails',)
 auction_post_role = whitelist('bids')
 auction_patch_role = whitelist('auctionUrl', 'bids', 'lots')
 enquiries_role = (blacklist('transfer_token', 'owner_token', '_attachments', 'revisions', 'bids', 'numberOfBids') + schematics_embedded_role)
