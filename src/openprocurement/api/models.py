@@ -855,26 +855,19 @@ class Contract(Model):
                 raise ValidationError(u"mergedInto must be id one of tender contract")
             if value == data['id']:
                 raise ValidationError(u"mergedInto can't be id of current contract")
-        # if value and data['status'] != 'merged':
-        #     raise ValueError(u"Can set only when contract status is merged")
 
     def validate_additionalAwardIDs(self, data, value):
         if value and isinstance(data['__parent__'], Model):
             # Get all awards which in validate_additionalAwardIDs
             awards = [award for award in data['__parent__'].awards if award['id'] in [v['id'] for v in value]]
-            for additional_award in value:
+            for additional_award in awards:
                 if additional_award['id'] == data['awardID']:
-                    raise ValidationError(u"You can merge here self contract")
+                    raise ValidationError(u"Can't merge here self contract")
                 #  Потрібно перевірити що існує контракт який можливо мержити
                 contracts = [c for c in data['__parent__'].contracts if
                              c['awardID'] == additional_award['id']]
-                if not contracts:  # if we don't find contract by award
-                    raise ValidationError(u"Contract for this award didn't create yet")
-
-                contracts = [contract for contract in contracts if contract['status'] == 'pending']
-                if not contracts:
-                    raise ValidationError("Can't find contract in status pending for {0} award".format(additional_award['id']))
-                contract = contracts[0]
+                if len(contracts) < len(awards):  # if we don't find contract by award
+                    raise ValidationError(u"Not all contracts was created for awards")
             if len(set([award['suppliers'][0]['identifier']['id'] for award in awards])) > 1:
                 raise ValidationError(u"Awards must have same suppliers id")
             if len(set([award['suppliers'][0]['identifier']['scheme'] for award in awards])) > 1:
