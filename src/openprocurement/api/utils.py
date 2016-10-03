@@ -813,13 +813,13 @@ def calculate_business_date(date_obj, timedelta_obj, context=None, working_days=
     return date_obj + timedelta_obj
 
 
-def check_merged_contracts(request):
+def check_merged_contracts(self):
     """ Set status pending and delete mergeInto for all previous merged contracts before
         Set status merged and set mergeInto for all new contracts which awardID come in additionalAwardIDs """
 
-    contract = request.validated['contract']
-    data = request.validated['data']
-    tender = request.validated['tender']
+    contract = self.request.validated['contract']
+    data = self.request.validated['data']
+    tender = self.request.validated['tender']
     if 'additionalAwardIDs' in contract:  # Get ids for all previos merged contracts
         old_additional_award_ids = [additional_award_id['id'] for additional_award_id in
                                     contract.get('additionalAwardIDs', [])]
@@ -832,15 +832,15 @@ def check_merged_contracts(request):
         for new_contract in new_contracts:
             # all new contracts must have status pending
             if new_contract['status'] != 'pending' and new_contract not in prev_contracts:
-                request.errors.add('body', 'data',
-                                   "Can't merge contract in status {}".format(new_contract['status']))
-                request.errors.status = 403
-                return request
+                self.request.errors.add('body', 'data',
+                                        "Can't merge contract in status {}".format(new_contract['status']))
+                self.request.errors.status = 403
+                return self.request
             # Check if it exists and length > 0
             if 'additionalAwardIDs' in new_contract and new_contract['additionalAwardIDs']:
-                request.errors.add('body', 'data', "Can't merge contract which has additionalAwardIDs")
-                request.errors.status = 403
-                return request
+                self.request.errors.add('body', 'data', "Can't merge contract which has additionalAwardIDs")
+                self.request.errors.status = 403
+                return self.request
 
         for prev_contract in prev_contracts:
             prev_contract['status'] = 'pending'
