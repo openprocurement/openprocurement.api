@@ -876,7 +876,7 @@ class Contract(Model):
                 raise ValidationError(u"Awards must have same suppliers id")
             # Check that all award suppliers schema is the same
             if len(set([award['suppliers'][0]['identifier']['scheme'] for award in awards])) > 1 or \
-                    awards[0]['suppliers'][0]['identifier']['id'] != contract_award['suppliers'][0]['identifier']['id']:
+                    awards[0]['suppliers'][0]['identifier']['scheme'] != contract_award['suppliers'][0]['identifier']['scheme']:
                 raise ValidationError(u"Awards must have same suppliers schema")
 
     def validate_awardID(self, data, awardID):

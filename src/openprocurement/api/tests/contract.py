@@ -181,7 +181,7 @@ class TenderMergedContracts2LotsResourceTest(BaseTenderWebTest):
                              {
                                  "location": "body",
                                  "name": "additionalAwardIDs",
-                                 "description": ["Awards must have same suppliers id"]
+                                 "description": ["Awards must have same suppliers schema"]
                              }
                          ])
 
