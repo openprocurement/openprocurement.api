@@ -16,7 +16,7 @@ def prepare_bids(init_bids):
     return init_bids
 
 
-class TenderMergedContracts2LotsResourceTest(BaseTenderContentWebTest):
+class TenderMergedContracts2LotsResourceTest(BaseTenderWebTest):
     initial_status = 'active.qualification'
     initial_bids = prepare_bids(test_bids)
     initial_lots = deepcopy(2 * test_lots)
@@ -193,7 +193,7 @@ class TenderMergedContracts2LotsResourceTest(BaseTenderContentWebTest):
         self.assertNotEqual(second_contract['status'], 'merged')
 
 
-class TenderMergedContracts3LotsResourceTest(BaseTenderContentWebTest):
+class TenderMergedContracts3LotsResourceTest(BaseTenderWebTest):
     initial_status = 'active.qualification'
     initial_bids = prepare_bids(test_bids)
     initial_lots = deepcopy(3 * test_lots)
@@ -301,7 +301,7 @@ class TenderMergedContracts3LotsResourceTest(BaseTenderContentWebTest):
         self.assertNotEqual(second_contract["status"], "merged")
 
 
-class TenderMergedContracts4LotsResourceTest(BaseTenderContentWebTest):
+class TenderMergedContracts4LotsResourceTest(BaseTenderWebTest):
     initial_status = 'active.qualification'
     initial_bids = prepare_bids(test_bids)
     initial_lots = deepcopy(4 * test_lots)
