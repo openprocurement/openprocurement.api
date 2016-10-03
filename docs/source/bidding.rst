@@ -96,7 +96,7 @@ After auction ends it is possible to get full information about bids and bidders
                       "format": "text/plain", 
                       "id": "ff001412c60c4164a0f57101e4eaf8aa", 
                       "title": "Proposal.pdf", 
-                      "url": "http://api-sandbox.openprocurement.org/api/0/tenders/6f73bf0f7f734f459f7e37e3787054a0/bids/f7fc1212f9f140bba5c4e3cd4f2b62d9/documents/ff001412c60c4164a0f57101e4eaf8aa?download=4f45bbd414104cd78faf620208efd824"
+                      "url": "https://public.api.openprocurement.org/api/0/tenders/6f73bf0f7f734f459f7e37e3787054a0/bids/f7fc1212f9f140bba5c4e3cd4f2b62d9/documents/ff001412c60c4164a0f57101e4eaf8aa?download=4f45bbd414104cd78faf620208efd824"
                   }
               ], 
               "id": "f7fc1212f9f140bba5c4e3cd4f2b62d9", 
@@ -221,7 +221,7 @@ Individual bid can be retrieved via its `id`:
                   "format": "text/plain", 
                   "id": "ff001412c60c4164a0f57101e4eaf8aa", 
                   "title": "Proposal.pdf", 
-                  "url": "http://api-sandbox.openprocurement.org/api/0/tenders/6f73bf0f7f734f459f7e37e3787054a0/bids/f7fc1212f9f140bba5c4e3cd4f2b62d9/documents/ff001412c60c4164a0f57101e4eaf8aa?download=4f45bbd414104cd78faf620208efd824"
+                  "url": "https://public.api.openprocurement.org/api/0/tenders/6f73bf0f7f734f459f7e37e3787054a0/bids/f7fc1212f9f140bba5c4e3cd4f2b62d9/documents/ff001412c60c4164a0f57101e4eaf8aa?download=4f45bbd414104cd78faf620208efd824"
               }
           ], 
           "id": "f7fc1212f9f140bba5c4e3cd4f2b62d9", 

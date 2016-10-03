@@ -1,6 +1,6 @@
 GET /api/2.3/tenders/a4f89b85bdc041f080c73ca5b06ee953 HTTP/1.0
 Authorization: Basic YnJva2VyOg==
-Host: api-sandbox.openprocurement.org
+Host: public.api.openprocurement.org
 
 
 200 OK

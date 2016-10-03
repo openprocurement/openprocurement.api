@@ -60,7 +60,7 @@ Let's see what listing of tenders reveals us:
 .. include:: tutorial/initial-tender-listing.http
    :code:
 
-We do see the internal `id` of a tender (that can be used to construct full URL by prepending `http://api-sandbox.openprocurement.org/api/0/tenders/`) and its `dateModified` datestamp.
+We do see the internal `id` of a tender (that can be used to construct full URL by prepending `https://public.api.openprocurement.org/api/0/tenders/`) and its `dateModified` datestamp.
 
 The previous tender contained only required fields. Let's try creating tender with more data
 (tender has status `created`):

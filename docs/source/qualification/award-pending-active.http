@@ -2,7 +2,7 @@ PATCH /api/2.3/tenders/1c34544d0e6144f18886b6e59fb8256d/awards/53df3c5f28324859b
 Authorization: Basic YnJva2VyOg==
 Content-Length: 30
 Content-Type: application/json
-Host: api-sandbox.openprocurement.org
+Host: public.api.openprocurement.org
 
 {
   "data": {

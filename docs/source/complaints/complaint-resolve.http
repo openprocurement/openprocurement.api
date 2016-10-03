@@ -2,7 +2,7 @@ PATCH /api/2.3/tenders/1c34544d0e6144f18886b6e59fb8256d/complaints/d1aa551f7b8b4
 Authorization: Basic cmV2aWV3ZXI6
 Content-Length: 32
 Content-Type: application/json
-Host: api-sandbox.openprocurement.org
+Host: public.api.openprocurement.org
 
 {
   "data": {
@@ -22,7 +22,7 @@ Content-Type: application/json; charset=UTF-8
       {
         "author": "reviewers", 
         "title": "ComplaintResolution.pdf", 
-        "url": "http://api-sandbox.openprocurement.org/api/2.3/tenders/1c34544d0e6144f18886b6e59fb8256d/complaints/d1aa551f7b8b4127ba3ecbb89b07e926/documents/cba937637ea140c697598bf01774d0ce?download=b405da054eb346409701d16280552d66", 
+        "url": "https://public.api.openprocurement.org/api/2.3/tenders/1c34544d0e6144f18886b6e59fb8256d/complaints/d1aa551f7b8b4127ba3ecbb89b07e926/documents/cba937637ea140c697598bf01774d0ce?download=b405da054eb346409701d16280552d66", 
         "format": "application/pdf", 
         "documentOf": "tender", 
         "datePublished": "2016-06-10T15:29:36.855460+03:00", 
