@@ -812,3 +812,41 @@ def calculate_business_date(date_obj, timedelta_obj, context=None, working_days=
                 date_obj += timedelta(1) if timedelta_obj > timedelta() else -timedelta(1)
         return date_obj
     return date_obj + timedelta_obj
+
+
+def check_merged_contracts(request):
+    """ Set status pending and delete mergeInto for all previous merged contracts before
+        Set status merged and set mergeInto for all new contracts which awardID come in additionalAwardIDs """
+
+    contract = request.validated['contract']
+    data = request.validated['data']
+    tender = request.validated['tender']
+    if 'additionalAwardIDs' in contract:  # Get ids for all previos merged contracts
+        old_additional_award_ids = [additional_award_id['id'] for additional_award_id in
+                                    contract.get('additionalAwardIDs', [])]
+        new_additional_award_ids = [additional_award_id['id'] for additional_award_id in data['additionalAwardIDs']]
+        prev_contracts = [prev_contract for prev_contract in tender['contracts'] if
+                          prev_contract['awardID'] in old_additional_award_ids]
+
+        new_contracts = [new_contract for new_contract in tender['contracts'] if
+                         new_contract['awardID'] in new_additional_award_ids]
+        for new_contract in new_contracts:
+            # all new contracts must have status pending
+            if new_contract['status'] != 'pending' and new_contract not in prev_contracts:
+                request.errors.add('body', 'data',
+                                   "Can't merge contract in status {}".format(new_contract['status']))
+                request.errors.status = 403
+                return
+            # Check if it exists and length > 0
+            if 'additionalAwardIDs' in new_contract and new_contract['additionalAwardIDs']:
+                request.errors.add('body', 'data', "Can't merge contract which has additionalAwardIDs")
+                request.errors.status = 403
+                return
+
+        for prev_contract in prev_contracts:
+            prev_contract['status'] = 'pending'
+            del prev_contract['mergedInto']
+
+        for new_contract in new_contracts:
+            new_contract['status'] = 'merged'
+            new_contract['mergedInto'] = contract['id']
