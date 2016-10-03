@@ -428,6 +428,56 @@ class TenderMergedContracts4LotsResourceTest(BaseTenderWebTest):
         self.assertEqual(second_contract["status"], "merged")
         self.assertEqual(fourth_contract["status"], "merged")
 
+    def test_try_merge_main_contract(self):
+        """ Try merge contract which has additionalAwardIDs"""
+        authorization = self.app.authorization
+        self.app.authorization = ('Basic', ('token', ''))  # set admin role
+        # create two awards
+        awards_response = list()
+        for i in range(len(self.initial_lots)):
+            awards_response.append(
+                self.app.post_json('/tenders/{}/awards'.format(self.tender_id),
+                                   {'data': {'suppliers': self.initial_bids[0]['tenderers'],
+                                             'status': 'pending',
+                                             'bid_id': self.initial_bids[0]['id'],
+                                             'value': self.initial_bids[0]['lotValues'][i]['value'],
+                                             'lotID': self.initial_bids[0]['lotValues'][i]['relatedLot']}}))
+
+        self.app.authorization = authorization
+
+        # active all awards
+        for award in awards_response:
+            self.app.patch_json('/tenders/{}/awards/{}?acc_token={}'.format(
+                self.tender_id, award.json['data']['id'], self.tender_token),
+                {"data": {"status": "active"}})
+
+        # get created contracts
+        contract_response = self.app.get('/tenders/{}/contracts?acc_token={}'.format(self.tender_id, self.tender_token))
+        first_additionalAwardIDs = [{"id": awards_response[1].json['data']['id']}]
+        second_additionalAwardIDs = [{"id": awards_response[3].json['data']['id']}]
+
+        # Merge contracts
+        response = self.app.patch_json('/tenders/{}/contracts/{}?acc_token={}'.format(
+            self.tender_id, contract_response.json['data'][0]['id'], self.tender_token),
+            {"data": {"additionalAwardIDs": first_additionalAwardIDs}})
+
+        self.assertEqual(response.status, '200 OK')
+        response = self.app.patch_json('/tenders/{}/contracts/{}?acc_token={}'.format(
+            self.tender_id, contract_response.json['data'][2]['id'], self.tender_token),
+            {"data": {"additionalAwardIDs": [{"id": contract_response.json['data'][0]['awardID']}]}},
+            status=403)
+
+        self.assertEqual(response.status, '403 Forbidden')
+
+        # Get contracts and check fields
+        response = self.app.get('/tenders/{}/contracts?acc_token={}'.format(self.tender_id, self.tender_token))
+
+        first_contract, second_contract, third_contract, fourth_contract = response.json['data']
+        self.assertEqual(first_contract["additionalAwardIDs"], first_additionalAwardIDs)
+        self.assertEqual(first_contract["id"], second_contract["mergedInto"])
+        self.assertEqual(second_contract["status"], "merged")
+        self.assertNotEqual(fourth_contract["status"], "merged")
+
     def test_try_merge_contract_two_times(self):
         """ Check that we can merge contract 2 times in different contracts """
         authorization = self.app.authorization
