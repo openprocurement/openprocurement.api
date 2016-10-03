@@ -139,6 +139,7 @@ class TenderMergedContracts2LotsResourceTest(BaseTenderWebTest):
         initial_bids = deepcopy(self.initial_bids)
         initial_bids[0]['tenderers'][0]['identifier']['scheme'] = 'UA-EDR'
         initial_bids[1]['tenderers'][0]['identifier']['scheme'] = 'LV-RE'
+        initial_bids[1]['tenderers'][0]['identifier']['id'] = initial_bids[0]['tenderers'][0]['identifier']['id']
         # create two awards
         first_award_response = self.app.post_json('/tenders/{}/awards'.format(self.tender_id),
                                                   {'data': {'suppliers': initial_bids[0]['tenderers'],
