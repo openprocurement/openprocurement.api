@@ -859,18 +859,23 @@ class Contract(Model):
     def validate_additionalAwardIDs(self, data, value):
         if value and isinstance(data['__parent__'], Model):
             # Get all awards which in validate_additionalAwardIDs
+            contract_award = [award for award in data['__parent__'].awards if award['id'] == data['awardID']][0]
             awards = [award for award in data['__parent__'].awards if award['id'] in [v['id'] for v in value]]
             for additional_award in awards:
                 if additional_award['id'] == data['awardID']:
                     raise ValidationError(u"Can't merge here self contract")
-                #  Потрібно перевірити що існує контракт який можливо мержити
+                #  Check that for all addittional awards have contract
                 contracts = [c for c in data['__parent__'].contracts if
                              c['awardID'] == additional_award['id']]
                 if len(contracts) < len(awards):  # if we don't find contract by award
                     raise ValidationError(u"Not all contracts was created for awards")
-            if len(set([award['suppliers'][0]['identifier']['id'] for award in awards])) > 1:
+            # Check that all award suppliers id is the same
+            if len(set([award['suppliers'][0]['identifier']['id'] for award in awards])) > 1 or \
+                    awards[0]['suppliers'][0]['identifier']['id'] != contract_award['suppliers'][0]['identifier']['id']:
                 raise ValidationError(u"Awards must have same suppliers id")
-            if len(set([award['suppliers'][0]['identifier']['scheme'] for award in awards])) > 1:
+            # Check that all award suppliers schema is the same
+            if len(set([award['suppliers'][0]['identifier']['scheme'] for award in awards])) > 1 or \
+                    awards[0]['suppliers'][0]['identifier']['id'] != contract_award['suppliers'][0]['identifier']['id']:
                 raise ValidationError(u"Awards must have same suppliers schema")
 
     def validate_awardID(self, data, awardID):
