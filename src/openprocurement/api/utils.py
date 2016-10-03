@@ -202,8 +202,7 @@ def get_revision_changes(dst, src):
 
 
 def set_ownership(item, request):
-    if not item.get('owner'):
-        item.owner = request.authenticated_userid
+    item.owner = request.authenticated_userid
     item.owner_token = generate_id()
 
 
