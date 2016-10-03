@@ -2,7 +2,7 @@ POST /api/2.3/tenders?opt_pretty=1 HTTP/1.0
 Authorization: Basic YnJva2VyOg==
 Content-Length: 4152
 Content-Type: application/json
-Host: api-sandbox.openprocurement.org
+Host: public.api.openprocurement.org
 
 {
   "data": {
@@ -117,7 +117,7 @@ Host: api-sandbox.openprocurement.org
 
 201 Created
 Content-Type: application/json; charset=UTF-8
-Location: http://api-sandbox.openprocurement.org/api/2.3/tenders/84d69ce1f311425c92a7be4053d877b8
+Location: https://public.api.openprocurement.org/api/2.3/tenders/84d69ce1f311425c92a7be4053d877b8
 
 {
   "access": {

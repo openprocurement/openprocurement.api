@@ -1,5 +1,5 @@
 GET /api/2.3/tenders/1c34544d0e6144f18886b6e59fb8256d/complaints HTTP/1.0
-Host: api-sandbox.openprocurement.org
+Host: public.api.openprocurement.org
 
 
 200 OK
@@ -13,7 +13,7 @@ Content-Type: application/json; charset=UTF-8
         {
           "author": "complaint_owner", 
           "title": "Complaint_Attachement.pdf", 
-          "url": "http://api-sandbox.openprocurement.org/api/2.3/tenders/1c34544d0e6144f18886b6e59fb8256d/complaints/c504f4442b3c4103917145f405d5e6ea/documents/9ef0b09173464a3cbb04a814f10bd2a8?download=276f75ad62874327b5ab8a772d842aaf", 
+          "url": "https://public.api.openprocurement.org/api/2.3/tenders/1c34544d0e6144f18886b6e59fb8256d/complaints/c504f4442b3c4103917145f405d5e6ea/documents/9ef0b09173464a3cbb04a814f10bd2a8?download=276f75ad62874327b5ab8a772d842aaf", 
           "format": "application/pdf", 
           "documentOf": "tender", 
           "datePublished": "2016-06-10T15:29:34.667061+03:00", 

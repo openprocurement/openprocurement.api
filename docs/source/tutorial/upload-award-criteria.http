@@ -2,17 +2,17 @@ POST /api/2.3/tenders/a4f89b85bdc041f080c73ca5b06ee953/documents?acc_token=be391
 Authorization: Basic YnJva2VyOg==
 Content-Length: 193
 Content-Type: multipart/form-data; boundary=----------a_BoUnDaRy176287917142$
-Host: api-sandbox.openprocurement.org
+Host: public.api.openprocurement.org
 
 
 201 Created
 Content-Type: application/json; charset=UTF-8
-Location: http://api-sandbox.openprocurement.org/api/2.3/tenders/a4f89b85bdc041f080c73ca5b06ee953/documents/2fc2e39b222b4c74b94738702188424d
+Location: https://public.api.openprocurement.org/api/2.3/tenders/a4f89b85bdc041f080c73ca5b06ee953/documents/2fc2e39b222b4c74b94738702188424d
 
 {
   "data": {
     "title": "AwardCriteria.pdf", 
-    "url": "http://api-sandbox.openprocurement.org/api/2.3/tenders/a4f89b85bdc041f080c73ca5b06ee953/documents/2fc2e39b222b4c74b94738702188424d?download=9ef24d6aa3334caca68d2a0bf740fe09", 
+    "url": "https://public.api.openprocurement.org/api/2.3/tenders/a4f89b85bdc041f080c73ca5b06ee953/documents/2fc2e39b222b4c74b94738702188424d?download=9ef24d6aa3334caca68d2a0bf740fe09", 
     "format": "application/pdf", 
     "documentOf": "tender", 
     "datePublished": "2016-06-10T15:29:49.993070+03:00", 

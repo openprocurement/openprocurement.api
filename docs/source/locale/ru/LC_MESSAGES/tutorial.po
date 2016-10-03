@@ -97,7 +97,7 @@ msgstr ""
 #: ../../source/tutorial.rst:62
 msgid ""
 "We do see the internal `id` of a tender (that can be used to construct full "
-"URL by prepending `http://api-sandbox.openprocurement.org/api/0/tenders/`) "
+"URL by prepending `https://public.api.openprocurement.org/api/0/tenders/`) "
 "and its `dateModified` datestamp."
 msgstr ""
 
@@ -346,7 +346,7 @@ msgstr ""
 
 #~ msgid ""
 #~ "We do see the internal `id` of a tender (that can be used to construct full "
-#~ "URL by prepending `http://api-sandbox.openprocurement.org/api/0/tenders/`) "
+#~ "URL by prepending `https://public.api.openprocurement.org/api/0/tenders/`) "
 #~ "and its `modified` datestamp."
 #~ msgstr ""
 

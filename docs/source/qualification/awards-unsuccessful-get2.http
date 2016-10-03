@@ -1,6 +1,6 @@
 GET /api/2.3/tenders/1c34544d0e6144f18886b6e59fb8256d/awards HTTP/1.0
 Authorization: Basic YnJva2VyOg==
-Host: api-sandbox.openprocurement.org
+Host: public.api.openprocurement.org
 
 
 200 OK
@@ -13,7 +13,7 @@ Content-Type: application/json; charset=UTF-8
       "documents": [
         {
           "title": "Unsuccessful_Reason.pdf", 
-          "url": "http://api-sandbox.openprocurement.org/api/2.3/tenders/1c34544d0e6144f18886b6e59fb8256d/awards/e9a940c30ca142af9cfc261a7536d8ff/documents/729fafe3e52d4712913edfe2af49c8c6?download=112d7834ba504a3dae587cc3617ea1e7", 
+          "url": "https://public.api.openprocurement.org/api/2.3/tenders/1c34544d0e6144f18886b6e59fb8256d/awards/e9a940c30ca142af9cfc261a7536d8ff/documents/729fafe3e52d4712913edfe2af49c8c6?download=112d7834ba504a3dae587cc3617ea1e7", 
           "format": "application/pdf", 
           "documentOf": "tender", 
           "datePublished": "2016-06-10T15:29:39.093821+03:00", 
@@ -61,7 +61,7 @@ Content-Type: application/json; charset=UTF-8
             {
               "author": "complaint_owner", 
               "title": "Complaint_Attachement.pdf", 
-              "url": "http://api-sandbox.openprocurement.org/api/2.3/tenders/1c34544d0e6144f18886b6e59fb8256d/awards/e9a940c30ca142af9cfc261a7536d8ff/complaints/cfa1dd69996642c1b00ed0693ef9f71c/documents/98b8b4ec77a54382a4e66ca4d72c6add?download=46648e80263a4020b54907e1ecbebcfd", 
+              "url": "https://public.api.openprocurement.org/api/2.3/tenders/1c34544d0e6144f18886b6e59fb8256d/awards/e9a940c30ca142af9cfc261a7536d8ff/complaints/cfa1dd69996642c1b00ed0693ef9f71c/documents/98b8b4ec77a54382a4e66ca4d72c6add?download=46648e80263a4020b54907e1ecbebcfd", 
               "format": "application/pdf", 
               "documentOf": "tender", 
               "datePublished": "2016-06-10T15:29:41.237732+03:00", 
@@ -146,7 +146,7 @@ Content-Type: application/json; charset=UTF-8
             {
               "author": "reviewers", 
               "title": "ComplaintResolution.pdf", 
-              "url": "http://api-sandbox.openprocurement.org/api/2.3/tenders/1c34544d0e6144f18886b6e59fb8256d/awards/e9a940c30ca142af9cfc261a7536d8ff/complaints/acb6eb180acf4dc9b49d0b4d2c8134e4/documents/c21aa81511e140f8bf9b603a425bf330?download=b877f92857f4416cb011aab4cb45d057", 
+              "url": "https://public.api.openprocurement.org/api/2.3/tenders/1c34544d0e6144f18886b6e59fb8256d/awards/e9a940c30ca142af9cfc261a7536d8ff/complaints/acb6eb180acf4dc9b49d0b4d2c8134e4/documents/c21aa81511e140f8bf9b603a425bf330?download=b877f92857f4416cb011aab4cb45d057", 
               "format": "application/pdf", 
               "documentOf": "tender", 
               "datePublished": "2016-06-10T15:29:45.926543+03:00", 
@@ -267,7 +267,7 @@ Content-Type: application/json; charset=UTF-8
       "documents": [
         {
           "title": "Cancellation_Reason.pdf", 
-          "url": "http://api-sandbox.openprocurement.org/api/2.3/tenders/1c34544d0e6144f18886b6e59fb8256d/awards/90d2bdbf1b5449f18173020c9c617977/documents/8ea5e81901324c29b92d5c4fc0c8a19d?download=d1a65bfc0973488987359abe9def5694", 
+          "url": "https://public.api.openprocurement.org/api/2.3/tenders/1c34544d0e6144f18886b6e59fb8256d/awards/90d2bdbf1b5449f18173020c9c617977/documents/8ea5e81901324c29b92d5c4fc0c8a19d?download=d1a65bfc0973488987359abe9def5694", 
           "format": "application/pdf", 
           "documentOf": "tender", 
           "datePublished": "2016-06-10T15:29:40.422925+03:00", 

@@ -2,7 +2,7 @@ POST /api/2.3/tenders/1c34544d0e6144f18886b6e59fb8256d/awards/e9a940c30ca142af9c
 Authorization: Basic YnJva2VyOg==
 Content-Length: 775
 Content-Type: application/json
-Host: api-sandbox.openprocurement.org
+Host: public.api.openprocurement.org
 
 {
   "data": {
@@ -34,7 +34,7 @@ Host: api-sandbox.openprocurement.org
 
 201 Created
 Content-Type: application/json; charset=UTF-8
-Location: http://api-sandbox.openprocurement.org/api/2.3/tenders/1c34544d0e6144f18886b6e59fb8256d/awards/e9a940c30ca142af9cfc261a7536d8ff/complaints/cfa1dd69996642c1b00ed0693ef9f71c
+Location: https://public.api.openprocurement.org/api/2.3/tenders/1c34544d0e6144f18886b6e59fb8256d/awards/e9a940c30ca142af9cfc261a7536d8ff/complaints/cfa1dd69996642c1b00ed0693ef9f71c
 
 {
   "access": {
