@@ -49,9 +49,9 @@ class TenderMergedContracts2LotsResourceTest(BaseTenderWebTest):
 
         self.app.authorization = authorization
         self.app.patch_json('/tenders/{}/awards/{}?acc_token={}'.format(self.tender_id, first_award_id, self.tender_token),
-                            {"data": {"status": "active", "qualified": True, "eligible": True}})
+                            {"data": {"status": "active"}})
         self.app.patch_json('/tenders/{}/awards/{}?acc_token={}'.format(self.tender_id, second_award_id, self.tender_token),
-                            {"data": {"status": "active", "qualified": True, "eligible": True}})
+                            {"data": {"status": "active"}})
 
         response = self.app.get('/tenders/{}/contracts?acc_token={}'.format(self.tender_id, self.tender_token))
         first_contract, second_contract = response.json['data']
@@ -98,9 +98,9 @@ class TenderMergedContracts2LotsResourceTest(BaseTenderWebTest):
         # Active two awards
         self.app.authorization = authorization
         self.app.patch_json('/tenders/{}/awards/{}?acc_token={}'.format(self.tender_id, first_award_id, self.tender_token),
-                            {"data": {"status": "active", "qualified": True, "eligible": True}})
+                            {"data": {"status": "active"}})
         self.app.patch_json('/tenders/{}/awards/{}?acc_token={}'.format(self.tender_id, second_award_id, self.tender_token),
-                            {"data": {"status": "active", "qualified": True, "eligible": True}})
+                            {"data": {"status": "active"}})
 
         response = self.app.get('/tenders/{}/contracts?acc_token={}'.format(self.tender_id, self.tender_token))
         first_contract, second_contract = response.json['data']
@@ -161,9 +161,9 @@ class TenderMergedContracts2LotsResourceTest(BaseTenderWebTest):
         # Active two awards
         self.app.authorization = authorization
         self.app.patch_json('/tenders/{}/awards/{}?acc_token={}'.format(self.tender_id, first_award_id, self.tender_token),
-                            {"data": {"status": "active", "qualified": True, "eligible": True}})
+                            {"data": {"status": "active"}})
         self.app.patch_json('/tenders/{}/awards/{}?acc_token={}'.format(self.tender_id, second_award_id, self.tender_token),
-                            {"data": {"status": "active", "qualified": True, "eligible": True}})
+                            {"data": {"status": "active"}})
 
         response = self.app.get('/tenders/{}/contracts?acc_token={}'.format(self.tender_id, self.tender_token))
         first_contract, second_contract = response.json['data']
@@ -221,7 +221,7 @@ class TenderMergedContracts3LotsResourceTest(BaseTenderWebTest):
         for award in awards_response:
             self.app.patch_json('/tenders/{}/awards/{}?acc_token={}'.format(
                 self.tender_id, award.json['data']['id'], self.tender_token),
-                {"data": {"status": "active", "qualified": True, "eligible": True}})
+                {"data": {"status": "active"}})
 
         # get created contracts
         response = self.app.get('/tenders/{}/contracts?acc_token={}'.format(self.tender_id, self.tender_token))
@@ -265,7 +265,7 @@ class TenderMergedContracts3LotsResourceTest(BaseTenderWebTest):
         for award in awards_response[:-1]:
             self.app.patch_json('/tenders/{}/awards/{}?acc_token={}'.format(
                 self.tender_id, award.json['data']['id'], self.tender_token),
-                {"data": {"status": "active", "qualified": True, "eligible": True}})
+                {"data": {"status": "active"}})
 
         # get created contracts
         response = self.app.get('/tenders/{}/contracts?acc_token={}'.format(self.tender_id, self.tender_token))
@@ -336,7 +336,7 @@ class TenderMergedContracts4LotsResourceTest(BaseTenderWebTest):
         for award in awards_response:
             self.app.patch_json('/tenders/{}/awards/{}?acc_token={}'.format(
                 self.tender_id, award.json['data']['id'], self.tender_token),
-                {"data": {"status": "active", "qualified": True, "eligible": True}})
+                {"data": {"status": "active"}})
 
         # get created contracts
         contract_response = self.app.get('/tenders/{}/contracts?acc_token={}'.format(self.tender_id, self.tender_token))
@@ -397,7 +397,7 @@ class TenderMergedContracts4LotsResourceTest(BaseTenderWebTest):
         for award in awards_response:
             self.app.patch_json('/tenders/{}/awards/{}?acc_token={}'.format(
                 self.tender_id, award.json['data']['id'], self.tender_token),
-                {"data": {"status": "active", "qualified": True, "eligible": True}})
+                {"data": {"status": "active"}})
 
         # get created contracts
         contract_response = self.app.get('/tenders/{}/contracts?acc_token={}'.format(self.tender_id, self.tender_token))
@@ -448,7 +448,7 @@ class TenderMergedContracts4LotsResourceTest(BaseTenderWebTest):
         for award in awards_response:
             self.app.patch_json('/tenders/{}/awards/{}?acc_token={}'.format(
                 self.tender_id, award.json['data']['id'], self.tender_token),
-                {"data": {"status": "active", "qualified": True, "eligible": True}})
+                {"data": {"status": "active"}})
 
         # get created contracts
         contract_response = self.app.get('/tenders/{}/contracts?acc_token={}'.format(self.tender_id, self.tender_token))
