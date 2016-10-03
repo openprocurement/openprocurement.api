@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 import unittest
 from datetime import timedelta
+from copy import deepcopy
 
 from openprocurement.api.models import get_now
 from openprocurement.api.tests.base import BaseTenderWebTest, test_tender_data, test_bids, test_lots, test_organization
