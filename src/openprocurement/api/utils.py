@@ -835,12 +835,12 @@ def check_merged_contracts(request):
                 request.errors.add('body', 'data',
                                    "Can't merge contract in status {}".format(new_contract['status']))
                 request.errors.status = 403
-                return
+                return request
             # Check if it exists and length > 0
             if 'additionalAwardIDs' in new_contract and new_contract['additionalAwardIDs']:
                 request.errors.add('body', 'data', "Can't merge contract which has additionalAwardIDs")
                 request.errors.status = 403
-                return
+                return request
 
         for prev_contract in prev_contracts:
             prev_contract['status'] = 'pending'
