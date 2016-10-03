@@ -865,10 +865,11 @@ class Contract(Model):
                 if additional_award['id'] == data['awardID']:
                     raise ValidationError(u"Can't merge here self contract")
                 #  Check that for all addittional awards have contract
-                contracts = [c for c in data['__parent__'].contracts if
-                             c['awardID'] == additional_award['id']]
-                if len(contracts) < len(awards):  # if we don't find contract by award
-                    raise ValidationError(u"Not all contracts was created for awards")
+                for contract in data['__parent__'].contracts:
+                    if contract['awardID'] == additional_award['id']:
+                        break
+                else:
+                    raise ValidationError(u"Not found contract for award {}".format(additional_award['id']))
             # Check that all award suppliers id is the same
             if len(set([award['suppliers'][0]['identifier']['id'] for award in awards])) > 1 or \
                     awards[0]['suppliers'][0]['identifier']['id'] != contract_award['suppliers'][0]['identifier']['id']:
