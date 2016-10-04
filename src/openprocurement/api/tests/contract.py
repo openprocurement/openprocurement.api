@@ -80,6 +80,116 @@ class TenderMergedContracts2LotsResourceTest(BaseTenderWebTest):
                              }
                          ])
 
+    def test_try_merge_not_real_award(self):
+        """ Can't merge award which doesn't exist """
+        authorization = self.app.authorization
+        self.app.authorization = ('Basic', ('token', ''))  # set admin role
+        # create two awards
+        first_award_response = self.app.post_json('/tenders/{}/awards'.format(self.tender_id),
+                                                  {'data': {'suppliers': self.initial_bids[0]['tenderers'],
+                                                            'status': 'pending',
+                                                            'bid_id': self.initial_bids[0]['id'],
+                                                            'value': self.initial_bids[0]['lotValues'][0]['value'],
+                                                            'lotID': self.initial_bids[0]['lotValues'][0][
+                                                                'relatedLot']}})
+
+        second_award_response = self.app.post_json('/tenders/{}/awards'.format(self.tender_id),
+                                                   {'data': {'suppliers': self.initial_bids[0]['tenderers'],
+                                                             'status': 'pending',
+                                                             'bid_id': self.initial_bids[0]['id'],
+                                                             'value': self.initial_bids[0]['lotValues'][1]['value'],
+                                                             'lotID': self.initial_bids[0]['lotValues'][1][
+                                                                 'relatedLot']}})
+
+        first_award = first_award_response.json['data']
+        first_award_id = first_award['id']
+        second_award = second_award_response.json['data']
+        second_award_id = second_award['id']
+
+        self.app.authorization = authorization
+        self.app.patch_json(
+            '/tenders/{}/awards/{}?acc_token={}'.format(self.tender_id, first_award_id, self.tender_token),
+            {"data": {"status": "active"}})
+        self.app.patch_json(
+            '/tenders/{}/awards/{}?acc_token={}'.format(self.tender_id, second_award_id, self.tender_token),
+            {"data": {"status": "active"}})
+
+        response = self.app.get('/tenders/{}/contracts?acc_token={}'.format(self.tender_id, self.tender_token))
+        first_contract, second_contract = response.json['data']
+
+        # Try send not real award id
+        response = self.app.patch_json('/tenders/{}/contracts/{}?acc_token={}'.format(
+            self.tender_id, first_contract['id'], self.tender_token),
+            {"data": {"additionalAwardIDs": [{"id": uuid4().hex}]}},
+            status=422)
+
+        self.assertEqual(response.status, '422 Unprocessable Entity')
+        self.assertEqual(response.json['errors'],
+                         [
+                             {
+                                 "location": "body",
+                                 "name": "additionalAwardIDs",
+                                 "description": [
+                                     {
+                                         "id": ["id must be one of awards id"]
+                                     }
+                                 ]
+                             }
+                         ])
+
+    def test_try_merge_itself(self):
+        """ Can't merge contract if self contract """
+        authorization = self.app.authorization
+        self.app.authorization = ('Basic', ('token', ''))  # set admin role
+        # create two awards
+        first_award_response = self.app.post_json('/tenders/{}/awards'.format(self.tender_id),
+                                                  {'data': {'suppliers': self.initial_bids[0]['tenderers'],
+                                                            'status': 'pending',
+                                                            'bid_id': self.initial_bids[0]['id'],
+                                                            'value': self.initial_bids[0]['lotValues'][0]['value'],
+                                                            'lotID': self.initial_bids[0]['lotValues'][0][
+                                                                'relatedLot']}})
+
+        second_award_response = self.app.post_json('/tenders/{}/awards'.format(self.tender_id),
+                                                   {'data': {'suppliers': self.initial_bids[0]['tenderers'],
+                                                             'status': 'pending',
+                                                             'bid_id': self.initial_bids[0]['id'],
+                                                             'value': self.initial_bids[0]['lotValues'][1]['value'],
+                                                             'lotID': self.initial_bids[0]['lotValues'][1][
+                                                                 'relatedLot']}})
+
+        first_award = first_award_response.json['data']
+        first_award_id = first_award['id']
+        second_award = second_award_response.json['data']
+        second_award_id = second_award['id']
+
+        self.app.authorization = authorization
+        self.app.patch_json(
+            '/tenders/{}/awards/{}?acc_token={}'.format(self.tender_id, first_award_id, self.tender_token),
+            {"data": {"status": "active"}})
+        self.app.patch_json(
+            '/tenders/{}/awards/{}?acc_token={}'.format(self.tender_id, second_award_id, self.tender_token),
+            {"data": {"status": "active"}})
+
+        response = self.app.get('/tenders/{}/contracts?acc_token={}'.format(self.tender_id, self.tender_token))
+        first_contract, second_contract = response.json['data']
+
+        # Try send itself
+        response = self.app.patch_json('/tenders/{}/contracts/{}?acc_token={}'.format(
+            self.tender_id, first_contract['id'], self.tender_token),
+            {"data": {"additionalAwardIDs": [{"id": first_contract['awardID']}]}},
+            status=422)
+
+        self.assertEqual(response.status, '422 Unprocessable Entity')
+        self.assertEqual(response.json['errors'],
+                         [
+                             {
+                                 "location": "body",
+                                 "name": "additionalAwardIDs",
+                                 "description": ["Can't merge itself"]
+                             }
+                         ])
+
     def test_merge_two_contracts(self):
         """ Create two awards and merged them """
         authorization = self.app.authorization
@@ -114,42 +224,6 @@ class TenderMergedContracts2LotsResourceTest(BaseTenderWebTest):
         first_contract, second_contract = response.json['data']
 
         additionalAwardIDs = [{"id": second_contract['awardID']}]
-
-        # Try send not real award id
-        response = self.app.patch_json('/tenders/{}/contracts/{}?acc_token={}'.format(
-            self.tender_id, first_contract['id'], self.tender_token),
-            {"data": {"additionalAwardIDs": [{"id": uuid4().hex}]}},
-            status=422)
-
-        self.assertEqual(response.status, '422 Unprocessable Entity')
-        self.assertEqual(response.json['errors'],
-                         [
-                             {
-                                 "location": "body",
-                                 "name": "additionalAwardIDs",
-                                 "description": [
-                                     {
-                                         "id": ["id must be one of awards id"]
-                                     }
-                                 ]
-                             }
-                         ])
-
-        # Try send itself
-        response = self.app.patch_json('/tenders/{}/contracts/{}?acc_token={}'.format(
-            self.tender_id, first_contract['id'], self.tender_token),
-            {"data": {"additionalAwardIDs": [{"id": first_contract['awardID']}]}},
-            status=422)
-
-        self.assertEqual(response.status, '422 Unprocessable Entity')
-        self.assertEqual(response.json['errors'],
-                         [
-                             {
-                                 "location": "body",
-                                 "name": "additionalAwardIDs",
-                                 "description": ["Can't merge itself"]
-                             }
-                         ])
 
         response = self.app.patch_json('/tenders/{}/contracts/{}?acc_token={}'.format(
             self.tender_id, first_contract['id'], self.tender_token),
@@ -523,7 +597,7 @@ class TenderMergedContracts4LotsResourceTest(BaseTenderWebTest):
         self.assertEqual(fourth_contract["status"], "merged")
 
     def test_try_merge_main_contract(self):
-        """ Try merge contract which has additionalAwardIDs"""
+        """ Try merge contract which has additionalAwardIDs """
         authorization = self.app.authorization
         self.app.authorization = ('Basic', ('token', ''))  # set admin role
         # create two awards
@@ -548,7 +622,6 @@ class TenderMergedContracts4LotsResourceTest(BaseTenderWebTest):
         # get created contracts
         contract_response = self.app.get('/tenders/{}/contracts?acc_token={}'.format(self.tender_id, self.tender_token))
         first_additionalAwardIDs = [{"id": awards_response[1].json['data']['id']}]
-        second_additionalAwardIDs = [{"id": awards_response[3].json['data']['id']}]
 
         # Merge contracts
         response = self.app.patch_json('/tenders/{}/contracts/{}?acc_token={}'.format(
