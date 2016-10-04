@@ -863,19 +863,19 @@ class Contract(Model):
             awards = [award for award in data['__parent__'].awards if award['id'] in [v['id'] for v in value]]
             for additional_award in awards:
                 if additional_award['id'] == data['awardID']:
-                    raise ValidationError(u"Can't merge here self contract")
+                    raise ValidationError(u"Can't merge itself")
                 #  Check that for all addittional awards have contract
                 for contract in data['__parent__'].contracts:
                     if contract['awardID'] == additional_award['id']:
                         break
                 else:
-                    raise ValidationError(u"Not found contract for award {}".format(additional_award['id']))
+                    raise ValidationError(u"Can't found contract for award {}".format(additional_award['id']))
             # Check that all award suppliers id is the same
-            if len(set([award['suppliers'][0]['identifier']['id'] for award in awards])) > 1 or \
+            if len(set(award['suppliers'][0]['identifier']['id'] for award in awards)) > 1 or \
                     awards[0]['suppliers'][0]['identifier']['id'] != contract_award['suppliers'][0]['identifier']['id']:
                 raise ValidationError(u"Awards must have same suppliers id")
             # Check that all award suppliers schema is the same
-            if len(set([award['suppliers'][0]['identifier']['scheme'] for award in awards])) > 1 or \
+            if len(set(award['suppliers'][0]['identifier']['scheme'] for award in awards)) > 1 or \
                     awards[0]['suppliers'][0]['identifier']['scheme'] != contract_award['suppliers'][0]['identifier']['scheme']:
                 raise ValidationError(u"Awards must have same suppliers schema")
 
