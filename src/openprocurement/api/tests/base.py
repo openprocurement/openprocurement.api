@@ -135,7 +135,7 @@ test_features_tender_data["features"] = [
 test_bids = [
     {
         "tenderers": [
-            test_organization
+            deepcopy(test_organization)
         ],
         "value": {
             "amount": 469,
@@ -145,7 +145,7 @@ test_bids = [
     },
     {
         "tenderers": [
-            test_organization
+            deepcopy(test_organization)
         ],
         "value": {
             "amount": 479,

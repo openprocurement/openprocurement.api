@@ -8,6 +8,7 @@ from openprocurement.api.utils import (
     json_view,
     context_unpack,
     APIResource,
+    check_merged_contracts,
 )
 from openprocurement.api.validation import (
     validate_contract_data,
@@ -102,6 +103,8 @@ class TenderAwardContractResource(APIResource):
                 self.request.errors.add('body', 'data', 'Can\'t sign contract before reviewing all complaints')
                 self.request.errors.status = 403
                 return
+        if check_merged_contracts(self.request) is not None:
+            return
         contract_status = self.request.context.status
         apply_patch(self.request, save=False, src=self.request.context.serialize())
         if contract_status != self.request.context.status and (contract_status != 'pending' or self.request.context.status != 'active'):
