@@ -103,7 +103,7 @@ class TenderAwardContractResource(APIResource):
                 self.request.errors.add('body', 'data', 'Can\'t sign contract before reviewing all complaints')
                 self.request.errors.status = 403
                 return
-        if check_merged_contracts(self) is not None:
+        if check_merged_contracts(self.request) is not None:
             return
         contract_status = self.request.context.status
         apply_patch(self.request, save=False, src=self.request.context.serialize())

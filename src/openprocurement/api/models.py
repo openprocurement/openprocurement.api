@@ -806,19 +806,6 @@ class Cancellation(Model):
             raise ValidationError(u"relatedLot should be one of lots")
 
 
-class AwardID(Model):
-
-    id = MD5Type(required=True, default=lambda: uuid4().hex)
-
-    def validate_id(self, data, awardID):
-        awards = [award for award in data['__parent__']['__parent__'].awards if award['id'] == awardID]
-        if not awards:
-            raise ValidationError(u"id must be one of awards id")
-        else:
-            if awards[0]['status'] != 'active':
-                raise ValidationError(u"awards must has status active")
-
-
 class Contract(Model):
     class Options:
         roles = {
@@ -846,7 +833,7 @@ class Contract(Model):
     items = ListType(ModelType(Item))
     suppliers = ListType(ModelType(Organization), min_size=1, max_size=1)
     date = IsoDateTimeType()
-    additionalAwardIDs = ListType(ModelType(AwardID), default=list())
+    additionalAwardIDs = ListType(StringType, default=list())
     mergedInto = MD5Type()
 
     def validate_mergedInto(self, data, value):
@@ -860,11 +847,16 @@ class Contract(Model):
         if value and isinstance(data['__parent__'], Model):
             # Get all awards which in validate_additionalAwardIDs
             contract_award = [award for award in data['__parent__'].awards if award['id'] == data['awardID']][0]
-            awards = [award for award in data['__parent__'].awards if award['id'] in [v['id'] for v in value]]
+            awards = [award for award in data['__parent__'].awards if award['id'] in value]
+            if len(awards) < len(value):
+                raise ValidationError(u"id must be one of awards id")
             for additional_award in awards:
                 if additional_award['id'] == data['awardID']:
                     raise ValidationError(u"Can't merge itself")
-                #  Check that for all addittional awards have contract
+                # Check that award has status active
+                if additional_award['status'] != 'active':
+                    raise ValidationError(u"awards must has status active")
+                # Check that for all addittional awards have contract
                 for contract in data['__parent__'].contracts:
                     if contract['awardID'] == additional_award['id']:
                         break

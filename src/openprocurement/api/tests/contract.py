@@ -65,7 +65,7 @@ class TenderMergedContracts2LotsResourceTest(BaseTenderWebTest):
 
         response = self.app.patch_json('/tenders/{}/contracts/{}?acc_token={}'.format(
             self.tender_id, contracts[0]['id'], self.tender_token),
-            {"data": {"additionalAwardIDs": [{"id": second_award_id}]}},
+            {"data": {"additionalAwardIDs": [second_award_id]}},
             status=422)
 
         self.assertEqual(response.status, '422 Unprocessable Entity')
@@ -120,7 +120,7 @@ class TenderMergedContracts2LotsResourceTest(BaseTenderWebTest):
         # Try send not real award id
         response = self.app.patch_json('/tenders/{}/contracts/{}?acc_token={}'.format(
             self.tender_id, first_contract['id'], self.tender_token),
-            {"data": {"additionalAwardIDs": [{"id": uuid4().hex}]}},
+            {"data": {"additionalAwardIDs": [uuid4().hex]}},
             status=422)
 
         self.assertEqual(response.status, '422 Unprocessable Entity')
@@ -129,11 +129,7 @@ class TenderMergedContracts2LotsResourceTest(BaseTenderWebTest):
                              {
                                  "location": "body",
                                  "name": "additionalAwardIDs",
-                                 "description": [
-                                     {
-                                         "id": ["id must be one of awards id"]
-                                     }
-                                 ]
+                                 "description": ["id must be one of awards id"]
                              }
                          ])
 
@@ -177,7 +173,7 @@ class TenderMergedContracts2LotsResourceTest(BaseTenderWebTest):
         # Try send itself
         response = self.app.patch_json('/tenders/{}/contracts/{}?acc_token={}'.format(
             self.tender_id, first_contract['id'], self.tender_token),
-            {"data": {"additionalAwardIDs": [{"id": first_contract['awardID']}]}},
+            {"data": {"additionalAwardIDs": [first_contract['awardID']]}},
             status=422)
 
         self.assertEqual(response.status, '422 Unprocessable Entity')
@@ -196,18 +192,19 @@ class TenderMergedContracts2LotsResourceTest(BaseTenderWebTest):
         self.app.authorization = ('Basic', ('token', ''))  # set admin role
         # create two awards
         first_award_response = self.app.post_json('/tenders/{}/awards'.format(self.tender_id),
-                                      {'data': {'suppliers': self.initial_bids[0]['tenderers'],
-                                                'status': 'pending',
-                                                'bid_id': self.initial_bids[0]['id'],
-                                                'value': self.initial_bids[0]['lotValues'][0]['value'],
-                                                'lotID': self.initial_bids[0]['lotValues'][0]['relatedLot']}})
+                                                  {'data': {
+                                                      'suppliers': self.initial_bids[0]['tenderers'],
+                                                      'status': 'pending',
+                                                      'bid_id': self.initial_bids[0]['id'],
+                                                      'value': self.initial_bids[0]['lotValues'][0]['value'],
+                                                      'lotID': self.initial_bids[0]['lotValues'][0]['relatedLot']}})
 
         second_award_response = self.app.post_json('/tenders/{}/awards'.format(self.tender_id),
-                                      {'data': {'suppliers': self.initial_bids[0]['tenderers'],
-                                                'status': 'pending',
-                                                'bid_id': self.initial_bids[0]['id'],
-                                                'value': self.initial_bids[0]['lotValues'][1]['value'],
-                                                'lotID': self.initial_bids[0]['lotValues'][1]['relatedLot']}})
+                                                   {'data': {'suppliers': self.initial_bids[0]['tenderers'],
+                                                             'status': 'pending',
+                                                             'bid_id': self.initial_bids[0]['id'],
+                                                             'value': self.initial_bids[0]['lotValues'][1]['value'],
+                                                             'lotID': self.initial_bids[0]['lotValues'][1]['relatedLot']}})
 
         first_award = first_award_response.json['data']
         first_award_id = first_award['id']
@@ -223,7 +220,7 @@ class TenderMergedContracts2LotsResourceTest(BaseTenderWebTest):
         response = self.app.get('/tenders/{}/contracts?acc_token={}'.format(self.tender_id, self.tender_token))
         first_contract, second_contract = response.json['data']
 
-        additionalAwardIDs = [{"id": second_contract['awardID']}]
+        additionalAwardIDs = [second_contract['awardID']]
 
         response = self.app.patch_json('/tenders/{}/contracts/{}?acc_token={}'.format(
             self.tender_id, first_contract['id'], self.tender_token),
@@ -274,7 +271,7 @@ class TenderMergedContracts2LotsResourceTest(BaseTenderWebTest):
         first_contract, second_contract = response.json['data']
 
         # Try merge first contract to second
-        additionalAwardIDs = [{"id": second_contract['awardID']}]
+        additionalAwardIDs = [second_contract['awardID']]
         response = self.app.patch_json(
             '/tenders/{}/contracts/{}?acc_token={}'.format(self.tender_id, first_contract['id'], self.tender_token),
             {"data": {"additionalAwardIDs": additionalAwardIDs}},
@@ -338,7 +335,7 @@ class TenderMergedContracts2LotsResourceTest(BaseTenderWebTest):
         first_contract, second_contract = response.json['data']
 
         # Try merge first contract to second
-        additionalAwardIDs = [{"id": second_contract['awardID']}]
+        additionalAwardIDs = [second_contract['awardID']]
         response = self.app.patch_json(
             '/tenders/{}/contracts/{}?acc_token={}'.format(self.tender_id, first_contract['id'], self.tender_token),
             {"data": {"additionalAwardIDs": additionalAwardIDs}},
@@ -396,7 +393,7 @@ class TenderMergedContracts3LotsResourceTest(BaseTenderWebTest):
         response = self.app.get('/tenders/{}/contracts?acc_token={}'.format(self.tender_id, self.tender_token))
         first_contract, second_contract, third_contract = response.json['data']
 
-        additionalAwardIDs = [{"id": second_contract['awardID']}, {"id": third_contract['awardID']}]
+        additionalAwardIDs = [second_contract['awardID'], third_contract['awardID']]
 
         response = self.app.patch_json('/tenders/{}/contracts/{}?acc_token={}'.format(
             self.tender_id, first_contract['id'], self.tender_token),
@@ -441,7 +438,7 @@ class TenderMergedContracts3LotsResourceTest(BaseTenderWebTest):
         first_contract, second_contract = response.json['data']
 
         # for third award didn't create contract
-        additionalAwardIDs = [{"id": second_contract['awardID']}, {"id": awards_response[-1].json['data']['id']}]
+        additionalAwardIDs = [second_contract['awardID'], awards_response[-1].json['data']['id']]
 
         response = self.app.patch_json('/tenders/{}/contracts/{}?acc_token={}'.format(
             self.tender_id, first_contract['id'], self.tender_token),
@@ -454,11 +451,7 @@ class TenderMergedContracts3LotsResourceTest(BaseTenderWebTest):
                              {
                                  "location": "body",
                                  "name": "additionalAwardIDs",
-                                 "description": [
-                                     {
-                                         "id": ["awards must has status active"]
-                                     }
-                                 ]
+                                 "description": ["awards must has status active"]
                              }
                          ])
 
@@ -476,13 +469,6 @@ class TenderMergedContracts4LotsResourceTest(BaseTenderWebTest):
     initial_bids = prepare_bids(test_bids)
     initial_lots = deepcopy(4 * test_lots)
     initial_auth = ('Basic', ('broker', ''))
-
-    @classmethod
-    def tearDownClass(cls):
-        pass
-
-    def tearDown(self):
-        pass
 
     def test_merge_three_contracts(self):
         """ Create two awards and merged them """
@@ -509,7 +495,7 @@ class TenderMergedContracts4LotsResourceTest(BaseTenderWebTest):
 
         # get created contracts
         contract_response = self.app.get('/tenders/{}/contracts?acc_token={}'.format(self.tender_id, self.tender_token))
-        additionalAwardIDs = [{"id": award_response.json['data']['id']} for award_response in awards_response[1:]]
+        additionalAwardIDs = [award_response.json['data']['id'] for award_response in awards_response[1:]]
 
         response = self.app.patch_json('/tenders/{}/contracts/{}?acc_token={}'.format(
             self.tender_id, contract_response.json['data'][0]['id'], self.tender_token),
@@ -570,8 +556,8 @@ class TenderMergedContracts4LotsResourceTest(BaseTenderWebTest):
 
         # get created contracts
         contract_response = self.app.get('/tenders/{}/contracts?acc_token={}'.format(self.tender_id, self.tender_token))
-        first_additionalAwardIDs = [{"id": awards_response[1].json['data']['id']}]
-        second_additionalAwardIDs = [{"id": awards_response[3].json['data']['id']}]
+        first_additionalAwardIDs = [awards_response[1].json['data']['id']]
+        second_additionalAwardIDs = [awards_response[3].json['data']['id']]
 
         # Merge contracts
         response = self.app.patch_json('/tenders/{}/contracts/{}?acc_token={}'.format(
@@ -621,7 +607,7 @@ class TenderMergedContracts4LotsResourceTest(BaseTenderWebTest):
 
         # get created contracts
         contract_response = self.app.get('/tenders/{}/contracts?acc_token={}'.format(self.tender_id, self.tender_token))
-        first_additionalAwardIDs = [{"id": awards_response[1].json['data']['id']}]
+        first_additionalAwardIDs = [awards_response[1].json['data']['id']]
 
         # Merge contracts
         response = self.app.patch_json('/tenders/{}/contracts/{}?acc_token={}'.format(
@@ -631,7 +617,7 @@ class TenderMergedContracts4LotsResourceTest(BaseTenderWebTest):
         self.assertEqual(response.status, '200 OK')
         response = self.app.patch_json('/tenders/{}/contracts/{}?acc_token={}'.format(
             self.tender_id, contract_response.json['data'][2]['id'], self.tender_token),
-            {"data": {"additionalAwardIDs": [{"id": contract_response.json['data'][0]['awardID']}]}},
+            {"data": {"additionalAwardIDs": [contract_response.json['data'][0]['awardID']]}},
             status=403)
 
         self.assertEqual(response.status, '403 Forbidden')
@@ -670,8 +656,8 @@ class TenderMergedContracts4LotsResourceTest(BaseTenderWebTest):
 
         # get created contracts
         contract_response = self.app.get('/tenders/{}/contracts?acc_token={}'.format(self.tender_id, self.tender_token))
-        first_additionalAwardIDs = [{"id": awards_response[1].json['data']['id']}]
-        second_additionalAwardIDs = [{"id": awards_response[3].json['data']['id']}]
+        first_additionalAwardIDs = [awards_response[1].json['data']['id']]
+        second_additionalAwardIDs = [awards_response[3].json['data']['id']]
 
         # Merge contracts
         response = self.app.patch_json('/tenders/{}/contracts/{}?acc_token={}'.format(
@@ -697,7 +683,7 @@ class TenderMergedContracts4LotsResourceTest(BaseTenderWebTest):
         self.assertEqual(fourth_contract["status"], "merged")
 
         # Try merge contract which already merge
-        first_additionalAwardIDs.append({"id": awards_response[3].json['data']['id']})
+        first_additionalAwardIDs.append(awards_response[3].json['data']['id'])
         response = self.app.patch_json('/tenders/{}/contracts/{}?acc_token={}'.format(
             self.tender_id, contract_response.json['data'][0]['id'], self.tender_token),
             {"data": {"additionalAwardIDs": first_additionalAwardIDs}},
