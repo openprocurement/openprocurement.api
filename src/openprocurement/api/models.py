@@ -833,7 +833,7 @@ class Contract(Model):
     items = ListType(ModelType(Item))
     suppliers = ListType(ModelType(Organization), min_size=1, max_size=1)
     date = IsoDateTimeType()
-    additionalAwardIDs = ListType(StringType, default=list())
+    additionalAwardIDs = ListType(MD5Type, default=list())
     mergedInto = MD5Type()
 
     def validate_mergedInto(self, data, value):
