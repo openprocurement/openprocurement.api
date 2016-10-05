@@ -35,7 +35,7 @@ Schema
 :dateAnswered:
     string, :ref:`date`, auto-generated
 
-    Date of answer.
+    Date when answer has been provided.
 
 :answer:
     string
