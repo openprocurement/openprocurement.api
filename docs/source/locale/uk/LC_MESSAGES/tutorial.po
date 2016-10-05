@@ -1,10 +1,11 @@
 #
+# Zoriana Zaiats <sorenabell@quintagroup.com>, 2016.
 msgid ""
 msgstr ""
 "Project-Id-Version: openprocurement.api 0.1\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-09-21 15:42+0300\n"
-"PO-Revision-Date: 2016-09-21 16:20+0200\n"
+"POT-Creation-Date: 2016-10-05 09:58+0300\n"
+"PO-Revision-Date: 2016-10-05 10:44+0200\n"
 "Last-Translator: Zoriana Zaiats <sorenabell@quintagroup.com>\n"
 "Language-Team: Ukrainian <info@quintagroup.com>\n"
 "MIME-Version: 1.0\n"
@@ -269,11 +270,11 @@ msgstr ""
 
 #: ../../source/tutorial.rst:190
 msgid "Bidder can register a bid in `draft` status:"
-msgstr "Учасник може зареєструвати ставку у статусі `draft` (чернетка):"
+msgstr "Учасник може зареєструвати пропозицію у статусі `draft` (чернетка):"
 
 #: ../../source/tutorial.rst:195
 msgid "And activate a bid:"
-msgstr "І активувати пропозицію:"
+msgstr "Та активувати пропозицію:"
 
 #: ../../source/tutorial.rst:200
 msgid "And upload proposal document:"
@@ -420,7 +421,7 @@ msgstr "Тепер переглянемо знову усі документи �
 
 #: ../../source/tutorial.rst:302
 msgid "Set contract signature date"
-msgstr "Встановити дату підписання договору"
+msgstr "Встановити дату підписання угоди"
 
 #: ../../source/tutorial.rst:304
 msgid ""
@@ -510,22 +511,4 @@ msgstr "Завантаження нової версії документа"
 msgid "Activating the request and cancelling tender"
 msgstr "Активація запиту та скасування закупівлі"
 
-#: ../../source/tutorial.rst:190
-msgid "Bidder can register a bid in `draft` status:"
-msgstr "Учасник може зареєструвати ставку у статусі `draft` (чернетка):"
 
-#: ../../source/tutorial.rst:195
-msgid "And activate a bid:"
-msgstr "І активувати ставку:"
-
-#: ../../source/tutorial.rst:302
-msgid "Set contract signature date"
-msgstr "Встановити дату підписання договору"
-
-#: ../../source/tutorial.rst:304
-msgid ""
-"There is a possibility to set custom contract signature date. If the date is"
-" not set it will be generated on contract registration."
-msgstr ""
-"Є можливість встановити дату підписання договору. Якщо дата не"
-" встановлена, то вона буде згенерована під час реєстрації договору."
