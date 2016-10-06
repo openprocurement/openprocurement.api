@@ -327,7 +327,10 @@ def save_tender(request):
         if getattr(tender, 'modified', True):
             tender.dateModified = now
         try:
-            tender.store(request.registry.db)
+            tender.validate()
+            # if not request.params.get('dry_run'):
+            if not request.registry.dry_run:
+                tender.store(request.registry.db, validate=False)
         except ModelValidationError, e:
             for i in e.message:
                 request.errors.add('body', i, e.message[i])

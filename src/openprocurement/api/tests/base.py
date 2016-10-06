@@ -199,6 +199,11 @@ test_features = [
     }
 ]
 
+test_public_tender_data = test_tender_data.copy()
+test_public_tender_data.update({'id': uuid4().hex, 'status': 'active.enquiries', 'tenderID': 'UA-X', 'dateModified': now.isoformat()})
+
+test_public_features_tender_data = test_features_tender_data.copy()
+test_public_features_tender_data.update({'id': uuid4().hex, 'status': 'active.enquiries', 'tenderID': 'UA-X', 'dateModified': now.isoformat()})
 
 class PrefixedRequestClass(webtest.app.TestRequest):
 
@@ -495,3 +500,54 @@ class BaseTenderWebTest(BaseWebTest):
             self.tearDownDS()
         del self.db[self.tender_id]
         super(BaseTenderWebTest, self).tearDown()
+
+
+class DryRunTenderBaseWebTest(BaseTenderWebTest):
+    initial_data = test_public_tender_data
+
+    @classmethod
+    def setUpClass(cls):
+        while True:
+            try:
+                cls.app = webtest.TestApp("config:tests_dry_run.ini", relative_to=cls.relative_to)
+            except:
+                pass
+            else:
+                break
+        cls.app.RequestClass = PrefixedRequestClass
+        cls.couchdb_server = cls.app.app.registry.couchdb_server
+        cls.db = cls.app.app.registry.db
+        cls.db_name = cls.db.name
+
+    def create_tender(self):
+        data = deepcopy(self.initial_data)
+        self.tender_id = data['_id'] = data['id'] = uuid4().hex
+        data['doc_type'] = "Tender"
+        if self.initial_lots:
+            lots = []
+            for i in self.initial_lots:
+                lot = deepcopy(i)
+                lot['id'] = uuid4().hex
+                lots.append(lot)
+            data['lots'] = self.initial_lots = lots
+            for i, item in enumerate(data['items']):
+                item['relatedLot'] = lots[i % len(lots)]['id']
+        if self.initial_bids:
+            bids = []
+            for i in self.initial_bids:
+                if self.initial_lots:
+                    i = i.copy()
+                    i['id'] = uuid4().hex
+                    value = i.pop('value')
+                    i['lotValues'] = [
+                        {
+                            'value': value,
+                            'relatedLot': l['id'],
+                        }
+                        for l in self.initial_lots
+                    ]
+                bids.append(i)
+            data['bids'] = bids
+        self.db.save(data)
+        if self.initial_status != data['status']:
+            self.set_status(self.initial_status)

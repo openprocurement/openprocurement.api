@@ -178,6 +178,7 @@ def main(global_config, **settings):
     config.registry.server_id = settings.get('id', '')
     config.registry.health_threshold = float(settings.get('health_threshold', 99))
     config.registry.update_after = asbool(settings.get('update_after', True))
+    config.registry.dry_run = asbool(settings.get('dry_run', False))
     return config.make_wsgi_app()
 
 
