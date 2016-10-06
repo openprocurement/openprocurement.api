@@ -14,7 +14,9 @@ from schematics.types.serializable import serializable
 from uuid import uuid4
 from barbecue import vnmax
 from zope.interface import implementer, Interface
-
+from urlparse import urlparse, parse_qs
+from string import hexdigits
+from hashlib import algorithms, new as hash_new
 
 STAND_STILL_TIME = timedelta(days=2)
 COMPLAINT_STAND_STILL_TIME = timedelta(days=3)
@@ -357,17 +359,47 @@ class Item(Model):
         if relatedLot and isinstance(data['__parent__'], Model) and relatedLot not in [i.id for i in get_tender(data['__parent__']).lots]:
             raise ValidationError(u"relatedLot should be one of lots")
 
+class HashType(StringType):
+
+    MESSAGES = {
+        'hash_invalid': "Hash type is not supported.",
+        'hash_length': "Hash value is wrong length.",
+        'hash_hex': "Hash value is not hexadecimal.",
+    }
+
+    def to_native(self, value, context=None):
+        value = super(HashType, self).to_native(value, context)
+
+        if ':' not in value:
+            raise ValidationError(self.messages['hash_invalid'])
+
+        hash_type, hash_value = value.split(':', 1)
+
+        if hash_type not in algorithms:
+            raise ValidationError(self.messages['hash_invalid'])
+
+        if len(hash_value) != hash_new(hash_type).digest_size * 2:
+            raise ValidationError(self.messages['hash_length'])
+        try:
+            int(hash_value, 16)
+        except ValueError:
+            raise ConversionError(self.messages['hash_hex'])
+        return value
+
 
 class Document(Model):
     class Options:
         roles = {
-            'edit': blacklist('id', 'url', 'datePublished', 'dateModified', ''),
-            'embedded': schematics_embedded_role,
+            'create': blacklist('id', 'datePublished', 'dateModified', 'author', 'download_url'),
+            'edit': blacklist('id', 'url', 'datePublished', 'dateModified', 'author', 'hash', 'download_url'),
+            'embedded': (blacklist('url', 'download_url') + schematics_embedded_role),
+            'default': blacklist("__parent__"),
             'view': (blacklist('revisions') + schematics_default_role),
             'revisions': whitelist('url', 'dateModified'),
         }
 
     id = MD5Type(required=True, default=lambda: uuid4().hex)
+    hash = HashType()
     documentType = StringType(choices=[
         'tenderNotice', 'awardNotice', 'contractNotice',
         'notice', 'biddingDocuments', 'technicalSpecifications',
@@ -379,20 +411,51 @@ class Document(Model):
         'eligibilityCriteria', 'contractProforma', 'commercialProposal',
         'qualificationDocuments', 'eligibilityDocuments',
     ])
-    title = StringType()  # A title of the document.
+    title = StringType(required=True)  # A title of the document.
     title_en = StringType()
     title_ru = StringType()
     description = StringType()  # A description of the document.
     description_en = StringType()
     description_ru = StringType()
-    format = StringType(regex='^[-\w]+/[-\.\w\+]+$')
-    url = StringType()  # Link to the document or attachment.
+    format = StringType(required=True, regex='^[-\w]+/[-\.\w\+]+$')
+    url = StringType(required=True)  # Link to the document or attachment.
     datePublished = IsoDateTimeType(default=get_now)
     dateModified = IsoDateTimeType(default=get_now)  # Date that the document was last dateModified
     language = StringType()
     documentOf = StringType(required=True, choices=['tender', 'item', 'lot'], default='tender')
     relatedItem = MD5Type()
     author = StringType()
+
+    @serializable(serialized_name="url")
+    def download_url(self):
+        url = self.url
+        if not url or '?download=' not in url:
+            return url
+        doc_id = parse_qs(urlparse(url).query)['download'][-1]
+        root = self.__parent__
+        parents = []
+        while root.__parent__ is not None:
+            parents[0:0] = [root]
+            root = root.__parent__
+        request = root.request
+        if not request.registry.docservice_url:
+            return url
+        if 'status' in parents[0] and parents[0].status in type(parents[0])._options.roles:
+            role = parents[0].status
+            for index, obj in enumerate(parents):
+                if obj.id != url.split('/')[(index - len(parents)) * 2 - 1]:
+                    break
+                field = url.split('/')[(index - len(parents)) * 2]
+                if "_" in field:
+                    field = field[0] + field.title().replace("_", "")[1:]
+                roles = type(obj)._options.roles
+                if roles[role if role in roles else 'default'](field, []):
+                    return url
+        from openprocurement.api.utils import generate_docservice_url
+        if not self.hash:
+            path = [i for i in urlparse(url).path.split('/') if len(i) == 32 and not set(i).difference(hexdigits)]
+            return generate_docservice_url(request, doc_id, False, '{}/{}'.format(path[0], path[-1]))
+        return generate_docservice_url(request, doc_id, False)
 
     def import_data(self, raw_data, **kw):
         """
