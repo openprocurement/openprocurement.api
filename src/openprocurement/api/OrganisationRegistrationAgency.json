@@ -26,8 +26,8 @@
          "code":"AE-AFZ",
          "name":"Ajman Free Zone Authority",
          "url":"http://www.afz.gov.ae/",
-         "description":"Use Authority's website to find its address, email and call center contacts.",
-         "public-database":false
+         "public-database":false,
+         "description":"Use Authority's website to find its address, email and call center contacts."
       },
       {
          "category":"AE",
@@ -166,12 +166,28 @@
          "description":"The Registry of the Francophone Brussels Commercial Court"
       },
       {
+         "category":"BY",
+         "code":"BY-UNP",
+         "name":"Unified State Register of Legal Entities and Individual Entrepreneurs (Ministry of Justice of the Republic of Belarus)",
+         "url":"http://egr.gov.by/egrn/index.jsp?language=en",
+         "public-database":true,
+         "description":"Information is available only in Belarusian language, contains Registration number, Registration authority, Date of registration, etc."
+      },
+      {
          "category":"CA",
          "code":"CA-CRA_ACR",
          "name":"Canadian Revenue Agency / Agence du revenu du Canada",
          "url":"http://www.cra-arc.gc.ca/",
          "public-database":true,
          "description":"CRA_ACR is legal requirement for bilingual use"
+      },
+      {
+         "category":"CH",
+         "code":"CH-ZEFIX",
+         "name":"Swiss Commercial Register (via Zefix)",
+         "url":"http://www.zefix.ch/",
+         "public-database":true,
+         "description":"The Federal Office of Justice maintains Zefix for the purpose of accessing the companies decentrally recorded in the cantonal databases. Access to general company information is free of charge. The entries and changes in the Commercial Registry are published in the Swiss Official Gazette of Commerce and on the Internet (http://zefix.admin.ch/shab)."
       },
       {
          "category":"CN",
@@ -638,12 +654,36 @@
          "description":"Every business entry in Poland is assigned an ID in 3 different registries:business, court, and tax. This is the court register."
       },
       {
+         "category":"RO",
+         "code":"RO-CUI",
+         "name":"National Trade Register Office, Ministry of Finance",
+         "url":"http://www.mfinante.ro/pjuridice.html?pagina=domenii",
+         "public-database":true,
+         "description":null
+      },
+      {
          "category":"RS",
          "code":"RS-APR",
          "name":"Serbian Business Registrations Agency (APR)",
          "url":"http://www.apr.gov.rs/eng/Home.aspx",
          "public-database":true,
          "description":"The SBRA runs business registers as single, centralized, public electronic databases."
+      },
+      {
+         "category":"RU",
+         "code":"RU-INN",
+         "name":"Uniform State Register of Legal Entities of Russian Federation",
+         "url":"https://russianpartner.biz/",
+         "public-database":true,
+         "description":null
+      },
+      {
+         "category":"RU",
+         "code":"RU-OGRN",
+         "name":"Uniform State Register of Legal Entities of Russian Federation",
+         "url":"https://russianpartner.biz/",
+         "public-database":true,
+         "description":null
       },
       {
          "category":"SE",
