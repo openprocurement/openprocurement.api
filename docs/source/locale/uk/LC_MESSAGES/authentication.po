@@ -89,5 +89,3 @@ msgstr "`access.token` в тілі запитів POST/PUT/PATCH"
 #: ../../source/authentication.rst:39
 msgid "See the example of the action with token passed as URL query string:"
 msgstr "Ось приклад, де токен передається як рядок URL запиту:"
-
-

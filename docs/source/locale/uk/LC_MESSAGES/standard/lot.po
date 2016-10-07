@@ -1,5 +1,4 @@
 #
-# Zoriana Zaiats <sorenabell@quintagroup.com>, 2016.
 msgid ""
 msgstr ""
 "Project-Id-Version: openprocurement.api 0.8.1\n"
@@ -126,5 +125,3 @@ msgstr "Скасовано лот закупівлі (скасовано)"
 #: ../../source/standard/lot.rst:71
 msgid "Status of the Lot."
 msgstr "Статус лота."
-
-

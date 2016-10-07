@@ -1,5 +1,4 @@
 #
-# Zoriana Zaiats <sorenabell@quintagroup.com>, 2016.
 msgid ""
 msgstr ""
 "Project-Id-Version: openprocurement.api 0.10\n"
@@ -383,5 +382,3 @@ msgstr "`tenderPeriod.startDate`"
 #: ../../source/standard/tender.rst:196
 msgid "`tenderPeriod.endDate`"
 msgstr "`tenderPeriod.endDate`"
-
-

@@ -1,5 +1,4 @@
 #
-# Zoriana Zaiats <sorenabell@quintagroup.com>, 2016.
 msgid ""
 msgstr ""
 "Project-Id-Version: openprocurement.api 0.12a1\n"
@@ -62,7 +61,4 @@ msgstr ""
 "встановити значення ``quick`` для параметра `submissionMethodDetails`. "
 "Цей параметр працює тільки з `mode` зі значенням ``test`` і пришвидшує "
 "дату початку аукціону."
-
-#~ msgid ""
-#~ msgstr ""
 

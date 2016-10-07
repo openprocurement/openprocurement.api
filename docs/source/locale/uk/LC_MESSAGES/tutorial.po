@@ -1,5 +1,4 @@
 #
-# Zoriana Zaiats <sorenabell@quintagroup.com>, 2016.
 msgid ""
 msgstr ""
 "Project-Id-Version: openprocurement.api 0.1\n"
@@ -510,5 +509,3 @@ msgstr "Завантаження нової версії документа"
 #: ../../source/tutorial.rst:362
 msgid "Activating the request and cancelling tender"
 msgstr "Активація запиту та скасування закупівлі"
-
-
