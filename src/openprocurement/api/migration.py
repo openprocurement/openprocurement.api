@@ -697,10 +697,14 @@ def from22to23(registry):
         doc = i.doc
         model = registry.tender_procurementMethodTypes.get(doc['procurementMethodType'])
         if model:
-            tender = model(doc)
-            tender.__parent__ = root
-            doc = tender.to_primitive()
-            docs.append(doc)
+            try:
+                tender = model(doc)
+                tender.__parent__ = root
+                doc = tender.to_primitive()
+            except:
+                LOGGER.error("Failed migration of tender {} to schema 23.".format(doc['id']), extra={'MESSAGE_ID': 'migrate_data_failed', 'TENDER_ID': doc['id']})
+            else:
+                docs.append(doc)
         if len(docs) >= 2 ** 7:
             result = registry.db.update(docs)
             docs = []
