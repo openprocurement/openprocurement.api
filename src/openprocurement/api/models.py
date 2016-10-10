@@ -338,7 +338,7 @@ class Item(Model):
     description_en = StringType()
     description_ru = StringType()
     classification = ModelType(CPVClassification, required=True)
-    additionalClassifications = ListType(ModelType(Classification), default=list(), required=True, min_size=1)
+    additionalClassifications = ListType(ModelType(Classification))
     unit = ModelType(Unit)  # Description of the unit which the good comes in e.g. hours, kilograms
     quantity = IntType()  # The number of units required
     deliveryDate = ModelType(Period)
