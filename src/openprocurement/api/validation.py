@@ -273,7 +273,8 @@ def validate_patch_lot_data(request):
 
 
 def validate_document_data(request):
-    model = type(request.validated['db_doc']).documents.model_class
+    context = request.context if 'documents' in request.context else request.context.__parent__
+    model = type(context).documents.model_class
     return validate_data(request, model)
 
 
