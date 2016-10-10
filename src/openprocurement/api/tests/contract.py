@@ -359,6 +359,68 @@ class TenderMergedContracts2LotsResourceTest(BaseTenderWebTest):
         self.assertNotIn('mergedInto', second_contract)
         self.assertNotEqual(second_contract['status'], 'merged')
 
+    def test_set_big_value(self):
+        """ Create two awards and merged them """
+        authorization = self.app.authorization
+        self.app.authorization = ('Basic', ('token', ''))  # set admin role
+        # create two awards
+        first_award_response = self.app.post_json('/tenders/{}/awards'.format(self.tender_id),
+                                                  {'data': {
+                                                      'suppliers': self.initial_bids[0]['tenderers'],
+                                                      'status': 'pending',
+                                                      'bid_id': self.initial_bids[0]['id'],
+                                                      'value': self.initial_bids[0]['lotValues'][0]['value'],
+                                                      'lotID': self.initial_bids[0]['lotValues'][0]['relatedLot']}})
+
+        second_award_response = self.app.post_json('/tenders/{}/awards'.format(self.tender_id),
+                                                   {'data': {'suppliers': self.initial_bids[0]['tenderers'],
+                                                             'status': 'pending',
+                                                             'bid_id': self.initial_bids[0]['id'],
+                                                             'value': self.initial_bids[0]['lotValues'][1]['value'],
+                                                             'lotID': self.initial_bids[0]['lotValues'][1][
+                                                                 'relatedLot']}})
+
+        first_award = first_award_response.json['data']
+        first_award_id = first_award['id']
+        second_award = second_award_response.json['data']
+        second_award_id = second_award['id']
+
+        self.app.authorization = authorization
+        self.app.patch_json(
+            '/tenders/{}/awards/{}?acc_token={}'.format(self.tender_id, first_award_id, self.tender_token),
+            {"data": {"status": "active"}})
+        self.app.patch_json(
+            '/tenders/{}/awards/{}?acc_token={}'.format(self.tender_id, second_award_id, self.tender_token),
+            {"data": {"status": "active"}})
+
+        response = self.app.get('/tenders/{}/contracts?acc_token={}'.format(self.tender_id, self.tender_token))
+        first_contract, second_contract = response.json['data']
+
+        additionalAwardIDs = [second_contract['awardID']]
+
+        response = self.app.patch_json('/tenders/{}/contracts/{}?acc_token={}'.format(
+            self.tender_id, first_contract['id'], self.tender_token),
+            {"data": {"additionalAwardIDs": additionalAwardIDs}})
+
+        self.assertEqual(response.status, '200 OK')
+
+        response = self.app.get('/tenders/{}/contracts?acc_token={}'.format(
+            self.tender_id, self.tender_token))
+        first_contract, second_contract = response.json['data']
+
+        self.assertEqual(first_contract["additionalAwardIDs"], additionalAwardIDs)
+        self.assertEqual(first_contract['id'], second_contract['mergedInto'])
+        self.assertEqual(second_contract['status'], 'merged')
+
+        max_value = first_contract["value"]["amount"] + second_award["value"]["amount"]
+        response = self.app.patch_json('/tenders/{}/contracts/{}?acc_token={}'.format(
+            self.tender_id, first_contract['id'], self.tender_token),
+            {"data": {"value": {"amount": max_value + 0.1}}}, status=403)
+
+        self.assertEqual(response.status, '403 Forbidden')
+        self.assertEqual(response.json['errors'][0]["description"],
+                         "Value amount should be less or equal to awarded amount ({value:.1f})".format(value=max_value))
+
 
 class TenderMergedContracts3LotsResourceTest(BaseTenderWebTest):
     initial_status = 'active.qualification'
