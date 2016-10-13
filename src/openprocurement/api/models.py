@@ -27,6 +27,7 @@ schematics_embedded_role = SchematicsDocument.Options.roles['embedded'] + blackl
 schematics_default_role = SchematicsDocument.Options.roles['default'] + blacklist("__parent__")
 
 TZ = timezone(os.environ['TZ'] if 'TZ' in os.environ else 'Europe/Kiev')
+CANT_DELETE_PERIOD_START_DATE_FROM = datetime(2016, 9, 23, tzinfo=TZ)
 
 
 def get_now():
@@ -276,6 +277,13 @@ class LotAuctionPeriod(Period):
 
 class PeriodEndRequired(Period):
     endDate = IsoDateTimeType(required=True)  # The end date for the period.
+
+    def validate_startDate(self, data, period):
+        if period and data.get('endDate') and data.get('endDate') < period:
+            raise ValidationError(u"period should begin before its end")
+        tender = get_tender(data['__parent__'])
+        if tender.get('revisions') and tender['revisions'][0].date > CANT_DELETE_PERIOD_START_DATE_FROM and not period:
+            raise ValidationError([u'This field cannot be deleted'])
 
 
 class Classification(Model):
@@ -1030,7 +1038,7 @@ draft_role = whitelist('status')
 edit_role = (blacklist('status', 'procurementMethodType', 'lots', 'transfer_token', 'owner_token', 'owner', '_attachments', 'revisions', 'date', 'dateModified', 'doc_id', 'tenderID', 'bids', 'documents', 'awards', 'questions', 'complaints', 'auctionUrl', 'auctionPeriod', 'awardPeriod', 'procurementMethod', 'awardCriteria', 'submissionMethod', 'mode', 'cancellations') + schematics_embedded_role)
 view_role = (blacklist('transfer_token', 'owner_token', '_attachments', 'revisions') + schematics_embedded_role)
 listing_role = whitelist('dateModified', 'doc_id')
-auction_view_role = whitelist('tenderID', 'dateModified', 'bids', 'auctionPeriod', 'minimalStep', 'auctionUrl', 'features', 'lots')
+auction_view_role = whitelist('tenderID', 'dateModified', 'bids', 'items', 'auctionPeriod', 'minimalStep', 'auctionUrl', 'features', 'lots')
 auction_post_role = whitelist('bids')
 auction_patch_role = whitelist('auctionUrl', 'bids', 'lots')
 enquiries_role = (blacklist('transfer_token', 'owner_token', '_attachments', 'revisions', 'bids', 'numberOfBids') + schematics_embedded_role)
@@ -1147,6 +1155,7 @@ class Tender(SchematicsDocument, Model):
     create_accreditation = 1
     edit_accreditation = 2
     procuring_entity_kinds = ['general', 'special', 'defense', 'other']
+    block_complaint_status = ['claim', 'answered', 'pending']
 
     __name__ = ''
 
@@ -1214,34 +1223,47 @@ class Tender(SchematicsDocument, Model):
                     checks.append(lot.auctionPeriod.startDate.astimezone(TZ))
                 elif now < calc_auction_end_time(lot.numberOfBids, lot.auctionPeriod.startDate).astimezone(TZ):
                     checks.append(calc_auction_end_time(lot.numberOfBids, lot.auctionPeriod.startDate).astimezone(TZ))
-        elif not self.lots and self.status == 'active.awarded':
+        elif not self.lots and self.status == 'active.awarded' and not any([
+                i.status in self.block_complaint_status
+                for i in self.complaints
+            ]) and not any([
+                i.status in self.block_complaint_status
+                for a in self.awards
+                for i in a.complaints
+            ]):
             standStillEnds = [
                 a.complaintPeriod.endDate.astimezone(TZ)
                 for a in self.awards
                 if a.complaintPeriod.endDate
             ]
-            if standStillEnds:
-                standStillEnd = max(standStillEnds)
-                if standStillEnd > now:
-                    checks.append(standStillEnd)
-        elif self.lots and self.status in ['active.qualification', 'active.awarded']:
-            lots_ends = []
+            last_award_status = self.awards[-1].status if self.awards else ''
+            if standStillEnds and last_award_status == 'unsuccessful':
+                checks.append(max(standStillEnds))
+        elif self.lots and self.status in ['active.qualification', 'active.awarded'] and not any([
+                i.status in self.block_complaint_status and i.relatedLot is None
+                for i in self.complaints
+            ]):
             for lot in self.lots:
                 if lot['status'] != 'active':
                     continue
                 lot_awards = [i for i in self.awards if i.lotID == lot.id]
+                pending_complaints = any([
+                    i['status'] in self.block_complaint_status and i.relatedLot == lot.id
+                    for i in self.complaints
+                ])
+                pending_awards_complaints = any([
+                    i.status in self.block_complaint_status
+                    for a in lot_awards
+                    for i in a.complaints
+                ])
                 standStillEnds = [
                     a.complaintPeriod.endDate.astimezone(TZ)
                     for a in lot_awards
                     if a.complaintPeriod.endDate
                 ]
-                if not standStillEnds:
-                    continue
-                standStillEnd = max(standStillEnds)
-                if standStillEnd > now:
-                    lots_ends.append(standStillEnd)
-            if lots_ends:
-                checks.append(min(lots_ends))
+                last_award_status = lot_awards[-1].status if lot_awards else ''
+                if not pending_complaints and not pending_awards_complaints and standStillEnds and last_award_status == 'unsuccessful':
+                    checks.append(max(standStillEnds))
         if self.status.startswith('active'):
             from openprocurement.api.utils import calculate_business_date
             for complaint in self.complaints:

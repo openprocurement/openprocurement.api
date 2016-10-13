@@ -641,6 +641,7 @@ class TenderMultipleLotAuctionResourceTest(TenderAuctionResourceTest):
         self.assertIn('dateModified', auction)
         self.assertIn('minimalStep', auction)
         self.assertIn('lots', auction)
+        self.assertIn('items', auction)
         self.assertNotIn("procuringEntity", auction)
         self.assertNotIn("tenderers", auction["bids"][0])
         self.assertEqual(auction["bids"][0]['lotValues'][0]['value']['amount'], self.initial_bids[0]['lotValues'][0]['value']['amount'])
