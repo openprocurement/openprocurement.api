@@ -16,6 +16,13 @@ from openprocurement.api.validation import (
 )
 
 
+def set_pending(contracts):
+    """ Set status pending and delete mergedInto in contracts """
+    for contract in contracts:
+        contract['status'] = 'pending'
+        del contract['mergedInto']
+
+
 @opresource(name='Tender Awards',
             collection_path='/tenders/{tender_id}/awards',
             path='/tenders/{tender_id}/awards/{award_id}',
@@ -321,7 +328,16 @@ class TenderAwardResource(APIResource):
                     j.dateCanceled = now
             for i in tender.contracts:
                 if i.awardID == award.id:
+                    if i.status == 'merged':  # Find contract and remove from additionalAwardIDs
+                        main_contract = [c for c in tender.contracts if c['id'] == i.mergedInto][0]
+                        main_contract['additionalAwardIDs'].pop(main_contract['additionalAwardIDs'].index(i.awardID))
+                        del i['mergedInto']
+                    if 'additionalAwardIDs' in i:  # if cancelled contract has additionalAwardIDs
+                        set_pending((contract for contract in tender.contracts
+                                     if contract['awardID'] in i['additionalAwardIDs']))
+                        del i['additionalAwardIDs']  # delete additionalAwardIDs from cancelled contract
                     i.status = 'cancelled'
+                    break
             add_next_award(self.request)
         elif award_status == 'pending' and award.status == 'unsuccessful':
             award.complaintPeriod.endDate = calculate_business_date(get_now(), STAND_STILL_TIME, tender, True)
