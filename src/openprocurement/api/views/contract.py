@@ -24,13 +24,15 @@ from openprocurement.api.validation import (
 class TenderAwardContractResource(APIResource):
 
     @staticmethod
-    def award_valid(request, awardID):
+    def award_valid(request, awardID, additional=False):
         tender = request.validated['tender']
         award = [a for a in tender.awards if a.id == awardID][0]
         stand_still_end = award.complaintPeriod.endDate
         if stand_still_end > get_now():
-            request.errors.add('body', 'data', 'Can\'t sign contract before stand-still period end ({})'.format(
-                stand_still_end.isoformat()))
+            error_message = 'Can\'t sign contract before stand-still{additional} period end ({end_date})'.format(
+                additional=" additional awards" if additional else "",
+                end_date=stand_still_end.isoformat())
+            request.errors.add('body', 'data', error_message)
             request.errors.status = 403
             return False
         pending_complaints = [
@@ -45,7 +47,9 @@ class TenderAwardContractResource(APIResource):
             if i.status in ['claim', 'answered', 'pending'] and a.lotID == award.lotID
             ]
         if pending_complaints or pending_awards_complaints:
-            request.errors.add('body', 'data', 'Can\'t sign contract before reviewing all complaints')
+            error_message = 'Can\'t sign contract before reviewing all{additional} complaints'.format(
+                additional=" additional")
+            request.errors.add('body', 'data', error_message)
             request.errors.status = 403
             return False
         return True
@@ -118,7 +122,7 @@ class TenderAwardContractResource(APIResource):
             if not self.award_valid(self.request, self.request.context.awardID):  # check main contract
                 return
             for awardID in contract.get('additionalAwardIDs'):
-                if not self.award_valid(self.request, awardID):  # if get errors then return them
+                if not self.award_valid(self.request, awardID, additional=True):  # if get errors then return them
                     return
         if check_merged_contracts(self.request) is not None:
             return
