@@ -170,7 +170,7 @@ def main(global_config, **settings):
             connection.create_bucket(bucket_name, location=Location.EU)
         config.registry.bucket_name = bucket_name
     config.registry.server_id = settings.get('id', '')
-    config.registry.health_threshold = float(settings.get('health_threshold', 99))
+    config.registry.health_threshold_revisions = float(settings.get('health_threshold_revisions', 512))
     config.registry.update_after = asbool(settings.get('update_after', True))
     return config.make_wsgi_app()
 
