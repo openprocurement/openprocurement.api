@@ -2145,7 +2145,6 @@ class TenderContractResourceTest(BaseTenderWebTest):
         ])
 
     def test_create_tender_contract(self):
-        now = datetime.now()
         response = self.app.post_json('/tenders/{}/contracts'.format(
             self.tender_id), {'data': {'title': 'contract title', 'description': 'contract description', 'awardID': self.award_id, 'value': self.award_value, 'suppliers': self.award_suppliers}})
         self.assertEqual(response.status, '201 Created')
