@@ -882,6 +882,9 @@ class Contract(Model):
                 raise ValidationError(u"Contract signature date should be after award complaint period end date ({})".format(award.complaintPeriod.endDate.isoformat()))
             if value > get_now():
                 raise ValidationError(u"Contract signature date can't be in the future")
+            for additional_award in [award for award in data['__parent__'].awards if award['id'] in data['additionalAwardIDs']]:
+                if additional_award.complaintPeriod.endDate >= value:
+                    raise ValidationError(u"Contract signature date should be after additional awards complaint period end date ({})".format(additional_award.complaintPeriod.endDate.isoformat()))
 
 
 class Award(Model):

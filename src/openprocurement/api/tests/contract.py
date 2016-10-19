@@ -301,7 +301,7 @@ class TenderMergedContracts2LotsResourceTest(BaseTenderWebTest):
         # Try set status active for main contract
         response = self.app.patch_json("/tenders/{}/contracts/{}?acc_token={}".format(
             self.tender_id, first_contract['id'], self.tender_token),
-            {"data": {"dateSigned": dateSigned, "status": "active"}},
+            {"data": {"status": "active"}},
             status=403)
         self.assertEqual(response.status, '403 Forbidden')
         self.assertIn("Can't sign contract before stand-still additional awards period end",
@@ -321,6 +321,93 @@ class TenderMergedContracts2LotsResourceTest(BaseTenderWebTest):
 
         self.assertEqual(response.status, '200 OK')
         self.assertEqual(response.json['data']['status'], 'active')
+        self.assertEqual(response.json['data']['dateSigned'], dateSigned)
+
+    def test_additional_awards_dateSigned(self):
+        """ Try set dateSigned before end complaint period for additional awards """
+        authorization = self.app.authorization
+        self.app.authorization = ('Basic', ('token', ''))  # set admin role
+        # create two awards
+        first_award_response = self.app.post_json('/tenders/{}/awards'.format(self.tender_id),
+                                                  {'data': {
+                                                      'suppliers': self.initial_bids[0]['tenderers'],
+                                                      'status': 'pending',
+                                                      'bid_id': self.initial_bids[0]['id'],
+                                                      'value': self.initial_bids[0]['lotValues'][0]['value'],
+                                                      'lotID': self.initial_bids[0]['lotValues'][0]['relatedLot']}})
+
+        second_award_response = self.app.post_json('/tenders/{}/awards'.format(self.tender_id),
+                                                   {'data': {'suppliers': self.initial_bids[0]['tenderers'],
+                                                             'status': 'pending',
+                                                             'bid_id': self.initial_bids[0]['id'],
+                                                             'value': self.initial_bids[0]['lotValues'][1]['value'],
+                                                             'lotID': self.initial_bids[0]['lotValues'][1][
+                                                                 'relatedLot']}})
+
+        first_award = first_award_response.json['data']
+        first_award_id = first_award['id']
+        second_award = second_award_response.json['data']
+        second_award_id = second_award['id']
+
+        self.app.authorization = authorization
+        self.app.patch_json(
+            '/tenders/{}/awards/{}?acc_token={}'.format(self.tender_id, first_award_id, self.tender_token),
+            {"data": {"status": "active"}})
+        self.app.patch_json(
+            '/tenders/{}/awards/{}?acc_token={}'.format(self.tender_id, second_award_id, self.tender_token),
+            {"data": {"status": "active"}})
+
+        response = self.app.get('/tenders/{}/contracts?acc_token={}'.format(self.tender_id, self.tender_token))
+        first_contract, second_contract = response.json['data']
+
+        additionalAwardIDs = [second_contract['awardID']]
+
+        response = self.app.patch_json('/tenders/{}/contracts/{}?acc_token={}'.format(
+            self.tender_id, first_contract['id'], self.tender_token),
+            {"data": {"additionalAwardIDs": additionalAwardIDs}})
+
+        self.assertEqual(response.status, '200 OK')
+
+        response = self.app.get('/tenders/{}/contracts?acc_token={}'.format(
+            self.tender_id, self.tender_token))
+        first_contract, second_contract = response.json['data']
+
+        self.assertEqual(first_contract["additionalAwardIDs"], additionalAwardIDs)
+        self.assertEqual(first_contract['id'], second_contract['mergedInto'])
+        self.assertEqual(second_contract['status'], 'merged')
+
+        # Update complaintPeriod for additional award
+        tender = self.db.get(self.tender_id)
+        now = get_now()
+        tender['awards'][0]['complaintPeriod'] = {"startDate": (now - timedelta(days=1)).isoformat(),
+                                                  "endDate": (now - timedelta(days=1)).isoformat()}
+        tender['awards'][1]['complaintPeriod'] = {"startDate": (now + timedelta(days=1)).isoformat(),
+                                                  "endDate": (now + timedelta(days=1)).isoformat()}
+        self.db.save(tender)
+
+        dateSigned = get_now().isoformat()
+        # Try set status active for main contract
+        response = self.app.patch_json("/tenders/{}/contracts/{}?acc_token={}".format(
+            self.tender_id, first_contract['id'], self.tender_token),
+            {"data": {"dateSigned": dateSigned}},
+            status=422)
+        self.assertEqual(response.status, '422 Unprocessable Entity')
+        self.assertIn("Contract signature date should be after additional awards complaint period end date ",
+                      response.json['errors'][0]['description'][0])
+
+        tender = self.db.get(self.tender_id)
+        now = get_now()
+        tender['awards'][0]['complaintPeriod'] = {"startDate": (now - timedelta(days=1)).isoformat(),
+                                                  "endDate": (now - timedelta(days=1)).isoformat()}
+        tender['awards'][1]['complaintPeriod'] = {"startDate": (now - timedelta(days=1)).isoformat(),
+                                                  "endDate": (now - timedelta(days=1)).isoformat()}
+        self.db.save(tender)
+        # Try set status active for main contract
+        response = self.app.patch_json("/tenders/{}/contracts/{}?acc_token={}".format(
+            self.tender_id, first_contract['id'], self.tender_token),
+            {"data": {"dateSigned": dateSigned}})
+
+        self.assertEqual(response.status, '200 OK')
         self.assertEqual(response.json['data']['dateSigned'], dateSigned)
 
     def test_activate_contract_with_complaint(self):
@@ -905,7 +992,7 @@ class TenderMergedContracts3LotsResourceTest(BaseTenderWebTest):
         # Try set status active for main contract
         response = self.app.patch_json("/tenders/{}/contracts/{}?acc_token={}".format(
             self.tender_id, first_contract['id'], self.tender_token),
-            {"data": {"dateSigned": dateSigned, "status": "active"}},
+            {"data": {"status": "active"}},
             status=403)
         self.assertEqual(response.status, '403 Forbidden')
         self.assertIn("Can't sign contract before stand-still additional awards period end",
@@ -1316,6 +1403,89 @@ class TenderMergedContracts3LotsResourceTest(BaseTenderWebTest):
         self.assertNotIn('additionalAwardIDs', first_contract)
         self.assertNotIn('mergedInto', second_contract)
         self.assertNotEqual(second_contract["status"], "merged")
+
+    def test_additional_awards_dateSigned(self):
+        """ Try set dateSigned before end complaint period for additional awards """
+        authorization = self.app.authorization
+        self.app.authorization = ('Basic', ('token', ''))  # set admin role
+        # create two awards
+        awards_response = list()
+        for i in range(len(self.initial_lots)):
+            awards_response.append(
+                self.app.post_json('/tenders/{}/awards'.format(self.tender_id),
+                                   {'data': {'suppliers': self.initial_bids[0]['tenderers'],
+                                             'status': 'pending',
+                                             'bid_id': self.initial_bids[0]['id'],
+                                             'value': self.initial_bids[0]['lotValues'][i]['value'],
+                                             'lotID': self.initial_bids[0]['lotValues'][i]['relatedLot']}}))
+
+        self.app.authorization = authorization
+
+        # active all awards
+        for award in awards_response:
+            self.app.patch_json('/tenders/{}/awards/{}?acc_token={}'.format(
+                self.tender_id, award.json['data']['id'], self.tender_token),
+                {"data": {"status": "active"}})
+
+        # get created contracts
+        response = self.app.get('/tenders/{}/contracts?acc_token={}'.format(self.tender_id, self.tender_token))
+        first_contract, second_contract, third_contract = response.json['data']
+
+        additionalAwardIDs = [second_contract['awardID'], third_contract['awardID']]
+
+        response = self.app.patch_json('/tenders/{}/contracts/{}?acc_token={}'.format(
+            self.tender_id, first_contract['id'], self.tender_token),
+            {"data": {"additionalAwardIDs": additionalAwardIDs}})
+
+        self.assertEqual(response.status, '200 OK')
+
+        # Get contracts and check fields
+        response = self.app.get('/tenders/{}/contracts?acc_token={}'.format(self.tender_id, self.tender_token))
+
+        first_contract, second_contract, third_contract = response.json['data']
+        self.assertEqual(first_contract["additionalAwardIDs"], additionalAwardIDs)
+        self.assertEqual(first_contract["id"], second_contract["mergedInto"])
+        self.assertEqual(first_contract["id"], third_contract["mergedInto"])
+        self.assertEqual(second_contract["status"], "merged")
+        self.assertEqual(third_contract["status"], "merged")
+
+        # Update complaintPeriod for additional award
+        tender = self.db.get(self.tender_id)
+        now = get_now()
+        tender['awards'][0]['complaintPeriod'] = {"startDate": (now - timedelta(days=1)).isoformat(),
+                                                  "endDate": (now - timedelta(days=1)).isoformat()}
+        tender['awards'][1]['complaintPeriod'] = {"startDate": (now - timedelta(days=1)).isoformat(),
+                                                  "endDate": (now - timedelta(days=1)).isoformat()}
+        tender['awards'][2]['complaintPeriod'] = {"startDate": (now + timedelta(days=1)).isoformat(),
+                                                  "endDate": (now + timedelta(days=1)).isoformat()}
+        self.db.save(tender)
+
+        dateSigned = get_now().isoformat()
+        # Try set status active for main contract
+        response = self.app.patch_json("/tenders/{}/contracts/{}?acc_token={}".format(
+            self.tender_id, first_contract['id'], self.tender_token),
+            {"data": {"dateSigned": dateSigned}},
+            status=422)
+        self.assertEqual(response.status, '422 Unprocessable Entity')
+        self.assertIn("Contract signature date should be after additional awards complaint period end date",
+                      response.json['errors'][0]['description'][0])
+
+        tender = self.db.get(self.tender_id)
+        now = get_now()
+        tender['awards'][0]['complaintPeriod'] = {"startDate": (now - timedelta(days=1)).isoformat(),
+                                                  "endDate": (now - timedelta(days=1)).isoformat()}
+        tender['awards'][1]['complaintPeriod'] = {"startDate": (now - timedelta(days=1)).isoformat(),
+                                                  "endDate": (now - timedelta(days=1)).isoformat()}
+        tender['awards'][2]['complaintPeriod'] = {"startDate": (now - timedelta(days=1)).isoformat(),
+                                                  "endDate": (now - timedelta(days=1)).isoformat()}
+        self.db.save(tender)
+        # Try set status active for main contract
+        response = self.app.patch_json("/tenders/{}/contracts/{}?acc_token={}".format(
+            self.tender_id, first_contract['id'], self.tender_token),
+            {"data": {"dateSigned": dateSigned}})
+
+        self.assertEqual(response.status, '200 OK')
+        self.assertEqual(response.json['data']['dateSigned'], dateSigned)
 
 
 class TenderMergedContracts4LotsResourceTest(BaseTenderWebTest):
@@ -2056,6 +2226,115 @@ class TenderMergedContracts4LotsResourceTest(BaseTenderWebTest):
             {"data": {"dateSigned": dateSigned, "status": "active"}})
 
         self.assertEqual(response.json['data']['status'], 'active')
+        self.assertEqual(response.json['data']['dateSigned'], dateSigned)
+
+    def test_additional_awards_dateSigned(self):
+        """ Try set dateSigned before end complaint period for additional awards """
+        authorization = self.app.authorization
+        self.app.authorization = ('Basic', ('token', ''))  # set admin role
+        # create two awards
+        awards_response = list()
+        for i in range(len(self.initial_lots)):
+            awards_response.append(
+                self.app.post_json('/tenders/{}/awards'.format(self.tender_id),
+                                   {'data': {'suppliers': self.initial_bids[0]['tenderers'],
+                                             'status': 'pending',
+                                             'bid_id': self.initial_bids[0]['id'],
+                                             'value': self.initial_bids[0]['lotValues'][i]['value'],
+                                             'lotID': self.initial_bids[0]['lotValues'][i]['relatedLot']}}))
+
+        self.app.authorization = authorization
+
+        # active all awards
+        for award in awards_response:
+            self.app.patch_json('/tenders/{}/awards/{}?acc_token={}'.format(
+                self.tender_id, award.json['data']['id'], self.tender_token),
+                {"data": {"status": "active"}})
+
+        # get created contracts
+        contract_response = self.app.get('/tenders/{}/contracts?acc_token={}'.format(self.tender_id, self.tender_token))
+        first_additionalAwardIDs = [awards_response[1].json['data']['id']]
+        second_additionalAwardIDs = [awards_response[3].json['data']['id']]
+
+        # Merge contracts
+        response = self.app.patch_json('/tenders/{}/contracts/{}?acc_token={}'.format(
+            self.tender_id, contract_response.json['data'][0]['id'], self.tender_token),
+            {"data": {"additionalAwardIDs": first_additionalAwardIDs}})
+
+        self.assertEqual(response.status, '200 OK')
+        response = self.app.patch_json('/tenders/{}/contracts/{}?acc_token={}'.format(
+            self.tender_id, contract_response.json['data'][2]['id'], self.tender_token),
+            {"data": {"additionalAwardIDs": second_additionalAwardIDs}})
+
+        self.assertEqual(response.status, '200 OK')
+
+        # Get contracts and check fields
+        response = self.app.get('/tenders/{}/contracts?acc_token={}'.format(self.tender_id, self.tender_token))
+
+        first_contract, second_contract, third_contract, fourth_contract = response.json['data']
+        self.assertEqual(first_contract["additionalAwardIDs"], first_additionalAwardIDs)
+        self.assertEqual(third_contract["additionalAwardIDs"], second_additionalAwardIDs)
+        self.assertEqual(first_contract["id"], second_contract["mergedInto"])
+        self.assertEqual(third_contract["id"], fourth_contract["mergedInto"])
+        self.assertEqual(second_contract["status"], "merged")
+        self.assertEqual(fourth_contract["status"], "merged")
+
+        # Update complaintPeriod for additional award
+        tender = self.db.get(self.tender_id)
+        now = get_now()
+        tender['awards'][0]['complaintPeriod'] = {"startDate": (now - timedelta(days=1)).isoformat(),
+                                                  "endDate": (now - timedelta(days=1)).isoformat()}
+        tender['awards'][1]['complaintPeriod'] = {"startDate": (now + timedelta(days=1)).isoformat(),
+                                                  "endDate": (now + timedelta(days=1)).isoformat()}
+        tender['awards'][2]['complaintPeriod'] = {"startDate": (now - timedelta(days=1)).isoformat(),
+                                                  "endDate": (now - timedelta(days=1)).isoformat()}
+        tender['awards'][3]['complaintPeriod'] = {"startDate": (now + timedelta(days=1)).isoformat(),
+                                                  "endDate": (now + timedelta(days=1)).isoformat()}
+        self.db.save(tender)
+
+        dateSigned = get_now().isoformat()
+        # Try set status active for first main contract
+        response = self.app.patch_json("/tenders/{}/contracts/{}?acc_token={}".format(
+            self.tender_id, first_contract['id'], self.tender_token),
+            {"data": {"dateSigned": dateSigned}},
+            status=422)
+        self.assertEqual(response.status, '422 Unprocessable Entity')
+        self.assertIn("Contract signature date should be after additional awards complaint period end date",
+                      response.json['errors'][0]['description'][0])
+
+        tender = self.db.get(self.tender_id)
+        now = get_now()
+        tender['awards'][1]['complaintPeriod'] = {"startDate": (now - timedelta(days=1)).isoformat(),
+                                                  "endDate": (now - timedelta(days=1)).isoformat()}
+        self.db.save(tender)
+        # Try now set status active for first main contract
+        response = self.app.patch_json("/tenders/{}/contracts/{}?acc_token={}".format(
+            self.tender_id, first_contract['id'], self.tender_token),
+            {"data": {"dateSigned": dateSigned}})
+
+        self.assertEqual(response.status, '200 OK')
+        self.assertEqual(response.json['data']['dateSigned'], dateSigned)
+
+        # Try set status active for second main contract
+        response = self.app.patch_json("/tenders/{}/contracts/{}?acc_token={}".format(
+            self.tender_id, third_contract['id'], self.tender_token),
+            {"data": {"dateSigned": dateSigned}},
+            status=422)
+        self.assertEqual(response.status, '422 Unprocessable Entity')
+        self.assertIn("Contract signature date should be after additional awards complaint period end date",
+                      response.json['errors'][0]['description'][0])
+
+        tender = self.db.get(self.tender_id)
+        now = get_now()
+        tender['awards'][3]['complaintPeriod'] = {"startDate": (now - timedelta(days=1)).isoformat(),
+                                                  "endDate": (now - timedelta(days=1)).isoformat()}
+        self.db.save(tender)
+        # Try set status active for main contract
+        response = self.app.patch_json("/tenders/{}/contracts/{}?acc_token={}".format(
+            self.tender_id, third_contract['id'], self.tender_token),
+            {"data": {"dateSigned": dateSigned}})
+
+        self.assertEqual(response.status, '200 OK')
         self.assertEqual(response.json['data']['dateSigned'], dateSigned)
 
 
