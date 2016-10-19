@@ -48,7 +48,7 @@ class TenderAwardContractResource(APIResource):
             ]
         if pending_complaints or pending_awards_complaints:
             error_message = 'Can\'t sign contract before reviewing all{additional} complaints'.format(
-                additional=" additional")
+                additional=" additional" if additional else "")
             request.errors.add('body', 'data', error_message)
             request.errors.status = 403
             return False
