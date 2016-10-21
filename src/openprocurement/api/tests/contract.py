@@ -236,6 +236,25 @@ class TenderMergedContracts2LotsResourceTest(BaseTenderWebTest):
         self.assertEqual(first_contract['id'], second_contract['mergedInto'])
         self.assertEqual(second_contract['status'], 'merged')
 
+        # set stand still period
+        tender = self.db.get(self.tender_id)
+        now = get_now()
+        tender['awards'][0]['complaintPeriod'] = {"startDate": (now - timedelta(days=1)).isoformat(),
+                                                  "endDate": (now - timedelta(days=1)).isoformat()}
+        tender['awards'][1]['complaintPeriod'] = {"startDate": (now - timedelta(days=1)).isoformat(),
+                                                  "endDate": (now - timedelta(days=1)).isoformat()}
+        self.db.save(tender)
+
+        # Set status active for first contract
+        response = self.app.patch_json('/tenders/{}/contracts/{}?acc_token={}'.format(
+            self.tender_id, first_contract['id'], self.tender_token),
+            {'data': {'status': 'active'}})
+
+        self.assertEqual(response.json['data']['status'], 'active')
+        # and check tender status
+        response = self.app.get('/tenders/{}'.format(self.tender_id))
+        self.assertEqual(response.json['data']['status'], 'complete')
+
     def test_standstill_period(self):
         """ Create two awards and merged them and try set status active for main
             contract while additional award has stand still period  """
@@ -930,6 +949,24 @@ class TenderMergedContracts3LotsResourceTest(BaseTenderWebTest):
         self.assertEqual(second_contract["status"], "merged")
         self.assertEqual(third_contract["status"], "merged")
 
+        # set stand still period
+        tender = self.db.get(self.tender_id)
+        now = get_now()
+        for award in tender['awards']:
+            award['complaintPeriod'] = {"startDate": (now - timedelta(days=1)).isoformat(),
+                                        "endDate": (now - timedelta(days=1)).isoformat()}
+        self.db.save(tender)
+
+        # Set status active for first contract
+        response = self.app.patch_json('/tenders/{}/contracts/{}?acc_token={}'.format(
+            self.tender_id, first_contract['id'], self.tender_token),
+            {'data': {'status': 'active'}})
+
+        self.assertEqual(response.json['data']['status'], 'active')
+        # and check tender status
+        response = self.app.get('/tenders/{}'.format(self.tender_id))
+        self.assertEqual(response.json['data']['status'], 'complete')
+
     def test_standstill_period(self):
         """ Create two awards and merged them and try set status active for main
             contract while additional award has stand still period  """
@@ -1556,6 +1593,69 @@ class TenderMergedContracts4LotsResourceTest(BaseTenderWebTest):
         self.assertNotEqual(third_contract["status"], "merged")
         self.assertNotEqual(fourth_contract["status"], "merged")
 
+    def test_sign_contract(self):
+        """ Create four awards and merged them and sign main contracts """
+        authorization = self.app.authorization
+        self.app.authorization = ('Basic', ('token', ''))  # set admin role
+        # create two awards
+        awards_response = list()
+        for i in range(len(self.initial_lots)):
+            awards_response.append(
+                self.app.post_json('/tenders/{}/awards'.format(self.tender_id),
+                                   {'data': {'suppliers': self.initial_bids[0]['tenderers'],
+                                             'status': 'pending',
+                                             'bid_id': self.initial_bids[0]['id'],
+                                             'value': self.initial_bids[0]['lotValues'][i]['value'],
+                                             'lotID': self.initial_bids[0]['lotValues'][i]['relatedLot']}}))
+
+        self.app.authorization = authorization
+
+        # active all awards
+        for award in awards_response:
+            self.app.patch_json('/tenders/{}/awards/{}?acc_token={}'.format(
+                self.tender_id, award.json['data']['id'], self.tender_token),
+                {"data": {"status": "active"}})
+
+        # get created contracts
+        contract_response = self.app.get('/tenders/{}/contracts?acc_token={}'.format(self.tender_id, self.tender_token))
+        additionalAwardIDs = [award_response.json['data']['id'] for award_response in awards_response[1:]]
+
+        response = self.app.patch_json('/tenders/{}/contracts/{}?acc_token={}'.format(
+            self.tender_id, contract_response.json['data'][0]['id'], self.tender_token),
+            {"data": {"additionalAwardIDs": additionalAwardIDs}})
+
+        self.assertEqual(response.status, '200 OK')
+
+        # Get contracts and check fields
+        response = self.app.get('/tenders/{}/contracts?acc_token={}'.format(self.tender_id, self.tender_token))
+
+        first_contract, second_contract, third_contract, fourth_contract = response.json['data']
+        self.assertEqual(first_contract["additionalAwardIDs"], additionalAwardIDs)
+        self.assertEqual(first_contract["id"], second_contract["mergedInto"])
+        self.assertEqual(first_contract["id"], third_contract["mergedInto"])
+        self.assertEqual(first_contract["id"], fourth_contract["mergedInto"])
+        self.assertEqual(second_contract["status"], "merged")
+        self.assertEqual(third_contract["status"], "merged")
+        self.assertEqual(fourth_contract["status"], "merged")
+
+        # set stand still period
+        tender = self.db.get(self.tender_id)
+        now = get_now()
+        for award in tender['awards']:
+            award['complaintPeriod'] = {"startDate": (now - timedelta(days=1)).isoformat(),
+                                        "endDate": (now - timedelta(days=1)).isoformat()}
+        self.db.save(tender)
+
+        # Set status active for first contract
+        response = self.app.patch_json('/tenders/{}/contracts/{}?acc_token={}'.format(
+            self.tender_id, first_contract['id'], self.tender_token),
+            {'data': {'status': 'active'}})
+
+        self.assertEqual(response.json['data']['status'], 'active')
+        # and check tender status
+        response = self.app.get('/tenders/{}'.format(self.tender_id))
+        self.assertEqual(response.json['data']['status'], 'complete')
+
     def test_cancel_award(self):
         """ Create two awards and merged them and then cancel both """
         authorization = self.app.authorization
@@ -1880,6 +1980,33 @@ class TenderMergedContracts4LotsResourceTest(BaseTenderWebTest):
         self.assertEqual(third_contract["id"], fourth_contract["mergedInto"])
         self.assertEqual(second_contract["status"], "merged")
         self.assertEqual(fourth_contract["status"], "merged")
+
+        # set stand still period
+        tender = self.db.get(self.tender_id)
+        now = get_now()
+        for award in tender['awards']:
+            award['complaintPeriod'] = {"startDate": (now - timedelta(days=1)).isoformat(),
+                                        "endDate": (now - timedelta(days=1)).isoformat()}
+        self.db.save(tender)
+
+        # Set status active for first contract
+        response = self.app.patch_json('/tenders/{}/contracts/{}?acc_token={}'.format(
+            self.tender_id, first_contract['id'], self.tender_token),
+            {'data': {'status': 'active'}})
+
+        self.assertEqual(response.json['data']['status'], 'active')
+        # and check tender status, tender must have status 'active.awarded;
+        response = self.app.get('/tenders/{}'.format(self.tender_id))
+        self.assertNotEqual(response.json['data']['status'], 'complete')
+
+        # set status active for first contract
+        response = self.app.patch_json('/tenders/{}/contracts/{}?acc_token={}'.format(
+            self.tender_id, third_contract['id'], self.tender_token),
+            {'data': {'status': 'active'}})
+
+        # and check tender status
+        response = self.app.get('/tenders/{}'.format(self.tender_id))
+        self.assertEqual(response.json['data']['status'], 'complete')
 
     def test_try_merge_main_contract(self):
         """ Try merge contract which has additionalAwardIDs """

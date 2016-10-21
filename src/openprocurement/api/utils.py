@@ -387,6 +387,12 @@ def check_status(request):
                 return
 
 
+def get_award_by_id(tender, awardID):
+    for award in tender.awards:
+        if award.id == awardID:
+            return award
+
+
 def check_tender_status(request):
     tender = request.validated['tender']
     now = get_now()
@@ -424,7 +430,11 @@ def check_tender_status(request):
                 LOGGER.info('Switched lot {} of tender {} to {}'.format(lot.id, tender.id, 'complete'),
                             extra=context_unpack(request, {'MESSAGE_ID': 'switched_lot_complete'}, {'LOT_ID': lot.id}))
                 lot.status = 'complete'
-        statuses = set([lot.status for lot in tender.lots])
+        statuses = set([lot.status
+                        for lot in tender.lots
+                        if lot.id not in [get_award_by_id(tender, contract['awardID'])['lotID']
+                                          for contract in tender.contracts
+                                          if contract.status == 'merged']])
         if statuses == set(['cancelled']):
             LOGGER.info('Switched tender {} to {}'.format(tender.id, 'cancelled'),
                         extra=context_unpack(request, {'MESSAGE_ID': 'switched_tender_cancelled'}))
