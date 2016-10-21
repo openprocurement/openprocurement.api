@@ -13,11 +13,9 @@ msgstr ""
 "Language: uk\n"
 "X-Generator: Poedit 1.8.5\n"
 
-#: ../../source/lots.rst:4
 msgid "Tenders with multiple Lots"
 msgstr "Багатолотові закупівлі"
 
-#: ../../source/lots.rst:34
 msgid ""
 "Multilot Tender shares general documentation, and can have lot-specific and "
 "even item-specific documentation."
@@ -25,7 +23,6 @@ msgstr ""
 "Багатолотова закупівля може мати документацію для процедури в цілому, "
 "окремо для лота та окремо для елемента."
 
-#: ../../source/lots.rst:54
 msgid ""
 "The same applies to :ref:`Questions <question>` and answers. Question "
 "placed in Tender can be general, lot-specific or item-specific."
@@ -33,7 +30,6 @@ msgstr ""
 "Те саме стосується і :ref:`запитань <question>` та відповідей. Питання може "
 "бути по процедурі в цілому, окремо для лота та окремо для елемента."
 
-#: ../../source/lots.rst:57
 msgid ""
 "When bidding, provider can place bid against single lot, multiple lots or "
 "even all lots of the tender."
@@ -41,7 +37,6 @@ msgstr ""
 "На торгах учасник може подавати пропозицію для одного лота, декількох "
 "лотів, або навіть для всіх лотів закупівлі."
 
-#: ../../source/lots.rst:77
 msgid ""
 "Each of the :ref:`documents <document>` attached to the :ref:`Bid` can be "
 "general, lot-specific or item-specific."
@@ -49,29 +44,23 @@ msgstr ""
 "Кожен :ref:`документ <document>`, вкладений до :ref:`пропозиції <bid>`, "
 "може стосуватись процедури в цілому, окремого лота або окремого елемента."
 
-#: ../../source/lots.rst:82
 msgid ""
 "Each Lot can be cancelled individually, not affecting processes that take "
 "place in other lots."
 msgstr "Кожен лот можна скасувати окремо, не впливаючи на інші лоти."
 
-#: ../../source/lots.rst:86
 msgid "Announcing Multilot tender"
 msgstr "Оголошення багатолотової закупівлі"
 
-#: ../../source/lots.rst:131
 msgid "2nd lot:"
 msgstr "Другий лот:"
 
-#: ../../source/lots.rst:144
 msgid "Items should be distributed among the lots."
 msgstr "Елементи повинні бути розподілені по лотах."
 
-#: ../../source/lots.rst:161
 msgid "Bidding in Multilot tender"
 msgstr "Подання пропозицій у багатолотовій закупівлі"
 
-#: ../../source/lots.rst:163
 msgid ""
 "Bid should have `lotValues` property consisting of multiple :ref:`LotValue` "
 "objects.  Each should reference lot the bid is placed against via "
@@ -81,11 +70,9 @@ msgstr ""
 "декількох об’єктів :ref:`LotValue`. Кожен з них повинен посилатись на лот, "
 "до якого подана пропозиція, через властивість `relatedLot`."
 
-#: ../../source/lots.rst:194
 msgid "Qualification in Multilot tender"
 msgstr "Кваліфікація у багатолотових закупівлях"
 
-#: ../../source/lots.rst:6
 msgid ""
 "When having tender with separate items that can be supplied by different "
 "providers it is possible to split the tender into :ref:`Lots <lot>`.  Each "
@@ -95,11 +82,9 @@ msgstr ""
 "різних постачальників, то можна розділити цю процедуру закупівлі на :ref:"
 "`лоти <lot>`. Кожен лот має свій власний бюджет (`Lot.value`)."
 
-#: ../../source/lots.rst:80
 msgid "Each Lot has its own auction and awarding process."
 msgstr "Кожен лот має окремий аукціон та процес визначення переможця."
 
-#: ../../source/lots.rst:88
 msgid ""
 "One has to create Multilot tender in several steps. There should be tender "
 "created with items."
@@ -107,18 +92,15 @@ msgstr ""
 "Багатолотова закупівля створюється в декілька кроків. Спочатку потрібно "
 "створити закупівлю з декількома елементами."
 
-#: ../../source/lots.rst:118
 msgid "Then all lots have to be added to Tender with separate requests."
 msgstr "Потім потрібно додати всі лоти окремими запитами."
 
-#: ../../source/lots.rst:191
 msgid ""
 "Auction participation URLs are available for each of the submitted lots."
 msgstr ""
 "URL-адреси для участі в аукціоні будуть доступні для кожного з поданих "
 "лотів."
 
-#: ../../source/lots.rst:196
 msgid ""
 "After Auctions are over each active lot has its own awarding process "
 "started. I.e.  there are multiple award objects created in :ref:`Tender` "
@@ -129,7 +111,6 @@ msgstr ""
 "об’єктів визначення переможця і кожен з них вимагає рішення "
 "(дискваліфікації чи прийняття)."
 
-#: ../../source/lots.rst:228
 msgid ""
 "When all qualification processes end, and all stand still periods end, the "
 "whole tender switch state to either `complete` or `unsuccessful` (if awads "
@@ -139,7 +120,6 @@ msgstr ""
 "зупинок, вся закупівля змінює статус або на \"завершена\", або на \"не "
 "відбулась\" (якщо визначення переможців для всіх лотів `не відбулись`)."
 
-#: ../../source/lots.rst:10
 msgid ""
 "For more information read `Tender with multiple lots <http://"
 "openprocurement.org/en/multilots.html>`_."

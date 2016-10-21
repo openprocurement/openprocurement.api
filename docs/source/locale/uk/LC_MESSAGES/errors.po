@@ -17,11 +17,9 @@ msgstr ""
 "=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
 "X-Generator: Lokalize 2.0\n"
 
-#: ../../source/errors.rst:4
 msgid "Responses"
 msgstr "Відповіді"
 
-#: ../../source/errors.rst:6
 msgid ""
 "After processing API always provides response, reporting either success "
 "or failure."
@@ -29,11 +27,9 @@ msgstr ""
 "Після обробки API завжди надає відповідь, звітуючи або про успіх, або про"
 " помилку."
 
-#: ../../source/errors.rst:10
 msgid "Status Codes"
 msgstr "Коди стану"
 
-#: ../../source/errors.rst:11
 msgid ""
 "In all cases, the API should return an `HTTP Status Code "
 "<http://en.wikipedia.org/wiki/List_of_HTTP_status_codes>`_ that indicates"
@@ -45,11 +41,9 @@ msgstr ""
 "вказуватиме природу помилки (див. внизу), з тілом відповіді у форматі "
 "JSON, що міститиме додаткову інформацію."
 
-#: ../../source/errors.rst:18
 msgid "200"
 msgstr "200"
 
-#: ../../source/errors.rst:17
 msgid ""
 "Success. If data was requested, it will be available in the `data` field "
 "at the top level of the response body."
@@ -57,11 +51,9 @@ msgstr ""
 "Успіх. Якщо це був запит про інформацію, то вона буде доступна у `data` "
 "полі на верхньому рівні тіла відповіді."
 
-#: ../../source/errors.rst:24
 msgid "201"
 msgstr "201"
 
-#: ../../source/errors.rst:21
 msgid ""
 "Success (for object creation). Its information is available in the `data`"
 " field at the top level of the response body.  The API URL where the "
@@ -72,11 +64,9 @@ msgstr ""
 "відповіді. API URL, де об’єкт можна прочитати, міститься у `Location` "
 "заголовку відповіді."
 
-#: ../../source/errors.rst:29
 msgid "400"
 msgstr "400"
 
-#: ../../source/errors.rst:27
 msgid ""
 "Invalid request. This usually occurs because of a missing or malformed "
 "parameter.  Check the documentation and the syntax of your request and "
@@ -86,11 +76,9 @@ msgstr ""
 "неправильний параметр. Перевірте документацію та синтаксис вашого запиту "
 "і спробуйте ще раз."
 
-#: ../../source/errors.rst:33
 msgid "401"
 msgstr "401"
 
-#: ../../source/errors.rst:32
 msgid ""
 "No authorization. A valid API key was not provided with the request, so "
 "the API could not associate a user with the request."
@@ -98,11 +86,9 @@ msgstr ""
 "Несанкційонований доступ. Не було надано дійсного API ключа разом із "
 "запитом, тому API не може зв'язати користувача із запитом."
 
-#: ../../source/errors.rst:38
 msgid "403"
 msgstr "403"
 
-#: ../../source/errors.rst:36
 msgid ""
 "Forbidden. The API key and request syntax was valid but the server is "
 "refusing to complete the request.  This can happen if you are trying to "
@@ -112,11 +98,9 @@ msgstr ""
 "відмовляється виконати запит. Це може статися, якщо ви пробуєте прочитати"
 " або записати об'єкти чи властивості, до яких не маєте доступу."
 
-#: ../../source/errors.rst:43
 msgid "404"
 msgstr "404"
 
-#: ../../source/errors.rst:41
 msgid ""
 "Not found. Either the request method and path supplied do not specify a "
 "known action in the API, or the object specified by the request does not "
@@ -125,11 +109,9 @@ msgstr ""
 "Ресурс не знайдено. Або даний метод та шлях запиту не вказують відому дію"
 " для API, або об’єкт, вказаний у запиті, не існує."
 
-#: ../../source/errors.rst:46
 msgid "409"
 msgstr "409"
 
-#: ../../source/errors.rst:46
 msgid ""
 "Document update conflict. The request could not be completed due to a "
 "conflict with the current state of the target resource. Please repeat "
@@ -139,21 +121,17 @@ msgstr ""
 " конфлікт стану цільового ресурсу, наприклад, конфлікт одночасного"
 " редагування."
 
-#: ../../source/errors.rst:49
 msgid "412"
 msgstr "412"
 
-#: ../../source/errors.rst:49
 msgid "Precondition Failed. See :ref:`API in cluster mode <cluster>`."
 msgstr ""
 "Збій під час обробки попередньої умови. Дивіться розділ :ref:`Pобота з "
 "API в режимі кластеру <cluster>`."
 
-#: ../../source/errors.rst:52
 msgid "422"
 msgstr "422"
 
-#: ../../source/errors.rst:52
 msgid ""
 "Unprocessable Entity. This status code means the server understands the "
 "content type of the request entity. For example, this error condition may"
@@ -165,29 +143,23 @@ msgstr ""
 " JSON містить добре сформовані (тобто синтаксично правильні), але семантично"
 " помилкові, інструкції у форматі JSON."
 
-#: ../../source/errors.rst:55
 msgid "429"
 msgstr "429"
 
-#: ../../source/errors.rst:55
 msgid "Rate Limit Enforced. See :ref:`Rate control <performance>`."
 msgstr ""
 "Перевищено допустиму частоту запитів. Дивіться розділ :ref:`Контроль "
 "частоти запитів <performance>`."
 
-#: ../../source/errors.rst:58
 msgid "500"
 msgstr "500"
 
-#: ../../source/errors.rst:58
 msgid "Server error. There was a problem on OpenProcurement's end."
 msgstr "Помилка сервера. Була проблема зі сторони OpenProcurement."
 
-#: ../../source/errors.rst:61
 msgid "Success Response"
 msgstr "Відповідь з повідомленням про успіх"
 
-#: ../../source/errors.rst:62
 msgid ""
 "Every successful get, create, update, replace request results in response"
 " that contains `data` attribute.  That `data` attribute contains full "
@@ -201,7 +173,6 @@ msgstr ""
 "згенеровані у результаті обробки (наприклад, нові ID об’єкта або "
 "`modified` дата), то вони присутні у відповіді."
 
-#: ../../source/errors.rst:68
 msgid ""
 "The listing requests result in similar responses, but instead of single "
 "object in `data` attribute, the JSON response contains collection of "
@@ -210,19 +181,15 @@ msgstr ""
 "Запити списку отримують схожі відповіді, але замість одного об'єкта в "
 "`data` атрибуті, JSON відповідь містить колекцію об'єктів."
 
-#: ../../source/errors.rst:73
 msgid "Example Succes Response"
 msgstr "Приклад відповіді з повідомленням про успіх"
 
-#: ../../source/errors.rst:74
 msgid "Here is a response that describes tender"
 msgstr "Це відповідь, що описує закупівлю."
 
-#: ../../source/errors.rst:146
 msgid "Error Response"
 msgstr "Відповідь з повідомленням про помилку"
 
-#: ../../source/errors.rst:147
 msgid ""
 "In the event of an error, the response body will contain an `errors` "
 "field at the top level.  It contains an array of at least one error "
@@ -232,7 +199,6 @@ msgstr ""
 "рівні. Воно містить масив як мінімум одного помилкового об’єкта описаного"
 " нижче:"
 
-#: ../../source/errors.rst:152
 msgid ""
 "Part of the request causing the error. Possible values are `header` and "
 "`body`."
@@ -240,7 +206,6 @@ msgstr ""
 "Частина запиту спричинює помилку. Можливі значення це `header` "
 "(заголовок) або `body` (тіло)."
 
-#: ../../source/errors.rst:155
 msgid ""
 "Specific header name that caused the problem (in case of `header` "
 "location)"
@@ -248,21 +213,17 @@ msgstr ""
 "Конкретна назва заголовку, що спричиняє проблему (у випадку "
 "місцярозташування `заголовок`)"
 
-#: ../../source/errors.rst:156
 msgid "The field name causing the error (in case of `body` location)"
 msgstr ""
 "Конкретна назва поля, що спричиняє проблему (у випадку місцярозташування "
 "`тіло`)"
 
-#: ../../source/errors.rst:159
 msgid "Verbose (human readable) description of the error."
 msgstr "Докладний (придатний для читання людиною) опис помилки."
 
-#: ../../source/errors.rst:174
 msgid "Example Error Response"
 msgstr "Приклад відповіді з повідомленням про помилку"
 
-#: ../../source/errors.rst:175
 msgid "Sample below indicates incomplete request."
 msgstr "Зразок нижче вказує на неповний запит."
 

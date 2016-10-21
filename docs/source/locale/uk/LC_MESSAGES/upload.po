@@ -13,15 +13,12 @@ msgstr ""
 "X-Generator: Poedit 1.7.6\n"
 "Language: uk\n"
 
-#: ../../source/upload.rst:4
 msgid "Documents Uploading"
 msgstr "Завантаження документів"
 
-#: ../../source/upload.rst:9
 msgid "Content-Type: multipart/form-data"
 msgstr "Content-Type: multipart/form-data"
 
-#: ../../source/upload.rst:11
 msgid ""
 "This is standard approach of HTML form file uploading defined by `RFC 1867 "
 "<http://www.faqs.org/rfcs/rfc1867.html>`_.  The requirements are:"
@@ -29,27 +26,21 @@ msgstr ""
 "Це стандартний підхід до HTML форми завантаження файлів, що визначається "
 "`RFC 1867 <http://www.faqs.org/rfcs/rfc1867.html>`_. Вимоги:"
 
-#: ../../source/upload.rst:14
 msgid "Form element should have name `file`"
 msgstr "Елемент форми повинен мати назву `file`."
 
-#: ../../source/upload.rst:15
 msgid "Only one document can be uploaded."
 msgstr "Завантажити можна лише один документ."
 
-#: ../../source/upload.rst:17
 msgid "The cURL example::"
 msgstr "Приклад cURL::"
 
-#: ../../source/upload.rst:21
 msgid "HTTPie example::"
 msgstr "Приклад HTTPie::"
 
-#: ../../source/upload.rst:25
 msgid "The request itself should look like::"
 msgstr "Сам запит повинен виглядати так::"
 
-#: ../../source/upload.rst:6
 msgid ""
 "All of the document uploading API endpoints follow the same set of rules."
 msgstr ""

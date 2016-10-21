@@ -13,11 +13,9 @@ msgstr ""
 "X-Generator: Poedit 1.7.6\n"
 "Language: uk\n"
 
-#: ../../source/dates.rst:7
 msgid "The date format is `ISO 8601 <http://en.wikipedia.org/wiki/ISO_8601>`_."
 msgstr "Формат дати `ISO 8601 <http://en.wikipedia.org/wiki/ISO_8601>`_."
 
-#: ../../source/dates.rst:5
 msgid "Date Format: ISO 8601"
 msgstr "Формат дати: ISO 8601"
 
