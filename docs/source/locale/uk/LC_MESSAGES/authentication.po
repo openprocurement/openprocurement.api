@@ -16,11 +16,9 @@ msgstr ""
 "=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
 "X-Generator: Lokalize 2.0\n"
 
-#: ../../source/authentication.rst:4
 msgid "Authentication"
 msgstr "Аутентифікація"
 
-#: ../../source/authentication.rst:6
 msgid ""
 "Some of the API requests (especially the ones that are read-only GET "
 "requests) do not require any authenication.  The other ones, that modify "
@@ -34,11 +32,9 @@ msgstr ""
 "власника, щоб забезпечити кілька ролей дійових осіб при створенні "
 "об’єкта."
 
-#: ../../source/authentication.rst:12
 msgid "API keys"
 msgstr "Ключі API"
 
-#: ../../source/authentication.rst:14
 msgid ""
 "API key is username to use with Basic Authenication scheme (see "
 ":rfc:`2617#section-2`)."
@@ -46,19 +42,15 @@ msgstr ""
 "Ключ API - це ім’я користувача, що буде використовуватись зі схемою "
 "базової аутентифікації (див. :rfc:`2617#section-2`)."
 
-#: ../../source/authentication.rst:17
 msgid "Owner tokens"
 msgstr "Токени власника"
 
-#: ../../source/authentication.rst:20
 msgid "Getting token"
 msgstr "Отримання токена"
 
-#: ../../source/authentication.rst:22
 msgid "The token is issued when object is created in the database:"
 msgstr "Токен видається, коли об'єкт створюється в базі даних:"
 
-#: ../../source/authentication.rst:27
 msgid ""
 "You can see the `access` with `token` in response.  Its value can be used"
 " to modify objects further under \"Owner role\"."
@@ -66,26 +58,20 @@ msgstr ""
 "У відповіді є `access` разом з `token`. Це значення можна використати для"
 " модифікації об’єктів у \"ролі Власника\"."
 
-#: ../../source/authentication.rst:31
 msgid "Using token"
 msgstr "Використання токена"
 
-#: ../../source/authentication.rst:33
 msgid "You can pass access token in the following ways:"
 msgstr "Ви можете передати токен доступу такими способами:"
 
-#: ../../source/authentication.rst:35
 msgid "`acc_token` URL query string parameter"
 msgstr "параметр рядка URL запиту `acc_token` "
 
-#: ../../source/authentication.rst:36
 msgid "`X-Access-Token` HTTP request header"
 msgstr "заголовок HTTP запиту `X-Access-Token`"
 
-#: ../../source/authentication.rst:37
 msgid "`access.token` in the body of POST/PUT/PATCH request"
 msgstr "`access.token` в тілі запитів POST/PUT/PATCH"
 
-#: ../../source/authentication.rst:39
 msgid "See the example of the action with token passed as URL query string:"
 msgstr "Ось приклад, де токен передається як рядок URL запиту:"

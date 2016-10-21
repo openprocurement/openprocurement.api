@@ -16,11 +16,9 @@ msgstr ""
 "=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
 "X-Generator: Lokalize 2.0\n"
 
-#: ../../source/acceleration.rst:4
 msgid "Acceleration mode for sandbox"
 msgstr "Режим прискорення в пісочниці"
 
-#: ../../source/acceleration.rst:6
 msgid ""
 "Acceleration mode was developed to enable `belowThreshold` procedures "
 "testing in the sandbox and to reduce time frames of these procedures."
@@ -29,19 +27,15 @@ msgstr ""
 "допорогових закупівель `belowThreshold` на пісочниці доступний режим \n"
 "прискорення."
 
-#: ../../source/acceleration.rst:8
 msgid "**This mode will work only in the sandbox**."
 msgstr "**Даний механізм діє лише на пісочниці**."
 
-#: ../../source/acceleration.rst:12
 msgid "To enable acceleration mode you will need to:"
 msgstr "Щоб увімкнути режим прискорення вам потрібно:"
 
-#: ../../source/acceleration.rst:11
 msgid "add additional parameter `mode` with a value ``test``;"
 msgstr "додати додатковий параметр `mode` зі значенням ``test``;"
 
-#: ../../source/acceleration.rst:12
 msgid ""
 "set ``quick, accelerator=1440`` as text value for "
 "`procurementMethodDetails`. This parameter will accelerate auction "
@@ -53,7 +47,6 @@ msgstr ""
 " закупівлі. Число 1440 показує, що часові обмеження та терміни "
 "скорочуються в 1440 раз. "
 
-#: ../../source/acceleration.rst:13
 msgid ""
 "set ``quick`` as a value for `submissionMethodDetails`. This parameter "
 "works only with ``mode = \"test\"`` and will speed up auction start date."

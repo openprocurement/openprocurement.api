@@ -13,15 +13,12 @@ msgstr ""
 "Language: uk\n"
 "X-Generator: Poedit 1.8.5\n"
 
-#: ../../source/performance.rst:4
 msgid "Performance recommendations"
 msgstr "Рекомендації для роботи"
 
-#: ../../source/performance.rst:8
 msgid "Rate Control"
 msgstr "Контроль частоти запитів"
 
-#: ../../source/performance.rst:12
 msgid ""
 "Expected client response to such restriction is to repeat requests returned "
 "with 429 status code increasing the delay between individual requests sent "
@@ -32,7 +29,6 @@ msgstr ""
 "збільшуючи затримку між окремими запитами, що посилаються на ЦБД, доти доки "
 "запити не почнуть вдаватися (2xx/3xx відповіді)."
 
-#: ../../source/performance.rst:14
 msgid ""
 "Such CDB servers behavior is required in order to distribute server "
 "resources evenly between clients."
@@ -40,7 +36,6 @@ msgstr ""
 "Така поведінка серверів ЦБД необхідна, щоб рівномірніше розподіляти ресурси "
 "серверів між майданчиками."
 
-#: ../../source/performance.rst:10
 msgid ""
 "\"Aggressive\" IP addresses can be restricted in the speed with which "
 "servers are processing CDB requests. In this case CDB will respond with "

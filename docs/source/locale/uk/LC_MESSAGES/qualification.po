@@ -15,23 +15,18 @@ msgstr ""
 "=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
 "X-Generator: Lokalize 1.5\n"
 
-#: ../../source/qualification.rst:5
 msgid "Qualification Operations"
 msgstr "Операції кваліфікації"
 
-#: ../../source/qualification.rst:49
 msgid "Contract Awarding"
 msgstr "Винагорода (визначення переможця з ціллю підписання договору)"
 
-#: ../../source/qualification.rst:24
 msgid "Disqualification"
 msgstr "Дискваліфікація"
 
-#: ../../source/qualification.rst:12
 msgid "Listing awards"
 msgstr "Перегляд результатів оцінки"
 
-#: ../../source/qualification.rst:26
 msgid ""
 "The protocol of Qualification Committee decision should be uploaded as "
 "document into award and later its status should switch to either `active` "
@@ -41,23 +36,18 @@ msgstr ""
 "вигляді документа до рішення. Пізніше його статус повинен бути змінений або "
 "на `active` (якщо його прийнято), або на `unsuccessful` (якщо відмовлено)."
 
-#: ../../source/qualification.rst:51
 msgid "Protocol upload:"
 msgstr "Завантаження протоколу:"
 
-#: ../../source/qualification.rst:57
 msgid "Confirming the Award:"
 msgstr "Підтвердження визначення переможця:"
 
-#: ../../source/qualification.rst:110
 msgid "Influence of Complaint Satisfaction"
 msgstr "Вплив задовільненої скарги"
 
-#: ../../source/qualification.rst:80
 msgid "Cancelling Active Award"
 msgstr "Скасування активної винагороди"
 
-#: ../../source/qualification.rst:82
 msgid ""
 "Sometimes Bidder refuses to sign the contract even after passing "
 "qualification process.  In this case Procuring Entity is expected to be able"
@@ -68,15 +58,12 @@ msgstr ""
 "можливість відмовитися від затвердженого переможця, а потім дискваліфікувати"
 " його цінову пропозицію."
 
-#: ../../source/qualification.rst:86
 msgid "After we have Award with active status:"
 msgstr "Коли стадія Визначення переможця активна"
 
-#: ../../source/qualification.rst:91
 msgid "There is need to cancel it:"
 msgstr "Є необхідність її скасувати"
 
-#: ../../source/qualification.rst:7
 msgid ""
 "When auction is over, the qualification process starts. The status of tender"
 " is `active.qualification` then.  Right after results are submitted to "
@@ -86,14 +73,12 @@ msgstr ""
 "статус `active.qualification`. Після того, як результати подаються у "
 "Центральну базу даних, реєструється рішення про перемогу учасника аукціону."
 
-#: ../../source/qualification.rst:14
 msgid ""
 "The pending award can be retrieved via request to list all available awards:"
 msgstr ""
 "Результати аукціону, що оцінюються, можна дізнатись запитом на отримання "
 "списків усіх доступних винагород:"
 
-#: ../../source/qualification.rst:20
 msgid ""
 "When the award is in `pending` status, it means that procuring entity has to"
 " review documents describing the bid and other bidder documents."
@@ -101,7 +86,6 @@ msgstr ""
 "Визначення переможця (винагорода) має статус `pending`, якщо замовнику "
 "потрібно перевірити документи пов’язані з пропозицією кандидата."
 
-#: ../../source/qualification.rst:42
 msgid ""
 "Note that after award rejection the next bid in the value-sorted bid "
 "sequence becomes subject of subsequent award.  For convenience you can use "
@@ -113,7 +97,6 @@ msgstr ""
 "перемогу. Для зручності, ви можете використати заголовок `Location` з "
 "попередньої відповіді, що вказує на \"pending\" стан оцінки, що ще триває."
 
-#: ../../source/qualification.rst:73
 msgid ""
 "The procuring entity can wait until bidder provides all missing documents "
 "(licenses, certificates, statements, etc.) or update original bid documents "
@@ -127,7 +110,6 @@ msgstr ""
 "пропозиції, якщо надані документи не задовільняють умов закупівлі, навіть до"
 " того як повний пакет документів стане доступним."
 
-#: ../../source/qualification.rst:96
 msgid ""
 "Note that there is Location header returned that aids in locating the "
 "\"fresh\" award that is most likely subject for disqualification:"
@@ -135,7 +117,6 @@ msgstr ""
 "Зверніть увагу, що повернуто заголовок Location, який допомогає в пошуку "
 "\"свіжої\" винагороди, яка, швидше за все, і є предметом дискваліфікації:"
 
-#: ../../source/qualification.rst:105
 msgid ""
 "In the case when there is another Bid for qualification, there will be "
 "Location header in the response pointing to its Award."
@@ -143,7 +124,6 @@ msgstr ""
 "У випадку, якщо є інша пропозиція для кваліфікації, у відповіді буде "
 "заголовок Location, що вказуватиме на відповідну винагороду."
 
-#: ../../source/qualification.rst:33
 msgid ""
 "The Qualification Committee can upload several documents, for example, "
 "decisions to prolong the qualification process - in order to allow the "
@@ -157,7 +137,6 @@ msgstr ""
 " процедуру прозорою та зменшать ймовірність відміни рішення органом розгляду"
 " скарг."
 
-#: ../../source/qualification.rst:116
 msgid ""
 "Disqualification decision of procuring entity's qualification committee can "
 "be cancelled in the following cases:"
@@ -165,21 +144,17 @@ msgstr ""
 "Рішення кваліфікаційної комісії замовника про дискваліфікацію  можна "
 "відмінити у таких випадках:"
 
-#: ../../source/qualification.rst:118
 msgid ""
 "claim for this disqualification has been submitted (claim status is "
 "``claim``);"
 msgstr "подана вимога на цю дискваліфікацію (статус вимоги ``claim``);"
 
-#: ../../source/qualification.rst:119
 msgid "claim has been answered (claim status is ``answered``);"
 msgstr "надана відповідь по вимозі (статус вимоги ``answered``);"
 
-#: ../../source/qualification.rst:120
 msgid "complaint is pending review (complaint status is ``pending``);"
 msgstr "скарга очікує розгляду органом оскарження (статус скарги ``pending``);"
 
-#: ../../source/qualification.rst:121
 msgid ""
 "complaint has been satisfied by the Complaint Review Body (complaint status "
 "is ``resolved``)."
@@ -187,7 +162,6 @@ msgstr ""
 "скарга задовільнена, тобто є позитивне рішення органу оскарження (статус "
 "скарги ``resolved``)."
 
-#: ../../source/qualification.rst:112
 msgid ""
 "If decision of the procuring entity is unfair any bidder can file complaint "
 "and after proper review the whole awarding process can start from the award "
@@ -197,7 +171,6 @@ msgstr ""
 "і, після її відповідного розгляду, весь процес визначення переможця може "
 "вернутись до цього рішення."
 
-#: ../../source/qualification.rst:123
 msgid ""
 "After the disqualification decision cancellation it receives ``cancelled`` "
 "status. New pending award is generated and procuring entity is obliged to "
