@@ -430,11 +430,12 @@ def check_tender_status(request):
                 LOGGER.info('Switched lot {} of tender {} to {}'.format(lot.id, tender.id, 'complete'),
                             extra=context_unpack(request, {'MESSAGE_ID': 'switched_lot_complete'}, {'LOT_ID': lot.id}))
                 lot.status = 'complete'
+        merged_lots_ids = [get_award_by_id(tender, contract['awardID'])['lotID']
+                           for contract in tender.contracts
+                           if contract.status == 'merged']
         statuses = set([lot.status
                         for lot in tender.lots
-                        if lot.id not in [get_award_by_id(tender, contract['awardID'])['lotID']
-                                          for contract in tender.contracts
-                                          if contract.status == 'merged']])
+                        if lot.id not in merged_lots_ids])
         if statuses == set(['cancelled']):
             LOGGER.info('Switched tender {} to {}'.format(tender.id, 'cancelled'),
                         extra=context_unpack(request, {'MESSAGE_ID': 'switched_tender_cancelled'}))
