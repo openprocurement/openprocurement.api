@@ -387,10 +387,10 @@ def check_status(request):
                 return
 
 
-def get_award_by_id(tender, awardID):
-    for award in tender.awards:
-        if award.id == awardID:
-            return award
+def get_contract_by_id(contract_id, tender):
+    for contract in tender.contracts:
+        if contract_id == contract['id']:
+            return contract
 
 
 def check_tender_status(request):
@@ -426,16 +426,14 @@ def check_tender_status(request):
                             extra=context_unpack(request, {'MESSAGE_ID': 'switched_lot_unsuccessful'}, {'LOT_ID': lot.id}))
                 lot.status = 'unsuccessful'
                 continue
-            elif last_award.status == 'active' and any([i.status == 'active' and i.awardID == last_award.id for i in tender.contracts]):
+            elif last_award.status == 'active' and (
+                    any([i.status == 'active' and i.awardID == last_award.id for i in tender.contracts]) or
+                    any([i.status == 'merged' and get_contract_by_id(i.get('mergedInto'), tender).status == 'active'])
+            ):
                 LOGGER.info('Switched lot {} of tender {} to {}'.format(lot.id, tender.id, 'complete'),
                             extra=context_unpack(request, {'MESSAGE_ID': 'switched_lot_complete'}, {'LOT_ID': lot.id}))
                 lot.status = 'complete'
-        merged_lots_ids = [get_award_by_id(tender, contract['awardID'])['lotID']
-                           for contract in tender.contracts
-                           if contract.status == 'merged']
-        statuses = set([lot.status
-                        for lot in tender.lots
-                        if lot.id not in merged_lots_ids])
+        statuses = set([lot.status for lot in tender.lots])
         if statuses == set(['cancelled']):
             LOGGER.info('Switched tender {} to {}'.format(tender.id, 'cancelled'),
                         extra=context_unpack(request, {'MESSAGE_ID': 'switched_tender_cancelled'}))
