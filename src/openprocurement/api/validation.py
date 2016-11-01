@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from openprocurement.api.models import get_now
+from openprocurement.api.models import get_now, SANDBOX_MODE
 from schematics.exceptions import ModelValidationError, ModelConversionError
 from openprocurement.api.utils import apply_data_patch, update_logging_context
 
@@ -165,10 +165,17 @@ def validate_tender_auction_data(request):
         data = {}
     if request.method == 'POST':
         now = get_now().isoformat()
-        if tender.lots:
-            data['lots'] = [{'auctionPeriod': {'endDate': now}} if i.id == lot_id else {} for i in tender.lots]
+        if (SANDBOX_MODE and tender.submissionMethodDetails and tender.submissionMethodDetails in [u'quick(mode:no-auction)', u'quick(mode:fast-forward)']):
+            if tender.lots:
+                data['lots'] = [{'auctionPeriod': {'startDate': now, 'endDate': now}} if i.id == lot_id else {} for i in tender.lots]
+            else:
+                data['auctionPeriod'] = {'startDate': now, 'endDate': now}
         else:
-            data['auctionPeriod'] = {'endDate': now}
+            if tender.lots:
+                data['lots'] = [{'auctionPeriod': {'endDate': now}} if i.id == lot_id else {} for i in tender.lots]
+            else:
+                data['auctionPeriod'] = {'endDate': now}
+
     request.validated['data'] = data
 
 
@@ -278,8 +285,16 @@ def validate_patch_lot_data(request):
     return validate_data(request, model, True)
 
 
+def validate_document_data(request):
+    context = request.context if 'documents' in request.context else request.context.__parent__
+    model = type(context).documents.model_class
+    return validate_data(request, model)
+
+
 def validate_file_upload(request):
     update_logging_context(request, {'document_id': '__new__'})
+    if request.registry.docservice_url and request.content_type == "application/json":
+        return validate_document_data(request)
     if 'file' not in request.POST or not hasattr(request.POST['file'], 'filename'):
         request.errors.add('body', 'file', 'Not Found')
         request.errors.status = 404
@@ -288,5 +303,7 @@ def validate_file_upload(request):
 
 
 def validate_file_update(request):
+    if request.registry.docservice_url and request.content_type == "application/json":
+        return validate_document_data(request)
     if request.content_type == 'multipart/form-data':
         validate_file_upload(request)

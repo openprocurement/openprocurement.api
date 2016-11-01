@@ -15,23 +15,18 @@ msgstr ""
 "%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
 "X-Generator: Poedit 1.8.5\n"
 
-#: ../../source/meat.rst:4
 msgid "Most economically advantageous tenders (MEAT)"
 msgstr "Закупівлі за принципом найбільш економічно вигідної пропозиції"
 
-#: ../../source/meat.rst:90
 msgid "Announcing MEAT"
 msgstr "Оголошення закупівлі з неціновими критеріями"
 
-#: ../../source/meat.rst:146
 msgid "Bidding in MEAT"
 msgstr "Подання пропозицій до закупівлі з неціновими критеріями"
 
-#: ../../source/meat.rst:168
 msgid "Qualification in MEAT"
 msgstr "Кваліфікація у закупівлі з неціновими критеріями"
 
-#: ../../source/meat.rst:6
 msgid ""
 "Besides simple price-only tenders it is possible to announce the tender where "
 "other factors are valuable.  Such tenders define features that procuring "
@@ -51,7 +46,6 @@ msgstr ""
 "оцінку та надають Параметри своїх пропозицій (дійсне значення кожного "
 "критерію) разом із фінансовою частиною своєї пропозиції."
 
-#: ../../source/meat.rst:17
 msgid ""
 "The :ref:`Feature` is a data structure, part of the :ref:`Tender`. Tender can "
 "have multiple features associated. Feature can be associated with tenderer, "
@@ -64,7 +58,6 @@ msgstr ""
 "закуповується. Критерії ідентифікуються за допомогою кодів, що є унікальними в "
 "межах тендера."
 
-#: ../../source/meat.rst:72
 msgid ""
 ":ref:`Parameters <parameter>` provided by :ref:`bidders <Bid>` should "
 "correspond to a set of required features.  Parameters are linked to features "
@@ -74,7 +67,6 @@ msgstr ""
 "відповідати набору необхідних критеріїв. Параметри поєднуються з критеріями за "
 "допомогою їхніх кодів."
 
-#: ../../source/meat.rst:148
 msgid ""
 "The same applies to :ref:`Bid` - Parameters of a Bid can be set initially with "
 "POST request and modified later with PATCH requests (see more at :ref:"
@@ -84,7 +76,6 @@ msgstr ""
 "можуть бути створені POST запитом, а потім модифіковані PATCH запитами (більше "
 "в :ref:`bidding`)."
 
-#: ../../source/meat.rst:170
 msgid ""
 "During auction Bidder can bid with his/her bid price and see normalized price "
 "of his/her bid against normalized bids of other bidders.  Ranking in auction "
@@ -97,11 +88,9 @@ msgstr ""
 "береться до уваги і цінова пропозиція, і інші нецінові критерії (`Bid."
 "parameters`)."
 
-#: ../../source/meat.rst:111
 msgid "Changing Features"
 msgstr "Зміна критеріїв"
 
-#: ../../source/meat.rst:113
 msgid ""
 "In the case that Features should be changed one can send PATCH that replaces "
 "Tender.features with new set:"
@@ -109,17 +98,14 @@ msgstr ""
 "Якщо є необхідність змінити критерій, можна надіслати PATCH запит, що замінить "
 "Tender.features новим набором:"
 
-#: ../../source/meat.rst:129
 msgid "Removing Features"
 msgstr "Видалення критеріїв"
 
-#: ../../source/meat.rst:131
 msgid ""
 "In case no Features are needed, they can be removed altogether with following "
 "request:"
 msgstr "Якщо не потрібно жодних критеріїв, їх можна видалити таким запитом:"
 
-#: ../../source/meat.rst:92
 msgid ""
 "Features can be set in :ref:`Tender` pretty the :ref:`same way <procuring>` as "
 "Items are - with POST request."
@@ -127,7 +113,6 @@ msgstr ""
 "Features (критерії) можуть бути встановлені для :ref:`Tender` майже :ref:`тим "
 "самим способом <procuring>`, що і Items - за допомогою POST запиту."
 
-#: ../../source/meat.rst:15
 msgid ""
 "For more information read `Non-price criteria <http://openprocurement.org/en/"
 "nonprice-criteria.html>`_."

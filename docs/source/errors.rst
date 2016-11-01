@@ -41,9 +41,15 @@ containing additional information.
   Not found. Either the request method and path supplied do not specify a
   known action in the API, or the object specified by the request does not
   exist.
+
+409
+  Document update conflict. The request could not be completed due to a conflict with the current state of the target resource. Please repeat your request.
   
 412
   Precondition Failed. See :ref:`API in cluster mode <cluster>`.
+  
+422
+  Unprocessable Entity. This status code means the server understands the content type of the request entity. For example, this error condition may occur if a JSON request body contains well-formed (i.e., syntactically correct), but semantically erroneous, JSON instructions.
 
 429
   Rate Limit Enforced. See :ref:`Rate control <performance>`.
