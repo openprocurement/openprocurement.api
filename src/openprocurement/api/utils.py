@@ -147,12 +147,14 @@ def upload_file(request, blacklisted_fields=DOCUMENT_BLACKLISTED_FIELDS):
                                 )
                 json_data = r.json()
             except:
-                pass
+                in_file.seek(0)
             else:
                 if r.status_code == 200 and json_data.get('data', {}).get('url'):
                     doc_url = json_data['data']['url']
                     doc_hash = json_data['data']['hash']
                     break
+                else:
+                    in_file.seek(0)
             index -= 1
         else:
             request.errors.add('body', 'data', "Can't upload document to document service.")
