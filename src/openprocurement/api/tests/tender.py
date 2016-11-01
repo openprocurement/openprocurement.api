@@ -646,6 +646,277 @@ class TenderResourceTest(BaseWebTest):
         self.assertEqual(data['guarantee']['amount'], 100500)
         self.assertEqual(data['guarantee']['currency'], "USD")
 
+    def test_tender_item_location_validation(self):
+        response = self.app.get('/tenders')
+        self.assertEqual(response.status, '200 OK')
+        self.assertEqual(len(response.json['data']), 0)
+
+        # Create tender with valid location (float coordinates)
+        tender_data = test_tender_data.copy()
+        tender_data['items'][0]['deliveryLocation'] = {
+            'latitude': -89.99999,
+            'longitude': -179.99999
+        }
+        response = self.app.post_json('/tenders', {"data": tender_data})
+        self.assertEqual(response.status, '201 Created')
+        self.assertEqual(response.content_type, 'application/json')
+        tender = response.json['data']
+        self.assertEqual(tender['items'][0]['deliveryLocation']['latitude'], tender_data['items'][0]['deliveryLocation']['latitude'])
+        self.assertEqual(tender['items'][0]['deliveryLocation']['longitude'], tender_data['items'][0]['deliveryLocation']['longitude'])
+
+        # Create tender with valid location (float coordinates as string)
+        tender_data['items'][0]['deliveryLocation']['latitude'] = '89.01254'
+        tender_data['items'][0]['deliveryLocation']['longitude'] = '179.02354'
+        response = self.app.post_json('/tenders', {"data": tender_data})
+        self.assertEqual(response.status, '201 Created')
+        self.assertEqual(response.content_type, 'application/json')
+        tender = response.json['data']
+        self.assertEqual(tender['items'][0]['deliveryLocation']['latitude'], tender_data['items'][0]['deliveryLocation']['latitude'])
+        self.assertEqual(tender['items'][0]['deliveryLocation']['longitude'], tender_data['items'][0]['deliveryLocation']['longitude'])
+
+        # Create tender with valid location (integer coordinates as string)
+        tender_data['items'][0]['deliveryLocation']['latitude'] = '90'
+        tender_data['items'][0]['deliveryLocation']['longitude'] = '180'
+        response = self.app.post_json('/tenders', {"data": tender_data})
+        self.assertEqual(response.status, '201 Created')
+        self.assertEqual(response.content_type, 'application/json')
+        tender = response.json['data']
+        self.assertEqual(tender['items'][0]['deliveryLocation']['latitude'], tender_data['items'][0]['deliveryLocation']['latitude'])
+        self.assertEqual(tender['items'][0]['deliveryLocation']['longitude'], tender_data['items'][0]['deliveryLocation']['longitude'])
+
+        # Create tender with valid location (integer coordinates)
+        tender_data['items'][0]['deliveryLocation']['latitude'] = 90
+        tender_data['items'][0]['deliveryLocation']['longitude'] = 180
+        response = self.app.post_json('/tenders', {"data": tender_data})
+        self.assertEqual(response.status, '201 Created')
+        self.assertEqual(response.content_type, 'application/json')
+        tender = response.json['data']
+        self.assertEqual(tender['items'][0]['deliveryLocation']['latitude'], tender_data['items'][0]['deliveryLocation']['latitude'])
+        self.assertEqual(tender['items'][0]['deliveryLocation']['longitude'], tender_data['items'][0]['deliveryLocation']['longitude'])
+
+        # Tests for latitude
+        # Create tender with invalid location (latitude )
+        tender_data['items'][0]['deliveryLocation']['latitude'] = 'string'
+        tender_data['items'][0]['deliveryLocation']['longitude'] = 180
+        response = self.app.post_json('/tenders', {"data": tender_data}, status=422)
+        self.assertEqual(response.status, '422 Unprocessable Entity')
+        self.assertEqual(response.content_type, 'application/json')
+        self.assertEqual(response.json['status'], 'error')
+        self.assertEqual(response.json['errors'], [{
+            u'location': u'body',
+            u'name': u'items',
+            u'description': [{u'deliveryLocation': [u'Latitude must be float with up to 5 digits after point.']}],
+        }])
+
+        # Create tender with latitude greater than 90 degree
+        tender_data['items'][0]['deliveryLocation']['latitude'] = 90.00001
+        tender_data['items'][0]['deliveryLocation']['longitude'] = 180
+        response = self.app.post_json('/tenders', {"data": tender_data}, status=422)
+        self.assertEqual(response.status, '422 Unprocessable Entity')
+        self.assertEqual(response.content_type, 'application/json')
+        self.assertEqual(response.json['status'], 'error')
+        self.assertEqual(response.json['errors'], [{
+            u'location': u'body',
+            u'name': u'items',
+            u'description': [{u'deliveryLocation': [u'Latitude must be between -90 and 90 degree.']}],
+        }])
+
+        # Create tender with latitude less than -90 degree
+        tender_data['items'][0]['deliveryLocation']['latitude'] = -90.00001
+        tender_data['items'][0]['deliveryLocation']['longitude'] = 180
+        response = self.app.post_json('/tenders', {"data": tender_data}, status=422)
+        self.assertEqual(response.status, '422 Unprocessable Entity')
+        self.assertEqual(response.content_type, 'application/json')
+        self.assertEqual(response.json['status'], 'error')
+        self.assertEqual(response.json['errors'], [{
+            u'location': u'body',
+            u'name': u'items',
+            u'description': [{u'deliveryLocation': [u'Latitude must be between -90 and 90 degree.']}],
+        }])
+
+        # Create tender with latitude more than 5 digits after point
+        tender_data['items'][0]['deliveryLocation']['latitude'] = -89.000001
+        tender_data['items'][0]['deliveryLocation']['longitude'] = 180
+        response = self.app.post_json('/tenders', {"data": tender_data}, status=422)
+        self.assertEqual(response.status, '422 Unprocessable Entity')
+        self.assertEqual(response.content_type, 'application/json')
+        self.assertEqual(response.json['status'], 'error')
+        self.assertEqual(response.json['errors'], [{
+            u'location': u'body',
+            u'name': u'items',
+            u'description': [{u'deliveryLocation': [u'Latitude can\'t have more then 5 digits after point.']}],
+        }])
+
+        # Create tender with latitude greater than 90 degree
+        tender_data['items'][0]['deliveryLocation']['latitude'] = '90.00001'
+        tender_data['items'][0]['deliveryLocation']['longitude'] = 180
+        response = self.app.post_json('/tenders', {"data": tender_data}, status=422)
+        self.assertEqual(response.status, '422 Unprocessable Entity')
+        self.assertEqual(response.content_type, 'application/json')
+        self.assertEqual(response.json['status'], 'error')
+        self.assertEqual(response.json['errors'], [{
+            u'location': u'body',
+            u'name': u'items',
+            u'description': [{u'deliveryLocation': [u'Latitude must be between -90 and 90 degree.']}],
+        }])
+
+        # Create tender with latitude less than -90 degree
+        tender_data['items'][0]['deliveryLocation']['latitude'] = '-90.00001'
+        tender_data['items'][0]['deliveryLocation']['longitude'] = 180
+        response = self.app.post_json('/tenders', {"data": tender_data}, status=422)
+        self.assertEqual(response.status, '422 Unprocessable Entity')
+        self.assertEqual(response.content_type, 'application/json')
+        self.assertEqual(response.json['status'], 'error')
+        self.assertEqual(response.json['errors'], [{
+            u'location': u'body',
+            u'name': u'items',
+            u'description': [{u'deliveryLocation': [u'Latitude must be between -90 and 90 degree.']}],
+        }])
+
+        # Create tender with latitude more than 5 digits after point
+        tender_data['items'][0]['deliveryLocation']['latitude'] = '-89.000001'
+        tender_data['items'][0]['deliveryLocation']['longitude'] = 180
+        response = self.app.post_json('/tenders', {"data": tender_data}, status=422)
+        self.assertEqual(response.status, '422 Unprocessable Entity')
+        self.assertEqual(response.content_type, 'application/json')
+        self.assertEqual(response.json['status'], 'error')
+        self.assertEqual(response.json['errors'], [{
+            u'location': u'body',
+            u'name': u'items',
+            u'description': [{u'deliveryLocation': [u'Latitude can\'t have more then 5 digits after point.']}],
+        }])
+
+        # Tests for longitude
+        # Create tender with invalid location (longitude )
+        tender_data['items'][0]['deliveryLocation']['latitude'] = 90
+        tender_data['items'][0]['deliveryLocation']['longitude'] = 'string'
+        response = self.app.post_json('/tenders', {"data": tender_data}, status=422)
+        self.assertEqual(response.status, '422 Unprocessable Entity')
+        self.assertEqual(response.content_type, 'application/json')
+        self.assertEqual(response.json['status'], 'error')
+        self.assertEqual(response.json['errors'], [{
+            u'location': u'body',
+            u'name': u'items',
+            u'description': [{u'deliveryLocation': [u'Longitude must be float with up to 5 digits after point.']}],
+        }])
+
+        # Create tender with longitude greater than 180 degree
+        tender_data['items'][0]['deliveryLocation']['latitude'] = 90
+        tender_data['items'][0]['deliveryLocation']['longitude'] = 180.00001
+        response = self.app.post_json('/tenders', {"data": tender_data}, status=422)
+        self.assertEqual(response.status, '422 Unprocessable Entity')
+        self.assertEqual(response.content_type, 'application/json')
+        self.assertEqual(response.json['status'], 'error')
+        self.assertEqual(response.json['errors'], [{
+            u'location': u'body',
+            u'name': u'items',
+            u'description': [{u'deliveryLocation': [u'Longitude must be between -180 and 180 degree.']}],
+        }])
+
+        # Create tender with longitude less than -90 degree
+        tender_data['items'][0]['deliveryLocation']['latitude'] = -90
+        tender_data['items'][0]['deliveryLocation']['longitude'] = -180.00001
+        response = self.app.post_json('/tenders', {"data": tender_data}, status=422)
+        self.assertEqual(response.status, '422 Unprocessable Entity')
+        self.assertEqual(response.content_type, 'application/json')
+        self.assertEqual(response.json['status'], 'error')
+        self.assertEqual(response.json['errors'], [{
+            u'location': u'body',
+            u'name': u'items',
+            u'description': [{u'deliveryLocation': [u'Longitude must be between -180 and 180 degree.']}],
+        }])
+
+        # Create tender with longitude more than 5 digits after point
+        tender_data['items'][0]['deliveryLocation']['latitude'] = -89
+        tender_data['items'][0]['deliveryLocation']['longitude'] = 179.000001
+        response = self.app.post_json('/tenders', {"data": tender_data}, status=422)
+        self.assertEqual(response.status, '422 Unprocessable Entity')
+        self.assertEqual(response.content_type, 'application/json')
+        self.assertEqual(response.json['status'], 'error')
+        self.assertEqual(response.json['errors'], [{
+            u'location': u'body',
+            u'name': u'items',
+            u'description': [{u'deliveryLocation': [u'Longitude can\'t have more then 5 digits after point.']}],
+        }])
+
+        # Create tender with longitude greater than 180 degree
+        tender_data['items'][0]['deliveryLocation']['latitude'] = '90'
+        tender_data['items'][0]['deliveryLocation']['longitude'] = '180.000001'
+        response = self.app.post_json('/tenders', {"data": tender_data}, status=422)
+        self.assertEqual(response.status, '422 Unprocessable Entity')
+        self.assertEqual(response.content_type, 'application/json')
+        self.assertEqual(response.json['status'], 'error')
+        self.assertEqual(response.json['errors'], [{
+            u'location': u'body',
+            u'name': u'items',
+            u'description': [{u'deliveryLocation': [u'Longitude must be between -180 and 180 degree.']}],
+        }])
+
+        # Create tender with longitude less than -180 degree
+        tender_data['items'][0]['deliveryLocation']['latitude'] = '-90'
+        tender_data['items'][0]['deliveryLocation']['longitude'] = '-180.0000001'
+        response = self.app.post_json('/tenders', {"data": tender_data}, status=422)
+        self.assertEqual(response.status, '422 Unprocessable Entity')
+        self.assertEqual(response.content_type, 'application/json')
+        self.assertEqual(response.json['status'], 'error')
+        self.assertEqual(response.json['errors'], [{
+            u'location': u'body',
+            u'name': u'items',
+            u'description': [{u'deliveryLocation': [u'Longitude must be between -180 and 180 degree.']}],
+        }])
+
+        # Create tender with longitude more than 5 digits after point
+        tender_data['items'][0]['deliveryLocation']['latitude'] = '-89.1'
+        tender_data['items'][0]['deliveryLocation']['longitude'] = '179.000121'
+        response = self.app.post_json('/tenders', {"data": tender_data}, status=422)
+        self.assertEqual(response.status, '422 Unprocessable Entity')
+        self.assertEqual(response.content_type, 'application/json')
+        self.assertEqual(response.json['status'], 'error')
+        self.assertEqual(response.json['errors'], [{
+            u'location': u'body',
+            u'name': u'items',
+            u'description': [{u'deliveryLocation': [u'Longitude can\'t have more then 5 digits after point.']}],
+        }])
+
+        # Create tender with longitude but without latitude
+        del tender_data['items'][0]['deliveryLocation']['latitude']
+        tender_data['items'][0]['deliveryLocation']['longitude'] = '179.000121'
+        response = self.app.post_json('/tenders', {"data": tender_data}, status=422)
+        self.assertEqual(response.status, '422 Unprocessable Entity')
+        self.assertEqual(response.content_type, 'application/json')
+        self.assertEqual(response.json['status'], 'error')
+        self.assertEqual(response.json['errors'], [{
+            u'location': u'body',
+            u'name': u'items',
+            u'description': [{u'deliveryLocation': {u'latitude': [u'This field is required.']}}],
+        }])
+
+        # Create tender with latitude but without longitude
+        tender_data['items'][0]['deliveryLocation']['latitude'] = '28.01'
+        del tender_data['items'][0]['deliveryLocation']['longitude']
+        response = self.app.post_json('/tenders', {"data": tender_data}, status=422)
+        self.assertEqual(response.status, '422 Unprocessable Entity')
+        self.assertEqual(response.content_type, 'application/json')
+        self.assertEqual(response.json['status'], 'error')
+        self.assertEqual(response.json['errors'], [{
+            u'location': u'body',
+            u'name': u'items',
+            u'description': [{u'deliveryLocation': {u'longitude': [u'This field is required.']}}],
+        }])
+
+        # Create tender without longitude and latitude
+        del tender_data['items'][0]['deliveryLocation']['latitude']
+        response = self.app.post_json('/tenders', {"data": tender_data}, status=422)
+        self.assertEqual(response.status, '422 Unprocessable Entity')
+        self.assertEqual(response.content_type, 'application/json')
+        self.assertEqual(response.json['status'], 'error')
+        self.assertEqual(response.json['errors'], [{
+            u'location': u'body',
+            u'name': u'items',
+            u'description': [{u'deliveryLocation': {u'longitude': [u'This field is required.'], "latitude": ["This field is required."]}}],
+        }])
+        del tender_data['items'][0]['deliveryLocation']
+
     def test_get_tender(self):
         response = self.app.get('/tenders')
         self.assertEqual(response.status, '200 OK')
