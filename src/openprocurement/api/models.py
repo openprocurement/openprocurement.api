@@ -357,6 +357,25 @@ class Item(Model):
         if relatedLot and isinstance(data['__parent__'], Model) and relatedLot not in [i.id for i in get_tender(data['__parent__']).lots]:
             raise ValidationError(u"relatedLot should be one of lots")
 
+    def validate_deliveryLocation(self, data, deliveryLocation):
+        if 'deliveryLocation' in data and data['deliveryLocation'] is not None:
+            try:
+                latitude = float(data['deliveryLocation'].latitude)
+            except ValueError:
+                raise ValidationError(u"Latitude must be float with up to 5 digits after point.")
+            if not(-90 <= latitude <= 90):
+                raise ValidationError(u"Latitude must be between -90 and 90 degree.")
+            if len(str(latitude).split('.')[1]) > 5:
+                raise ValidationError(u"Latitude can't have more then 5 digits after point.")
+            try:
+                longitude = float(data['deliveryLocation'].longitude)
+            except ValueError:
+                raise ValidationError(u"Longitude must be float with up to 5 digits after point.")
+            if not(-180 <= longitude <= 180):
+                raise ValidationError(u"Longitude must be between -180 and 180 degree.")
+            if len(str(longitude).split('.')[1]) > 5:
+                raise ValidationError(u"Longitude can't have more then 5 digits after point.")
+
 
 class Document(Model):
     class Options:
