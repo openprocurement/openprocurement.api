@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 import os
+import re
 from couchdb_schematics.document import SchematicsDocument
 from datetime import datetime, timedelta, time
 from iso8601 import parse_date, ParseError
@@ -28,7 +29,10 @@ schematics_default_role = SchematicsDocument.Options.roles['default'] + blacklis
 
 TZ = timezone(os.environ['TZ'] if 'TZ' in os.environ else 'Europe/Kiev')
 CANT_DELETE_PERIOD_START_DATE_FROM = datetime(2016, 9, 23, tzinfo=TZ)
+ITEMS_LOCATION_VALIDATION_FROM = datetime(2015, 11, 2, tzinfo=TZ)
 
+latitude_expression = re.compile(r'(-?[0-8][0-9]\.\d{0,5}|-?[0-8][0-9]|-?90\.[0]{0,5}|-?90|-?[0-9]\.\d{0,5}|-?[0-9])')
+longitude_expression = re.compile(r'(-?180\.[0]{0,5}|-?180|-?1[0-7][0-9]\.\d{0,5}|-?1[0-7][0-9]|-?[0-9][0-9]\.\d{0,5}|-?[0-9][0-9]|-?[0-9]\.\d{0,5}|-?[0-9])')
 
 def get_now():
     return datetime.now(TZ)
@@ -327,6 +331,26 @@ class Location(Model):
     latitude = BaseType(required=True)
     longitude = BaseType(required=True)
     elevation = BaseType()
+
+    def validate_latitude(self, data, latitude):
+        if isinstance(data['__parent__'], Model):
+            tender = data['__parent__']['__parent__']
+            if tender.get('revisions') and tender['revisions'][0].date > \
+                    ITEMS_LOCATION_VALIDATION_FROM and 'latitude' in data:
+                latitude = latitude_expression.match(str(data['latitude']))
+                if latitude is None or latitude.group() != \
+                        str(data['latitude']):
+                    raise ValidationError(u"Invalid value.")
+
+    def validate_longitude(self, data, longitude):
+        if isinstance(data['__parent__'], Model):
+            tender = data['__parent__']['__parent__']
+            if tender.get('revisions') and tender['revisions'][0].date > \
+                    ITEMS_LOCATION_VALIDATION_FROM and 'longitude' in data:
+                longitude = longitude_expression.match(str(data['longitude']))
+                if longitude is None or longitude.group() != \
+                        str(data['longitude']):
+                    raise ValidationError(u"Invalid value.")
 
 
 ADDITIONAL_CLASSIFICATIONS_SCHEMES = [u'ДКПП', u'NONE', u'ДК003', u'ДК015', u'ДК018']
