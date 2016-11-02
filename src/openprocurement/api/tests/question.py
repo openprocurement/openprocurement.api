@@ -172,6 +172,7 @@ class TenderQuestionResourceTest(BaseTenderWebTest):
         self.assertEqual(response.status, '200 OK')
         self.assertEqual(response.content_type, 'application/json')
         self.assertEqual(response.json['data']["answer"], "answer")
+        self.assertIn('dateAnswered', response.json['data'])
 
         response = self.app.patch_json('/tenders/{}/questions/some_id'.format(self.tender_id), {"data": {"answer": "answer"}}, status=404)
         self.assertEqual(response.status, '404 Not Found')
@@ -195,6 +196,7 @@ class TenderQuestionResourceTest(BaseTenderWebTest):
         self.assertEqual(response.status, '200 OK')
         self.assertEqual(response.content_type, 'application/json')
         self.assertEqual(response.json['data']["answer"], "answer")
+        self.assertIn('dateAnswered', response.json['data'])
 
         self.set_status('active.tendering')
 
@@ -346,11 +348,13 @@ class TenderLotQuestionResourceTest(BaseTenderWebTest):
         self.assertEqual(response.status, '200 OK')
         self.assertEqual(response.content_type, 'application/json')
         self.assertEqual(response.json['data']["answer"], "answer")
+        self.assertIn('dateAnswered', response.json['data'])
 
         response = self.app.get('/tenders/{}/questions/{}'.format(self.tender_id, question['id']))
         self.assertEqual(response.status, '200 OK')
         self.assertEqual(response.content_type, 'application/json')
         self.assertEqual(response.json['data']["answer"], "answer")
+        self.assertIn('dateAnswered', response.json['data'])
 
 
 def suite():

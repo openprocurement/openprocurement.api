@@ -25,6 +25,7 @@ class Root(object):
         (Allow, 'g:auction', 'auction'),
         (Allow, 'g:auction', 'upload_tender_documents'),
         (Allow, 'g:contracting', 'extract_credentials'),
+        (Allow, 'g:competitive_dialogue', 'create_tender'),
         (Allow, 'g:chronograph', 'edit_tender'),
         (Allow, 'g:Administrator', 'edit_tender'),
         (Allow, 'g:Administrator', 'edit_bid'),
