@@ -696,6 +696,10 @@ def from22to23(registry):
     root = Root(request)
     for i in results:
         doc = i.doc
+        if 'documents' not in doc and 'awards' not in doc and 'bids' not in doc and 'questions' not in doc and 'complaints' not in doc and 'cancellations' not in doc and 'contracts' not in doc:
+            continue
+        if 'documents' in doc and any([i.get('url', '').startswith(registry.docservice_url) for i in doc['documents']]):
+            continue
         model = registry.tender_procurementMethodTypes.get(doc.get('procurementMethodType', 'belowThreshold'))
         if model:
             try:
@@ -705,6 +709,7 @@ def from22to23(registry):
             except:
                 LOGGER.error("Failed migration of tender {} to schema 23.".format(doc.id), extra={'MESSAGE_ID': 'migrate_data_failed', 'TENDER_ID': doc.id})
             else:
+                doc['dateModified'] = get_now().isoformat()
                 docs.append(doc)
         if len(docs) >= 2 ** 7:
             result = registry.db.update(docs)
