@@ -438,6 +438,19 @@ class BaseTenderWebTest(BaseWebTest):
         self._srequest = SESSION.request
         SESSION.request = request
 
+    def setUpBadDS(self):
+        self.app.app.registry.docservice_url = 'http://localhost'
+        def request(method, url, **kwargs):
+            response = Response()
+            response.status_code = 403
+            response.encoding = 'application/json'
+            response._content = '"Unauthorized: upload_view failed permission check"'
+            response.reason = '403 Forbidden'
+            return response
+
+        self._srequest = SESSION.request
+        SESSION.request = request
+
     def generate_docservice_url(self):
         uuid = uuid4().hex
         key = self.app.app.registry.docservice_key
