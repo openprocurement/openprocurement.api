@@ -5,7 +5,6 @@ from openprocurement.api.tests.base import BaseTenderWebTest
 
 
 class TenderDocumentResourceTest(BaseTenderWebTest):
-    s3_connection = False
 
     def test_not_found(self):
         response = self.app.get('/tenders/some_id/documents', status=404)
@@ -87,7 +86,18 @@ class TenderDocumentResourceTest(BaseTenderWebTest):
         doc_id = response.json["data"]['id']
         self.assertIn(doc_id, response.headers['Location'])
         self.assertEqual(u'укр.doc', response.json["data"]["title"])
-        key = response.json["data"]["url"].split('?')[-1].split('=')[-1]
+        if self.docservice:
+            self.assertIn('Signature=', response.json["data"]["url"])
+            self.assertIn('KeyID=', response.json["data"]["url"])
+            self.assertNotIn('Expires=', response.json["data"]["url"])
+            key = response.json["data"]["url"].split('/')[-1].split('?')[0]
+            tender = self.db.get(self.tender_id)
+            self.assertIn(key, tender['documents'][-1]["url"])
+            self.assertIn('Signature=', tender['documents'][-1]["url"])
+            self.assertIn('KeyID=', tender['documents'][-1]["url"])
+            self.assertNotIn('Expires=', tender['documents'][-1]["url"])
+        else:
+            key = response.json["data"]["url"].split('?')[-1].split('=')[-1]
 
         response = self.app.get('/tenders/{}/documents'.format(self.tender_id))
         self.assertEqual(response.status, '200 OK')
@@ -95,21 +105,24 @@ class TenderDocumentResourceTest(BaseTenderWebTest):
         self.assertEqual(doc_id, response.json["data"][0]["id"])
         self.assertEqual(u'укр.doc', response.json["data"][0]["title"])
 
-        if self.s3_connection:
+        response = self.app.get('/tenders/{}/documents/{}?download=some_id'.format(
+            self.tender_id, doc_id), status=404)
+        self.assertEqual(response.status, '404 Not Found')
+        self.assertEqual(response.content_type, 'application/json')
+        self.assertEqual(response.json['status'], 'error')
+        self.assertEqual(response.json['errors'], [
+            {u'description': u'Not Found', u'location': u'url', u'name': u'download'}
+        ])
+
+        if self.docservice:
             response = self.app.get('/tenders/{}/documents/{}?download={}'.format(
                 self.tender_id, doc_id, key))
             self.assertEqual(response.status, '302 Moved Temporarily')
-            self.assertEqual(response.location, 'http://s3/{}/{}/{}/{}'.format('bucket', self.tender_id, doc_id, key))
+            self.assertIn('http://localhost/get/', response.location)
+            self.assertIn('Signature=', response.location)
+            self.assertIn('KeyID=', response.location)
+            self.assertNotIn('Expires=', response.location)
         else:
-            response = self.app.get('/tenders/{}/documents/{}?download=some_id'.format(
-                self.tender_id, doc_id), status=404)
-            self.assertEqual(response.status, '404 Not Found')
-            self.assertEqual(response.content_type, 'application/json')
-            self.assertEqual(response.json['status'], 'error')
-            self.assertEqual(response.json['errors'], [
-                {u'description': u'Not Found', u'location': u'url', u'name': u'download'}
-            ])
-
             response = self.app.get('/tenders/{}/documents/{}?download={}'.format(
                 self.tender_id, doc_id, key))
             self.assertEqual(response.status, '200 OK')
@@ -171,6 +184,7 @@ class TenderDocumentResourceTest(BaseTenderWebTest):
         self.assertEqual(u'укр.doc', response.json["data"]["title"])
         doc_id = response.json["data"]['id']
         dateModified = response.json["data"]['dateModified']
+        datePublished = response.json["data"]['datePublished']
         self.assertIn(doc_id, response.headers['Location'])
 
         response = self.app.put('/tenders/{}/documents/{}'.format(
@@ -178,13 +192,27 @@ class TenderDocumentResourceTest(BaseTenderWebTest):
         self.assertEqual(response.status, '200 OK')
         self.assertEqual(response.content_type, 'application/json')
         self.assertEqual(doc_id, response.json["data"]["id"])
-        key = response.json["data"]["url"].split('?')[-1].split('=')[-1]
+        if self.docservice:
+            self.assertIn('Signature=', response.json["data"]["url"])
+            self.assertIn('KeyID=', response.json["data"]["url"])
+            self.assertNotIn('Expires=', response.json["data"]["url"])
+            key = response.json["data"]["url"].split('/')[-1].split('?')[0]
+            tender = self.db.get(self.tender_id)
+            self.assertIn(key, tender['documents'][-1]["url"])
+            self.assertIn('Signature=', tender['documents'][-1]["url"])
+            self.assertIn('KeyID=', tender['documents'][-1]["url"])
+            self.assertNotIn('Expires=', tender['documents'][-1]["url"])
+        else:
+            key = response.json["data"]["url"].split('?')[-1].split('=')[-1]
 
-        if self.s3_connection:
+        if self.docservice:
             response = self.app.get('/tenders/{}/documents/{}?download={}'.format(
                 self.tender_id, doc_id, key))
             self.assertEqual(response.status, '302 Moved Temporarily')
-            self.assertEqual(response.location, 'http://s3/{}/{}/{}/{}'.format('bucket', self.tender_id, doc_id, key))
+            self.assertIn('http://localhost/get/', response.location)
+            self.assertIn('Signature=', response.location)
+            self.assertIn('KeyID=', response.location)
+            self.assertNotIn('Expires=', response.location)
         else:
             response = self.app.get('/tenders/{}/documents/{}?download={}'.format(
                 self.tender_id, doc_id, key))
@@ -202,6 +230,7 @@ class TenderDocumentResourceTest(BaseTenderWebTest):
         dateModified2 = response.json["data"]['dateModified']
         self.assertTrue(dateModified < dateModified2)
         self.assertEqual(dateModified, response.json["data"]["previousVersions"][0]['dateModified'])
+        self.assertEqual(response.json["data"]['datePublished'], datePublished)
 
         response = self.app.get('/tenders/{}/documents?all=true'.format(self.tender_id))
         self.assertEqual(response.status, '200 OK')
@@ -238,13 +267,27 @@ class TenderDocumentResourceTest(BaseTenderWebTest):
         self.assertEqual(response.status, '200 OK')
         self.assertEqual(response.content_type, 'application/json')
         self.assertEqual(doc_id, response.json["data"]["id"])
-        key = response.json["data"]["url"].split('?')[-1].split('=')[-1]
+        if self.docservice:
+            self.assertIn('Signature=', response.json["data"]["url"])
+            self.assertIn('KeyID=', response.json["data"]["url"])
+            self.assertNotIn('Expires=', response.json["data"]["url"])
+            key = response.json["data"]["url"].split('/')[-1].split('?')[0]
+            tender = self.db.get(self.tender_id)
+            self.assertIn(key, tender['documents'][-1]["url"])
+            self.assertIn('Signature=', tender['documents'][-1]["url"])
+            self.assertIn('KeyID=', tender['documents'][-1]["url"])
+            self.assertNotIn('Expires=', tender['documents'][-1]["url"])
+        else:
+            key = response.json["data"]["url"].split('?')[-1].split('=')[-1]
 
-        if self.s3_connection:
+        if self.docservice:
             response = self.app.get('/tenders/{}/documents/{}?download={}'.format(
                 self.tender_id, doc_id, key))
             self.assertEqual(response.status, '302 Moved Temporarily')
-            self.assertEqual(response.location, 'http://s3/{}/{}/{}/{}'.format('bucket', self.tender_id, doc_id, key))
+            self.assertIn('http://localhost/get/', response.location)
+            self.assertIn('Signature=', response.location)
+            self.assertIn('KeyID=', response.location)
+            self.assertNotIn('Expires=', response.location)
         else:
             response = self.app.get('/tenders/{}/documents/{}?download={}'.format(
                 self.tender_id, doc_id, key))
@@ -337,223 +380,330 @@ class TenderDocumentResourceTest(BaseTenderWebTest):
         self.assertEqual(response.json['errors'][0]["description"], "Can't update document in current (active.tendering) tender status")
 
 
-import boto
-from boto.utils import find_matching_headers
-from boto.utils import merge_headers_by_name
+class TenderDocumentWithDSResourceTest(TenderDocumentResourceTest):
+    docservice = True
 
-try:
-    from hashlib import md5
-except ImportError:
-    from md5 import md5
+    def test_create_tender_document_json_invalid(self):
+        response = self.app.post_json('/tenders/{}/documents'.format(self.tender_id),
+            {'data': {
+                'title': u'укр.doc',
+                'url': self.generate_docservice_url(),
+                'format': 'application/msword',
+            }}, status=422)
+        self.assertEqual(response.status, '422 Unprocessable Entity')
+        self.assertEqual(response.content_type, 'application/json')
+        self.assertEqual(response.json['errors'][0]["description"], "This field is required.")
 
+        response = self.app.post_json('/tenders/{}/documents'.format(self.tender_id),
+            {'data': {
+                'title': u'укр.doc',
+                'url': self.generate_docservice_url(),
+                'hash': '0' * 32,
+                'format': 'application/msword',
+            }}, status=422)
+        self.assertEqual(response.status, '422 Unprocessable Entity')
+        self.assertEqual(response.content_type, 'application/json')
+        self.assertEqual(response.json['errors'], [
+            {u'description': [u'Hash type is not supported.'], u'location': u'body', u'name': u'hash'}
+        ])
 
-NOT_IMPL = None
+        response = self.app.post_json('/tenders/{}/documents'.format(self.tender_id),
+            {'data': {
+                'title': u'укр.doc',
+                'url': self.generate_docservice_url(),
+                'hash': 'sha2048:' + '0' * 32,
+                'format': 'application/msword',
+            }}, status=422)
+        self.assertEqual(response.status, '422 Unprocessable Entity')
+        self.assertEqual(response.content_type, 'application/json')
+        self.assertEqual(response.json['errors'], [
+            {u'description': [u'Hash type is not supported.'], u'location': u'body', u'name': u'hash'}
+        ])
 
+        response = self.app.post_json('/tenders/{}/documents'.format(self.tender_id),
+            {'data': {
+                'title': u'укр.doc',
+                'url': self.generate_docservice_url(),
+                'hash': 'sha512:' + '0' * 32,
+                'format': 'application/msword',
+            }}, status=422)
+        self.assertEqual(response.status, '422 Unprocessable Entity')
+        self.assertEqual(response.content_type, 'application/json')
+        self.assertEqual(response.json['errors'], [
+            {u'description': [u'Hash value is wrong length.'], u'location': u'body', u'name': u'hash'}
+        ])
 
-class MockAcl(object):
+        response = self.app.post_json('/tenders/{}/documents'.format(self.tender_id),
+            {'data': {
+                'title': u'укр.doc',
+                'url': self.generate_docservice_url(),
+                'hash': 'md5:' + 'O' * 32,
+                'format': 'application/msword',
+            }}, status=422)
+        self.assertEqual(response.status, '422 Unprocessable Entity')
+        self.assertEqual(response.content_type, 'application/json')
+        self.assertEqual(response.json['errors'], [
+            {u'description': [u'Hash value is not hexadecimal.'], u'location': u'body', u'name': u'hash'}
+        ])
 
-    def __init__(self, parent=NOT_IMPL):
-        pass
+        response = self.app.post_json('/tenders/{}/documents'.format(self.tender_id),
+            {'data': {
+                'title': u'укр.doc',
+                'url': 'http://invalid.docservice.url/get/uuid',
+                'hash': 'md5:' + '0' * 32,
+                'format': 'application/msword',
+            }}, status=403)
+        self.assertEqual(response.status, '403 Forbidden')
+        self.assertEqual(response.content_type, 'application/json')
+        self.assertEqual(response.json['errors'][0]["description"], "Can add document only from document service.")
 
-    def startElement(self, name, attrs, connection):
-        pass
+        response = self.app.post_json('/tenders/{}/documents'.format(self.tender_id),
+            {'data': {
+                'title': u'укр.doc',
+                'url': '/'.join(self.generate_docservice_url().split('/')[:4]),
+                'hash': 'md5:' + '0' * 32,
+                'format': 'application/msword',
+            }}, status=403)
+        self.assertEqual(response.status, '403 Forbidden')
+        self.assertEqual(response.content_type, 'application/json')
+        self.assertEqual(response.json['errors'][0]["description"], "Can add document only from document service.")
 
-    def endElement(self, name, value, connection):
-        pass
+        response = self.app.post_json('/tenders/{}/documents'.format(self.tender_id),
+            {'data': {
+                'title': u'укр.doc',
+                'url': self.generate_docservice_url().split('?')[0],
+                'hash': 'md5:' + '0' * 32,
+                'format': 'application/msword',
+            }}, status=403)
+        self.assertEqual(response.status, '403 Forbidden')
+        self.assertEqual(response.content_type, 'application/json')
+        self.assertEqual(response.json['errors'][0]["description"], "Can add document only from document service.")
 
-    def to_xml(self):
-        return '<mock_ACL_XML/>'
+        response = self.app.post_json('/tenders/{}/documents'.format(self.tender_id),
+            {'data': {
+                'title': u'укр.doc',
+                'url': self.generate_docservice_url().replace(self.app.app.registry.keyring.keys()[-1], '0' * 8),
+                'hash': 'md5:' + '0' * 32,
+                'format': 'application/msword',
+            }}, status=422)
+        self.assertEqual(response.status, '422 Unprocessable Entity')
+        self.assertEqual(response.content_type, 'application/json')
+        self.assertEqual(response.json['errors'][0]["description"], "Document url expired.")
 
+        response = self.app.post_json('/tenders/{}/documents'.format(self.tender_id),
+            {'data': {
+                'title': u'укр.doc',
+                'url': self.generate_docservice_url().replace("Signature=", "Signature=ABC"),
+                'hash': 'md5:' + '0' * 32,
+                'format': 'application/msword',
+            }}, status=422)
+        self.assertEqual(response.status, '422 Unprocessable Entity')
+        self.assertEqual(response.content_type, 'application/json')
+        self.assertEqual(response.json['errors'][0]["description"], "Document url signature invalid.")
 
-class MockKey(object):
+        response = self.app.post_json('/tenders/{}/documents'.format(self.tender_id),
+            {'data': {
+                'title': u'укр.doc',
+                'url': self.generate_docservice_url().replace("Signature=", "Signature=bw%3D%3D"),
+                'hash': 'md5:' + '0' * 32,
+                'format': 'application/msword',
+            }}, status=422)
+        self.assertEqual(response.status, '422 Unprocessable Entity')
+        self.assertEqual(response.content_type, 'application/json')
+        self.assertEqual(response.json['errors'][0]["description"], "Document url invalid.")
 
-    def __init__(self, bucket=None, name=None):
-        self.bucket = bucket
-        self.name = name
-        self.data = None
-        self.etag = None
-        self.size = None
-        self.closed = True
-        self.content_encoding = None
-        self.content_language = None
-        self.content_type = None
-        self.last_modified = 'Wed, 06 Oct 2010 05:11:54 GMT'
-        self.BufferSize = 8192
-        self.metadata = {}
+    def test_create_tender_document_json(self):
+        response = self.app.post_json('/tenders/{}/documents'.format(self.tender_id),
+            {'data': {
+                'title': u'укр.doc',
+                'url': self.generate_docservice_url(),
+                'hash': 'md5:' + '0' * 32,
+                'format': 'application/msword',
+            }})
+        self.assertEqual(response.status, '201 Created')
+        self.assertEqual(response.content_type, 'application/json')
+        doc_id = response.json["data"]['id']
+        self.assertIn(doc_id, response.headers['Location'])
+        self.assertEqual(u'укр.doc', response.json["data"]["title"])
+        self.assertIn('Signature=', response.json["data"]["url"])
+        self.assertIn('KeyID=', response.json["data"]["url"])
+        self.assertNotIn('Expires=', response.json["data"]["url"])
+        key = response.json["data"]["url"].split('/')[-1].split('?')[0]
+        tender = self.db.get(self.tender_id)
+        self.assertIn(key, tender['documents'][-1]["url"])
+        self.assertIn('Signature=', tender['documents'][-1]["url"])
+        self.assertIn('KeyID=', tender['documents'][-1]["url"])
+        self.assertNotIn('Expires=', tender['documents'][-1]["url"])
 
-    def set_contents_from_file(self, fp, headers=None, replace=NOT_IMPL,
-                               cb=NOT_IMPL, num_cb=NOT_IMPL,
-                               policy=NOT_IMPL, md5=NOT_IMPL,
-                               res_upload_handler=NOT_IMPL):
-        self.data = fp.read()
-        self.set_etag()
-        self.size = len(self.data)
-        self._handle_headers(headers)
+        response = self.app.get('/tenders/{}/documents'.format(self.tender_id))
+        self.assertEqual(response.status, '200 OK')
+        self.assertEqual(response.content_type, 'application/json')
+        self.assertEqual(doc_id, response.json["data"][0]["id"])
+        self.assertEqual(u'укр.doc', response.json["data"][0]["title"])
 
-    def set_acl(self, acl_str, headers=None):
-        pass
+        response = self.app.get('/tenders/{}/documents/{}?download=some_id'.format(
+            self.tender_id, doc_id), status=404)
+        self.assertEqual(response.status, '404 Not Found')
+        self.assertEqual(response.content_type, 'application/json')
+        self.assertEqual(response.json['status'], 'error')
+        self.assertEqual(response.json['errors'], [
+            {u'description': u'Not Found', u'location': u'url', u'name': u'download'}
+        ])
 
-    def _handle_headers(self, headers):
-        if not headers:
-            return
-        if find_matching_headers('Content-Encoding', headers):
-            self.content_encoding = merge_headers_by_name('Content-Encoding',
-                                                          headers)
-        if find_matching_headers('Content-Type', headers):
-            self.content_type = merge_headers_by_name('Content-Type', headers)
-        if find_matching_headers('Content-Language', headers):
-            self.content_language = merge_headers_by_name('Content-Language',
-                                                          headers)
+        response = self.app.get('/tenders/{}/documents/{}?download={}'.format(
+            self.tender_id, doc_id, key))
+        self.assertEqual(response.status, '302 Moved Temporarily')
+        self.assertIn('http://localhost/get/', response.location)
+        self.assertIn('Signature=', response.location)
+        self.assertIn('KeyID=', response.location)
+        self.assertNotIn('Expires=', response.location)
 
-    def set_etag(self):
-        """
-        Set etag attribute by generating hex MD5 checksum on current
-        contents of mock key.
-        """
-        m = md5()
-        m.update(self.data)
-        hex_md5 = m.hexdigest()
-        self.etag = hex_md5
+        response = self.app.get('/tenders/{}/documents/{}'.format(
+            self.tender_id, doc_id))
+        self.assertEqual(response.status, '200 OK')
+        self.assertEqual(response.content_type, 'application/json')
+        self.assertEqual(doc_id, response.json["data"]["id"])
+        self.assertEqual(u'укр.doc', response.json["data"]["title"])
 
-    def set_metadata(self, name, value):
-        # Ensure that metadata that is vital to signing is in the correct
-        # case. Applies to ``Content-Type`` & ``Content-MD5``.
-        if name.lower() == 'content-type':
-            self.metadata['Content-Type'] = value
-        elif name.lower() == 'content-md5':
-            self.metadata['Content-MD5'] = value
-        else:
-            self.metadata[name] = value
+        self.set_status('active.tendering')
 
-    def set_remote_metadata(self, metadata_plus, metadata_minus, preserve_acl,
-                            headers=None):
-        src_bucket = self.bucket
-        metadata = self.metadata
-        metadata.update(metadata_plus)
-        for h in metadata_minus:
-            if h in metadata:
-                del metadata[h]
-        rewritten_metadata = {}
-        for h in metadata:
-            if (h.startswith('x-goog-meta-') or h.startswith('x-amz-meta-')):
-                rewritten_h = (h.replace('x-goog-meta-', '')
-                               .replace('x-amz-meta-', ''))
-            else:
-                rewritten_h = h
-            rewritten_metadata[rewritten_h] = metadata[h]
-        metadata = rewritten_metadata
-        src_bucket.copy_key(self.name, self.bucket.name, self.name,
-                            metadata=metadata, preserve_acl=preserve_acl,
-                            headers=headers)
+        response = self.app.post_json('/tenders/{}/documents'.format(self.tender_id),
+            {'data': {
+                'title': u'укр.doc',
+                'url': self.generate_docservice_url(),
+                'hash': 'md5:' + '0' * 32,
+                'format': 'application/msword',
+            }}, status=403)
+        self.assertEqual(response.status, '403 Forbidden')
+        self.assertEqual(response.content_type, 'application/json')
+        self.assertEqual(response.json['errors'][0]["description"], "Can't add document in current (active.tendering) tender status")
 
-    def copy(self, dst_bucket_name, dst_key, metadata=NOT_IMPL,
-             reduced_redundancy=NOT_IMPL, preserve_acl=NOT_IMPL):
-        dst_bucket = self.bucket.connection.get_bucket(dst_bucket_name)
-        return dst_bucket.copy_key(dst_key, self.bucket.name, self.name, metadata)
+    def test_put_tender_document_json(self):
+        response = self.app.post_json('/tenders/{}/documents'.format(self.tender_id),
+            {'data': {
+                'title': u'укр.doc',
+                'url': self.generate_docservice_url(),
+                'hash': 'md5:' + '0' * 32,
+                'format': 'application/msword',
+            }})
+        self.assertEqual(response.status, '201 Created')
+        self.assertEqual(response.content_type, 'application/json')
+        self.assertEqual(u'укр.doc', response.json["data"]["title"])
+        doc_id = response.json["data"]['id']
+        dateModified = response.json["data"]['dateModified']
+        datePublished = response.json["data"]['datePublished']
+        self.assertIn(doc_id, response.headers['Location'])
 
+        response = self.app.put_json('/tenders/{}/documents/{}'.format(self.tender_id, doc_id),
+            {'data': {
+                'title': u'name.doc',
+                'url': self.generate_docservice_url(),
+                'hash': 'md5:' + '0' * 32,
+                'format': 'application/msword',
+            }})
+        self.assertEqual(response.status, '200 OK')
+        self.assertEqual(response.content_type, 'application/json')
+        self.assertEqual(doc_id, response.json["data"]["id"])
+        self.assertIn('Signature=', response.json["data"]["url"])
+        self.assertIn('KeyID=', response.json["data"]["url"])
+        self.assertNotIn('Expires=', response.json["data"]["url"])
+        key = response.json["data"]["url"].split('/')[-1].split('?')[0]
+        tender = self.db.get(self.tender_id)
+        self.assertIn(key, tender['documents'][-1]["url"])
+        self.assertIn('Signature=', tender['documents'][-1]["url"])
+        self.assertIn('KeyID=', tender['documents'][-1]["url"])
+        self.assertNotIn('Expires=', tender['documents'][-1]["url"])
 
-class MockBucket(object):
+        response = self.app.get('/tenders/{}/documents/{}?download={}'.format(
+            self.tender_id, doc_id, key))
+        self.assertEqual(response.status, '302 Moved Temporarily')
+        self.assertIn('http://localhost/get/', response.location)
+        self.assertIn('Signature=', response.location)
+        self.assertIn('KeyID=', response.location)
+        self.assertNotIn('Expires=', response.location)
 
-    def __init__(self, connection=None, name=None, key_class=NOT_IMPL):
-        self.name = name
-        self.keys = {}
-        self.acls = {name: MockAcl()}
-        # default object ACLs are one per bucket and not supported for keys
-        self.def_acl = MockAcl()
-        self.subresources = {}
-        self.connection = connection
-        self.logging = False
+        response = self.app.get('/tenders/{}/documents/{}'.format(
+            self.tender_id, doc_id))
+        self.assertEqual(response.status, '200 OK')
+        self.assertEqual(response.content_type, 'application/json')
+        self.assertEqual(doc_id, response.json["data"]["id"])
+        self.assertEqual(u'name.doc', response.json["data"]["title"])
+        dateModified2 = response.json["data"]['dateModified']
+        self.assertTrue(dateModified < dateModified2)
+        self.assertEqual(dateModified, response.json["data"]["previousVersions"][0]['dateModified'])
+        self.assertEqual(response.json["data"]['datePublished'], datePublished)
 
-    def new_key(self, key_name=None):
-        mock_key = MockKey(self, key_name)
-        self.keys[key_name] = mock_key
-        self.acls[key_name] = MockAcl()
-        return mock_key
+        response = self.app.get('/tenders/{}/documents?all=true'.format(self.tender_id))
+        self.assertEqual(response.status, '200 OK')
+        self.assertEqual(response.content_type, 'application/json')
+        self.assertEqual(dateModified, response.json["data"][0]['dateModified'])
+        self.assertEqual(dateModified2, response.json["data"][1]['dateModified'])
 
-    def get_key(self, key_name, headers=NOT_IMPL, version_id=NOT_IMPL):
-        # Emulate behavior of boto when get_key called with non-existent key.
-        if key_name not in self.keys:
-            return None
-        return self.keys[key_name]
+        response = self.app.post_json('/tenders/{}/documents'.format(self.tender_id, doc_id),
+            {'data': {
+                'title': 'name.doc',
+                'url': self.generate_docservice_url(),
+                'hash': 'md5:' + '0' * 32,
+                'format': 'application/msword',
+            }})
+        self.assertEqual(response.status, '201 Created')
+        self.assertEqual(response.content_type, 'application/json')
+        doc_id = response.json["data"]['id']
+        dateModified = response.json["data"]['dateModified']
+        self.assertIn(doc_id, response.headers['Location'])
 
-    def copy_key(self, new_key_name, src_bucket_name,
-                 src_key_name, metadata=NOT_IMPL, src_version_id=NOT_IMPL,
-                 storage_class=NOT_IMPL, preserve_acl=NOT_IMPL,
-                 encrypt_key=NOT_IMPL, headers=NOT_IMPL, query_args=NOT_IMPL):
-        import copy
-        src_key = self.connection.get_bucket(src_bucket_name).get_key(src_key_name)
-        new_key = self.new_key(key_name=new_key_name)
-        new_key.data = copy.copy(src_key.data)
-        new_key.size = len(new_key.data)
-        return new_key
+        response = self.app.get('/tenders/{}/documents'.format(self.tender_id))
+        self.assertEqual(response.status, '200 OK')
+        self.assertEqual(response.content_type, 'application/json')
+        self.assertEqual(dateModified2, response.json["data"][0]['dateModified'])
+        self.assertEqual(dateModified, response.json["data"][1]['dateModified'])
 
+        response = self.app.put_json('/tenders/{}/documents/{}'.format(self.tender_id, doc_id),
+            {'data': {
+                'title': u'укр.doc',
+                'url': self.generate_docservice_url(),
+                'hash': 'md5:' + '0' * 32,
+                'format': 'application/msword',
+            }})
+        self.assertEqual(response.status, '200 OK')
+        self.assertEqual(response.content_type, 'application/json')
+        self.assertEqual(doc_id, response.json["data"]["id"])
+        self.assertIn('Signature=', response.json["data"]["url"])
+        self.assertIn('KeyID=', response.json["data"]["url"])
+        self.assertNotIn('Expires=', response.json["data"]["url"])
+        key = response.json["data"]["url"].split('/')[-1].split('?')[0]
+        tender = self.db.get(self.tender_id)
+        self.assertIn(key, tender['documents'][-1]["url"])
+        self.assertIn('Signature=', tender['documents'][-1]["url"])
+        self.assertIn('KeyID=', tender['documents'][-1]["url"])
+        self.assertNotIn('Expires=', tender['documents'][-1]["url"])
 
-class MockProvider(object):
+        response = self.app.get('/tenders/{}/documents/{}?download={}'.format(
+            self.tender_id, doc_id, key))
+        self.assertEqual(response.status, '302 Moved Temporarily')
+        self.assertIn('http://localhost/get/', response.location)
+        self.assertIn('Signature=', response.location)
+        self.assertIn('KeyID=', response.location)
+        self.assertNotIn('Expires=', response.location)
 
-    def __init__(self, provider):
-        self.provider = provider
+        self.set_status('active.tendering')
 
-    def get_provider_name(self):
-        return self.provider
-
-
-class MockConnection(object):
-
-    def __init__(self, aws_access_key_id=NOT_IMPL,
-                 aws_secret_access_key=NOT_IMPL, is_secure=NOT_IMPL,
-                 port=NOT_IMPL, proxy=NOT_IMPL, proxy_port=NOT_IMPL,
-                 proxy_user=NOT_IMPL, proxy_pass=NOT_IMPL,
-                 host=NOT_IMPL, debug=NOT_IMPL,
-                 https_connection_factory=NOT_IMPL,
-                 calling_format=NOT_IMPL,
-                 path=NOT_IMPL, provider='s3',
-                 bucket_class=NOT_IMPL):
-        self.buckets = {}
-        self.provider = MockProvider(provider)
-
-    def create_bucket(self, bucket_name, headers=NOT_IMPL, location=NOT_IMPL,
-                      policy=NOT_IMPL, storage_class=NOT_IMPL):
-        if bucket_name in self.buckets:
-            raise boto.exception.StorageCreateError(
-                409, 'BucketAlreadyOwnedByYou',
-                "<Message>Your previous request to create the named bucket "
-                "succeeded and you already own it.</Message>")
-        mock_bucket = MockBucket(name=bucket_name, connection=self)
-        self.buckets[bucket_name] = mock_bucket
-        return mock_bucket
-
-    def get_bucket(self, bucket_name, validate=NOT_IMPL, headers=NOT_IMPL):
-        if bucket_name not in self.buckets:
-            raise boto.exception.StorageResponseError(404, 'NoSuchBucket', 'Not Found')
-        return self.buckets[bucket_name]
-
-    def get_all_buckets(self, headers=NOT_IMPL):
-        return self.buckets.itervalues()
-
-    def generate_url(self, expires_in, method, bucket='', key='', headers=None,
-                     query_auth=True, force_http=False, response_headers=None,
-                     expires_in_absolute=False, version_id=None):
-        return 'http://s3/{}/{}'.format(bucket, key)
-
-
-class TenderDocumentWithS3ResourceTest(TenderDocumentResourceTest):
-    s3_connection = True
-
-    def setUp(self):
-        super(TenderDocumentWithS3ResourceTest, self).setUp()
-        # Create mock s3 connection
-        connection = MockConnection()
-        self.app.app.registry.s3_connection = connection
-        bucket_name = 'bucket'
-        if bucket_name not in [b.name for b in connection.get_all_buckets()]:
-            connection.create_bucket(bucket_name)
-        self.app.app.registry.bucket_name = bucket_name
+        response = self.app.put_json('/tenders/{}/documents/{}'.format(self.tender_id, doc_id),
+            {'data': {
+                'title': u'укр.doc',
+                'url': self.generate_docservice_url(),
+                'hash': 'md5:' + '0' * 32,
+                'format': 'application/msword',
+            }}, status=403)
+        self.assertEqual(response.status, '403 Forbidden')
+        self.assertEqual(response.content_type, 'application/json')
+        self.assertEqual(response.json['errors'][0]["description"], "Can't update document in current (active.tendering) tender status")
 
 
 def suite():
     suite = unittest.TestSuite()
     suite.addTest(unittest.makeSuite(TenderDocumentResourceTest))
-    suite.addTest(unittest.makeSuite(TenderDocumentWithS3ResourceTest))
+    suite.addTest(unittest.makeSuite(TenderDocumentWithDSResourceTest))
     return suite
 
 

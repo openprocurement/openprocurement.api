@@ -278,8 +278,16 @@ def validate_patch_lot_data(request):
     return validate_data(request, model, True)
 
 
+def validate_document_data(request):
+    context = request.context if 'documents' in request.context else request.context.__parent__
+    model = type(context).documents.model_class
+    return validate_data(request, model)
+
+
 def validate_file_upload(request):
     update_logging_context(request, {'document_id': '__new__'})
+    if request.registry.docservice_url and request.content_type == "application/json":
+        return validate_document_data(request)
     if 'file' not in request.POST or not hasattr(request.POST['file'], 'filename'):
         request.errors.add('body', 'file', 'Not Found')
         request.errors.status = 404
@@ -288,5 +296,7 @@ def validate_file_upload(request):
 
 
 def validate_file_update(request):
+    if request.registry.docservice_url and request.content_type == "application/json":
+        return validate_document_data(request)
     if request.content_type == 'multipart/form-data':
         validate_file_upload(request)
