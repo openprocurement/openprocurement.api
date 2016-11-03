@@ -383,6 +383,22 @@ class TenderDocumentResourceTest(BaseTenderWebTest):
 class TenderDocumentWithDSResourceTest(TenderDocumentResourceTest):
     docservice = True
 
+    def test_create_tender_document_error(self):
+        self.tearDownDS()
+        response = self.app.post('/tenders/{}/documents'.format(self.tender_id),
+                                 upload_files=[('file', u'укр.doc', 'content')],
+                                 status=422)
+        self.assertEqual(response.status, '422 Unprocessable Entity')
+        self.assertEqual(response.content_type, 'application/json')
+        self.assertEqual(response.json['errors'][0]["description"], "Can't upload document to document service.")
+        self.setUpBadDS()
+        response = self.app.post('/tenders/{}/documents'.format(self.tender_id),
+                                 upload_files=[('file', u'укр.doc', 'content')],
+                                 status=422)
+        self.assertEqual(response.status, '422 Unprocessable Entity')
+        self.assertEqual(response.content_type, 'application/json')
+        self.assertEqual(response.json['errors'][0]["description"], "Can't upload document to document service.")
+
     def test_create_tender_document_json_invalid(self):
         response = self.app.post_json('/tenders/{}/documents'.format(self.tender_id),
             {'data': {
