@@ -178,13 +178,18 @@ def upload_file(request, blacklisted_fields=DOCUMENT_BLACKLISTED_FIELDS):
                                 auth=(request.registry.docservice_username, request.registry.docservice_password)
                                 )
                 json_data = r.json()
-            except:
-                pass
+            except Exception, e:
+                LOGGER.warning("Raised exception '{}' on uploading document to document service': {}.".format(type(e), e),
+                               extra=context_unpack(request, {'MESSAGE_ID': 'document_service_exception'}, {'file_size': in_file.tell()}))
             else:
                 if r.status_code == 200 and json_data.get('data', {}).get('url'):
                     doc_url = json_data['data']['url']
                     doc_hash = json_data['data']['hash']
                     break
+                else:
+                    LOGGER.warning("Error {} on uploading document to document service '{}': {}".format(r.status_code, url, r.text),
+                                   extra=context_unpack(request, {'MESSAGE_ID': 'document_service_error'}, {'ERROR_STATUS': r.status_code, 'file_size': in_file.tell()}))
+            in_file.seek(0)
             index -= 1
         else:
             request.errors.add('body', 'data', "Can't upload document to document service.")

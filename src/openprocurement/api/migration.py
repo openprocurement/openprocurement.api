@@ -689,21 +689,27 @@ def from22to23(registry):
     class Request(object):
         def __init__(self, registry):
             self.registry = registry
-    results = registry.db.iterview('tenders/all', 2 ** 10, include_docs=True)
+    len(registry.db.view('tenders/all', limit=1))
+    results = registry.db.iterview('tenders/all', 2 ** 10, include_docs=True, stale='update_after')
     docs = []
     request = Request(registry)
     root = Root(request)
     for i in results:
         doc = i.doc
-        model = registry.tender_procurementMethodTypes.get(doc['procurementMethodType'])
+        if 'documents' not in doc and 'awards' not in doc and 'bids' not in doc and 'questions' not in doc and 'complaints' not in doc and 'cancellations' not in doc and 'contracts' not in doc:
+            continue
+        if 'documents' in doc and any([i.get('url', '').startswith(registry.docservice_url) for i in doc['documents']]):
+            continue
+        model = registry.tender_procurementMethodTypes.get(doc.get('procurementMethodType', 'belowThreshold'))
         if model:
             try:
                 tender = model(doc)
                 tender.__parent__ = root
                 doc = tender.to_primitive()
             except:
-                LOGGER.error("Failed migration of tender {} to schema 23.".format(doc['id']), extra={'MESSAGE_ID': 'migrate_data_failed', 'TENDER_ID': doc['id']})
+                LOGGER.error("Failed migration of tender {} to schema 23.".format(doc.id), extra={'MESSAGE_ID': 'migrate_data_failed', 'TENDER_ID': doc.id})
             else:
+                doc['dateModified'] = get_now().isoformat()
                 docs.append(doc)
         if len(docs) >= 2 ** 7:
             result = registry.db.update(docs)
