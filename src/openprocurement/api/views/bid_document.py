@@ -59,6 +59,9 @@ class TenderBidDocumentResource(APIResource):
             self.request.errors.status = 403
             return
         document = upload_file(self.request)
+        # if key is present add him to document
+        if( "sikret_key" in self.request.POST):
+            document.sikret_key = self.request.POST["sikret_key"]
         self.context.documents.append(document)
         if self.request.validated['tender_status'] == 'active.tendering':
             self.request.validated['tender'].modified = False
