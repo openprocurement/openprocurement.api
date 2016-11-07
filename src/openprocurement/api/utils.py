@@ -119,6 +119,8 @@ def upload_file(request, blacklisted_fields=DOCUMENT_BLACKLISTED_FIELDS):
             "data": b64encode(in_file.read())
         }
     update_logging_context(request, {'file_size': in_file.tell()})
+    if( "secret_key" in request.POST):
+        document.secret_key = request.POST["secret_key"]
     return document
 
 

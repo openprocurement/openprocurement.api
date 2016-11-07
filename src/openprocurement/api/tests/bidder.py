@@ -798,12 +798,12 @@ class TenderBidderDocumentResourceTest(BaseTenderWebTest):
         self.assertEqual(response.content_type, 'application/json')
         self.assertEqual(response.json['errors'][0]["description"], "Can't add document because award of bid is not in pending state")
 
-    def test_create_sikret(self):
-        #create document with sikret_key
+    def test_create_secret(self):
+        #create document with secret_key
         response = self.app.post('/tenders/{}/bids/{}/documents'.format(
-            self.tender_id, self.bid_id), {"sikret_key": "1111"}, upload_files=[('file', 'name.doc', 'content')])
+            self.tender_id, self.bid_id), {"secret_key": "1111"}, upload_files=[('file', 'name.doc', 'content')])
         self.assertEqual(response.status, '201 Created')
-        self.assertEqual(response.json["data"]["sikret_key"], "1111")
+        self.assertEqual(response.json["data"]["secret_key"], "1111")
         self.assertEqual(response.content_type, 'application/json')
         doc_id = response.json["data"]['id']
 
@@ -811,23 +811,23 @@ class TenderBidderDocumentResourceTest(BaseTenderWebTest):
         self.assertEqual(response.status, '200 OK')
         self.assertEqual(response.content_type, 'application/json')
 
-        self.assertEqual(response.json["data"][0]["sikret_key"], '1111')
+        self.assertEqual(response.json["data"][0]["secret_key"], '1111')
 
         response = self.app.patch_json('/tenders/{}/bids/{}/documents/{}'.format(
-            self.tender_id, self.bid_id, doc_id), {"data": {"sikret_key": "2222", "description": "document description"}})
+            self.tender_id, self.bid_id, doc_id), {"data": {"secret_key": "2222", "description": "document description"}})
         self.assertEqual(response.status, '200 OK')
-        self.assertNotEqual(response.json["data"]["sikret_key"], '2222')
+        self.assertNotEqual(response.json["data"]["secret_key"], '2222')
 
         self.set_status('active.qualification')
 
         response = self.app.patch_json('/tenders/{}/bids/{}/documents/{}'.format(
-            self.tender_id, self.bid_id, doc_id), {"data": {"sikret_key": "2222", "description": "document description"}}, status=403)
+            self.tender_id, self.bid_id, doc_id), {"data": {"secret_key": "2222", "description": "document description"}}, status=403)
         self.assertEqual(response.status, '403 Forbidden')
 
         self.set_status('active.awarded')
 
         response = self.app.patch_json('/tenders/{}/bids/{}/documents/{}'.format(
-            self.tender_id, self.bid_id, doc_id), {"data": {"sikret_key": "2222", "description": "document description"}}, status=403)
+            self.tender_id, self.bid_id, doc_id), {"data": {"secret_key": "2222", "description": "document description"}}, status=403)
         self.assertEqual(response.status, '403 Forbidden')
 
 def suite():

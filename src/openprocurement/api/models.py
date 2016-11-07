@@ -361,7 +361,8 @@ class Item(Model):
 class Document(Model):
     class Options:
         roles = {
-            'edit': blacklist('id', 'url', 'datePublished', 'dateModified', 'sikret_key', ''),
+            'edit': blacklist('id', 'url', 'datePublished', 'dateModified', ''),
+            'edit': blacklist('id', 'url', 'datePublished', 'dateModified', 'secret_key', ''),
             'embedded': schematics_embedded_role,
             'view': (blacklist('revisions') + schematics_default_role),
             'revisions': whitelist('url', 'dateModified'),
@@ -393,7 +394,7 @@ class Document(Model):
     documentOf = StringType(required=True, choices=['tender', 'item', 'lot'], default='tender')
     relatedItem = MD5Type()
     author = StringType()
-    sikret_key = StringType()
+    secret_key = StringType()
 
     def import_data(self, raw_data, **kw):
         """
