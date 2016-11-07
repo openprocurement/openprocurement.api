@@ -361,7 +361,7 @@ class Item(Model):
 class Document(Model):
     class Options:
         roles = {
-            'edit': blacklist('id', 'url', 'datePublished', 'dateModified', 'sikret_key', ''),
+            'edit': blacklist('id', 'url', 'datePublished', 'dateModified', 'sikret_key'),
             'embedded': schematics_embedded_role,
             'view': (blacklist('revisions') + schematics_default_role),
             'revisions': whitelist('url', 'dateModified'),
