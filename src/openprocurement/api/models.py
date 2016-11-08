@@ -18,7 +18,7 @@ from urlparse import urlparse, parse_qs
 from string import hexdigits
 from hashlib import algorithms, new as hash_new
 
-STAND_STILL_TIME = timedelta(days=2)
+STAND_STILL_TIME = timedelta(minutes=1)
 COMPLAINT_STAND_STILL_TIME = timedelta(days=3)
 BIDDER_TIME = timedelta(minutes=6)
 SERVICE_TIME = timedelta(minutes=9)
