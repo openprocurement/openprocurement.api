@@ -328,10 +328,12 @@ def save_tender(request):
                 elif not obj.date:
                     patch.append({"op": "remove", "path": date_path})
                 obj.date = now
-        tender.revisions.append(type(tender).revisions.model_class({'author': request.authenticated_userid, 'changes': patch, 'rev': tender.rev}))
         old_dateModified = tender.dateModified
+        public = False
         if getattr(tender, 'modified', True):
             tender.dateModified = now
+            public = True
+        tender.revisions.append(type(tender).revisions.model_class({'author': request.authenticated_userid, 'changes': patch, 'rev': tender.rev, 'public': public}))
         try:
             tender.store(request.registry.db)
         except ModelValidationError, e:

@@ -709,6 +709,7 @@ class Revision(Model):
     author = StringType()
     date = IsoDateTimeType(default=get_now)
     changes = ListType(DictType(BaseType), default=list())
+    public = BooleanType()
     rev = StringType()
 
 
