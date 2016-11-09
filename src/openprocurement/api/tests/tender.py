@@ -935,6 +935,7 @@ class TenderResourceTest(BaseWebTest):
         revisions = self.db.get(tender['id']).get('revisions')
         self.assertEqual(revisions[-1][u'changes'][0]['op'], u'remove')
         self.assertEqual(revisions[-1][u'changes'][0]['path'], u'/procurementMethodRationale')
+        self.assertTrue(revisions[-1][u'public'])
 
         response = self.app.patch_json('/tenders/{}'.format(
             tender['id']), {'data': {'items': [data['items'][0]]}})
