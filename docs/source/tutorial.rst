@@ -363,3 +363,61 @@ Activating the request and cancelling tender
 
 .. include:: tutorial/active-cancellation.http
    :code:
+
+
+Merge contracts
+---------------
+
+For merge contracts `suppliers` must be the same. Let's get contracts.
+
+.. include:: tutorial/merged_contracts/all_pending_contracts.http
+   :code:
+
+
+Let's merge second contract in first, for merge need send field `additionalAwardIDs` with list of merge awards id.
+In response we must see `additionalAwardIDs`.
+
+.. include:: tutorial/merged_contracts/merge_contracts.http
+   :code:
+
+Now additional award must has status `merged`, and field `mergedInto`. We can't make changes with additional contract.
+
+.. include:: tutorial/merged_contracts/additional_contract.http
+   :code:
+
+Sign main contract
+~~~~~~~~~~~~~~~~~~
+
+Set contract value and sign.
+
+.. include:: tutorial/merged_contracts/tender-contract-sign.http
+   :code:
+
+Cancel main award
+~~~~~~~~~~~~~~~~~
+
+Let`s cancel award which contract has additional awards.
+
+.. include:: tutorial/merged_contracts/cancel_main_contract.http
+   :code:
+
+Lets look on contracts
+
+.. include:: tutorial/merged_contracts/contract_after_cancel_main_award.http
+   :code:
+
+We see that contract and award move in status `cancelled` and all additional contract change status from `merged` to `pending`, and remove field `mergeInto`.
+
+
+Cancel additional award
+~~~~~~~~~~~~~~~~~~~~~~~
+
+If cancel additional award then, award and contract move in status `cancelled`, and ID of award will delete from `additionalAwards` in main contract
+
+.. include:: tutorial/merged_contracts/cancel_additional_contract.http
+   :code:
+
+Let's look on main contract
+
+.. include:: tutorial/merged_contracts/main_contract_after_cancel_additional.http
+   :code:
