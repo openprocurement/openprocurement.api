@@ -608,7 +608,7 @@ class Bid(Model):
             'Administrator': Administrator_bid_role,
             'embedded': view_bid_role,
             'view': view_bid_role,
-            'create': whitelist('value', 'status', 'tenderers', 'parameters', 'lotValues'),
+            'create': whitelist('value', 'status', 'tenderers', 'parameters', 'lotValues', 'documents'),
             'edit': whitelist('value', 'status', 'tenderers', 'parameters', 'lotValues'),
             'auction_view': whitelist('value', 'lotValues', 'id', 'date', 'parameters', 'participationUrl'),
             'auction_post': whitelist('value', 'lotValues', 'id', 'date'),
