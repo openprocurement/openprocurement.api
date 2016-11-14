@@ -13,15 +13,12 @@ msgstr ""
 "Language: uk\n"
 "X-Generator: Poedit 1.7.6\n"
 
-#: ../../source/index.rst:12
 msgid "Welcome to openprocurement.api's documentation!"
 msgstr "Вітаємо на сайті документації по openprocurement.api!"
 
-#: ../../source/index.rst:19
 msgid "Contents:"
 msgstr "Зміст:"
 
-#: ../../source/index.rst:14
 msgid ""
 "Please report any problems or suggestions for improvement either via the "
 "`mailing list <http://groups.google.com/group/open-procurement-general>`_ or"
@@ -33,14 +30,11 @@ msgstr ""
 "через `issue tracker "
 "<https://github.com/openprocurement/openprocurement.api/issues>`_."
 
-#: ../../source/index.rst:47
 msgid "Indices and tables"
 msgstr "Індекси та таблиці"
 
-#: ../../source/index.rst:49
 msgid ":ref:`genindex`"
 msgstr ":ref:`genindex`"
 
-#: ../../source/index.rst:50
 msgid ":ref:`search`"
 msgstr ":ref:`search`"
