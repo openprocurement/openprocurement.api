@@ -816,7 +816,7 @@ class TenderBidderDocumentResourceTest(BaseTenderWebTest):
         response = self.app.patch_json('/tenders/{}/bids/{}/documents/{}'.format(
             self.tender_id, self.bid_id, doc_id), {"data": {"secret_key": "2222", "description": "document description"}})
         self.assertEqual(response.status, '200 OK')
-        self.assertNotEqual(response.json["data"]["secret_key"], '2222')
+        self.assertEqual(response.json["data"]["secret_key"], '2222')
 
         self.set_status('active.qualification')
 
