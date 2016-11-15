@@ -7,6 +7,7 @@ from cornice.util import json_error
 from couchdb.http import ResourceConflict
 from email.header import decode_header
 from functools import partial
+from itertools import ifilter
 from json import dumps
 from jsonpatch import make_patch, apply_patch as _apply_patch
 from jsonpointer import resolve_pointer
@@ -329,11 +330,17 @@ def save_tender(request):
                     patch.append({"op": "remove", "path": date_path})
                 obj.date = now
         old_dateModified = tender.dateModified
-        public = False
+        revision = {
+            'author': request.authenticated_userid,
+            'changes': patch,
+            'rev': tender.rev,
+            'public': False
+        }
         if getattr(tender, 'modified', True):
             tender.dateModified = now
-            public = True
-        tender.revisions.append(type(tender).revisions.model_class({'author': request.authenticated_userid, 'changes': patch, 'rev': tender.rev, 'public': public}))
+            revision['public'] = True
+            revision['date'] = now
+        tender.revisions.append(type(tender).revisions.model_class(revision))
         try:
             tender.store(request.registry.db)
         except ModelValidationError, e:
@@ -904,3 +911,4 @@ def calculate_business_date(date_obj, timedelta_obj, context=None, working_days=
                 date_obj += timedelta(1) if timedelta_obj > timedelta() else -timedelta(1)
         return date_obj
     return date_obj + timedelta_obj
+
