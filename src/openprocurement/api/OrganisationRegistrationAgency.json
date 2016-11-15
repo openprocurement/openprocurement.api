@@ -62,6 +62,14 @@
          "description":"There is no search available, but there is a listing of companies with telephone and fax numbers"
       },
       {
+         "category":"AT",
+         "code":"AT-FN",
+         "description":"Available only in German. Access can be obtained by using services of special companies like http://www.advokat.at/Advokat-Online/Module/Firmenbuch.aspx that are entitled to provide it (for full list see https://www.justiz.gv.at/web2013/html/default/2c9484852308c2a601240b693e1c0860.de.html)",
+	 "name":"Firmenbuch (the Ministry of Justice of Austria)",
+         "public-database":true,
+         "url":"https://www.justiz.gv.at/web2013/html/default/2c9484852308c2a601240b693e1c0860.de.html"
+      },
+      {
          "category":"AE",
          "code":"AE-FUJCCI",
          "name":"Fujairah Chamber of Commerce and Industry",
