@@ -2031,7 +2031,18 @@ class TenderAwardDocumentResourceTest(BaseTenderWebTest):
         doc_id = response.json["data"]['id']
         self.assertIn(doc_id, response.headers['Location'])
         self.assertEqual('name.doc', response.json["data"]["title"])
-        key = response.json["data"]["url"].split('?')[-1]
+        if self.docservice:
+            self.assertIn('Signature=', response.json["data"]["url"])
+            self.assertIn('KeyID=', response.json["data"]["url"])
+            self.assertNotIn('Expires=', response.json["data"]["url"])
+            key = response.json["data"]["url"].split('/')[-1].split('?')[0]
+            tender = self.db.get(self.tender_id)
+            self.assertIn(key, tender['awards'][-1]['documents'][-1]["url"])
+            self.assertIn('Signature=', tender['awards'][-1]['documents'][-1]["url"])
+            self.assertIn('KeyID=', tender['awards'][-1]['documents'][-1]["url"])
+            self.assertNotIn('Expires=', tender['awards'][-1]['documents'][-1]["url"])
+        else:
+            key = response.json["data"]["url"].split('?')[-1].split('=')[-1]
 
         response = self.app.get('/tenders/{}/awards/{}/documents'.format(self.tender_id, self.award_id))
         self.assertEqual(response.status, '200 OK')
@@ -2054,12 +2065,21 @@ class TenderAwardDocumentResourceTest(BaseTenderWebTest):
             {u'description': u'Not Found', u'location': u'url', u'name': u'download'}
         ])
 
-        response = self.app.get('/tenders/{}/awards/{}/documents/{}?{}'.format(
-            self.tender_id, self.award_id, doc_id, key))
-        self.assertEqual(response.status, '200 OK')
-        self.assertEqual(response.content_type, 'application/msword')
-        self.assertEqual(response.content_length, 7)
-        self.assertEqual(response.body, 'content')
+        if self.docservice:
+            response = self.app.get('/tenders/{}/awards/{}/documents/{}?download={}'.format(
+                self.tender_id, self.award_id, doc_id, key))
+            self.assertEqual(response.status, '302 Moved Temporarily')
+            self.assertIn('http://localhost/get/', response.location)
+            self.assertIn('Signature=', response.location)
+            self.assertIn('KeyID=', response.location)
+            self.assertNotIn('Expires=', response.location)
+        else:
+            response = self.app.get('/tenders/{}/awards/{}/documents/{}?download={}'.format(
+                self.tender_id, self.award_id, doc_id, key))
+            self.assertEqual(response.status, '200 OK')
+            self.assertEqual(response.content_type, 'application/msword')
+            self.assertEqual(response.content_length, 7)
+            self.assertEqual(response.body, 'content')
 
         response = self.app.get('/tenders/{}/awards/{}/documents/{}'.format(
             self.tender_id, self.award_id, doc_id))
@@ -2100,14 +2120,32 @@ class TenderAwardDocumentResourceTest(BaseTenderWebTest):
         self.assertEqual(response.status, '200 OK')
         self.assertEqual(response.content_type, 'application/json')
         self.assertEqual(doc_id, response.json["data"]["id"])
-        key = response.json["data"]["url"].split('?')[-1]
+        if self.docservice:
+            self.assertIn('Signature=', response.json["data"]["url"])
+            self.assertIn('KeyID=', response.json["data"]["url"])
+            self.assertNotIn('Expires=', response.json["data"]["url"])
+            key = response.json["data"]["url"].split('/')[-1].split('?')[0]
+            tender = self.db.get(self.tender_id)
+            self.assertIn(key, tender['awards'][-1]['documents'][-1]["url"])
+            self.assertIn('Signature=', tender['awards'][-1]['documents'][-1]["url"])
+            self.assertIn('KeyID=', tender['awards'][-1]['documents'][-1]["url"])
+            self.assertNotIn('Expires=', tender['awards'][-1]['documents'][-1]["url"])
+        else:
+            key = response.json["data"]["url"].split('?')[-1].split('=')[-1]
 
-        response = self.app.get('/tenders/{}/awards/{}/documents/{}?{}'.format(
+        response = self.app.get('/tenders/{}/awards/{}/documents/{}?download={}'.format(
             self.tender_id, self.award_id, doc_id, key))
-        self.assertEqual(response.status, '200 OK')
-        self.assertEqual(response.content_type, 'application/msword')
-        self.assertEqual(response.content_length, 8)
-        self.assertEqual(response.body, 'content2')
+        if self.docservice:
+            self.assertEqual(response.status, '302 Moved Temporarily')
+            self.assertIn('http://localhost/get/', response.location)
+            self.assertIn('Signature=', response.location)
+            self.assertIn('KeyID=', response.location)
+            self.assertNotIn('Expires=', response.location)
+        else:
+            self.assertEqual(response.status, '200 OK')
+            self.assertEqual(response.content_type, 'application/msword')
+            self.assertEqual(response.content_length, 8)
+            self.assertEqual(response.body, 'content2')
 
         response = self.app.get('/tenders/{}/awards/{}/documents/{}'.format(
             self.tender_id, self.award_id, doc_id))
@@ -2121,14 +2159,32 @@ class TenderAwardDocumentResourceTest(BaseTenderWebTest):
         self.assertEqual(response.status, '200 OK')
         self.assertEqual(response.content_type, 'application/json')
         self.assertEqual(doc_id, response.json["data"]["id"])
-        key = response.json["data"]["url"].split('?')[-1]
+        if self.docservice:
+            self.assertIn('Signature=', response.json["data"]["url"])
+            self.assertIn('KeyID=', response.json["data"]["url"])
+            self.assertNotIn('Expires=', response.json["data"]["url"])
+            key = response.json["data"]["url"].split('/')[-1].split('?')[0]
+            tender = self.db.get(self.tender_id)
+            self.assertIn(key, tender['awards'][-1]['documents'][-1]["url"])
+            self.assertIn('Signature=', tender['awards'][-1]['documents'][-1]["url"])
+            self.assertIn('KeyID=', tender['awards'][-1]['documents'][-1]["url"])
+            self.assertNotIn('Expires=', tender['awards'][-1]['documents'][-1]["url"])
+        else:
+            key = response.json["data"]["url"].split('?')[-1].split('=')[-1]
 
-        response = self.app.get('/tenders/{}/awards/{}/documents/{}?{}'.format(
+        response = self.app.get('/tenders/{}/awards/{}/documents/{}?download={}'.format(
             self.tender_id, self.award_id, doc_id, key))
-        self.assertEqual(response.status, '200 OK')
-        self.assertEqual(response.content_type, 'application/msword')
-        self.assertEqual(response.content_length, 8)
-        self.assertEqual(response.body, 'content3')
+        if self.docservice:
+            self.assertEqual(response.status, '302 Moved Temporarily')
+            self.assertIn('http://localhost/get/', response.location)
+            self.assertIn('Signature=', response.location)
+            self.assertIn('KeyID=', response.location)
+            self.assertNotIn('Expires=', response.location)
+        else:
+            self.assertEqual(response.status, '200 OK')
+            self.assertEqual(response.content_type, 'application/msword')
+            self.assertEqual(response.content_length, 8)
+            self.assertEqual(response.body, 'content3')
 
         self.set_status('complete')
 
@@ -2166,6 +2222,10 @@ class TenderAwardDocumentResourceTest(BaseTenderWebTest):
         self.assertEqual(response.json['errors'][0]["description"], "Can't update document in current (complete) tender status")
 
 
+class TenderAwardDocumentWithDSResourceTest(TenderAwardDocumentResourceTest):
+    docservice = True
+
+
 class Tender2LotAwardDocumentResourceTest(BaseTenderWebTest):
     initial_status = 'active.qualification'
     initial_bids = test_bids
@@ -2188,7 +2248,18 @@ class Tender2LotAwardDocumentResourceTest(BaseTenderWebTest):
         doc_id = response.json["data"]['id']
         self.assertIn(doc_id, response.headers['Location'])
         self.assertEqual('name.doc', response.json["data"]["title"])
-        key = response.json["data"]["url"].split('?')[-1]
+        if self.docservice:
+            self.assertIn('Signature=', response.json["data"]["url"])
+            self.assertIn('KeyID=', response.json["data"]["url"])
+            self.assertNotIn('Expires=', response.json["data"]["url"])
+            key = response.json["data"]["url"].split('/')[-1].split('?')[0]
+            tender = self.db.get(self.tender_id)
+            self.assertIn(key, tender['awards'][-1]['documents'][-1]["url"])
+            self.assertIn('Signature=', tender['awards'][-1]['documents'][-1]["url"])
+            self.assertIn('KeyID=', tender['awards'][-1]['documents'][-1]["url"])
+            self.assertNotIn('Expires=', tender['awards'][-1]['documents'][-1]["url"])
+        else:
+            key = response.json["data"]["url"].split('?')[-1].split('=')[-1]
 
         response = self.app.get('/tenders/{}/awards/{}/documents'.format(self.tender_id, self.award_id))
         self.assertEqual(response.status, '200 OK')
@@ -2211,12 +2282,19 @@ class Tender2LotAwardDocumentResourceTest(BaseTenderWebTest):
             {u'description': u'Not Found', u'location': u'url', u'name': u'download'}
         ])
 
-        response = self.app.get('/tenders/{}/awards/{}/documents/{}?{}'.format(
+        response = self.app.get('/tenders/{}/awards/{}/documents/{}?download={}'.format(
             self.tender_id, self.award_id, doc_id, key))
-        self.assertEqual(response.status, '200 OK')
-        self.assertEqual(response.content_type, 'application/msword')
-        self.assertEqual(response.content_length, 7)
-        self.assertEqual(response.body, 'content')
+        if self.docservice:
+            self.assertEqual(response.status, '302 Moved Temporarily')
+            self.assertIn('http://localhost/get/', response.location)
+            self.assertIn('Signature=', response.location)
+            self.assertIn('KeyID=', response.location)
+            self.assertNotIn('Expires=', response.location)
+        else:
+            self.assertEqual(response.status, '200 OK')
+            self.assertEqual(response.content_type, 'application/msword')
+            self.assertEqual(response.content_length, 7)
+            self.assertEqual(response.body, 'content')
 
         response = self.app.get('/tenders/{}/awards/{}/documents/{}'.format(
             self.tender_id, self.award_id, doc_id))
@@ -2263,14 +2341,32 @@ class Tender2LotAwardDocumentResourceTest(BaseTenderWebTest):
         self.assertEqual(response.status, '200 OK')
         self.assertEqual(response.content_type, 'application/json')
         self.assertEqual(doc_id, response.json["data"]["id"])
-        key = response.json["data"]["url"].split('?')[-1]
+        if self.docservice:
+            self.assertIn('Signature=', response.json["data"]["url"])
+            self.assertIn('KeyID=', response.json["data"]["url"])
+            self.assertNotIn('Expires=', response.json["data"]["url"])
+            key = response.json["data"]["url"].split('/')[-1].split('?')[0]
+            tender = self.db.get(self.tender_id)
+            self.assertIn(key, tender['awards'][-1]['documents'][-1]["url"])
+            self.assertIn('Signature=', tender['awards'][-1]['documents'][-1]["url"])
+            self.assertIn('KeyID=', tender['awards'][-1]['documents'][-1]["url"])
+            self.assertNotIn('Expires=', tender['awards'][-1]['documents'][-1]["url"])
+        else:
+            key = response.json["data"]["url"].split('?')[-1].split('=')[-1]
 
-        response = self.app.get('/tenders/{}/awards/{}/documents/{}?{}'.format(
+        response = self.app.get('/tenders/{}/awards/{}/documents/{}?download={}'.format(
             self.tender_id, self.award_id, doc_id, key))
-        self.assertEqual(response.status, '200 OK')
-        self.assertEqual(response.content_type, 'application/msword')
-        self.assertEqual(response.content_length, 8)
-        self.assertEqual(response.body, 'content2')
+        if self.docservice:
+            self.assertEqual(response.status, '302 Moved Temporarily')
+            self.assertIn('http://localhost/get/', response.location)
+            self.assertIn('Signature=', response.location)
+            self.assertIn('KeyID=', response.location)
+            self.assertNotIn('Expires=', response.location)
+        else:
+            self.assertEqual(response.status, '200 OK')
+            self.assertEqual(response.content_type, 'application/msword')
+            self.assertEqual(response.content_length, 8)
+            self.assertEqual(response.body, 'content2')
 
         response = self.app.get('/tenders/{}/awards/{}/documents/{}'.format(
             self.tender_id, self.award_id, doc_id))
@@ -2284,14 +2380,32 @@ class Tender2LotAwardDocumentResourceTest(BaseTenderWebTest):
         self.assertEqual(response.status, '200 OK')
         self.assertEqual(response.content_type, 'application/json')
         self.assertEqual(doc_id, response.json["data"]["id"])
-        key = response.json["data"]["url"].split('?')[-1]
+        if self.docservice:
+            self.assertIn('Signature=', response.json["data"]["url"])
+            self.assertIn('KeyID=', response.json["data"]["url"])
+            self.assertNotIn('Expires=', response.json["data"]["url"])
+            key = response.json["data"]["url"].split('/')[-1].split('?')[0]
+            tender = self.db.get(self.tender_id)
+            self.assertIn(key, tender['awards'][-1]['documents'][-1]["url"])
+            self.assertIn('Signature=', tender['awards'][-1]['documents'][-1]["url"])
+            self.assertIn('KeyID=', tender['awards'][-1]['documents'][-1]["url"])
+            self.assertNotIn('Expires=', tender['awards'][-1]['documents'][-1]["url"])
+        else:
+            key = response.json["data"]["url"].split('?')[-1].split('=')[-1]
 
-        response = self.app.get('/tenders/{}/awards/{}/documents/{}?{}'.format(
+        response = self.app.get('/tenders/{}/awards/{}/documents/{}?download={}'.format(
             self.tender_id, self.award_id, doc_id, key))
-        self.assertEqual(response.status, '200 OK')
-        self.assertEqual(response.content_type, 'application/msword')
-        self.assertEqual(response.content_length, 8)
-        self.assertEqual(response.body, 'content3')
+        if self.docservice:
+            self.assertEqual(response.status, '302 Moved Temporarily')
+            self.assertIn('http://localhost/get/', response.location)
+            self.assertIn('Signature=', response.location)
+            self.assertIn('KeyID=', response.location)
+            self.assertNotIn('Expires=', response.location)
+        else:
+            self.assertEqual(response.status, '200 OK')
+            self.assertEqual(response.content_type, 'application/msword')
+            self.assertEqual(response.content_length, 8)
+            self.assertEqual(response.body, 'content3')
 
         response = self.app.post_json('/tenders/{}/cancellations'.format(self.tender_id), {'data': {
             'reason': 'cancellation reason',
@@ -2339,6 +2453,10 @@ class Tender2LotAwardDocumentResourceTest(BaseTenderWebTest):
         self.assertEqual(response.status, '403 Forbidden')
         self.assertEqual(response.content_type, 'application/json')
         self.assertEqual(response.json['errors'][0]["description"], "Can update document only in active lot status")
+
+
+class Tender2LotAwardDocumentWithDSResourceTest(Tender2LotAwardDocumentResourceTest):
+    docservice = True
 
 
 def suite():

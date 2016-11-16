@@ -1,23 +1,33 @@
-POST /api/2.3/tenders/1c34544d0e6144f18886b6e59fb8256d/awards/90d2bdbf1b5449f18173020c9c617977/documents?acc_token=cc248e7ef9674336aa17d4528e5e5c77 HTTP/1.0
+POST /api/2.3/tenders/eeb9177097a14a8c80ca0d1c8b202a00/awards/69f2611e848b4a83aa6f10c192dc1456/documents?acc_token=a8d118cc5aab4c9e8e6fafe89d2c4615 HTTP/1.0
 Authorization: Basic YnJva2VyOg==
-Content-Length: 197
-Content-Type: multipart/form-data; boundary=----------a_BoUnDaRy79406354464$
+Content-Length: 341
+Content-Type: application/json
 Host: api-sandbox.openprocurement.org
+
+{
+  "data": {
+    "url": "http://public.docs-sandbox.openprocurement.org/get/65c9de328cec4ff9ba8492038755f1cf?KeyID=a1a42480&Signature=Tc4AgPidSJy8poeEyhGLCeLYk6aM0MtzYPS7cAcTaL%2F8XA9fdU6Yq1rYVhV09tDmd%2F9N1zMFv5yqRr4%2FPZ0bAg%3D%3D", 
+    "title": "Cancellation_Reason.pdf", 
+    "hash": "md5:00000000000000000000000000000000", 
+    "format": "application/pdf"
+  }
+}
 
 
 201 Created
 Content-Type: application/json; charset=UTF-8
-Location: http://api-sandbox.openprocurement.org/api/2.3/tenders/1c34544d0e6144f18886b6e59fb8256d/awards/90d2bdbf1b5449f18173020c9c617977/documents/8ea5e81901324c29b92d5c4fc0c8a19d
+Location: http://api-sandbox.openprocurement.org/api/2.3/tenders/eeb9177097a14a8c80ca0d1c8b202a00/awards/69f2611e848b4a83aa6f10c192dc1456/documents/da1c73f1478f4186a83afe754bd06e89
 
 {
   "data": {
+    "hash": "md5:00000000000000000000000000000000", 
     "title": "Cancellation_Reason.pdf", 
-    "url": "http://api-sandbox.openprocurement.org/api/2.3/tenders/1c34544d0e6144f18886b6e59fb8256d/awards/90d2bdbf1b5449f18173020c9c617977/documents/8ea5e81901324c29b92d5c4fc0c8a19d?download=d1a65bfc0973488987359abe9def5694", 
+    "url": "http://public.docs-sandbox.openprocurement.org/get/65c9de328cec4ff9ba8492038755f1cf?KeyID=a1a42480&Signature=AOwjLo%2F%252B2tTfq43K%252B6%252BAzVJ9x6qj%252BQ2YKs55hHvsowr8zKBdlEo12uWnXtfBuOVQIRIt8FmqywQ%2Fdr5WqUZkCjYAAAA1AAAAYwAAADkAAABkAAAAZQAAADMAAAAyAAAA", 
     "format": "application/pdf", 
     "documentOf": "tender", 
-    "datePublished": "2016-06-10T15:29:40.422925+03:00", 
-    "id": "8ea5e81901324c29b92d5c4fc0c8a19d", 
-    "dateModified": "2016-06-10T15:29:40.422964+03:00"
+    "datePublished": "2016-07-21T17:17:56.532625+03:00", 
+    "id": "da1c73f1478f4186a83afe754bd06e89", 
+    "dateModified": "2016-07-21T17:17:56.532661+03:00"
   }
 }
 

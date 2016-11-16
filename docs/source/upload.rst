@@ -5,31 +5,24 @@ Documents Uploading
 
 All of the document uploading API endpoints follow the same set of rules.
 
-Content-Type: multipart/form-data
+Upload document with registration
 ---------------------------------
 
-This is standard approach of HTML form file uploading defined by `RFC 1867
-<http://www.faqs.org/rfcs/rfc1867.html>`_.  The requirements are:
+#. :ref:`Register document upload in document service <documentservice:register-document-upload>`.
 
-* Form element should have name `file`
-* Only one document can be uploaded.
+#. Add document in API:
 
-The cURL example::
+    .. include:: tutorial/upload-tender-notice.http
+        :code:
 
-    curl --form file=@page.pdf http://api-sandbox.openprocurement.org/api/0/tenders/f6882fa63d5141bcabec54a4766eec61/documents
+#. :ref:`Upload document in document service <documentservice:upload-document>`.
 
-HTTPie example::
+Upload document w/o registration
+--------------------------------
 
-    http -f POST http://api-sandbox.openprocurement.org/api/0/tenders/f6882fa63d5141bcabec54a4766eec61/documents file@page.pdf
+#. :ref:`Register document upload in document service <documentservice:upload-document-w-o-registration>`.
 
-The request itself should look like::
+#. Add document in API:
 
-    POST /api/0.2/tenders/f6882fa63d5141bcabec54a4766eec61/documents HTTP/1.1
-    Content-Type: multipart/form-data; boundary=28e02f7d4a3c4da19c4e2589329ad36f
-    Host: api-sandbox.openprocurement.org
-
-    --28e02f7d4a3c4da19c4e2589329ad36f
-    Content-Disposition: form-data; name="file"; filename="page.pdf"
-
-    ..Contents of PDF goes here...
-    --28e02f7d4a3c4da19c4e2589329ad36f--
+    .. include:: tutorial/upload-tender-notice.http
+        :code:
