@@ -844,8 +844,6 @@ class TenderBidderDocumentResourceTest(BaseTenderWebTest):
         self.assertEqual(response.content_type, 'application/json')
         self.assertEqual(response.json['errors'][0]["description"], "Can't add document because award of bid is not in pending state")
 
-
-
     def test_create_secret(self):
         #create document with secret_key
         response = self.app.post('/tenders/{}/bids/{}/documents'.format(
@@ -864,7 +862,7 @@ class TenderBidderDocumentResourceTest(BaseTenderWebTest):
         response = self.app.patch_json('/tenders/{}/bids/{}/documents/{}'.format(
             self.tender_id, self.bid_id, doc_id), {"data": {"secret_key": "2222", "description": "document description"}})
         self.assertEqual(response.status, '200 OK')
-        self.assertEqual(response.json["data"]["secret_key"], '2222')
+        self.assertNotEqual(response.json["data"]["secret_key"], '2222')
 
         self.set_status('active.qualification')
 
@@ -877,7 +875,6 @@ class TenderBidderDocumentResourceTest(BaseTenderWebTest):
         response = self.app.patch_json('/tenders/{}/bids/{}/documents/{}'.format(
             self.tender_id, self.bid_id, doc_id), {"data": {"secret_key": "2222", "description": "document description"}}, status=403)
         self.assertEqual(response.status, '403 Forbidden')
-
 
 
 class TenderBidderDocumentWithDSResourceTest(TenderBidderDocumentResourceTest):
