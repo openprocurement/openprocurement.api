@@ -293,6 +293,8 @@ def validate_file_upload(request):
         request.errors.status = 404
     else:
         request.validated['file'] = request.POST['file']
+    if 'secret_key' in request.POST:
+        request.validated['secret_key'] = request.POST['secret_key']
 
 
 def validate_file_update(request):

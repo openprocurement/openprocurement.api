@@ -144,6 +144,7 @@ def upload_file(request, blacklisted_fields=DOCUMENT_BLACKLISTED_FIELDS):
         data = request.validated['file']
         filename = get_filename(data)
         content_type = data.type
+        secret_key = request.validated['secret_key']
         in_file = data.file
     else:
         filename = first_document.title
@@ -156,7 +157,7 @@ def upload_file(request, blacklisted_fields=DOCUMENT_BLACKLISTED_FIELDS):
     else:
         # update document
         model = type(request.context)
-    document = model({'title': filename, 'format': content_type})
+    document = model({'title': filename, 'format': content_type, 'secret_key': secret_key})
     document.__parent__ = request.context
     if 'document_id' in request.validated:
         document.id = request.validated['document_id']
@@ -204,8 +205,6 @@ def upload_file(request, blacklisted_fields=DOCUMENT_BLACKLISTED_FIELDS):
             "content_type": document.format,
             "data": b64encode(in_file.read())
         }
-    if( "secret_key" in request.POST):
-        document.secret_key = request.POST["secret_key"]
     document_route = request.matched_route.name.replace("collection_", "")
     document_path = request.current_route_path(_route_name=document_route, document_id=document.id, _query={'download': key})
     document.url = '/' + '/'.join(document_path.split('/')[3:])
