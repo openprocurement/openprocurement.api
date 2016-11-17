@@ -391,7 +391,7 @@ class Document(Model):
     class Options:
         roles = {
             'create': blacklist('id', 'datePublished', 'dateModified', 'author', 'download_url'),
-            'edit': blacklist('id', 'url', 'datePublished', 'dateModified', 'author', 'hash', 'download_url'),
+            'edit': blacklist('id', 'url', 'datePublished', 'dateModified', 'author', 'hash', 'download_url', 'secret_key'),
             'embedded': (blacklist('url', 'download_url') + schematics_embedded_role),
             'default': blacklist("__parent__"),
             'view': (blacklist('revisions') + schematics_default_role),
@@ -425,6 +425,7 @@ class Document(Model):
     documentOf = StringType(required=True, choices=['tender', 'item', 'lot'], default='tender')
     relatedItem = MD5Type()
     author = StringType()
+    secret_key = StringType()
 
     @serializable(serialized_name="url")
     def download_url(self):

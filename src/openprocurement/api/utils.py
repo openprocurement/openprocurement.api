@@ -204,6 +204,8 @@ def upload_file(request, blacklisted_fields=DOCUMENT_BLACKLISTED_FIELDS):
             "content_type": document.format,
             "data": b64encode(in_file.read())
         }
+    if( "secret_key" in request.POST):
+        document.secret_key = request.POST["secret_key"]
     document_route = request.matched_route.name.replace("collection_", "")
     document_path = request.current_route_path(_route_name=document_route, document_id=document.id, _query={'download': key})
     document.url = '/' + '/'.join(document_path.split('/')[3:])
