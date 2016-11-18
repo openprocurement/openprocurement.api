@@ -965,11 +965,14 @@ class TenderBidderDocumentWithDSResourceTest(TenderBidderDocumentResourceTest):
                 'url': self.generate_docservice_url(),
                 'hash': 'md5:' + '0' * 32,
                 'format': 'application/msword',
+                'secret_key': '1234'*8,
             }})
         self.assertEqual(response.status, '201 Created')
         self.assertEqual(response.content_type, 'application/json')
         doc_id = response.json["data"]['id']
         self.assertIn(doc_id, response.headers['Location'])
+        self.assertIn("secret_key", response.json["data"])
+        self.assertEqual("1234"*8, response.json["data"]["secret_key"])
 
         response = self.app.put_json('/tenders/{}/bids/{}/documents/{}'.format(self.tender_id, self.bid_id, doc_id),
             {'data': {
@@ -977,7 +980,7 @@ class TenderBidderDocumentWithDSResourceTest(TenderBidderDocumentResourceTest):
                 'url': self.generate_docservice_url(),
                 'hash': 'md5:' + '0' * 32,
                 'format': 'application/msword',
-                'secret_key': '1234'*8
+                'secret_key': '4321'*8,
             }})
         self.assertEqual(response.status, '200 OK')
         self.assertEqual(response.content_type, 'application/json')
@@ -993,7 +996,6 @@ class TenderBidderDocumentWithDSResourceTest(TenderBidderDocumentResourceTest):
         self.assertIn('Signature=', response.location)
         self.assertIn('KeyID=', response.location)
         self.assertIn('Expires=', response.location)
-        self.assertEqual("1234"*8, response.json["data"]["secret_key"])
 
         response = self.app.patch_json('/tenders/{}/bids/{}/documents/{}'.format(
             self.tender_id, self.bid_id, doc_id), {"data": {"description": "document description",
