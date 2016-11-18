@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 import os
+import re
 from couchdb_schematics.document import SchematicsDocument
 from datetime import datetime, timedelta, time
 from iso8601 import parse_date, ParseError
@@ -31,6 +32,9 @@ schematics_default_role = SchematicsDocument.Options.roles['default'] + blacklis
 TZ = timezone(os.environ['TZ'] if 'TZ' in os.environ else 'Europe/Kiev')
 CANT_DELETE_PERIOD_START_DATE_FROM = datetime(2016, 9, 23, tzinfo=TZ)
 BID_LOTVALUES_VALIDATION_FROM = datetime(2016, 10, 21, tzinfo=TZ)
+ITEMS_LOCATION_VALIDATION_FROM = datetime(2015, 11, 2, tzinfo=TZ)
+
+coordinates_reg_exp = re.compile(r'-?\d{1,3}\.\d+|-?\d{1,3}')
 
 
 def get_now():
@@ -325,12 +329,47 @@ class Address(Model):
     countryName_ru = StringType()
 
 
+def validate_location(data, value):
+    if isinstance(data['__parent__'], Model):
+        parent_object = data.get('__parent__', {}).get('__parent__', {})
+        if parent_object.get('revisions') and parent_object['revisions'][0].date > \
+                ITEMS_LOCATION_VALIDATION_FROM and 'latitude' in data:
+            valid_value = coordinates_reg_exp.match(str(value))
+            if valid_value is not None and valid_value.group() == str(value):
+                return dict(is_instance=True, is_valid=True)
+            else:
+                return dict(is_instance=True, is_valid=False)
+
+    return dict(is_instance=False)
+
+
 class Location(Model):
 
     latitude = BaseType(required=True)
     longitude = BaseType(required=True)
     elevation = BaseType()
 
+    def validate_latitude(self, data, latitude):
+        valid_location = validate_location(data, latitude)
+        if valid_location['is_instance']:
+            if valid_location['is_valid']:
+                if not -90 <= float(latitude) <= 90:
+                    raise ValidationError(
+                        u"Invalid value. Latitude must be between -90 and 90 degree.")
+            else:
+                raise ValidationError(
+                    u"Invalid value. Required latitude format 12.0123456789")
+
+    def validate_longitude(self, data, longitude):
+        valid_location = validate_location(data, longitude)
+        if valid_location['is_instance']:
+            if valid_location['is_valid']:
+                if not -180 <= float(longitude) <= 180:
+                    raise ValidationError(
+                        u"Invalid value. Longitude must be between -180 and 180 degree.")
+            else:
+                raise ValidationError(
+                    u"Invalid value. Required longitude format 12.0123456789")
 
 ADDITIONAL_CLASSIFICATIONS_SCHEMES = [u'ДКПП', u'NONE', u'ДК003', u'ДК015', u'ДК018']
 
