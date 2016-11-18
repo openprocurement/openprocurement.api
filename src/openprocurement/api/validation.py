@@ -286,10 +286,6 @@ def validate_document_data(request):
 
 def validate_file_upload(request):
     update_logging_context(request, {'document_id': '__new__'})
-    if 'secret_key' in request.POST:
-        request.validated['secret_key'] = request.POST['secret_key']
-    else:
-        request.validated['secret_key'] = None
     if request.registry.docservice_url and request.content_type == "application/json":
         return validate_document_data(request)
     if 'file' not in request.POST or not hasattr(request.POST['file'], 'filename'):
@@ -300,10 +296,6 @@ def validate_file_upload(request):
 
 
 def validate_file_update(request):
-    if 'secret_key' in request.POST:
-        request.validated['secret_key'] = request.POST['secret_key']
-    else:
-        request.validated['secret_key'] = None
     if request.registry.docservice_url and request.content_type == "application/json":
         return validate_document_data(request)
     if request.content_type == 'multipart/form-data':

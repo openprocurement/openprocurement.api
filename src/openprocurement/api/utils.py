@@ -144,25 +144,18 @@ def upload_file(request, blacklisted_fields=DOCUMENT_BLACKLISTED_FIELDS):
         data = request.validated['file']
         filename = get_filename(data)
         content_type = data.type
-        if request.validated['secret_key']:
-            secret_key = request.validated['secret_key']
         in_file = data.file
     else:
         filename = first_document.title
         content_type = request.content_type
         in_file = request.body_file
-        if request.validated['secret_key']:
-            secret_key = request.validated['secret_key']
     if hasattr(request.context, "documents"):
         # upload new document
         model = type(request.context).documents.model_class
     else:
         # update document
         model = type(request.context)
-    if request.validated['secret_key']:
-        document = model({'title': filename, 'format': content_type, 'secret_key': secret_key})
-    else:
-        document = model({'title': filename, 'format': content_type})
+    document = model({'title': filename, 'format': content_type})
     document.__parent__ = request.context
     if 'document_id' in request.validated:
         document.id = request.validated['document_id']
