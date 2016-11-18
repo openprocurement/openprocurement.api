@@ -14,7 +14,9 @@ from schematics.types.serializable import serializable
 from uuid import uuid4
 from barbecue import vnmax
 from zope.interface import implementer, Interface
-
+from urlparse import urlparse, parse_qs
+from string import hexdigits
+from hashlib import algorithms, new as hash_new
 
 STAND_STILL_TIME = timedelta(days=2)
 COMPLAINT_STAND_STILL_TIME = timedelta(days=3)
@@ -27,8 +29,13 @@ schematics_embedded_role = SchematicsDocument.Options.roles['embedded'] + blackl
 schematics_default_role = SchematicsDocument.Options.roles['default'] + blacklist("__parent__")
 
 TZ = timezone(os.environ['TZ'] if 'TZ' in os.environ else 'Europe/Kiev')
+<<<<<<< HEAD
 CANT_DELETE_PERIOD_START_DATE_FROM = datetime(2016, 9, 23, tzinfo=TZ)
 ITEMS_LOCATION_VALIDATION_FROM = datetime(2015, 11, 2, tzinfo=TZ)
+=======
+CANT_DELETE_PERIOD_START_DATE_FROM = datetime(2016, 8, 30, tzinfo=TZ)
+BID_LOTVALUES_VALIDATION_FROM = datetime(2016, 10, 24, tzinfo=TZ)
+>>>>>>> origin/master
 
 
 def get_now():
@@ -387,17 +394,47 @@ class Item(Model):
         if relatedLot and isinstance(data['__parent__'], Model) and relatedLot not in [i.id for i in get_tender(data['__parent__']).lots]:
             raise ValidationError(u"relatedLot should be one of lots")
 
+class HashType(StringType):
+
+    MESSAGES = {
+        'hash_invalid': "Hash type is not supported.",
+        'hash_length': "Hash value is wrong length.",
+        'hash_hex': "Hash value is not hexadecimal.",
+    }
+
+    def to_native(self, value, context=None):
+        value = super(HashType, self).to_native(value, context)
+
+        if ':' not in value:
+            raise ValidationError(self.messages['hash_invalid'])
+
+        hash_type, hash_value = value.split(':', 1)
+
+        if hash_type not in algorithms:
+            raise ValidationError(self.messages['hash_invalid'])
+
+        if len(hash_value) != hash_new(hash_type).digest_size * 2:
+            raise ValidationError(self.messages['hash_length'])
+        try:
+            int(hash_value, 16)
+        except ValueError:
+            raise ConversionError(self.messages['hash_hex'])
+        return value
+
 
 class Document(Model):
     class Options:
         roles = {
-            'edit': blacklist('id', 'url', 'datePublished', 'dateModified', ''),
-            'embedded': schematics_embedded_role,
+            'create': blacklist('id', 'datePublished', 'dateModified', 'author', 'download_url'),
+            'edit': blacklist('id', 'url', 'datePublished', 'dateModified', 'author', 'hash', 'download_url'),
+            'embedded': (blacklist('url', 'download_url') + schematics_embedded_role),
+            'default': blacklist("__parent__"),
             'view': (blacklist('revisions') + schematics_default_role),
             'revisions': whitelist('url', 'dateModified'),
         }
 
     id = MD5Type(required=True, default=lambda: uuid4().hex)
+    hash = HashType()
     documentType = StringType(choices=[
         'tenderNotice', 'awardNotice', 'contractNotice',
         'notice', 'biddingDocuments', 'technicalSpecifications',
@@ -409,20 +446,51 @@ class Document(Model):
         'eligibilityCriteria', 'contractProforma', 'commercialProposal',
         'qualificationDocuments', 'eligibilityDocuments',
     ])
-    title = StringType()  # A title of the document.
+    title = StringType(required=True)  # A title of the document.
     title_en = StringType()
     title_ru = StringType()
     description = StringType()  # A description of the document.
     description_en = StringType()
     description_ru = StringType()
-    format = StringType(regex='^[-\w]+/[-\.\w\+]+$')
-    url = StringType()  # Link to the document or attachment.
+    format = StringType(required=True, regex='^[-\w]+/[-\.\w\+]+$')
+    url = StringType(required=True)  # Link to the document or attachment.
     datePublished = IsoDateTimeType(default=get_now)
     dateModified = IsoDateTimeType(default=get_now)  # Date that the document was last dateModified
     language = StringType()
     documentOf = StringType(required=True, choices=['tender', 'item', 'lot'], default='tender')
     relatedItem = MD5Type()
     author = StringType()
+
+    @serializable(serialized_name="url")
+    def download_url(self):
+        url = self.url
+        if not url or '?download=' not in url:
+            return url
+        doc_id = parse_qs(urlparse(url).query)['download'][-1]
+        root = self.__parent__
+        parents = []
+        while root.__parent__ is not None:
+            parents[0:0] = [root]
+            root = root.__parent__
+        request = root.request
+        if not request.registry.docservice_url:
+            return url
+        if 'status' in parents[0] and parents[0].status in type(parents[0])._options.roles:
+            role = parents[0].status
+            for index, obj in enumerate(parents):
+                if obj.id != url.split('/')[(index - len(parents)) * 2 - 1]:
+                    break
+                field = url.split('/')[(index - len(parents)) * 2]
+                if "_" in field:
+                    field = field[0] + field.title().replace("_", "")[1:]
+                roles = type(obj)._options.roles
+                if roles[role if role in roles else 'default'](field, []):
+                    return url
+        from openprocurement.api.utils import generate_docservice_url
+        if not self.hash:
+            path = [i for i in urlparse(url).path.split('/') if len(i) == 32 and not set(i).difference(hexdigits)]
+            return generate_docservice_url(request, doc_id, False, '{}/{}'.format(path[0], path[-1]))
+        return generate_docservice_url(request, doc_id, False)
 
     def import_data(self, raw_data, **kw):
         """
@@ -574,7 +642,7 @@ class Bid(Model):
             'Administrator': Administrator_bid_role,
             'embedded': view_bid_role,
             'view': view_bid_role,
-            'create': whitelist('value', 'status', 'tenderers', 'parameters', 'lotValues'),
+            'create': whitelist('value', 'status', 'tenderers', 'parameters', 'lotValues', 'documents'),
             'edit': whitelist('value', 'status', 'tenderers', 'parameters', 'lotValues'),
             'auction_view': whitelist('value', 'lotValues', 'id', 'date', 'parameters', 'participationUrl'),
             'auction_post': whitelist('value', 'lotValues', 'id', 'date'),
@@ -636,6 +704,10 @@ class Bid(Model):
             tender = data['__parent__']
             if tender.lots and not values:
                 raise ValidationError(u'This field is required.')
+            if tender.get('revisions') and tender['revisions'][0].date > BID_LOTVALUES_VALIDATION_FROM and values:
+                lots = [i.relatedLot for i in values]
+                if len(lots) != len(set(lots)):
+                    raise ValidationError(u'bids don\'t allow duplicated proposals')
 
     def validate_value(self, data, value):
         if isinstance(data['__parent__'], Model):
@@ -1062,12 +1134,12 @@ def validate_cpv_group(items, *args):
 
 
 plain_role = (blacklist('_attachments', 'revisions', 'dateModified') + schematics_embedded_role)
-create_role = (blacklist('owner_token', 'owner', '_attachments', 'revisions', 'date', 'dateModified', 'doc_id', 'tenderID', 'bids', 'documents', 'awards', 'questions', 'complaints', 'auctionUrl', 'status', 'auctionPeriod', 'awardPeriod', 'procurementMethod', 'awardCriteria', 'submissionMethod', 'cancellations') + schematics_embedded_role)
+create_role = (blacklist('owner_token', 'owner', 'contracts', '_attachments', 'revisions', 'date', 'dateModified', 'doc_id', 'tenderID', 'bids', 'documents', 'awards', 'questions', 'complaints', 'auctionUrl', 'status', 'auctionPeriod', 'awardPeriod', 'procurementMethod', 'awardCriteria', 'submissionMethod', 'cancellations') + schematics_embedded_role)
 draft_role = whitelist('status')
 edit_role = (blacklist('status', 'procurementMethodType', 'lots', 'owner_token', 'owner', '_attachments', 'revisions', 'date', 'dateModified', 'doc_id', 'tenderID', 'bids', 'documents', 'awards', 'questions', 'complaints', 'auctionUrl', 'auctionPeriod', 'awardPeriod', 'procurementMethod', 'awardCriteria', 'submissionMethod', 'mode', 'cancellations') + schematics_embedded_role)
 view_role = (blacklist('owner_token', '_attachments', 'revisions') + schematics_embedded_role)
 listing_role = whitelist('dateModified', 'doc_id')
-auction_view_role = whitelist('tenderID', 'dateModified', 'bids', 'items', 'auctionPeriod', 'minimalStep', 'auctionUrl', 'features', 'lots')
+auction_view_role = whitelist('tenderID', 'dateModified', 'bids', 'items', 'auctionPeriod', 'minimalStep', 'auctionUrl', 'features', 'lots', 'submissionMethodDetails',)
 auction_post_role = whitelist('bids')
 auction_patch_role = whitelist('auctionUrl', 'bids', 'lots')
 enquiries_role = (blacklist('owner_token', '_attachments', 'revisions', 'bids', 'numberOfBids') + schematics_embedded_role)

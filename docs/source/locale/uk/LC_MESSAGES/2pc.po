@@ -14,18 +14,14 @@ msgstr ""
 "Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
 "X-Generator: Lokalize 1.5\n"
 
-#: ../../source/2pc.rst:4
 msgid "2 Phase Commit"
 msgstr "Двофазний коміт"
 
-#: ../../source/2pc.rst:9
 msgid "Creating tender with 2 Phase Commit"
 msgstr "Створення закупівлі за допомогою двофазного коміта"
 
-#: ../../source/2pc.rst:11
 msgid "Let's create tender in draft status:"
 msgstr "Створимо закупівлю у статусі `draft`:"
 
-#: ../../source/2pc.rst:16
 msgid "And now switch to `active.enquiries` status:"
 msgstr "Переключимо у статус  `active.enquiries`:"

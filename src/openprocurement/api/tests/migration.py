@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 import unittest
 
+from openprocurement.api.models import Tender
 from openprocurement.api.migration import migrate_data, get_db_schema_version, set_db_schema_version, SCHEMA_VERSION
 from openprocurement.api.tests.base import BaseWebTest, test_tender_data
 from email.header import Header
@@ -10,11 +11,11 @@ class MigrateTest(BaseWebTest):
 
     def setUp(self):
         super(MigrateTest, self).setUp()
-        migrate_data(self.couchdb_server[self.db_name])
+        migrate_data(self.app.app.registry)
 
     def test_migrate(self):
         self.assertEqual(get_db_schema_version(self.db), SCHEMA_VERSION)
-        migrate_data(self.db, 1)
+        migrate_data(self.app.app.registry, 1)
         self.assertEqual(get_db_schema_version(self.db), SCHEMA_VERSION)
 
     def test_migrate_from0to1(self):
@@ -23,7 +24,7 @@ class MigrateTest(BaseWebTest):
                 'modifiedAt': '2014-10-15T00:00:00.000000'}
         _id, _rev = self.db.save(data)
         item = self.db.get(_id)
-        migrate_data(self.db, 1)
+        migrate_data(self.app.app.registry, 1)
         migrated_item = self.db.get(_id)
         self.assertNotIn('modified', item)
         self.assertIn('modifiedAt', item)
@@ -52,7 +53,7 @@ class MigrateTest(BaseWebTest):
         }
         _id, _rev = self.db.save(data)
         item = self.db.get(_id)
-        migrate_data(self.db, 2)
+        migrate_data(self.app.app.registry, 2)
         migrated_item = self.db.get(_id)
         self.assertIn('country-name', item["procuringEntity"]["address"])
         self.assertNotIn('countryName', item["procuringEntity"]["address"])
@@ -80,7 +81,7 @@ class MigrateTest(BaseWebTest):
         }
         _id, _rev = self.db.save(data)
         item = self.db.get(_id)
-        migrate_data(self.db, 3)
+        migrate_data(self.app.app.registry, 3)
         migrated_item = self.db.get(_id)
         self.assertIn('bidders', item)
         self.assertNotIn('bids', item)
@@ -107,7 +108,7 @@ class MigrateTest(BaseWebTest):
         }
         _id, _rev = self.db.save(data)
         item = self.db.get(_id)
-        migrate_data(self.db, 4)
+        migrate_data(self.app.app.registry, 4)
         migrated_item = self.db.get(_id)
         self.assertEqual(item["itemsToBeProcured"][0]["otherClassificationScheme"], migrated_item["itemsToBeProcured"][0]["primaryClassification"]["scheme"])
         self.assertEqual(item["itemsToBeProcured"][0]["classificationID"], migrated_item["itemsToBeProcured"][0]["primaryClassification"]["id"])
@@ -124,7 +125,7 @@ class MigrateTest(BaseWebTest):
         }
         _id, _rev = self.db.save(data)
         item = self.db.get(_id)
-        migrate_data(self.db, 5)
+        migrate_data(self.app.app.registry, 5)
         migrated_item = self.db.get(_id)
         self.assertNotIn('clarificationPeriod', migrated_item)
         self.assertIn('enquiryPeriod', migrated_item)
@@ -161,7 +162,7 @@ class MigrateTest(BaseWebTest):
         }
         _id, _rev = self.db.save(data)
         item = self.db.get(_id)
-        migrate_data(self.db, 6)
+        migrate_data(self.app.app.registry, 6)
         migrated_item = self.db.get(_id)
         self.assertNotIn('attachments', migrated_item)
         self.assertIn('documents', migrated_item)
@@ -234,7 +235,7 @@ class MigrateTest(BaseWebTest):
             ],
         }
         _id, _rev = self.db.save(data)
-        migrate_data(self.db, 11)
+        migrate_data(self.app.app.registry, 11)
         migrated_item = self.db.get(_id)
         self.assertTrue(all([
             i["identifier"]["scheme"] == 'UA-EDR'
@@ -468,7 +469,7 @@ class MigrateTest(BaseWebTest):
         for i in data:
             _id, _rev = self.db.save(i)
             items.append(self.db.get(_id))
-        migrate_data(self.db, 12)
+        migrate_data(self.app.app.registry, 12)
         for item in items:
             migrated_item = self.db.get(item['_id'])
             self.assertNotEqual(item, migrated_item)
@@ -484,7 +485,7 @@ class MigrateTest(BaseWebTest):
             'submissionMethod': 'Electronic Auction',
         }
         _id, _rev = self.db.save(data)
-        migrate_data(self.db, 13)
+        migrate_data(self.app.app.registry, 13)
         migrated_item = self.db.get(_id)
         self.assertEqual('open', migrated_item['procurementMethod'])
         self.assertEqual('lowestCost', migrated_item['awardCriteria'])
@@ -513,7 +514,7 @@ class MigrateTest(BaseWebTest):
             }],
         }
         _id, _rev = self.db.save(data)
-        migrate_data(self.db, 14)
+        migrate_data(self.app.app.registry, 14)
         migrated_item = self.db.get(_id)
         self.assertEqual(migrated_item["documents"][0]["title"], filename)
 
@@ -533,7 +534,7 @@ class MigrateTest(BaseWebTest):
             ]
         }
         _id, _rev = self.db.save(data)
-        migrate_data(self.db, 15)
+        migrate_data(self.app.app.registry, 15)
         migrated_item = self.db.get(_id)
         self.assertIn('title', migrated_item)
         self.assertEqual(data['items'][0]["description"], migrated_item['title'])
@@ -553,7 +554,7 @@ class MigrateTest(BaseWebTest):
         }
         _id, _rev = self.db.save(data)
         item = self.db.get(_id)
-        migrate_data(self.db, 16)
+        migrate_data(self.app.app.registry, 16)
         migrated_item = self.db.get(_id)
         self.assertEqual(item["items"][0]["deliveryLocation"]["longitudee"], migrated_item["items"][0]["deliveryLocation"]["longitude"])
 
@@ -570,7 +571,7 @@ class MigrateTest(BaseWebTest):
             ]
         }
         _id, _rev = self.db.save(data)
-        migrate_data(self.db, 17)
+        migrate_data(self.app.app.registry, 17)
         migrated_item = self.db.get(_id)
         for i in migrated_item['awards']:
             self.assertIn('complaintPeriod', i)
@@ -592,7 +593,7 @@ class MigrateTest(BaseWebTest):
             ]
         }
         _id, _rev = self.db.save(data)
-        migrate_data(self.db, 18)
+        migrate_data(self.app.app.registry, 18)
         migrated_item = self.db.get(_id)
         for i in migrated_item['awards']:
             self.assertNotIn('contracts', i)
@@ -680,7 +681,7 @@ class MigrateTest(BaseWebTest):
             ]
         }
         _id, _rev = self.db.save(data)
-        migrate_data(self.db, 19)
+        migrate_data(self.app.app.registry, 19)
         migrated_item = self.db.get(_id)
         tender_docs = migrated_item['documents']
         self.assertEqual('contractAnnexe', tender_docs[0]['documentType'])
@@ -710,7 +711,7 @@ class MigrateTest(BaseWebTest):
             ]
         }
         _id, _rev = self.db.save(data)
-        migrate_data(self.db, 20)
+        migrate_data(self.app.app.registry, 20)
         migrated_item = self.db.get(_id)
         self.assertEqual('/tenders/13fcd78ee62e40dda3a89dc930e5bac9/contracts/3e9b292b2a7540a89797de335bf053ce/documents/ebcb5dd7f7384b0fbfbed2dc4252fa6e?download=10367238a2964ee18513f209d9b6d1d3', migrated_item['contracts'][0]['documents'][0]['url'])
 
@@ -732,9 +733,35 @@ class MigrateTest(BaseWebTest):
             ]
         }
         _id, _rev = self.db.save(data)
-        migrate_data(self.db, 22)
+        migrate_data(self.app.app.registry, 22)
         migrated_item = self.db.get(_id)
         self.assertEqual(migrated_item['awards'][0]['complaints'][0]['type'], 'complaint')
+
+    def test_migrate_from22to23(self):
+        set_db_schema_version(self.db, 22)
+        u = Tender(test_tender_data)
+        u.tenderID = "UA-X"
+        u.store(self.db)
+        data = self.db.get(u.id)
+        data["documents"] = [
+            {
+                "id": "ebcb5dd7f7384b0fbfbed2dc4252fa6e",
+                "title": "name.txt",
+                "documentOf": "tender",
+                "url": "/tenders/{}/documents/ebcb5dd7f7384b0fbfbed2dc4252fa6e?download=10367238a2964ee18513f209d9b6d1d3".format(u.id),
+                "datePublished": "2016-06-01T00:00:00+03:00",
+                "dateModified": "2016-06-01T00:00:00+03:00",
+                "format": "text/plain",
+            }
+        ]
+        _id, _rev = self.db.save(data)
+        self.app.app.registry.docservice_url = 'http://localhost'
+        migrate_data(self.app.app.registry, 23)
+        migrated_item = self.db.get(u.id)
+        self.assertIn('http://localhost/get/10367238a2964ee18513f209d9b6d1d3?', migrated_item['documents'][0]['url'])
+        self.assertIn('Prefix={}%2Febcb5dd7f7384b0fbfbed2dc4252fa6e'.format(u.id), migrated_item['documents'][0]['url'])
+        self.assertIn('KeyID=', migrated_item['documents'][0]['url'])
+        self.assertIn('Signature=', migrated_item['documents'][0]['url'])
 
 
 def suite():

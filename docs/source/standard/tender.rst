@@ -54,6 +54,9 @@ Schema
 
     Bid guarantee
 
+:date:
+    string, :ref:`date`, auto-generated
+    
 :items:
    list of :ref:`item` objects, required
 
