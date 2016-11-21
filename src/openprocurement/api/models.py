@@ -32,7 +32,7 @@ schematics_default_role = SchematicsDocument.Options.roles['default'] + blacklis
 TZ = timezone(os.environ['TZ'] if 'TZ' in os.environ else 'Europe/Kiev')
 CANT_DELETE_PERIOD_START_DATE_FROM = datetime(2016, 9, 23, tzinfo=TZ)
 BID_LOTVALUES_VALIDATION_FROM = datetime(2016, 10, 21, tzinfo=TZ)
-ITEMS_LOCATION_VALIDATION_FROM = datetime(2016, 11, 20, tzinfo=TZ)
+ITEMS_LOCATION_VALIDATION_FROM = datetime(2016, 11, 22, tzinfo=TZ)
 
 coordinates_reg_exp = re.compile(r'-?\d{1,3}\.\d+|-?\d{1,3}')
 
