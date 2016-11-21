@@ -390,6 +390,14 @@
          "description":null
       },
       {
+         "category":"HU",
+         "code":"HU-VAT",
+         "name":"K\u00f6z\u00f6ss\u00e9gi ad\u00f3sz\u00e1m/ VAT ID (Ministry of Justice of Hungary)",
+         "url":"http://www.e-cegjegyzek.hu/?cegkereses",
+         "public-database":true,
+         "description":"K\u00f6z\u00f6ss\u00e9gi ad\u00f3sz\u00e1m serves as both tax number and VAT ID. No abbreviation is used."
+      },
+      {
          "category":"ID",
          "code":"ID-KDN",
          "name":"Ministry Home affairs/ Kementerian Dalam Negeri",
@@ -522,8 +530,23 @@
          "code":"LS-LCN",
          "name":"Lesotho Council of Non Governmental Organisations",
          "url":"http://www.lcn.org.ls/",
-         "public-database":false,
+         "public-database":false
+      },
+      {
+         "category":"LT",
+         "code":"LT-PVM",
+         "name":"Prid\u0117tin\u0117s vert\u0117s mokestis/VAT",
+         "url":"http://www.registrucentras.lt/jar/index_en.php",
+         "public-database":true,
          "description":null
+      },
+      {
+         "category":"LT",
+         "code":"LT-RC",
+         "name":"Juridini\u0173 asmen\u0173 dalyvi\u0173 informacin\u0117 sistema/Information Platform of Legal Entities",
+         "url":"http://www.registrucentras.lt/jar/index_en.php",
+         "public-database":true,
+         "description":"The Register of Legal Entities registers businesses, institutions and NGOs and collects detailed data about Lithuanian legal entities as well as branches and representative offices of foreign companies and organizations. The Register contains complete information (and historical data) about legal form and status of legal entities, fields of its activity, size and structure of the authorized capital, members of sole and collective management bodies, licenses acquired, etc. It is obligatory for the most of business companies to submit annual financial statements to the Register of Legal Entities since 2004. Starting from March 2010 private limited liability companies are obliged to declare current list of shareholders to the Register."
       },
       {
          "category":"LV",
