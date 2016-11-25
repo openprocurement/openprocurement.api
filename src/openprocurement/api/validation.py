@@ -72,7 +72,9 @@ def validate_tender_data(request):
         return
 
     model = request.tender_from_data(data, create=False)
-    if not any([request.check_accreditation(acc) for acc in getattr(model, 'create_accreditations', [getattr(model, 'create_accreditation', '')])]):
+    create_accreditation = request.check_accreditation(model.create_accreditation)
+    additional_create_accreditations = any([request.check_accreditation(acc) for acc in getattr(model, 'additional_create_accreditations', '')])
+    if not create_accreditation and not additional_create_accreditations:
         request.errors.add('procurementMethodType', 'accreditation', 'Broker Accreditation level does not permit tender creation')
         request.errors.status = 403
         return
