@@ -1,23 +1,33 @@
-POST /api/2.3/tenders/1c34544d0e6144f18886b6e59fb8256d/awards/e9a940c30ca142af9cfc261a7536d8ff/documents?acc_token=cc248e7ef9674336aa17d4528e5e5c77 HTTP/1.0
+POST /api/2.3/tenders/eeb9177097a14a8c80ca0d1c8b202a00/awards/86d3f73dd7094865a9fd4966584c62ae/documents?acc_token=a8d118cc5aab4c9e8e6fafe89d2c4615 HTTP/1.0
 Authorization: Basic YnJva2VyOg==
-Content-Length: 199
-Content-Type: multipart/form-data; boundary=----------a_BoUnDaRy203961632474$
+Content-Length: 349
+Content-Type: application/json
 Host: api-sandbox.openprocurement.org
+
+{
+  "data": {
+    "url": "http://public.docs-sandbox.openprocurement.org/get/d9f9cff141e9459daed074c56155676c?KeyID=a1a42480&Signature=UBLVv1zRU7vktd0tU%2F4PyI8djGyisz%2FwGghrjPJshoL0sLp%2BqXv%2BOr5%2BEQGNF67%2BCDf5gnLQ%2Fksk5QBUVIa2AA%3D%3D", 
+    "title": "Unsuccessful_Reason.pdf", 
+    "hash": "md5:00000000000000000000000000000000", 
+    "format": "application/pdf"
+  }
+}
 
 
 201 Created
 Content-Type: application/json; charset=UTF-8
-Location: http://api-sandbox.openprocurement.org/api/2.3/tenders/1c34544d0e6144f18886b6e59fb8256d/awards/e9a940c30ca142af9cfc261a7536d8ff/documents/729fafe3e52d4712913edfe2af49c8c6
+Location: http://api-sandbox.openprocurement.org/api/2.3/tenders/eeb9177097a14a8c80ca0d1c8b202a00/awards/86d3f73dd7094865a9fd4966584c62ae/documents/acfbcdc5e39d4492b43af0cfa2db1a51
 
 {
   "data": {
+    "hash": "md5:00000000000000000000000000000000", 
     "title": "Unsuccessful_Reason.pdf", 
-    "url": "http://api-sandbox.openprocurement.org/api/2.3/tenders/1c34544d0e6144f18886b6e59fb8256d/awards/e9a940c30ca142af9cfc261a7536d8ff/documents/729fafe3e52d4712913edfe2af49c8c6?download=112d7834ba504a3dae587cc3617ea1e7", 
+    "url": "http://public.docs-sandbox.openprocurement.org/get/d9f9cff141e9459daed074c56155676c?KeyID=a1a42480&Signature=rouGILe%2F%2FpZ8%2FhqYoXiGkMRAkP9EjjC5Y14mea%2Fm%2FJb1AjFSxXytafd3qovtPIm08XDJAwHv0wsJfk9hwoO8DmQAAAA5AAAAZgAAADkAAABjAAAAZgAAAGYAAAAxAAAA", 
     "format": "application/pdf", 
     "documentOf": "tender", 
-    "datePublished": "2016-06-10T15:29:39.093821+03:00", 
-    "id": "729fafe3e52d4712913edfe2af49c8c6", 
-    "dateModified": "2016-06-10T15:29:39.093871+03:00"
+    "datePublished": "2016-07-21T17:17:55.311634+03:00", 
+    "id": "acfbcdc5e39d4492b43af0cfa2db1a51", 
+    "dateModified": "2016-07-21T17:17:55.311664+03:00"
   }
 }
 
