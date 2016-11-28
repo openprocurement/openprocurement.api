@@ -4,7 +4,7 @@ from pkg_resources import get_distribution
 from copy import deepcopy
 from datetime import timedelta
 
-from openprocurement.api import ROUTE_PREFIX
+from openprocurement.api.utils import ROUTE_PREFIX
 from openprocurement.api.models import Tender, get_now
 from openprocurement.api.tests.base import test_tender_data, test_organization, BaseWebTest, BaseTenderWebTest
 from uuid import uuid4
