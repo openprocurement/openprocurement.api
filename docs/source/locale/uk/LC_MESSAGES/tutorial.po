@@ -3,7 +3,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: openprocurement.api 0.1\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-11-09 13:49+0000\n"
+"POT-Creation-Date: 2016-11-28 11:06+0000\n"
 "PO-Revision-Date: 2016-03-21 13:51+0200\n"
 "Last-Translator: Zoriana Zaiats <sorenabell@quintagroup.com>\n"
 "Language-Team: Ukrainian <info@quintagroup.com>\n"
@@ -506,77 +506,4 @@ msgstr "Завантаження нової версії документа"
 msgid "Activating the request and cancelling tender"
 msgstr "Активація запиту та скасування закупівлі"
 
-#: ../../source/tutorial.rst:369
-msgid "Merge contracts"
-msgstr "Об'єднання контрактів"
-
-#: ../../source/tutorial.rst:371
-msgid "For merge contracts `suppliers` must be the same. Let's get contracts."
-msgstr "Для об'єднання контрактів поле suppliers повинне співпадати. Подивимось доступні контракти."
-
-#: ../../source/tutorial.rst:377
-msgid ""
-"Let's merge second contract in first, for merge need send field "
-"`additionalAwardIDs` with list of merge awards id. In response we must "
-"see `additionalAwardIDs`."
-msgstr ""
-"Давайте об'єднаємо контракти, для цього потрібно в головний контракт "
-"передати `additionalAwardIDs` зі списком додаткових авардів."
-
-#: ../../source/tutorial.rst:383
-msgid ""
-"Now additional award must has status `merged`, and field `mergedInto`. We"
-" can't make changes with additional contract."
-msgstr ""
-"Всі додаткові контракти повинні бути в статусі `merged`, та мати поле "
-"`mergedInto` в якому зберігається id головного контракту. Ми не можемо "
-"робити будь-які зміни в додаткових контрактах."
-
-#: ../../source/tutorial.rst:389
-msgid "Sign main contract"
-msgstr "Підпишемо головний контракт"
-
-#: ../../source/tutorial.rst:391
-msgid "Set contract value and sign."
-msgstr "Встановлення вартості угоди"
-
-#: ../../source/tutorial.rst:397
-msgid "Cancel main award"
-msgstr "Скасування головного контракту"
-
-#: ../../source/tutorial.rst:399
-msgid "Let`s cancel award which contract has additional awards."
-msgstr "Давайте скасуємо award контракт якого містить в собі додаткові контракти."
-
-#: ../../source/tutorial.rst:404
-msgid "Lets look on contracts"
-msgstr "Подивимось на контракти"
-
-#: ../../source/tutorial.rst:409
-msgid ""
-"We see that contract and award move in status `cancelled` and all "
-"additional contract change status from `merged` to `pending`, and remove "
-"field `mergeInto`."
-msgstr ""
-"Ми бачимо, що контракт та авард перейшли в статус `cancelled` і всі "
-"додаткові контракти змінили статус з `merged` на `pending`, та прибрали "
-"поле `mergedInto`."
-
-#: ../../source/tutorial.rst:413
-msgid "Cancel additional award"
-msgstr "Відміна додаткового контракту"
-
-#: ../../source/tutorial.rst:415
-msgid ""
-"If cancel additional award then, award and contract move in status "
-"`cancelled`, and ID of award will delete from `additionalAwards` in main "
-"contract"
-msgstr ""
-"При відміні додаткових контрактів, авард та контракт переходят в статус "
-"`cancelled`, та ID аварду видалиться зі списку `additionalAwards` з "
-"головного контракту"
-
-#: ../../source/tutorial.rst:420
-msgid "Let's look on main contract"
-msgstr "Давайте подивимось на головний контракт"
 
