@@ -31,6 +31,7 @@ schematics_default_role = SchematicsDocument.Options.roles['default'] + blacklis
 TZ = timezone(os.environ['TZ'] if 'TZ' in os.environ else 'Europe/Kiev')
 CANT_DELETE_PERIOD_START_DATE_FROM = datetime(2016, 9, 23, tzinfo=TZ)
 BID_LOTVALUES_VALIDATION_FROM = datetime(2016, 10, 21, tzinfo=TZ)
+CPV_ITEMS_CLASS_FROM = datetime(2017, 1, 1, tzinfo=TZ)
 
 
 def get_now():
@@ -1168,7 +1169,7 @@ class Tender(SchematicsDocument, Model):
     description_ru = StringType()
     date = IsoDateTimeType()
     tenderID = StringType()  # TenderID should always be the same as the OCID. It is included to make the flattened data structure more convenient.
-    items = ListType(ModelType(Item), required=True, min_size=1, validators=[validate_cpv_group, validate_items_uniq])  # The goods and services to be purchased, broken into line items wherever possible. Items should not be duplicated, but a quantity of 2 specified instead.
+    items = ListType(ModelType(Item), required=True, min_size=1, validators=[validate_items_uniq])  # The goods and services to be purchased, broken into line items wherever possible. Items should not be duplicated, but a quantity of 2 specified instead.
     value = ModelType(Value, required=True)  # The total estimated value of the procurement.
     procurementMethod = StringType(choices=['open', 'selective', 'limited'], default='open')  # Specify tendering method as per GPA definitions of Open, Selective, Limited (http://www.wto.org/english/docs_e/legal_e/rev-gpr-94_01_e.htm)
     procurementMethodRationale = StringType()  # Justification of procurement method, especially in the case of Limited tendering.
@@ -1400,6 +1401,12 @@ class Tender(SchematicsDocument, Model):
 
         self._data.update(data)
         return self
+
+    def validate_items(self, data, items):
+        if (data.get('revisions')[0].date if data.get('revisions') else get_now()) > CPV_ITEMS_CLASS_FROM and items and len(set([i.classification.id[:4] for i in items])) != 1:
+            raise ValidationError(u"CPV class of items should be identical")
+        else:
+            validate_cpv_group(items)
 
     def validate_features(self, data, features):
         if features and data['lots'] and any([
