@@ -1,0 +1,80 @@
+GET /api/2.3/tenders/4506e1c848de480abc345cd2b9d24856/contracts/74199bb63c6e4bd2b521cdc0ed20a437?acc_token=6e631cfeb801444e929b7f3ba2373f60 HTTP/1.0
+Authorization: Basic YnJva2VyOg==
+Host: api-sandbox.openprocurement.org
+
+
+200 OK
+Content-Type: application/json; charset=UTF-8
+
+{
+  "data": {
+    "status": "pending", 
+    "items": [
+      {
+        "relatedLot": "e2f2e61d734248b1b1d98e47fa80eae4", 
+        "description": "футляри до державних нагород", 
+        "classification": {
+          "scheme": "CPV", 
+          "description": "Cartons", 
+          "id": "44617100-9"
+        }, 
+        "additionalClassifications": [
+          {
+            "scheme": "ДКПП", 
+            "id": "17.21.1", 
+            "description": "папір і картон гофровані, паперова й картонна тара"
+          }
+        ], 
+        "deliveryAddress": {
+          "postalCode": "79000", 
+          "countryName": "Україна", 
+          "streetAddress": "вул. Банкова 1", 
+          "region": "м. Київ", 
+          "locality": "м. Київ"
+        }, 
+        "deliveryDate": {
+          "startDate": "2016-11-11T15:09:39.262050+02:00", 
+          "endDate": "2016-11-14T15:09:39.262050+02:00"
+        }, 
+        "id": "e1d33fdf53984f28a0743538fec8f491", 
+        "unit": {
+          "code": "44617100-9", 
+          "name": "item"
+        }, 
+        "quantity": 5
+      }
+    ], 
+    "suppliers": [
+      {
+        "contactPoint": {
+          "email": "soleksuk@gmail.com", 
+          "telephone": "+380 (432) 21-69-30", 
+          "name": "Сергій Олексюк"
+        }, 
+        "identifier": {
+          "scheme": "UA-EDR", 
+          "id": "00137256", 
+          "uri": "http://www.sc.gov.ua/"
+        }, 
+        "name": "ДКП «Школяр»", 
+        "address": {
+          "postalCode": "21100", 
+          "countryName": "Україна", 
+          "streetAddress": "вул. Островського, 33", 
+          "region": "м. Вінниця", 
+          "locality": "м. Вінниця"
+        }
+      }
+    ], 
+    "value": {
+      "currency": "UAH", 
+      "amount": 100.0, 
+      "valueAddedTaxIncluded": true
+    }, 
+    "date": "2016-11-09T17:09:44.689825+02:00", 
+    "awardID": "9aff5265cfb04b97a7abf9d232ca6b54", 
+    "id": "74199bb63c6e4bd2b521cdc0ed20a437", 
+    "contractID": "UA-2016-11-09-000001-3"
+  }
+}
+
