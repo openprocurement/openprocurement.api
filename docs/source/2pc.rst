@@ -47,15 +47,11 @@ Tender with the ``draft`` status is "invisible" in the `GET /tenders` list. Chro
 Publication of a tender
 ~~~~~~~~~~~~~~~~~~~~~~~
 
+The request `PATCH /tenders/{id}?acc_token=...`  ``{“data”:{“status”:”active.enquiries”}}`` changes status of tender (according to the request), therefore, publishes it ("visualizes" it in the `GET /tenders list`).
+
 .. include:: tutorial/tender-patch-2pc.http
    :code:
    
-The request `PATCH /tenders/{id}?acc_token=...`  ``{“data”:{“status”:”active.enquiries”}}`` executes the following:
-
-1. If the field ``enquiryPeriod.startDate`` is empty, fills it out with the current time. If the date is in the past, it declines publication indicating that the beginning of the Questions and Answers (enquiries) period can not start in the past.
-2. Generates ``tender_id`` with regard to ``enquiryPeriod.startDate``.
-3. Changes status of tender (according to the request), therefore, publishes it ("visualizes" it in the `GET /tenders list`).
-
 All tenders created in the CDB but not yet published will not be displayed on the web platform and, therefore, will not lead to their announcement.
 
 Repeating of the request for publication in case of problem with receiving a response from the server will not cause errors.
