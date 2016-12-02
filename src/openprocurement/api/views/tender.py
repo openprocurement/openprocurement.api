@@ -347,7 +347,8 @@ class TendersResource(APIResource):
         tender_id = generate_id()
         tender = self.request.validated['tender']
         tender.id = tender_id
-        tender.tenderID = generate_tender_id(get_now(), self.db, self.server_id)
+        if not tender.get('tenderID'):
+            tender.tenderID = generate_tender_id(get_now(), self.db, self.server_id)
         if hasattr(tender, "initialize"):
             tender.initialize()
         if self.request.json_body['data'].get('status') == 'draft':

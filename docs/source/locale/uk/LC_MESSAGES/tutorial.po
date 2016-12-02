@@ -1,16 +1,21 @@
 #
+# Zoriana Zaiats <sorenabell@quintagroup.com>, 2016.
 msgid ""
 msgstr ""
 "Project-Id-Version: openprocurement.api 0.1\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-11-28 11:06+0000\n"
-"PO-Revision-Date: 2016-03-21 13:51+0200\n"
+"POT-Creation-Date: 2016-10-05 09:58+0300\n"
+"PO-Revision-Date: 2016-10-05 10:44+0200\n"
 "Last-Translator: Zoriana Zaiats <sorenabell@quintagroup.com>\n"
 "Language-Team: Ukrainian <info@quintagroup.com>\n"
 "MIME-Version: 1.0\n"
-"Content-Type: text/plain; charset=utf-8\n"
+"Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 2.3.4\n"
+"Language: uk\n"
+"Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<"
+"=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
+"X-Generator: Lokalize 2.0\n"
 
 #: ../../source/tutorial.rst:4
 msgid "Tutorial"
@@ -207,10 +212,12 @@ msgstr ""
 msgid ""
 "Now let’s try to modify any field in our document. For example, "
 "`description`:"
-msgstr "Можна змінити будь-яке поле в документі. Наприклад, `description` (опис):"
+msgstr ""
+"Можна змінити будь-яке поле в документі. Наприклад, `description` (опис):"
 
 #: ../../source/tutorial.rst:144
-msgid "`200 OK` response was returned. The description was modified successfully."
+msgid ""
+"`200 OK` response was returned. The description was modified successfully."
 msgstr "Повернено код `200 OK`, тобто опис було успішно відредаговано."
 
 #: ../../source/tutorial.rst:146
@@ -262,13 +269,12 @@ msgstr ""
 "статус `active.tendering`, що дозволяє реєстрацію пропозицій."
 
 #: ../../source/tutorial.rst:190
-#, fuzzy
 msgid "Bidder can register a bid in `draft` status:"
-msgstr "Учасник може зареєструвати цінову пропозицію:"
+msgstr "Учасник може зареєструвати пропозицію у статусі `draft` (чернетка):"
 
 #: ../../source/tutorial.rst:195
 msgid "And activate a bid:"
-msgstr ""
+msgstr "Та активувати пропозицію:"
 
 #: ../../source/tutorial.rst:200
 msgid "And upload proposal document:"
@@ -414,18 +420,16 @@ msgid "Let's see the list of all added contract documents:"
 msgstr "Тепер переглянемо знову усі документи пов’язані із укладанням угоди:"
 
 #: ../../source/tutorial.rst:302
-#, fuzzy
 msgid "Set contract signature date"
-msgstr "Встановлення дати підписання угоди"
+msgstr "Встановити дату підписання угоди"
 
 #: ../../source/tutorial.rst:304
-#, fuzzy
 msgid ""
 "There is a possibility to set custom contract signature date. If the date"
 " is not set it will be generated on contract registration."
 msgstr ""
-"Є можливість встановити дату підписання угоди. Для цього вставте "
-"відповідну дату в поле `dateSigned`."
+"Є можливість встановити дату підписання договору. Якщо дата не"
+" встановлена, то вона буде згенерована під час реєстрації договору"
 
 #: ../../source/tutorial.rst:311
 msgid "Contract registration"
@@ -471,7 +475,8 @@ msgstr ""
 
 #: ../../source/tutorial.rst:331
 msgid "See :ref:`cancellation` data structure for details."
-msgstr "Див. структуру запиту :ref:`cancellation` для більш детальної інформації."
+msgstr ""
+"Див. структуру запиту :ref:`cancellation` для більш детальної інформації."
 
 #: ../../source/tutorial.rst:334
 msgid "Preparing the cancellation request"
