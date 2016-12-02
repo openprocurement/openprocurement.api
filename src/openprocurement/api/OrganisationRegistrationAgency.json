@@ -26,8 +26,8 @@
          "code":"AE-AFZ",
          "name":"Ajman Free Zone Authority",
          "url":"http://www.afz.gov.ae/",
-         "description":"Use Authority's website to find its address, email and call center contacts.",
-         "public-database":false
+         "public-database":false,
+         "description":"Use Authority's website to find its address, email and call center contacts."
       },
       {
          "category":"AE",
@@ -60,6 +60,14 @@
          "url":"http://www.fujairahfreetradezone.com/appdir/company-listing.php",
          "public-database":true,
          "description":"There is no search available, but there is a listing of companies with telephone and fax numbers"
+      },
+      {
+         "category":"AT",
+         "code":"AT-FN",
+         "description":"Available only in German. Access can be obtained by using services of special companies like http://www.advokat.at/Advokat-Online/Module/Firmenbuch.aspx that are entitled to provide it (for full list see https://www.justiz.gv.at/web2013/html/default/2c9484852308c2a601240b693e1c0860.de.html)",
+	 "name":"Firmenbuch (the Ministry of Justice of Austria)",
+         "public-database":true,
+         "url":"https://www.justiz.gv.at/web2013/html/default/2c9484852308c2a601240b693e1c0860.de.html"
       },
       {
          "category":"AE",
@@ -166,12 +174,28 @@
          "description":"The Registry of the Francophone Brussels Commercial Court"
       },
       {
+         "category":"BY",
+         "code":"BY-UNP",
+         "name":"Unified State Register of Legal Entities and Individual Entrepreneurs (Ministry of Justice of the Republic of Belarus)",
+         "url":"http://egr.gov.by/egrn/index.jsp?language=en",
+         "public-database":true,
+         "description":"Information is available only in Belarusian language, contains Registration number, Registration authority, Date of registration, etc."
+      },
+      {
          "category":"CA",
          "code":"CA-CRA_ACR",
          "name":"Canadian Revenue Agency / Agence du revenu du Canada",
          "url":"http://www.cra-arc.gc.ca/",
          "public-database":true,
          "description":"CRA_ACR is legal requirement for bilingual use"
+      },
+      {
+         "category":"CH",
+         "code":"CH-ZEFIX",
+         "name":"Swiss Commercial Register (via Zefix)",
+         "url":"http://www.zefix.ch/",
+         "public-database":true,
+         "description":"The Federal Office of Justice maintains Zefix for the purpose of accessing the companies decentrally recorded in the cantonal databases. Access to general company information is free of charge. The entries and changes in the Commercial Registry are published in the Swiss Official Gazette of Commerce and on the Internet (http://zefix.admin.ch/shab)."
       },
       {
          "category":"CN",
@@ -366,6 +390,14 @@
          "description":null
       },
       {
+         "category":"HU",
+         "code":"HU-VAT",
+         "name":"K\u00f6z\u00f6ss\u00e9gi ad\u00f3sz\u00e1m/ VAT ID (Ministry of Justice of Hungary)",
+         "url":"http://www.e-cegjegyzek.hu/?cegkereses",
+         "public-database":true,
+         "description":"K\u00f6z\u00f6ss\u00e9gi ad\u00f3sz\u00e1m serves as both tax number and VAT ID. No abbreviation is used."
+      },
+      {
          "category":"ID",
          "code":"ID-KDN",
          "name":"Ministry Home affairs/ Kementerian Dalam Negeri",
@@ -498,8 +530,23 @@
          "code":"LS-LCN",
          "name":"Lesotho Council of Non Governmental Organisations",
          "url":"http://www.lcn.org.ls/",
-         "public-database":false,
+         "public-database":false
+      },
+      {
+         "category":"LT",
+         "code":"LT-PVM",
+         "name":"Prid\u0117tin\u0117s vert\u0117s mokestis/VAT",
+         "url":"http://www.registrucentras.lt/jar/index_en.php",
+         "public-database":true,
          "description":null
+      },
+      {
+         "category":"LT",
+         "code":"LT-RC",
+         "name":"Juridini\u0173 asmen\u0173 dalyvi\u0173 informacin\u0117 sistema/Information Platform of Legal Entities",
+         "url":"http://www.registrucentras.lt/jar/index_en.php",
+         "public-database":true,
+         "description":"The Register of Legal Entities registers businesses, institutions and NGOs and collects detailed data about Lithuanian legal entities as well as branches and representative offices of foreign companies and organizations. The Register contains complete information (and historical data) about legal form and status of legal entities, fields of its activity, size and structure of the authorized capital, members of sole and collective management bodies, licenses acquired, etc. It is obligatory for the most of business companies to submit annual financial statements to the Register of Legal Entities since 2004. Starting from March 2010 private limited liability companies are obliged to declare current list of shareholders to the Register."
       },
       {
          "category":"LV",
@@ -638,12 +685,36 @@
          "description":"Every business entry in Poland is assigned an ID in 3 different registries:business, court, and tax. This is the court register."
       },
       {
+         "category":"RO",
+         "code":"RO-CUI",
+         "name":"National Trade Register Office, Ministry of Finance",
+         "url":"http://www.mfinante.ro/pjuridice.html?pagina=domenii",
+         "public-database":true,
+         "description":null
+      },
+      {
          "category":"RS",
          "code":"RS-APR",
          "name":"Serbian Business Registrations Agency (APR)",
          "url":"http://www.apr.gov.rs/eng/Home.aspx",
          "public-database":true,
          "description":"The SBRA runs business registers as single, centralized, public electronic databases."
+      },
+      {
+         "category":"RU",
+         "code":"RU-INN",
+         "name":"Uniform State Register of Legal Entities of Russian Federation",
+         "url":"https://russianpartner.biz/",
+         "public-database":true,
+         "description":null
+      },
+      {
+         "category":"RU",
+         "code":"RU-OGRN",
+         "name":"Uniform State Register of Legal Entities of Russian Federation",
+         "url":"https://russianpartner.biz/",
+         "public-database":true,
+         "description":null
       },
       {
          "category":"SE",

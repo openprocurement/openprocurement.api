@@ -25,6 +25,7 @@ class Root(object):
         (Allow, 'g:auction', 'auction'),
         (Allow, 'g:auction', 'upload_tender_documents'),
         (Allow, 'g:contracting', 'extract_credentials'),
+        (Allow, 'g:competitive_dialogue', 'create_tender'),
         (Allow, 'g:chronograph', 'edit_tender'),
         (Allow, 'g:Administrator', 'edit_tender'),
         (Allow, 'g:Administrator', 'edit_bid'),
@@ -62,7 +63,7 @@ def factory(request):
     request.validated['tender_id'] = request.matchdict['tender_id']
     tender = request.tender
     tender.__parent__ = root
-    request.validated['tender'] = tender
+    request.validated['tender'] = request.validated['db_doc'] = tender
     request.validated['tender_status'] = tender.status
     if request.method != 'GET':
         request.validated['tender_src'] = tender.serialize('plain')
