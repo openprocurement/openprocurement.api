@@ -32,6 +32,11 @@ Schema
 
     Date of posting.
 
+:dateAnswered:
+    string, :ref:`date`, auto-generated
+
+    Date when answer has been provided.
+
 :answer:
     string
 

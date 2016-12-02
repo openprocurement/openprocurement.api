@@ -5,8 +5,3 @@
 API Reference
 =============
 
-
-.. services::
-   :modules: openprocurement.api.views
-
-

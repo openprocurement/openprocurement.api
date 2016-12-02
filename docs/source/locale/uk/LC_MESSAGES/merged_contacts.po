@@ -1,0 +1,92 @@
+
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2014-2015, Quintagroup, Ltd
+# This file is distributed under the same license as the openprocurement.api
+# package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2016.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: openprocurement.api 2.3.38\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2016-12-02 15:10+0200\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.3.4\n"
+
+#: ../../source/merged_contacts.rst:5
+msgid "Merge contracts"
+msgstr "Обʼєднання контрактів"
+
+#: ../../source/merged_contacts.rst:7
+msgid "For merge contracts `suppliers` must be the same. Let's get contracts."
+msgstr "Для об'єднання контрактів поле suppliers повинне співпадати. Подивимось доступні контракти."
+
+#: ../../source/merged_contacts.rst:13
+msgid ""
+"Let's merge second contract in the first, for merging  the field "
+"`additionalAwardIDs` needs to be sent with list of merge awards id. In "
+"response we must see `additionalAwardIDs`."
+msgstr ""
+"Давайте об'єднаємо контракти, для цього потрібно в головний контракт передати `additionalAwardIDs` зі списком додаткових авардів."
+
+#: ../../source/merged_contacts.rst:19
+msgid ""
+"Now additional award must have a status `merged`, and field `mergedInto`."
+" We can't make changes in additional contracts."
+msgstr ""
+"Всі додаткові контракти повинні бути в статусі `merged`, та мати поле `mergedInto` "
+"в якому зберігається id головного контракту. Ми не можемо робити будь-які зміни в додаткових контрактах."
+
+#: ../../source/merged_contacts.rst:25
+msgid "Sign main contract"
+msgstr "Підпишемо головний контракт"
+
+#: ../../source/merged_contacts.rst:27
+msgid "Set contract value and sign."
+msgstr "Встановлення вартості угоди."
+
+#: ../../source/merged_contacts.rst:33
+msgid "Cancel main award"
+msgstr "Скасування головного контракту"
+
+#: ../../source/merged_contacts.rst:35
+msgid "Let`s cancel award which contract has additional awards."
+msgstr "Давайте скасуємо award, контракт якого містить в собі додаткові контракти."
+
+#: ../../source/merged_contacts.rst:40
+msgid "Lets look on contracts"
+msgstr "Подивимось на контракти"
+
+#: ../../source/merged_contacts.rst:45
+msgid ""
+"We see that contract and award move in status `cancelled` and each "
+"additional contract has changed a status from `merged` to `pending`, and "
+"has removed a field `mergeInto`."
+msgstr ""
+"Ми бачимо, що контракт та авард перейшли в статус `cancelled` "
+" і всі додаткові контракти змінили статус з `merged` на `pending`, та прибрали поле `mergedInto`. "
+
+#: ../../source/merged_contacts.rst:49
+msgid "Cancel additional award"
+msgstr "Відміна додаткового контракту"
+
+#: ../../source/merged_contacts.rst:51
+msgid ""
+"If additional award is canceled, then award and contract will move in "
+"status `cancelled`, and ID of award will be deleted from "
+"`additionalAwards` in the main contract"
+msgstr ""
+"При відміні додаткових контрактів, авард та контракт переходят в статус "
+"`cancelled`, та ID аварду видалиться "
+"зі списку `additionalAwards` з головного контракту"
+
+#: ../../source/merged_contacts.rst:56
+msgid "Let's look on the main contract"
+msgstr "Давайте подивимось на головний контракт"
+

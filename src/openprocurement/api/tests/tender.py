@@ -5,7 +5,7 @@ from copy import deepcopy
 from datetime import timedelta
 
 from openprocurement.api import ROUTE_PREFIX
-from openprocurement.api.models import Tender, get_now
+from openprocurement.api.models import Tender, get_now, CANT_DELETE_PERIOD_START_DATE_FROM
 from openprocurement.api.tests.base import test_tender_data, test_organization, BaseWebTest, BaseTenderWebTest
 from uuid import uuid4
 
@@ -761,6 +761,7 @@ class TenderResourceTest(BaseWebTest):
 
     def test_tender_features(self):
         data = test_tender_data.copy()
+        data['procuringEntity']['contactPoint']['faxNumber'] = u"0440000000"
         item = data['items'][0].copy()
         item['id'] = "1"
         data['items'] = [item]
@@ -832,9 +833,10 @@ class TenderResourceTest(BaseWebTest):
         self.assertIn('features', response.json['data'])
         self.assertNotIn('relatedItem', response.json['data']['features'][0])
 
-        response = self.app.patch_json('/tenders/{}'.format(tender['id']), {'data': {'tenderPeriod': {'startDate': None}}})
+        response = self.app.patch_json('/tenders/{}'.format(tender['id']), {'data': {'procuringEntity': {'contactPoint': {'faxNumber': None}}}})
         self.assertEqual(response.status, '200 OK')
         self.assertIn('features', response.json['data'])
+        self.assertNotIn('faxNumber', response.json['data']['procuringEntity']['contactPoint'])
 
         response = self.app.patch_json('/tenders/{}'.format(tender['id']), {'data': {'features': []}})
         self.assertEqual(response.status, '200 OK')
@@ -872,11 +874,13 @@ class TenderResourceTest(BaseWebTest):
         self.assertEqual(response.content_type, 'application/json')
 
     def test_patch_tender(self):
+        data = test_tender_data.copy()
+        data['procuringEntity']['contactPoint']['faxNumber'] = u"0440000000"
         response = self.app.get('/tenders')
         self.assertEqual(response.status, '200 OK')
         self.assertEqual(len(response.json['data']), 0)
 
-        response = self.app.post_json('/tenders', {'data': test_tender_data})
+        response = self.app.post_json('/tenders', {'data': data})
         self.assertEqual(response.status, '201 Created')
         tender = response.json['data']
         owner_token = response.json['access']['token']
@@ -898,13 +902,13 @@ class TenderResourceTest(BaseWebTest):
         self.assertNotEqual(response.json['data']['procuringEntity']['kind'], 'defense')
 
         response = self.app.patch_json('/tenders/{}'.format(
-            tender['id']), {'data': {'tenderPeriod': {'startDate': None}}})
+            tender['id']), {'data': {'procuringEntity': {'contactPoint': {'faxNumber': None}}}})
         self.assertEqual(response.status, '200 OK')
         self.assertEqual(response.content_type, 'application/json')
-        self.assertNotIn('startDate', response.json['data']['tenderPeriod'])
+        self.assertNotIn('faxNumber', response.json['data']['procuringEntity']['contactPoint'])
 
         response = self.app.patch_json('/tenders/{}'.format(
-            tender['id']), {'data': {'tenderPeriod': {'startDate': tender['enquiryPeriod']['endDate']}}})
+            tender['id']), {'data': {'procuringEntity': {'contactPoint': {'faxNumber': u"0440000000"}}}})
         self.assertEqual(response.status, '200 OK')
         self.assertEqual(response.content_type, 'application/json')
         self.assertIn('startDate', response.json['data']['tenderPeriod'])
@@ -933,12 +937,12 @@ class TenderResourceTest(BaseWebTest):
         self.assertEqual(revisions[-1][u'changes'][0]['path'], u'/procurementMethodRationale')
 
         response = self.app.patch_json('/tenders/{}'.format(
-            tender['id']), {'data': {'items': [test_tender_data['items'][0]]}})
+            tender['id']), {'data': {'items': [data['items'][0]]}})
         self.assertEqual(response.status, '200 OK')
         self.assertEqual(response.content_type, 'application/json')
 
         response = self.app.patch_json('/tenders/{}'.format(
-            tender['id']), {'data': {'items': [{}, test_tender_data['items'][0]]}})
+            tender['id']), {'data': {'items': [{}, data['items'][0]]}})
         self.assertEqual(response.status, '200 OK')
         self.assertEqual(response.content_type, 'application/json')
         item0 = response.json['data']['items'][0]
@@ -1002,6 +1006,31 @@ class TenderResourceTest(BaseWebTest):
         self.assertEqual(response.status, '403 Forbidden')
         self.assertEqual(response.content_type, 'application/json')
         self.assertEqual(response.json['errors'][0]["description"], "Can't update tender in current (complete) status")
+
+    @unittest.skipIf(get_now() < CANT_DELETE_PERIOD_START_DATE_FROM, "Can`t delete period start date only from {}".format(CANT_DELETE_PERIOD_START_DATE_FROM))
+    def test_required_field_deletion(self):
+        response = self.app.post_json('/tenders', {'data': test_tender_data})
+        self.assertEqual(response.status, '201 Created')
+        tender = response.json['data']
+
+        # TODO: Test all the required fields
+        response = self.app.patch_json('/tenders/{}'.format(
+            tender['id']), {'data': {'enquiryPeriod': {'startDate': None}}}, status=422)
+        self.assertEqual(response.status, '422 Unprocessable Entity')
+        self.assertEqual(response.content_type, 'application/json')
+        self.assertEqual(response.json['status'], 'error')
+        self.assertEqual(response.json['errors'], [
+            {u'description': {u'startDate': [u'This field cannot be deleted']}, u'location': u'body', u'name': u'enquiryPeriod'}
+        ])
+
+        response = self.app.patch_json('/tenders/{}'.format(
+            tender['id']), {'data': {'tenderPeriod': {'startDate': None}}}, status=422)
+        self.assertEqual(response.status, '422 Unprocessable Entity')
+        self.assertEqual(response.content_type, 'application/json')
+        self.assertEqual(response.json['status'], 'error')
+        self.assertEqual(response.json['errors'], [
+            {u'description': {u'startDate': [u'This field cannot be deleted']}, u'location': u'body', u'name': u'tenderPeriod'}
+        ])
 
     def test_dateModified_tender(self):
         response = self.app.get('/tenders')
