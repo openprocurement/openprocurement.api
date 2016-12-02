@@ -350,7 +350,7 @@ class Item(Model):
     description_en = StringType()
     description_ru = StringType()
     classification = ModelType(CPVClassification, required=True)
-    additionalClassifications = ListType(ModelType(Classification), default=list(), min_size=1)
+    additionalClassifications = ListType(ModelType(Classification), default=list())
     unit = ModelType(Unit)  # Description of the unit which the good comes in e.g. hours, kilograms
     quantity = IntType()  # The number of units required
     deliveryDate = ModelType(Period)
@@ -360,11 +360,13 @@ class Item(Model):
 
     def validate_additionalClassifications(self, data, items):
         tender = get_tender(data['__parent__'])
-        if (tender.get('revisions')[0].date if tender.get('revisions') else get_now()) > CPV_ITEMS_CLASS_FROM:
-            pass
-        elif not items:
+        tender_from_2017 = (tender.get('revisions')[0].date if tender.get('revisions') else get_now()) > CPV_ITEMS_CLASS_FROM
+        not_cpv = data['classification']['id'] == '99999999-9'
+        if not items and (not tender_from_2017 or tender_from_2017 and not_cpv):
             raise ValidationError(u'This field is required.')
-        elif items and not any([i.scheme in ADDITIONAL_CLASSIFICATIONS_SCHEMES for i in items]):
+        elif tender_from_2017 and not_cpv and items and not any([i.scheme in ADDITIONAL_CLASSIFICATIONS_SCHEMES_2017 for i in items]):
+            raise ValidationError(u"One of additional classifications should be one of [{0}].".format(', '.join(ADDITIONAL_CLASSIFICATIONS_SCHEMES_2017)))
+        elif not tender_from_2017 and items and not any([i.scheme in ADDITIONAL_CLASSIFICATIONS_SCHEMES for i in items]):
             raise ValidationError(u"One of additional classifications should be one of [{0}].".format(', '.join(ADDITIONAL_CLASSIFICATIONS_SCHEMES)))
 
     def validate_relatedLot(self, data, relatedLot):
