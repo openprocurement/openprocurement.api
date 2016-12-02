@@ -3,17 +3,18 @@ msgid ""
 msgstr ""
 "Project-Id-Version: openprocurement.api 0.10\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2014-11-24 18:25+0200\n"
-"PO-Revision-Date: 2016-04-15 14:05+0300\n"
+"POT-Creation-Date: 2016-08-02 12:46+0300\n"
+"PO-Revision-Date: 2016-08-02 12:47+0200\n"
 "Last-Translator: Zoriana Zaiats <sorenabell@quintagroup.com>\n"
 "Language-Team: Ukrainian <info@quintagroup.com>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.3.4\n"
 "Language: uk\n"
 "Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<"
 "=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
-"X-Generator: Lokalize 1.5\n"
+"X-Generator: Lokalize 2.0\n"
 
 #: ../../source/standard/tender.rst:8
 msgid "Tender"
@@ -27,6 +28,17 @@ msgstr "Схема"
 msgid "string, multilingual"
 msgstr "рядок, багатомовний"
 
+#: ../../source/standard/tender.rst:16
+msgid ""
+"The name of the tender, displayed in listings. You can include the "
+"following items:"
+msgstr ""
+"Назва тендера, яка відображається у списках. Можна включити такі елементи:"
+
+#: ../../source/standard/tender.rst:18
+msgid "tender code (in procuring organization management system)"
+msgstr "код закупівлі (у системі управління організації-замовника)"
+
 #: ../../source/standard/tender.rst:19
 msgid "periodicity of the tender (annual, quarterly, etc.)"
 msgstr "періодичність закупівлі (щороку, щокварталу, і т.д.)"
@@ -39,13 +51,32 @@ msgstr "елемент, що закуповується"
 msgid "some other info"
 msgstr "інша інформація"
 
+#: ../../source/standard/tender.rst:26
+msgid "Detailed description of tender."
+msgstr "Детальний опис закупівлі"
+
+#: ../../source/standard/tender.rst:29
+msgid "string, auto-generated, read-only"
+msgstr "рядок, генерується автоматично, лише для читання"
+
+#: ../../source/standard/tender.rst:31
+msgid "The tender identifier to refer tender to in \"paper\" documentation."
+msgstr ""
+"Ідентифікатор закупівлі, щоб знайти закупівлю у  \"паперовій\" "
+"документації"
+
 #: ../../source/standard/tender.rst:33
 msgid ""
 "|ocdsDescription| TenderID should always be the same as the OCID. It is "
 "included to make the flattened data structure more convenient."
 msgstr ""
-"|ocdsDescription| Ідентифікатор тендера `TenderID` повинен завжди співпадати"
-" з OCID. Його включають, щоб зробити структуру даних більш зручною."
+"|ocdsDescription| Ідентифікатор тендера `TenderID` повинен завжди "
+"співпадати з OCID. Його включають, щоб зробити структуру даних більш "
+"зручною."
+
+#: ../../source/standard/tender.rst:37
+msgid ":ref:`ProcuringEntity`, required"
+msgstr ":ref:`ProcuringEntity`, обов’язково"
 
 #: ../../source/standard/tender.rst:39
 msgid "Organization conducting the tender."
@@ -59,308 +90,21 @@ msgstr ""
 "|ocdsDescription| Об’єкт, що управляє закупівлею. Він не обов’язково є "
 "покупцем, який платить / використовує закуплені елементи."
 
-#: ../../source/standard/tender.rst:49
-msgid "|ocdsDescription| The total estimated value of the procurement."
-msgstr "|ocdsDescription| Загальна кошторисна вартість закупівлі."
-
-#: ../../source/standard/tender.rst:62
-msgid ""
-"|ocdsDescription| The goods and services to be purchased, broken into line "
-"items wherever possible. Items should not be duplicated, but a quantity of 2"
-" specified instead."
-msgstr ""
-"|ocdsDescription| Товари та послуги, що будуть закуплені, поділені на "
-"спискові елементи, де це можливо. Елементи не повинні дублюватись, замість "
-"цього вкажіть кількість 2."
-
-#: ../../source/standard/tender.rst:71
-msgid "List of :ref:`document` objects"
-msgstr "Список об’єктів :ref:`document`"
-
-#: ../../source/standard/tender.rst:73
-msgid "|ocdsDescription| All documents and attachments related to the tender."
-msgstr "|ocdsDescription| Всі документи та додатки пов’язані із закупівлею."
-
-#: ../../source/standard/tender.rst:77
-msgid "List of :ref:`question` objects"
-msgstr "Список об’єктів :ref:`question`"
-
-#: ../../source/standard/tender.rst:79
-msgid "Questions to ``procuringEntity`` and answers to them."
-msgstr "Питання до замовника ``procuringEntity`` і відповіді на них."
-
-#: ../../source/standard/tender.rst:82
-msgid "List of :ref:`complaint` objects"
-msgstr "Список об’єктів :ref:`complaint`"
-
-#: ../../source/standard/tender.rst:84
-msgid "Complaints to tender conditions and their resolutions."
-msgstr "Скарги на умови закупівлі та їх вирішення."
-
-#: ../../source/standard/tender.rst:87
-msgid "List of :ref:`bid` objects"
-msgstr "Список об’єктів :ref:`bid`"
-
-#: ../../source/standard/tender.rst:91
-msgid ""
-"|ocdsDescription| A list of all the companies who entered submissions for "
-"the tender."
-msgstr ""
-"|ocdsDescription| Список усіх компаній, які подали заявки для участі у "
-"закупівлі."
-
-#: ../../source/standard/tender.rst:104
-msgid "List of :ref:`award` objects"
-msgstr "Список об’єктів :ref:`award`"
-
-#: ../../source/standard/tender.rst:106
-msgid "All qualifications (disqualifications and awards)."
-msgstr "Усі  кваліфікації (дискваліфікації та переможці)."
-
-#: ../../source/standard/tender.rst:116
-msgid ""
-"|ocdsDescription| The period during which enquiries may be made and will be "
-"answered."
-msgstr ""
-"|ocdsDescription| Період, коли можна зробити уточнення та отримати відповіді"
-" на них."
-
-#: ../../source/standard/tender.rst:124
-msgid ""
-"|ocdsDescription| The period when the tender is open for submissions. The "
-"end date is the closing date for tender submissions."
-msgstr ""
-"|ocdsDescription| Період, коли закупівля відкрита для подачі пропозицій. "
-"Кінцева дата - це дата, коли перестають прийматись пропозиції."
-
-#: ../../source/standard/tender.rst:128 ../../source/standard/tender.rst:138
-msgid ":ref:`period`, read-only"
-msgstr ":ref:`period`,  лише для читання"
-
-#: ../../source/standard/tender.rst:130
-msgid "Period when Auction is conducted."
-msgstr "Період, коли проводиться аукціон."
-
-#: ../../source/standard/tender.rst:142
-msgid ""
-"|ocdsDescription| The date or period on which an award is anticipated to be "
-"made."
-msgstr ""
-"|ocdsDescription| Дата або період, коли очікується визначення переможця."
-
-#: ../../source/standard/tender.rst:165
-msgid "Status of the Tender."
-msgstr "Статус Закупівлі."
-
-#: ../../source/standard/tender.rst:183
-msgid "Historical changes to Tender object properties."
-msgstr "Зміни властивостей об’єктів Закупівлі"
-
-#: ../../source/standard/tender.rst:18
-msgid "tender code (in procuring organization management system)"
-msgstr "код закупівлі (у системі управління організації-замовника)"
-
-#: ../../source/standard/tender.rst:45 ../../source/standard/tender.rst:95
+#: ../../source/standard/tender.rst:45 ../../source/standard/tender.rst:98
 msgid ":ref:`value`, required"
 msgstr ":ref:`value`, обов’язково"
 
-#: ../../source/standard/tender.rst:58
-msgid "list of :ref:`item` objects, required"
-msgstr "список об’єктів :ref:`item`, обов’язково"
-
-#: ../../source/standard/tender.rst:97
-msgid "The minimal step of auction (reduction). Validation rules:"
-msgstr "Мінімальний крок аукціону (редукціону). Правила валідації:"
-
-#: ../../source/standard/tender.rst:99
-msgid "`amount` should be less then `Tender.value.amount`"
-msgstr "Значення `amount` повинно бути меншим за `Tender.value.amount`"
-
-#: ../../source/standard/tender.rst:100
-msgid "`currency` should either be absent or match `Tender.value.currency`"
-msgstr ""
-"Значення `currency` повинно бути або відсутнім, або співпадати з "
-"`Tender.value.currency`"
-
-#: ../../source/standard/tender.rst:101
-msgid ""
-"`valueAddedTaxIncluded` should either be absent or match "
-"`Tender.value.valueAddedTaxIncluded`"
-msgstr ""
-"Значення `valueAddedTaxIncluded` повинно бути або відсутнім, або співпадати "
-"з `Tender.value.valueAddedTaxIncluded`"
-
-#: ../../source/standard/tender.rst:112 ../../source/standard/tender.rst:120
-msgid ":ref:`period`, required"
-msgstr ":ref:`period`, обов’язково"
-
-#: ../../source/standard/tender.rst:187
-msgid "The Tender dates should be sequential:"
-msgstr "Дати закупівлі повинні бути послідовними:"
-
-#: ../../source/standard/tender.rst:189
-msgid "Current time"
-msgstr "Поточний час"
-
-#: ../../source/standard/tender.rst:190
-msgid "`enquiryPeriod.startDate`"
-msgstr "`enquiryPeriod.startDate`"
-
-#: ../../source/standard/tender.rst:191
-msgid "`enquiryPeriod.endDate`"
-msgstr "`enquiryPeriod.endDate`"
-
-#: ../../source/standard/tender.rst:192
-msgid "`tenderPeriod.startDate`"
-msgstr "`tenderPeriod.startDate`"
-
-#: ../../source/standard/tender.rst:193
-msgid "`tenderPeriod.endDate`"
-msgstr "`tenderPeriod.endDate`"
-
-#: ../../source/standard/tender.rst:146
-msgid "string"
-msgstr "рядок"
-
-#: ../../source/standard/tender.rst:149
-msgid "Enquiries period (enquiries)"
-msgstr "Період уточнень (уточнення)"
-
-#: ../../source/standard/tender.rst:151
-msgid "Tendering period (tendering)"
-msgstr "Очікування пропозицій (пропозиції)"
-
-#: ../../source/standard/tender.rst:153
-msgid "Auction period (auction)"
-msgstr "Період аукціону (аукціон)"
-
-#: ../../source/standard/tender.rst:155
-msgid "Winner qualification (qualification)"
-msgstr "Кваліфікація переможця (кваліфікація)"
-
-#: ../../source/standard/tender.rst:157
-msgid "Standstill period (standstill)"
-msgstr "Пропозиції розглянуто (розглянуто)"
-
-#: ../../source/standard/tender.rst:159
-msgid "Unsuccessful tender (unsuccessful)"
-msgstr "Закупівля не відбулась (не відбулась)"
-
-#: ../../source/standard/tender.rst:161
-msgid "Complete tender (complete)"
-msgstr "Завершена закупівля (завершена)"
-
-#: ../../source/standard/tender.rst:163
-msgid "Cancelled tender (cancelled)"
-msgstr "Відмінена закупівля (відмінена)"
-
-#: ../../source/standard/tender.rst:173
-msgid "List of :ref:`cancellation` objects."
-msgstr "Список об’єктів :ref:`cancellation`."
-
-#: ../../source/standard/tender.rst:175
-msgid "Contains 1 object with `active` status in case of cancelled Tender."
-msgstr ""
-"Містить 1 об’єкт зі статусом `active` на випадок, якщо закупівлю буде "
-"відмінено."
-
-#: ../../source/standard/tender.rst:16
-msgid ""
-"The name of the tender, displayed in listings. You can include the following"
-" items:"
-msgstr ""
-"Назва тендера, яка відображається у списках. Можна включити такі елементи:"
-
-#: ../../source/standard/tender.rst:26
-msgid "Detailed description of tender."
-msgstr "Детальний опис закупівлі"
-
-#: ../../source/standard/tender.rst:31
-msgid "The tender identifier to refer tender to in \"paper\" documentation."
-msgstr ""
-"Ідентифікатор закупівлі, щоб знайти закупівлю у  \"паперовій\" документації"
-
 #: ../../source/standard/tender.rst:47
 msgid ""
-"Total available tender budget. Bids greater then ``value`` will be rejected."
+"Total available tender budget. Bids greater then ``value`` will be "
+"rejected."
 msgstr ""
-"Повний доступний бюджет закупівлі. Пропозиції, що більші за ``value`` будуть"
-" відхилені."
+"Повний доступний бюджет закупівлі. Пропозиції, що більші за ``value`` "
+"будуть відхилені."
 
-#: ../../source/standard/tender.rst:60
-msgid "List that contains single item being procured."
-msgstr "Список, який містить елемент, що закуповується."
-
-#: ../../source/standard/tender.rst:89
-msgid ""
-"A list of all bids placed in the tender with information about tenderers, "
-"their proposal and other qualification documentation."
-msgstr ""
-"Список усіх пропозицій зроблених під час закупівлі разом із інформацією про "
-"учасників закупівлі, їхні пропозиції та інша кваліфікаційна документація."
-
-#: ../../source/standard/tender.rst:114
-msgid ""
-"Period when questions are allowed. At least `endDate` has to be provided."
-msgstr ""
-"Період, коли дозволено задавати питання. Повинна бути вказана хоча б "
-"`endDate` дата."
-
-#: ../../source/standard/tender.rst:122
-msgid ""
-"Period when bids can be submitted. At least `endDate` has to be provided."
-msgstr ""
-"Період, коли подаються пропозиції. Повинна бути вказана хоча б `endDate` "
-"дата."
-
-#: ../../source/standard/tender.rst:140
-msgid "Awarding process period."
-msgstr "Період, коли відбувається визначення переможця."
-
-#: ../../source/standard/tender.rst:177
-msgid ""
-"The :ref:`cancellation` object describes the reason of tender cancellation "
-"contains accompanying documents  if any."
-msgstr ""
-"Об’єкт :ref:`cancellation` описує причину скасування закупівлі та надає "
-"відповідні документи, якщо такі є."
-
-#: ../../source/standard/tender.rst:109
-msgid "List of :ref:`Contract` objects"
-msgstr "Список об’єктів :ref:`Contract`"
-
-#: ../../source/standard/tender.rst:133
-msgid "url"
-msgstr "URL-адреса"
-
-#: ../../source/standard/tender.rst:135
-msgid "A web address for view auction."
-msgstr "Веб-адреса для перегляду аукціону."
-
-#: ../../source/standard/tender.rst:168
-msgid "List of :ref:`lot` objects."
-msgstr "Список об’єктів :ref:`lot`."
-
-#: ../../source/standard/tender.rst:170
-msgid "Contains all tender lots."
-msgstr "Містить всі лоти закупівлі."
-
-#: ../../source/standard/tender.rst:66
-msgid "list of :ref:`Feature` objects"
-msgstr "список об’єктів :ref:`Feature`"
-
-#: ../../source/standard/tender.rst:68
-msgid "Features of tender."
-msgstr "Властивості закупівлі."
-
-#: ../../source/standard/tender.rst:29
-msgid "string, auto-generated, read-only"
-msgstr "рядок, генерується автоматично, лише для читання"
-
-#: ../../source/standard/tender.rst:181
-msgid "List of :ref:`revision` objects, auto-generated"
-msgstr ""
-"Список об’єктів :ref:`revision`, генерується автоматично, лише для читання"
+#: ../../source/standard/tender.rst:49
+msgid "|ocdsDescription| The total estimated value of the procurement."
+msgstr "|ocdsDescription| Загальна кошторисна вартість закупівлі."
 
 #: ../../source/standard/tender.rst:53
 msgid ":ref:`Guarantee`"
@@ -370,7 +114,271 @@ msgstr ":ref:`Guarantee`"
 msgid "Bid guarantee"
 msgstr "Забезпечення тендерної пропозиції"
 
-#: ../../source/standard/tender.rst:37
-msgid ":ref:`ProcuringEntity`, required"
-msgstr ":ref:`ProcuringEntity`, обов’язково"
+#: ../../source/standard/tender.rst:58
+msgid "string, :ref:`date`, auto-generated"
+msgstr "рядок, :ref:`date`, генерується автоматично"
 
+#: ../../source/standard/tender.rst:61
+msgid "list of :ref:`item` objects, required"
+msgstr "список об’єктів :ref:`item`, обов’язково"
+
+#: ../../source/standard/tender.rst:63
+msgid "List that contains single item being procured."
+msgstr "Список, який містить елемент, що закуповується."
+
+#: ../../source/standard/tender.rst:65
+msgid ""
+"|ocdsDescription| The goods and services to be purchased, broken into "
+"line items wherever possible. Items should not be duplicated, but a "
+"quantity of 2 specified instead."
+msgstr ""
+"|ocdsDescription| Товари та послуги, що будуть закуплені, поділені на "
+"спискові елементи, де це можливо. Елементи не повинні дублюватись, "
+"замість цього вкажіть кількість 2."
+
+#: ../../source/standard/tender.rst:69
+msgid "list of :ref:`Feature` objects"
+msgstr "список об’єктів :ref:`Feature`"
+
+#: ../../source/standard/tender.rst:71
+msgid "Features of tender."
+msgstr "Властивості закупівлі."
+
+#: ../../source/standard/tender.rst:74
+msgid "List of :ref:`document` objects"
+msgstr "Список об’єктів :ref:`document`"
+
+#: ../../source/standard/tender.rst:76
+msgid "|ocdsDescription| All documents and attachments related to the tender."
+msgstr "|ocdsDescription| Всі документи та додатки пов’язані із закупівлею."
+
+#: ../../source/standard/tender.rst:80
+msgid "List of :ref:`question` objects"
+msgstr "Список об’єктів :ref:`question`"
+
+#: ../../source/standard/tender.rst:82
+msgid "Questions to ``procuringEntity`` and answers to them."
+msgstr "Питання до замовника ``procuringEntity`` і відповіді на них."
+
+#: ../../source/standard/tender.rst:85
+msgid "List of :ref:`complaint` objects"
+msgstr "Список об’єктів :ref:`complaint`"
+
+#: ../../source/standard/tender.rst:87
+msgid "Complaints to tender conditions and their resolutions."
+msgstr "Скарги на умови закупівлі та їх вирішення."
+
+#: ../../source/standard/tender.rst:90
+msgid "List of :ref:`bid` objects"
+msgstr "Список об’єктів :ref:`bid`"
+
+#: ../../source/standard/tender.rst:92
+msgid ""
+"A list of all bids placed in the tender with information about tenderers,"
+" their proposal and other qualification documentation."
+msgstr ""
+"Список усіх пропозицій зроблених під час закупівлі разом із інформацією "
+"про учасників закупівлі, їхні пропозиції та інша кваліфікаційна "
+"документація."
+
+#: ../../source/standard/tender.rst:94
+msgid ""
+"|ocdsDescription| A list of all the companies who entered submissions for"
+" the tender."
+msgstr ""
+"|ocdsDescription| Список усіх компаній, які подали заявки для участі у "
+"закупівлі."
+
+#: ../../source/standard/tender.rst:100
+msgid "The minimal step of auction (reduction). Validation rules:"
+msgstr "Мінімальний крок аукціону (редукціону). Правила валідації:"
+
+#: ../../source/standard/tender.rst:102
+msgid "`amount` should be less then `Tender.value.amount`"
+msgstr "Значення `amount` повинно бути меншим за `Tender.value.amount`"
+
+#: ../../source/standard/tender.rst:103
+msgid "`currency` should either be absent or match `Tender.value.currency`"
+msgstr ""
+"Значення `currency` повинно бути або відсутнім, або співпадати з "
+"`Tender.value.currency`"
+
+#: ../../source/standard/tender.rst:104
+msgid ""
+"`valueAddedTaxIncluded` should either be absent or match "
+"`Tender.value.valueAddedTaxIncluded`"
+msgstr ""
+"Значення `valueAddedTaxIncluded` повинно бути або відсутнім, або "
+"співпадати з `Tender.value.valueAddedTaxIncluded`"
+
+#: ../../source/standard/tender.rst:107
+msgid "List of :ref:`award` objects"
+msgstr "Список об’єктів :ref:`award`"
+
+#: ../../source/standard/tender.rst:109
+msgid "All qualifications (disqualifications and awards)."
+msgstr "Усі  кваліфікації (дискваліфікації та переможці)."
+
+#: ../../source/standard/tender.rst:112
+msgid "List of :ref:`Contract` objects"
+msgstr "Список об’єктів :ref:`Contract`"
+
+#: ../../source/standard/tender.rst:115 ../../source/standard/tender.rst:123
+msgid ":ref:`period`, required"
+msgstr ":ref:`period`, обов’язково"
+
+#: ../../source/standard/tender.rst:117
+msgid ""
+"Period when questions are allowed. At least `endDate` has to be provided."
+msgstr ""
+"Період, коли дозволено задавати питання. Повинна бути вказана хоча б "
+"`endDate` дата."
+
+#: ../../source/standard/tender.rst:119
+msgid ""
+"|ocdsDescription| The period during which enquiries may be made and will "
+"be answered."
+msgstr ""
+"|ocdsDescription| Період, коли можна зробити уточнення та отримати "
+"відповіді на них."
+
+#: ../../source/standard/tender.rst:125
+msgid ""
+"Period when bids can be submitted. At least `endDate` has to be provided."
+msgstr ""
+"Період, коли подаються пропозиції. Повинна бути вказана хоча б `endDate` "
+"дата."
+
+#: ../../source/standard/tender.rst:127
+msgid ""
+"|ocdsDescription| The period when the tender is open for submissions. The"
+" end date is the closing date for tender submissions."
+msgstr ""
+"|ocdsDescription| Період, коли закупівля відкрита для подачі пропозицій. "
+"Кінцева дата - це дата, коли перестають прийматись пропозиції."
+
+#: ../../source/standard/tender.rst:131 ../../source/standard/tender.rst:141
+msgid ":ref:`period`, read-only"
+msgstr ":ref:`period`,  лише для читання"
+
+#: ../../source/standard/tender.rst:133
+msgid "Period when Auction is conducted."
+msgstr "Період, коли проводиться аукціон."
+
+#: ../../source/standard/tender.rst:136
+msgid "url"
+msgstr "URL-адреса"
+
+#: ../../source/standard/tender.rst:138
+msgid "A web address for view auction."
+msgstr "Веб-адреса для перегляду аукціону."
+
+#: ../../source/standard/tender.rst:143
+msgid "Awarding process period."
+msgstr "Період, коли відбувається визначення переможця."
+
+#: ../../source/standard/tender.rst:145
+msgid ""
+"|ocdsDescription| The date or period on which an award is anticipated to "
+"be made."
+msgstr ""
+"|ocdsDescription| Дата або період, коли очікується визначення переможця."
+
+#: ../../source/standard/tender.rst:149
+msgid "string"
+msgstr "рядок"
+
+#: ../../source/standard/tender.rst:152
+msgid "Enquiries period (enquiries)"
+msgstr "Період уточнень (уточнення)"
+
+#: ../../source/standard/tender.rst:154
+msgid "Tendering period (tendering)"
+msgstr "Очікування пропозицій (пропозиції)"
+
+#: ../../source/standard/tender.rst:156
+msgid "Auction period (auction)"
+msgstr "Період аукціону (аукціон)"
+
+#: ../../source/standard/tender.rst:158
+msgid "Winner qualification (qualification)"
+msgstr "Кваліфікація переможця (кваліфікація)"
+
+#: ../../source/standard/tender.rst:160
+msgid "Standstill period (standstill)"
+msgstr "Пропозиції розглянуто (розглянуто)"
+
+#: ../../source/standard/tender.rst:162
+msgid "Unsuccessful tender (unsuccessful)"
+msgstr "Закупівля не відбулась (не відбулась)"
+
+#: ../../source/standard/tender.rst:164
+msgid "Complete tender (complete)"
+msgstr "Завершена закупівля (завершена)"
+
+#: ../../source/standard/tender.rst:166
+msgid "Cancelled tender (cancelled)"
+msgstr "Відмінена закупівля (відмінена)"
+
+#: ../../source/standard/tender.rst:168
+msgid "Status of the Tender."
+msgstr "Статус Закупівлі."
+
+#: ../../source/standard/tender.rst:171
+msgid "List of :ref:`lot` objects."
+msgstr "Список об’єктів :ref:`lot`."
+
+#: ../../source/standard/tender.rst:173
+msgid "Contains all tender lots."
+msgstr "Містить всі лоти закупівлі."
+
+#: ../../source/standard/tender.rst:176
+msgid "List of :ref:`cancellation` objects."
+msgstr "Список об’єктів :ref:`cancellation`."
+
+#: ../../source/standard/tender.rst:178
+msgid "Contains 1 object with `active` status in case of cancelled Tender."
+msgstr ""
+"Містить 1 об’єкт зі статусом `active` на випадок, якщо закупівлю буде "
+"відмінено."
+
+#: ../../source/standard/tender.rst:180
+msgid ""
+"The :ref:`cancellation` object describes the reason of tender "
+"cancellation contains accompanying documents  if any."
+msgstr ""
+"Об’єкт :ref:`cancellation` описує причину скасування закупівлі та надає "
+"відповідні документи, якщо такі є."
+
+#: ../../source/standard/tender.rst:184
+msgid "List of :ref:`revision` objects, auto-generated"
+msgstr ""
+"Список об’єктів :ref:`revision`, генерується автоматично, лише для читання"
+
+#: ../../source/standard/tender.rst:186
+msgid "Historical changes to Tender object properties."
+msgstr "Зміни властивостей об’єктів Закупівлі"
+
+#: ../../source/standard/tender.rst:190
+msgid "The Tender dates should be sequential:"
+msgstr "Дати закупівлі повинні бути послідовними:"
+
+#: ../../source/standard/tender.rst:192
+msgid "Current time"
+msgstr "Поточний час"
+
+#: ../../source/standard/tender.rst:193
+msgid "`enquiryPeriod.startDate`"
+msgstr "`enquiryPeriod.startDate`"
+
+#: ../../source/standard/tender.rst:194
+msgid "`enquiryPeriod.endDate`"
+msgstr "`enquiryPeriod.endDate`"
+
+#: ../../source/standard/tender.rst:195
+msgid "`tenderPeriod.startDate`"
+msgstr "`tenderPeriod.startDate`"
+
+#: ../../source/standard/tender.rst:196
+msgid "`tenderPeriod.endDate`"
+msgstr "`tenderPeriod.endDate`"

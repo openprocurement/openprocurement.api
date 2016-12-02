@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
-from openprocurement.api.models import get_now
+from openprocurement.api.models import get_now, SANDBOX_MODE
 from schematics.exceptions import ModelValidationError, ModelConversionError
-from openprocurement.api.utils import apply_data_patch, update_logging_context
+from openprocurement.api.utils import apply_data_patch, update_logging_context, check_document
 
 
 def validate_json_data(request):
@@ -167,10 +167,17 @@ def validate_tender_auction_data(request):
         data = {}
     if request.method == 'POST':
         now = get_now().isoformat()
-        if tender.lots:
-            data['lots'] = [{'auctionPeriod': {'endDate': now}} if i.id == lot_id else {} for i in tender.lots]
+        if (SANDBOX_MODE and tender.submissionMethodDetails and tender.submissionMethodDetails in [u'quick(mode:no-auction)', u'quick(mode:fast-forward)']):
+            if tender.lots:
+                data['lots'] = [{'auctionPeriod': {'startDate': now, 'endDate': now}} if i.id == lot_id else {} for i in tender.lots]
+            else:
+                data['auctionPeriod'] = {'startDate': now, 'endDate': now}
         else:
-            data['auctionPeriod'] = {'endDate': now}
+            if tender.lots:
+                data['lots'] = [{'auctionPeriod': {'endDate': now}} if i.id == lot_id else {} for i in tender.lots]
+            else:
+                data['auctionPeriod'] = {'endDate': now}
+
     request.validated['data'] = data
 
 
@@ -185,7 +192,16 @@ def validate_bid_data(request):
         return
     update_logging_context(request, {'bid_id': '__new__'})
     model = type(request.tender).bids.model_class
-    return validate_data(request, model)
+    bid = validate_data(request, model)
+    validated_bid = request.validated.get('bid')
+    if validated_bid:
+        if any([key == 'documents' or 'Documents' in key for key in validated_bid.keys()]):
+            bid_documents = validate_bid_documents(request)
+            if not bid_documents:
+                return
+            for documents_type, documents in bid_documents.items():
+                validated_bid[documents_type] = documents
+    return bid
 
 
 def validate_patch_bid_data(request):
@@ -302,3 +318,18 @@ def validate_file_update(request):
         return validate_document_data(request)
     if request.content_type == 'multipart/form-data':
         validate_file_upload(request)
+
+
+def validate_bid_documents(request):
+    bid_documents = [key for key in request.validated['bid'].keys() if key == 'documents' or 'Documents' in key]
+    documents = {}
+    for doc_type in bid_documents:
+        documents[doc_type] = []
+        for document in request.validated['bid'][doc_type]:
+            model = getattr(type(request.validated['bid']), doc_type).model_class
+            document = model(document)
+            document.validate()
+            route_kwargs = {'bid_id': request.validated['bid'].id}
+            document = check_document(request, document, doc_type, route_kwargs)
+            documents[doc_type].append(document)
+    return documents

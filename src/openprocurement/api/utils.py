@@ -39,6 +39,10 @@ SESSION = Session()
 json_view = partial(view, renderer='json')
 
 
+def route_prefix(settings={}):
+    return '/api/{}'.format(settings.get('api_version', VERSION))
+
+
 def generate_id():
     return uuid4().hex
 
@@ -96,49 +100,11 @@ def generate_docservice_url(request, doc_id, temporary=True, prefix=None):
 def upload_file(request, blacklisted_fields=DOCUMENT_BLACKLISTED_FIELDS):
     first_document = request.validated['documents'][0] if 'documents' in request.validated and request.validated['documents'] else None
     if 'data' in request.validated and request.validated['data']:
-        document = request.validated['document']
-        url = document.url
-        parsed_url = urlparse(url)
-        parsed_query = dict(parse_qsl(parsed_url.query))
-        if not url.startswith(request.registry.docservice_url) or \
-                len(parsed_url.path.split('/')) != 3 or \
-                set(['Signature', 'KeyID']) != set(parsed_query):
-            request.errors.add('body', 'url', "Can add document only from document service.")
-            request.errors.status = 403
-            raise error_handler(request.errors)
-        if not document.hash:
-            request.errors.add('body', 'hash', "This field is required.")
-            request.errors.status = 422
-            raise error_handler(request.errors)
-        keyid = parsed_query['KeyID']
-        if keyid not in request.registry.keyring:
-            request.errors.add('body', 'url', "Document url expired.")
-            request.errors.status = 422
-            raise error_handler(request.errors)
-        dockey = request.registry.keyring[keyid]
-        signature = parsed_query['Signature']
-        key = urlparse(url).path.split('/')[-1]
-        try:
-            signature = b64decode(unquote(signature))
-        except TypeError:
-            request.errors.add('body', 'url', "Document url signature invalid.")
-            request.errors.status = 422
-            raise error_handler(request.errors)
-        mess = "{}\0{}".format(key, document.hash.split(':', 1)[-1])
-        try:
-            if mess != dockey.verify(signature + mess.encode("utf-8")):
-                raise ValueError
-        except ValueError:
-            request.errors.add('body', 'url', "Document url invalid.")
-            request.errors.status = 422
-            raise error_handler(request.errors)
+        document = check_document(request, request.validated['document'], 'body', {})
         if first_document:
             for attr_name in type(first_document)._fields:
                 if attr_name not in blacklisted_fields:
                     setattr(document, attr_name, getattr(first_document, attr_name))
-        document_route = request.matched_route.name.replace("collection_", "")
-        document_path = request.current_route_path(_route_name=document_route, document_id=document.id, _query={'download': key})
-        document.url = '/' + '/'.join(document_path.split('/')[3:])
         return document
     if request.content_type == 'multipart/form-data':
         data = request.validated['file']
@@ -400,6 +366,52 @@ def check_bids(request):
         if tender.numberOfBids == 1:
             #tender.status = 'active.qualification'
             add_next_award(request)
+
+
+def check_document(request, document, document_container, route_kwargs):
+    url = document.url
+    parsed_url = urlparse(url)
+    parsed_query = dict(parse_qsl(parsed_url.query))
+    if not url.startswith(request.registry.docservice_url) or \
+            len(parsed_url.path.split('/')) != 3 or \
+            set(['Signature', 'KeyID']) != set(parsed_query):
+        request.errors.add(document_container, 'url', "Can add document only from document service.")
+        request.errors.status = 403
+        raise error_handler(request.errors)
+    if not document.hash:
+        request.errors.add(document_container, 'hash', "This field is required.")
+        request.errors.status = 422
+        raise error_handler(request.errors)
+    keyid = parsed_query['KeyID']
+    if keyid not in request.registry.keyring:
+        request.errors.add(document_container, 'url', "Document url expired.")
+        request.errors.status = 422
+        raise error_handler(request.errors)
+    dockey = request.registry.keyring[keyid]
+    signature = parsed_query['Signature']
+    key = urlparse(url).path.split('/')[-1]
+    try:
+        signature = b64decode(unquote(signature))
+    except TypeError:
+        request.errors.add(document_container, 'url', "Document url signature invalid.")
+        request.errors.status = 422
+        raise error_handler(request.errors)
+    mess = "{}\0{}".format(key, document.hash.split(':', 1)[-1])
+    try:
+        if mess != dockey.verify(signature + mess.encode("utf-8")):
+            raise ValueError
+    except ValueError:
+        request.errors.add(document_container, 'url', "Document url invalid.")
+        request.errors.status = 422
+        raise error_handler(request.errors)
+    document_route = request.matched_route.name.replace("collection_", "")
+    if "Documents" not in document_route:
+        specified_document_route_end = (document_container.lower().rsplit('documents')[0] + ' documents').lstrip().title()
+        document_route = ' '.join([document_route[:-1], specified_document_route_end])
+    route_kwargs.update({'_route_name': document_route, 'document_id': document.id, '_query': {'download': key}})
+    document_path = request.current_route_path(**route_kwargs)
+    document.url = '/' + '/'.join(document_path.split('/')[3:])
+    return document
 
 
 def check_complaint_status(request, complaint, now=None):
@@ -701,7 +713,7 @@ def forbidden(request):
 def add_logging_context(event):
     request = event.request
     params = {
-        'API_VERSION': VERSION,
+        'API_VERSION': request.registry.settings.get('api_version', VERSION),
         'TAGS': 'python,api',
         'USER': str(request.authenticated_userid or ''),
         #'ROLE': str(request.authenticated_role),
@@ -817,20 +829,20 @@ def set_renderer(event):
         return True
 
 
-def fix_url(item, app_url):
+def fix_url(item, app_url, settings={}):
     if isinstance(item, list):
         [
-            fix_url(i, app_url)
+            fix_url(i, app_url, settings)
             for i in item
             if isinstance(i, dict) or isinstance(i, list)
         ]
     elif isinstance(item, dict):
         if "format" in item and "url" in item and '?download=' in item['url']:
             path = item["url"] if item["url"].startswith('/') else '/' + '/'.join(item['url'].split('/')[5:])
-            item["url"] = app_url + ROUTE_PREFIX + path
+            item["url"] = app_url + route_prefix(settings) + path
             return
         [
-            fix_url(item[i], app_url)
+            fix_url(item[i], app_url, settings)
             for i in item
             if isinstance(item[i], dict) or isinstance(item[i], list)
         ]
@@ -838,7 +850,7 @@ def fix_url(item, app_url):
 
 def beforerender(event):
     if event.rendering_val and isinstance(event.rendering_val, dict) and 'data' in event.rendering_val:
-        fix_url(event.rendering_val['data'], event['request'].application_url)
+        fix_url(event.rendering_val['data'], event['request'].application_url, event['request'].registry.settings)
 
 
 def register_tender_procurementMethodType(config, model):

@@ -11,7 +11,7 @@ owner tokens are issued to facilitate multiple actor roles upon object creation.
 API keys
 --------
 
-API key is username to use with Basic Authenication scheme.
+API key is username to use with Basic Authenication scheme (see :rfc:`2617#section-2`). 
 
 Owner tokens
 ------------

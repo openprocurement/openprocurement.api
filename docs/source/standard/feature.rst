@@ -28,7 +28,7 @@ Schema
 :relatedItem:
     string
 
-    Id of related item.
+    Id of related :ref:`item` or :ref:`lot` (only if the ``featureOf`` value is ``item`` or ``lot``).
 
 :title:
     string, multilingual, required
