@@ -5,7 +5,7 @@ from copy import deepcopy
 from datetime import timedelta
 
 from openprocurement.api import ROUTE_PREFIX
-from openprocurement.api.models import Tender, get_now, CANT_DELETE_PERIOD_START_DATE_FROM, coordinates_reg_exp
+from openprocurement.api.models import Tender, get_now, CANT_DELETE_PERIOD_START_DATE_FROM, ITEMS_LOCATION_VALIDATION_FROM, coordinates_reg_exp
 from openprocurement.api.tests.base import test_tender_data, test_organization, BaseWebTest, BaseTenderWebTest
 from uuid import uuid4
 
@@ -673,6 +673,7 @@ class TenderResourceTest(BaseWebTest):
         self.assertEqual(data['guarantee']['amount'], 100500)
         self.assertEqual(data['guarantee']['currency'], "USD")
 
+    @unittest.skipIf(get_now() < ITEMS_LOCATION_VALIDATION_FROM, "Can`t validate delivery location before {}".format(ITEMS_LOCATION_VALIDATION_FROM))
     def test_tender_item_location_validation(self):
         response = self.app.get('/tenders')
         self.assertEqual(response.status, '200 OK')
