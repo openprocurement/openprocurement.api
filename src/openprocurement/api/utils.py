@@ -499,6 +499,12 @@ def check_status(request):
                 return
 
 
+def get_contract_by_id(contract_id, tender):
+    for contract in tender.contracts:
+        if contract_id == contract['id']:
+            return contract
+
+
 def check_tender_status(request):
     tender = request.validated['tender']
     now = get_now()
@@ -532,7 +538,8 @@ def check_tender_status(request):
                             extra=context_unpack(request, {'MESSAGE_ID': 'switched_lot_unsuccessful'}, {'LOT_ID': lot.id}))
                 lot.status = 'unsuccessful'
                 continue
-            elif last_award.status == 'active' and any([i.status == 'active' and i.awardID == last_award.id for i in tender.contracts]):
+            elif last_award.status == 'active' and \
+                    (any([(i.status == 'active' or (i.status == 'merged' and get_contract_by_id(i.get('mergedInto'), tender).status == 'active')) and i.awardID == last_award.id for i in tender.contracts])):
                 LOGGER.info('Switched lot {} of tender {} to {}'.format(lot.id, tender.id, 'complete'),
                             extra=context_unpack(request, {'MESSAGE_ID': 'switched_lot_complete'}, {'LOT_ID': lot.id}))
                 lot.status = 'complete'
@@ -922,3 +929,40 @@ def calculate_business_date(date_obj, timedelta_obj, context=None, working_days=
                 date_obj += timedelta(1) if timedelta_obj > timedelta() else -timedelta(1)
         return date_obj
     return date_obj + timedelta_obj
+
+
+def check_merged_contracts(request):
+    """ Set status pending and delete mergeInto for all previous merged contracts before
+        Set status merged and set mergeInto for all new contracts which awardID come in additionalAwardIDs """
+
+    contract = request.validated['contract']
+    data = request.validated['data']
+    tender = request.validated['tender']
+    if 'additionalAwardIDs' in contract:  # Get ids for all previos merged contracts
+        old_additional_award_ids = contract.get('additionalAwardIDs', [])
+        new_additional_award_ids = data['additionalAwardIDs']
+        prev_contracts = [prev_contract for prev_contract in tender['contracts'] if
+                          prev_contract['awardID'] in old_additional_award_ids]
+
+        new_contracts = [new_contract for new_contract in tender['contracts'] if
+                         new_contract['awardID'] in new_additional_award_ids]
+        for new_contract in new_contracts:
+            # all new contracts must have status pending
+            if new_contract['status'] != 'pending' and new_contract not in prev_contracts:
+                request.errors.add('body', 'data',
+                                        "Can't merge contract in status {}".format(new_contract['status']))
+                request.errors.status = 403
+                return request
+            # Check if it exists and length > 0
+            if 'additionalAwardIDs' in new_contract and new_contract['additionalAwardIDs']:
+                request.errors.add('body', 'data', "Can't merge contract which has additionalAwardIDs")
+                request.errors.status = 403
+                return request
+
+        for prev_contract in prev_contracts:
+            prev_contract['status'] = 'pending'
+            del prev_contract['mergedInto']
+
+        for new_contract in new_contracts:
+            new_contract['status'] = 'merged'
+            new_contract['mergedInto'] = contract['id']

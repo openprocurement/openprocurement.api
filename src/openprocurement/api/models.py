@@ -924,7 +924,7 @@ class Cancellation(Model):
 class Contract(Model):
     class Options:
         roles = {
-            'create': blacklist('id', 'status', 'date', 'documents', 'dateSigned'),
+            'create': blacklist('id', 'status', 'date', 'documents', 'dateSigned', 'additionalAwardIDs'),
             'edit': blacklist('id', 'documents', 'date', 'awardID', 'suppliers', 'items', 'contractID'),
             'embedded': schematics_embedded_role,
             'view': schematics_default_role,
@@ -940,7 +940,7 @@ class Contract(Model):
     description = StringType()  # Contract description
     description_en = StringType()
     description_ru = StringType()
-    status = StringType(choices=['pending', 'terminated', 'active', 'cancelled'], default='pending')
+    status = StringType(choices=['pending', 'terminated', 'active', 'cancelled', 'merged'], default='pending')
     period = ModelType(Period)
     value = ModelType(Value)
     dateSigned = IsoDateTimeType()
@@ -948,6 +948,43 @@ class Contract(Model):
     items = ListType(ModelType(Item))
     suppliers = ListType(ModelType(Organization), min_size=1, max_size=1)
     date = IsoDateTimeType()
+    additionalAwardIDs = ListType(MD5Type, default=list())
+    mergedInto = MD5Type()
+
+    def validate_mergedInto(self, data, value):
+        if data['status'] == 'merged':
+            if value not in [contract['id'] for contract in data['__parent__'].contracts]:
+                raise ValidationError(u"mergedInto must be id one of tender contract")
+            if value == data['id']:
+                raise ValidationError(u"mergedInto can't be id of current contract")
+
+    def validate_additionalAwardIDs(self, data, value):
+        if value and isinstance(data['__parent__'], Model):
+            # Get all awards which in validate_additionalAwardIDs
+            contract_award = [award for award in data['__parent__'].awards if award['id'] == data['awardID']][0]
+            awards = [award for award in data['__parent__'].awards if award['id'] in value]
+            if len(awards) < len(value):
+                raise ValidationError(u"id must be one of awards id")
+            for additional_award in awards:
+                if additional_award['id'] == data['awardID']:
+                    raise ValidationError(u"Can't merge itself")
+                # Check that award has status active
+                if additional_award['status'] != 'active':
+                    raise ValidationError(u"awards must has status active")
+                # Check that for all addittional awards have contract
+                for contract in data['__parent__'].contracts:
+                    if contract['awardID'] == additional_award['id']:
+                        break
+                else:
+                    raise ValidationError(u"Can't found contract for award {}".format(additional_award['id']))
+            # Check that all award suppliers id is the same
+            if len(set(award['suppliers'][0]['identifier']['id'] for award in awards)) > 1 or \
+                    awards[0]['suppliers'][0]['identifier']['id'] != contract_award['suppliers'][0]['identifier']['id']:
+                raise ValidationError(u"Awards must have same suppliers id")
+            # Check that all award suppliers schema is the same
+            if len(set(award['suppliers'][0]['identifier']['scheme'] for award in awards)) > 1 or \
+                    awards[0]['suppliers'][0]['identifier']['scheme'] != contract_award['suppliers'][0]['identifier']['scheme']:
+                raise ValidationError(u"Awards must have same suppliers schema")
 
     def validate_awardID(self, data, awardID):
         if awardID and isinstance(data['__parent__'], Model) and awardID not in [i.id for i in data['__parent__'].awards]:
@@ -960,6 +997,9 @@ class Contract(Model):
                 raise ValidationError(u"Contract signature date should be after award complaint period end date ({})".format(award.complaintPeriod.endDate.isoformat()))
             if value > get_now():
                 raise ValidationError(u"Contract signature date can't be in the future")
+            for additional_award in [award for award in data['__parent__'].awards if award['id'] in data['additionalAwardIDs']]:
+                if additional_award.complaintPeriod.endDate >= value:
+                    raise ValidationError(u"Contract signature date should be after additional awards complaint period end date ({})".format(additional_award.complaintPeriod.endDate.isoformat()))
 
 
 class Award(Model):
