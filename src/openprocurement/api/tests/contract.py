@@ -532,7 +532,7 @@ class TenderMergedContracts2LotsResourceTest(BaseTenderWebTest):
         self.assertEqual(first_contract['id'], second_contract['mergedInto'])
         self.assertEqual(second_contract['status'], 'merged')
 
-        max_value = first_contract["value"]["amount"] + second_award["value"]["amount"]
+        max_value = first_contract["value"]["amount"]
         response = self.app.patch_json('/tenders/{}/contracts/{}?acc_token={}'.format(
             self.tender_id, first_contract['id'], self.tender_token),
             {"data": {"value": {"amount": max_value + 0.1}}}, status=403)
@@ -1050,6 +1050,77 @@ class TenderMergedContracts3LotsResourceTest(BaseTenderWebTest):
 
         self.assertEqual(response.status, '200 OK')
         self.assertEqual(response.json['data']['dateSigned'], dateSigned)
+
+    def test_main_contract_amount(self):
+        """ Check contract's amount while merging contracts and canceling awards."""
+        awards = self.create_awards()
+        self.active_awards(awards)
+
+        # get created contracts
+        response = self.app.get('/tenders/{}/contracts?acc_token={}'.format(self.tender_id, self.tender_token))
+        first_contract, second_contract, third_contract = response.json['data']
+
+        # merge second contract to first
+        response = self.app.patch_json('/tenders/{}/contracts/{}?acc_token={}'.format(
+            self.tender_id, first_contract['id'], self.tender_token),
+            {"data": {"additionalAwardIDs": [second_contract['awardID']]}})
+        self.assertEqual(response.status, '200 OK')
+        self.assertEqual(response.json['data']['value']['amount'], first_contract['value']['amount'] +
+                         second_contract['value']['amount'])
+
+        # merge third and second contracts to first
+        response = self.app.patch_json('/tenders/{}/contracts/{}?acc_token={}'.format(
+            self.tender_id, first_contract['id'], self.tender_token),
+            {"data": {"additionalAwardIDs": [second_contract['awardID'], third_contract['awardID']]}})
+        self.assertEqual(response.status, '200 OK')
+        self.assertEqual(response.json['data']['value']['amount'], first_contract['value']['amount'] +
+                         second_contract['value']['amount'] + third_contract['value']['amount'])
+
+        # send empty list of additionalAwardIDs
+        response = self.app.patch_json('/tenders/{}/contracts/{}?acc_token={}'.format(
+            self.tender_id, first_contract['id'], self.tender_token),
+            {"data": {"additionalAwardIDs": []}})
+        self.assertEqual(response.status, '200 OK')
+        self.assertEqual(response.json['data']['value']['amount'], first_contract['value']['amount'])
+
+        # merge third and second contract to first and send big amount
+        max_value = sum([first_contract['value']['amount'],
+                         second_contract['value']['amount'],
+                         third_contract['value']['amount']])
+        response = self.app.patch_json('/tenders/{}/contracts/{}?acc_token={}'.format(
+            self.tender_id, first_contract['id'], self.tender_token),
+            {"data": {"additionalAwardIDs": [second_contract['awardID'], third_contract['awardID']],
+                      "value": {"amount": max_value + 0.1}}}, status=403)
+        self.assertEqual(response.status, '403 Forbidden')
+        self.assertEqual(response.json['errors'][0]['description'],
+                         "Value amount should be less or equal to awarded amount ({value:.1f})".format(value=max_value))
+
+        # merge third and second contract to first and send small amount
+        response = self.app.patch_json('/tenders/{}/contracts/{}?acc_token={}'.format(
+            self.tender_id, first_contract['id'], self.tender_token),
+            {"data": {"additionalAwardIDs": [second_contract['awardID'], third_contract['awardID']],
+                      "value": {"amount": max_value - 0.1}}})
+        self.assertEqual(response.status, '200 OK')
+        self.assertEqual(response.json['data']['value']['amount'], max_value - 0.1)
+
+        # cancel third award
+        response = self.app.patch_json('/tenders/{}/awards/{}?acc_token={}'.format(self.tender_id,
+                                                                                   third_contract['awardID'],
+                                                                                   self.tender_token),
+                                       {'data': {'status': 'cancelled'}})
+        self.assertEqual(response.status, '200 OK')
+        response = self.app.get('/tenders/{}/contracts/{}'.format(self.tender_id, first_contract['id']))
+        self.assertEqual(response.json['data']['value']['amount'], first_contract['value']['amount'] +
+                         second_contract['value']['amount'])
+
+        # cancel second award
+        response = self.app.patch_json('/tenders/{}/awards/{}?acc_token={}'.format(self.tender_id,
+                                                                                   second_contract['awardID'],
+                                                                                   self.tender_token),
+                                       {'data': {'status': 'cancelled'}})
+        self.assertEqual(response.status, '200 OK')
+        response = self.app.get('/tenders/{}/contracts/{}'.format(self.tender_id, first_contract['id']))
+        self.assertEqual(response.json['data']['value']['amount'], first_contract['value']['amount'])
 
 
 class TenderMergedContracts4LotsResourceTest(BaseTenderWebTest):

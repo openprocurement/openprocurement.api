@@ -108,11 +108,8 @@ class TenderAwardContractResource(APIResource):
                     return
 
             award = [a for a in tender.awards if a.id == self.request.context.awardID][0]
-            max_sum = award.value.amount
-            # If contract has additionalAwardIDs then add value.amount to mac contract value
-            if 'additionalAwardIDs' in contract and contract['additionalAwardIDs']:
-                max_sum += sum([award.value.amount for award in tender.awards if award['id'] in contract['additionalAwardIDs']])
-            if data['value']['amount'] > max_sum:
+            max_sum = award.value.amount + sum([award.value.amount for award in tender.awards if award['id'] in data['additionalAwardIDs']])
+            if self.request.json_body.get('data').get('value', {}).get('amount') > max_sum:
                 self.request.errors.add('body', 'data',
                                         'Value amount should be less or equal to awarded amount ({})'.format(max_sum))
                 self.request.errors.status = 403
@@ -127,7 +124,14 @@ class TenderAwardContractResource(APIResource):
         if check_merged_contracts(self.request) is not None:
             return
         contract_status = self.request.context.status
+        additional_awards_before = contract['additionalAwardIDs']
         apply_patch(self.request, save=False, src=self.request.context.serialize())
+        if additional_awards_before != contract['additionalAwardIDs']:
+            contract['value']['amount'] = self.request.json_body.get('data').get('value', {}).get('amount') or \
+                                          sum([award.value.amount for award in tender.awards if award['id']
+                                               in contract.get('additionalAwardIDs', [])
+                                               or award['id'] == contract['awardID']])
+
         if contract_status != self.request.context.status and (contract_status != 'pending' or self.request.context.status != 'active'):
             self.request.errors.add('body', 'data', 'Can\'t update contract status')
             self.request.errors.status = 403
