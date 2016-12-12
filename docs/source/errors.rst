@@ -55,26 +55,23 @@ containing additional information.
   Rate Limit Enforced. See :ref:`Rate control <performance>`.
   
 
-Any 5xx error response means abnormal request processing situation and
+Any **5xx error** response means abnormal request processing situation and
 should be reported to technical support.
+
 Platform has to properly react to 5xx errors because such errors do not
-necessarily guarantee that request was not performed. For repeatable operations
-(such as 2-phase commit, fieds value modifications, etc.) you should repeat
-the request with some interval. For other operations (such as document
-upload, etc.) you should check modified object data (tender, bid, award, etc.)
-with bigger interval (5-10 min).
+necessarily guarantee that request has not been performed. For repeatable operations (such as :ref:`2-phase commit <2pc>`, field value modifications, etc.) you should repeat the request with some interval. For other operations (such as document upload, etc.) you should check modified object data (tender, bid, award, etc.) with bigger interval (5-10 min).
 
 500
   Server error. There was a problem on OpenProcurement's end.
 
 501
   Not Implemented. The server either does not recognize the request method,
-  or it lacks the ability to fulfill the request. Re-check request consistency.
+  or it lacks the ability to fulfill the request. Re-check the request consistency.
 
 502
   Bad Gateway. The server received an invalid response or backend is not ready
   to handle requests. Repeat request for repeatable operations or check object
-  data with interval (1-5 min).
+  data with interval 1-5 min.
 
 503
   Service Unavailable. The server is currently unavailable (because it is
@@ -82,11 +79,11 @@ with bigger interval (5-10 min).
 
 504
   Gateway Time-out. The server did not receive a timely response. Repeat
-  request for repeatable operations or check object data with interval (1-5 min).
+  request for repeatable operations or check object data with interval 1-5 min.
 
 505
   HTTP Version Not Supported. The server does not support the HTTP protocol
-  version used in the request. Re-check request consistency.
+  version used in the request. Re-check the request consistency.
 
 
 Success Response
