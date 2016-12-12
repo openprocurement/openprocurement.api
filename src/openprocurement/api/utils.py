@@ -918,7 +918,7 @@ def check_merged_contracts(request):
     contract = request.validated['contract']
     data = request.validated['data']
     tender = request.validated['tender']
-    if 'additionalAwardIDs' in contract:  # Get ids for all previos merged contracts
+    if 'additionalAwardIDs' in contract:  # Get ids for all previous merged contracts
         old_additional_award_ids = contract.get('additionalAwardIDs', [])
         new_additional_award_ids = data['additionalAwardIDs']
         prev_contracts = [prev_contract for prev_contract in tender['contracts'] if
@@ -930,7 +930,7 @@ def check_merged_contracts(request):
             # all new contracts must have status pending
             if new_contract['status'] != 'pending' and new_contract not in prev_contracts:
                 request.errors.add('body', 'data',
-                                        "Can't merge contract in status {}".format(new_contract['status']))
+                                   "Can't merge contract in status {}".format(new_contract['status']))
                 request.errors.status = 403
                 return request
             # Check if it exists and length > 0
