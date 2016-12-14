@@ -331,6 +331,9 @@ class TenderAwardResource(APIResource):
                     if i.status == 'merged':  # Find contract and remove from additionalAwardIDs
                         main_contract = [c for c in tender.contracts if c['id'] == i.mergedInto][0]
                         main_contract['additionalAwardIDs'].pop(main_contract['additionalAwardIDs'].index(i.awardID))
+                        main_contract.value.amount = sum([award.value.amount for award in tender.awards
+                                                          if award['id'] in main_contract['additionalAwardIDs']
+                                                          or award['id'] == main_contract['awardID']])
                         del i['mergedInto']
                     if 'additionalAwardIDs' in i:  # if cancelled contract has additionalAwardIDs
                         set_pending((contract for contract in tender.contracts
