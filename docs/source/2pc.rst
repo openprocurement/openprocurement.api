@@ -54,11 +54,14 @@ Repeating of the request for publication in case of problem with receiving a res
 
 The new mechanism is available along with the "old" one. The "old" is likely to be turned off in one of the later releases.
 
+Work with errors
+----------------
 
-Example of incorrectly formed request error
--------------------------------------------
+In case of unsuccessful request and/or 5xx errors you should check modified object data (tender, bid, award, etc.), since 5xx error response does not necessarily guarantee that request has not been performed. You should repeat this request with some interval until successful result. 
 
-Error indicates that the data is not found in the body of JSON.
+You can view more detailed error description :ref:`here <errors>`.
+
+Here is an example of incorrectly formed request. This error indicates that the data is not found in the body of JSON.
 
 .. include:: tutorial/tender-post-attempt-json.http
    :code:
