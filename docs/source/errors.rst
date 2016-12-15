@@ -59,7 +59,11 @@ Any **5xx error** response means abnormal request processing situation and
 should be reported to technical support.
 
 Platform has to properly react to 5xx errors because such errors do not
-necessarily guarantee that request has not been performed. For repeatable operations (such as :ref:`2-phase commit <2pc>`, field value modifications, etc.) you should repeat the request with some interval. For other operations (such as document upload, etc.) you should check modified object data (tender, bid, award, etc.) with bigger interval (5-10 min).
+necessarily guarantee that request has not been performed. For repeatable operations (such as :ref:`2-phase commit <2pc>`, field value modifications, etc.) you should repeat the request with some interval. The time interval has to be increased for each of the following repeated requests. 
+
+Request repetition can be applied only to a specific phase of the operation. For example, if in case of executing a 2-phase commit the first phase was executed successfully (a tender was created in status `draft`), but the second phase (tender publication) failed with a 5xx error, then the request should be repeated only for the not executed phase (only for tender publication).
+
+For other operations (such as document upload, etc.) you should check modified object data (tender, bid, award, etc.) with bigger interval (5-10 min).
 
 500
   Server error. There was a problem on OpenProcurement's end.
