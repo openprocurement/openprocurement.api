@@ -64,7 +64,7 @@ def generate_tender_id(ctime, db, server_id=''):
             sleep(1)
         else:
             break
-    return 'R-UA-{:04}-{:02}-{:02}-{:06}{}'.format(ctime.year, ctime.month, ctime.day, index, server_id and '-' + server_id)
+    return 'MD-{:04}-{:02}-{:02}-{:06}{}'.format(ctime.year, ctime.month, ctime.day, index, server_id and '-' + server_id)
 
 
 def get_filename(data):
