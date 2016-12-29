@@ -108,7 +108,7 @@ def upload_file(request, blacklisted_fields=DOCUMENT_BLACKLISTED_FIELDS, whiteli
             for attr_name in type(first_document)._fields:
                 if attr_name in whitelisted_fields:
                     setattr(document, attr_name, getattr(first_document, attr_name))
-                elif attr_name not in blacklisted_fields and attr_name not in request.validated['data']:
+                elif attr_name not in blacklisted_fields and attr_name not in request.validated['json_data']:
                     setattr(document, attr_name, getattr(first_document, attr_name))
         return document
     if request.content_type == 'multipart/form-data':
