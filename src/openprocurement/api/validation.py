@@ -15,6 +15,7 @@ def validate_json_data(request):
         request.errors.add('body', 'data', "Data not available")
         request.errors.status = 422
         return
+    request.validated['json_data'] = json['data']
     return json['data']
 
 
