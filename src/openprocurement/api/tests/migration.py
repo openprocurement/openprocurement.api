@@ -763,6 +763,15 @@ class MigrateTest(BaseWebTest):
         self.assertIn('KeyID=', migrated_item['documents'][0]['url'])
         self.assertIn('Signature=', migrated_item['documents'][0]['url'])
 
+    def test_migrate_from23to24(self):
+        set_db_schema_version(self.db, 23)
+        data = {'doc_type': 'Tender'}
+        _id, _rev = self.db.save(data)
+        migrate_data(self.app.app.registry, 24)
+        migrated_item = self.db.get(_id)
+        self.assertIn('operator', migrated_item)
+        self.assertEqual(migrated_item['operator'], 'UA')
+
 
 def suite():
     suite = unittest.TestSuite()
