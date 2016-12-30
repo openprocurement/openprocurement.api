@@ -1203,7 +1203,7 @@ class Tender(SchematicsDocument, Model):
     owner_token = StringType()
     transfer_token = StringType()
     owner = StringType()
-    operator = StringType()
+    operator = StringType(default='UA')
 
     procurementMethodType = StringType(default="belowThreshold")
 
