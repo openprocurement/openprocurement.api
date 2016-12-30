@@ -544,10 +544,21 @@ class TenderResourceTest(BaseWebTest):
             tender.pop('procurementMethodDetails')
         self.assertEqual(set(tender), set([u'procurementMethodType', u'id', u'date', u'dateModified', u'tenderID', u'status', u'enquiryPeriod',
                                            u'tenderPeriod', u'minimalStep', u'items', u'value', u'procuringEntity', u'next_check',
-                                           u'procurementMethod', u'awardCriteria', u'submissionMethod', u'title', u'owner']))
+                                           u'procurementMethod', u'awardCriteria', u'submissionMethod', u'title', u'owner', u'operator']))
         self.assertNotEqual(data['id'], tender['id'])
         self.assertNotEqual(data['doc_id'], tender['id'])
         self.assertNotEqual(data['tenderID'], tender['tenderID'])
+
+    def test_create_tender_operator(self):
+        authorization = self.app.authorization
+        self.app.authorization = ('Basic', ('brokerxx', ''))
+        data = test_tender_data.copy()
+        response = self.app.post_json('/tenders', {'data': data})
+        self.assertEqual(response.status, '201 Created')
+        self.assertEqual(response.content_type, 'application/json')
+        tender = response.json['data']
+        self.assertEqual(tender['operator'], 'XX')
+        self.assertTrue(tender['tenderID'].startswith('R-XX-'))
 
     def test_create_tender_draft(self):
         data = test_tender_data.copy()
@@ -588,7 +599,7 @@ class TenderResourceTest(BaseWebTest):
         self.assertEqual(response.content_type, 'application/json')
         tender = response.json['data']
         self.assertEqual(set(tender) - set(test_tender_data), set(
-            [u'id', u'dateModified', u'tenderID', u'date', u'status', u'procurementMethod', u'awardCriteria', u'submissionMethod', u'next_check', u'owner']))
+            [u'id', u'dateModified', u'tenderID', u'date', u'status', u'procurementMethod', u'awardCriteria', u'submissionMethod', u'next_check', u'owner', u'operator']))
         self.assertIn(tender['id'], response.headers['Location'])
         self.assertNotIn('transfer_token', tender)
 

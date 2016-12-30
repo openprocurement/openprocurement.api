@@ -4,6 +4,8 @@ from hashlib import sha512
 from pyramid.authentication import BasicAuthAuthenticationPolicy, b64decode
 from ConfigParser import ConfigParser
 
+OPERATOR_PREFIX = 'operator:'
+
 
 class AuthenticationPolicy(BasicAuthAuthenticationPolicy):
     def __init__(self, auth_file, realm='OpenProcurement', debug=False):
@@ -17,8 +19,9 @@ class AuthenticationPolicy(BasicAuthAuthenticationPolicy):
                 (
                     k.split(',', 1)[0],
                     {
-                        'name': j,
+                        'name': j.split('|', 1)[1] if '|' in j else j,
                         'level': k.split(',', 1)[1] if ',' in k else '1234',
+                        'operator': j.split('|', 1)[0].upper() if '|' in j else 'UA',
                         'group': i
                     }
                 )
@@ -38,6 +41,7 @@ class AuthenticationPolicy(BasicAuthAuthenticationPolicy):
         auth_groups = ['g:{}'.format(user['group'])]
         for i in user['level']:
             auth_groups.append('a:{}'.format(i))
+        auth_groups.append('{}{}'.format(OPERATOR_PREFIX, user['operator']))
         if not token:
             token = request.headers.get('X-Access-Token')
             if not token:
@@ -122,3 +126,12 @@ def authenticated_role(request):
 
 def check_accreditation(request, level):
     return "a:{}".format(level) in request.effective_principals
+
+
+def get_operator(request):
+    operator_principals = [
+        i[len(OPERATOR_PREFIX):]
+        for i in request.effective_principals
+        if i.startswith(OPERATOR_PREFIX)
+    ]
+    return operator_principals[0] if operator_principals else ''

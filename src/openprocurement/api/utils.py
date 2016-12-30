@@ -49,7 +49,7 @@ def generate_id():
     return uuid4().hex
 
 
-def generate_tender_id(ctime, db, server_id=''):
+def generate_tender_id(ctime, db, server_id='', operator='UA'):
     key = ctime.date().isoformat()
     tenderIDdoc = 'tenderID_' + server_id if server_id else 'tenderID'
     while True:
@@ -64,7 +64,7 @@ def generate_tender_id(ctime, db, server_id=''):
             sleep(1)
         else:
             break
-    return 'R-UA-{:04}-{:02}-{:02}-{:06}{}'.format(ctime.year, ctime.month, ctime.day, index, server_id and '-' + server_id)
+    return 'R-{}-{:04}-{:02}-{:02}-{:06}{}'.format(operator, ctime.year, ctime.month, ctime.day, index, server_id and '-' + server_id)
 
 
 def get_filename(data):
