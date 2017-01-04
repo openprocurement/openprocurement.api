@@ -729,6 +729,7 @@ class Question(Model):
     answer = StringType()  # only tender owner can post answer
     questionOf = StringType(required=True, choices=['tender', 'item', 'lot'], default='tender')
     relatedItem = StringType(min_length=1)
+    dateAnswered = IsoDateTimeType()
 
     def validate_relatedItem(self, data, relatedItem):
         if not relatedItem and data.get('questionOf') in ['item', 'lot']:
