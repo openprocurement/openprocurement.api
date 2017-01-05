@@ -534,6 +534,14 @@
          "description":null
       },
       {
+         "category":"KR",
+         "code":"KR-DART",
+         "name":"Repository of Korea's Corporate Filings / Data Analysis, Retrieval and Transfer System",
+         "url":"http://englishdart.fss.or.kr/mainEng.do",
+         "public-database":true,
+         "description":"DART (Data Analysis, Retrieval and Transfer System) is an electronic disclosure system that allows companies to submit disclosures online, where it becomes immediately available to investors and other users. Information is free and includes Company Code, Corporation Registration Number, Taxpayer Identification Number, Establishment Date, etc."
+      },
+      {
          "category":"LS",
          "code":"LS-LCN",
          "name":"Lesotho Council of Non Governmental Organisations",
