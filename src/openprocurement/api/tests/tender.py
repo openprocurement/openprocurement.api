@@ -557,8 +557,8 @@ class TenderResourceTest(BaseWebTest):
         self.assertEqual(response.status, '201 Created')
         self.assertEqual(response.content_type, 'application/json')
         tender = response.json['data']
-        self.assertEqual(tender['operator'], 'XX')
-        self.assertTrue(tender['tenderID'].startswith('R-XX-'))
+        self.assertEqual(tender['operator'], 'xx')
+        self.assertTrue(tender['tenderID'].startswith('R-YY-'))
 
     def test_create_tender_draft(self):
         data = test_tender_data.copy()
