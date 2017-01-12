@@ -534,6 +534,14 @@
          "description":null
       },
       {
+         "category":"KZ",
+         "code":"KZ-BIN",
+         "name":"\u0411\u0438\u0437\u043d\u0435\u0441 \u0441\u04d9\u0439\u043a\u0435\u0441\u0442\u0435\u043d\u0434\u0456\u0440\u0443 \u043d\u043e\u043c\u0435\u0440\u0456 (\u0411\u0418\u041d) / Business Identification Number (BIN)",
+         "url":"http://kgd.gov.kz/en/services/taxpayer_search/legal_entity",
+         "public-database":true,
+         "description":"A unique code every legal entity or an individual enterpreneur must obtain."
+      },
+      {
          "category":"LS",
          "code":"LS-LCN",
          "name":"Lesotho Council of Non Governmental Organisations",
