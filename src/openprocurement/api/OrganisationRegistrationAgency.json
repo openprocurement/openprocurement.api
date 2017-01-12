@@ -741,6 +741,22 @@
          "description":"The Accounting and Corporate Regulatory Authority (ACRA) is the national regulator of business entities, public accountants and corporate service providers in Singapore"
       },
       {
+         "category":"SI",
+         "code":"SI-PRS",
+         "name":"Company Identification Number/Mati\u010dna \u0161tevilka",
+         "url":"http://www.ajpes.eu/prs/",
+         "public-database":true,
+         "description":"The Slovenian Business Register (PRS) is a central database containing information about all business entities involved in a profit or non-profit activity having their principal place of business located on the territory of the Republic of Slovenia, as well as information on their subsidiaries and other divisions of business entities performing business activities in the territory of the Republic of Slovenia."
+      },
+      {
+         "category":"SI",
+         "code":"SI-TIN",
+         "name":"Tax Identification Number/Dav\u010dna \u0161tevilka, Ministry of Finance of the Republic of Slovenia",
+         "url":"http://www.ajpes.eu/prs/",
+         "public-database":true,
+         "description":"A unique code every legal entity or an individual enterpreneur must obtain."
+      },
+      {
          "category":"SK",
          "code":"SK-ZRSR",
          "name":"Slovakia Ministry Of Interior Trade Register",
