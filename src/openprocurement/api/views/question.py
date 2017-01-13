@@ -36,7 +36,7 @@ class TenderQuestionResource(APIResource):
         if any([
             i.status != 'active'
             for i in tender.lots
-            if question.questionOf == 'lot' and i.id == question.relatedItem or question.questionOf == 'item' and i.id == items_dict[question.questionOf]
+            if question.questionOf == 'lot' and i.id == question.relatedItem or question.questionOf == 'item' and i.id == items_dict[question.relatedItem]
         ]):
             self.request.errors.add('body', 'data', 'Can {} question only in active lot status'.format(operation))
             self.request.errors.status = 403
