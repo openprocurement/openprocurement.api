@@ -2,13 +2,14 @@
 import logging
 from datetime import timedelta
 from iso8601 import parse_date
+from openprocurement.api.auth import DEFAULT_OPERATOR
 from openprocurement.api.models import CPV_CODES, STAND_STILL_TIME, TZ, get_now
 from openprocurement.api.traversal import Root
 from email.header import decode_header
 
 
 LOGGER = logging.getLogger(__name__)
-SCHEMA_VERSION = 23
+SCHEMA_VERSION = 24
 SCHEMA_DOC = 'openprocurement_schema'
 
 
@@ -711,6 +712,23 @@ def from22to23(registry):
             else:
                 doc['dateModified'] = get_now().isoformat()
                 docs.append(doc)
+        if len(docs) >= 2 ** 7:
+            result = registry.db.update(docs)
+            docs = []
+    if docs:
+        registry.db.update(docs)
+
+
+def from23to24(registry):
+    len(registry.db.view('tenders/all', limit=1))
+    results = registry.db.iterview('tenders/all', 2 ** 10, include_docs=True, stale='update_after')
+    docs = []
+    for i in results:
+        doc = i.doc
+        if not doc.get('operator'):
+            doc['operator'] = DEFAULT_OPERATOR
+            doc['dateModified'] = get_now().isoformat()
+            docs.append(doc)
         if len(docs) >= 2 ** 7:
             result = registry.db.update(docs)
             docs = []

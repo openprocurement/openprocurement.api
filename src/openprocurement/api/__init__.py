@@ -10,7 +10,7 @@ from couchdb import Server as CouchdbServer, Session
 from couchdb.http import Unauthorized, extract_credentials
 from libnacl.sign import Signer, Verifier
 from logging import getLogger
-from openprocurement.api.auth import AuthenticationPolicy, authenticated_role, check_accreditation
+from openprocurement.api.auth import AuthenticationPolicy, authenticated_role, check_accreditation, get_operator, get_prefix
 from openprocurement.api.design import sync_design
 from openprocurement.api.migration import migrate_data
 from openprocurement.api.models import Tender
@@ -72,6 +72,8 @@ def main(global_config, **settings):
     config.add_request_method(authenticated_role, reify=True)
     config.add_request_method(extract_tender, 'tender', reify=True)
     config.add_request_method(check_accreditation)
+    config.add_request_method(get_operator, 'operator', reify=True)
+    config.add_request_method(get_prefix, 'operator_prefix', reify=True)
     config.add_renderer('prettyjson', JSON(indent=4))
     config.add_renderer('jsonp', JSONP(param_name='opt_jsonp'))
     config.add_renderer('prettyjsonp', JSONP(indent=4, param_name='opt_jsonp'))

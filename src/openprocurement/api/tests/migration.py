@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 import unittest
 
+from openprocurement.api.auth import DEFAULT_OPERATOR
 from openprocurement.api.models import Tender
 from openprocurement.api.migration import migrate_data, get_db_schema_version, set_db_schema_version, SCHEMA_VERSION
 from openprocurement.api.tests.base import BaseWebTest, test_tender_data
@@ -762,6 +763,15 @@ class MigrateTest(BaseWebTest):
         self.assertIn('Prefix={}%2Febcb5dd7f7384b0fbfbed2dc4252fa6e'.format(u.id), migrated_item['documents'][0]['url'])
         self.assertIn('KeyID=', migrated_item['documents'][0]['url'])
         self.assertIn('Signature=', migrated_item['documents'][0]['url'])
+
+    def test_migrate_from23to24(self):
+        set_db_schema_version(self.db, 23)
+        data = {'doc_type': 'Tender'}
+        _id, _rev = self.db.save(data)
+        migrate_data(self.app.app.registry, 24)
+        migrated_item = self.db.get(_id)
+        self.assertIn('operator', migrated_item)
+        self.assertEqual(migrated_item['operator'], DEFAULT_OPERATOR)
 
 
 def suite():

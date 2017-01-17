@@ -1088,9 +1088,9 @@ def validate_cpv_group(items, *args):
 
 
 plain_role = (blacklist('_attachments', 'revisions', 'dateModified') + schematics_embedded_role)
-create_role = (blacklist('transfer_token', 'owner_token', 'owner', '_attachments', 'revisions', 'date', 'dateModified', 'doc_id', 'tenderID', 'bids', 'documents', 'awards', 'questions', 'complaints', 'auctionUrl', 'status', 'auctionPeriod', 'awardPeriod', 'procurementMethod', 'awardCriteria', 'submissionMethod', 'cancellations') + schematics_embedded_role)
+create_role = (blacklist('transfer_token', 'owner_token', 'owner', '_attachments', 'revisions', 'date', 'dateModified', 'doc_id', 'tenderID', 'bids', 'documents', 'awards', 'questions', 'complaints', 'auctionUrl', 'status', 'auctionPeriod', 'awardPeriod', 'procurementMethod', 'awardCriteria', 'submissionMethod', 'cancellations', 'operator') + schematics_embedded_role)
 draft_role = whitelist('status')
-edit_role = (blacklist('status', 'procurementMethodType', 'lots', 'transfer_token', 'owner_token', 'owner', '_attachments', 'revisions', 'date', 'dateModified', 'doc_id', 'tenderID', 'bids', 'documents', 'awards', 'questions', 'complaints', 'auctionUrl', 'auctionPeriod', 'awardPeriod', 'procurementMethod', 'awardCriteria', 'submissionMethod', 'mode', 'cancellations') + schematics_embedded_role)
+edit_role = (blacklist('status', 'procurementMethodType', 'lots', 'transfer_token', 'owner_token', 'owner', '_attachments', 'revisions', 'date', 'dateModified', 'doc_id', 'tenderID', 'bids', 'documents', 'awards', 'questions', 'complaints', 'auctionUrl', 'auctionPeriod', 'awardPeriod', 'procurementMethod', 'awardCriteria', 'submissionMethod', 'mode', 'cancellations', 'operator') + schematics_embedded_role)
 view_role = (blacklist('transfer_token', 'owner_token', '_attachments', 'revisions') + schematics_embedded_role)
 listing_role = whitelist('dateModified', 'doc_id')
 auction_view_role = whitelist('tenderID', 'dateModified', 'bids', 'items', 'auctionPeriod', 'minimalStep', 'auctionUrl', 'features', 'lots')
@@ -1204,6 +1204,7 @@ class Tender(SchematicsDocument, Model):
     owner_token = StringType()
     transfer_token = StringType()
     owner = StringType()
+    operator = StringType(default='UA')
 
     procurementMethodType = StringType(default="belowThreshold")
 
