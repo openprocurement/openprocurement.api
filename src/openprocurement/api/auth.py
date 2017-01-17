@@ -7,6 +7,7 @@ from ConfigParser import ConfigParser
 GROUP_PREFIX = 'g:'
 LEVEL_PREFIX = 'a:'
 OPERATOR_PREFIX = 'operator:'
+DEFAULT_OPERATOR = 'ua'
 
 
 class AuthenticationPolicy(BasicAuthAuthenticationPolicy):
@@ -21,7 +22,7 @@ class AuthenticationPolicy(BasicAuthAuthenticationPolicy):
                 self.users.update({config.get(i, 'token'): {
                     'name': i,
                     'level': config.get(i, 'level') if config.has_option(i, 'level') else '1234',
-                    'operator': config.get(i, 'operator') if config.has_option(i, 'operator') else 'UA',
+                    'operator': config.get(i, 'operator').lower() if config.has_option(i, 'operator') else DEFAULT_OPERATOR,
                     'group': config.get(i, 'group') if config.has_option(i, 'group') else 'brokers'
                 }})
         self.operators = dict(config.items('operators')) if config.has_section('operators') else {}
