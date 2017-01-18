@@ -477,9 +477,6 @@ class BaseTenderResourceTest(object):
         self.assertEqual(set([i['dateModified'] for i in response.json['data']]), set([i['dateModified'] for i in tenders]))
         self.assertEqual([i['dateModified'] for i in response.json['data']], sorted([i['dateModified'] for i in tenders]))
 
-
-class ApiTenderResourceTest(BaseTenderResourceTest):
-
     def test_listing_changes(self):
         response = self.app.get('/tenders?feed=changes')
         self.assertEqual(response.status, '200 OK')
@@ -575,6 +572,9 @@ class ApiTenderResourceTest(BaseTenderResourceTest):
         response = self.app.get('/tenders?feed=changes&mode=_all_')
         self.assertEqual(response.status, '200 OK')
         self.assertEqual(len(response.json['data']), 4)
+
+
+class ApiTenderResourceTest(BaseTenderResourceTest):
 
     def test_create_tender_invalid(self):
         request_path = '/tenders'
