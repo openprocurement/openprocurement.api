@@ -1202,7 +1202,7 @@ class ApiTenderResourceTest(BaseTenderResourceTest):
 class TenderResourceTest(ApiTenderResourceTest, BaseWebTest):
     test_tender_data = test_tender_data
 
-class TenderProcessTest(BaseTenderWebTest):
+class BaseTenderProcessTest(object):
     setUp = BaseWebTest.setUp
     def test_invalid_tender_conditions(self):
         self.app.authorization = ('Basic', ('broker', ''))
@@ -1466,7 +1466,9 @@ class TenderProcessTest(BaseTenderWebTest):
         self.assertEqual(response.content_type, 'application/json')
         self.assertEqual(response.json['errors'][0]["description"], "Can't update document in current (complete) tender status")
 
-
+class TenderProcessTest(BaseTenderWebTest,BaseTenderProcessTest):
+    pass
+    
 def suite():
     suite = unittest.TestSuite()
     suite.addTest(unittest.makeSuite(TenderProcessTest))
