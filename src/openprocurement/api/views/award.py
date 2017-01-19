@@ -317,6 +317,10 @@ class TenderAwardResource(APIResource):
                 'items': [i for i in tender.items if i.relatedLot == award.lotID ],
                 'contractID': '{}-{}{}'.format(tender.tenderID, self.server_id, len(tender.contracts) + 1) }))
             add_next_award(self.request)
+        elif award_status == 'merged' and award.status == 'cancelled':
+            self.request.errors.add('body', 'data', 'Can\'t cancel award while it is a part of merged contracts.')
+            self.request.errors.status = 403
+            return
         elif award_status == 'active' and award.status == 'cancelled':
             now = get_now()
             if award.complaintPeriod.endDate > now:
