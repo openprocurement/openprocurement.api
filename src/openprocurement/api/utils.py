@@ -254,7 +254,7 @@ def get_file(request):
 def prepare_patch(changes, orig, patch, basepath=''):
     if isinstance(patch, dict):
         for i in patch:
-            if i in orig:
+            if i in orig and i != 'schema_properties':
                 prepare_patch(changes, orig[i], patch[i], '{}/{}'.format(basepath, i))
             else:
                 changes.append({'op': 'add', 'path': '{}/{}'.format(basepath, i), 'value': patch[i]})
