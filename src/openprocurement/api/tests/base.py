@@ -8,11 +8,12 @@ from uuid import uuid4
 from requests.models import Response
 from base64 import b64encode
 from urllib import urlencode
+from types import FunctionType
 
 from openprocurement.api.models import SANDBOX_MODE
 from openprocurement.api.utils import VERSION, SESSION, apply_data_patch
 from openprocurement.api.design import sync_design
-
+from openprocurement.api import ROUTE_PREFIX
 
 now = datetime.now()
 test_organization = {
@@ -199,6 +200,8 @@ test_features = [
     }
 ]
 
+def create_classmethod(func):
+    return FunctionType(func.func_code, globals(),'test_' + func.func_name)
 
 class PrefixedRequestClass(webtest.app.TestRequest):
 
