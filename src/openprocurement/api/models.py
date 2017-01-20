@@ -410,6 +410,7 @@ class Document(Model):
             'default': blacklist("__parent__"),
             'view': (blacklist('revisions') + schematics_default_role),
             'revisions': whitelist('url', 'dateModified'),
+            'edrapi': blacklist('id', 'datePublished', 'dateModified', 'author', 'download_url')
         }
 
     id = MD5Type(required=True, default=lambda: uuid4().hex)
@@ -423,7 +424,7 @@ class Document(Model):
         'contractSigned', 'contractArrangements', 'contractSchedule',
         'contractAnnexe', 'contractGuarantees', 'subContract',
         'eligibilityCriteria', 'contractProforma', 'commercialProposal',
-        'qualificationDocuments', 'eligibilityDocuments',
+        'qualificationDocuments', 'eligibilityDocuments', 'registerExtract',
     ])
     title = StringType(required=True)  # A title of the document.
     title_en = StringType()
@@ -436,7 +437,7 @@ class Document(Model):
     datePublished = IsoDateTimeType(default=get_now)
     dateModified = IsoDateTimeType(default=get_now)  # Date that the document was last dateModified
     language = StringType()
-    documentOf = StringType(required=True, choices=['tender', 'item', 'lot'], default='tender')
+    documentOf = StringType(required=True, choices=['tender', 'item', 'lot', 'award', 'qualification'], default='tender')
     relatedItem = MD5Type()
     author = StringType()
 
@@ -495,6 +496,13 @@ class Document(Model):
                 raise ValidationError(u"relatedItem should be one of lots")
             if data.get('documentOf') == 'item' and relatedItem not in [i.id for i in tender.items]:
                 raise ValidationError(u"relatedItem should be one of items")
+
+    def get_role(self):
+        root = self.__parent__
+        while root.__parent__ is not None:
+            root = root.__parent__
+        request = root.request
+        return 'edrapi' if request.authenticated_role == 'edrapi' else 'edit'
 
 
 class Identifier(Model):
