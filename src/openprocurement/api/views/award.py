@@ -306,6 +306,10 @@ class TenderAwardResource(APIResource):
             self.request.errors.status = 403
             return
         award_status = award.status
+        if award_status == 'cancelled' and self.request.validated['award']['status'] == 'merged':
+            self.request.errors.add('body', 'data', 'Can\'t cancel award while it is a part of merged contracts.')
+            self.request.errors.status = 403
+            return
         apply_patch(self.request, save=False, src=self.request.context.serialize())
         if award_status == 'pending' and award.status == 'active':
             award.complaintPeriod.endDate = calculate_business_date(get_now(), STAND_STILL_TIME, tender, True)
@@ -317,10 +321,6 @@ class TenderAwardResource(APIResource):
                 'items': [i for i in tender.items if i.relatedLot == award.lotID ],
                 'contractID': '{}-{}{}'.format(tender.tenderID, self.server_id, len(tender.contracts) + 1) }))
             add_next_award(self.request)
-        elif award_status == 'merged' and award.status == 'cancelled':
-            self.request.errors.add('body', 'data', 'Can\'t cancel award while it is a part of merged contracts.')
-            self.request.errors.status = 403
-            return
         elif award_status == 'active' and award.status == 'cancelled':
             now = get_now()
             if award.complaintPeriod.endDate > now:
