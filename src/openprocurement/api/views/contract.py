@@ -89,11 +89,13 @@ class TenderAwardContractResource(APIResource):
         """Update of contract
         """
         if self.request.validated['tender_status'] not in ['active.qualification', 'active.awarded']:
-            self.request.errors.add('body', 'data', 'Can\'t update contract in current ({}) tender status'.format(self.request.validated['tender_status']))
+            self.request.errors.add('body', 'data', 'Can\'t update contract in current ({}) tender status'.format(
+                self.request.validated['tender_status']))
             self.request.errors.status = 403
             return
         tender = self.request.validated['tender']
-        if any([i.status != 'active' for i in tender.lots if i.id in [a.lotID for a in tender.awards if a.id == self.request.context.awardID]]):
+        if any([i.status != 'active' for i in tender.lots if
+                i.id in [a.lotID for a in tender.awards if a.id == self.request.context.awardID]]):
             self.request.errors.add('body', 'data', 'Can update contract only in active lot status')
             self.request.errors.status = 403
             return
@@ -108,8 +110,14 @@ class TenderAwardContractResource(APIResource):
                     return
 
             award = [a for a in tender.awards if a.id == self.request.context.awardID][0]
-            if data['value']['amount'] > award.value.amount:
-                self.request.errors.add('body', 'data', 'Value amount should be less or equal to awarded amount ({})'.format(award.value.amount))
+            max_sum = award.value.amount
+            # If contract has additionalAwardIDs then add value.amount to mac contract value
+            if 'additionalAwardIDs' in contract and contract['additionalAwardIDs']:
+                max_sum += sum(
+                    [award.value.amount for award in tender.awards if award['id'] in contract['additionalAwardIDs']])
+            if data['value']['amount'] > max_sum:
+                self.request.errors.add('body', 'data',
+                                        'Value amount should be less or equal to awarded amount ({})'.format(max_sum))
                 self.request.errors.status = 403
                 return
 
@@ -123,7 +131,8 @@ class TenderAwardContractResource(APIResource):
             return
         contract_status = self.request.context.status
         apply_patch(self.request, save=False, src=self.request.context.serialize())
-        if contract_status != self.request.context.status and (contract_status != 'pending' or self.request.context.status != 'active'):
+        if contract_status != self.request.context.status and (
+                contract_status != 'pending' or self.request.context.status != 'active'):
             self.request.errors.add('body', 'data', 'Can\'t update contract status')
             self.request.errors.status = 403
             return
@@ -132,5 +141,5 @@ class TenderAwardContractResource(APIResource):
         check_tender_status(self.request)
         if save_tender(self.request):
             self.LOGGER.info('Updated tender contract {}'.format(self.request.context.id),
-                        extra=context_unpack(self.request, {'MESSAGE_ID': 'tender_contract_patch'}))
+                             extra=context_unpack(self.request, {'MESSAGE_ID': 'tender_contract_patch'}))
             return {'data': self.request.context.serialize()}
