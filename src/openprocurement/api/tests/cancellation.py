@@ -415,10 +415,7 @@ class TenderLotCancellationContractTest(BaseTenderWebTest):
     initial_bids = test_bids
 
     def test_create_lot_cancellation_on_merged_contract(self):
-        lot_id = self.initial_lots[0]['id']
         second_lot_id = self.initial_lots[1]['id']
-        response = self.app.get('/tenders/{}/awards'.format(self.tender_id))
-        print len(response.json['data'])
 
         # Create awards
         request_path = '/tenders/{}/awards'.format(self.tender_id)
@@ -448,13 +445,59 @@ class TenderLotCancellationContractTest(BaseTenderWebTest):
         self.assertEqual(response.content_type, 'application/json')
 
         # Create cancellation on lot
-        response = self.app.post_json('/tenders/{}/cancellations'.format(self.tender_id), {'data': {
-            'reason': 'cancellation reason',
-            "cancellationOf": "lot",
-            "relatedLot": second_lot_id}}, status=403)
+        response = self.app.post_json('/tenders/{}/cancellations'.format(self.tender_id),
+                                      {"data": {
+                                                "reason": "cancellation reason",
+                                                "cancellationOf": "lot",
+                                                "relatedLot": second_lot_id}}, status=403)
         self.assertEqual(response.status, '403 Forbidden')
         self.assertEqual(response.json['errors'][0]["description"],
                          "Can add cancellation on lot if corresponding contract is merged.")
+
+    def test_update_lot_cancellation_on_merged_contract(self):
+        second_lot_id = self.initial_lots[1]['id']
+
+        # Create awards
+        request_path = '/tenders/{}/awards'.format(self.tender_id)
+        response = self.app.post_json(request_path, {'data': {'suppliers': [test_organization], 'status': u'pending',
+                                                              'bid_id': self.initial_bids[0]['id'],
+                                                              'lotID': self.initial_lots[0]['id'], "value": {"amount": 500}}})
+        self.assertEqual(response.status, '201 Created')
+        self.assertEqual(response.content_type, 'application/json')
+        first_award = response.json['data']
+        response = self.app.post_json(request_path, {'data': {'suppliers': [test_organization], 'status': u'pending',
+                                                              'bid_id': self.initial_bids[1]['id'],
+                                                              'lotID': self.initial_lots[1]['id'], "value": {"amount": 500}}})
+        self.assertEqual(response.status, '201 Created')
+        self.assertEqual(response.content_type, 'application/json')
+        second_award = response.json['data']
+        response = self.app.patch_json('/tenders/{}/awards/{}'.format(self.tender_id, first_award['id']), {"data": {"status": "active"}})
+        self.assertEqual(response.json['data']['status'], 'active')
+        response = self.app.patch_json('/tenders/{}/awards/{}'.format(self.tender_id, second_award['id']), {"data": {"status": "active"}})
+        self.assertEqual(response.json['data']['status'], 'active')
+
+        # Create cancellation on lot
+        response = self.app.post_json('/tenders/{}/cancellations'.format(self.tender_id),
+                                      {"data": {'reason': 'cancellation reason',
+                                                "cancellationOf": "lot",
+                                                "relatedLot": second_lot_id}})
+        self.assertEqual(response.status, '201 Created')
+        cancellation = response.json['data']
+
+        # Merge contract
+        response = self.app.get('/tenders/{}/contracts'.format(self.tender_id))
+        response = self.app.patch_json('/tenders/{}/contracts/{}?acc_token={}'.format(
+            self.tender_id, response.json['data'][0]['id'], self.tender_token),
+            {"data": {"additionalAwardIDs": [response.json['data'][1]['awardID']]}})
+        self.assertEqual(response.status, '200 OK')
+        self.assertEqual(response.content_type, 'application/json')
+
+        # Activate cancellation on lot
+        response = self.app.patch_json('/tenders/{}/cancellations/{}'.format(self.tender_id, cancellation['id']),
+                                       {'data': {"status": "active"}}, status=403)
+        self.assertEqual(response.status, '403 Forbidden')
+        self.assertEqual(response.json['errors'][0]["description"],
+                         "Can update cancellation on lot if corresponding contract is merged.")
 
 
 class TenderCancellationDocumentResourceTest(BaseTenderWebTest):
