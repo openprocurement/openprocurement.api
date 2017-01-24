@@ -306,7 +306,8 @@ class TenderAwardResource(APIResource):
             self.request.errors.status = 403
             return
         award_status = award.status
-        if award_status == 'cancelled' and self.request.validated['award']['status'] == 'merged':
+        if self.request.validated['data'].get('status') == 'cancelled' and \
+                [i for i in tender.contracts if i.awardID == award.id and i.status == 'merged']:
             self.request.errors.add('body', 'data', 'Can\'t cancel award while it is a part of merged contracts.')
             self.request.errors.status = 403
             return
