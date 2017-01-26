@@ -34,6 +34,7 @@ LOGGER = getLogger(PKG.project_name)
 VERSION = '{}.{}'.format(int(PKG.parsed_version[0]), int(PKG.parsed_version[1]) if PKG.parsed_version[1].isdigit() else 0)
 ROUTE_PREFIX = '/api/{}'.format(VERSION)
 DOCUMENT_BLACKLISTED_FIELDS = ('title', 'format', 'url', 'dateModified', 'hash')
+DOCUMENT_WHITELISTED_FIELDS = ('id', 'datePublished', 'author', '__parent__')
 ACCELERATOR_RE = compile(r'.accelerator=(?P<accelerator>\d+)')
 SESSION = Session()
 json_view = partial(view, renderer='json')
@@ -93,8 +94,8 @@ def generate_docservice_url(request, doc_id, temporary=True, prefix=None):
     return urlunsplit((parsed_url.scheme, parsed_url.netloc, '/get/{}'.format(doc_id), urlencode(query), ''))
 
 
-def upload_file(request, blacklisted_fields=DOCUMENT_BLACKLISTED_FIELDS):
-    first_document = request.validated['documents'][0] if 'documents' in request.validated and request.validated['documents'] else None
+def upload_file(request, blacklisted_fields=DOCUMENT_BLACKLISTED_FIELDS, whitelisted_fields=DOCUMENT_WHITELISTED_FIELDS):
+    first_document = request.validated['documents'][-1] if 'documents' in request.validated and request.validated['documents'] else None
     if 'data' in request.validated and request.validated['data']:
         document = request.validated['document']
         url = document.url
@@ -134,7 +135,9 @@ def upload_file(request, blacklisted_fields=DOCUMENT_BLACKLISTED_FIELDS):
             raise error_handler(request.errors)
         if first_document:
             for attr_name in type(first_document)._fields:
-                if attr_name not in blacklisted_fields:
+                if attr_name in whitelisted_fields:
+                    setattr(document, attr_name, getattr(first_document, attr_name))
+                elif attr_name not in blacklisted_fields and attr_name not in request.validated['json_data']:
                     setattr(document, attr_name, getattr(first_document, attr_name))
         document_route = request.matched_route.name.replace("collection_", "")
         document_path = request.current_route_path(_route_name=document_route, document_id=document.id, _query={'download': key})
