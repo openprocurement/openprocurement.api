@@ -62,6 +62,14 @@
          "description":"There is no search available, but there is a listing of companies with telephone and fax numbers"
       },
       {
+         "category":"AT",
+         "code":"AT-FN",
+         "description":"Available only in German. Access can be obtained by using services of special companies like http://www.advokat.at/Advokat-Online/Module/Firmenbuch.aspx that are entitled to provide it (for full list see https://www.justiz.gv.at/web2013/html/default/2c9484852308c2a601240b693e1c0860.de.html)",
+	 "name":"Firmenbuch (the Ministry of Justice of Austria)",
+         "public-database":true,
+         "url":"https://www.justiz.gv.at/web2013/html/default/2c9484852308c2a601240b693e1c0860.de.html"
+      },
+      {
          "category":"AE",
          "code":"AE-FUJCCI",
          "name":"Fujairah Chamber of Commerce and Industry",
@@ -164,6 +172,14 @@
          "url":"http://www.juridat.be/tribunal_commerce/bruxelles/index.htm",
          "public-database":false,
          "description":"The Registry of the Francophone Brussels Commercial Court"
+      },
+      {
+         "category":"BG",
+         "code":"BG-EIK",
+         "name":"\u0415\u0434\u0438\u043d\u043d\u0438\u044f\u0442 \u0438\u0434\u0435\u043d\u0442\u0438\u0444\u0438\u043a\u0430\u0446\u0438\u043e\u043d\u0435\u043d \u043a\u043e\u0434 (\u0415\u0418\u041a)/Unified identification code (UIC)",
+         "url":"https://public.brra.bg/CheckUps/Verifications/VerificationPersonOrg.ra",
+         "public-database":true,
+         "description":"A unified code which certifies the legality of one's business and under which one's company is signed in the National Statistics Agency"
       },
       {
          "category":"BY",
@@ -382,6 +398,14 @@
          "description":null
       },
       {
+         "category":"HU",
+         "code":"HU-VAT",
+         "name":"K\u00f6z\u00f6ss\u00e9gi ad\u00f3sz\u00e1m/ VAT ID (Ministry of Justice of Hungary)",
+         "url":"http://www.e-cegjegyzek.hu/?cegkereses",
+         "public-database":true,
+         "description":"K\u00f6z\u00f6ss\u00e9gi ad\u00f3sz\u00e1m serves as both tax number and VAT ID. No abbreviation is used."
+      },
+      {
          "category":"ID",
          "code":"ID-KDN",
          "name":"Ministry Home affairs/ Kementerian Dalam Negeri",
@@ -510,12 +534,35 @@
          "description":null
       },
       {
+         "category":"KZ",
+         "code":"KZ-BIN",
+         "name":"\u0411\u0438\u0437\u043d\u0435\u0441 \u0441\u04d9\u0439\u043a\u0435\u0441\u0442\u0435\u043d\u0434\u0456\u0440\u0443 \u043d\u043e\u043c\u0435\u0440\u0456 (\u0411\u0418\u041d) / Business Identification Number (BIN)",
+         "url":"http://kgd.gov.kz/en/services/taxpayer_search/legal_entity",
+         "public-database":true,
+         "description":"A unique code every legal entity or an individual enterpreneur must obtain."
+      },
+      {
          "category":"LS",
          "code":"LS-LCN",
          "name":"Lesotho Council of Non Governmental Organisations",
          "url":"http://www.lcn.org.ls/",
-         "public-database":false,
+         "public-database":false
+      },
+      {
+         "category":"LT",
+         "code":"LT-PVM",
+         "name":"Prid\u0117tin\u0117s vert\u0117s mokestis/VAT",
+         "url":"http://www.registrucentras.lt/jar/index_en.php",
+         "public-database":true,
          "description":null
+      },
+      {
+         "category":"LT",
+         "code":"LT-RC",
+         "name":"Juridini\u0173 asmen\u0173 dalyvi\u0173 informacin\u0117 sistema/Information Platform of Legal Entities",
+         "url":"http://www.registrucentras.lt/jar/index_en.php",
+         "public-database":true,
+         "description":"The Register of Legal Entities registers businesses, institutions and NGOs and collects detailed data about Lithuanian legal entities as well as branches and representative offices of foreign companies and organizations. The Register contains complete information (and historical data) about legal form and status of legal entities, fields of its activity, size and structure of the authorized capital, members of sole and collective management bodies, licenses acquired, etc. It is obligatory for the most of business companies to submit annual financial statements to the Register of Legal Entities since 2004. Starting from March 2010 private limited liability companies are obliged to declare current list of shareholders to the Register."
       },
       {
          "category":"LV",
@@ -524,6 +571,14 @@
          "url":"http://www.ur.gov.lv/",
          "public-database":true,
          "description":"Free of charge information includes type of legal entity; registered office; new or current name or trade name and previously registered or historical name or trade name; registration number; Single Euro Payment Area beneficiary identification code (if allocated); registration date; date of deletion of the legal entity from the register (or the date of reorganisation if the reason for the deletion is a reorganisation); deadline for registration of religious organisations that are subject to re-registration."
+      },
+      {
+         "category":"MD",
+         "code":"MD-IDNO",
+         "name":"State Chamber of Registration of the Republic of Moldova, Ministry of Justice",
+         "url":"http://cis.gov.md/",
+         "public-database":true,
+         "description":"General information about the legal entities incorporated on the Republic of Moldova\u2019s territory, except political parties, non-governmental organizations and press agencies. Data from the State Chamber of Registration is published once per month on the Government Portal of Open Data http://date.gov.md/ckan/ro/dataset/11736-date-din-registrul-de-stat-al-unitatilor-de-drept-privind-intreprinderile-inregistrate-in-repu and can be searched in a convenient way via dedicated platform http://www.idno.md/."
       },
       {
          "category":"MM",
@@ -700,6 +755,22 @@
          "url":"http://www.acra.gov.sg/",
          "public-database":true,
          "description":"The Accounting and Corporate Regulatory Authority (ACRA) is the national regulator of business entities, public accountants and corporate service providers in Singapore"
+      },
+      {
+         "category":"SI",
+         "code":"SI-PRS",
+         "name":"Company Identification Number/Mati\u010dna \u0161tevilka",
+         "url":"http://www.ajpes.eu/prs/",
+         "public-database":true,
+         "description":"The Slovenian Business Register (PRS) is a central database containing information about all business entities involved in a profit or non-profit activity having their principal place of business located on the territory of the Republic of Slovenia, as well as information on their subsidiaries and other divisions of business entities performing business activities in the territory of the Republic of Slovenia."
+      },
+      {
+         "category":"SI",
+         "code":"SI-TIN",
+         "name":"Tax Identification Number/Dav\u010dna \u0161tevilka, Ministry of Finance of the Republic of Slovenia",
+         "url":"http://www.ajpes.eu/prs/",
+         "public-database":true,
+         "description":"A unique code every legal entity or an individual enterpreneur must obtain."
       },
       {
          "category":"SK",
