@@ -33,7 +33,7 @@ PKG = get_distribution(__package__)
 LOGGER = getLogger(PKG.project_name)
 VERSION = '{}.{}'.format(int(PKG.parsed_version[0]), int(PKG.parsed_version[1]) if PKG.parsed_version[1].isdigit() else 0)
 ROUTE_PREFIX = '/api/{}'.format(VERSION)
-DOCUMENT_BLACKLISTED_FIELDS = ('title', 'format', 'url', 'dateModified', 'hash')
+DOCUMENT_BLACKLISTED_FIELDS = ('title', 'format', 'url', 'dateModified', 'hash', 'secret_key')
 ACCELERATOR_RE = compile(r'.accelerator=(?P<accelerator>\d+)')
 SESSION = Session()
 json_view = partial(view, renderer='json')
@@ -149,7 +149,6 @@ def upload_file(request, blacklisted_fields=DOCUMENT_BLACKLISTED_FIELDS):
         filename = first_document.title
         content_type = request.content_type
         in_file = request.body_file
-
     if hasattr(request.context, "documents"):
         # upload new document
         model = type(request.context).documents.model_class

@@ -1028,6 +1028,43 @@ class TenderBidderDocumentWithDSResourceTest(TenderBidderDocumentResourceTest):
         self.assertEqual(response.content_type, 'application/json')
         self.assertEqual(response.json['errors'][0]["description"], "Can't update document in current (active.awarded) tender status")
 
+    def test_field_secret_key(self):
+        response = self.app.post_json('/tenders/{}/bids/{}/documents'.format(self.tender_id, self.bid_id),
+            {'data': {
+                'title': 'name.doc',
+                'url': self.generate_docservice_url(),
+                'hash': 'md5:' + '0' * 32,
+                'format': 'application/msword',
+                'secret_key': "1234"*8
+            }})
+        self.assertEqual(response.status, '201 Created')
+        self.assertEqual(response.content_type, 'application/json')
+        doc_id = response.json["data"]['id']
+        self.assertIn("secret_key", response.json["data"])
+        self.assertEqual("1234"*8, response.json["data"]["secret_key"])
+
+        response = self.app.put_json('/tenders/{}/bids/{}/documents/{}'.format(self.tender_id, self.bid_id, doc_id),
+            {'data': {
+                'title': 'name.doc',
+                'url': self.generate_docservice_url(),
+                'hash': 'md5:' + '0' * 32,
+                'format': 'application/msword',
+                'secret_key': "4321"*8
+            }})
+        self.assertEqual(response.status, '200 OK')
+        self.assertEqual(response.content_type, 'application/json')
+        self.assertIn("secret_key", response.json["data"])
+        self.assertEqual("4321"*8, response.json["data"]["secret_key"])
+
+        response = self.app.patch_json('/tenders/{}/bids/{}/documents/{}'.format(
+            self.tender_id, self.bid_id, doc_id), {"data": {"description": "document description",
+                                                            "secret_key": "4231"*8}})
+        self.assertEqual(response.status, '200 OK')
+        self.assertEqual(response.content_type, 'application/json')
+        self.assertEqual(doc_id, response.json["data"]["id"])
+        self.assertEqual("4321"*8, response.json["data"]["secret_key"])
+
+
 
 def suite():
     suite = unittest.TestSuite()
