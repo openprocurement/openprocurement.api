@@ -337,7 +337,7 @@ class TenderAwardResource(APIResource):
                                  if contract['awardID'] in i['additionalAwardIDs']))
                     del i['additionalAwardIDs']  # delete additionalAwardIDs from cancelled contract
                     i.status = 'cancelled'
-                break
+                    break
             add_next_award(self.request)
         elif award_status == 'pending' and award.status == 'unsuccessful':
             award.complaintPeriod.endDate = calculate_business_date(get_now(), STAND_STILL_TIME, tender, True)
