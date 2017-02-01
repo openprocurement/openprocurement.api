@@ -454,7 +454,7 @@ class TenderLotCancellationContractTest(BaseTenderWebTest):
         self.assertEqual(response.json['errors'][0]["description"],
                          "Can add cancellation on lot if corresponding contract is merged.")
 
-    def test_create_cancellation_on_lot_with_cancalled_awards(self):
+    def test_create_cancellation_on_lot_with_cancelled_awards(self):
         """ Try create cancellation when we already have cancelled award """
         # Create awards
         request_path = '/tenders/{}/awards'.format(self.tender_id)
