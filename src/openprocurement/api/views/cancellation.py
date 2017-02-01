@@ -59,8 +59,8 @@ class TenderCancellationResource(APIResource):
             self.request.errors.add('body', 'data', 'Can {} cancellation only in active lot status'.format(operation))
             self.request.errors.status = 403
             return
-        award_id = tender.get('awards') and [i.id for i in tender.awards if i.lotID == cancellation.relatedLot][0] or False
-        if cancellation.get('relatedLot') and award_id and [c for c in tender.get('contracts') if c.awardID == award_id and c.status == 'merged']:
+        awards_id = [i.id for i in tender.awards if i.lotID == cancellation.relatedLot] if tender.get('awards') else False
+        if cancellation.get('relatedLot') and [c for c in tender.get('contracts') if c.awardID in awards_id and c.status == 'merged']:
             self.request.errors.add('body', 'data', 'Can {} cancellation on lot if corresponding contract is merged.'.format(operation))
             self.request.errors.status = 403
             return
