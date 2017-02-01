@@ -313,31 +313,10 @@ class TenderMergedContracts2LotsResourceTest(BaseTenderWebTest):
         # Cancel additional award
         response = self.app.patch_json('/tenders/{}/awards/{}?acc_token={}'.format(
             self.tender_id, second_award_id, self.tender_token),
-            {'data': {'status': 'cancelled'}})
+            {'data': {'status': 'cancelled'}}, status=403)
 
-        self.assertEqual(response.status, "200 OK")
-
-        # Check cancel award
-        response = self.app.get('/tenders/{}/contracts/{}?acc_token'.format(
-            self.tender_id, second_contract['id'], self.tender_token))
-
-        self.assertEqual(response.status, "200 OK")
-        self.assertEqual(response.json['data']['status'], 'cancelled')
-        self.assertNotIn('mergedInto', response.json['data'])
-
-        # Check contracts
-        response = self.app.get('/tenders/{}/contracts?acc_token={}'.format(self.tender_id, self.tender_token))
-
-        self.assertEqual(response.status, "200 OK")
-        self.assertEqual(len(response.json['data']), 2)
-        self.assertNotIn('additionalAwardIDs', response.json['data'][0])
-
-        # Check that new award was created and has status pending
-        response = self.app.get('/tenders/{}/awards?acc_token={}'.format(self.tender_id, self.tender_token))
-
-        self.assertEqual(response.status, "200 OK")
-        self.assertEqual(len(response.json['data']), 3)
-        self.assertEqual(response.json['data'][-1]['status'], 'pending')
+        self.assertEqual(response.status, "403 Forbidden")
+        self.assertEqual(response.json['errors'][0]['description'], "Can't cancel award while it is a part of merged contracts.")
 
     def test_cancel_main_award(self):
         """ Create two awards and merged them and then cancel main award """
@@ -816,7 +795,7 @@ class TenderMergedContracts3LotsResourceTest(BaseTenderWebTest):
         self.assertEqual(response.json['data']['dateSigned'], dateSigned)
 
     def test_cancel_award(self):
-        """ Create two awards and merged them and then cancel both """
+        """ Create two awards and merged them and try to cancel both """
         awards = self.create_awards()
         self.active_awards(awards)
 
@@ -845,54 +824,33 @@ class TenderMergedContracts3LotsResourceTest(BaseTenderWebTest):
         # Cancel additional award
         response = self.app.patch_json('/tenders/{}/awards/{}?acc_token={}'.format(
             self.tender_id, second_contract['awardID'], self.tender_token),
-            {'data': {'status': 'cancelled'}})
+            {'data': {'status': 'cancelled'}}, status=403)
 
-        self.assertEqual(response.status, "200 OK")
-
-        # Check cancel award
-        response = self.app.get('/tenders/{}/contracts/{}?acc_token'.format(
-            self.tender_id, second_contract['id'], self.tender_token))
-
-        self.assertEqual(response.status, "200 OK")
-        self.assertEqual(response.json['data']['status'], 'cancelled')
-        self.assertNotIn('mergedInto', response.json['data'])
+        self.assertEqual(response.status, "403 Forbidden")
+        self.assertEqual(response.json['errors'][0]['description'], "Can't cancel award while it is a part of merged contracts.")
 
         # Check main contract
         response = self.app.get('/tenders/{}/contracts?acc_token={}'.format(self.tender_id, self.tender_token))
 
         self.assertEqual(response.status, "200 OK")
         self.assertEqual(len(response.json['data']), 3)
-        self.assertEqual(len(response.json['data'][0]['additionalAwardIDs']), 1)
+        self.assertEqual(len(response.json['data'][0]['additionalAwardIDs']), 2)
 
         # Cancel second additional award
         response = self.app.patch_json('/tenders/{}/awards/{}?acc_token={}'.format(
             self.tender_id, third_contract['awardID'], self.tender_token),
-            {'data': {'status': 'cancelled'}})
+            {'data': {'status': 'cancelled'}}, status=403)
 
-        self.assertEqual(response.status, "200 OK")
-
-        # Check second cancel award
-        response = self.app.get('/tenders/{}/contracts/{}?acc_token'.format(
-            self.tender_id, third_contract['id'], self.tender_token))
-
-        self.assertEqual(response.status, "200 OK")
-        self.assertEqual(response.json['data']['status'], 'cancelled')
-        self.assertNotIn('mergedInto', response.json['data'])
+        self.assertEqual(response.status, "403 Forbidden")
+        self.assertIn("Can\'t cancel award while it is a part of merged contracts.",
+                      response.json['errors'][0]['description'])
 
         # Check main contract
         response = self.app.get('/tenders/{}/contracts?acc_token={}'.format(self.tender_id, self.tender_token))
 
         self.assertEqual(response.status, "200 OK")
         self.assertEqual(len(response.json['data']), 3)
-        self.assertNotIn('additionalAwardIDs', response.json['data'][0])
-
-        # Check that new awards were created and has status pending
-        response = self.app.get('/tenders/{}/awards?acc_token={}'.format(self.tender_id, self.tender_token))
-
-        self.assertEqual(response.status, "200 OK")
-        self.assertEqual(len(response.json['data']), 5)
-        self.assertEqual(response.json['data'][-1]['status'], 'pending')
-        self.assertEqual(response.json['data'][-2]['status'], 'pending')
+        self.assertEqual(len(response.json['data'][0]['additionalAwardIDs']), 2)
 
     def test_cancel_main_award(self):
         """ Create two awards and merged them and then cancel main contract """
@@ -1171,7 +1129,7 @@ class TenderMergedContracts4LotsResourceTest(BaseTenderWebTest):
         self.assertEqual(response.json['data']['status'], 'complete')
 
     def test_cancel_award(self):
-        """ Create two awards and merged them and then cancel both """
+        """ Create two awards and merged them and try to cancel both """
         awards_response = self.create_awards()
         self.active_awards(awards_response)
         # get created contracts
@@ -1199,77 +1157,47 @@ class TenderMergedContracts4LotsResourceTest(BaseTenderWebTest):
         # Cancel first additional award
         response = self.app.patch_json('/tenders/{}/awards/{}?acc_token={}'.format(
             self.tender_id, second_contract['awardID'], self.tender_token),
-            {'data': {'status': 'cancelled'}})
+            {'data': {'status': 'cancelled'}}, status=403)
 
-        self.assertEqual(response.status, "200 OK")
-
-        # Check first cancel award
-        response = self.app.get('/tenders/{}/contracts/{}?acc_token'.format(
-            self.tender_id, second_contract['id'], self.tender_token))
-
-        self.assertEqual(response.status, "200 OK")
-        self.assertEqual(response.json['data']['status'], 'cancelled')
-        self.assertNotIn('mergedInto', response.json['data'])
+        self.assertEqual(response.status, "403 Forbidden")
+        self.assertEqual(response.json['errors'][0]['description'], "Can't cancel award while it is a part of merged contracts.")
 
         # Check main contract
         response = self.app.get('/tenders/{}/contracts?acc_token={}'.format(self.tender_id, self.tender_token))
 
         self.assertEqual(response.status, "200 OK")
         self.assertEqual(len(response.json['data']), 4)
-        self.assertEqual(len(response.json['data'][0]['additionalAwardIDs']), 2)
+        self.assertEqual(len(response.json['data'][0]['additionalAwardIDs']), 3)
 
         # Cancel second additional award
         response = self.app.patch_json('/tenders/{}/awards/{}?acc_token={}'.format(
             self.tender_id, third_contract['awardID'], self.tender_token),
-            {'data': {'status': 'cancelled'}})
+            {'data': {'status': 'cancelled'}}, status=403)
 
-        self.assertEqual(response.status, "200 OK")
-
-        # Check second cancel award
-        response = self.app.get('/tenders/{}/contracts/{}?acc_token'.format(
-            self.tender_id, third_contract['id'], self.tender_token))
-
-        self.assertEqual(response.status, "200 OK")
-        self.assertEqual(response.json['data']['status'], 'cancelled')
-        self.assertNotIn('mergedInto', response.json['data'])
+        self.assertEqual(response.status, "403 Forbidden")
+        self.assertEqual(response.json['errors'][0]['description'], "Can't cancel award while it is a part of merged contracts.")
 
         # Check main contract
         response = self.app.get('/tenders/{}/contracts?acc_token={}'.format(self.tender_id, self.tender_token))
 
         self.assertEqual(response.status, "200 OK")
         self.assertEqual(len(response.json['data']), 4)
-        self.assertEqual(len(response.json['data'][0]['additionalAwardIDs']), 1)
+        self.assertEqual(len(response.json['data'][0]['additionalAwardIDs']), 3)
 
         # Cancel third additional award
         response = self.app.patch_json('/tenders/{}/awards/{}?acc_token={}'.format(
             self.tender_id, fourth_contract['awardID'], self.tender_token),
-            {'data': {'status': 'cancelled'}})
+            {'data': {'status': 'cancelled'}}, status=403)
 
-        self.assertEqual(response.status, "200 OK")
-
-        # Check second cancel award
-        response = self.app.get('/tenders/{}/contracts/{}?acc_token'.format(
-            self.tender_id, fourth_contract['id'], self.tender_token))
-
-        self.assertEqual(response.status, "200 OK")
-        self.assertEqual(response.json['data']['status'], 'cancelled')
-        self.assertNotIn('mergedInto', response.json['data'])
+        self.assertEqual(response.status, "403 Forbidden")
+        self.assertEqual(response.json['errors'][0]['description'], "Can't cancel award while it is a part of merged contracts.")
 
         # Check main contract
         response = self.app.get('/tenders/{}/contracts?acc_token={}'.format(self.tender_id, self.tender_token))
 
         self.assertEqual(response.status, "200 OK")
         self.assertEqual(len(response.json['data']), 4)
-        self.assertNotIn('additionalAwardIDs', response.json['data'][0])
-
-        # Check that new awards were created and have status pending
-        response = self.app.get('/tenders/{}/awards?acc_token={}'.format(self.tender_id, self.tender_token))
-
-        self.assertEqual(response.status, "200 OK")
-        self.assertEqual(len(response.json['data']), 7)
-        self.assertEqual(response.json['data'][-1]['status'], 'pending')
-        self.assertEqual(response.json['data'][-2]['status'], 'pending')
-        self.assertEqual(response.json['data'][-3]['status'], 'pending')
+        self.assertEqual(len(response.json['data'][0]['additionalAwardIDs']), 3)
 
     def test_cancel_main_award(self):
         """ Create two awards and merged them and then main """
