@@ -5,16 +5,13 @@ if 'test' not in __import__('sys').argv[0]:
     import gevent.monkey
     gevent.monkey.patch_all()
 import os
-from base64 import b64decode, b64encode
 from couchdb import Server as CouchdbServer, Session
 from couchdb.http import Unauthorized, extract_credentials
 from libnacl.sign import Signer, Verifier
 from logging import getLogger
 from openprocurement.api.auth import AuthenticationPolicy, authenticated_role, check_accreditation
 from openprocurement.api.design import sync_design
-from openprocurement.api.migration import migrate_data
-from openprocurement.api.models import Tender
-from openprocurement.api.utils import forbidden, add_logging_context, set_logging_context, extract_tender, request_params, isTender, set_renderer, beforerender, register_tender_procurementMethodType, tender_from_data, ROUTE_PREFIX
+from openprocurement.api.utils import forbidden, add_logging_context, set_logging_context, request_params, set_renderer, beforerender, ROUTE_PREFIX
 from pbkdf2 import PBKDF2
 from pkg_resources import iter_entry_points
 from pyramid.authorization import ACLAuthorizationPolicy as AuthorizationPolicy
@@ -69,7 +66,6 @@ def main(global_config, **settings):
     config.add_forbidden_view(forbidden)
     config.add_request_method(request_params, 'params', reify=True)
     config.add_request_method(authenticated_role, reify=True)
-    config.add_request_method(extract_tender, 'tender', reify=True)
     config.add_request_method(check_accreditation)
     config.add_renderer('prettyjson', JSON(indent=4))
     config.add_renderer('jsonp', JSONP(param_name='opt_jsonp'))
@@ -81,11 +77,6 @@ def main(global_config, **settings):
     config.scan("openprocurement.api.views.spore")
     config.scan("openprocurement.api.views.health")
 
-    # tender procurementMethodType plugins support
-    config.add_route_predicate('procurementMethodType', isTender)
-    config.registry.tender_procurementMethodTypes = {}
-    config.add_request_method(tender_from_data)
-    config.add_directive('add_tender_procurementMethodType', register_tender_procurementMethodType)
 
     # search for plugins
     plugins = settings.get('plugins') and settings['plugins'].split(',')
@@ -182,5 +173,4 @@ def main(global_config, **settings):
 
 
 def includeme(config):
-    config.add_tender_procurementMethodType(Tender)
     config.scan("openprocurement.api.views")

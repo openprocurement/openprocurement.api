@@ -3,10 +3,6 @@ import unittest
 from pyramid import testing
 from openprocurement.api.auth import AuthenticationPolicy
 from pyramid.tests.test_authentication import TestBasicAuthAuthenticationPolicy
-from openprocurement.api.tests.base import test_tender_data, test_organization, BaseWebTest, BaseTenderWebTest
-
-test_tender_data_mode_test = test_tender_data.copy()
-test_tender_data_mode_test["mode"] = "test"
 
 
 class AuthTest(TestBasicAuthAuthenticationPolicy):
@@ -21,107 +17,6 @@ class AuthTest(TestBasicAuthAuthenticationPolicy):
         request.headers['Authorization'] = 'Bearer chrisr'
         policy = self._makeOne(None)
         self.assertEqual(policy.unauthenticated_userid(request), 'chrisr')
-
-
-class AccreditationTenderTest(BaseWebTest):
-    def test_create_tender_accreditation(self):
-        self.app.authorization = ('Basic', ('broker1', ''))
-        response = self.app.post_json('/tenders', {"data": test_tender_data})
-        self.assertEqual(response.status, '201 Created')
-        self.assertEqual(response.content_type, 'application/json')
-
-        for broker in ['broker2', 'broker3', 'broker4']:
-            self.app.authorization = ('Basic', (broker, ''))
-            response = self.app.post_json('/tenders', {"data": test_tender_data}, status=403)
-            self.assertEqual(response.status, '403 Forbidden')
-            self.assertEqual(response.content_type, 'application/json')
-            self.assertEqual(response.json['errors'][0]["description"], "Broker Accreditation level does not permit tender creation")
-
-        self.app.authorization = ('Basic', ('broker1t', ''))
-        response = self.app.post_json('/tenders', {"data": test_tender_data}, status=403)
-        self.assertEqual(response.status, '403 Forbidden')
-        self.assertEqual(response.content_type, 'application/json')
-        self.assertEqual(response.json['errors'][0]["description"], "Broker Accreditation level does not permit tender creation")
-
-        response = self.app.post_json('/tenders', {"data": test_tender_data_mode_test})
-        self.assertEqual(response.status, '201 Created')
-
-
-class AccreditationTenderQuestionTest(BaseTenderWebTest):
-    def test_create_tender_question_accreditation(self):
-        self.app.authorization = ('Basic', ('broker2', ''))
-        response = self.app.post_json('/tenders/{}/questions'.format(self.tender_id),
-                                      {'data': {'title': 'question title', 'description': 'question description', 'author': test_organization}})
-        self.assertEqual(response.status, '201 Created')
-        self.assertEqual(response.content_type, 'application/json')
-
-        for broker in ['broker1', 'broker3', 'broker4']:
-            self.app.authorization = ('Basic', (broker, ''))
-            response = self.app.post_json('/tenders/{}/questions'.format(self.tender_id),
-                                          {'data': {'title': 'question title', 'description': 'question description', 'author': test_organization}},
-                                          status=403)
-            self.assertEqual(response.status, '403 Forbidden')
-            self.assertEqual(response.content_type, 'application/json')
-            self.assertEqual(response.json['errors'][0]["description"], "Broker Accreditation level does not permit question creation")
-
-        self.app.authorization = ('Basic', ('broker2t', ''))
-        response = self.app.post_json('/tenders/{}/questions'.format(self.tender_id),
-                                      {'data': {'title': 'question title', 'description': 'question description', 'author': test_organization}},
-                                      status=403)
-        self.assertEqual(response.status, '403 Forbidden')
-        self.assertEqual(response.content_type, 'application/json')
-        self.assertEqual(response.json['errors'][0]["description"], "Broker Accreditation level does not permit question creation")
-
-
-class AccreditationTenderQuestionModeTest(BaseTenderWebTest):
-    initial_data = test_tender_data_mode_test
-
-    def test_create_tender_question_accreditation(self):
-        self.app.authorization = ('Basic', ('broker2', ''))
-        response = self.app.post_json('/tenders/{}/questions'.format(self.tender_id),
-                                      {'data': {'title': 'question title', 'description': 'question description', 'author': test_organization}})
-        self.assertEqual(response.status, '201 Created')
-        self.assertEqual(response.content_type, 'application/json')
-
-
-class AccreditationTenderBidTest(BaseTenderWebTest):
-    initial_status = 'active.tendering'
-
-    def test_create_tender_bid_accreditation(self):
-        self.app.authorization = ('Basic', ('broker2', ''))
-        response = self.app.post_json('/tenders/{}/bids'.format(self.tender_id),
-                                      {'data': {'tenderers': [test_organization], "value": {"amount": 500}}})
-        self.assertEqual(response.status, '201 Created')
-        self.assertEqual(response.content_type, 'application/json')
-
-        for broker in ['broker1', 'broker3', 'broker4']:
-            self.app.authorization = ('Basic', (broker, ''))
-            response = self.app.post_json('/tenders/{}/bids'.format(self.tender_id),
-                                          {'data': {'tenderers': [test_organization], "value": {"amount": 500}}},
-                                          status=403)
-            self.assertEqual(response.status, '403 Forbidden')
-            self.assertEqual(response.content_type, 'application/json')
-            self.assertEqual(response.json['errors'][0]["description"], "Broker Accreditation level does not permit bid creation")
-
-        self.app.authorization = ('Basic', ('broker2t', ''))
-        response = self.app.post_json('/tenders/{}/bids'.format(self.tender_id),
-                                      {'data': {'tenderers': [test_organization], "value": {"amount": 500}}},
-                                      status=403)
-        self.assertEqual(response.status, '403 Forbidden')
-        self.assertEqual(response.content_type, 'application/json')
-        self.assertEqual(response.json['errors'][0]["description"], "Broker Accreditation level does not permit bid creation")
-
-
-class AccreditationTenderBidModeTest(BaseTenderWebTest):
-    initial_data = test_tender_data_mode_test
-    initial_status = 'active.tendering'
-
-    def test_create_tender_bid_accreditation(self):
-        self.app.authorization = ('Basic', ('broker2t', ''))
-        response = self.app.post_json('/tenders/{}/bids'.format(self.tender_id),
-                                      {'data': {'tenderers': [test_organization], "value": {"amount": 500}}})
-        self.assertEqual(response.status, '201 Created')
-        self.assertEqual(response.content_type, 'application/json')
 
 
 def suite():
