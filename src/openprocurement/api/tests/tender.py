@@ -1462,10 +1462,6 @@ class TenderProcessTest(BaseTenderWebTest):
         self.assertEqual(response.json['errors'][0]["description"], "Can't update document in current (complete) tender status")
 
     def test_lost_contract_for_active_award(self):
-        self.app.authorization = ('Basic', ('broker', ''))
-        # empty tenders listing
-        response = self.app.get('/tenders')
-        self.assertEqual(response.json['data'], [])
         # create tender
         response = self.app.post_json('/tenders',
                                       {"data": test_tender_data})
