@@ -1430,6 +1430,8 @@ class Tender(SchematicsDocument, Model):
                 elif complaint.status == 'answered' and complaint.dateAnswered:
                     checks.append(calculate_business_date(complaint.dateAnswered, COMPLAINT_STAND_STILL_TIME, self))
             for award in self.awards:
+                if award.status == 'active' and not any([i.awardID == award.id for i in self.contracts]):
+                    checks.append(award.date)
                 for complaint in award.complaints:
                     if complaint.status == 'claim' and complaint.dateSubmitted:
                         checks.append(calculate_business_date(complaint.dateSubmitted, COMPLAINT_STAND_STILL_TIME, self))
