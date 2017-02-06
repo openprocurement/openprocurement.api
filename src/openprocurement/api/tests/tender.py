@@ -1761,6 +1761,60 @@ class TenderProcessTest(BaseTenderWebTest):
         self.assertEqual(response.content_type, 'application/json')
         self.assertEqual(response.json['errors'][0]["description"], "Can't update document in current (complete) tender status")
 
+    def test_lost_contract_for_active_award(self):
+        self.app.authorization = ('Basic', ('broker', ''))
+        # create tender
+        response = self.app.post_json('/tenders',
+                                      {"data": test_tender_data})
+        tender_id = self.tender_id = response.json['data']['id']
+        owner_token = response.json['access']['token']
+        # switch to active.tendering
+        self.set_status('active.tendering')
+        # create bid
+        self.app.authorization = ('Basic', ('broker', ''))
+        response = self.app.post_json('/tenders/{}/bids'.format(tender_id),
+                                      {'data': {'tenderers': [test_organization], "value": {"amount": 500}}})
+        # switch to active.qualification
+        self.set_status('active.auction', {"auctionPeriod": {"startDate": None}, 'status': 'active.tendering'})
+        self.app.authorization = ('Basic', ('chronograph', ''))
+        response = self.app.patch_json('/tenders/{}'.format(tender_id), {"data": {"id": tender_id}})
+        # get awards
+        self.app.authorization = ('Basic', ('broker', ''))
+        response = self.app.get('/tenders/{}/awards?acc_token={}'.format(tender_id, owner_token))
+        # get pending award
+        award_id = [i['id'] for i in response.json['data'] if i['status'] == 'pending'][0]
+        # set award as active
+        response = self.app.patch_json('/tenders/{}/awards/{}?acc_token={}'.format(tender_id, award_id, owner_token),
+                                       {"data": {"status": "active"}})
+        # lost contract
+        tender = self.db.get(tender_id)
+        tender['contracts'] = None
+        self.db.save(tender)
+        # check tender
+        response = self.app.get('/tenders/{}'.format(tender_id))
+        self.assertEqual(response.json['data']['status'], 'active.awarded')
+        self.assertNotIn('contracts', response.json['data'])
+        self.assertIn('next_check', response.json['data'])
+        # create lost contract
+        self.app.authorization = ('Basic', ('chronograph', ''))
+        response = self.app.patch_json('/tenders/{}'.format(tender_id), {"data": {"id": tender_id}})
+        self.assertEqual(response.json['data']['status'], 'active.awarded')
+        self.assertIn('contracts', response.json['data'])
+        self.assertNotIn('next_check', response.json['data'])
+        contract_id = response.json['data']['contracts'][-1]['id']
+        # time travel
+        tender = self.db.get(tender_id)
+        for i in tender.get('awards', []):
+            i['complaintPeriod']['endDate'] = i['complaintPeriod']['startDate']
+        self.db.save(tender)
+        # sign contract
+        self.app.authorization = ('Basic', ('broker', ''))
+        self.app.patch_json('/tenders/{}/contracts/{}?acc_token={}'.format(tender_id, contract_id, owner_token), {"data": {"status": "active"}})
+        # check status
+        self.app.authorization = ('Basic', ('broker', ''))
+        response = self.app.get('/tenders/{}'.format(tender_id))
+        self.assertEqual(response.json['data']['status'], 'complete')
+
 
 def suite():
     suite = unittest.TestSuite()
