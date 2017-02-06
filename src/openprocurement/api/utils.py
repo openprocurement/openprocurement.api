@@ -427,7 +427,7 @@ def check_status(request):
                 'awardID': award.id,
                 'suppliers': award.suppliers,
                 'value': award.value,
-                'date': get_now(),
+                'date': now,
                 'items': [i for i in tender.items if i.relatedLot == award.lotID ],
                 'contractID': '{}-{}{}'.format(tender.tenderID, request.registry.server_id, len(tender.contracts) + 1) }))
             add_next_award(request)
