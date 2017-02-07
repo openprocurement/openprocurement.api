@@ -12,7 +12,10 @@ HEALTH_THRESHOLD_FUNCTIONS = {
 def get_spore(request):
     tasks = getattr(request.registry, 'admin_couchdb_server', request.registry.couchdb_server).tasks()
     output = {task['replication_id']: task['progress'] for task in tasks if 'type' in task and task['type'] == 'replication'}
-    health_threshold = request.params.get('health_threshold', request.registry.health_threshold)
+    try:
+        health_threshold = float(request.params.get('health_threshold', request.registry.health_threshold))
+    except ValueError, e:
+        health_threshold = request.registry.health_threshold
     health_threshold_func_name = request.params.get('health_threshold_func', request.registry.health_threshold_func)
     health_threshold_func = HEALTH_THRESHOLD_FUNCTIONS.get(health_threshold_func_name, all)
     if not(output and health_threshold_func(
