@@ -8,16 +8,17 @@ with open(os.path.join(here, 'README.rst')) as f:
 
 requires = [
     'barbecue',
-    'boto',
     'chaussette',
     'cornice',
     'couchdb-schematics',
     'gevent',
     'iso8601',
     'jsonpatch',
+    'libnacl',
     'pbkdf2',
     'pycrypto',
     'pyramid_exclog',
+    'requests',
     'rfc6266',
     'setuptools',
     'tzlocal',
@@ -37,11 +38,14 @@ entry_points = {
     ],
     'openprocurement.api.plugins': [
         'belowThreshold = openprocurement.api:includeme'
+    ],
+    'openprocurement.api.migrations': [
+        'tenders = openprocurement.api.migration:migrate_data'
     ]
 }
 
 setup(name='openprocurement.api',
-      version='2.3.26',
+      version='2.3.46',
       description='openprocurement.api',
       long_description=README,
       classifiers=[

@@ -15,6 +15,7 @@ def validate_json_data(request):
         request.errors.add('body', 'data', "Data not available")
         request.errors.status = 422
         return
+    request.validated['json_data'] = json['data']
     return json['data']
 
 
@@ -72,7 +73,9 @@ def validate_tender_data(request):
         return
 
     model = request.tender_from_data(data, create=False)
-    if not request.check_accreditation(model.create_accreditation):
+    #if not request.check_accreditation(model.create_accreditation):
+    #if not any([request.check_accreditation(acc) for acc in getattr(model, 'create_accreditations', [getattr(model, 'create_accreditation', '')])]):
+    if not any([request.check_accreditation(acc) for acc in iter(str(model.create_accreditation))]):
         request.errors.add('procurementMethodType', 'accreditation', 'Broker Accreditation level does not permit tender creation')
         request.errors.status = 403
         return
@@ -278,8 +281,16 @@ def validate_patch_lot_data(request):
     return validate_data(request, model, True)
 
 
+def validate_document_data(request):
+    context = request.context if 'documents' in request.context else request.context.__parent__
+    model = type(context).documents.model_class
+    return validate_data(request, model)
+
+
 def validate_file_upload(request):
     update_logging_context(request, {'document_id': '__new__'})
+    if request.registry.docservice_url and request.content_type == "application/json":
+        return validate_document_data(request)
     if 'file' not in request.POST or not hasattr(request.POST['file'], 'filename'):
         request.errors.add('body', 'file', 'Not Found')
         request.errors.status = 404
@@ -288,5 +299,7 @@ def validate_file_upload(request):
 
 
 def validate_file_update(request):
+    if request.registry.docservice_url and request.content_type == "application/json":
+        return validate_document_data(request)
     if request.content_type == 'multipart/form-data':
         validate_file_upload(request)

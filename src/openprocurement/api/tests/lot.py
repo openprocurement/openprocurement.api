@@ -719,6 +719,14 @@ class TenderLotBidderResourceTest(BaseTenderWebTest):
             {u'description': u"invalid literal for int() with base 10: 'contactPoint'", u'location': u'body', u'name': u'data'},
         ])
 
+        response = self.app.post_json(request_path, {'data': {'tenderers': [test_organization], 'lotValues': [{"value": {"amount": 500}, 'relatedLot': self.initial_lots[0]['id']}, {"value": {"amount": 500}, 'relatedLot': self.initial_lots[0]['id']}]}}, status=422)
+        self.assertEqual(response.status, '422 Unprocessable Entity')
+        self.assertEqual(response.content_type, 'application/json')
+        self.assertEqual(response.json['status'], 'error')
+        self.assertEqual(response.json['errors'], [
+            {u'description': [u"bids don't allow duplicated proposals"], u'location': u'body', u'name': u'lotValues'}
+        ])
+
     def test_patch_tender_bidder(self):
         lot_id = self.initial_lots[0]['id']
         response = self.app.post_json('/tenders/{}/bids'.format(self.tender_id), {'data': {'tenderers': [test_organization], 'lotValues': [{"value": {"amount": 500}, 'relatedLot': lot_id}]}})

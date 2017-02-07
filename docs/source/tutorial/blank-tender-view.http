@@ -1,4 +1,4 @@
-GET /api/2.3/tenders/a4f89b85bdc041f080c73ca5b06ee953 HTTP/1.0
+GET /api/2.3/tenders/b74c14bbee6f44a9a0c8408c13a4c1a8 HTTP/1.0
 Authorization: Basic YnJva2VyOg==
 Host: api-sandbox.openprocurement.org
 
@@ -10,10 +10,10 @@ Content-Type: application/json; charset=UTF-8
   "data": {
     "procurementMethod": "open", 
     "status": "active.enquiries", 
-    "tenderID": "UA-2016-06-10-000001", 
+    "awardCriteria": "lowestCost", 
     "tenderPeriod": {
-      "startDate": "2016-06-17T15:29:31.511759+03:00", 
-      "endDate": "2016-06-24T15:29:31.511759+03:00"
+      "startDate": "2016-07-28T17:17:48.184527+03:00", 
+      "endDate": "2016-08-04T17:17:48.184527+03:00"
     }, 
     "title": "футляри до державних нагород", 
     "minimalStep": {
@@ -44,10 +44,10 @@ Content-Type: application/json; charset=UTF-8
           "locality": "м. Київ"
         }, 
         "deliveryDate": {
-          "startDate": "2016-06-12T15:29:31.511759+03:00", 
-          "endDate": "2016-06-15T15:29:31.511759+03:00"
+          "startDate": "2016-07-23T17:17:48.184527+03:00", 
+          "endDate": "2016-07-26T17:17:48.184527+03:00"
         }, 
-        "id": "bc8a07adf2df4c98aa22e8d598eb06d3", 
+        "id": "93b5e35b0ece40b88af4114d4c8017fe", 
         "unit": {
           "code": "44617100-9", 
           "name": "item"
@@ -62,7 +62,8 @@ Content-Type: application/json; charset=UTF-8
       "valueAddedTaxIncluded": true
     }, 
     "submissionMethod": "electronicAuction", 
-    "next_check": "2016-06-17T15:29:31.511759+03:00", 
+    "date": "2016-07-21T17:18:04.728611+03:00", 
+    "next_check": "2016-07-28T17:17:48.184527+03:00", 
     "procuringEntity": {
       "contactPoint": {
         "name": "Державне управління справами", 
@@ -84,13 +85,13 @@ Content-Type: application/json; charset=UTF-8
       }
     }, 
     "enquiryPeriod": {
-      "startDate": "2016-06-10T15:29:48.639408+03:00", 
-      "endDate": "2016-06-17T15:29:31.511759+03:00"
+      "startDate": "2016-07-21T17:18:04.728536+03:00", 
+      "endDate": "2016-07-28T17:17:48.184527+03:00"
     }, 
     "owner": "broker", 
-    "dateModified": "2016-06-10T15:29:48.644410+03:00", 
-    "id": "a4f89b85bdc041f080c73ca5b06ee953", 
-    "awardCriteria": "lowestCost"
+    "dateModified": "2016-07-21T17:18:04.733149+03:00", 
+    "id": "b74c14bbee6f44a9a0c8408c13a4c1a8", 
+    "tenderID": "UA-2016-07-21-000001"
   }
 }
 
