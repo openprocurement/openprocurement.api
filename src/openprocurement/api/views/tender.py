@@ -24,6 +24,7 @@ from openprocurement.api.utils import (
     set_ownership,
     tender_serialize,
     APIResource,
+    _apply_patch
 )
 from openprocurement.api.validation import (
     validate_patch_tender_data,
@@ -463,10 +464,41 @@ class TenderResource(APIResource):
             }
 
         """
+        tender_data = {}
         if self.request.authenticated_role == 'chronograph':
             tender_data = self.context.serialize('chronograph_view')
         else:
-            tender_data = self.context.serialize(self.context.status)
+            revisions = self.context.revisions[1:]
+            public_revisions = [
+                rev.rev
+                for rev in revisions
+                if rev.get('public', False)
+                or not any([ch for ch in rev['changes'] if ch['path'].startswith('/bids') or ch['path'] == '/numberOfBids'])
+            ]
+
+            a_rev = self.request.headers.get('X-Revision-N', '')
+            model = type(self.context)
+            if not a_rev or not a_rev.isdigit():
+                header = ('X-Revision-N', str(len(public_revisions)))
+                tender_data = self.context.serialize(self.context.status)
+            else:
+                tender = self.context.serialize('plain')
+                for version, revision in enumerate(public_revisions):
+                    if version == int(a_rev):
+                        for patch in reversed(revisions):
+                            tender = _apply_patch(tender, patch.changes)
+                            if patch.rev == revision:
+                                try:
+                                    tender['dateModified'] = public_revisions[public_revisions.index(patch) - 1].date
+                                except (IndexError, ValueError):
+                                    tender['dateModified'] = self.context.revisions[0].date
+                                header = ('X-Revision-N', str(version))
+                                tender_data = model(tender).serialize(tender['status'])
+            if not tender_data:
+                header = ('X-Revision-N', str(len(public_revisions)))
+                tender_data = self.context.serialize(self.context.status)
+
+            self.request.response.headerlist.append(header)
         return {'data': tender_data}
 
     #@json_view(content_type="application/json", validators=(validate_tender_data, ), permission='edit_tender')

@@ -280,6 +280,8 @@ class TenderBidderResourceTest(BaseTenderWebTest):
         self.assertEqual(response.status, '201 Created')
         self.assertEqual(response.content_type, 'application/json')
         bidder = response.json['data']
+        revisions = self.db.get(self.tender_id).get('revisions')
+        self.assertFalse(revisions[-1][u'public'])
 
         response = self.app.delete('/tenders/{}/bids/{}'.format(self.tender_id, bidder['id']))
         self.assertEqual(response.status, '200 OK')
@@ -287,6 +289,8 @@ class TenderBidderResourceTest(BaseTenderWebTest):
         self.assertEqual(response.json['data'], bidder)
 
         revisions = self.db.get(self.tender_id).get('revisions')
+        self.assertFalse(revisions[-2][u'public'])
+        self.assertFalse(revisions[-1][u'public'])
         self.assertTrue(any([i for i in revisions[-2][u'changes'] if i['op'] == u'remove' and i['path'] == u'/bids']))
         self.assertTrue(any([i for i in revisions[-1][u'changes'] if i['op'] == u'add' and i['path'] == u'/bids']))
 

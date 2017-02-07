@@ -965,6 +965,7 @@ class TenderResourceTest(BaseWebTest):
         revisions = self.db.get(tender['id']).get('revisions')
         self.assertEqual(revisions[-1][u'changes'][0]['op'], u'remove')
         self.assertEqual(revisions[-1][u'changes'][0]['path'], u'/procurementMethodRationale')
+        self.assertTrue(revisions[-1][u'public'])
 
         response = self.app.patch_json('/tenders/{}'.format(
             tender['id']), {'data': {'items': [data['items'][0]]}})
@@ -1194,6 +1195,7 @@ class TenderResourceTest(BaseWebTest):
         self.assertEqual(response.status, '200 OK')
         self.assertEqual(response.content_type, 'application/json')
         self.assertEqual(response.json['data']['mode'], u'test')
+
 
 
 class TenderProcessTest(BaseTenderWebTest):
@@ -1460,6 +1462,63 @@ class TenderProcessTest(BaseTenderWebTest):
         self.assertEqual(response.status, '403 Forbidden')
         self.assertEqual(response.content_type, 'application/json')
         self.assertEqual(response.json['errors'][0]["description"], "Can't update document in current (complete) tender status")
+
+    def test_get_tender_versions(self):
+        data = test_tender_data.copy()
+        _patch = self.app.patch_json
+        _get = self.app.get
+        _post = self.app.post_json
+
+        response = _post('/tenders', {'data': data})
+        date_mod_init = response.json['data']['dateModified']
+        self.tender_id = response.json['data']['id']
+        path = '/tenders/{}'.format(self.tender_id)
+        token = '?acc_token={}'.format(response.json['access']['token'])
+
+        data = {}
+
+        response = _get(path)
+        self.assertEqual(response.headers['X-Revision-N'], "0")
+        self.assertEqual(response.json['data']['dateModified'], date_mod_init)
+
+        data['data'] = {'procuringEntity':
+                        {'contactPoint': {'faxNumber': u"0440000000"}}}
+        response = _patch(path+token, data)
+        self.assertEqual(response.status, '200 OK')
+        date_mod_new = response.json['data']['dateModified']
+
+        response = _get(path)
+        self.assertEqual(response.headers['X-Revision-N'], "1")
+        procuring_entity = response.json['data']['procuringEntity']
+        self.assertIn('faxNumber', procuring_entity['contactPoint'])
+        self.assertEqual(response.json['data']['dateModified'], date_mod_new)
+
+        response = _get(path, headers={'X-Revision-N': "0"})
+        procuring_entity = response.json['data']['procuringEntity']
+        self.assertNotIn('faxNumber', procuring_entity['contactPoint'])
+        self.assertEqual(response.json['data']['dateModified'], date_mod_init)
+
+        response = _get(path, headers={'X-Revision-N': "999"})
+        self.assertEqual("1", response.headers['X-Revision-N'])
+
+        response = _get(path, headers={'X-Revision-N': "abc"})
+        self.assertEqual("1", response.headers['X-Revision-N'])
+
+        self.set_status('active.tendering')
+        self.app.authorization = ('Basic', ('broker', ''))
+        data['data'] = {'tenderers': [test_organization], "value": {"amount": 450}}
+        _post(path+'/bids', data)
+
+        data['data'] = {'tenderers': [test_organization], "value": {"amount": 150}}
+        _post(path+'/bids', data)
+
+        response = _get(path)
+        self.assertEqual(response.headers['X-Revision-N'], "1")
+
+        for i in ["0", "1"]:
+            response = _get(path, headers={'X-Revision-N': i})
+            self.assertNotIn('bids', response.json['data'])
+            self.assertEqual(i, response.headers['X-Revision-N'])
 
 
 def suite():
