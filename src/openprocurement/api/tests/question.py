@@ -3,8 +3,7 @@ import unittest
 
 from openprocurement.api.tests.base import BaseTenderWebTest, test_tender_data, test_lots, test_organization
 
-
-class TenderQuestionResourceTest(BaseTenderWebTest):
+class BaseTenderQuestionResourceTest(object):
 
     def test_create_tender_question_invalid(self):
         response = self.app.post_json('/tenders/some_id/questions', {
@@ -143,24 +142,6 @@ class TenderQuestionResourceTest(BaseTenderWebTest):
             {u'description': [u'relatedItem should be one of items'], u'location': u'body', u'name': u'relatedItem'}
         ])
 
-    def test_create_tender_question(self):
-        response = self.app.post_json('/tenders/{}/questions'.format(
-            self.tender_id), {'data': {'title': 'question title', 'description': 'question description', 'author': test_organization}})
-        self.assertEqual(response.status, '201 Created')
-        self.assertEqual(response.content_type, 'application/json')
-        question = response.json['data']
-        self.assertEqual(question['author']['name'], test_organization['name'])
-        self.assertIn('id', question)
-        self.assertIn(question['id'], response.headers['Location'])
-
-        self.set_status('active.tendering')
-
-        response = self.app.post_json('/tenders/{}/questions'.format(
-            self.tender_id), {'data': {'title': 'question title', 'description': 'question description', 'author': test_organization}}, status=403)
-        self.assertEqual(response.status, '403 Forbidden')
-        self.assertEqual(response.content_type, 'application/json')
-        self.assertEqual(response.json['errors'][0]["description"], "Can add question only in enquiryPeriod")
-
     def test_patch_tender_question(self):
         response = self.app.post_json('/tenders/{}/questions'.format(
             self.tender_id), {'data': {'title': 'question title', 'description': 'question description', 'author': test_organization}})
@@ -168,7 +149,8 @@ class TenderQuestionResourceTest(BaseTenderWebTest):
         self.assertEqual(response.content_type, 'application/json')
         question = response.json['data']
 
-        response = self.app.patch_json('/tenders/{}/questions/{}'.format(self.tender_id, question['id']), {"data": {"answer": "answer"}})
+        response = self.app.patch_json('/tenders/{}/questions/{}?acc_token={}'.format(
+            self.tender_id, question['id'], self.tender_token), {"data": {"answer": "answer"}})
         self.assertEqual(response.status, '200 OK')
         self.assertEqual(response.content_type, 'application/json')
         self.assertEqual(response.json['data']["answer"], "answer")
@@ -198,12 +180,13 @@ class TenderQuestionResourceTest(BaseTenderWebTest):
         self.assertEqual(response.json['data']["answer"], "answer")
         self.assertIn('dateAnswered', response.json['data'])
 
-        self.set_status('active.tendering')
+        self.set_status(self.status)
 
-        response = self.app.patch_json('/tenders/{}/questions/{}'.format(self.tender_id, question['id']), {"data": {"answer": "answer"}}, status=403)
+        response = self.app.patch_json('/tenders/{}/questions/{}?acc_token={}'.format(
+            self.tender_id, question['id'], self.tender_token), {"data": {"answer": "answer"}}, status=403)
         self.assertEqual(response.status, '403 Forbidden')
         self.assertEqual(response.content_type, 'application/json')
-        self.assertEqual(response.json['errors'][0]["description"], "Can't update question in current (active.tendering) tender status")
+        self.assertEqual(response.json['errors'][0]["description"], "Can't update question in current ({}) tender status".format(self.status))
 
     def test_get_tender_question(self):
         response = self.app.post_json('/tenders/{}/questions'.format(
@@ -270,12 +253,34 @@ class TenderQuestionResourceTest(BaseTenderWebTest):
                 u'url', u'name': u'tender_id'}
         ])
 
-
-class TenderLotQuestionResourceTest(BaseTenderWebTest):
-    initial_lots = 2 * test_lots
+class ApiTenderQuestionResourceTest(object):
 
     def test_create_tender_question(self):
-        response = self.app.post_json('/tenders/{}/cancellations'.format(self.tender_id), {'data': {
+        response = self.app.post_json('/tenders/{}/questions'.format(
+            self.tender_id), {'data': {'title': 'question title', 'description': 'question description', 'author': test_organization}})
+        self.assertEqual(response.status, '201 Created')
+        self.assertEqual(response.content_type, 'application/json')
+        question = response.json['data']
+        self.assertEqual(question['author']['name'], test_organization['name'])
+        self.assertIn('id', question)
+        self.assertIn(question['id'], response.headers['Location'])
+
+        self.set_status('active.tendering')
+
+        response = self.app.post_json('/tenders/{}/questions'.format(
+            self.tender_id), {'data': {'title': 'question title', 'description': 'question description', 'author': test_organization}}, status=403)
+        self.assertEqual(response.status, '403 Forbidden')
+        self.assertEqual(response.content_type, 'application/json')
+        self.assertEqual(response.json['errors'][0]["description"], "Can add question only in enquiryPeriod")
+
+class TenderQuestionResourceTest(BaseTenderWebTest,BaseTenderQuestionResourceTest, ApiTenderQuestionResourceTest):
+    test_tender_data = test_tender_data
+    status = "acitve.tendering"
+
+class BaseTenderLotQuestionResourceTest(object):
+
+    def test_create_tender_question(self):
+        response = self.app.post_json('/tenders/{}/cancellations?acc_token={}'.format(self.tender_id, self.tender_token), {'data': {
             'reason': 'cancellation reason',
             'status': 'active',
             "cancellationOf": "lot",
@@ -320,7 +325,7 @@ class TenderLotQuestionResourceTest(BaseTenderWebTest):
         self.assertEqual(response.content_type, 'application/json')
         question = response.json['data']
 
-        response = self.app.post_json('/tenders/{}/cancellations'.format(self.tender_id), {'data': {
+        response = self.app.post_json('/tenders/{}/cancellations?acc_token={}'.format(self.tender_id, self.tender_token), {'data': {
             'reason': 'cancellation reason',
             'status': 'active',
             "cancellationOf": "lot",
@@ -328,7 +333,8 @@ class TenderLotQuestionResourceTest(BaseTenderWebTest):
         }})
         self.assertEqual(response.status, '201 Created')
 
-        response = self.app.patch_json('/tenders/{}/questions/{}'.format(self.tender_id, question['id']), {"data": {"answer": "answer"}}, status=403)
+        response = self.app.patch_json('/tenders/{}/questions/{}?acc_token={}'.format(
+            self.tender_id, question['id'], self.tender_token), {"data": {"answer": "answer"}}, status=403)
         self.assertEqual(response.status, '403 Forbidden')
         self.assertEqual(response.content_type, 'application/json')
         self.assertEqual(response.json['errors'][0]["description"], "Can update question only in active lot status")
@@ -344,7 +350,8 @@ class TenderLotQuestionResourceTest(BaseTenderWebTest):
         self.assertEqual(response.content_type, 'application/json')
         question = response.json['data']
 
-        response = self.app.patch_json('/tenders/{}/questions/{}'.format(self.tender_id, question['id']), {"data": {"answer": "answer"}})
+        response = self.app.patch_json('/tenders/{}/questions/{}?acc_token={}'.format(
+            self.tender_id, question['id'], self.tender_token), {"data": {"answer": "answer"}})
         self.assertEqual(response.status, '200 OK')
         self.assertEqual(response.content_type, 'application/json')
         self.assertEqual(response.json['data']["answer"], "answer")
@@ -356,6 +363,8 @@ class TenderLotQuestionResourceTest(BaseTenderWebTest):
         self.assertEqual(response.json['data']["answer"], "answer")
         self.assertIn('dateAnswered', response.json['data'])
 
+class TenderLotQuestionResourceTest(BaseTenderWebTest, BaseTenderLotQuestionResourceTest):
+    initial_lots = 2 * test_lots
 
 def suite():
     suite = unittest.TestSuite()
