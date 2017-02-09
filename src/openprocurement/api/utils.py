@@ -422,6 +422,15 @@ def check_status(request):
     for complaint in tender.complaints:
         check_complaint_status(request, complaint, now)
     for award in tender.awards:
+        if award.status == 'active' and not any([i.awardID == award.id for i in tender.contracts]):
+            tender.contracts.append(type(tender).contracts.model_class({
+                'awardID': award.id,
+                'suppliers': award.suppliers,
+                'value': award.value,
+                'date': now,
+                'items': [i for i in tender.items if i.relatedLot == award.lotID ],
+                'contractID': '{}-{}{}'.format(tender.tenderID, request.registry.server_id, len(tender.contracts) + 1) }))
+            add_next_award(request)
         for complaint in award.complaints:
             check_complaint_status(request, complaint, now)
     if tender.status == 'active.enquiries' and not tender.tenderPeriod.startDate and tender.enquiryPeriod.endDate.astimezone(TZ) <= now:
