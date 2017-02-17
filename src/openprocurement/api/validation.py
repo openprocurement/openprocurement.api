@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*-
-from schematics.exceptions import ModelValidationError, ModelConversionError
+from schematics.exceptions import (
+    ModelValidationError, ModelConversionError, ValidationError
+)
 from openprocurement.api.utils import apply_data_patch, update_logging_context
 
 
@@ -91,3 +93,15 @@ def validate_file_update(request):
         return validate_document_data(request)
     if request.content_type == 'multipart/form-data':
         validate_file_upload(request)
+
+
+def validate_items_uniq(items, *args):
+    if items:
+        ids = [i.id for i in items]
+        if [i for i in set(ids) if ids.count(i) > 1]:
+            raise ValidationError(u"Item id should be uniq for all items")
+
+
+def validate_cpv_group(items, *args):
+    if items and len(set([i.classification.id[:3] for i in items])) != 1:
+        raise ValidationError(u"CPV group of items be identical")

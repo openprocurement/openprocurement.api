@@ -11,7 +11,8 @@ from libnacl.sign import Signer, Verifier
 from logging import getLogger
 from openprocurement.api.auth import AuthenticationPolicy, authenticated_role, check_accreditation
 from openprocurement.api.design import sync_design
-from openprocurement.api.utils import forbidden, add_logging_context, set_logging_context, request_params, set_renderer, beforerender, ROUTE_PREFIX
+from openprocurement.api.utils import forbidden, add_logging_context, set_logging_context, request_params, set_renderer, beforerender
+from openprocurement.api.constants import ROUTE_PREFIX
 from pbkdf2 import PBKDF2
 from pkg_resources import iter_entry_points
 from pyramid.authorization import ACLAuthorizationPolicy as AuthorizationPolicy

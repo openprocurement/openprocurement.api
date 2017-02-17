@@ -9,21 +9,23 @@ from couchdb_schematics.document import SchematicsDocument
 from schematics.exceptions import ConversionError, ValidationError
 from schematics.models import Model as SchematicsModel
 from schematics.transforms import whitelist, blacklist, export_loop, convert
-from schematics.types import (StringType, FloatType, URLType,
+from schematics.types import (StringType, FloatType, URLType, IntType,
                               BooleanType, BaseType, EmailType, MD5Type)
 from schematics.types.compound import (ModelType, DictType,
                                        ListType as BaseListType)
 from schematics.types.serializable import serializable
 
-from openprocurement.api.utils import get_now
+from openprocurement.api.utils import get_now, set_parent
 from openprocurement.api.constants import (
-    CPV_CODES, ORA_CODES
+    CPV_CODES, ORA_CODES, TZ
 )
 
 schematics_default_role = SchematicsDocument.Options.roles['default'] + blacklist("__parent__")
 schematics_embedded_role = SchematicsDocument.Options.roles['embedded'] + blacklist("__parent__")
 
 plain_role = (blacklist('_attachments', 'revisions', 'dateModified') + schematics_embedded_role)
+listing_role = whitelist('dateModified', 'doc_id')
+draft_role = whitelist('status')
 
 
 class IsoDateTimeType(BaseType):
@@ -146,8 +148,6 @@ class Guarantee(Model):
 
 
 class Period(Model):
-    """The period when the tender is open for submissions. The end date is the closing date for tender submissions."""
-
     startDate = IsoDateTimeType()  # The state date for the period.
     endDate = IsoDateTimeType()  # The end date for the period.
 
@@ -196,7 +196,6 @@ class Address(Model):
 
 
 class Location(Model):
-
     latitude = BaseType(required=True)
     longitude = BaseType(required=True)
     elevation = BaseType()
@@ -324,6 +323,22 @@ class Identifier(Model):
     uri = URLType()  # A URI to identify the organization.
 
 
+class Item(Model):
+    """A good, service, or work to be contracted."""
+    id = StringType(required=True, min_length=1, default=lambda: uuid4().hex)
+    description = StringType(required=True)  # A description of the goods, services to be provided.
+    description_en = StringType()
+    description_ru = StringType()
+    classification = ModelType(CPVClassification)
+    additionalClassifications = ListType(ModelType(Classification), default=list())
+    unit = ModelType(Unit)  # Description of the unit which the good comes in e.g. hours, kilograms
+    quantity = IntType()  # The number of units required
+    deliveryDate = ModelType(Period)
+    deliveryAddress = ModelType(Address)
+    deliveryLocation = ModelType(Location)
+    relatedLot = MD5Type()
+
+
 class ContactPoint(Model):
     name = StringType(required=True)
     name_en = StringType()
@@ -362,5 +377,22 @@ class Revision(Model):
     rev = StringType()
 
 
-
-
+class Contract(Model):
+    id = MD5Type(required=True, default=lambda: uuid4().hex)
+    awardID = StringType()
+    contractID = StringType()
+    contractNumber = StringType()
+    title = StringType()  # Contract title
+    title_en = StringType()
+    title_ru = StringType()
+    description = StringType()  # Contract description
+    description_en = StringType()
+    description_ru = StringType()
+    status = StringType(choices=['pending', 'terminated', 'active', 'cancelled'], default='pending')
+    period = ModelType(Period)
+    value = ModelType(Value)
+    dateSigned = IsoDateTimeType()
+    documents = ListType(ModelType(Document), default=list())
+    items = ListType(ModelType(Item))
+    suppliers = ListType(ModelType(Organization), min_size=1, max_size=1)
+    date = IsoDateTimeType()

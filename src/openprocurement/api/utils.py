@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 import os
-from datetime import datetime
+from logging import getLogger
+from datetime import datetime, timedelta
 from base64 import b64encode, b64decode
 from cornice.resource import resource, view
 from email.header import decode_header
@@ -15,18 +16,17 @@ from uuid import uuid4
 from webob.multidict import NestedMultiDict
 from binascii import hexlify, unhexlify
 from Crypto.Cipher import AES
-from requests import Session
 from cornice.util import json_error
 from json import dumps
 
+from schematics.exceptions import ValidationError
 from openprocurement.api.constants import LOGGER
 from openprocurement.api.constants import (
     ADDITIONAL_CLASSIFICATIONS_SCHEMES, ADDITIONAL_CLASSIFICATIONS_SCHEMES_2017,
     DOCUMENT_BLACKLISTED_FIELDS, DOCUMENT_WHITELISTED_FIELDS,
-    ROUTE_PREFIX, VERSION, TZ
+    ROUTE_PREFIX, VERSION, TZ, WORKING_DAYS, SESSION
 )
 
-SESSION = Session()
 json_view = partial(view, renderer='json')
 
 
@@ -80,7 +80,7 @@ def generate_docservice_url(request, doc_id, temporary=True, prefix=None):
     query['KeyID'] = docservice_key.hex_vk()[:8]
     return urlunsplit((parsed_url.scheme, parsed_url.netloc, '/get/{}'.format(doc_id), urlencode(query), ''))
 
-def error_handler(errors, request_params=True):
+def error_handler(errors, request_params=True, extra_params=None):
     params = {
         'ERROR_STATUS': errors.status
     }
@@ -91,6 +91,8 @@ def error_handler(errors, request_params=True):
     if errors.request.matchdict:
         for x, j in errors.request.matchdict.items():
             params[x.upper()] = j
+    if extra_params and isinstance(extra_params, dict):
+        params.update(extra_params)
     LOGGER.info('Error on processing request "{}"'.format(dumps(errors, indent=4)),
                 extra=context_unpack(errors.request, {'MESSAGE_ID': 'error_handler'}, params))
     return json_error(errors)
@@ -216,8 +218,8 @@ def upload_file(request, blacklisted_fields=DOCUMENT_BLACKLISTED_FIELDS, whiteli
     return document
 
 
-# def update_file_content_type(request):
-    # pass
+def update_file_content_type(request):  # XXX TODO
+    pass
 
 
 def get_file(request):
@@ -435,3 +437,12 @@ def decrypt(uuid, name, key):
     except:
         text = ''
     return text
+
+
+def set_modetest_titles(item):
+    if not item.title or u'[ТЕСТУВАННЯ]' not in item.title:
+        item.title = u'[ТЕСТУВАННЯ] {}'.format(item.title or u'')
+    if not item.title_en or u'[TESTING]' not in item.title_en:
+        item.title_en = u'[TESTING] {}'.format(item.title_en or u'')
+    if not item.title_ru or u'[ТЕСТИРОВАНИЕ]' not in item.title_ru:
+        item.title_ru = u'[ТЕСТИРОВАНИЕ] {}'.format(item.title_ru or u'')
