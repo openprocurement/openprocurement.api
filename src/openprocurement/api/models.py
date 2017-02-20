@@ -5,6 +5,7 @@ from datetime import datetime, timedelta, time
 from iso8601 import parse_date, ParseError
 from pytz import timezone
 from pyramid.security import Allow
+from pyramid.threadlocal import get_current_registry
 from schematics.exceptions import ConversionError, ValidationError
 from schematics.models import Model as SchematicsModel
 from schematics.transforms import whitelist, blacklist, export_loop, convert
@@ -451,8 +452,8 @@ class Document(Model):
         while root.__parent__ is not None:
             parents[0:0] = [root]
             root = root.__parent__
-        request = root.request
-        if not request.registry.docservice_url:
+        docservice_key = get_current_registry().settings.get('docservice_url', None)
+        if not docservice_key:
             return url
         if 'status' in parents[0] and parents[0].status in type(parents[0])._options.roles:
             role = parents[0].status
@@ -468,8 +469,8 @@ class Document(Model):
         from openprocurement.api.utils import generate_docservice_url
         if not self.hash:
             path = [i for i in urlparse(url).path.split('/') if len(i) == 32 and not set(i).difference(hexdigits)]
-            return generate_docservice_url(request, doc_id, False, '{}/{}'.format(path[0], path[-1]))
-        return generate_docservice_url(request, doc_id, False)
+            return generate_docservice_url(docservice_key, doc_id, False, '{}/{}'.format(path[0], path[-1]))
+        return generate_docservice_url(docservice_key, doc_id, False)
 
     def import_data(self, raw_data, **kw):
         """

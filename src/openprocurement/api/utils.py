@@ -75,9 +75,8 @@ def get_filename(data):
         return header[0]
 
 
-def generate_docservice_url(request, doc_id, temporary=True, prefix=None):
-    docservice_key = getattr(request.registry, 'docservice_key', None)
-    parsed_url = urlparse(request.registry.docservice_url)
+def generate_docservice_url(docservice_key, doc_id, temporary=True, prefix=None):
+    parsed_url = urlparse(docservice_key)
     query = {}
     if temporary:
         expires = int(ttime()) + 300  # EXPIRES
