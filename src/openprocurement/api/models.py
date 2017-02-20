@@ -452,8 +452,9 @@ class Document(Model):
         while root.__parent__ is not None:
             parents[0:0] = [root]
             root = root.__parent__
-        docservice_key = get_current_registry().settings.get('docservice_url', None)
-        if not docservice_key:
+        docservice_url = get_current_registry().settings.get('docservice_url', None)
+        docservice_key = get_current_registry().settings.get('docservice_key', None)
+        if not docservice_url:
             return url
         if 'status' in parents[0] and parents[0].status in type(parents[0])._options.roles:
             role = parents[0].status
@@ -469,8 +470,8 @@ class Document(Model):
         from openprocurement.api.utils import generate_docservice_url
         if not self.hash:
             path = [i for i in urlparse(url).path.split('/') if len(i) == 32 and not set(i).difference(hexdigits)]
-            return generate_docservice_url(docservice_key, doc_id, False, '{}/{}'.format(path[0], path[-1]))
-        return generate_docservice_url(docservice_key, doc_id, False)
+            return generate_docservice_url(docservice_url, doc_id, False, '{}/{}'.format(path[0], path[-1]), docservice_key=docservice_key)
+        return generate_docservice_url(docservice_url, doc_id, False, docservice_key=docservice_key)
 
     def import_data(self, raw_data, **kw):
         """
