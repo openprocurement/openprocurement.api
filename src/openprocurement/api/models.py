@@ -452,8 +452,8 @@ class Document(Model):
         while root.__parent__ is not None:
             parents[0:0] = [root]
             root = root.__parent__
-        docservice_url = get_current_registry().settings.get('docservice_url', None)
-        docservice_key = get_current_registry().settings.get('docservice_key', None)
+        docservice_url = get_current_registry().get('docservice_url', None)
+        docservice_key = get_current_registry().get('docservice_key', None)
         if not docservice_url:
             return url
         if 'status' in parents[0] and parents[0].status in type(parents[0])._options.roles:
