@@ -159,6 +159,13 @@ def main(global_config, **settings):
         sync_design(db)
     config.registry.db = db
 
+    # search subscribers
+    subscribers = settings.get('subscribers') and settings['subscribers'].split(',')
+    for entry_point in iter_entry_points('openprocurement.subscribers.newrequest'):
+        if subscribers is not None and entry_point.name in subscribers:
+            plugin = entry_point.load()
+            plugin(config)
+
     # Document Service key
     config.registry.docservice_url = settings.get('docservice_url')
     config.registry.docservice_username = settings.get('docservice_username')
