@@ -110,8 +110,8 @@ class TenderAwardContractResource(APIResource):
             award = [a for a in tender.awards if a.id == self.request.context.awardID][0]
             max_sum = award.value.amount
             # If contract has additionalAwardIDs then add value.amount to mac contract value
-            if 'additionalAwardIDs' in contract and contract['additionalAwardIDs']:
-                max_sum += sum([award.value.amount for award in tender.awards if award['id'] in contract['additionalAwardIDs']])
+            if 'additionalAwardIDs' in data and data['additionalAwardIDs']:
+                max_sum += sum([award.value.amount for award in tender.awards if award['id'] in data['additionalAwardIDs']])
             if data['value']['amount'] > max_sum:
                 self.request.errors.add('body', 'data',
                                         'Value amount should be less or equal to awarded amount ({})'.format(max_sum))
