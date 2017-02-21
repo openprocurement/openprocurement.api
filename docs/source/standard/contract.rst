@@ -68,9 +68,6 @@ Schema
     * `active` - this contract has been signed by all the parties, and is
       now legally in force.
     * `cancelled` - this contract has been cancelled prior to being signed.
-    * `terminated` - this contract was signed and in force, and has now come
-      to a close.  This may be due to a successful completion of the contract,
-      or may be early termination due to some non-completion issue.
 
 :period:
     :ref:`Period`
@@ -82,7 +79,7 @@ Schema
     string, :ref:`date`
 
     |ocdsDescription|
-    The date the contract was signed. In the case of multiple signatures, the date of the last signature.
+    The date when the contract was signed. In the case of multiple signatures, the date of the last signature.
 
 :date:
     string, :ref:`date`

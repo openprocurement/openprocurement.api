@@ -41,15 +41,54 @@ containing additional information.
   Not found. Either the request method and path supplied do not specify a
   known action in the API, or the object specified by the request does not
   exist.
+
+409
+  Document update conflict. The request could not be completed due to a conflict with the current state of the target resource. Please repeat your request.
   
 412
   Precondition Failed. See :ref:`API in cluster mode <cluster>`.
+  
+422
+  Unprocessable Entity. This status code means the server understands the content type of the request entity. For example, this error condition may occur if a JSON request body contains well-formed (i.e., syntactically correct), but semantically erroneous, JSON instructions.
 
 429
   Rate Limit Enforced. See :ref:`Rate control <performance>`.
   
+
+Any **5xx error** response means abnormal request processing situation and
+should be reported to technical support.
+
+Platform has to properly react to 5xx errors because such errors do not
+necessarily guarantee that request has not been performed. For repeatable operations (such as :ref:`2-phase commit <2pc>`, field value modifications, etc.) you should repeat the request with some interval. The time interval has to be increased for each of the following repeated requests. 
+
+Request repetition can be applied only to a specific phase of the operation. For example, if in case of executing a 2-phase commit the first phase was executed successfully (a tender was created in status `draft`), but the second phase (tender publication) failed with a 5xx error, then the request should be repeated only for the not executed phase (only for tender publication).
+
+For other operations (such as document upload, etc.) you should check modified object data (tender, bid, award, etc.) with bigger interval (5-10 min).
+
 500
   Server error. There was a problem on OpenProcurement's end.
+
+501
+  Not Implemented. The server either does not recognize the request method,
+  or it lacks the ability to fulfill the request. Re-check the request consistency.
+
+502
+  Bad Gateway. The server received an invalid response or backend is not ready
+  to handle requests. Repeat request for repeatable operations or check object
+  data with interval 1-5 min.
+
+503
+  Service Unavailable. The server is currently unavailable (because it is
+  overloaded or down for maintenance). Generally, this is a temporary state.
+
+504
+  Gateway Time-out. The server did not receive a timely response. Repeat
+  request for repeatable operations or check object data with interval 1-5 min.
+
+505
+  HTTP Version Not Supported. The server does not support the HTTP protocol
+  version used in the request. Re-check the request consistency.
+
 
 Success Response
 ----------------

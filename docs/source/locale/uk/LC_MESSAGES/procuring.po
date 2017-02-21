@@ -13,19 +13,15 @@ msgstr ""
 "X-Generator: Poedit 1.7.6\n"
 "Language: uk\n"
 
-#: ../../source/procuring.rst:5
 msgid "Procuring Entity Operations"
 msgstr "Операції для організації-замовника закупівлі "
 
-#: ../../source/procuring.rst:8
 msgid "Registration of the Tender"
 msgstr "Реєстрація Закупівлі"
 
-#: ../../source/procuring.rst:12
 msgid "Creating primary Tender record"
 msgstr "Cтворення початкового запису Закупівлі"
 
-#: ../../source/procuring.rst:13
 msgid ""
 "When registering tender in the database, one has provide all primary tender "
 "details (except binary documents) in payload of request."
@@ -33,38 +29,30 @@ msgstr ""
 "При реєстрації закупівлі у базі даних потрібно надати всі основні деталі "
 "закупівлі (окрім двійкових документів) в тілі запиту. "
 
-#: ../../source/procuring.rst:29
 msgid "Uploading documentation"
 msgstr "Завантаження документації"
 
-#: ../../source/procuring.rst:51
 msgid "Changing the Tender"
 msgstr "Зміна Закупівлі"
 
-#: ../../source/procuring.rst:52
 msgid ""
 "Procuring Entity can change both the primary record and associated "
 "documentation."
 msgstr ""
 "Замовник закупівлі може змінити і початковий запис, і відповідну документацію."
 
-#: ../../source/procuring.rst:57
 msgid "Changing primary Tender Record"
 msgstr "Зміна початкового запису Закупівлі"
 
-#: ../../source/procuring.rst:69
 msgid "Changing existing documents"
 msgstr "Зміна існуючих документів"
 
-#: ../../source/procuring.rst:88
 msgid "Uploading additional documents"
 msgstr "Завантаження додаткових документів"
 
-#: ../../source/procuring.rst:45 ../../source/procuring.rst:82
 msgid "Example request:"
 msgstr "Приклад запиту:"
 
-#: ../../source/procuring.rst:71
 msgid ""
 "Procuring Entity can upload new versions of the tender documentation. You can "
 "see supported request types in :ref:`upload` section."
@@ -72,11 +60,9 @@ msgstr ""
 "Замовник може завантажити нові версії документів закупівлі. Всі типи запитів, "
 "які підтримуються, ви можете побачити в секції :ref:`upload`."
 
-#: ../../source/procuring.rst:89
 msgid "The same as :ref:`procuring-uploading-docs`."
 msgstr "Так само як :ref:`procuring-uploading-docs`."
 
-#: ../../source/procuring.rst:9
 msgid ""
 "Tender registration consists of primary record creation and documentation "
 "uploading."
@@ -84,7 +70,6 @@ msgstr ""
 "Реєстрація Закупівлі складається зі створення початкового запису та "
 "завантаження документації."
 
-#: ../../source/procuring.rst:19
 msgid ""
 "The produced response will contain URL of the created tender in Location "
 "header of response, and in ``data.id`` of body."
@@ -92,7 +77,6 @@ msgstr ""
 "Отримана відповідь міститиме URL створеної закупівлі у заголовку відповіді "
 "`Location` та у ``data.id`` тіла."
 
-#: ../../source/procuring.rst:31
 msgid ""
 "All tender documentation should be uploaded with the following request - one "
 "request per document. You can see supported request types in :ref:`upload` "
@@ -102,7 +86,6 @@ msgstr ""
 "запиту на документ. Всі типи запитів, які підтримуються, ви можете побачити в "
 "секції :ref:`upload`."
 
-#: ../../source/procuring.rst:38
 msgid ""
 "The response produced will have URL of the tender uploaded document in "
 "Location header of response and in ``data.id`` of body."
@@ -110,7 +93,6 @@ msgstr ""
 "Отримана відповідь міститиме URL створеної закупівлі у заголовку відповіді "
 "`Location` та у ``data.id`` тіла."
 
-#: ../../source/procuring.rst:58
 msgid ""
 "Procuring Entity can change the Tender properties with the following request. "
 "Data to change should be in payload of the message."

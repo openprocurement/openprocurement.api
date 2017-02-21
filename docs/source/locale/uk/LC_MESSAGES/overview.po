@@ -15,11 +15,9 @@ msgstr ""
 "=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
 "X-Generator: Lokalize 1.5\n"
 
-#: ../../source/overview.rst:2
 msgid "Overview"
 msgstr "Огляд"
 
-#: ../../source/overview.rst:4
 msgid ""
 "The Open Procurement API is the only interface to Open Procurement database "
 "that is core unit of `Open Procurement <http://openprocurement.org/>`_ "
@@ -29,7 +27,6 @@ msgstr ""
 " є основним елементом інфраструктури `Open Procurement "
 "<http://openprocurement.org/>`_."
 
-#: ../../source/overview.rst:15
 msgid ""
 "The API accepts `JSON <http://json.org/>`_ or form-encoded content in "
 "requests.  It returns JSON content in all of its responses, including "
@@ -40,55 +37,43 @@ msgstr ""
 " повертає JSON вміст у всіх свої відповідях, включно з помилками. "
 "Підтримується лише UTF-8 кодування і для запитів, і для відповідей."
 
-#: ../../source/overview.rst:39
 msgid "Main responsibilities"
 msgstr "Основні задачі"
 
-#: ../../source/overview.rst:42
 msgid "Business logic"
 msgstr "Бізнес логіка"
 
-#: ../../source/overview.rst:45
 msgid "Project status"
 msgstr "Стан проекту"
 
-#: ../../source/overview.rst:47
 msgid "The project has pre alpha status."
 msgstr "Статус цього проекту - перед-альфа"
 
-#: ../../source/overview.rst:77
 msgid "API stability"
 msgstr "Стабільність API"
 
-#: ../../source/overview.rst:84
 msgid "Change log"
 msgstr "Звіт про зміни"
 
-#: ../../source/overview.rst:208
 msgid "0.1"
 msgstr "0.1"
 
-#: ../../source/overview.rst:212
 msgid "Set up general build, testing, deployment, and ci framework."
 msgstr ""
 "Налаштування загальної збірки, тестування, розгортання та ci фреймворка."
 
-#: ../../source/overview.rst:218
 msgid "Next steps"
 msgstr "Наступні кроки"
 
-#: ../../source/overview.rst:219
 msgid ""
 "You might find it helpful to look at the :ref:`tutorial`, or the "
 ":ref:`reference`."
 msgstr ""
 "Можливо вам буде цікаво прочитати :ref:`tutorial`, або :ref:`reference`."
 
-#: ../../source/overview.rst:21
 msgid "Conventions"
 msgstr "Домовленості"
 
-#: ../../source/overview.rst:22
 msgid ""
 "All API POST and PUT requests expect a top-level object with a single "
 "element in it named `data`.  Successful responses will mirror this format. "
@@ -102,7 +87,6 @@ msgstr ""
 "містить параметри запиту. Якщо створюється нова закупівля, то це ті поля, "
 "які ми хочемо встановити на самій закупівлі."
 
-#: ../../source/overview.rst:28
 msgid ""
 "If the request was successful, we will get a response code of `201` "
 "indicating the object was created.  That response will have a data field at "
@@ -113,7 +97,6 @@ msgstr ""
 "об’єкт був створений. Ця відповідь буде мати data поле на верхньому рівні, "
 "яке вміщуватиме повну інформацію про нову закупівлю, включно з ID."
 
-#: ../../source/overview.rst:78
 msgid ""
 "API is highly unstable, and while API endpoints are expected to remain "
 "relatively stable the data exchange formats are expected to be changed a "
@@ -125,96 +108,72 @@ msgstr ""
 "через `Open Procurement API <https://groups.google.com/group/open-"
 "procurement-api>`_ розсилку."
 
-#: ../../source/overview.rst:210
 msgid "Released: 2014-10-24"
 msgstr "Випущено: 2014-10-24"
 
-#: ../../source/overview.rst:213
 msgid "Creating/modifying tender"
 msgstr "Створення/модифікація закупівлі"
 
-#: ../../source/overview.rst:214
 msgid "Adding/modifying/cancelling tender proposal"
 msgstr "Додавання/модифікація/відміна цінової пропозиції"
 
-#: ../../source/overview.rst:215
 msgid "Awarding/disqualification of tender proposals"
 msgstr "Визначення переможця/дискваліфікація цінових пропозицій"
 
-#: ../../source/overview.rst:198
 msgid "0.2"
 msgstr "0.2"
 
-#: ../../source/overview.rst:201
 msgid "Tender Listing Batching (optimized for sync operations)"
 msgstr "Сортування списку закупівель (оптимізоване для синхронних операцій)"
 
-#: ../../source/overview.rst:202
 msgid "Documents retrieval"
 msgstr "Вичитка документів"
 
-#: ../../source/overview.rst:203
 msgid "Change tracking"
 msgstr "Відстеження змін"
 
-#: ../../source/overview.rst:204
 msgid "Options: Pretty-print, JSONP"
 msgstr "Опції: Pretty-print, JSONP"
 
-#: ../../source/overview.rst:205
 msgid "Introduction of state machine and time-based state switching"
 msgstr "Впровадження станів та перемикання станів з урахуванням часу"
 
-#: ../../source/overview.rst:199
 msgid "Released: 2014-11-07"
 msgstr "Випущено: 2014-11-07"
 
-#: ../../source/overview.rst:177
 msgid "0.3"
 msgstr "0.3"
 
-#: ../../source/overview.rst:178
 msgid "Released: 2014-11-21"
 msgstr "Випущено: 2014-11-21"
 
-#: ../../source/overview.rst:165 ../../source/overview.rst:180
 msgid "New Features:"
 msgstr "Нові властивості:"
 
-#: ../../source/overview.rst:182
 msgid "Asking Questions"
 msgstr "Можливість задавати питання"
 
-#: ../../source/overview.rst:183
 msgid "Filing Complaint on tender conditions"
 msgstr "Подача скарги на тендерні умови"
 
-#: ../../source/overview.rst:184
 msgid "Answer Question"
 msgstr "Можливість відповідати на запитання"
 
-#: ../../source/overview.rst:185
 msgid "Publish Complaint resolution"
 msgstr "Публікація вирішення скарги"
 
-#: ../../source/overview.rst:186
 msgid "Retrieve Questions and Answers, Complaints and Resolutions"
 msgstr "Вичитка запитань та відповідей, скарг та їх рішень"
 
-#: ../../source/overview.rst:187
 msgid "Auction Scheduler"
 msgstr "Планувальник аукціону"
 
-#: ../../source/overview.rst:188
 msgid "Auction Runner"
 msgstr "Контролер аукціону"
 
-#: ../../source/overview.rst:126 ../../source/overview.rst:157
-#: ../../source/overview.rst:172 ../../source/overview.rst:190
 msgid "Modifications:"
 msgstr "Модифікації:"
 
-#: ../../source/overview.rst:192
 msgid ""
 ":ref:`standard` harmonized with `Open Contracting 1.0RC <http://ocds.open-"
 "contracting.org/standard/r/1__0__RC/>`_"
@@ -222,175 +181,130 @@ msgstr ""
 ":ref:`standard` налаштований відповідно до `Open Contracting 1.0RC "
 "<http://ocds.open-contracting.org/standard/r/1__0__RC/>`_"
 
-#: ../../source/overview.rst:194
 msgid "``/bidders/`` endpoint renamed into ``/bids/``"
 msgstr "точки входу ``/bidders/`` перейменовані в ``/bids/``"
 
-#: ../../source/overview.rst:195
 msgid "``modified`` property renamed into ``modificationDate``"
 msgstr "властивість ``modified`` перейменована в ``modificationDate``"
 
-#: ../../source/overview.rst:162
 msgid "0.4"
 msgstr "0.4"
 
-#: ../../source/overview.rst:163
 msgid "Released: 2014-12-01"
 msgstr "Випущено: 2014-12-01"
 
-#: ../../source/overview.rst:167
 msgid "Filing Complaint on award"
 msgstr "Подання скарги на визначення переможця"
 
-#: ../../source/overview.rst:168
 msgid "Complaint attachments"
 msgstr "Додатки до скарг"
 
-#: ../../source/overview.rst:169
 msgid "Tender Cancelling"
 msgstr "Відміна закупівлі"
 
-#: ../../source/overview.rst:170
 msgid "Question authors visibility"
 msgstr "Видимість авторів питань"
 
-#: ../../source/overview.rst:174
 msgid "Tender status codelist harmonized"
 msgstr "Уточнення списку статусів закупівлі"
 
-#: ../../source/overview.rst:136
 msgid "0.6"
 msgstr "0.6"
 
-#: ../../source/overview.rst:137
 msgid "Released: 2014-12-15"
 msgstr "Випущено: 2014-12-15"
 
-#: ../../source/overview.rst:90 ../../source/overview.rst:99
-#: ../../source/overview.rst:108 ../../source/overview.rst:117
-#: ../../source/overview.rst:139 ../../source/overview.rst:151
 msgid "New features:"
 msgstr "Нові властивості:"
 
-#: ../../source/overview.rst:141
 msgid "Token Broker authorization"
 msgstr "Авторизація токена брокера"
 
-#: ../../source/overview.rst:142
 msgid "Actor token authorization"
 msgstr "Авторизація токена дійової особи"
 
-#: ../../source/overview.rst:143
 msgid "Added Item.deliveryLocation"
 msgstr "Додано Item.deliveryLocation"
 
-#: ../../source/overview.rst:148
 msgid "0.5"
 msgstr "0.5"
 
-#: ../../source/overview.rst:88 ../../source/overview.rst:97
-#: ../../source/overview.rst:149
 msgid "Released: not released"
 msgstr "Випущено: не випущено"
 
-#: ../../source/overview.rst:153
 msgid "Actor token generation"
 msgstr "Генерація токена дійової особи"
 
-#: ../../source/overview.rst:159
 msgid "Tender.deliveryDate moved to Item.deliveryDate"
 msgstr "Tender.deliveryDate перенесено до Item.deliveryDate"
 
-#: ../../source/overview.rst:154
 msgid "Added Item.deliveryAddress"
 msgstr "Додано Item.deliveryAddress"
 
-#: ../../source/overview.rst:155
 msgid "Award sequential review logic"
 msgstr "Логіка послідовного розгляду визначення переможця"
 
-#: ../../source/overview.rst:144
 msgid "Pending complaints Tender completion blocking"
 msgstr "Блокування завершення закупівлі через невирішені скарги"
 
-#: ../../source/overview.rst:145
 msgid "Rescheduling of failed auctions"
 msgstr "Перенесення невдалих аукціонів"
 
-#: ../../source/overview.rst:105
 msgid "0.8"
 msgstr "0.8"
 
-#: ../../source/overview.rst:110
 msgid "Stand-still period for each of the awards independently"
 msgstr "Період зупинки для кожної винагороди окремо"
 
-#: ../../source/overview.rst:114
 msgid "0.7"
 msgstr "0.7"
 
-#: ../../source/overview.rst:115
 msgid "Released: 2015-03-13"
 msgstr "Випущено: 2015-03-13"
 
-#: ../../source/overview.rst:119
 msgid "Set title, classification and additionalClassifications required"
 msgstr ""
 "Обов’язкове встановлення назви, класифікації та additionalClassifications"
 
-#: ../../source/overview.rst:120
 msgid "Added validation identical cpv groups of items"
 msgstr "Додана валідація для однакових cpv груп товарів"
 
-#: ../../source/overview.rst:121
 msgid "Added upload tender documents by auction user"
 msgstr "Дадано завантаження документів закупівлі користувачем аукціону"
 
-#: ../../source/overview.rst:123
 msgid "Strict mode for patching operation"
 msgstr "Жорсткий режим для операцій з патчами"
 
-#: ../../source/overview.rst:124
 msgid "Cancalling active award"
 msgstr "Відміна активної винагороди"
 
-#: ../../source/overview.rst:128
 msgid "Authenticated couchdb access"
 msgstr "Автентифікований доступ до бази даних couchdb"
 
-#: ../../source/overview.rst:129
 msgid "Fixed authentication of PUT and PATCH methods"
 msgstr "Виправлена аутентифікація методів PUT та PATCH"
 
-#: ../../source/overview.rst:130
 msgid "Optimized calls to db on start"
 msgstr "Оптимізовано запити до БД при старті"
 
-#: ../../source/overview.rst:131
 msgid "Fixed deliveryLocation fields"
 msgstr "Виправлені поля deliveryLocation"
 
-#: ../../source/overview.rst:132
 msgid "Fixed edit format field in Documents"
 msgstr "Виправлено поле редагування формату в Документах"
 
-#: ../../source/overview.rst:133
 msgid "Fixed restrictions uploading documents of bid"
 msgstr "Виправлені обмеження заватаження документів цінової пропозиції"
 
-#: ../../source/overview.rst:111
 msgid "Added new cancellation API"
 msgstr "Додано новий механізм скасування тендера"
 
-#: ../../source/overview.rst:96
 msgid "0.9"
 msgstr "0.9"
 
-#: ../../source/overview.rst:106
 msgid "Released: 2015-05-12"
 msgstr "Випущено: 2015-05-12"
 
-#: ../../source/overview.rst:8
 msgid ""
 "The Open Procurement API is a `REST "
 "<http://en.wikipedia.org/wiki/Representational_State_Transfer>`_-ful "
@@ -406,7 +320,6 @@ msgstr ""
 "вбудовані HTTP особливості, щоб отримувати команди та повертати відповіді. "
 "Це полегшує спілкування."
 
-#: ../../source/overview.rst:33
 msgid ""
 "If something went wrong during the request, we'll get a different status "
 "code and the JSON returned will have an `errors` field at the top level "
@@ -417,20 +330,16 @@ msgstr ""
 "який при поверненні міститиме `errors` поле на верхньому рівні зі списком "
 "проблем. Ми дивимось на першу з них і видруковуємо її повідомлення."
 
-#: ../../source/overview.rst:101
 msgid ":ref:`MEAT tenders <meat>`"
 msgstr ""
 ":ref:`Закупівлі за принципом найбільш економічно вигідної пропозиції <meat>`"
 
-#: ../../source/overview.rst:87
 msgid "0.10"
 msgstr "0.10"
 
-#: ../../source/overview.rst:92
 msgid ":ref:`Multilot tenders <lots>`"
 msgstr ":ref:`Багатолотові закупівлі <lots>`"
 
-#: ../../source/overview.rst:49
 msgid ""
 "The source repository for this project is on GitHub: "
 "https://github.com/openprocurement/openprocurement.api"
@@ -438,7 +347,6 @@ msgstr ""
 "Репозиторій джерельних текстів цього проекту є на `GitHub "
 "<https://github.com/openprocurement/openprocurement.api>`_."
 
-#: ../../source/overview.rst:51
 msgid ""
 "You can leave feedback by raising a new issue on the `issue tracker "
 "<https://github.com/openprocurement/openprocurement.api/issues>`_ (GitHub "
@@ -448,7 +356,6 @@ msgstr ""
 "<https://github.com/openprocurement/openprocurement.api/issues>`_ "
 "(реєстрація на GitHub обов’язкова)."
 
-#: ../../source/overview.rst:55
 msgid ""
 "For general discussion use `Open Procurement General "
 "<https://groups.google.com/group/open-procurement-general>`_ maillist."
@@ -456,7 +363,6 @@ msgstr ""
 "Загальне обговорення відбувається через розсилку `Open Procurement General "
 "<https://groups.google.com/group/open-procurement-general>`_."
 
-#: ../../source/overview.rst:59
 msgid ""
 "General information, roadmap, and technical specifications for the Open "
 "Procurement project can be found at `openprocurement.org "
@@ -465,15 +371,12 @@ msgstr ""
 "Загальну інформацію, пояснення та технічні специфікації можна знайти на "
 "сайті `openprocurement.org <http://openprocurement.org/en>`_."
 
-#: ../../source/overview.rst:122
 msgid "Closing tender by registering contract"
 msgstr "Закриття закупівлі реєстрацією угоди"
 
-#: ../../source/overview.rst:63
 msgid "Documentation of related packages"
 msgstr "Документація пов’язаних пакетів"
 
-#: ../../source/overview.rst:65
 msgid ""
 "`Open tender procedure (OpenUA) <http://openua.api-"
 "docs.openprocurement.org/en/latest/>`_"
@@ -481,7 +384,6 @@ msgstr ""
 "`Відкриті торги (OpenUA) <http://openua.api-"
 "docs.openprocurement.org/uk/latest/>`_"
 
-#: ../../source/overview.rst:67
 msgid ""
 "`Open tender procedure with publication in English (OpenEU) <http://openeu"
 ".api-docs.openprocurement.org/en/latest/>`_"
@@ -489,7 +391,6 @@ msgstr ""
 "`Відкриті торги з публікацією англійською мовою (OpenEU) <http://openeu"
 ".api-docs.openprocurement.org/uk/latest/>`_"
 
-#: ../../source/overview.rst:69
 msgid ""
 "`Reporting, negotiation procurement procedure and negotiation procedure for "
 "the urgent need  <http://limited.api-docs.openprocurement.org/en/latest/>`_"
@@ -498,7 +399,6 @@ msgstr ""
 "переговорна процедура за нагальною потребою <"
 "http://limited.api-docs.openprocurement.org/uk/latest/>`_"
 
-#: ../../source/overview.rst:71
 msgid ""
 "`Defense open tender <http://defense.api-"
 "docs.openprocurement.org/en/latest/>`_"
@@ -506,7 +406,6 @@ msgstr ""
 "`Процедура відкритих торгів для оборонних цілей <http://defense.api-"
 "docs.openprocurement.org/uk/latest/>`_"
 
-#: ../../source/overview.rst:73
 msgid ""
 "`Contracting API interface to OpenProcurement database <http://contracting"
 ".api-docs.openprocurement.org/en/latest/>`_"

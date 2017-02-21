@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 import os
+import re
 from couchdb_schematics.document import SchematicsDocument
 from datetime import datetime, timedelta, time
 from iso8601 import parse_date, ParseError
@@ -29,9 +30,12 @@ schematics_embedded_role = SchematicsDocument.Options.roles['embedded'] + blackl
 schematics_default_role = SchematicsDocument.Options.roles['default'] + blacklist("__parent__")
 
 TZ = timezone(os.environ['TZ'] if 'TZ' in os.environ else 'Europe/Kiev')
-CANT_DELETE_PERIOD_START_DATE_FROM = datetime(2016, 9, 23, tzinfo=TZ)
-BID_LOTVALUES_VALIDATION_FROM = datetime(2016, 10, 21, tzinfo=TZ)
+CANT_DELETE_PERIOD_START_DATE_FROM = datetime(2016, 8, 30, tzinfo=TZ)
+BID_LOTVALUES_VALIDATION_FROM = datetime(2016, 10, 24, tzinfo=TZ)
 CPV_ITEMS_CLASS_FROM = datetime(2017, 1, 1, tzinfo=TZ)
+ITEMS_LOCATION_VALIDATION_FROM = datetime(2016, 11, 22, tzinfo=TZ)
+
+coordinates_reg_exp = re.compile(r'-?\d{1,3}\.\d+|-?\d{1,3}')
 
 
 def get_now():
@@ -332,6 +336,38 @@ class Location(Model):
     longitude = BaseType(required=True)
     elevation = BaseType()
 
+    def validate_latitude(self, data, latitude):
+        if latitude:
+            parent_object = data.get('__parent__', {}).get('__parent__', {})
+            if (parent_object.get('revisions') and
+                parent_object['revisions'][0].date >
+                    ITEMS_LOCATION_VALIDATION_FROM):
+                valid_latitude = coordinates_reg_exp.match(str(latitude))
+                if (valid_latitude is not None and
+                        valid_latitude.group() == str(latitude)):
+                    if not -90 <= float(latitude) <= 90:
+                        raise ValidationError(
+                            u"Invalid value. Latitude must be between -90 and 90 degree.")
+                else:
+                    raise ValidationError(
+                        u"Invalid value. Required latitude format 12.0123456789")
+
+    def validate_longitude(self, data, longitude):
+        if longitude:
+            parent_object = data.get('__parent__', {}).get('__parent__', {})
+            if (parent_object.get('revisions') and
+                parent_object['revisions'][0].date >
+                    ITEMS_LOCATION_VALIDATION_FROM):
+                valid_longitude = coordinates_reg_exp.match(str(longitude))
+                if (valid_longitude is not None and
+                        valid_longitude.group() == str(longitude)):
+                    if not -180 <= float(longitude) <= 180:
+                        raise ValidationError(
+                            u"Invalid value. Longitude must be between -180 and 180 degree.")
+                else:
+                    raise ValidationError(
+                        u"Invalid value. Required longitude format 12.0123456789")
+
 
 ADDITIONAL_CLASSIFICATIONS_SCHEMES = [u'ДКПП', u'NONE', u'ДК003', u'ДК015', u'ДК018']
 ADDITIONAL_CLASSIFICATIONS_SCHEMES_2017 = [u'ДК003', u'ДК015', u'ДК018', u'specialNorms']
@@ -621,7 +657,7 @@ class Bid(Model):
             'Administrator': Administrator_bid_role,
             'embedded': view_bid_role,
             'view': view_bid_role,
-            'create': whitelist('value', 'status', 'tenderers', 'parameters', 'lotValues'),
+            'create': whitelist('value', 'status', 'tenderers', 'parameters', 'lotValues', 'documents'),
             'edit': whitelist('value', 'status', 'tenderers', 'parameters', 'lotValues'),
             'auction_view': whitelist('value', 'lotValues', 'id', 'date', 'parameters', 'participationUrl'),
             'auction_post': whitelist('value', 'lotValues', 'id', 'date'),
@@ -1118,7 +1154,7 @@ draft_role = whitelist('status')
 edit_role = (blacklist('status', 'procurementMethodType', 'lots', 'owner_token', 'owner', '_attachments', 'revisions', 'date', 'dateModified', 'doc_id', 'tenderID', 'bids', 'documents', 'awards', 'questions', 'complaints', 'auctionUrl', 'auctionPeriod', 'awardPeriod', 'procurementMethod', 'awardCriteria', 'submissionMethod', 'mode', 'cancellations') + schematics_embedded_role)
 view_role = (blacklist('owner_token', '_attachments', 'revisions') + schematics_embedded_role)
 listing_role = whitelist('dateModified', 'doc_id')
-auction_view_role = whitelist('tenderID', 'dateModified', 'bids', 'items', 'auctionPeriod', 'minimalStep', 'auctionUrl', 'features', 'lots')
+auction_view_role = whitelist('tenderID', 'dateModified', 'bids', 'items', 'auctionPeriod', 'minimalStep', 'auctionUrl', 'features', 'lots', 'submissionMethodDetails',)
 auction_post_role = whitelist('bids')
 auction_patch_role = whitelist('auctionUrl', 'bids', 'lots')
 enquiries_role = (blacklist('owner_token', '_attachments', 'revisions', 'bids', 'numberOfBids') + schematics_embedded_role)

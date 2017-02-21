@@ -71,7 +71,21 @@ bid2 = {
         ],
         "value": {
             "amount": 499
-        }
+        },
+        "documents": [
+            {
+                'title': u'Proposal_part1.pdf',
+                'url': u"http://broken1.ds",
+                'hash': 'md5:' + '0' * 32,
+                'format': 'application/pdf',
+            },
+            {
+                'title': u'Proposal_part2.pdf',
+                'url': u"http://broken2.ds",
+                'hash': 'md5:' + '0' * 32,
+                'format': 'application/pdf',
+            }
+        ]
     }
 }
 
@@ -518,10 +532,12 @@ class TenderResourceTest(BaseTenderWebTest):
                 self.tender_id, bid1_id, bids_access[bid1_id]))
             self.assertEqual(response.status, '200 OK')
 
-        # Second bidder registration
+        # Second bid registration with documents
         #
 
         with open('docs/source/tutorial/register-2nd-bidder.http', 'w') as self.app.file_obj:
+            for document in bid2['data']['documents']:
+                document['url'] = self.generate_docservice_url()
             response = self.app.post_json('/tenders/{}/bids'.format(
                 self.tender_id), bid2)
             bid2_id = response.json['data']['id']

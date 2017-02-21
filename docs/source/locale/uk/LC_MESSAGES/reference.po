@@ -13,7 +13,6 @@ msgstr ""
 "X-Generator: Poedit 1.7.6\n"
 "Language: uk\n"
 
-#: ../../source/reference.rst:6
 msgid "API Reference"
 msgstr "API Довідник"
 
