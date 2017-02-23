@@ -467,11 +467,11 @@ class Document(Model):
                 roles = type(obj)._options.roles
                 if roles[role if role in roles else 'default'](field, []):
                     return url
-        from openprocurement.api.utils import generate_docservice_url
+        from openprocurement.api.utils import generate_docservice_url_by_key
         if not self.hash:
             path = [i for i in urlparse(url).path.split('/') if len(i) == 32 and not set(i).difference(hexdigits)]
-            return generate_docservice_url(docservice_url, doc_id, False, '{}/{}'.format(path[0], path[-1]), docservice_key=docservice_key)
-        return generate_docservice_url(docservice_url, doc_id, False, docservice_key=docservice_key)
+            return generate_docservice_url_by_key(docservice_url, doc_id, False, '{}/{}'.format(path[0], path[-1]), docservice_key=docservice_key)
+        return generate_docservice_url_by_key(docservice_url, doc_id, False, docservice_key=docservice_key)
 
     def import_data(self, raw_data, **kw):
         """
