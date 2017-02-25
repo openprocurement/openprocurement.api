@@ -92,20 +92,21 @@ Announcing MEAT
 Features can be set in :ref:`Tender` pretty the :ref:`same way <procuring>` as Items are - with
 POST request.
 
-.. sourcecode:: http
+.. include:: tutorial/tender-with-features-post-attempt-json-data.http
+   :code:
 
-  POST /tenders HTTP/1.1
+Removing Features
+~~~~~~~~~~~~~~~~~
 
-  {"data": {
-    ...
-    "features": [...],
-    ...
-  }
+In case no Features are needed, they can be removed altogether with following request:
 
-.. sourcecode:: http
+.. include:: tutorial/remove-features.http
+   :code:
 
-  HTTP/1.1 201 Created
-  Location: /tenders/64e93250be76435397e8c992ed4214d1
+We can add Features again:
+
+.. include:: tutorial/add-features.http
+   :code:
 
 Changing Features
 ~~~~~~~~~~~~~~~~~
@@ -113,34 +114,8 @@ Changing Features
 In the case that Features should be changed one can send PATCH that replaces
 Tender.features with new set:
 
-.. sourcecode:: http
-
-  PATCH /tenders HTTP/1.1
-
-  {"data": {
-    "features": [...]
-  }
-
-.. sourcecode:: http
-
-  HTTP/1.1 200 OK
-
-Removing Features
-~~~~~~~~~~~~~~~~~
-
-In case no Features are needed, they can be removed altogether with following request:
-
-.. sourcecode:: http
-
-  PATCH /tenders HTTP/1.1
-
-  {"data": {
-    "features": []
-  }
-
-.. sourcecode:: http
-
-  HTTP/1.1 200 OK
+.. include:: tutorial/patch-features.http
+   :code:
 
 Bidding in MEAT
 ---------------
@@ -148,21 +123,8 @@ Bidding in MEAT
 The same applies to :ref:`Bid` - Parameters of a Bid can be set initially with POST
 request and modified later with PATCH requests (see more at :ref:`bidding`).
 
-.. sourcecode:: http
-
-  POST /tenders/64e93250be76435397e8c992ed4214d1/bids HTTP/1.1
-
-  {"data": {
-    ...
-    "parameters": [...],
-    ...
-  }
-
-.. sourcecode:: http
-
-  HTTP/1.1 201 Created
-  Location: /tenders/64e93250be76435397e8c992ed4214d1/bid/4879d3f8ee2443169b5fbbc9f89fa607
- 
+.. include:: tutorial/register-bidder-with-features.http
+   :code:
 
 Qualification in MEAT
 ---------------------
