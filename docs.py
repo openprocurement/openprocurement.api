@@ -939,6 +939,11 @@ class TenderResourceTest(BaseTenderWebTest):
         response = self.app.get('/tenders/{}/awards'.format(self.tender_id))
         award_id2 = [i['id'] for i in response.json['data'] if i['status'] == 'pending'][0]
 
+        with open('docs/source/qualification/award-protocol-upload.http', 'w') as self.app.file_obj:
+            response = self.app.post('/tenders/{}/awards/{}/documents?acc_token={}'.format(
+                self.tender_id, award_id2, self.tender_token), upload_files=[('file', 'name.doc', 'content')])
+            self.assertEqual(response.status, '201 Created')
+
         with open('docs/source/qualification/award-pending-active.http', 'w') as self.app.file_obj:
             response = self.app.patch_json('/tenders/{}/awards/{}?acc_token={}'.format(
                 self.tender_id, award_id2, self.tender_token), {"data":{"status":"active"}})
