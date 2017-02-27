@@ -50,25 +50,15 @@ Contract Awarding
 
 Protocol upload:
 
-.. sourcecode:: http
-
-  POST /tenders/64e93250be76435397e8c992ed4214d1/awards/{}/documents HTTP/1.1
+.. include:: qualification/award-protocol-upload.http
+   :code:
 
 Confirming the Award:
 
 .. sourcecode:: http
 
-  PATCH /tenders/64e93250be76435397e8c992ed4214d1/awards/{} HTTP/1.1
-
-  {
-      "data":{
-          "status": "active"
-      }
-  }
-
-.. sourcecode:: http
-
-  HTTP/1.1 200 OK
+.. include:: qualification/award-pending-active.http
+   :code:
 
 The procuring entity can wait until bidder provides all missing documents
 (licenses, certificates, statements, etc.) or update original bid documents
@@ -111,7 +101,7 @@ Influence of Complaint Satisfaction
 
 If decision of the procuring entity is unfair any bidder can file
 complaint and after proper review the whole awarding process can start from
-the award in question.  
+the award in question.
 
 Disqualification decision of procuring entity's qualification committee can be cancelled in the following cases:
 

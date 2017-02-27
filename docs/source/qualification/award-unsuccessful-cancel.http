@@ -1,4 +1,4 @@
-PATCH /api/2.3/tenders/eeb9177097a14a8c80ca0d1c8b202a00/awards/86d3f73dd7094865a9fd4966584c62ae?acc_token=a8d118cc5aab4c9e8e6fafe89d2c4615 HTTP/1.0
+PATCH /api/2.3/tenders/f2e454457c114f40a49c282c4c965bee/awards/1d2779a6983044c6a43b85286c7a5c97?acc_token=7f3a278f90804d248ea08f9fcbde845d HTTP/1.0
 Authorization: Basic YnJva2VyOg==
 Content-Length: 33
 Content-Type: application/json
@@ -13,7 +13,7 @@ Host: api-sandbox.openprocurement.org
 
 200 OK
 Content-Type: application/json; charset=UTF-8
-Location: http://api-sandbox.openprocurement.org/api/2.3/tenders/eeb9177097a14a8c80ca0d1c8b202a00/awards/6d8fd45d991540a0bb759b06e58656cf
+Location: http://api-sandbox.openprocurement.org/api/2.3/tenders/f2e454457c114f40a49c282c4c965bee/awards/561dc249536f42c6a36e8f55dc25ed71
 
 {
   "data": {
@@ -22,17 +22,17 @@ Location: http://api-sandbox.openprocurement.org/api/2.3/tenders/eeb9177097a14a8
       {
         "hash": "md5:00000000000000000000000000000000", 
         "title": "Unsuccessful_Reason.pdf", 
-        "url": "http://public.docs-sandbox.openprocurement.org/get/d9f9cff141e9459daed074c56155676c?KeyID=a1a42480&Signature=rouGILe%2F%2FpZ8%2FhqYoXiGkMRAkP9EjjC5Y14mea%2Fm%2FJb1AjFSxXytafd3qovtPIm08XDJAwHv0wsJfk9hwoO8DmQAAAA5AAAAZgAAADkAAABjAAAAZgAAAGYAAAAxAAAA", 
+        "url": "http://public.docs-sandbox.openprocurement.org/get/75c472d4f0f6416c8333746c99c575d6?KeyID=13edba3f&Signature=Zh3NX11br0mxiPotQcCEi%2FzJN%2FOBEQggvM%252BVV8kgJV5UbdQPbcmNo7CZT5Ki6Qwu32bvDaHXvLyaQ0bWg5UeAg%253D%253D", 
         "format": "application/pdf", 
         "documentOf": "tender", 
-        "datePublished": "2016-07-21T17:17:55.311634+03:00", 
-        "id": "acfbcdc5e39d4492b43af0cfa2db1a51", 
-        "dateModified": "2016-07-21T17:17:55.311664+03:00"
+        "datePublished": "2017-02-27T15:29:40.735946+02:00", 
+        "id": "9e375a1b177045a3b56bbfd3c1011e2b", 
+        "dateModified": "2017-02-27T15:29:40.735979+02:00"
       }
     ], 
     "complaintPeriod": {
-      "startDate": "2016-07-21T17:17:55.039093+03:00", 
-      "endDate": "2016-07-21T17:18:03.564901+03:00"
+      "startDate": "2017-02-27T15:29:40.484811+02:00", 
+      "endDate": "2017-02-27T15:29:48.297859+02:00"
     }, 
     "suppliers": [
       {
@@ -56,13 +56,13 @@ Location: http://api-sandbox.openprocurement.org/api/2.3/tenders/eeb9177097a14a8
         }
       }
     ], 
-    "bid_id": "3074dddf0f8f4f3f88f21224d7898243", 
+    "bid_id": "8edaf6267b2e4f85b9f0f84ae33026a7", 
     "value": {
       "currency": "UAH", 
       "amount": 450.0, 
       "valueAddedTaxIncluded": true
     }, 
-    "date": "2016-07-21T17:18:03.584814+03:00", 
+    "date": "2017-02-27T15:29:48.316864+02:00", 
     "complaints": [
       {
         "status": "resolved", 
@@ -71,12 +71,12 @@ Location: http://api-sandbox.openprocurement.org/api/2.3/tenders/eeb9177097a14a8
             "hash": "md5:00000000000000000000000000000000", 
             "author": "complaint_owner", 
             "title": "Complaint_Attachement.pdf", 
-            "url": "http://public.docs-sandbox.openprocurement.org/get/b1d288ec9d35491c83d5953a79d45071?KeyID=a1a42480&Signature=twSUg3Pm7UJJUoKW0E5lJ9fyDBuGXW3VHAKfq8j7q%252B8ysx%2FjgW1Q9B3mLNrHDS3UGm0rNjbKeZcGbGylCQvCDWIAAAAxAAAAZAAAADIAAAA4AAAAOAAAAGUAAABjAAAA", 
+            "url": "http://public.docs-sandbox.openprocurement.org/get/a980c370ed9e41ad83fc398efeca6dcc?KeyID=13edba3f&Signature=ChHXYnv42wk3Yd3Zxn4Ea60sEXH7vlDLpB2Uwb0Vtf8krH2oFf33DfoQXthVRJDoKFoserPh8UyDL2CV6kP%2FDw%253D%253D", 
             "format": "application/pdf", 
             "documentOf": "tender", 
-            "datePublished": "2016-07-21T17:17:57.441970+03:00", 
-            "id": "ae2cd7a20eab46c0b2d62cf2510936ca", 
-            "dateModified": "2016-07-21T17:17:57.442018+03:00"
+            "datePublished": "2017-02-27T15:29:42.897453+02:00", 
+            "id": "446f410dc96b4c198edd71ca9a67e55f", 
+            "dateModified": "2017-02-27T15:29:42.897485+02:00"
           }
         ], 
         "description": "complaint description", 
@@ -105,17 +105,17 @@ Location: http://api-sandbox.openprocurement.org/api/2.3/tenders/eeb9177097a14a8
         "title": "complaint title", 
         "satisfied": true, 
         "tendererAction": "Виправлено неконкурентні умови", 
-        "dateAnswered": "2016-07-21T17:17:58.552718+03:00", 
-        "tendererActionDate": "2016-07-21T17:17:58.552758+03:00", 
-        "dateSubmitted": "2016-07-21T17:17:57.747245+03:00", 
-        "complaintID": "UA-2016-07-21-000001.5", 
-        "date": "2016-07-21T17:17:58.874448+03:00", 
+        "dateAnswered": "2017-02-27T15:29:43.895311+02:00", 
+        "tendererActionDate": "2017-02-27T15:29:43.895338+02:00", 
+        "dateSubmitted": "2017-02-27T15:29:43.171013+02:00", 
+        "complaintID": "UA-2017-02-27-000001.5", 
+        "date": "2017-02-27T15:29:44.192053+02:00", 
         "resolution": "Виправлено неконкурентні умови", 
-        "id": "523f13eba5464cf1a5fe165009f78f3a"
+        "id": "3cbda4329f264b42842652251f3d5b03"
       }, 
       {
         "status": "invalid", 
-        "dateDecision": "2016-07-21T17:17:59.880278+03:00", 
+        "dateDecision": "2017-02-27T15:29:45.033220+02:00", 
         "description": "complaint description", 
         "author": {
           "contactPoint": {
@@ -141,28 +141,28 @@ Location: http://api-sandbox.openprocurement.org/api/2.3/tenders/eeb9177097a14a8
         "type": "complaint", 
         "title": "complaint title", 
         "satisfied": false, 
-        "dateEscalated": "2016-07-21T17:17:59.510382+03:00", 
-        "dateAnswered": "2016-07-21T17:17:59.180286+03:00", 
-        "dateSubmitted": "2016-07-21T17:17:58.023389+03:00", 
-        "complaintID": "UA-2016-07-21-000001.6", 
-        "date": "2016-07-21T17:17:59.892951+03:00", 
+        "dateEscalated": "2017-02-27T15:29:44.744567+02:00", 
+        "dateAnswered": "2017-02-27T15:29:44.454903+02:00", 
+        "dateSubmitted": "2017-02-27T15:29:43.430800+02:00", 
+        "complaintID": "UA-2017-02-27-000001.6", 
+        "date": "2017-02-27T15:29:45.046771+02:00", 
         "resolution": "Виправлено неконкурентні умови", 
-        "id": "0734e80e7f554fe0a874c16a1c52e206"
+        "id": "ade05b16867b42b197290aafbc8b547d"
       }, 
       {
         "status": "resolved", 
-        "dateDecision": "2016-07-21T17:18:02.667772+03:00", 
+        "dateDecision": "2017-02-27T15:29:47.459268+02:00", 
         "documents": [
           {
             "hash": "md5:00000000000000000000000000000000", 
             "author": "reviewers", 
             "title": "ComplaintResolution.pdf", 
-            "url": "http://public.docs-sandbox.openprocurement.org/get/fddb600727e24cbca910668c130af96f?KeyID=a1a42480&Signature=wB7r3gbiyuijB6Cv6lHHcFF4asw9kUgDSRV3Pz6cR1PUorYCaBYY8lkZADWEmqXBELB5LTlFFGawvMt6P2SBAGYAAABkAAAAZAAAAGIAAAA2AAAAMAAAADAAAAA3AAAA", 
+            "url": "http://public.docs-sandbox.openprocurement.org/get/79ed5024a9894f61ba83d6329be3b096?KeyID=13edba3f&Signature=kcg9%252BhqUNPMIJJps2GGi0q07xo75y8v7%252BHSqBSfUybz5zwH2aj4c02hw%2F6Kn7ipAPwEVKmrgfs5H3tmK00hoBA%253D%253D", 
             "format": "application/pdf", 
             "documentOf": "tender", 
-            "datePublished": "2016-07-21T17:18:02.305563+03:00", 
-            "id": "9bb5ad67bfad43a9a58bc972b1b31613", 
-            "dateModified": "2016-07-21T17:18:02.305597+03:00"
+            "datePublished": "2017-02-27T15:29:47.129346+02:00", 
+            "id": "91b39f3af9eb4f4793d8c5a7323fc08f", 
+            "dateModified": "2017-02-27T15:29:47.129379+02:00"
           }
         ], 
         "description": "complaint description", 
@@ -190,17 +190,17 @@ Location: http://api-sandbox.openprocurement.org/api/2.3/tenders/eeb9177097a14a8
         "type": "complaint", 
         "title": "complaint title", 
         "satisfied": false, 
-        "dateEscalated": "2016-07-21T17:18:00.867577+03:00", 
-        "dateAnswered": "2016-07-21T17:18:00.516074+03:00", 
-        "dateSubmitted": "2016-07-21T17:18:00.195924+03:00", 
-        "complaintID": "UA-2016-07-21-000001.7", 
-        "date": "2016-07-21T17:18:02.685259+03:00", 
+        "dateEscalated": "2017-02-27T15:29:45.905276+02:00", 
+        "dateAnswered": "2017-02-27T15:29:45.607350+02:00", 
+        "dateSubmitted": "2017-02-27T15:29:45.312455+02:00", 
+        "complaintID": "UA-2017-02-27-000001.7", 
+        "date": "2017-02-27T15:29:47.474404+02:00", 
         "resolution": "Виправлено неконкурентні умови", 
-        "id": "b5c19009d623453b93ac13f2f0fe0b78"
+        "id": "5b39f7deba0f4c32a4998fc12a8dabc1"
       }, 
       {
         "status": "declined", 
-        "dateDecision": "2016-07-21T17:18:03.008371+03:00", 
+        "dateDecision": "2017-02-27T15:29:47.782892+02:00", 
         "description": "complaint description", 
         "author": {
           "contactPoint": {
@@ -226,16 +226,16 @@ Location: http://api-sandbox.openprocurement.org/api/2.3/tenders/eeb9177097a14a8
         "type": "complaint", 
         "title": "complaint title", 
         "satisfied": false, 
-        "dateEscalated": "2016-07-21T17:18:01.933290+03:00", 
-        "dateAnswered": "2016-07-21T17:18:01.603001+03:00", 
-        "dateSubmitted": "2016-07-21T17:18:01.246311+03:00", 
-        "complaintID": "UA-2016-07-21-000001.8", 
-        "date": "2016-07-21T17:18:03.022976+03:00", 
+        "dateEscalated": "2017-02-27T15:29:46.825718+02:00", 
+        "dateAnswered": "2017-02-27T15:29:46.515129+02:00", 
+        "dateSubmitted": "2017-02-27T15:29:46.204320+02:00", 
+        "complaintID": "UA-2017-02-27-000001.8", 
+        "date": "2017-02-27T15:29:47.798206+02:00", 
         "resolution": "Виправлено неконкурентні умови", 
-        "id": "bec8a58fe2d54a6397977836d8577df4"
+        "id": "e8bc047092c148b9821b93b712a4824c"
       }
     ], 
-    "id": "86d3f73dd7094865a9fd4966584c62ae"
+    "id": "1d2779a6983044c6a43b85286c7a5c97"
   }
 }
 
