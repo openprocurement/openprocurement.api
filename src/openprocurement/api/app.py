@@ -173,6 +173,4 @@ def main(global_config, **settings):
     return config.make_wsgi_app()
 
 
-def includeme(config):
-    print "Init api"
-    config.scan("openprocurement.api.views")
+
