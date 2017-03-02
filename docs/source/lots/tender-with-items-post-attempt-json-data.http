@@ -1,0 +1,368 @@
+POST /api/2.3/tenders HTTP/1.0
+Authorization: Basic YnJva2VyOg==
+Content-Length: 6053
+Content-Type: application/json
+Host: api-sandbox.openprocurement.org
+
+{
+  "data": {
+    "tenderPeriod": {
+      "endDate": "2017-03-16T16:39:15.128217"
+    }, 
+    "title": "футляри до державних нагород", 
+    "minimalStep": {
+      "currency": "UAH", 
+      "amount": 35
+    }, 
+    "enquiryPeriod": {
+      "endDate": "2017-03-09T16:39:15.128217"
+    }, 
+    "procurementMethodType": "belowThreshold", 
+    "value": {
+      "currency": "UAH", 
+      "amount": 500
+    }, 
+    "procuringEntity": {
+      "contactPoint": {
+        "name": "Державне управління справами", 
+        "telephone": "0440000000"
+      }, 
+      "identifier": {
+        "scheme": "UA-EDR", 
+        "id": "00037256", 
+        "uri": "http://www.dus.gov.ua/"
+      }, 
+      "name": "Державне управління справами", 
+      "kind": "general", 
+      "address": {
+        "countryName": "Україна", 
+        "postalCode": "01220", 
+        "region": "м. Київ", 
+        "streetAddress": "вул. Банкова, 11, корпус 1", 
+        "locality": "м. Київ"
+      }
+    }, 
+    "procurementMethodDetails": "quick, accelerator=1440", 
+    "items": [
+      {
+        "description": "футляри до державних нагород", 
+        "classification": {
+          "scheme": "CPV", 
+          "id": "44617100-9", 
+          "description": "Cartons"
+        }, 
+        "additionalClassifications": [
+          {
+            "scheme": "ДКПП", 
+            "id": "17.21.1", 
+            "description": "папір і картон гофровані, паперова й картонна тара"
+          }
+        ], 
+        "deliveryAddress": {
+          "countryName": "Україна", 
+          "postalCode": "79000", 
+          "region": "м. Київ", 
+          "streetAddress": "вул. Банкова 1", 
+          "locality": "м. Київ"
+        }, 
+        "deliveryDate": {
+          "startDate": "2017-03-04T16:39:15.128217", 
+          "endDate": "2017-03-07T16:39:15.128217"
+        }, 
+        "unit": {
+          "code": "44617100-9", 
+          "name": "item"
+        }, 
+        "quantity": 5
+      }, 
+      {
+        "description": "Сегрегатори #1", 
+        "classification": {
+          "scheme": "CPV", 
+          "id": "44618100-6", 
+          "description": "Легкі контейнери"
+        }, 
+        "additionalClassifications": [
+          {
+            "scheme": "ДКПП", 
+            "id": "17.21.15-50.00", 
+            "description": "Сегрегатори, лотки на листи, ящики паперові для зберігання та подібні вироби"
+          }
+        ], 
+        "deliveryAddress": {
+          "countryName": "Україна", 
+          "postalCode": "79000", 
+          "region": "м. Київ", 
+          "streetAddress": "вул. Банкова 1", 
+          "locality": "м. Київ"
+        }, 
+        "deliveryDate": {
+          "startDate": "2017-03-04T16:39:15.129447", 
+          "endDate": "2017-03-07T16:39:15.129447"
+        }, 
+        "unit": {
+          "code": "44618100-6", 
+          "name": "item"
+        }, 
+        "quantity": 15
+      }, 
+      {
+        "description": "Сегрегатори #2", 
+        "classification": {
+          "scheme": "CPV", 
+          "id": "44618100-6", 
+          "description": "Легкі контейнери"
+        }, 
+        "additionalClassifications": [
+          {
+            "scheme": "ДКПП", 
+            "id": "17.21.15-50.00", 
+            "description": "Сегрегатори, лотки на листи, ящики паперові для зберігання та подібні вироби"
+          }
+        ], 
+        "deliveryAddress": {
+          "countryName": "Україна", 
+          "postalCode": "79000", 
+          "region": "м. Київ", 
+          "streetAddress": "вул. Банкова 1", 
+          "locality": "м. Київ"
+        }, 
+        "deliveryDate": {
+          "startDate": "2017-03-04T16:39:15.129447", 
+          "endDate": "2017-03-07T16:39:15.129447"
+        }, 
+        "unit": {
+          "code": "44618100-6", 
+          "name": "item"
+        }, 
+        "quantity": 15
+      }, 
+      {
+        "description": "Сегрегатори #3", 
+        "classification": {
+          "scheme": "CPV", 
+          "id": "44618100-6", 
+          "description": "Легкі контейнери"
+        }, 
+        "additionalClassifications": [
+          {
+            "scheme": "ДКПП", 
+            "id": "17.21.15-50.00", 
+            "description": "Сегрегатори, лотки на листи, ящики паперові для зберігання та подібні вироби"
+          }
+        ], 
+        "deliveryAddress": {
+          "countryName": "Україна", 
+          "postalCode": "79000", 
+          "region": "м. Київ", 
+          "streetAddress": "вул. Банкова 1", 
+          "locality": "м. Київ"
+        }, 
+        "deliveryDate": {
+          "startDate": "2017-03-04T16:39:15.129447", 
+          "endDate": "2017-03-07T16:39:15.129447"
+        }, 
+        "unit": {
+          "code": "44618100-6", 
+          "name": "item"
+        }, 
+        "quantity": 15
+      }
+    ]
+  }
+}
+
+
+201 Created
+Content-Type: application/json; charset=UTF-8
+Location: http://api-sandbox.openprocurement.org/api/2.3/tenders/4b9150ff75014ecaa01a988020b6afa7
+
+{
+  "access": {
+    "token": "8e3b5691ae004dd8946682b11788f75c"
+  }, 
+  "data": {
+    "procurementMethod": "open", 
+    "status": "active.enquiries", 
+    "awardCriteria": "lowestCost", 
+    "tenderPeriod": {
+      "startDate": "2017-03-09T16:39:15.128217+02:00", 
+      "endDate": "2017-03-16T16:39:15.128217+02:00"
+    }, 
+    "title": "футляри до державних нагород", 
+    "minimalStep": {
+      "currency": "UAH", 
+      "amount": 35.0, 
+      "valueAddedTaxIncluded": true
+    }, 
+    "items": [
+      {
+        "description": "футляри до державних нагород", 
+        "classification": {
+          "scheme": "CPV", 
+          "description": "Cartons", 
+          "id": "44617100-9"
+        }, 
+        "additionalClassifications": [
+          {
+            "scheme": "ДКПП", 
+            "id": "17.21.1", 
+            "description": "папір і картон гофровані, паперова й картонна тара"
+          }
+        ], 
+        "deliveryAddress": {
+          "postalCode": "79000", 
+          "countryName": "Україна", 
+          "streetAddress": "вул. Банкова 1", 
+          "region": "м. Київ", 
+          "locality": "м. Київ"
+        }, 
+        "deliveryDate": {
+          "startDate": "2017-03-04T16:39:15.128217+02:00", 
+          "endDate": "2017-03-07T16:39:15.128217+02:00"
+        }, 
+        "id": "474eb5f9ea424af79cfd415cffa182b0", 
+        "unit": {
+          "code": "44617100-9", 
+          "name": "item"
+        }, 
+        "quantity": 5
+      }, 
+      {
+        "description": "Сегрегатори #1", 
+        "classification": {
+          "scheme": "CPV", 
+          "description": "Легкі контейнери", 
+          "id": "44618100-6"
+        }, 
+        "additionalClassifications": [
+          {
+            "scheme": "ДКПП", 
+            "id": "17.21.15-50.00", 
+            "description": "Сегрегатори, лотки на листи, ящики паперові для зберігання та подібні вироби"
+          }
+        ], 
+        "deliveryAddress": {
+          "postalCode": "79000", 
+          "countryName": "Україна", 
+          "streetAddress": "вул. Банкова 1", 
+          "region": "м. Київ", 
+          "locality": "м. Київ"
+        }, 
+        "deliveryDate": {
+          "startDate": "2017-03-04T16:39:15.129447+02:00", 
+          "endDate": "2017-03-07T16:39:15.129447+02:00"
+        }, 
+        "id": "64664b6ef7ee42c5ba3f8bc55e1ddb9b", 
+        "unit": {
+          "code": "44618100-6", 
+          "name": "item"
+        }, 
+        "quantity": 15
+      }, 
+      {
+        "description": "Сегрегатори #2", 
+        "classification": {
+          "scheme": "CPV", 
+          "description": "Легкі контейнери", 
+          "id": "44618100-6"
+        }, 
+        "additionalClassifications": [
+          {
+            "scheme": "ДКПП", 
+            "id": "17.21.15-50.00", 
+            "description": "Сегрегатори, лотки на листи, ящики паперові для зберігання та подібні вироби"
+          }
+        ], 
+        "deliveryAddress": {
+          "postalCode": "79000", 
+          "countryName": "Україна", 
+          "streetAddress": "вул. Банкова 1", 
+          "region": "м. Київ", 
+          "locality": "м. Київ"
+        }, 
+        "deliveryDate": {
+          "startDate": "2017-03-04T16:39:15.129447+02:00", 
+          "endDate": "2017-03-07T16:39:15.129447+02:00"
+        }, 
+        "id": "4650542ea75740f0a52436ee7646a819", 
+        "unit": {
+          "code": "44618100-6", 
+          "name": "item"
+        }, 
+        "quantity": 15
+      }, 
+      {
+        "description": "Сегрегатори #3", 
+        "classification": {
+          "scheme": "CPV", 
+          "description": "Легкі контейнери", 
+          "id": "44618100-6"
+        }, 
+        "additionalClassifications": [
+          {
+            "scheme": "ДКПП", 
+            "id": "17.21.15-50.00", 
+            "description": "Сегрегатори, лотки на листи, ящики паперові для зберігання та подібні вироби"
+          }
+        ], 
+        "deliveryAddress": {
+          "postalCode": "79000", 
+          "countryName": "Україна", 
+          "streetAddress": "вул. Банкова 1", 
+          "region": "м. Київ", 
+          "locality": "м. Київ"
+        }, 
+        "deliveryDate": {
+          "startDate": "2017-03-04T16:39:15.129447+02:00", 
+          "endDate": "2017-03-07T16:39:15.129447+02:00"
+        }, 
+        "id": "a96a4a8cdef44442b46c56406b07adb0", 
+        "unit": {
+          "code": "44618100-6", 
+          "name": "item"
+        }, 
+        "quantity": 15
+      }
+    ], 
+    "procurementMethodType": "belowThreshold", 
+    "value": {
+      "currency": "UAH", 
+      "amount": 500.0, 
+      "valueAddedTaxIncluded": true
+    }, 
+    "submissionMethod": "electronicAuction", 
+    "enquiryPeriod": {
+      "startDate": "2017-03-02T16:39:17.790667+02:00", 
+      "endDate": "2017-03-09T16:39:15.128217+02:00"
+    }, 
+    "date": "2017-03-02T16:39:17.790724+02:00", 
+    "next_check": "2017-03-09T16:39:15.128217+02:00", 
+    "procuringEntity": {
+      "contactPoint": {
+        "name": "Державне управління справами", 
+        "telephone": "0440000000"
+      }, 
+      "identifier": {
+        "scheme": "UA-EDR", 
+        "id": "00037256", 
+        "uri": "http://www.dus.gov.ua/"
+      }, 
+      "name": "Державне управління справами", 
+      "kind": "general", 
+      "address": {
+        "postalCode": "01220", 
+        "countryName": "Україна", 
+        "streetAddress": "вул. Банкова, 11, корпус 1", 
+        "region": "м. Київ", 
+        "locality": "м. Київ"
+      }
+    }, 
+    "procurementMethodDetails": "quick, accelerator=1440", 
+    "owner": "broker", 
+    "dateModified": "2017-03-02T16:39:17.796864+02:00", 
+    "id": "4b9150ff75014ecaa01a988020b6afa7", 
+    "tenderID": "UA-2017-03-02-000001"
+  }
+}
+

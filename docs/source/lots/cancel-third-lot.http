@@ -1,0 +1,31 @@
+POST /api/2.3/tenders/4b9150ff75014ecaa01a988020b6afa7/cancellations?acc_token=8e3b5691ae004dd8946682b11788f75c HTTP/1.0
+Authorization: Basic YnJva2VyOg==
+Content-Length: 138
+Content-Type: application/json
+Host: api-sandbox.openprocurement.org
+
+{
+  "data": {
+    "status": "active", 
+    "relatedLot": "4c0e3d0ee6254560be9362fa25f6ee20", 
+    "reason": "cancellation reason", 
+    "cancellationOf": "lot"
+  }
+}
+
+
+201 Created
+Content-Type: application/json; charset=UTF-8
+Location: http://api-sandbox.openprocurement.org/api/2.3/tenders/4b9150ff75014ecaa01a988020b6afa7/cancellations/b1ecc6c137ef47f28a5923d8d6cb2c3b
+
+{
+  "data": {
+    "status": "active", 
+    "relatedLot": "4c0e3d0ee6254560be9362fa25f6ee20", 
+    "reason": "cancellation reason", 
+    "date": "2017-03-02T16:39:18.374238+02:00", 
+    "cancellationOf": "lot", 
+    "id": "b1ecc6c137ef47f28a5923d8d6cb2c3b"
+  }
+}
+

@@ -7,7 +7,7 @@ from datetime import timedelta, datetime
 from uuid import uuid4
 
 import openprocurement.api.tests.base as base_test
-from openprocurement.api.tests.base import test_tender_data, test_features_tender_data, test_bids, PrefixedRequestClass
+from openprocurement.api.tests.base import test_tender_data, test_features_tender_data, test_bids, test_lots, PrefixedRequestClass
 from openprocurement.api.models import get_now
 from openprocurement.api.tests.tender import BaseTenderWebTest
 from webtest import TestApp
@@ -1227,3 +1227,217 @@ class TenderFeaturesResourceTest(BaseTenderWebTest):
             bid1_id = response.json['data']['id']
             bids_access[bid1_id] = response.json['access']['token']
             self.assertEqual(response.status, '201 Created')
+
+
+class TenderMultiLotResourceTest(BaseTenderWebTest):
+    initial_data = deepcopy(test_tender_data)
+    initial_bids = deepcopy(test_bids)
+    initial_lots = 3 * deepcopy(test_lots)
+
+    def setUp(self):
+        self.app = DumpsTestAppwebtest(
+            'config:tests.ini', relative_to=os.path.dirname(base_test.__file__))
+        self.app.RequestClass = PrefixedRequestClass
+        self.app.authorization = ('Basic', ('broker', ''))
+        self.couchdb_server = self.app.app.registry.couchdb_server
+        self.db = self.app.app.registry.db
+        if self.docservice:
+            self.setUpDS()
+            self.app.app.registry.docservice_url = 'http://public.docs-sandbox.openprocurement.org'
+
+    def test_multilot_tender(self):
+        # Creating tender with few items
+        for i in xrange(0, 3):
+            self.initial_data['items'].append(deepcopy(self.initial_data['items'][0]))
+            self.initial_data['items'][-1]['description'] = u"Сегрегатори #" + str(i + 1)
+
+        with open('docs/source/lots/tender-with-items-post-attempt-json-data.http', 'w') as self.app.file_obj:
+            response = self.app.post_json('/tenders', {'data': self.initial_data})
+            self.assertEqual(response.status, '201 Created')
+
+        tender = response.json['data']
+        owner_token = response.json['access']['token']
+        self.tender_id = tender['id']
+
+        # Adding first lot
+        lots_ids = []
+
+        with open('docs/source/lots/first-lot-post-attempt.http', 'w') as self.app.file_obj:
+            response = self.app.post_json('/tenders/{}/lots?acc_token={}'.format(self.tender_id, owner_token), {'data': self.initial_lots[0]})
+            self.assertEqual(response.status, '201 Created')
+
+        lots_ids.append(response.json['data']['id'])
+
+        # Adding second lot
+        self.initial_lots[1]['value'] = {'amount': 1000.0}
+
+        with open('docs/source/lots/second-lot-post-attempt.http', 'w') as self.app.file_obj:
+            response = self.app.post_json('/tenders/{}/lots?acc_token={}'.format(self.tender_id, owner_token), {'data': self.initial_lots[1]})
+            self.assertEqual(response.status, '201 Created')
+
+        lots_ids.append(response.json['data']['id'])
+
+        # Adding third lot
+        self.initial_lots[2]['value'] = {'amount': 2000.0}
+
+        with open('docs/source/lots/third-lot-post-attempt.http', 'w') as self.app.file_obj:
+            response = self.app.post_json('/tenders/{}/lots?acc_token={}'.format(self.tender_id, owner_token), {'data': self.initial_lots[2]})
+            self.assertEqual(response.status, '201 Created')
+
+        lots_ids.append(response.json['data']['id'])
+
+        # Bound lots to items
+        patch_items_data = {
+            'items': [
+                {
+                    'relatedLot': lots_ids[0]
+                },
+                {
+                    'relatedLot': lots_ids[1]
+                },
+                {
+                    'relatedLot': lots_ids[2]
+                },
+                {
+                    'relatedLot': lots_ids[2]
+                }
+            ]
+        }
+
+        with open('docs/source/lots/bound-lots-with-items.http', 'w') as self.app.file_obj:
+            response = self.app.patch_json('/tenders/{}?acc_token={}'.format(self.tender_id, owner_token), {'data': patch_items_data})
+            self.assertEqual(response.status, '200 OK')
+
+        with open('docs/source/lots/patch-second-lot.http', 'w') as self.app.file_obj:
+            response = self.app.patch_json('/tenders/{}/lots/{}?acc_token={}'.format(self.tender_id, lots_ids[1], owner_token), {'data': {'value': {'amount': 1500.0}}})
+            self.assertEqual(response.status, '200 OK')
+
+        with open('docs/source/lots/cancel-third-lot.http', 'w') as self.app.file_obj:
+            response = self.app.post_json('/tenders/{}/cancellations?acc_token={}'.format(self.tender_id, owner_token), {'data':
+                {
+                    'reason': 'cancellation reason',
+                    'status': 'active',
+                    'cancellationOf': 'lot',
+                    'relatedLot': lots_ids[2]
+                }})
+            self.assertEqual(response.status, '201 Created')
+
+        del lots_ids[2]
+
+        # Bound lots to items again
+        patch_items_data = {
+            'items': [
+                {},
+                {},
+                {
+                    'relatedLot': lots_ids[1]
+                },
+                {
+                    'relatedLot': lots_ids[1]
+                }
+            ]
+        }
+
+        with open('docs/source/lots/second-bound-lots-with-items.http', 'w') as self.app.file_obj:
+            response = self.app.patch_json('/tenders/{}?acc_token={}'.format(self.tender_id, owner_token), {'data': patch_items_data})
+            self.assertEqual(response.status, '200 OK')
+
+        # Bidding
+        self.set_status('active.tendering')
+        value = self.initial_bids[0].pop('value')
+        lot_values_data = [
+                {
+                    'value': {'amount': value['amount']},
+                    'relatedLot': lots_ids[0]
+                },
+                {
+                    'value': {'amount': value['amount']},
+                    'relatedLot': lots_ids[1]
+                }
+        ]
+        self.initial_bids[0]['lotValues'] = lot_values_data
+
+        self.app.authorization = ('Basic', ('broker', ''))
+        bids_access = {}
+
+        with open('docs/source/lots/register-bidder-with-lot-values.http', 'w') as self.app.file_obj:
+            response = self.app.post_json('/tenders/{}/bids'.format(self.tender_id), {'data': self.initial_bids[0]})
+            self.assertEqual(response.status, '201 Created')
+            bid1_id = response.json['data']['id']
+            bids_access[bid1_id] = response.json['access']['token']
+
+        lot_values_data[0]['value']['amount'] = 300.0
+        lot_values_data[0]['relatedLot'] = lots_ids[1]
+        self.initial_bids[1]['lotValues'] = [lot_values_data[0]]
+        del self.initial_bids[1]['value']
+
+        with open('docs/source/lots/register-second-bidder-with-lot-values.http', 'w') as self.app.file_obj:
+            response = self.app.post_json('/tenders/{}/bids'.format(self.tender_id), {'data': self.initial_bids[1]})
+            bid2_id = response.json['data']['id']
+            bids_access[bid2_id] = response.json['access']['token']
+            self.assertEqual(response.status, '201 Created')
+
+        # get auction info
+        self.set_status('active.auction')
+        self.app.authorization = ('Basic', ('auction', ''))
+        response = self.app.get('/tenders/{}/auction'.format(self.tender_id))
+        auction_bids_data = response.json['data']['bids']
+
+        for lot_id in lots_ids:
+            # posting auction urls
+            response = self.app.patch_json('/tenders/{}/auction/{}'.format(self.tender_id, lot_id), {
+                'data': {
+                    'lots': [
+                        {
+                            'id': i['id'],
+                            'auctionUrl': 'https://tender.auction.url'
+                        }
+                        for i in response.json['data']['lots']
+                    ],
+                    'bids': [
+                        {
+                            'id': i['id'],
+                            'lotValues': [
+                                {
+                                    'relatedLot': j['relatedLot'],
+                                    'participationUrl': 'https://tender.auction.url/for_bid/{}'.format(i['id'])
+                                }
+                                for j in i['lotValues']
+                            ],
+                        }
+                        for i in auction_bids_data
+                    ]
+                }
+            })
+            # posting auction results
+            response = self.app.post_json('/tenders/{}/auction/{}'.format(self.tender_id, lot_id), {'data': {'bids': auction_bids_data}})
+
+        # awarding
+        self.app.authorization = ('Basic', ('broker', ''))
+
+        with open('docs/source/lots/get-awards.http', 'w') as self.app.file_obj:
+            response = self.app.get('/tenders/{}/awards'.format(self.tender_id))
+            self.assertEqual(response.status, '200 OK')
+
+        # get pending award
+        award_id = [i['id'] for i in response.json['data'] if i['status'] == 'pending' and i['lotID'] == lots_ids[0]][0]
+
+        with open('docs/source/lots/confirm-award-for-first-lot.http', 'w') as self.app.file_obj:
+            self.app.patch_json('/tenders/{}/awards/{}?acc_token={}'.format(self.tender_id, award_id, owner_token), {'data': {'status': 'active'}})
+            self.assertEqual(response.status, '200 OK')
+
+        # get pending award
+        response = self.app.get('/tenders/{}/awards?acc_token={}'.format(self.tender_id, owner_token))
+        award_id = [i['id'] for i in response.json['data'] if i['status'] == 'pending' and i['lotID'] == lots_ids[1]][0]
+
+        with open('docs/source/lots/unsuccessful-award-for-second-lot.http', 'w') as self.app.file_obj:
+            self.app.patch_json('/tenders/{}/awards/{}?acc_token={}'.format(self.tender_id, award_id, owner_token), {'data': {'status': 'unsuccessful'}})
+            self.assertEqual(response.status, '200 OK')
+
+        # get pending award
+        response = self.app.get('/tenders/{}/awards?acc_token={}'.format(self.tender_id, owner_token))
+        award_id = [i['id'] for i in response.json['data'] if i['status'] == 'pending' and i['lotID'] == lots_ids[1]][0]
+
+        with open('docs/source/lots/confirm-next-award-for-second-lot.http', 'w') as self.app.file_obj:
+            self.app.patch_json('/tenders/{}/awards/{}?acc_token={}'.format(self.tender_id, award_id, owner_token), {'data': {'status': 'active'}})
+            self.assertEqual(response.status, '200 OK')
