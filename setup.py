@@ -33,10 +33,10 @@ docs_requires = requires + [
 
 entry_points = {
     'paste.app_factory': [
-        'main = openprocurement.api:main'
+        'main = openprocurement.api.app:main'
     ],
     'openprocurement.api.plugins': [
-        'api = openprocurement.api:includeme'
+        'api = openprocurement.api.app:includeme'
     ],
     'openprocurement.api.migrations': [
         'tenders = openprocurement.api.migration:migrate_data'
