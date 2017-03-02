@@ -1,0 +1,57 @@
+PATCH /api/2.3/tenders/4b9150ff75014ecaa01a988020b6afa7/awards/0f89380dc96d41df8c80ee821fddffbc?acc_token=8e3b5691ae004dd8946682b11788f75c HTTP/1.0
+Authorization: Basic YnJva2VyOg==
+Content-Length: 36
+Content-Type: application/json
+Host: api-sandbox.openprocurement.org
+
+{
+  "data": {
+    "status": "unsuccessful"
+  }
+}
+
+
+200 OK
+Content-Type: application/json; charset=UTF-8
+Location: http://api-sandbox.openprocurement.org/api/2.3/tenders/4b9150ff75014ecaa01a988020b6afa7/awards/9289d0e62c9543c5be299d46f0e4e124
+
+{
+  "data": {
+    "status": "unsuccessful", 
+    "lotID": "4a053762d1e04b289dc84b64c95b76ee", 
+    "complaintPeriod": {
+      "startDate": "2017-03-02T16:39:19.950667+02:00", 
+      "endDate": "2017-03-02T16:41:20.372066+02:00"
+    }, 
+    "suppliers": [
+      {
+        "contactPoint": {
+          "name": "Державне управління справами", 
+          "telephone": "0440000000"
+        }, 
+        "identifier": {
+          "scheme": "UA-EDR", 
+          "id": "00037256", 
+          "uri": "http://www.dus.gov.ua/"
+        }, 
+        "name": "Державне управління справами", 
+        "address": {
+          "postalCode": "01220", 
+          "countryName": "Україна", 
+          "streetAddress": "вул. Банкова, 11, корпус 1", 
+          "region": "м. Київ", 
+          "locality": "м. Київ"
+        }
+      }
+    ], 
+    "bid_id": "e8bc98da44624bdb917ce6d74518c5a3", 
+    "value": {
+      "currency": "UAH", 
+      "amount": 800.0, 
+      "valueAddedTaxIncluded": true
+    }, 
+    "date": "2017-03-02T16:39:20.383035+02:00", 
+    "id": "0f89380dc96d41df8c80ee821fddffbc"
+  }
+}
+

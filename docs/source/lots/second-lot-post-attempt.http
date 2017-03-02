@@ -1,0 +1,45 @@
+POST /api/2.3/tenders/4b9150ff75014ecaa01a988020b6afa7/lots?acc_token=8e3b5691ae004dd8946682b11788f75c HTTP/1.0
+Authorization: Basic YnJva2VyOg==
+Content-Length: 145
+Content-Type: application/json
+Host: api-sandbox.openprocurement.org
+
+{
+  "data": {
+    "minimalStep": {
+      "currency": "UAH", 
+      "amount": 35
+    }, 
+    "description": "lot description", 
+    "value": {
+      "amount": 1000.0
+    }, 
+    "title": "lot title"
+  }
+}
+
+
+201 Created
+Content-Type: application/json; charset=UTF-8
+Location: http://api-sandbox.openprocurement.org/api/2.3/tenders/4b9150ff75014ecaa01a988020b6afa7/lots/4a053762d1e04b289dc84b64c95b76ee
+
+{
+  "data": {
+    "status": "active", 
+    "description": "lot description", 
+    "title": "lot title", 
+    "minimalStep": {
+      "currency": "UAH", 
+      "amount": 35.0, 
+      "valueAddedTaxIncluded": true
+    }, 
+    "value": {
+      "currency": "UAH", 
+      "amount": 1000.0, 
+      "valueAddedTaxIncluded": true
+    }, 
+    "date": "2017-03-02T16:39:17.937214+02:00", 
+    "id": "4a053762d1e04b289dc84b64c95b76ee"
+  }
+}
+

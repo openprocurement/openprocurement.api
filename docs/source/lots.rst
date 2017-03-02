@@ -88,74 +88,46 @@ Announcing Multilot tender
 One has to create Multilot tender in several steps. There should be
 tender created with items.
 
-.. sourcecode:: http
-
-  POST /tenders HTTP/1.1
-
-  {"data": {
-     "items":[
-        {"description": "", ... },
-        {"description": "", ... }
-       ],
-     ...
-    }}
-
-.. sourcecode:: http
-
-  HTTP/1.1 201 Created
-  Location: /tenders/64e93250be76435397e8c992ed4214d1
-
-  {"data": {
-    "items":[
-        {"id": "c25264295db0463ba533fd380756cff1", "description": "", ... },
-        {"id": "f94aa51e2af944e08e02a4063121f93c", "description": "", ... }
-      ],
-    ...
-    },
-    ...
-  }
+.. include:: lots/tender-with-items-post-attempt-json-data.http
+   :code:
 
 Then all lots have to be added to Tender with separate requests.
 
-.. sourcecode:: http
-
-  POST /tenders/64e93250be76435397e8c992ed4214d1/lots HTTP/1.1
-
-  {"data": {..}}
-
-.. sourcecode:: http
-
-  HTTP/1.1 201 Created
-  Location: /tenders/64e93250be76435397e8c992ed4214d1/lots/7d774fbf1e86420484c7d1a005cc283f
+.. include:: lots/first-lot-post-attempt.http
+   :code:
 
 2nd lot:
 
-.. sourcecode:: http
+.. include:: lots/second-lot-post-attempt.http
+   :code:
 
-  POST /tenders/64e93250be76435397e8c992ed4214d1/lots HTTP/1.1
+3nd lot:
 
-  {"data": {..}}
+.. include:: lots/third-lot-post-attempt.http
+   :code:
 
-.. sourcecode:: http
+Items should be distributed among the lots:
 
-  HTTP/1.1 201 Created
-  Location: /tenders/64e93250be76435397e8c992ed4214d1/lots/563ef5d999f34d36a5a0e4e4d91d7be1
+.. include:: lots/bound-lots-with-items.http
+   :code:
 
-Items should be distributed among the lots.
+Editing Lots
+--------------------------
 
-.. sourcecode:: http
+Lots can be edited, using Patch request. Changing second Lot's value:
 
-  PATCH /tenders/64e93250be76435397e8c992ed4214d1 HTTP/1.1
+.. include:: lots/patch-second-lot.http
+   :code:
 
-  {"data": {
-    "items":[
-        {"id": "c25264295db0463ba533fd380756cff1", "relatedLot": "7d774fbf1e86420484c7d1a005cc283f"},
-        {"id": "f94aa51e2af944e08e02a4063121f93c", "relatedLot": "563ef5d999f34d36a5a0e4e4d91d7be1"}
-      ],
-    ...
-    },
-    ...
-  }
+Lot can be cancelled:
+
+.. include:: lots/cancel-third-lot.http
+   :code:
+
+Change the Items distribution among the lots:
+
+.. include:: lots/second-bound-lots-with-items.http
+   :code:
 
 Bidding in Multilot tender
 --------------------------
@@ -164,29 +136,15 @@ Bid should have `lotValues` property consisting of multiple :ref:`LotValue`
 objects.  Each should reference lot the bid is placed against via
 `relatedLot` property.
 
-.. sourcecode:: http
+Register Bid for all active lots:
 
-  POST /tenders/64e93250be76435397e8c992ed4214d1/bids HTTP/1.1
+.. include:: lots/register-bidder-with-lot-values.http
+   :code:
 
-  {"data": {
-    "lotValues": [
-      {
-        "value": {"currency": "UAH", "amount": 7750.0, "valueAddedTaxIncluded": true},
-        "reatedLot": "7d774fbf1e86420484c7d1a005cc283f",
-        "date": "2015-11-01T12:43:12.482645+02:00"
-      }, {
-        "value": {"currency": "UAH", "amount": 8125.0, "valueAddedTaxIncluded": true},
-        "reatedLot": "563ef5d999f34d36a5a0e4e4d91d7be1",
-        "date": "2015-11-01T12:43:12.482645+02:00"
-      }
-    ],
-    ...
-  }}
+Register Bid only for second lot:
 
-.. sourcecode:: http
-
-  HTTP/1.1 201 Created
-  Location: /tenders/64e93250be76435397e8c992ed4214d1/bids/ae836da01ef749e494427dc591d36062
+.. include:: lots/register-second-bidder-with-lot-values.http
+   :code:
 
 Auction participation URLs are available for each of the submitted lots.
 
@@ -197,35 +155,24 @@ After Auctions are over each active lot has its own awarding process started.
 I.e.  there are multiple award objects created in :ref:`Tender` each
 requiring decision (disqualification or acceptance).
 
-.. sourcecode:: http
+.. include:: lots/get-awards.http
+   :code:
 
-  GET /tenders/64e93250be76435397e8c992ed4214d1/awards HTTP/1.1
+Confirming the Award for first Lot:
 
-.. sourcecode:: http
+.. include:: lots/confirm-award-for-first-lot.http
+   :code:
 
-  HTTP/1.1 200 OK
+Cancel the Award for second Lot:
 
-  {"data": [
-      {
-          "status": "pending",
-          "bid_id": "ae836da01ef749e494427dc591d36062",
-          "value": {"currency": "UAH", "amount": 7750.0, "valueAddedTaxIncluded": true},
-          "id": "c3179dd8609340a7ba9e5fe91762f564",
-          "lotId": "7d774fbf1e86420484c7d1a005cc283f",
-          "..."
-      }, {
-          "status": "pending",
-          "bid_id": "ae836da01ef749e494427dc591d36062",
-          "value": {"currency": "UAH", "amount": 8125.0, "valueAddedTaxIncluded": true},
-          "id": "c99e30174b10418bac026a77d41288d7",
-          "lotId": "563ef5d999f34d36a5a0e4e4d91d7be1",
-          "..."
-      }
-    ]
-  }
+.. include:: lots/unsuccessful-award-for-second-lot.http
+   :code:
 
+Confirming the next pending Award for second Lot:
+
+.. include:: lots/confirm-next-award-for-second-lot.http
+   :code:
 
 When all qualification processes end, and all stand still periods end, the
 whole tender switch state to either `complete` or `unsuccessful` (if awads
 for all lots are `unsuccessful`).
-

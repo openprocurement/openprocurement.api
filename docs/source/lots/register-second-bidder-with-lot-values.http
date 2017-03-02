@@ -1,0 +1,88 @@
+POST /api/2.3/tenders/4b9150ff75014ecaa01a988020b6afa7/bids HTTP/1.0
+Authorization: Basic YnJva2VyOg==
+Content-Length: 912
+Content-Type: application/json
+Host: api-sandbox.openprocurement.org
+
+{
+  "data": {
+    "lotValues": [
+      {
+        "relatedLot": "4a053762d1e04b289dc84b64c95b76ee", 
+        "value": {
+          "amount": 800.0
+        }
+      }
+    ], 
+    "tenderers": [
+      {
+        "contactPoint": {
+          "name": "Державне управління справами", 
+          "telephone": "0440000000"
+        }, 
+        "identifier": {
+          "scheme": "UA-EDR", 
+          "id": "00037256", 
+          "uri": "http://www.dus.gov.ua/"
+        }, 
+        "name": "Державне управління справами", 
+        "address": {
+          "countryName": "Україна", 
+          "postalCode": "01220", 
+          "region": "м. Київ", 
+          "streetAddress": "вул. Банкова, 11, корпус 1", 
+          "locality": "м. Київ"
+        }
+      }
+    ]
+  }
+}
+
+
+201 Created
+Content-Type: application/json; charset=UTF-8
+Location: http://api-sandbox.openprocurement.org/api/2.3/tenders/4b9150ff75014ecaa01a988020b6afa7/bids/e8bc98da44624bdb917ce6d74518c5a3
+
+{
+  "access": {
+    "token": "07720491f5cd4a10b08933608dd3751c"
+  }, 
+  "data": {
+    "date": "2017-03-02T16:39:18.919918+02:00", 
+    "status": "active", 
+    "id": "e8bc98da44624bdb917ce6d74518c5a3", 
+    "lotValues": [
+      {
+        "relatedLot": "4a053762d1e04b289dc84b64c95b76ee", 
+        "date": "2017-03-02T16:39:18.919857+02:00", 
+        "value": {
+          "currency": "UAH", 
+          "amount": 800.0, 
+          "valueAddedTaxIncluded": true
+        }
+      }
+    ], 
+    "tenderers": [
+      {
+        "contactPoint": {
+          "name": "Державне управління справами", 
+          "telephone": "0440000000"
+        }, 
+        "identifier": {
+          "scheme": "UA-EDR", 
+          "id": "00037256", 
+          "uri": "http://www.dus.gov.ua/"
+        }, 
+        "name": "Державне управління справами", 
+        "address": {
+          "postalCode": "01220", 
+          "countryName": "Україна", 
+          "streetAddress": "вул. Банкова, 11, корпус 1", 
+          "region": "м. Київ", 
+          "locality": "м. Київ"
+        }
+      }
+    ]
+  }
+}
+
