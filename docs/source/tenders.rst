@@ -6,13 +6,9 @@ Retrieving Tender Information
 
 Getting list of all tenders
 ---------------------------
-.. sourcecode:: http
 
-  GET /tenders HTTP/1.1
-
-.. sourcecode:: http
-
-  HTTP/1.1 200 OK
+.. include:: tutorial/initial-tender-listing.http
+   :code:
 
 Sorting
 ~~~~~~~
@@ -57,29 +53,15 @@ fetching subsequent page.  The `next_page` guarantees that all changes
 from the last request are included in the new batch.
 
 The safe frequency of synchronization requests is once per 5 minutes.
- 
+
 Reading the individual tender information
 -----------------------------------------
-.. sourcecode:: http
 
-  GET /tenders/64e93250be76435397e8c992ed4214d1 HTTP/1.1
-
-.. sourcecode:: http
-
-  HTTP/1.1 200 OK
+.. include:: tutorial/blank-tender-view.http
+   :code:
 
 Reading the tender documents list
 ---------------------------------
-
-.. sourcecode:: http
-
-  GET /tenders/64e93250be76435397e8c992ed4214d1/documents HTTP/1.1
-
-.. sourcecode:: http
-
-  HTTP/1.1 200 OK
-
-Example request:
 
 .. include:: tutorial/tender-documents-2.http
    :code:
