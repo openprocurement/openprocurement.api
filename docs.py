@@ -1447,3 +1447,103 @@ class TenderMultiLotResourceTest(BaseTenderWebTest):
         with open('docs/source/lots/confirm-next-award-for-second-lot.http', 'w') as self.app.file_obj:
             self.app.patch_json('/tenders/{}/awards/{}?acc_token={}'.format(self.tender_id, award_id, owner_token), {'data': {'status': 'active'}})
             self.assertEqual(response.status, '200 OK')
+
+
+class TenderBiddingResourceTest(BaseTenderWebTest):
+    initial_data = deepcopy(test_tender_data)
+    initial_bids = deepcopy(test_bids)
+    docservice = True
+
+    def setUp(self):
+        self.app = DumpsTestAppwebtest(
+            'config:tests.ini', relative_to=os.path.dirname(base_test.__file__))
+        self.app.RequestClass = PrefixedRequestClass
+        self.app.authorization = ('Basic', ('broker', ''))
+        self.couchdb_server = self.app.app.registry.couchdb_server
+        self.db = self.app.app.registry.db
+        if self.docservice:
+            self.setUpDS()
+            self.app.app.registry.docservice_url = 'http://public.docs-sandbox.openprocurement.org'
+
+    def generate_docservice_url(self):
+        return super(TenderBiddingResourceTest, self).generate_docservice_url().replace('/localhost/', '/public.docs-sandbox.openprocurement.org/')
+
+    def test_bidding(self):
+        # create tender
+        response = self.app.post_json('/tenders', {'data': self.initial_data})
+        self.assertEqual(response.status, '201 Created')
+        tender = response.json['data']
+        self.tender_id = tender['id']
+
+
+        self.set_status('active.tendering')
+        self.app.authorization = ('Basic', ('broker', ''))
+        bids_access = {}
+
+        with open('docs/source/bidding/register-bidder.http', 'w') as self.app.file_obj:
+            response = self.app.post_json('/tenders/{}/bids'.format(self.tender_id), {'data': self.initial_bids[0]})
+            self.assertEqual(response.status, '201 Created')
+            bid1_id = response.json['data']['id']
+            bids_access[bid1_id] = response.json['access']['token']
+
+        with open('docs/source/bidding/upload-bid-proposal.http', 'w') as self.app.file_obj:
+            response = self.app.post_json('/tenders/{}/bids/{}/documents?acc_token={}'.format(self.tender_id, bid1_id, bids_access[bid1_id]),
+                {'data': {
+                    'title': u'Proposal.pdf',
+                    'url': self.generate_docservice_url(),
+                    'hash': 'md5:' + '0' * 32,
+                    'format': 'application/pdf',
+                }})
+            doc_id = response.json['data']['id']
+            self.assertEqual(response.status, '201 Created')
+
+        with open('docs/source/bidding/patch-bid.http', 'w') as self.app.file_obj:
+            response = self.app.patch_json('/tenders/{}/bids/{}?acc_token={}'.format(
+                self.tender_id, bid1_id, bids_access[bid1_id]), {'data': {'value': {'amount': 400}}})
+            self.assertEqual(response.status, '200 OK')
+
+        with open('docs/source/bidding/update-bid-document.http', 'w') as self.app.file_obj:
+            response = self.app.patch_json('/tenders/{}/bids/{}/documents/{}?acc_token={}'.format(
+                self.tender_id, bid1_id, doc_id, bids_access[bid1_id]), {'data': {'title': u'New title.pdf'}})
+            self.assertEqual(response.status, '200 OK')
+
+        with open('docs/source/bidding/cancel-bid.http', 'w') as self.app.file_obj:
+            response = self.app.delete('/tenders/{}/bids/{}?acc_token={}'.format(self.tender_id, bid1_id, bids_access[bid1_id]))
+            self.assertEqual(response.status, '200 OK')
+
+        # create 2 more bids
+        for i in xrange(0, 2):
+            response = self.app.post_json('/tenders/{}/bids'.format(self.tender_id), {'data': self.initial_bids[i]})
+            self.assertEqual(response.status, '201 Created')
+            bid_id = response.json['data']['id']
+
+        # get auction info
+        self.set_status('active.auction')
+        self.app.authorization = ('Basic', ('auction', ''))
+        response = self.app.get('/tenders/{}/auction'.format(self.tender_id))
+        auction_bids_data = response.json['data']['bids']
+
+        # posting auction urls
+        response = self.app.patch_json('/tenders/{}/auction'.format(self.tender_id),
+            {
+                'data': {
+                    'auctionUrl': 'https://tender.auction.url',
+                    'bids': [
+                        {
+                            'id': i['id'],
+                            'participationUrl': 'https://tender.auction.url/for_bid/{}'.format(i['id'])
+                        }
+                        for i in auction_bids_data
+                    ]
+            }})
+        # posting auction results
+        response = self.app.post_json('/tenders/{}/auction'.format(self.tender_id),
+                                      {'data': {'bids': auction_bids_data}})
+
+        with open('docs/source/bidding/get-all-bids.http', 'w') as self.app.file_obj:
+            response = self.app.get('/tenders/{}/bids'.format(self.tender_id))
+            self.assertEqual(response.status, '200 OK')
+
+        with open('docs/source/bidding/get-bid-by-id.http', 'w') as self.app.file_obj:
+            response = self.app.get('/tenders/{}/bids/{}'.format(self.tender_id, bid_id))
+            self.assertEqual(response.status, '200 OK')

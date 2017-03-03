@@ -1,0 +1,29 @@
+PATCH /api/2.3/tenders/f448b78835e64a9599566e5e305daf9f/bids/419e5bf6f28847a8826f3b61bae86340/documents/fb89e8af02e243e2a2cb8a35dabb151b?acc_token=b829fcfa49424cf5a820c9de3217a740 HTTP/1.0
+Authorization: Basic YnJva2VyOg==
+Content-Length: 36
+Content-Type: application/json
+Host: api-sandbox.openprocurement.org
+
+{
+  "data": {
+    "title": "New title.pdf"
+  }
+}
+
+
+200 OK
+Content-Type: application/json; charset=UTF-8
+
+{
+  "data": {
+    "hash": "md5:00000000000000000000000000000000", 
+    "title": "New title.pdf", 
+    "url": "http://api-sandbox.openprocurement.org/api/2.3/tenders/f448b78835e64a9599566e5e305daf9f/bids/419e5bf6f28847a8826f3b61bae86340/documents/fb89e8af02e243e2a2cb8a35dabb151b?download=beea1fa45f764317a054b52a3615c86f", 
+    "format": "application/pdf", 
+    "documentOf": "tender", 
+    "datePublished": "2017-03-03T15:50:00.732548+02:00", 
+    "id": "fb89e8af02e243e2a2cb8a35dabb151b", 
+    "dateModified": "2017-03-03T15:50:00.732582+02:00"
+  }
+}
+
