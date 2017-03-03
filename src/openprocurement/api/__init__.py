@@ -96,6 +96,17 @@ def main(global_config, **settings):
             plugin(config.registry)
 
     config.registry.server_id = settings.get('id', '')
+
+    # search subscribers
+    subscribers_keys = [k for k in settings if k.startswith('subscribers.')]
+    for k in subscribers_keys:
+        subscribers = settings[k].split(',')
+        for subscriber in subscribers:
+            for entry_point in iter_entry_points('openprocurement.{}'.format(k), subscriber):
+                if entry_point:
+                    plugin = entry_point.load()
+                    plugin(config)
+
     config.registry.health_threshold = float(settings.get('health_threshold', 512))
     config.registry.health_threshold_func = settings.get('health_threshold_func', 'all')
     config.registry.update_after = asbool(settings.get('update_after', True))
