@@ -1146,8 +1146,8 @@ class TenderResourceTest(BaseTenderWebTest):
 
 
 class TenderFeaturesResourceTest(BaseTenderWebTest):
-    initial_data = test_features_tender_data
-    initial_bids = test_bids
+    initial_data = deepcopy(test_features_tender_data)
+    initial_bids = deepcopy(test_bids)
 
     def setUp(self):
         self.app = DumpsTestAppwebtest(
@@ -1161,40 +1161,25 @@ class TenderFeaturesResourceTest(BaseTenderWebTest):
             self.app.app.registry.docservice_url = 'http://public.docs-sandbox.openprocurement.org'
 
     def test_features_tender(self):
-        request_path = '/tenders?opt_pretty=1'
-
         # Creating tender with features
-        #
-
         with open('docs/source/tutorial/tender-with-features-post-attempt-json-data.http', 'w') as self.app.file_obj:
             response = self.app.post_json(
-                '/tenders?opt_pretty=1', {'data': test_features_tender_data})
+                '/tenders?opt_pretty=1', {'data': self.initial_data})
             self.assertEqual(response.status, '201 Created')
         tender = response.json['data']
         owner_token = response.json['access']['token']
         self.tender_id = tender['id']
 
-        # Removing features
-        #
-        remove_features_data = {
-            'features': []
-        }
-
         with open('docs/source/tutorial/remove-features.http', 'w') as self.app.file_obj:
-            response = self.app.patch_json('/tenders/{}?acc_token={}'.format(tender['id'], owner_token), {'data': remove_features_data})
+            response = self.app.patch_json('/tenders/{}?acc_token={}'.format(tender['id'], owner_token), {'data': {'features': []}})
 
-
-        # Adding features
-        #
-        add_features_data = deepcopy(test_features_tender_data['features'])
+        add_features_data = deepcopy(self.initial_data['features'])
         add_features_data[0]['code'] = 'OCDS-000111-AIR-INTAKE'
         add_features_data[1]['code'] = 'OCDS-000222-YEARS'
 
         with open('docs/source/tutorial/add-features.http', 'w') as self.app.file_obj:
             response = self.app.patch_json('/tenders/{}?acc_token={}'.format(tender['id'], owner_token), {'data': {'features': add_features_data}})
 
-        # Modifying features
-        #
         patch_features_data = {
             'features': [
                 {
@@ -1209,13 +1194,10 @@ class TenderFeaturesResourceTest(BaseTenderWebTest):
         with open('docs/source/tutorial/patch-features.http', 'w') as self.app.file_obj:
             response = self.app.patch_json('/tenders/{}?acc_token={}'.format(tender['id'], owner_token), {'data': patch_features_data})
 
-        # Registering bid
-        #
-
-        bid_with_feature = deepcopy(self.initial_bids[0])
-        bid_with_feature['parameters'] = patch_features_data['features']
-        bid_with_feature['parameters'][0]['value'] = 0.1
-        bid_with_feature['parameters'][1]['value'] = 0.15
+        # Bidding
+        self.initial_bids[0]['parameters'] = patch_features_data['features']
+        self.initial_bids[0]['parameters'][0]['value'] = 0.1
+        self.initial_bids[0]['parameters'][1]['value'] = 0.15
 
         self.set_status('active.tendering')
         self.app.authorization = ('Basic', ('broker', ''))
@@ -1223,7 +1205,7 @@ class TenderFeaturesResourceTest(BaseTenderWebTest):
 
         with open('docs/source/tutorial/register-bidder-with-features.http', 'w') as self.app.file_obj:
             response = self.app.post_json('/tenders/{}/bids'.format(
-                self.tender_id), {'data': bid_with_feature })
+                self.tender_id), {'data': self.initial_bids[0] })
             bid1_id = response.json['data']['id']
             bids_access[bid1_id] = response.json['access']['token']
             self.assertEqual(response.status, '201 Created')
