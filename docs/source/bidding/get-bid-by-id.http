@@ -1,0 +1,43 @@
+GET /api/2.3/tenders/f448b78835e64a9599566e5e305daf9f/bids/e3520570d92242698dea9c3c8517a455 HTTP/1.0
+Authorization: Basic YXVjdGlvbjo=
+Host: api-sandbox.openprocurement.org
+
+
+200 OK
+Content-Type: application/json; charset=UTF-8
+
+{
+  "data": {
+    "status": "active", 
+    "value": {
+      "currency": "UAH", 
+      "amount": 469.0, 
+      "valueAddedTaxIncluded": true
+    }, 
+    "tenderers": [
+      {
+        "contactPoint": {
+          "name": "Державне управління справами", 
+          "telephone": "0440000000"
+        }, 
+        "identifier": {
+          "scheme": "UA-EDR", 
+          "id": "00037256", 
+          "uri": "http://www.dus.gov.ua/"
+        }, 
+        "name": "Державне управління справами", 
+        "address": {
+          "postalCode": "01220", 
+          "countryName": "Україна", 
+          "streetAddress": "вул. Банкова, 11, корпус 1", 
+          "region": "м. Київ", 
+          "locality": "м. Київ"
+        }
+      }
+    ], 
+    "date": "2017-03-03T15:50:00.995594+02:00", 
+    "id": "e3520570d92242698dea9c3c8517a455", 
+    "participationUrl": "https://tender.auction.url/for_bid/e3520570d92242698dea9c3c8517a455"
+  }
+}
+
