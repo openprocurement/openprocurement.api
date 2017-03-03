@@ -142,10 +142,11 @@ def set_api_security(settings):
 
 def bootstrap_api_security():
     parser = argparse.ArgumentParser(description='---- Bootstrap API Security ----')
+    parser.add_argument('section', type=str, help='Section in configuration file')
     parser.add_argument('config', type=str, help='Path to configuration file')
     params = parser.parse_args()
     if os.path.isfile(params.config):
         conf = ConfigParser()
         conf.read(params.config)
-        settings = {k: v for k, v in conf.items('app:main')}
+        settings = {k: v for k, v in conf.items(params.section)}
         set_api_security(settings)
