@@ -1,0 +1,103 @@
+POST /api/2.3/tenders/4b9150ff75014ecaa01a988020b6afa7/bids HTTP/1.0
+Authorization: Basic YnJva2VyOg==
+Content-Length: 992
+Content-Type: application/json
+Host: api-sandbox.openprocurement.org
+
+{
+  "data": {
+    "lotValues": [
+      {
+        "relatedLot": "efb53f084735456daf93cd7d7c8bdbc2", 
+        "value": {
+          "amount": 400.0
+        }
+      }, 
+      {
+        "relatedLot": "4a053762d1e04b289dc84b64c95b76ee", 
+        "value": {
+          "amount": 900.0
+        }
+      }
+    ], 
+    "tenderers": [
+      {
+        "contactPoint": {
+          "name": "Державне управління справами", 
+          "telephone": "0440000000"
+        }, 
+        "identifier": {
+          "scheme": "UA-EDR", 
+          "id": "00037256", 
+          "uri": "http://www.dus.gov.ua/"
+        }, 
+        "name": "Державне управління справами", 
+        "address": {
+          "countryName": "Україна", 
+          "postalCode": "01220", 
+          "region": "м. Київ", 
+          "streetAddress": "вул. Банкова, 11, корпус 1", 
+          "locality": "м. Київ"
+        }
+      }
+    ]
+  }
+}
+
+
+201 Created
+Content-Type: application/json; charset=UTF-8
+Location: http://api-sandbox.openprocurement.org/api/2.3/tenders/4b9150ff75014ecaa01a988020b6afa7/bids/c4936db8d8ac496f9a74ccb4106d070c
+
+{
+  "access": {
+    "token": "0714e8f3079d4309bf751b27b59c6577"
+  }, 
+  "data": {
+    "date": "2017-03-02T16:39:18.809227+02:00", 
+    "status": "active", 
+    "id": "c4936db8d8ac496f9a74ccb4106d070c", 
+    "lotValues": [
+      {
+        "relatedLot": "efb53f084735456daf93cd7d7c8bdbc2", 
+        "date": "2017-03-02T16:39:18.808717+02:00", 
+        "value": {
+          "currency": "UAH", 
+          "amount": 400.0, 
+          "valueAddedTaxIncluded": true
+        }
+      }, 
+      {
+        "relatedLot": "4a053762d1e04b289dc84b64c95b76ee", 
+        "date": "2017-03-02T16:39:18.809166+02:00", 
+        "value": {
+          "currency": "UAH", 
+          "amount": 900.0, 
+          "valueAddedTaxIncluded": true
+        }
+      }
+    ], 
+    "tenderers": [
+      {
+        "contactPoint": {
+          "name": "Державне управління справами", 
+          "telephone": "0440000000"
+        }, 
+        "identifier": {
+          "scheme": "UA-EDR", 
+          "id": "00037256", 
+          "uri": "http://www.dus.gov.ua/"
+        }, 
+        "name": "Державне управління справами", 
+        "address": {
+          "postalCode": "01220", 
+          "countryName": "Україна", 
+          "streetAddress": "вул. Банкова, 11, корпус 1", 
+          "region": "м. Київ", 
+          "locality": "м. Київ"
+        }
+      }
+    ]
+  }
+}
+

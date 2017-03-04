@@ -1,0 +1,85 @@
+GET /api/2.3/tenders/4b9150ff75014ecaa01a988020b6afa7/awards HTTP/1.0
+Authorization: Basic YnJva2VyOg==
+Host: api-sandbox.openprocurement.org
+
+
+200 OK
+Content-Type: application/json; charset=UTF-8
+
+{
+  "data": [
+    {
+      "status": "pending", 
+      "lotID": "efb53f084735456daf93cd7d7c8bdbc2", 
+      "complaintPeriod": {
+        "startDate": "2017-03-02T16:39:19.950667+02:00"
+      }, 
+      "suppliers": [
+        {
+          "contactPoint": {
+            "name": "Державне управління справами", 
+            "telephone": "0440000000"
+          }, 
+          "identifier": {
+            "scheme": "UA-EDR", 
+            "id": "00037256", 
+            "uri": "http://www.dus.gov.ua/"
+          }, 
+          "name": "Державне управління справами", 
+          "address": {
+            "postalCode": "01220", 
+            "countryName": "Україна", 
+            "streetAddress": "вул. Банкова, 11, корпус 1", 
+            "region": "м. Київ", 
+            "locality": "м. Київ"
+          }
+        }
+      ], 
+      "bid_id": "c4936db8d8ac496f9a74ccb4106d070c", 
+      "value": {
+        "currency": "UAH", 
+        "amount": 400.0, 
+        "valueAddedTaxIncluded": true
+      }, 
+      "date": "2017-03-02T16:39:19.950937+02:00", 
+      "id": "82987429a7f24d0cb7227b5365f7e7c6"
+    }, 
+    {
+      "status": "pending", 
+      "lotID": "4a053762d1e04b289dc84b64c95b76ee", 
+      "complaintPeriod": {
+        "startDate": "2017-03-02T16:39:19.950667+02:00"
+      }, 
+      "suppliers": [
+        {
+          "contactPoint": {
+            "name": "Державне управління справами", 
+            "telephone": "0440000000"
+          }, 
+          "identifier": {
+            "scheme": "UA-EDR", 
+            "id": "00037256", 
+            "uri": "http://www.dus.gov.ua/"
+          }, 
+          "name": "Державне управління справами", 
+          "address": {
+            "postalCode": "01220", 
+            "countryName": "Україна", 
+            "streetAddress": "вул. Банкова, 11, корпус 1", 
+            "region": "м. Київ", 
+            "locality": "м. Київ"
+          }
+        }
+      ], 
+      "bid_id": "e8bc98da44624bdb917ce6d74518c5a3", 
+      "value": {
+        "currency": "UAH", 
+        "amount": 800.0, 
+        "valueAddedTaxIncluded": true
+      }, 
+      "date": "2017-03-02T16:39:19.951872+02:00", 
+      "id": "0f89380dc96d41df8c80ee821fddffbc"
+    }
+  ]
+}
+
