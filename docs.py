@@ -270,10 +270,8 @@ class DumpsTestAppwebtest(TestApp):
         return resp
 
 
-class TenderResourceTest(BaseTenderWebTest):
-    initial_data = test_tender_data
-    initial_bids = test_bids
-    docservice = True
+class BaseTenderDocsTest(BaseTenderWebTest):
+    """ Base class for all documentation generators """
 
     def setUp(self):
         self.app = DumpsTestAppwebtest(
@@ -287,7 +285,13 @@ class TenderResourceTest(BaseTenderWebTest):
             self.app.app.registry.docservice_url = 'http://public.docs-sandbox.openprocurement.org'
 
     def generate_docservice_url(self):
-        return super(TenderResourceTest, self).generate_docservice_url().replace('/localhost/', '/public.docs-sandbox.openprocurement.org/')
+        return super(BaseTenderDocsTest, self).generate_docservice_url().replace('/localhost/', '/public.docs-sandbox.openprocurement.org/')
+
+
+class TenderResourceTest(BaseTenderDocsTest):
+    initial_data = test_tender_data
+    initial_bids = test_bids
+    docservice = True
 
     def test_docs_2pc(self):
         # Creating tender in draft status
@@ -1145,20 +1149,9 @@ class TenderResourceTest(BaseTenderWebTest):
             self.assertEqual(response.status, '200 OK')
 
 
-class TenderFeaturesResourceTest(BaseTenderWebTest):
+class TenderFeaturesResourceTest(BaseTenderDocsTest):
     initial_data = test_features_tender_data
     initial_bids = test_bids
-
-    def setUp(self):
-        self.app = DumpsTestAppwebtest(
-            'config:tests.ini', relative_to=os.path.dirname(base_test.__file__))
-        self.app.RequestClass = PrefixedRequestClass
-        self.app.authorization = ('Basic', ('broker', ''))
-        self.couchdb_server = self.app.app.registry.couchdb_server
-        self.db = self.app.app.registry.db
-        if self.docservice:
-            self.setUpDS()
-            self.app.app.registry.docservice_url = 'http://public.docs-sandbox.openprocurement.org'
 
     def test_features_tender(self):
         request_path = '/tenders?opt_pretty=1'
@@ -1229,21 +1222,10 @@ class TenderFeaturesResourceTest(BaseTenderWebTest):
             self.assertEqual(response.status, '201 Created')
 
 
-class TenderMultiLotResourceTest(BaseTenderWebTest):
+class TenderMultiLotResourceTest(BaseTenderDocsTest):
     initial_data = deepcopy(test_tender_data)
     initial_bids = deepcopy(test_bids)
     initial_lots = 3 * deepcopy(test_lots)
-
-    def setUp(self):
-        self.app = DumpsTestAppwebtest(
-            'config:tests.ini', relative_to=os.path.dirname(base_test.__file__))
-        self.app.RequestClass = PrefixedRequestClass
-        self.app.authorization = ('Basic', ('broker', ''))
-        self.couchdb_server = self.app.app.registry.couchdb_server
-        self.db = self.app.app.registry.db
-        if self.docservice:
-            self.setUpDS()
-            self.app.app.registry.docservice_url = 'http://public.docs-sandbox.openprocurement.org'
 
     def test_multilot_tender(self):
         # Creating tender with few items
@@ -1443,24 +1425,10 @@ class TenderMultiLotResourceTest(BaseTenderWebTest):
             self.assertEqual(response.status, '200 OK')
 
 
-class TenderBiddingResourceTest(BaseTenderWebTest):
+class TenderBiddingResourceTest(BaseTenderDocsTest):
     initial_data = deepcopy(test_tender_data)
     initial_bids = deepcopy(test_bids)
     docservice = True
-
-    def setUp(self):
-        self.app = DumpsTestAppwebtest(
-            'config:tests.ini', relative_to=os.path.dirname(base_test.__file__))
-        self.app.RequestClass = PrefixedRequestClass
-        self.app.authorization = ('Basic', ('broker', ''))
-        self.couchdb_server = self.app.app.registry.couchdb_server
-        self.db = self.app.app.registry.db
-        if self.docservice:
-            self.setUpDS()
-            self.app.app.registry.docservice_url = 'http://public.docs-sandbox.openprocurement.org'
-
-    def generate_docservice_url(self):
-        return super(TenderBiddingResourceTest, self).generate_docservice_url().replace('/localhost/', '/public.docs-sandbox.openprocurement.org/')
 
     def test_bidding(self):
         # create tender
