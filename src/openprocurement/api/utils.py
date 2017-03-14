@@ -40,7 +40,9 @@ SESSION = Session()
 json_view = partial(view, renderer='json')
 
 
-def route_prefix(settings={}):
+def route_prefix(settings=None):
+    if settings is None:
+        settings = {}
     return '/api/{}'.format(settings.get('api_version', VERSION))
 
 
@@ -841,7 +843,9 @@ def set_renderer(event):
         return True
 
 
-def fix_url(item, app_url, settings={}):
+def fix_url(item, app_url, settings=None):
+    if settings is None:
+        settings = {}
     if isinstance(item, list):
         [
             fix_url(i, app_url, settings)
