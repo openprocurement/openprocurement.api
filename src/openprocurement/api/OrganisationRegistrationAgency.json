@@ -510,6 +510,14 @@
          "description":null
       },
       {
+         "category": "JP",
+         "code": "JP-JCN",
+         "description": "A code allocated to a company by the Japanese National Tax Agency. The registry itself is open and searchable by JCN (in Japanese only), but only limited information is available. More information on the corporate number (JCN) can be found here - http://www.nta.go.jp/foreign_language/corporate_number/ (National Tax Agency website). ",
+         "name": "JCN (Japanese Corporate Number). Japanese Corporate Registry - Houjintouki (\u6cd5\u4eba\u767b\u8a18)",
+         "public-database": true,
+         "url": "http://www.houjin-bangou.nta.go.jp/"
+      },
+      {
          "category":"KE",
          "code":"KE-NCB",
          "name":"NGO's Coordination Board",
