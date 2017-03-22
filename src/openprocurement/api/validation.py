@@ -5,6 +5,10 @@ from schematics.exceptions import (
 from openprocurement.api.utils import apply_data_patch, update_logging_context
 
 
+class ViewPermissionValidationError(Exception):
+    """Base class for validation exceptions in validation modules."""
+
+
 def validate_json_data(request):
     try:
         json = request.json_body
