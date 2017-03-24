@@ -2,8 +2,7 @@
 from schematics.exceptions import (
     ModelValidationError, ModelConversionError, ValidationError
 )
-from openprocurement.api.utils import apply_data_patch, update_logging_context
-from openprocurement.tender.core.utils import error_handler
+from openprocurement.api.utils import apply_data_patch, update_logging_context, error_handler
 
 
 def validate_json_data(request):
