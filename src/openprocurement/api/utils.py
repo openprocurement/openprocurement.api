@@ -9,6 +9,7 @@ from functools import partial
 from jsonpatch import make_patch, apply_patch as _apply_patch
 from openprocurement.api.traversal import factory
 from rfc6266 import build_header
+from hashlib import sha512
 from time import time as ttime
 from urllib import quote, unquote, urlencode
 from urlparse import urlparse, urlunsplit, parse_qsl
@@ -19,16 +20,17 @@ from Crypto.Cipher import AES
 from cornice.util import json_error
 from json import dumps
 
+from schematics.types import StringType
 from schematics.exceptions import ValidationError
 from openprocurement.api.constants import LOGGER
 from openprocurement.api.constants import (
-    ADDITIONAL_CLASSIFICATIONS_SCHEMES, ADDITIONAL_CLASSIFICATIONS_SCHEMES_2017,
+    ADDITIONAL_CLASSIFICATIONS_SCHEMES,
+    ADDITIONAL_CLASSIFICATIONS_SCHEMES_2017,
     DOCUMENT_BLACKLISTED_FIELDS, DOCUMENT_WHITELISTED_FIELDS,
     ROUTE_PREFIX, VERSION, TZ, WORKING_DAYS, SESSION
 )
 
 json_view = partial(view, renderer='json')
-
 
 
 def validate_dkpp(items, *args):
@@ -40,10 +42,10 @@ def get_now():
     return datetime.now(TZ)
 
 
-
 def set_parent(item, parent):
     if hasattr(item, '__parent__') and item.__parent__ is None:
         item.__parent__ = parent
+
 
 def generate_id():
     return uuid4().hex
@@ -296,6 +298,12 @@ def set_ownership(item, request):
     if not item.get('owner'):
         item.owner = request.authenticated_userid
     item.owner_token = generate_id()
+    acc = {'token': item.owner_token}
+    if isinstance(getattr(type(item), 'transfer_token', None), StringType):
+        transfer = generate_id()
+        item.transfer_token = sha512(transfer).hexdigest()
+        acc['transfer'] = transfer
+    return acc
 
 
 def request_params(request):
