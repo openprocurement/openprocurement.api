@@ -20,6 +20,7 @@ from cornice.util import json_error
 from json import dumps
 
 from schematics.exceptions import ValidationError
+from openprocurement.api.events import ErrorDesctiptorEvent
 from openprocurement.api.constants import LOGGER
 from openprocurement.api.constants import (
     ADDITIONAL_CLASSIFICATIONS_SCHEMES, ADDITIONAL_CLASSIFICATIONS_SCHEMES_2017,
@@ -80,7 +81,7 @@ def generate_docservice_url(request, doc_id, temporary=True, prefix=None):
     query['KeyID'] = docservice_key.hex_vk()[:8]
     return urlunsplit((parsed_url.scheme, parsed_url.netloc, '/get/{}'.format(doc_id), urlencode(query), ''))
 
-def error_handler(errors, request_params=True, extra_params=None):
+def error_handler(errors, request_params=True):
     params = {
         'ERROR_STATUS': errors.status
     }
@@ -91,8 +92,7 @@ def error_handler(errors, request_params=True, extra_params=None):
     if errors.request.matchdict:
         for x, j in errors.request.matchdict.items():
             params[x.upper()] = j
-    if extra_params and isinstance(extra_params, dict):
-        params.update(extra_params)
+    errors.request.registry.notify(ErrorDesctiptorEvent(errors, params))
     LOGGER.info('Error on processing request "{}"'.format(dumps(errors, indent=4)),
                 extra=context_unpack(errors.request, {'MESSAGE_ID': 'error_handler'}, params))
     return json_error(errors)
