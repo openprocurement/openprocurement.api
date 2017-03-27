@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
-class ContextConfigurator(object):
-    """ Base OP Context Configuration adapter """
+class ContentConfigurator(object):
+    """ Base OP Content Configuration adapter """
 
-    name = "Base Context Configurator"
+    name = "Base Openprocurement Content Configurator"
 
     def __init__(self, context, request):
         self.context = context
