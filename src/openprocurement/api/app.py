@@ -11,7 +11,7 @@ from libnacl.sign import Signer, Verifier
 from logging import getLogger
 from openprocurement.api.auth import AuthenticationPolicy, authenticated_role, check_accreditation
 from openprocurement.api.design import sync_design
-from openprocurement.api.utils import forbidden, add_logging_context, set_logging_context, request_params, set_renderer, beforerender
+from openprocurement.api.utils import forbidden, request_params
 from openprocurement.api.constants import ROUTE_PREFIX
 from pbkdf2 import PBKDF2
 from pkg_resources import iter_entry_points
@@ -71,10 +71,7 @@ def main(global_config, **settings):
     config.add_renderer('prettyjson', JSON(indent=4))
     config.add_renderer('jsonp', JSONP(param_name='opt_jsonp'))
     config.add_renderer('prettyjsonp', JSONP(indent=4, param_name='opt_jsonp'))
-    config.add_subscriber(add_logging_context, NewRequest)
-    config.add_subscriber(set_logging_context, ContextFound)
-    config.add_subscriber(set_renderer, NewRequest)
-    config.add_subscriber(beforerender, BeforeRender)
+    config.scan("openprocurement.api.subscribers")
     config.scan("openprocurement.api.views.spore")
     config.scan("openprocurement.api.views.health")
 
