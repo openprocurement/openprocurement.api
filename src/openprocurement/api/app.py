@@ -71,10 +71,6 @@ def main(global_config, **settings):
     config.add_renderer('prettyjson', JSON(indent=4))
     config.add_renderer('jsonp', JSONP(param_name='opt_jsonp'))
     config.add_renderer('prettyjsonp', JSONP(indent=4, param_name='opt_jsonp'))
-    config.scan("openprocurement.api.subscribers")
-    config.scan("openprocurement.api.views.spore")
-    config.scan("openprocurement.api.views.health")
-
 
     # search for plugins
     plugins = settings.get('plugins') and settings['plugins'].split(',')
