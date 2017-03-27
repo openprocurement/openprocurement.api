@@ -2,5 +2,9 @@
 from zope.interface import Interface
 
 
-class IContextConfigurator(Interface):
-    """ Context configurator """
+class IOPContent(Interface):
+    """ Openprocurement Content """
+
+
+class IContentConfigurator(Interface):
+    """ Content configurator """
