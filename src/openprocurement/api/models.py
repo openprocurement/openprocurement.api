@@ -496,13 +496,6 @@ class Document(Model):
             if data.get('documentOf') == 'item' and relatedItem not in [i.id for i in tender.items]:
                 raise ValidationError(u"relatedItem should be one of items")
 
-    def get_role(self):
-        root = self.__parent__
-        while root.__parent__ is not None:
-            root = root.__parent__
-        request = root.request
-        return 'create' if request.authenticated_role == 'bots' else 'edit'
-
 
 class Identifier(Model):
 
