@@ -501,7 +501,7 @@ class Document(Model):
         while root.__parent__ is not None:
             root = root.__parent__
         request = root.request
-        return 'create' if request.authenticated_role == 'edrapi' else 'edit'
+        return 'create' if request.authenticated_role == 'bots' else 'edit'
 
 
 class Identifier(Model):

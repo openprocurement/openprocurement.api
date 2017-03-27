@@ -89,7 +89,7 @@ class TenderAwardDocumentResource(APIResource):
                         extra=context_unpack(self.request, {'MESSAGE_ID': 'tender_award_document_put'}))
             return {'data': document.serialize("view")}
 
-    @json_view(content_type="application/json", validators=(validate_patch_document_data,), permission='upload_tender_documents')
+    @json_view(content_type="application/json", validators=(validate_patch_document_data,), permission='edit_tender')
     def patch(self):
         """Tender Award Document Update"""
         if not self.validate_award_document('update'):
