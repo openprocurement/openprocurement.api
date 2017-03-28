@@ -2238,6 +2238,23 @@ class TenderAwardDocumentResourceTest(BaseTenderWebTest):
             self.assertIn('KeyID=', tender['awards'][-1]['documents'][-1]["url"])
             self.assertNotIn('Expires=', tender['awards'][-1]['documents'][-1]["url"])
 
+    def test_patch_not_author(self):
+        authorization = self.app.authorization
+        self.app.authorization = ('Basic', ('bot', 'bot'))
+        response = self.app.post('/tenders/{}/awards/{}/documents?acc_token={}'.format(self.tender_id, self.award_id, self.tender_token),
+                                 upload_files=[('file', 'name.doc', 'content')])
+        self.assertEqual(response.status, '201 Created')
+        self.assertEqual(response.content_type, 'application/json')
+        doc_id = response.json["data"]['id']
+        self.assertIn(doc_id, response.headers['Location'])
+
+        self.app.authorization = authorization
+        response = self.app.patch_json('/tenders/{}/awards/{}/documents/{}'.format(self.tender_id, self.award_id, doc_id),
+                                       {"data": {"description": "document description"}}, status=403)
+        self.assertEqual(response.status, '403 Forbidden')
+        self.assertEqual(response.content_type, 'application/json')
+        self.assertEqual(response.json['errors'][0]["description"], "Can update document only author")
+
 
 class TenderAwardDocumentWithDSResourceTest(TenderAwardDocumentResourceTest):
     docservice = True
