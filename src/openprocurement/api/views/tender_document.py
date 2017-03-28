@@ -27,7 +27,8 @@ class TenderDocumentResource(APIResource):
     def validate_document(self, operation):
         if self.request.authenticated_role != 'auction' and self.request.validated['tender_status'] != 'active.enquiries' or \
            self.request.authenticated_role == 'auction' and self.request.validated['tender_status'] not in ['active.auction', 'active.qualification']:
-            self.request.errors.add('body', 'data', 'Can\'t update document in current ({}) tender status'.format(self.request.validated['tender_status']))
+            self.request.errors.add('body', 'data', 'Can\'t {operation} document in current ({tender_status}) tender status'.format(
+                operation=operation, tender_status=self.request.validated['tender_status']))
             self.request.errors.status = 403
             return
         if operation == 'update' and self.request.authenticated_role != (self.context.author or 'tender_owner'):
