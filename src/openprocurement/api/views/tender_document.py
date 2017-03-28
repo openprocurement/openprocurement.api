@@ -24,7 +24,7 @@ from openprocurement.api.validation import (
             description="Tender related binary files (PDFs, etc.)")
 class TenderDocumentResource(APIResource):
 
-    def validate_award_document(self, operation):
+    def validate_document(self, operation):
         if self.request.authenticated_role != 'auction' and self.request.validated['tender_status'] != 'active.enquiries' or \
            self.request.authenticated_role == 'auction' and self.request.validated['tender_status'] not in ['active.auction', 'active.qualification']:
             self.request.errors.add('body', 'data', 'Can\'t update document in current ({}) tender status'.format(self.request.validated['tender_status']))
@@ -84,7 +84,7 @@ class TenderDocumentResource(APIResource):
     @json_view(permission='upload_tender_documents', validators=(validate_file_update,))
     def put(self):
         """Tender Document Update"""
-        if not self.validate_award_document('update'):
+        if not self.validate_document('update'):
             return
         document = upload_file(self.request)
         self.request.validated['tender'].documents.append(document)
@@ -96,7 +96,7 @@ class TenderDocumentResource(APIResource):
     @json_view(content_type="application/json", permission='upload_tender_documents', validators=(validate_patch_document_data,))
     def patch(self):
         """Tender Document Update"""
-        if not self.validate_award_document('update'):
+        if not self.validate_document('update'):
             return
         if apply_patch(self.request, src=self.request.context.serialize()):
             update_file_content_type(self.request)
