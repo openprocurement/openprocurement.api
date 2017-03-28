@@ -2218,6 +2218,26 @@ class TenderAwardDocumentResourceTest(BaseTenderWebTest):
         self.assertEqual(response.content_type, 'application/json')
         self.assertEqual(response.json['errors'][0]["description"], "Can't update document in current (complete) tender status")
 
+    def test_create_award_document_bot(self):
+        self.app.authorization = ('Basic', ('bot', 'bot'))
+        response = self.app.post('/tenders/{}/awards/{}/documents'.format(
+            self.tender_id, self.award_id), upload_files=[('file', 'edr_request.yaml', 'content')])
+        self.assertEqual(response.status, '201 Created')
+        self.assertEqual(response.content_type, 'application/json')
+        doc_id = response.json["data"]['id']
+        self.assertIn(doc_id, response.headers['Location'])
+        self.assertEqual('edr_request.yaml', response.json["data"]["title"])
+        if self.docservice:
+            self.assertIn('Signature=', response.json["data"]["url"])
+            self.assertIn('KeyID=', response.json["data"]["url"])
+            self.assertNotIn('Expires=', response.json["data"]["url"])
+            key = response.json["data"]["url"].split('/')[-1].split('?')[0]
+            tender = self.db.get(self.tender_id)
+            self.assertIn(key, tender['awards'][-1]['documents'][-1]["url"])
+            self.assertIn('Signature=', tender['awards'][-1]['documents'][-1]["url"])
+            self.assertIn('KeyID=', tender['awards'][-1]['documents'][-1]["url"])
+            self.assertNotIn('Expires=', tender['awards'][-1]['documents'][-1]["url"])
+
 
 class TenderAwardDocumentWithDSResourceTest(TenderAwardDocumentResourceTest):
     docservice = True
