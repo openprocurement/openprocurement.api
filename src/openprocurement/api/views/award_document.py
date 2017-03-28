@@ -33,7 +33,7 @@ class TenderAwardDocumentResource(APIResource):
             self.request.errors.add('body', 'data', 'Can {} document only in active lot status'.format(operation))
             self.request.errors.status = 403
             return
-        if operation == 'update' and self.request.authenticated_role != self.context.author:
+        if operation == 'update' and self.request.authenticated_role != (self.context.author or 'tender_owner'):
             self.request.errors.add('url', 'role', 'Can update document only author')
             self.request.errors.status = 403
             return
