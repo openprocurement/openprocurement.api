@@ -58,6 +58,7 @@ class TenderAwardDocumentResource(APIResource):
         if not self.validate_award_document('add'):
             return
         document = upload_file(self.request)
+        document.author = self.request.authenticated_role
         self.context.documents.append(document)
         if save_tender(self.request):
             self.LOGGER.info('Created tender award document {}'.format(document.id),
