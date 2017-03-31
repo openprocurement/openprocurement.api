@@ -82,6 +82,7 @@ def validate_file_upload(request):
     if 'file' not in request.POST or not hasattr(request.POST['file'], 'filename'):
         request.errors.add('body', 'file', 'Not Found')
         request.errors.status = 404
+        raise error_handler(request.errors)
     else:
         request.validated['file'] = request.POST['file']
 
