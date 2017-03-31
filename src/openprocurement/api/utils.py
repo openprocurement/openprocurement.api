@@ -26,6 +26,7 @@ from openprocurement.api.constants import (
     ADDITIONAL_CLASSIFICATIONS_SCHEMES, DOCUMENT_BLACKLISTED_FIELDS,
     DOCUMENT_WHITELISTED_FIELDS, ROUTE_PREFIX, TZ, SESSION
 )
+from openprocurement.api.interfaces import IContentConfigurator
 
 json_view = partial(view, renderer='json')
 
@@ -344,6 +345,14 @@ def context_unpack(request, msg, params=None):
     for key, value in logging_context.items():
         journal_context["JOURNAL_" + key] = value
     return journal_context
+
+
+def get_content_configurator(request):
+    content_type = request.path[len(ROUTE_PREFIX)+1:].split('/')[0][:-1]
+    if hasattr(request, content_type):  # content is constructed
+        context = getattr(request, content_type)
+        return request.registry.queryMultiAdapter((context, request),
+                                                  IContentConfigurator)
 
 
 def fix_url(item, app_url):
