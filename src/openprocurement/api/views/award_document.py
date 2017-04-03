@@ -33,6 +33,10 @@ class TenderAwardDocumentResource(APIResource):
             self.request.errors.add('body', 'data', 'Can {} document only in active lot status'.format(operation))
             self.request.errors.status = 403
             return
+        if operation == 'update' and self.request.authenticated_role != (self.context.author or 'tender_owner'):
+            self.request.errors.add('url', 'role', 'Can update document only author')
+            self.request.errors.status = 403
+            return
         return True
 
     @json_view(permission='view_tender')
@@ -47,13 +51,14 @@ class TenderAwardDocumentResource(APIResource):
             ]).values(), key=lambda i: i['dateModified'])
         return {'data': collection_data}
 
-    @json_view(validators=(validate_file_upload,), permission='edit_tender')
+    @json_view(validators=(validate_file_upload,), permission='upload_tender_documents')
     def collection_post(self):
         """Tender Award Document Upload
         """
         if not self.validate_award_document('add'):
             return
         document = upload_file(self.request)
+        document.author = self.request.authenticated_role
         self.context.documents.append(document)
         if save_tender(self.request):
             self.LOGGER.info('Created tender award document {}'.format(document.id),
