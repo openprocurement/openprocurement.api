@@ -510,6 +510,14 @@
          "description":null
       },
       {
+         "category": "JP",
+         "code": "JP-JCN",
+         "description": "A code allocated to a company by the Japanese National Tax Agency. The registry itself is open and searchable by JCN (in Japanese only), but only limited information is available. More information on the corporate number (JCN) can be found here - http://www.nta.go.jp/foreign_language/corporate_number/ (National Tax Agency website). ",
+         "name": "JCN (Japanese Corporate Number). Japanese Corporate Registry - Houjintouki (\u6cd5\u4eba\u767b\u8a18)",
+         "public-database": true,
+         "url": "http://www.houjin-bangou.nta.go.jp/"
+      },
+      {
          "category":"KE",
          "code":"KE-NCB",
          "name":"NGO's Coordination Board",
@@ -779,6 +787,22 @@
          "url":"http://www.zrsr.sk/default.aspx?LANG=en",
          "public-database":true,
          "description":"Most organisations (including NGOs) have to be registered with the Ministry of Interior for the Trade Register Of The Slovak Republic (\u017divnostensky Register Slovenskej Republiky) and are allocated a unique registration number"
+      },
+      {
+         "category":"TR",
+         "code":"TR-MERSIS",
+         "name":"MERSIS - central trade registry system / Merkezi Sicil Kay\u0131t Sistemi",
+         "url":"http://mersis.gumrukticaret.gov.tr/Login/tabid/110/Default.aspx?returnurl=%2fMersis%2f%C5%9EirketSorgulama.aspx",
+         "public-database":false,
+         "description":"Central Trade Registry System (MERSIS) is a centralized information system allowing for the implementation of the commercial registry processes and storing them and commercial registry data electronically. Mersis may be reached by the username-password or the e-signature from the website address of Ministry of Customs and Trade. It contains titles of companies, addresses, contact information, capital information, companies' partners, joint capital information, field of business, executive bodies of companies. Some information can also be found at http://www.ticaretsicil.gov.tr/english/index.php"
+      },
+      {
+         "category":"TR",
+         "code":"TR-VAT",
+         "name":"Vergi Kimlik Numaras\u0131 - VAT",
+         "url":"http://mersis.gumrukticaret.gov.tr/Login/tabid/110/Default.aspx?returnurl=%2fMersis%2f%C5%9EirketSorgulama.aspx",
+         "public-database":false,
+         "description":"All resident legal entities obtain a TIN (Vergi Kimlik Numarasi) automatically since they are subject to tax. Although legal\narrangements like ordinary partnerships are not subject to corporate income tax, TIN is issued to\nthem while registering to local tax offices. Consists of 10 digits. Information can be found at http://mersis.gumrukticaret.gov.tr/Login/tabid/110/Default.aspx?returnurl=%2fMersis%2f%C5%9EirketSorgulama.aspx. Only in Turkish, not available to the broad audience."
       },
       {
          "category":"TZ",

@@ -1,21 +1,22 @@
 # -*- coding: utf-8 -*-
-import unittest
-import webtest
 import os
-from copy import deepcopy
-from datetime import datetime, timedelta
+import webtest
+import unittest
 from uuid import uuid4
-from requests.models import Response
-from base64 import b64encode
-from urllib import urlencode
+from datetime import datetime
+from types import FunctionType
 
-from openprocurement.api.constants import SANDBOX_MODE, VERSION
-from openprocurement.api.utils import SESSION, apply_data_patch
+
+from openprocurement.api.constants import VERSION
 from openprocurement.api.design import sync_design
 
 
 now = datetime.now()
 
+
+def snitch(func):
+    return FunctionType(func.func_code, func.func_globals,
+                        'test_' + func.func_name, closure = func.func_closure)
 
 class PrefixedRequestClass(webtest.app.TestRequest):
 

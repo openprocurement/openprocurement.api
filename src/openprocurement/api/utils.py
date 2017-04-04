@@ -20,15 +20,15 @@ from cornice.util import json_error
 from json import dumps
 
 from schematics.exceptions import ValidationError
+from openprocurement.api.events import ErrorDesctiptorEvent
 from openprocurement.api.constants import LOGGER
 from openprocurement.api.constants import (
-    ADDITIONAL_CLASSIFICATIONS_SCHEMES, ADDITIONAL_CLASSIFICATIONS_SCHEMES_2017,
-    DOCUMENT_BLACKLISTED_FIELDS, DOCUMENT_WHITELISTED_FIELDS,
-    ROUTE_PREFIX, VERSION, TZ, WORKING_DAYS, SESSION
+    ADDITIONAL_CLASSIFICATIONS_SCHEMES, DOCUMENT_BLACKLISTED_FIELDS,
+    DOCUMENT_WHITELISTED_FIELDS, ROUTE_PREFIX, TZ, SESSION
 )
+from openprocurement.api.interfaces import IContentConfigurator
 
 json_view = partial(view, renderer='json')
-
 
 
 def validate_dkpp(items, *args):
@@ -38,7 +38,6 @@ def validate_dkpp(items, *args):
 
 def get_now():
     return datetime.now(TZ)
-
 
 
 def set_parent(item, parent):
@@ -80,7 +79,8 @@ def generate_docservice_url(request, doc_id, temporary=True, prefix=None):
     query['KeyID'] = docservice_key.hex_vk()[:8]
     return urlunsplit((parsed_url.scheme, parsed_url.netloc, '/get/{}'.format(doc_id), urlencode(query), ''))
 
-def error_handler(errors, request_params=True, extra_params=None):
+
+def error_handler(errors, request_params=True):
     params = {
         'ERROR_STATUS': errors.status
     }
@@ -91,8 +91,7 @@ def error_handler(errors, request_params=True, extra_params=None):
     if errors.request.matchdict:
         for x, j in errors.request.matchdict.items():
             params[x.upper()] = j
-    if extra_params and isinstance(extra_params, dict):
-        params.update(extra_params)
+    errors.request.registry.notify(ErrorDesctiptorEvent(errors, params))
     LOGGER.info('Error on processing request "{}"'.format(dumps(errors, indent=4)),
                 extra=context_unpack(errors.request, {'MESSAGE_ID': 'error_handler'}, params))
     return json_error(errors)
@@ -330,39 +329,6 @@ def forbidden(request):
     return error_handler(request.errors)
 
 
-def add_logging_context(event):
-    request = event.request
-    params = {
-        'API_VERSION': VERSION,
-        'TAGS': 'python,api',
-        'USER': str(request.authenticated_userid or ''),
-        #'ROLE': str(request.authenticated_role),
-        'CURRENT_URL': request.url,
-        'CURRENT_PATH': request.path_info,
-        'REMOTE_ADDR': request.remote_addr or '',
-        'USER_AGENT': request.user_agent or '',
-        'REQUEST_METHOD': request.method,
-        'TIMESTAMP': get_now().isoformat(),
-        'REQUEST_ID': request.environ.get('REQUEST_ID', ''),
-        'CLIENT_REQUEST_ID': request.headers.get('X-Client-Request-ID', ''),
-    }
-
-    request.logging_context = params
-
-
-def set_logging_context(event):
-    request = event.request
-
-    params = {}
-    params['ROLE'] = str(request.authenticated_role)
-    if request.params:
-        params['PARAMS'] = str(dict(request.params))
-    if request.matchdict:
-        for x, j in request.matchdict.items():
-            params[x.upper()] = j
-    update_logging_context(request, params)
-
-
 def update_logging_context(request, params):
     if not request.__dict__.get('logging_context'):
         request.logging_context = {}
@@ -381,23 +347,12 @@ def context_unpack(request, msg, params=None):
     return journal_context
 
 
-def set_renderer(event):
-    request = event.request
-    try:
-        json = request.json_body
-    except ValueError:
-        json = {}
-    pretty = isinstance(json, dict) and json.get('options', {}).get('pretty') or request.params.get('opt_pretty')
-    jsonp = request.params.get('opt_jsonp')
-    if jsonp and pretty:
-        request.override_renderer = 'prettyjsonp'
-        return True
-    if jsonp:
-        request.override_renderer = 'jsonp'
-        return True
-    if pretty:
-        request.override_renderer = 'prettyjson'
-        return True
+def get_content_configurator(request):
+    content_type = request.path[len(ROUTE_PREFIX)+1:].split('/')[0][:-1]
+    if hasattr(request, content_type):  # content is constructed
+        context = getattr(request, content_type)
+        return request.registry.queryMultiAdapter((context, request),
+                                                  IContentConfigurator)
 
 
 def fix_url(item, app_url):
@@ -417,11 +372,6 @@ def fix_url(item, app_url):
             for i in item
             if isinstance(item[i], dict) or isinstance(item[i], list)
         ]
-
-
-def beforerender(event):
-    if event.rendering_val and isinstance(event.rendering_val, dict) and 'data' in event.rendering_val:
-        fix_url(event.rendering_val['data'], event['request'].application_url)
 
 
 def encrypt(uuid, name, key):
