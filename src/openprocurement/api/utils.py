@@ -97,6 +97,12 @@ def error_handler(errors, request_params=True):
     return json_error(errors)
 
 
+def raise_operation_error(request, message):
+    request.errors.add('body', 'data', message)
+    request.errors.status = 403
+    raise error_handler(request.errors)
+
+
 def upload_file(request, blacklisted_fields=DOCUMENT_BLACKLISTED_FIELDS, whitelisted_fields=DOCUMENT_WHITELISTED_FIELDS):
     first_document = request.validated['documents'][-1] if 'documents' in request.validated and request.validated['documents'] else None
     if 'data' in request.validated and request.validated['data']:
