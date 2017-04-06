@@ -98,6 +98,9 @@ def error_handler(errors, request_params=True):
 
 
 def raise_operation_error(request, message):
+    """
+    This function is used in views validators to add access errors and raise exceptions if requested operation is forbidden.
+    """
     request.errors.add('body', 'data', message)
     request.errors.status = 403
     raise error_handler(request.errors)
