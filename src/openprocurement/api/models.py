@@ -330,43 +330,46 @@ class Address(Model):
     countryName_ru = StringType()
 
 
-class Location(Model):
-
+class BaseLocation(Model):
     latitude = BaseType(required=True)
     longitude = BaseType(required=True)
     elevation = BaseType()
 
-    def validate_latitude(self, data, latitude):
-        if latitude:
-            parent_object = data.get('__parent__', {}).get('__parent__', {})
-            if (parent_object.get('revisions') and
-                parent_object['revisions'][0].date >
-                    ITEMS_LOCATION_VALIDATION_FROM):
-                valid_latitude = coordinates_reg_exp.match(str(latitude))
-                if (valid_latitude is not None and
-                        valid_latitude.group() == str(latitude)):
-                    if not -90 <= float(latitude) <= 90:
-                        raise ValidationError(
-                            u"Invalid value. Latitude must be between -90 and 90 degree.")
-                else:
-                    raise ValidationError(
-                        u"Invalid value. Required latitude format 12.0123456789")
 
-    def validate_longitude(self, data, longitude):
-        if longitude:
-            parent_object = data.get('__parent__', {}).get('__parent__', {})
-            if (parent_object.get('revisions') and
-                parent_object['revisions'][0].date >
-                    ITEMS_LOCATION_VALIDATION_FROM):
-                valid_longitude = coordinates_reg_exp.match(str(longitude))
-                if (valid_longitude is not None and
-                        valid_longitude.group() == str(longitude)):
-                    if not -180 <= float(longitude) <= 180:
-                        raise ValidationError(
-                            u"Invalid value. Longitude must be between -180 and 180 degree.")
-                else:
+def validate_coordinate(bottom_degree, top_degree, name):
+    def validate(degree):
+        if degree:
+            valid_degree = coordinates_reg_exp.match(str(degree))
+            if (valid_degree is not None and
+                valid_degree.group() == str(degree)):
+                if not bottom_degree <= float(degree) <= top_degree:
                     raise ValidationError(
-                        u"Invalid value. Required longitude format 12.0123456789")
+                        u"Invalid value. {name} must be between {bottom} and {top} degree.".format(
+                            name=name.capitalize(),
+                            bottom=bottom_degree,
+                            top=top_degree)
+                        )
+            else:
+                raise ValidationError(
+                    u"Invalid value. Required {name} format 12.0123456789".format(name=name))
+    return validate
+
+
+class Location(BaseLocation):
+
+     def validate_latitude(self, data, latitude):
+         parent_object = data.get('__parent__', {}).get('__parent__', {})
+         if (parent_object.get('revisions') and
+             parent_object['revisions'][0].date >
+             ITEMS_LOCATION_VALIDATION_FROM):
+             validate = validate_coordinate(-90, 90, 'latitude')(latitude)
+
+     def validate_longitude(self, data, longitude):
+         parent_object = data.get('__parent__', {}).get('__parent__', {})
+         if (parent_object.get('revisions') and
+             parent_object['revisions'][0].date >
+             ITEMS_LOCATION_VALIDATION_FROM):
+             validate = validate_coordinate(-180, 180, 'longitude')(longitude)
 
 
 ADDITIONAL_CLASSIFICATIONS_SCHEMES = [u'ДКПП', u'NONE', u'ДК003', u'ДК015', u'ДК018']
