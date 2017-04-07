@@ -15,6 +15,7 @@ def validate_json_data(request):
         request.errors.add('body', 'data', "Data not available")
         request.errors.status = 422
         return
+    request.validated['json_data'] = json['data']
     return json['data']
 
 
@@ -72,7 +73,9 @@ def validate_tender_data(request):
         return
 
     model = request.tender_from_data(data, create=False)
-    if not request.check_accreditation(model.create_accreditation):
+    #if not request.check_accreditation(model.create_accreditation):
+    #if not any([request.check_accreditation(acc) for acc in getattr(model, 'create_accreditations', [getattr(model, 'create_accreditation', '')])]):
+    if not any([request.check_accreditation(acc) for acc in iter(str(model.create_accreditation))]):
         request.errors.add('procurementMethodType', 'accreditation', 'Broker Accreditation level does not permit tender creation')
         request.errors.status = 403
         return

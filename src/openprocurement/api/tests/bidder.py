@@ -974,9 +974,11 @@ class TenderBidderDocumentWithDSResourceTest(TenderBidderDocumentResourceTest):
                 'url': self.generate_docservice_url(),
                 'hash': 'md5:' + '0' * 32,
                 'format': 'application/msword',
+                'description': 'test description',
             }})
         self.assertEqual(response.status, '200 OK')
         self.assertEqual(response.content_type, 'application/json')
+        self.assertEqual('test description', response.json["data"]["description"])
         self.assertEqual(doc_id, response.json["data"]["id"])
         key = response.json["data"]["url"].split('?')[-1]
 
@@ -1004,6 +1006,7 @@ class TenderBidderDocumentWithDSResourceTest(TenderBidderDocumentResourceTest):
             }})
         self.assertEqual(response.status, '200 OK')
         self.assertEqual(response.content_type, 'application/json')
+        self.assertEqual('test description', response.json["data"]["description"])
         self.assertEqual(doc_id, response.json["data"]["id"])
         key = response.json["data"]["url"].split('?')[-1]
 

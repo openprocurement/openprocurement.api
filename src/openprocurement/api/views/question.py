@@ -21,26 +21,41 @@ from openprocurement.api.validation import (
             description="Tender questions")
 class TenderQuestionResource(APIResource):
 
+    def validate_question(self, operation):
+        tender = self.request.validated['tender']
+        if operation == 'add' and (tender.status != 'active.enquiries' or tender.enquiryPeriod.startDate and get_now() < tender.enquiryPeriod.startDate or get_now() > tender.enquiryPeriod.endDate):
+            self.request.errors.add('body', 'data', 'Can add question only in enquiryPeriod')
+            self.request.errors.status = 403
+            return
+        if operation == 'update' and tender.status != 'active.enquiries':
+            self.request.errors.add('body', 'data', 'Can\'t update question in current ({}) tender status'.format(tender.status))
+            self.request.errors.status = 403
+            return
+        question = self.request.validated['question']
+        items_dict = {i.id: i.relatedLot for i in tender.items}
+        if any([
+            i.status != 'active'
+            for i in tender.lots
+            if question.questionOf == 'lot' and i.id == question.relatedItem or question.questionOf == 'item' and i.id == items_dict[question.relatedItem]
+        ]):
+            self.request.errors.add('body', 'data', 'Can {} question only in active lot status'.format(operation))
+            self.request.errors.status = 403
+            return
+        return True
+
     @json_view(content_type="application/json", validators=(validate_question_data,), permission='create_question')
     def collection_post(self):
         """Post a question
         """
-        tender = self.request.validated['tender']
-        if tender.status != 'active.enquiries' or get_now() < tender.enquiryPeriod.startDate or get_now() > tender.enquiryPeriod.endDate:
-            self.request.errors.add('body', 'data', 'Can add question only in enquiryPeriod')
-            self.request.errors.status = 403
+        if not self.validate_question('add'):
             return
         question = self.request.validated['question']
-        if any([i.status != 'active' for i in tender.lots if i.id == question.relatedItem]):
-            self.request.errors.add('body', 'data', 'Can add question only in active lot status')
-            self.request.errors.status = 403
-            return
-        tender.questions.append(question)
+        self.request.context.questions.append(question)
         if save_tender(self.request):
             self.LOGGER.info('Created tender question {}'.format(question.id),
                         extra=context_unpack(self.request, {'MESSAGE_ID': 'tender_question_create'}, {'question_id': question.id}))
             self.request.response.status = 201
-            self.request.response.headers['Location'] = self.request.route_url('Tender Questions', tender_id=tender.id, question_id=question.id)
+            self.request.response.headers['Location'] = self.request.route_url('Tender Questions', tender_id=self.request.context.id, question_id=question.id)
             return {'data': question.serialize("view")}
 
     @json_view(permission='view_tender')
@@ -59,17 +74,10 @@ class TenderQuestionResource(APIResource):
     def patch(self):
         """Post an Answer
         """
-        tender = self.request.validated['tender']
-        if tender.status != 'active.enquiries':
-            self.request.errors.add('body', 'data', 'Can\'t update question in current ({}) tender status'.format(tender.status))
-            self.request.errors.status = 403
-            return
-        if any([i.status != 'active' for i in tender.lots if i.id == self.request.context.relatedItem]):
-            self.request.errors.add('body', 'data', 'Can update question only in active lot status')
-            self.request.errors.status = 403
+        if not self.validate_question('update'):
             return
         self.context.dateAnswered = get_now()
         if apply_patch(self.request, src=self.request.context.serialize()):
             self.LOGGER.info('Updated tender question {}'.format(self.request.context.id),
                         extra=context_unpack(self.request, {'MESSAGE_ID': 'tender_question_patch'}))
-            return {'data': self.request.context.serialize(tender.status)}
+            return {'data': self.request.context.serialize(self.request.validated['tender_status'])}
