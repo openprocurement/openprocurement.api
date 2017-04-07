@@ -26,6 +26,7 @@ requires = [
 test_requires = requires + [
     'webtest',
     'python-coveralls',
+    'mock',
 ]
 docs_requires = requires + [
     'sphinxcontrib-httpdomain',
@@ -44,7 +45,7 @@ entry_points = {
 }
 
 setup(name='openprocurement.api',
-      version='2.3.36',
+      version='2.3.52',
       description='openprocurement.api',
       long_description=README,
       classifiers=[
