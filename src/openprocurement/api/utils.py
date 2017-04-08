@@ -110,51 +110,13 @@ def raise_operation_error(request, message):
 def upload_file(request, blacklisted_fields=DOCUMENT_BLACKLISTED_FIELDS, whitelisted_fields=DOCUMENT_WHITELISTED_FIELDS):
     first_document = request.validated['documents'][-1] if 'documents' in request.validated and request.validated['documents'] else None
     if 'data' in request.validated and request.validated['data']:
-        document = request.validated['document']
-        url = document.url
-        parsed_url = urlparse(url)
-        parsed_query = dict(parse_qsl(parsed_url.query))
-        if not url.startswith(request.registry.docservice_url) or \
-                len(parsed_url.path.split('/')) != 3 or \
-                set(['Signature', 'KeyID']) != set(parsed_query):
-            request.errors.add('body', 'url', "Can add document only from document service.")
-            request.errors.status = 403
-            raise error_handler(request.errors)
-        if not document.hash:
-            request.errors.add('body', 'hash', "This field is required.")
-            request.errors.status = 422
-            raise error_handler(request.errors)
-        keyid = parsed_query['KeyID']
-        if keyid not in request.registry.keyring:
-            request.errors.add('body', 'url', "Document url expired.")
-            request.errors.status = 422
-            raise error_handler(request.errors)
-        dockey = request.registry.keyring[keyid]
-        signature = parsed_query['Signature']
-        key = urlparse(url).path.split('/')[-1]
-        try:
-            signature = b64decode(unquote(signature))
-        except TypeError:
-            request.errors.add('body', 'url', "Document url signature invalid.")
-            request.errors.status = 422
-            raise error_handler(request.errors)
-        mess = "{}\0{}".format(key, document.hash.split(':', 1)[-1])
-        try:
-            if mess != dockey.verify(signature + mess.encode("utf-8")):
-                raise ValueError
-        except ValueError:
-            request.errors.add('body', 'url', "Document url invalid.")
-            request.errors.status = 422
-            raise error_handler(request.errors)
+        document = check_document(request, request.validated['document'], 'body', {})
         if first_document:
             for attr_name in type(first_document)._fields:
                 if attr_name in whitelisted_fields:
                     setattr(document, attr_name, getattr(first_document, attr_name))
                 elif attr_name not in blacklisted_fields and attr_name not in request.validated['json_data']:
                     setattr(document, attr_name, getattr(first_document, attr_name))
-        document_route = request.matched_route.name.replace("collection_", "")
-        document_path = request.current_route_path(_route_name=document_route, document_id=document.id, _query={'download': key})
-        document.url = '/' + '/'.join(document_path.split('/')[3:])
         return document
     if request.content_type == 'multipart/form-data':
         data = request.validated['file']
@@ -305,6 +267,52 @@ def set_ownership(item, request):
     if not item.get('owner'):
         item.owner = request.authenticated_userid
     item.owner_token = generate_id()
+
+
+def check_document(request, document, document_container, route_kwargs):
+    url = document.url
+    parsed_url = urlparse(url)
+    parsed_query = dict(parse_qsl(parsed_url.query))
+    if not url.startswith(request.registry.docservice_url) or \
+            len(parsed_url.path.split('/')) != 3 or \
+            set(['Signature', 'KeyID']) != set(parsed_query):
+        request.errors.add(document_container, 'url', "Can add document only from document service.")
+        request.errors.status = 403
+        raise error_handler(request.errors)
+    if not document.hash:
+        request.errors.add(document_container, 'hash', "This field is required.")
+        request.errors.status = 422
+        raise error_handler(request.errors)
+    keyid = parsed_query['KeyID']
+    if keyid not in request.registry.keyring:
+        request.errors.add(document_container, 'url', "Document url expired.")
+        request.errors.status = 422
+        raise error_handler(request.errors)
+    dockey = request.registry.keyring[keyid]
+    signature = parsed_query['Signature']
+    key = urlparse(url).path.split('/')[-1]
+    try:
+        signature = b64decode(unquote(signature))
+    except TypeError:
+        request.errors.add(document_container, 'url', "Document url signature invalid.")
+        request.errors.status = 422
+        raise error_handler(request.errors)
+    mess = "{}\0{}".format(key, document.hash.split(':', 1)[-1])
+    try:
+        if mess != dockey.verify(signature + mess.encode("utf-8")):
+            raise ValueError
+    except ValueError:
+        request.errors.add(document_container, 'url', "Document url invalid.")
+        request.errors.status = 422
+        raise error_handler(request.errors)
+    document_route = request.matched_route.name.replace("collection_", "")
+    if "Documents" not in document_route:
+        specified_document_route_end = (document_container.lower().rsplit('documents')[0] + ' documents').lstrip().title()
+        document_route = ' '.join([document_route[:-1], specified_document_route_end])
+    route_kwargs.update({'_route_name': document_route, 'document_id': document.id, '_query': {'download': key}})
+    document_path = request.current_route_path(**route_kwargs)
+    document.url = '/' + '/'.join(document_path.split('/')[3:])
+    return document
 
 
 def request_params(request):
