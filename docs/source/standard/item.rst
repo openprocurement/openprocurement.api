@@ -28,8 +28,8 @@ Schema
     itemClassificationScheme to identify preferred classification lists,
     including CPV and GSIN.
 
-    It is mandatory for `classification.scheme` to be `CPV`. The
-    `classification.id` should be valid CPV code.
+    It is mandatory for `classification.scheme` to be `CPV` or `ДК021`. The
+    `classification.id` should be valid CPV or ДК021 code.
 
 :additionalClassifications:
     List of :ref:`Classification` objects
