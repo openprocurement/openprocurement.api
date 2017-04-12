@@ -4,6 +4,7 @@ from schematics.exceptions import (
 )
 from openprocurement.api.utils import apply_data_patch, update_logging_context, error_handler
 
+OPERATIONS = {"POST": "add", "PATCH": "update", "PUT": "update", "DELETE": "delete"}
 
 def validate_json_data(request):
     try:
