@@ -93,6 +93,12 @@ def factory(request):
             return get_item(bid, 'document', request)
         else:
             return bid
+    elif request.matchdict.get('qualification_id'):
+        qualification = get_item(tender, 'qualification', request)
+        if request.matchdict.get('document_id'):
+            return get_item(qualification, 'document', request)
+        else:
+            return qualification
     elif request.matchdict.get('complaint_id'):
         complaint = get_item(tender, 'complaint', request)
         if request.matchdict.get('document_id'):
