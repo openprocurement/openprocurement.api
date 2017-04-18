@@ -24,7 +24,7 @@ from openprocurement.api.events import ErrorDesctiptorEvent
 from openprocurement.api.constants import LOGGER
 from openprocurement.api.constants import (
     ADDITIONAL_CLASSIFICATIONS_SCHEMES, DOCUMENT_BLACKLISTED_FIELDS,
-    DOCUMENT_WHITELISTED_FIELDS, ROUTE_PREFIX, TZ, SESSION
+    DOCUMENT_WHITELISTED_FIELDS, ROUTE_PREFIX, TZ, SESSION, VERSION
 )
 from openprocurement.api.interfaces import IContentConfigurator
 
@@ -34,6 +34,10 @@ json_view = partial(view, renderer='json')
 def validate_dkpp(items, *args):
     if items and not any([i.scheme in ADDITIONAL_CLASSIFICATIONS_SCHEMES for i in items]):
         raise ValidationError(u"One of additional classifications should be one of [{0}].".format(', '.join(ADDITIONAL_CLASSIFICATIONS_SCHEMES)))
+
+
+def route_prefix(settings={}):
+    return '/api/{}'.format(settings.get('api_version', VERSION))
 
 
 def get_now():
@@ -365,20 +369,20 @@ def get_content_configurator(request):
                                                   IContentConfigurator)
 
 
-def fix_url(item, app_url):
+def fix_url(item, app_url, settings={}):
     if isinstance(item, list):
         [
-            fix_url(i, app_url)
+            fix_url(i, app_url, settings)
             for i in item
             if isinstance(i, dict) or isinstance(i, list)
         ]
     elif isinstance(item, dict):
         if "format" in item and "url" in item and '?download=' in item['url']:
             path = item["url"] if item["url"].startswith('/') else '/' + '/'.join(item['url'].split('/')[5:])
-            item["url"] = app_url + ROUTE_PREFIX + path
+            item["url"] = app_url + route_prefix(settings) + path
             return
         [
-            fix_url(item[i], app_url)
+            fix_url(item[i], app_url, settings)
             for i in item
             if isinstance(item[i], dict) or isinstance(item[i], list)
         ]

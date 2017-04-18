@@ -11,8 +11,7 @@ from libnacl.sign import Signer, Verifier
 from logging import getLogger
 from openprocurement.api.auth import AuthenticationPolicy, authenticated_role, check_accreditation
 from openprocurement.api.design import sync_design
-from openprocurement.api.utils import forbidden, request_params
-from openprocurement.api.constants import ROUTE_PREFIX
+from openprocurement.api.utils import forbidden, request_params, route_prefix
 from pbkdf2 import PBKDF2
 from pkg_resources import iter_entry_points
 from pyramid.authorization import ACLAuthorizationPolicy as AuthorizationPolicy
@@ -60,7 +59,7 @@ def main(global_config, **settings):
         settings=settings,
         authentication_policy=AuthenticationPolicy(settings['auth.file'], __name__),
         authorization_policy=AuthorizationPolicy(),
-        route_prefix=ROUTE_PREFIX,
+        route_prefix=route_prefix(settings),
     )
     config.include('pyramid_exclog')
     config.include("cornice")
