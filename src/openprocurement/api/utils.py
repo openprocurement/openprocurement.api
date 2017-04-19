@@ -535,11 +535,13 @@ def check_tender_status(request):
                 LOGGER.info('Switched lot {} of tender {} to {}'.format(lot.id, tender.id, 'unsuccessful'),
                             extra=context_unpack(request, {'MESSAGE_ID': 'switched_lot_unsuccessful'}, {'LOT_ID': lot.id}))
                 lot.status = 'unsuccessful'
+                lot.date = now
                 continue
             elif last_award.status == 'active' and any([i.status == 'active' and i.awardID == last_award.id for i in tender.contracts]):
                 LOGGER.info('Switched lot {} of tender {} to {}'.format(lot.id, tender.id, 'complete'),
                             extra=context_unpack(request, {'MESSAGE_ID': 'switched_lot_complete'}, {'LOT_ID': lot.id}))
                 lot.status = 'complete'
+                lot.date = now
         statuses = set([lot.status for lot in tender.lots])
         if statuses == set(['cancelled']):
             LOGGER.info('Switched tender {} to {}'.format(tender.id, 'cancelled'),
@@ -577,6 +579,8 @@ def check_tender_status(request):
             tender.status = 'unsuccessful'
         if tender.contracts and tender.contracts[-1].status == 'active':
             tender.status = 'complete'
+    if tender.status in ['complete', 'unsuccessful', 'cancelled']:
+        tender.date = now
 
 
 def add_next_award(request):
