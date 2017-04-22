@@ -76,6 +76,24 @@ def get_filename(data):
         return header[0]
 
 
+def generate_docservice_url_by_key(docservice_url, doc_id, temporary=True, prefix=None, docservice_key=None):
+    """ Generate docservice url docservice_url and docservice_key"""
+    parsed_url = urlparse(docservice_url)
+    query = {}
+    if temporary:
+        expires = int(ttime()) + 300  # EXPIRES
+        mess = "{}\0{}".format(doc_id, expires)
+        query['Expires'] = expires
+    else:
+        mess = doc_id
+    if prefix:
+        mess = '{}/{}'.format(prefix, mess)
+        query['Prefix'] = prefix
+    query['Signature'] = quote(b64encode(docservice_key.signature(mess.encode("utf-8"))))
+    query['KeyID'] = docservice_key.hex_vk()[:8]
+    return urlunsplit((parsed_url.scheme, parsed_url.netloc, '/get/{}'.format(doc_id), urlencode(query), ''))
+
+
 def generate_docservice_url(request, doc_id, temporary=True, prefix=None):
     docservice_key = getattr(request.registry, 'docservice_key', None)
     parsed_url = urlparse(request.registry.docservice_url)
