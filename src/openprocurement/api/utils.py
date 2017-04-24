@@ -22,13 +22,13 @@ from json import dumps
 
 from schematics.types import StringType
 from schematics.exceptions import ValidationError
+from openprocurement.api.events import ErrorDesctiptorEvent
 from openprocurement.api.constants import LOGGER
 from openprocurement.api.constants import (
-    ADDITIONAL_CLASSIFICATIONS_SCHEMES,
-    ADDITIONAL_CLASSIFICATIONS_SCHEMES_2017,
-    DOCUMENT_BLACKLISTED_FIELDS, DOCUMENT_WHITELISTED_FIELDS,
-    ROUTE_PREFIX, VERSION, TZ, WORKING_DAYS, SESSION
+    ADDITIONAL_CLASSIFICATIONS_SCHEMES, DOCUMENT_BLACKLISTED_FIELDS,
+    DOCUMENT_WHITELISTED_FIELDS, ROUTE_PREFIX, TZ, SESSION
 )
+from openprocurement.api.interfaces import IContentConfigurator
 
 json_view = partial(view, renderer='json')
 
@@ -82,7 +82,8 @@ def generate_docservice_url(request, doc_id, temporary=True, prefix=None):
     query['KeyID'] = docservice_key.hex_vk()[:8]
     return urlunsplit((parsed_url.scheme, parsed_url.netloc, '/get/{}'.format(doc_id), urlencode(query), ''))
 
-def error_handler(errors, request_params=True, extra_params=None):
+
+def error_handler(errors, request_params=True):
     params = {
         'ERROR_STATUS': errors.status
     }
@@ -93,61 +94,32 @@ def error_handler(errors, request_params=True, extra_params=None):
     if errors.request.matchdict:
         for x, j in errors.request.matchdict.items():
             params[x.upper()] = j
-    if extra_params and isinstance(extra_params, dict):
-        params.update(extra_params)
+    errors.request.registry.notify(ErrorDesctiptorEvent(errors, params))
     LOGGER.info('Error on processing request "{}"'.format(dumps(errors, indent=4)),
                 extra=context_unpack(errors.request, {'MESSAGE_ID': 'error_handler'}, params))
     return json_error(errors)
 
 
+def raise_operation_error(request, message):
+    """
+    This function mostly used in views validators to add access errors and
+    raise exceptions if requested operation is forbidden.
+    """
+    request.errors.add('body', 'data', message)
+    request.errors.status = 403
+    raise error_handler(request.errors)
+
+
 def upload_file(request, blacklisted_fields=DOCUMENT_BLACKLISTED_FIELDS, whitelisted_fields=DOCUMENT_WHITELISTED_FIELDS):
     first_document = request.validated['documents'][-1] if 'documents' in request.validated and request.validated['documents'] else None
     if 'data' in request.validated and request.validated['data']:
-        document = request.validated['document']
-        url = document.url
-        parsed_url = urlparse(url)
-        parsed_query = dict(parse_qsl(parsed_url.query))
-        if not url.startswith(request.registry.docservice_url) or \
-                len(parsed_url.path.split('/')) != 3 or \
-                set(['Signature', 'KeyID']) != set(parsed_query):
-            request.errors.add('body', 'url', "Can add document only from document service.")
-            request.errors.status = 403
-            raise error_handler(request.errors)
-        if not document.hash:
-            request.errors.add('body', 'hash', "This field is required.")
-            request.errors.status = 422
-            raise error_handler(request.errors)
-        keyid = parsed_query['KeyID']
-        if keyid not in request.registry.keyring:
-            request.errors.add('body', 'url', "Document url expired.")
-            request.errors.status = 422
-            raise error_handler(request.errors)
-        dockey = request.registry.keyring[keyid]
-        signature = parsed_query['Signature']
-        key = urlparse(url).path.split('/')[-1]
-        try:
-            signature = b64decode(unquote(signature))
-        except TypeError:
-            request.errors.add('body', 'url', "Document url signature invalid.")
-            request.errors.status = 422
-            raise error_handler(request.errors)
-        mess = "{}\0{}".format(key, document.hash.split(':', 1)[-1])
-        try:
-            if mess != dockey.verify(signature + mess.encode("utf-8")):
-                raise ValueError
-        except ValueError:
-            request.errors.add('body', 'url', "Document url invalid.")
-            request.errors.status = 422
-            raise error_handler(request.errors)
+        document = check_document(request, request.validated['document'], 'body', {})
         if first_document:
             for attr_name in type(first_document)._fields:
                 if attr_name in whitelisted_fields:
                     setattr(document, attr_name, getattr(first_document, attr_name))
                 elif attr_name not in blacklisted_fields and attr_name not in request.validated['json_data']:
                     setattr(document, attr_name, getattr(first_document, attr_name))
-        document_route = request.matched_route.name.replace("collection_", "")
-        document_path = request.current_route_path(_route_name=document_route, document_id=document.id, _query={'download': key})
-        document.url = '/' + '/'.join(document_path.split('/')[3:])
         return document
     if request.content_type == 'multipart/form-data':
         data = request.validated['file']
@@ -306,6 +278,52 @@ def set_ownership(item, request):
     return acc
 
 
+def check_document(request, document, document_container, route_kwargs):
+    url = document.url
+    parsed_url = urlparse(url)
+    parsed_query = dict(parse_qsl(parsed_url.query))
+    if not url.startswith(request.registry.docservice_url) or \
+            len(parsed_url.path.split('/')) != 3 or \
+            set(['Signature', 'KeyID']) != set(parsed_query):
+        request.errors.add(document_container, 'url', "Can add document only from document service.")
+        request.errors.status = 403
+        raise error_handler(request.errors)
+    if not document.hash:
+        request.errors.add(document_container, 'hash', "This field is required.")
+        request.errors.status = 422
+        raise error_handler(request.errors)
+    keyid = parsed_query['KeyID']
+    if keyid not in request.registry.keyring:
+        request.errors.add(document_container, 'url', "Document url expired.")
+        request.errors.status = 422
+        raise error_handler(request.errors)
+    dockey = request.registry.keyring[keyid]
+    signature = parsed_query['Signature']
+    key = urlparse(url).path.split('/')[-1]
+    try:
+        signature = b64decode(unquote(signature))
+    except TypeError:
+        request.errors.add(document_container, 'url', "Document url signature invalid.")
+        request.errors.status = 422
+        raise error_handler(request.errors)
+    mess = "{}\0{}".format(key, document.hash.split(':', 1)[-1])
+    try:
+        if mess != dockey.verify(signature + mess.encode("utf-8")):
+            raise ValueError
+    except ValueError:
+        request.errors.add(document_container, 'url', "Document url invalid.")
+        request.errors.status = 422
+        raise error_handler(request.errors)
+    document_route = request.matched_route.name.replace("collection_", "")
+    if "Documents" not in document_route:
+        specified_document_route_end = (document_container.lower().rsplit('documents')[0] + ' documents').lstrip().title()
+        document_route = ' '.join([document_route[:-1], specified_document_route_end])
+    route_kwargs.update({'_route_name': document_route, 'document_id': document.id, '_query': {'download': key}})
+    document_path = request.current_route_path(**route_kwargs)
+    document.url = '/' + '/'.join(document_path.split('/')[3:])
+    return document
+
+
 def request_params(request):
     try:
         params = NestedMultiDict(request.GET, request.POST)
@@ -338,39 +356,6 @@ def forbidden(request):
     return error_handler(request.errors)
 
 
-def add_logging_context(event):
-    request = event.request
-    params = {
-        'API_VERSION': VERSION,
-        'TAGS': 'python,api',
-        'USER': str(request.authenticated_userid or ''),
-        #'ROLE': str(request.authenticated_role),
-        'CURRENT_URL': request.url,
-        'CURRENT_PATH': request.path_info,
-        'REMOTE_ADDR': request.remote_addr or '',
-        'USER_AGENT': request.user_agent or '',
-        'REQUEST_METHOD': request.method,
-        'TIMESTAMP': get_now().isoformat(),
-        'REQUEST_ID': request.environ.get('REQUEST_ID', ''),
-        'CLIENT_REQUEST_ID': request.headers.get('X-Client-Request-ID', ''),
-    }
-
-    request.logging_context = params
-
-
-def set_logging_context(event):
-    request = event.request
-
-    params = {}
-    params['ROLE'] = str(request.authenticated_role)
-    if request.params:
-        params['PARAMS'] = str(dict(request.params))
-    if request.matchdict:
-        for x, j in request.matchdict.items():
-            params[x.upper()] = j
-    update_logging_context(request, params)
-
-
 def update_logging_context(request, params):
     if not request.__dict__.get('logging_context'):
         request.logging_context = {}
@@ -389,23 +374,12 @@ def context_unpack(request, msg, params=None):
     return journal_context
 
 
-def set_renderer(event):
-    request = event.request
-    try:
-        json = request.json_body
-    except ValueError:
-        json = {}
-    pretty = isinstance(json, dict) and json.get('options', {}).get('pretty') or request.params.get('opt_pretty')
-    jsonp = request.params.get('opt_jsonp')
-    if jsonp and pretty:
-        request.override_renderer = 'prettyjsonp'
-        return True
-    if jsonp:
-        request.override_renderer = 'jsonp'
-        return True
-    if pretty:
-        request.override_renderer = 'prettyjson'
-        return True
+def get_content_configurator(request):
+    content_type = request.path[len(ROUTE_PREFIX)+1:].split('/')[0][:-1]
+    if hasattr(request, content_type):  # content is constructed
+        context = getattr(request, content_type)
+        return request.registry.queryMultiAdapter((context, request),
+                                                  IContentConfigurator)
 
 
 def fix_url(item, app_url):
@@ -425,11 +399,6 @@ def fix_url(item, app_url):
             for i in item
             if isinstance(item[i], dict) or isinstance(item[i], list)
         ]
-
-
-def beforerender(event):
-    if event.rendering_val and isinstance(event.rendering_val, dict) and 'data' in event.rendering_val:
-        fix_url(event.rendering_val['data'], event['request'].application_url)
 
 
 def encrypt(uuid, name, key):
