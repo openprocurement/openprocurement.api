@@ -9,6 +9,7 @@ from functools import partial
 from jsonpatch import make_patch, apply_patch as _apply_patch
 from openprocurement.api.traversal import factory
 from rfc6266 import build_header
+from hashlib import sha512
 from time import time as ttime
 from urllib import quote, unquote, urlencode
 from urlparse import urlparse, urlunsplit, parse_qsl
@@ -19,6 +20,7 @@ from Crypto.Cipher import AES
 from cornice.util import json_error
 from json import dumps
 
+from schematics.types import StringType
 from schematics.exceptions import ValidationError
 from openprocurement.api.events import ErrorDesctiptorEvent
 from openprocurement.api.constants import LOGGER
@@ -47,6 +49,7 @@ def get_now():
 def set_parent(item, parent):
     if hasattr(item, '__parent__') and item.__parent__ is None:
         item.__parent__ = parent
+
 
 def generate_id():
     return uuid4().hex
@@ -271,6 +274,12 @@ def set_ownership(item, request):
     if not item.get('owner'):
         item.owner = request.authenticated_userid
     item.owner_token = generate_id()
+    acc = {'token': item.owner_token}
+    if isinstance(getattr(type(item), 'transfer_token', None), StringType):
+        transfer = generate_id()
+        item.transfer_token = sha512(transfer).hexdigest()
+        acc['transfer'] = transfer
+    return acc
 
 
 def check_document(request, document, document_container, route_kwargs):
