@@ -86,6 +86,54 @@ class ListType(BaseListType):
             return data
 
 
+class SifterListType(ListType):
+    def __init__(self, field, min_size=None, max_size=None,
+                 filter_by=None, filter_in_values=[], **kwargs):
+        self.filter_by = filter_by
+        self.filter_in_values = filter_in_values
+        super(SifterListType, self).__init__(field, min_size=min_size,
+                                             max_size=max_size, **kwargs)
+
+    def export_loop(self, list_instance, field_converter,
+                    role=None, print_none=False):
+        """ Use the same functionality as original method but apply
+        additional filters.
+        """
+        data = []
+        for value in list_instance:
+            if hasattr(self.field, 'export_loop'):
+                item_role = role
+                # apply filters
+                if role not in ['plain', None] and self.filter_by and hasattr(value, self.filter_by):
+                    val = getattr(value, self.filter_by)
+                    if val in self.filter_in_values:
+                        item_role = val
+
+                shaped = self.field.export_loop(value, field_converter,
+                                                role=item_role,
+                                                print_none=print_none)
+                feels_empty = shaped and len(shaped) == 0
+            else:
+                shaped = field_converter(self.field, value)
+                feels_empty = shaped is None
+
+            # Print if we want empty or found a value
+            if feels_empty and self.field.allow_none():
+                data.append(shaped)
+            elif shaped is not None:
+                data.append(shaped)
+            elif print_none:
+                data.append(shaped)
+
+        # Return data if the list contains anything
+        if len(data) > 0:
+            return data
+        elif len(data) == 0 and self.allow_none():
+            return data
+        elif print_none:
+            return data
+
+
 class Model(SchematicsModel):
     class Options(object):
         """Export options for Document."""
