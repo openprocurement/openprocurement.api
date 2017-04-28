@@ -343,6 +343,11 @@ class APIResource(object):
 
 class APIResourceListing(APIResource):
 
+    def __init__(self, request, context):
+        super(APIResourceListing, self).__init__(request, context)
+        self.server = request.registry.couchdb_server
+        self.update_after = request.registry.update_after
+
     @json_view(permission='view_listing')
     def get(self):
         params = {}
@@ -408,11 +413,11 @@ class APIResourceListing(APIResource):
                     for x in view()
                 ]
             elif fields:
-                self.LOGGER.info('Used custom fields for {} list: {}'.format(self.object_for_listing, ','.join(sorted(fields))),
-                            extra=context_unpack(self.request, {'MESSAGE_ID': self.log_message}))
+                self.LOGGER.info('Used custom fields for {} list: {}'.format(self.object_name_for_listing, ','.join(sorted(fields))),
+                            extra=context_unpack(self.request, {'MESSAGE_ID': self.log_message_id}))
 
                 results = [
-                    (self.func_serialize(self.request, i[u'doc'], view_fields), i.key)
+                    (self.serialize_func(self.request, i[u'doc'], view_fields), i.key)
                     for i in view(include_docs=True)
                 ]
         else:
@@ -438,15 +443,15 @@ class APIResourceListing(APIResource):
             'data': results,
             'next_page': {
                 "offset": params['offset'],
-                "path": self.request.route_path(self.object_for_listing, _query=params),
-                "uri": self.request.route_url(self.object_for_listing, _query=params)
+                "path": self.request.route_path(self.object_name_for_listing, _query=params),
+                "uri": self.request.route_url(self.object_name_for_listing, _query=params)
             }
         }
         if descending or offset:
             data['prev_page'] = {
                 "offset": pparams['offset'],
-                "path": self.request.route_path(self.object_for_listing, _query=pparams),
-                "uri": self.request.route_url(self.object_for_listing, _query=pparams)
+                "path": self.request.route_path(self.object_name_for_listing, _query=pparams),
+                "uri": self.request.route_url(self.object_name_for_listing, _query=pparams)
             }
         return data
 
