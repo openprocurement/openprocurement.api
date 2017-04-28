@@ -97,13 +97,18 @@ def generate_docservice_url(request, doc_id, temporary=True, prefix=None):
 def upload_file(request, blacklisted_fields=DOCUMENT_BLACKLISTED_FIELDS, whitelisted_fields=DOCUMENT_WHITELISTED_FIELDS):
     first_document = request.validated['documents'][-1] if 'documents' in request.validated and request.validated['documents'] else None
     if 'data' in request.validated and request.validated['data']:
-        document = check_document(request, request.validated['document'], 'body', {})
+        document = request.validated['document']
+        check_document(request, document, 'body')
+
         if first_document:
             for attr_name in type(first_document)._fields:
                 if attr_name in whitelisted_fields:
                     setattr(document, attr_name, getattr(first_document, attr_name))
                 elif attr_name not in blacklisted_fields and attr_name not in request.validated['json_data']:
                     setattr(document, attr_name, getattr(first_document, attr_name))
+
+        document_route = request.matched_route.name.replace("collection_", "")
+        document = update_document_url(request, document, document_route, {})
         return document
     if request.content_type == 'multipart/form-data':
         data = request.validated['file']
@@ -367,7 +372,7 @@ def check_bids(request):
             add_next_award(request)
 
 
-def check_document(request, document, document_container, route_kwargs):
+def check_document(request, document, document_container):
     url = document.url
     parsed_url = urlparse(url)
     parsed_query = dict(parse_qsl(parsed_url.query))
@@ -403,14 +408,31 @@ def check_document(request, document, document_container, route_kwargs):
         request.errors.add(document_container, 'url', "Document url invalid.")
         request.errors.status = 422
         raise error_handler(request.errors)
-    document_route = request.matched_route.name.replace("collection_", "")
-    if "Documents" not in document_route:
-        specified_document_route_end = (document_container.lower().rsplit('documents')[0] + ' documents').lstrip().title()
-        document_route = ' '.join([document_route[:-1], specified_document_route_end])
-    route_kwargs.update({'_route_name': document_route, 'document_id': document.id, '_query': {'download': key}})
+
+
+def update_document_url(request, document, document_route, route_kwargs):
+    key = urlparse(document.url).path.split('/')[-1]
+    route_kwargs.update({'_route_name': document_route,
+                         'document_id': document.id,
+                         '_query': {'download': key}})
     document_path = request.current_route_path(**route_kwargs)
     document.url = '/' + '/'.join(document_path.split('/')[3:])
     return document
+
+
+def check_document_batch(request, document, document_container, route_kwargs):
+    check_document(request, document, document_container)
+
+    document_route = request.matched_route.name.replace("collection_", "")
+    # Following piece of code was written by leits, so no one knows how it works
+    # and why =)
+    # To redefine document_route to get appropriate real document route when bid
+    # is created with documents? I hope so :)
+    if "Documents" not in document_route:
+        specified_document_route_end = (document_container.lower().rsplit('documents')[0] + ' documents').lstrip().title()
+        document_route = ' '.join([document_route[:-1], specified_document_route_end])
+
+    return update_document_url(request, document, document_route, route_kwargs)
 
 
 def check_complaint_status(request, complaint, now=None):

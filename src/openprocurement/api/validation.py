@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from openprocurement.api.models import get_now
 from schematics.exceptions import ModelValidationError, ModelConversionError
-from openprocurement.api.utils import apply_data_patch, update_logging_context, check_document
+from openprocurement.api.utils import apply_data_patch, update_logging_context, check_document_batch
 
 
 def validate_json_data(request):
@@ -324,6 +324,6 @@ def validate_bid_documents(request):
             document = model(document)
             document.validate()
             route_kwargs = {'bid_id': request.validated['bid'].id}
-            document = check_document(request, document, doc_type, route_kwargs)
+            document = check_document_batch(request, document, doc_type, route_kwargs)
             documents[doc_type].append(document)
     return documents
