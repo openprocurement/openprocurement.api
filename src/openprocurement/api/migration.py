@@ -8,7 +8,7 @@ from email.header import decode_header
 
 
 LOGGER = logging.getLogger(__name__)
-SCHEMA_VERSION = 23
+SCHEMA_VERSION = 24
 SCHEMA_DOC = 'openprocurement_schema'
 
 
@@ -716,3 +716,40 @@ def from22to23(registry):
             docs = []
     if docs:
         registry.db.update(docs)
+
+
+def from23to24(registry):
+
+    def update_doc_url(document):
+        doc_id = document['id']
+        doc_url = document['url']
+        if doc_url.startswith(registry.docservice_url):
+            return False
+        if 'documents/' + doc_id not in doc_url:
+            pre, post = doc_url.split('documents')
+            doc_key = post.split('?')[1]
+            doc_url = pre + 'documents/' + doc_id + '?' + doc_key
+            document['url'] = doc_url
+            return True
+
+    results = registry.db.iterview('tenders/all', 2 ** 10, include_docs=True)
+    docs = []
+    for i in results:
+        changed = False
+        doc = i.doc
+        if doc.get('procurementMethodType', '') in ['aboveThresholdEU', "competitiveDialogueUA", "competitiveDialogueEU", "competitiveDialogueEU.stage2", "competitiveDialogueUA.stage2"]:
+            for bid in doc.get('bids', []):
+                for document_type in ['documents', 'financialDocuments', 'eligibilityDocuments', 'qualificationDocuments']:
+                    for document in bid.get(document_type, []):
+                        if document.get('confidentiality', 'public') == 'buyerOnly':
+                            if update_doc_url(document):
+                                changed = True
+        if changed:
+            docs.append(doc)
+        if len(docs) >= 2 ** 7:
+            registry.db.update(docs)
+            docs = []
+    if docs:
+        registry.db.update(docs)
+
+    LOGGER.info("Migration complete.")
