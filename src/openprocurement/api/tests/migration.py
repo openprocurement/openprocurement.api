@@ -770,7 +770,6 @@ class MigrateTest(BaseWebTest):
         u.tenderID = "UA-X"
         u.store(self.db)
         tender_raw = self.db.get(u.id)
-        tender_raw['procurementMethodType'] = 'aboveThresholdEU'  # dirty eu simulation
         bid = {"id": "1b4da15470e84c4d948a5d1660d29776"}
         bid["documents"] = [
             {
@@ -783,10 +782,9 @@ class MigrateTest(BaseWebTest):
                 "dateModified": "2016-06-01T00:00:00+03:00",
                 "format": "text/plain",
                 "language": "uk",
-                "confidentiality": "buyerOnly"  # documents for which url is not rewrited to ds url
             },
             {
-                # non-ds url. should NOT be rewrited by migrator
+                # non-ds url. should be fixed (correct id in url) by migrator
                 "id": "f3e5470b76f84c66a89fd52ed871f645",
                 "title": "name.txt",
                 "documentOf": "tender",
@@ -807,6 +805,7 @@ class MigrateTest(BaseWebTest):
             }
         ]
 
+        # dirty eligibility documents container simulation
         bid["eligibilityDocuments"] = [
             {
                 # non-ds url. should be fixed (correct id in url) by migrator
@@ -832,10 +831,10 @@ class MigrateTest(BaseWebTest):
 
         # url should be corrected
         self.assertIn("/tenders/{}/bids/1b4da15470e84c4d948a5d1660d29776/documents/1801ca2749bd40b0944e58adc3e09c46?download=a65ef5c688884931aed1a472620d3a00".format(u.id), migrated_bid['documents'][0]['url'])
+        self.assertIn("/tenders/{}/bids/1b4da15470e84c4d948a5d1660d29776/documents/f3e5470b76f84c66a89fd52ed871f645?download=d48723d7b4014599ac8d94fb0ac958b4".format(u.id), migrated_bid['documents'][1]['url'])
         self.assertIn("/tenders/{}/bids/1b4da15470e84c4d948a5d1660d29776/eligibility_documents/73e728784f924518b07f16e34750df1b?download=5443af5e910f46debe412fc36e69f1ad".format(u.id), migrated_bid['eligibilityDocuments'][0]['url'])
 
         # url remained the same as before migration
-        self.assertIn("/tenders/{}/bids/1b4da15470e84c4d948a5d1660d29776/documents/512bd84155b145b99e0ac80894fe2b8f?download=d48723d7b4014599ac8d94fb0ac958b4".format(u.id), migrated_bid['documents'][1]['url'])
         self.assertIn("http://localhost.ds/get/b893bf5d2fb44a26bd6896178afe5953?KeyID=i_am_ds_url_lalalalala", migrated_bid['documents'][2]['url'])
 
 

@@ -737,13 +737,11 @@ def from23to24(registry):
     for i in results:
         changed = False
         doc = i.doc
-        if doc.get('procurementMethodType', '') in ['aboveThresholdEU', "competitiveDialogueUA", "competitiveDialogueEU", "competitiveDialogueEU.stage2", "competitiveDialogueUA.stage2"]:
-            for bid in doc.get('bids', []):
-                for document_type in ['documents', 'financialDocuments', 'eligibilityDocuments', 'qualificationDocuments']:
-                    for document in bid.get(document_type, []):
-                        if document.get('confidentiality', 'public') == 'buyerOnly':
-                            if update_doc_url(document):
-                                changed = True
+        for bid in doc.get('bids', []):
+            for document_type in ['documents', 'financialDocuments', 'eligibilityDocuments', 'qualificationDocuments']:
+                for document in bid.get(document_type, []):
+                    if update_doc_url(document):
+                        changed = True
         if changed:
             docs.append(doc)
         if len(docs) >= 2 ** 7:
