@@ -110,51 +110,13 @@ def raise_operation_error(request, message):
 def upload_file(request, blacklisted_fields=DOCUMENT_BLACKLISTED_FIELDS, whitelisted_fields=DOCUMENT_WHITELISTED_FIELDS):
     first_document = request.validated['documents'][-1] if 'documents' in request.validated and request.validated['documents'] else None
     if 'data' in request.validated and request.validated['data']:
-        document = request.validated['document']
-        url = document.url
-        parsed_url = urlparse(url)
-        parsed_query = dict(parse_qsl(parsed_url.query))
-        if not url.startswith(request.registry.docservice_url) or \
-                len(parsed_url.path.split('/')) != 3 or \
-                set(['Signature', 'KeyID']) != set(parsed_query):
-            request.errors.add('body', 'url', "Can add document only from document service.")
-            request.errors.status = 403
-            raise error_handler(request.errors)
-        if not document.hash:
-            request.errors.add('body', 'hash', "This field is required.")
-            request.errors.status = 422
-            raise error_handler(request.errors)
-        keyid = parsed_query['KeyID']
-        if keyid not in request.registry.keyring:
-            request.errors.add('body', 'url', "Document url expired.")
-            request.errors.status = 422
-            raise error_handler(request.errors)
-        dockey = request.registry.keyring[keyid]
-        signature = parsed_query['Signature']
-        key = urlparse(url).path.split('/')[-1]
-        try:
-            signature = b64decode(unquote(signature))
-        except TypeError:
-            request.errors.add('body', 'url', "Document url signature invalid.")
-            request.errors.status = 422
-            raise error_handler(request.errors)
-        mess = "{}\0{}".format(key, document.hash.split(':', 1)[-1])
-        try:
-            if mess != dockey.verify(signature + mess.encode("utf-8")):
-                raise ValueError
-        except ValueError:
-            request.errors.add('body', 'url', "Document url invalid.")
-            request.errors.status = 422
-            raise error_handler(request.errors)
+        document = check_document(request, request.validated['document'], 'body', {})
         if first_document:
             for attr_name in type(first_document)._fields:
                 if attr_name in whitelisted_fields:
                     setattr(document, attr_name, getattr(first_document, attr_name))
                 elif attr_name not in blacklisted_fields and attr_name not in request.validated['json_data']:
                     setattr(document, attr_name, getattr(first_document, attr_name))
-        document_route = request.matched_route.name.replace("collection_", "")
-        document_path = request.current_route_path(_route_name=document_route, document_id=document.id, _query={'download': key})
-        document.url = '/' + '/'.join(document_path.split('/')[3:])
         return document
     if request.content_type == 'multipart/form-data':
         data = request.validated['file']
@@ -307,6 +269,52 @@ def set_ownership(item, request):
     item.owner_token = generate_id()
 
 
+def check_document(request, document, document_container, route_kwargs):
+    url = document.url
+    parsed_url = urlparse(url)
+    parsed_query = dict(parse_qsl(parsed_url.query))
+    if not url.startswith(request.registry.docservice_url) or \
+            len(parsed_url.path.split('/')) != 3 or \
+            set(['Signature', 'KeyID']) != set(parsed_query):
+        request.errors.add(document_container, 'url', "Can add document only from document service.")
+        request.errors.status = 403
+        raise error_handler(request.errors)
+    if not document.hash:
+        request.errors.add(document_container, 'hash', "This field is required.")
+        request.errors.status = 422
+        raise error_handler(request.errors)
+    keyid = parsed_query['KeyID']
+    if keyid not in request.registry.keyring:
+        request.errors.add(document_container, 'url', "Document url expired.")
+        request.errors.status = 422
+        raise error_handler(request.errors)
+    dockey = request.registry.keyring[keyid]
+    signature = parsed_query['Signature']
+    key = urlparse(url).path.split('/')[-1]
+    try:
+        signature = b64decode(unquote(signature))
+    except TypeError:
+        request.errors.add(document_container, 'url', "Document url signature invalid.")
+        request.errors.status = 422
+        raise error_handler(request.errors)
+    mess = "{}\0{}".format(key, document.hash.split(':', 1)[-1])
+    try:
+        if mess != dockey.verify(signature + mess.encode("utf-8")):
+            raise ValueError
+    except ValueError:
+        request.errors.add(document_container, 'url', "Document url invalid.")
+        request.errors.status = 422
+        raise error_handler(request.errors)
+    document_route = request.matched_route.name.replace("collection_", "")
+    if "Documents" not in document_route:
+        specified_document_route_end = (document_container.lower().rsplit('documents')[0] + ' documents').lstrip().title()
+        document_route = ' '.join([document_route[:-1], specified_document_route_end])
+    route_kwargs.update({'_route_name': document_route, 'document_id': document.id, '_query': {'download': key}})
+    document_path = request.current_route_path(**route_kwargs)
+    document.url = '/' + '/'.join(document_path.split('/')[3:])
+    return document
+
+
 def request_params(request):
     try:
         params = NestedMultiDict(request.GET, request.POST)
@@ -331,6 +339,121 @@ class APIResource(object):
         self.db = request.registry.db
         self.server_id = request.registry.server_id
         self.LOGGER = getLogger(type(self).__module__)
+
+
+class APIResourceListing(APIResource):
+
+    def __init__(self, request, context):
+        super(APIResourceListing, self).__init__(request, context)
+        self.server = request.registry.couchdb_server
+        self.update_after = request.registry.update_after
+
+    @json_view(permission='view_listing')
+    def get(self):
+        params = {}
+        pparams = {}
+        fields = self.request.params.get('opt_fields', '')
+        if fields:
+            params['opt_fields'] = fields
+            pparams['opt_fields'] = fields
+            fields = fields.split(',')
+            view_fields = fields + ['dateModified', 'id']
+        limit = self.request.params.get('limit', '')
+        if limit:
+            params['limit'] = limit
+            pparams['limit'] = limit
+        limit = int(limit) if limit.isdigit() and (100 if fields else 1000) >= int(limit) > 0 else 100
+        descending = bool(self.request.params.get('descending'))
+        offset = self.request.params.get('offset', '')
+        if descending:
+            params['descending'] = 1
+        else:
+            pparams['descending'] = 1
+        feed = self.request.params.get('feed', '')
+        view_map = self.FEED.get(feed, self.VIEW_MAP)
+        changes = view_map is self.CHANGES_VIEW_MAP
+        if feed and feed in self.FEED:
+            params['feed'] = feed
+            pparams['feed'] = feed
+        mode = self.request.params.get('mode', '')
+        if mode and mode in view_map:
+            params['mode'] = mode
+            pparams['mode'] = mode
+        view_limit = limit + 1 if offset else limit
+        if changes:
+            if offset:
+                view_offset = decrypt(self.server.uuid, self.db.name, offset)
+                if view_offset and view_offset.isdigit():
+                    view_offset = int(view_offset)
+                else:
+                    self.request.errors.add('params', 'offset', 'Offset expired/invalid')
+                    self.request.errors.status = 404
+                    raise error_handler(self.request.errors)
+            if not offset:
+                view_offset = 'now' if descending else 0
+        else:
+            if offset:
+                view_offset = offset
+            else:
+                view_offset = '9' if descending else ''
+        list_view = view_map.get(mode, view_map[u''])
+        if self.update_after:
+            view = partial(list_view, self.db, limit=view_limit, startkey=view_offset, descending=descending, stale='update_after')
+        else:
+            view = partial(list_view, self.db, limit=view_limit, startkey=view_offset, descending=descending)
+        if fields:
+            if not changes and set(fields).issubset(set(self.FIELDS)):
+                results = [
+                    (dict([(i, j) for i, j in x.value.items() + [('id', x.id), ('dateModified', x.key)] if i in view_fields]), x.key)
+                    for x in view()
+                ]
+            elif changes and set(fields).issubset(set(self.FIELDS)):
+                results = [
+                    (dict([(i, j) for i, j in x.value.items() + [('id', x.id)] if i in view_fields]), x.key)
+                    for x in view()
+                ]
+            elif fields:
+                self.LOGGER.info('Used custom fields for {} list: {}'.format(self.object_name_for_listing, ','.join(sorted(fields))),
+                            extra=context_unpack(self.request, {'MESSAGE_ID': self.log_message_id}))
+
+                results = [
+                    (self.serialize_func(self.request, i[u'doc'], view_fields), i.key)
+                    for i in view(include_docs=True)
+                ]
+        else:
+            results = [
+                ({'id': i.id, 'dateModified': i.value['dateModified']} if changes else {'id': i.id, 'dateModified': i.key}, i.key)
+                for i in view()
+            ]
+        if results:
+            params['offset'], pparams['offset'] = results[-1][1], results[0][1]
+            if offset and view_offset == results[0][1]:
+                results = results[1:]
+            elif offset and view_offset != results[0][1]:
+                results = results[:limit]
+                params['offset'], pparams['offset'] = results[-1][1], view_offset
+            results = [i[0] for i in results]
+            if changes:
+                params['offset'] = encrypt(self.server.uuid, self.db.name, params['offset'])
+                pparams['offset'] = encrypt(self.server.uuid, self.db.name, pparams['offset'])
+        else:
+            params['offset'] = offset
+            pparams['offset'] = offset
+        data = {
+            'data': results,
+            'next_page': {
+                "offset": params['offset'],
+                "path": self.request.route_path(self.object_name_for_listing, _query=params),
+                "uri": self.request.route_url(self.object_name_for_listing, _query=params)
+            }
+        }
+        if descending or offset:
+            data['prev_page'] = {
+                "offset": pparams['offset'],
+                "path": self.request.route_path(self.object_name_for_listing, _query=pparams),
+                "uri": self.request.route_url(self.object_name_for_listing, _query=pparams)
+            }
+        return data
 
 
 def forbidden(request):
