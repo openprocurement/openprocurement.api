@@ -15,8 +15,15 @@ now = datetime.now()
 
 
 def snitch(func):
+    """
+        snitch method get test without test_ part in title
+        This method return a copy of function with test_ part at begining
+        It provide a way to realize a storage for tests that are non-executable
+        and provide a way for import tests where it needed.
+    """
     return FunctionType(func.func_code, func.func_globals,
-                        'test_' + func.func_name, closure = func.func_closure)
+                        'test_' + func.func_name, closure=func.func_closure)
+
 
 class PrefixedRequestClass(webtest.app.TestRequest):
 
