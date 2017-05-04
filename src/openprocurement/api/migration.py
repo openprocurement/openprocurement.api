@@ -751,6 +751,7 @@ def from23to24(registry):
             docs = []
     if docs:
         registry.db.update(docs)
+        count += len(docs)
 
     LOGGER.info("Migrated {} objects.".format(count))
     LOGGER.info("Migration complete.")
