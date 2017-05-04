@@ -50,6 +50,7 @@ def read_json(name):
 
 CPV_CODES = read_json('cpv.json')
 CPV_CODES.append('99999999-9')
+DK_CODES = read_json('dk021.json')
 #DKPP_CODES = read_json('dkpp.json')
 ORA_CODES = [i['code'] for i in read_json('OrganisationRegistrationAgency.json')['data']]
 WORKING_DAYS = read_json('working_days.json')
@@ -301,8 +302,14 @@ class Classification(Model):
 
 
 class CPVClassification(Classification):
-    scheme = StringType(required=True, default=u'CPV', choices=[u'CPV'])
-    id = StringType(required=True, choices=CPV_CODES)
+    scheme = StringType(required=True, default=u'CPV', choices=[u'CPV', u'ДК021'])
+    id = StringType(required=True)
+
+    def validate_id(self, data, code):
+        if data.get('scheme') == u'CPV' and code not in CPV_CODES:
+            raise ValidationError(BaseType.MESSAGES['choices'].format(unicode(CPV_CODES)))
+        elif data.get('scheme') == u'ДК021' and code not in DK_CODES:
+            raise ValidationError(BaseType.MESSAGES['choices'].format(unicode(DK_CODES)))
 
 
 class Unit(Model):
