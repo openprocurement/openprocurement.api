@@ -734,6 +734,7 @@ def from23to24(registry):
 
     results = registry.db.iterview('tenders/all', 2 ** 10, include_docs=True)
     docs = []
+    count = 0
     for i in results:
         changed = False
         doc = i.doc
@@ -746,8 +747,10 @@ def from23to24(registry):
             docs.append(doc)
         if len(docs) >= 2 ** 7:
             registry.db.update(docs)
+            count += len(docs)
             docs = []
     if docs:
         registry.db.update(docs)
 
+    LOGGER.info("Migrated {} objects.".format(count))
     LOGGER.info("Migration complete.")
