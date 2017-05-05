@@ -10,4 +10,5 @@ spore = Service(name='spore', path='/spore', renderer='json')
 @spore.get()
 def get_spore(request):
     services = get_services()
-    return generate_spore_description(services, 'Service name', request.application_url, VERSION)
+    return generate_spore_description(services, 'Service name', request.application_url,
+                                      request.registry.settings.get('api_version', VERSION))
