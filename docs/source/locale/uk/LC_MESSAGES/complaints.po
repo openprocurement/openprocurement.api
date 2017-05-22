@@ -55,20 +55,24 @@ msgid "Reviewer can upload documents and review complaint."
 msgstr "Орган оскарження може завантажувати документи та розглядати скарги."
 
 #: ../../source/complaints.rst:89
-msgid "Complaint recognized as invalid."
-msgstr "Скаргу визнано недійсною."
+msgid "Claim recognized as invalid."
+msgstr "Вимогу визнано недійсною."
 
 #: ../../source/complaints.rst:94
-msgid "Complaint recognized as declined."
-msgstr "Скаргу визнано відхиленою."
+msgid "Claim recognized as declined."
+msgstr "Вимогу визнано відхиленою."
 
 #: ../../source/complaints.rst:99
-msgid "Complaint recognized as resolved."
-msgstr "Скаргу визнано вирішеною."
+msgid "Claim recognized as resolved."
+msgstr "Вимогу визнано вирішеною."
 
 #: ../../source/complaints.rst:104
-msgid "Complaint cancelled by complainant."
-msgstr "Скаргу відкликано скаржником."
+msgid "Claim cancelled by complainant."
+msgstr "Вимогу відкликано скаржником."
+
+#: ../../source/complaints.rst:104
+msgid "Claim ignored by procuring entity."
+msgstr "Замовник залишив вимогу без відповіді."
 
 #: ../../source/complaints.rst:69
 msgid "Initial status"
@@ -88,11 +92,11 @@ msgstr "Замовник може завантажити документи та
 
 #: ../../source/complaints.rst:79
 msgid ""
-"Complainant can cancel claim, upload documents, accept solution or escalate "
-"claim to complaint."
+"Complainant can cancel claim, upload documents, agree or disagree with "
+"decision."
 msgstr ""
-"Скаржник може відкликати вимогу, завантажити документи, погодитись з "
-"вирішенням або перетворити вимогу на скаргу."
+"Скаржник може відкликати вимогу, завантажити документи, згодитись або не "
+"згодитись з вирішенням."
 
 #: ../../source/complaints.rst:87 ../../source/complaints.rst:92
 #: ../../source/complaints.rst:97 ../../source/complaints.rst:102

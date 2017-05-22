@@ -365,6 +365,7 @@ def check_bids(request):
         if tender.numberOfBids == 1:
             #tender.status = 'active.qualification'
             add_next_award(request)
+    check_ignored_claim(tender)
 
 
 def check_document(request, document, document_container, route_kwargs):
@@ -416,12 +417,24 @@ def check_document(request, document, document_container, route_kwargs):
 def check_complaint_status(request, complaint, now=None):
     if not now:
         now = get_now()
-    if complaint.status == 'claim' and calculate_business_date(complaint.dateSubmitted, COMPLAINT_STAND_STILL_TIME, request.tender) < now:
-        complaint.status = 'pending'
-        complaint.type = 'complaint'
-        complaint.dateEscalated = now
-    elif complaint.status == 'answered' and calculate_business_date(complaint.dateAnswered, COMPLAINT_STAND_STILL_TIME, request.tender) < now:
+    if complaint.status == 'answered' and calculate_business_date(complaint.dateAnswered, COMPLAINT_STAND_STILL_TIME, request.tender) < now:
         complaint.status = complaint.resolutionType
+    elif complaint.status == 'pending' and complaint.resolutionType and complaint.dateEscalated:
+        complaint.status = complaint.resolutionType
+    elif complaint.status == 'pending':
+        complaint.status = 'ignored'
+
+
+def check_ignored_claim(tender):
+    complete_lot_ids = [None] if tender.status in ['complete', 'cancelled', 'unsuccessful'] else []
+    complete_lot_ids.extend([i.id for i in tender.lots if i.status in ['complete', 'cancelled', 'unsuccessful']])
+    for complaint in tender.complaints:
+        if complaint.status == 'claim' and complaint.relatedLot in complete_lot_ids:
+            complaint.status = 'ignored'
+    for award in tender.awards:
+        for complaint in award.complaints:
+            if complaint.status == 'claim' and complaint.relatedLot in complete_lot_ids:
+                complaint.status = 'ignored'
 
 
 def check_status(request):
@@ -573,6 +586,7 @@ def check_tender_status(request):
             tender.status = 'unsuccessful'
         if tender.contracts and tender.contracts[-1].status == 'active':
             tender.status = 'complete'
+    check_ignored_claim(tender)
 
 
 def add_next_award(request):

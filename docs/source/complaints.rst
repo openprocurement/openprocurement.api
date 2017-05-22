@@ -38,14 +38,17 @@ Workflow
         claim -> answered;
         edge[style=dashed];
         draft -> claim; 
-        answered -> {pending,resolved};
-        {draft,claim,answered,pending} -> cancelled; 
-        edge[style=bold];
-        pending -> {declined,resolved,invalid};
+        answered -> resolved;
+        {draft,claim,answered} -> cancelled; 
         edge[label="3d" style=dotted];
-        claim -> pending;
         answered -> {resolved, invalid, declined};
+        edge[label="complete" style=dotted];
+        claim -> ignored;
+        edge[label="auto" style=dotted];
+        pending -> ignored;
+        pending -> {resolved, invalid, declined};
     }
+
 
 Roles
 -----
@@ -55,9 +58,6 @@ Roles
 
 :Procuring entity:
     plain
-
-:Reviewer:
-    bold
 
 :Chronograph:
     dotted
@@ -76,7 +76,7 @@ Statuses
     Complainant can cancel claim.
 
 :answered:
-    Complainant can cancel claim, upload documents, accept solution or escalate claim to complaint.
+    Complainant can cancel claim, upload documents, agree or disagree with decision.
 
 :pending:
     Reviewer can upload documents and review complaint.
@@ -86,19 +86,24 @@ Statuses
 :invalid:
     Terminal status
 
-    Complaint recognized as invalid.
+    Claim recognized as invalid.
 
 :declined:
     Terminal status
 
-    Complaint recognized as declined.
+    Claim recognized as declined.
 
 :resolved:
     Terminal status
 
-    Complaint recognized as resolved.
+    Claim recognized as resolved.
 
 :cancelled:
     Terminal status
 
-    Complaint cancelled by complainant.
+    Claim cancelled by complainant.
+
+:ignored:
+    Terminal status
+
+    Claim ignored by procuring entity.
