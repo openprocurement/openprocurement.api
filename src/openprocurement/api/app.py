@@ -8,6 +8,7 @@ import os
 from couchdb import Server as CouchdbServer, Session
 from couchdb.http import Unauthorized, extract_credentials
 from libnacl.sign import Signer, Verifier
+from libnacl.public import SecretKey, PublicKey
 from logging import getLogger
 from openprocurement.api.auth import AuthenticationPolicy, authenticated_role, check_accreditation
 from openprocurement.api.database import set_api_security
@@ -64,6 +65,10 @@ def main(global_config, **settings):
     dockeys = settings.get('dockeys') if 'dockeys' in settings else dockey.hex_vk()
     for key in dockeys.split('\0'):
         keyring[key[:8]] = Verifier(key)
+
+    # Archive keys
+    arch_pubkey = settings.get('arch_pubkey', None)
+    config.registry.arch_pubkey = PublicKey(arch_pubkey.decode('hex') if arch_pubkey else SecretKey().pk)
 
     # migrate data
     if not os.environ.get('MIGRATION_SKIP'):
