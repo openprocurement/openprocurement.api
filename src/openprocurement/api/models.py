@@ -33,6 +33,7 @@ TZ = timezone(os.environ['TZ'] if 'TZ' in os.environ else 'Europe/Kiev')
 CANT_DELETE_PERIOD_START_DATE_FROM = datetime(2016, 9, 23, tzinfo=TZ)
 BID_LOTVALUES_VALIDATION_FROM = datetime(2016, 10, 21, tzinfo=TZ)
 CPV_ITEMS_CLASS_FROM = datetime(2016, 12, 24, tzinfo=TZ)
+CPV_BLOCK_FROM = datetime(2017, 6, 1, tzinfo=TZ)
 ITEMS_LOCATION_VALIDATION_FROM = datetime(2016, 11, 22, tzinfo=TZ)
 
 coordinates_reg_exp = re.compile(r'-?\d{1,3}\.\d+|-?\d{1,3}')
@@ -93,6 +94,12 @@ def set_parent(item, parent):
 
 def get_tender(model):
     while not ITender.providedBy(model):
+        model = model.__parent__
+    return model
+
+
+def get_schematics_document(model):
+    while not isinstance(model, SchematicsDocument):
         model = model.__parent__
     return model
 
@@ -314,6 +321,11 @@ class CPVClassification(Classification):
             raise ValidationError(BaseType.MESSAGES['choices'].format(unicode(CPV_CODES)))
         elif data.get('scheme') == u'ДК021' and code not in DK_CODES:
             raise ValidationError(BaseType.MESSAGES['choices'].format(unicode(DK_CODES)))
+
+    def validate_scheme(self, data, scheme):
+        schematics_document = get_schematics_document(data['__parent__'])
+        if (schematics_document.get('revisions')[0].date if schematics_document.get('revisions') else get_now()) > CPV_BLOCK_FROM and scheme != u'ДК021':
+            raise ValidationError(BaseType.MESSAGES['choices'].format(unicode([u'ДК021'])))
 
 
 class Unit(Model):

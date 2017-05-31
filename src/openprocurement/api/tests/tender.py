@@ -5,7 +5,7 @@ from copy import deepcopy
 from datetime import timedelta
 
 from openprocurement.api import ROUTE_PREFIX
-from openprocurement.api.models import Tender, get_now, CANT_DELETE_PERIOD_START_DATE_FROM, CPV_ITEMS_CLASS_FROM, coordinates_reg_exp
+from openprocurement.api.models import Tender, get_now, CANT_DELETE_PERIOD_START_DATE_FROM, CPV_ITEMS_CLASS_FROM, CPV_BLOCK_FROM, coordinates_reg_exp
 from openprocurement.api.tests.base import test_tender_data, test_organization, BaseWebTest, BaseTenderWebTest
 from uuid import uuid4
 
@@ -601,7 +601,7 @@ class TenderResourceTest(BaseWebTest):
             ])
 
         cpv = test_tender_data["items"][0]['classification']["id"]
-        test_tender_data["items"][0]['classification']["id"] = u'60173000-1'
+        test_tender_data["items"][0]['classification']["id"] = u'160173000-1'
         response = self.app.post_json(request_path, {'data': test_tender_data}, status=422)
         test_tender_data["items"][0]['classification']["id"] = cpv
         self.assertEqual(response.status, '422 Unprocessable Entity')
@@ -612,10 +612,12 @@ class TenderResourceTest(BaseWebTest):
         self.assertIn("Value must be one of [u", response.json['errors'][0][u'description'][0][u'classification'][u'id'][0])
 
         cpv = test_tender_data["items"][0]['classification']["id"]
-        test_tender_data["items"][0]['classification']["scheme"] = u'ДК021'
+        if get_now() < CPV_BLOCK_FROM:
+            test_tender_data["items"][0]['classification']["scheme"] = u'CPV'
         test_tender_data["items"][0]['classification']["id"] = u'00000000-0'
         response = self.app.post_json(request_path, {'data': test_tender_data}, status=422)
-        test_tender_data["items"][0]['classification']["scheme"] = u'ДК021'
+        if get_now() < CPV_BLOCK_FROM:
+            test_tender_data["items"][0]['classification']["scheme"] = u'CPV'
         test_tender_data["items"][0]['classification']["id"] = cpv
         self.assertEqual(response.status, '422 Unprocessable Entity')
         self.assertEqual(response.content_type, 'application/json')
@@ -1312,7 +1314,7 @@ class TenderResourceTest(BaseWebTest):
         self.assertEqual(len(response.json['data']['items']), 1)
 
         response = self.app.patch_json('/tenders/{}'.format(tender['id']), {'data': {'items': [{"classification": {
-            "scheme": "CPV",
+            "scheme": "ДК021",
             "id": "55523100-3",
             "description": "Послуги з харчування у школах"
         }}]}})
