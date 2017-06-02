@@ -26,6 +26,7 @@ from openprocurement.api.constants import (
     ADDITIONAL_CLASSIFICATIONS_SCHEMES, DOCUMENT_BLACKLISTED_FIELDS,
     DOCUMENT_WHITELISTED_FIELDS, ROUTE_PREFIX, TZ, SESSION, VERSION
 )
+from openprocurement.api.interfaces import IOPContent
 from openprocurement.api.interfaces import IContentConfigurator
 
 json_view = partial(view, renderer='json')
@@ -47,6 +48,15 @@ def get_now():
 def set_parent(item, parent):
     if hasattr(item, '__parent__') and item.__parent__ is None:
         item.__parent__ = parent
+
+
+def get_root(item):
+    """ traverse back to root op content object (plan, tender, contract, etc.)
+    """
+    while not IOPContent.providedBy(item):
+        item = item.__parent__
+    return item
+
 
 def generate_id():
     return uuid4().hex
