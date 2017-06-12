@@ -1,12 +1,12 @@
-PATCH /api/2.3/tenders/eeb9177097a14a8c80ca0d1c8b202a00/complaints/f19052e57bb74ee3a754eb355b1d3898?acc_token=a50cd6cfde284f33a483907a768f9afb HTTP/1.0
+PATCH /api/2.3/tenders/03461a7a11b24926a1882f544f5b19d7/complaints/897faaa642d74561b7af1eae01d7a904?acc_token=636cc5dd0e484e1b81204bacf6cd098e HTTP/1.0
 Authorization: Basic YnJva2VyOg==
-Content-Length: 51
+Content-Length: 52
 Content-Type: application/json
 Host: api-sandbox.openprocurement.org
 
 {
   "data": {
-    "status": "pending", 
+    "status": "resolved", 
     "satisfied": false
   }
 }
@@ -17,39 +17,18 @@ Content-Type: application/json; charset=UTF-8
 
 {
   "data": {
-    "status": "pending", 
+    "status": "resolved", 
     "description": "complaint description", 
     "title": "complaint title", 
     "resolutionType": "resolved", 
-    "type": "complaint", 
-    "author": {
-      "contactPoint": {
-        "email": "soleksuk@gmail.com", 
-        "telephone": "+380 (432) 21-69-30", 
-        "name": "Сергій Олексюк"
-      }, 
-      "identifier": {
-        "scheme": "UA-EDR", 
-        "id": "00137256", 
-        "uri": "http://www.sc.gov.ua/"
-      }, 
-      "name": "ДКП «Школяр»", 
-      "address": {
-        "postalCode": "21100", 
-        "countryName": "Україна", 
-        "streetAddress": "вул. Островського, 33", 
-        "region": "м. Вінниця", 
-        "locality": "м. Вінниця"
-      }
-    }, 
+    "type": "claim", 
     "satisfied": false, 
-    "dateEscalated": "2016-07-21T17:17:51.872191+03:00", 
-    "dateAnswered": "2016-07-21T17:17:51.730761+03:00", 
-    "dateSubmitted": "2016-07-21T17:17:51.188415+03:00", 
-    "complaintID": "UA-2016-07-21-000001.2", 
-    "date": "2016-07-21T17:17:51.877004+03:00", 
+    "dateAnswered": "2017-06-12T14:11:38.278232+03:00", 
+    "dateSubmitted": "2017-06-12T14:11:37.950253+03:00", 
+    "complaintID": "UA-2017-06-12-000001.2", 
+    "date": "2017-06-12T14:11:38.371503+03:00", 
     "resolution": "Виправлено неконкурентні умови", 
-    "id": "f19052e57bb74ee3a754eb355b1d3898"
+    "id": "897faaa642d74561b7af1eae01d7a904"
   }
 }
 
