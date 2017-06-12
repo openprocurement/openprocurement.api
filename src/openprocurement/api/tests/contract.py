@@ -250,6 +250,13 @@ class TenderMergedContracts2LotsResourceTest(BaseTenderWebTest):
                                                   "endDate": (now - timedelta(days=1)).isoformat()}
         self.db.save(tender)
 
+        # Lets resolve complaint
+        self.edit_award_complaint(second_contract['awardID'], complaint['id'], self.tender_token,
+                                {"data": {"status": "answered",
+                                          "resolutionType": "resolved",
+                                          "resolution": "resolution text " * 2}
+                                })
+
         # Try set status active for main contract
         response = self.app.patch_json("/tenders/{}/contracts/{}?acc_token={}".format(
             self.tender_id, first_contract['id'], self.tender_token),
@@ -264,13 +271,6 @@ class TenderMergedContracts2LotsResourceTest(BaseTenderWebTest):
                                  "description": "Can't sign contract before reviewing all additional complaints"
                              }
                          ])
-
-        # Lets resolve complaint
-        self.edit_award_complaint(second_contract['awardID'], complaint['id'], self.tender_token,
-                                {"data": {"status": "answered",
-                                          "resolutionType": "resolved",
-                                          "resolution": "resolution text " * 2}
-                                })
 
         self.edit_award_complaint(second_contract['awardID'], complaint['id'], owner_token,
                                {"data": {"satisfied": True, "status": "resolved"}})
@@ -747,6 +747,15 @@ class TenderMergedContracts3LotsResourceTest(BaseTenderWebTest):
                                                   "endDate": (now - timedelta(days=1)).isoformat()}
         self.db.save(tender)
 
+        # Lets resolve first complaint
+        self.edit_award_complaint(second_contract['awardID'],
+                               second_award_complaint['id'],
+                               self.tender_token,
+                               {"data": {"status": "answered",
+                                              "resolutionType": "resolved",
+                                              "resolution": "resolution text " * 2}
+                                          })
+
         # Try set status active for main contract
         response = self.app.patch_json("/tenders/{}/contracts/{}?acc_token={}".format(
             self.tender_id, first_contract['id'], self.tender_token),
@@ -762,19 +771,17 @@ class TenderMergedContracts3LotsResourceTest(BaseTenderWebTest):
                              }
                          ])
 
-        # Lets resolve first complaint
-        self.edit_award_complaint(second_contract['awardID'],
-                               second_award_complaint['id'],
-                               self.tender_token,
-                               {"data": {"status": "answered",
-                                              "resolutionType": "resolved",
-                                              "resolution": "resolution text " * 2}
-                                          })
-
         self.edit_award_complaint(second_contract['awardID'],
                                second_award_complaint['id'],
                                second_award_complaint_owner_token,
                                {"data": {"satisfied": True, "status": "resolved"}})
+
+        # Lets resolve second complaint
+        self.edit_award_complaint(third_contract['awardID'],
+                               third_award_complaint['id'],
+                               self.tender_token,
+                               {"data": {"status": "answered", "resolutionType": "resolved",
+                                                         "resolution": "resolution text " * 2}})
 
         # Try set status active for main contract again
         response = self.app.patch_json("/tenders/{}/contracts/{}?acc_token={}".format(
@@ -790,13 +797,6 @@ class TenderMergedContracts3LotsResourceTest(BaseTenderWebTest):
                                  "description": "Can't sign contract before reviewing all additional complaints"
                              }
                          ])
-
-        # Lets resolve second complaint
-        self.edit_award_complaint(third_contract['awardID'],
-                               third_award_complaint['id'],
-                               self.tender_token,
-                               {"data": {"status": "answered", "resolutionType": "resolved",
-                                                         "resolution": "resolution text " * 2}})
 
         self.edit_award_complaint(third_contract['awardID'],
                                third_award_complaint['id'],
@@ -1577,6 +1577,19 @@ class TenderMergedContracts4LotsResourceTest(BaseTenderWebTest):
                                                   "endDate": (now - timedelta(days=1)).isoformat()}
         self.db.save(tender)
 
+        # Lets resolve first complaint
+        self.edit_award_complaint(second_contract['awardID'], second_award_complaint['id'], self.tender_token,
+                               {"data": {"status": "answered",
+                                             "resolutionType": "resolved",
+                                             "resolution": "resolution text " * 2}})
+
+        # Lets resolve second complaint
+        self.edit_award_complaint(fourth_contract['awardID'], fourth_award_complaint['id'], self.tender_token,
+                               {"data": {"status": "answered",
+                                         "resolutionType": "resolved",
+                                         "resolution": "resolution text " * 2}
+                               })
+
         # Try set status active for first main contract
         response = self.app.patch_json("/tenders/{}/contracts/{}?acc_token={}".format(
             self.tender_id, first_contract['id'], self.tender_token),
@@ -1607,12 +1620,6 @@ class TenderMergedContracts4LotsResourceTest(BaseTenderWebTest):
                              }
                          ])
 
-        # Lets resolve first complaint
-        self.edit_award_complaint(second_contract['awardID'], second_award_complaint['id'], self.tender_token,
-                               {"data": {"status": "answered",
-                                             "resolutionType": "resolved",
-                                             "resolution": "resolution text " * 2}})
-
         self.edit_award_complaint(second_contract['awardID'], second_award_complaint['id'],
                                second_award_complaint_owner_token,
                                {"data": {"satisfied": True, "status": "resolved"}})
@@ -1640,13 +1647,6 @@ class TenderMergedContracts4LotsResourceTest(BaseTenderWebTest):
                                  "description": "Can't sign contract before reviewing all additional complaints"
                              }
                          ])
-
-        # Lets resolve second complaint
-        self.edit_award_complaint(fourth_contract['awardID'], fourth_award_complaint['id'], self.tender_token,
-                               {"data": {"status": "answered",
-                                         "resolutionType": "resolved",
-                                         "resolution": "resolution text " * 2}
-                               })
 
         self.edit_award_complaint(fourth_contract['awardID'], fourth_award_complaint['id'],
                                fourth_award_complaint_owner_token,
@@ -1953,17 +1953,22 @@ class TenderContractResourceTest(BaseTenderWebTest):
         response = self.app.patch_json('/tenders/{}/contracts/{}'.format(self.tender_id, contract['id']), {"data": {"dateSigned": custom_signature_date}})
         self.assertEqual(response.status, '200 OK')
 
-        response = self.app.patch_json('/tenders/{}/contracts/{}'.format(self.tender_id, contract['id']), {"data": {"status": "active"}}, status=403)
-        self.assertEqual(response.status, '403 Forbidden')
-        self.assertEqual(response.content_type, 'application/json')
-        self.assertEqual(response.json['errors'][0]["description"], "Can't sign contract before reviewing all complaints")
-
         self.edit_award_complaint(self.award_id, complaint['id'], self.tender_token,
                                 {"data": {
                                         "status": "answered",
                                         "resolutionType": "resolved",
                                         "resolution": "resolution text " * 2
                                     }})
+
+        response = self.app.patch_json('/tenders/{}/contracts/{}'.format(self.tender_id, contract['id']), {"data": {"status": "active"}}, status=403)
+        self.assertEqual(response.status, '403 Forbidden')
+        self.assertEqual(response.content_type, 'application/json')
+        self.assertEqual(response.json['errors'][0]["description"], "Can't sign contract before reviewing all complaints")
+
+        response = self.app.patch_json('/tenders/{}/contracts/{}'.format(self.tender_id, contract['id']), {"data": {"status": "active"}}, status=403)
+        self.assertEqual(response.status, '403 Forbidden')
+        self.assertEqual(response.content_type, 'application/json')
+        self.assertEqual(response.json['errors'][0]["description"], "Can't sign contract before reviewing all complaints")
 
         self.edit_award_complaint(self.award_id, complaint['id'], owner_token,
                                 {"data": {

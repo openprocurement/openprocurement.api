@@ -1,4 +1,4 @@
-GET /api/2.3/tenders/eeb9177097a14a8c80ca0d1c8b202a00/awards/86d3f73dd7094865a9fd4966584c62ae/complaints HTTP/1.0
+GET /api/2.3/tenders/03461a7a11b24926a1882f544f5b19d7/awards/72a4d40debe940eea7407530731d9398/complaints HTTP/1.0
 Host: api-sandbox.openprocurement.org
 
 
@@ -14,12 +14,12 @@ Content-Type: application/json; charset=UTF-8
           "hash": "md5:00000000000000000000000000000000", 
           "author": "complaint_owner", 
           "title": "Complaint_Attachement.pdf", 
-          "url": "http://public.docs-sandbox.openprocurement.org/get/b1d288ec9d35491c83d5953a79d45071?KeyID=a1a42480&Signature=twSUg3Pm7UJJUoKW0E5lJ9fyDBuGXW3VHAKfq8j7q%252B8ysx%2FjgW1Q9B3mLNrHDS3UGm0rNjbKeZcGbGylCQvCDWIAAAAxAAAAZAAAADIAAAA4AAAAOAAAAGUAAABjAAAA", 
+          "url": "http://public.docs-sandbox.openprocurement.org/get/0de176d055104ab09bb07f8c9d5e9a85?KeyID=c33983f9&Signature=BfmBkBISZqVipkDADvhuCAhfgCcjXli5Kfm%252Bnn0oQubOkU4J2x%2FLi5biA4XoPqgprCMPTPK6L%252BUXUXT6U88gAw%253D%253D", 
           "format": "application/pdf", 
           "documentOf": "tender", 
-          "datePublished": "2016-07-21T17:17:57.441970+03:00", 
-          "id": "ae2cd7a20eab46c0b2d62cf2510936ca", 
-          "dateModified": "2016-07-21T17:17:57.442018+03:00"
+          "datePublished": "2017-06-12T14:11:41.650204+03:00", 
+          "id": "2ae37400e7804f87b78df7faaa71f4f1", 
+          "dateModified": "2017-06-12T14:11:41.650234+03:00"
         }
       ], 
       "description": "complaint description", 
@@ -44,11 +44,11 @@ Content-Type: application/json; charset=UTF-8
           "locality": "м. Вінниця"
         }
       }, 
-      "dateSubmitted": "2016-07-21T17:17:57.747245+03:00", 
-      "complaintID": "UA-2016-07-21-000001.5", 
-      "date": "2016-07-21T17:17:57.759085+03:00", 
+      "dateSubmitted": "2017-06-12T14:11:41.870068+03:00", 
+      "complaintID": "UA-2017-06-12-000001.5", 
+      "date": "2017-06-12T14:11:41.880951+03:00", 
       "type": "claim", 
-      "id": "523f13eba5464cf1a5fe165009f78f3a"
+      "id": "ec139df5c9e440c585f3753a980d0adb"
     }, 
     {
       "status": "claim", 
@@ -74,11 +74,11 @@ Content-Type: application/json; charset=UTF-8
           "locality": "м. Вінниця"
         }
       }, 
-      "dateSubmitted": "2016-07-21T17:17:58.023389+03:00", 
-      "complaintID": "UA-2016-07-21-000001.6", 
-      "date": "2016-07-21T17:17:58.023363+03:00", 
+      "dateSubmitted": "2017-06-12T14:11:42.085840+03:00", 
+      "complaintID": "UA-2017-06-12-000001.6", 
+      "date": "2017-06-12T14:11:42.085815+03:00", 
       "type": "claim", 
-      "id": "0734e80e7f554fe0a874c16a1c52e206"
+      "id": "f883a1c422f0431eabcfaf4f55047f11"
     }
   ]
 }
