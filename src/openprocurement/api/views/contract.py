@@ -90,13 +90,13 @@ class TenderAwardContractResource(APIResource):
             pending_complaints = [
                 i
                 for i in tender.complaints
-                if i.status in ['claim', 'answered', 'pending'] and i.relatedLot in [None, award.lotID]
+                if i.status in tender.block_complaint_status and i.relatedLot in [None, award.lotID]
             ]
             pending_awards_complaints = [
                 i
                 for a in tender.awards
                 for i in a.complaints
-                if i.status in ['claim', 'answered', 'pending'] and a.lotID == award.lotID
+                if i.status in tender.block_complaint_status and a.lotID == award.lotID
             ]
             if pending_complaints or pending_awards_complaints:
                 self.request.errors.add('body', 'data', 'Can\'t sign contract before reviewing all complaints')
