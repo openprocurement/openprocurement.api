@@ -744,6 +744,7 @@ def from23to24(registry):
                     if update_doc_url(document):
                         changed = True
         if changed:
+            doc['dateModified'] = get_now().isoformat()
             docs.append(doc)
         if len(docs) >= 2 ** 7:
             registry.db.update(docs)
