@@ -20,6 +20,7 @@ from cornice.util import json_error
 from json import dumps
 
 from schematics.exceptions import ValidationError
+from couchdb_schematics.document import SchematicsDocument
 from openprocurement.api.events import ErrorDesctiptorEvent
 from openprocurement.api.constants import LOGGER
 from openprocurement.api.constants import (
@@ -70,6 +71,12 @@ def get_filename(data):
         return header[0].decode(header[1])
     else:
         return header[0]
+
+
+def get_schematics_document(model):
+    while not isinstance(model, SchematicsDocument):
+        model = model.__parent__
+    return model
 
 
 def generate_docservice_url(request, doc_id, temporary=True, prefix=None):
