@@ -1,4 +1,4 @@
-POST /api/2.3/tenders/b74c14bbee6f44a9a0c8408c13a4c1a8/bids/77b0a756628d46829ae889f20beb235e/documents?acc_token=f9c02acb74504cab99088ca6f7947e11 HTTP/1.0
+POST /api/2.3/tenders/3d59d3514f8d44cbbc946731d71c69e2/bids/ec85348a49104431802f1d0e1ba0aea6/documents?acc_token=a1f98a6d585e4a01a2c8216696b35cf7 HTTP/1.0
 Authorization: Basic YnJva2VyOg==
 Content-Length: 328
 Content-Type: application/json
@@ -6,7 +6,7 @@ Host: api-sandbox.openprocurement.org
 
 {
   "data": {
-    "url": "http://public.docs-sandbox.openprocurement.org/get/dcef8be122194a93a69b3e73c1ad630c?KeyID=ef5aa287&Signature=J0mFV4Efix0RX0d6trUuGztVGGLPv9azJ6mXffj%2FKeZ1MtnbTtHzUUhHHx1oR%2BgM3yQtQSjAETIdKogRyK7vCQ%3D%3D", 
+    "url": "http://public.docs-sandbox.openprocurement.org/get/884579a2c16342d9a47e85d195b9247b?KeyID=ad57153b&Signature=D7Q6tP5Z2DaHW8beqNQblqkHL2CLR87U4VXnhNJ2O2QoeXARMVZ1p%2FkVfpWKy9Hqewoz%2BEBqsw99KiKBZuguAw%3D%3D", 
     "title": "Proposal.pdf", 
     "hash": "md5:00000000000000000000000000000000", 
     "format": "application/pdf"
@@ -16,18 +16,18 @@ Host: api-sandbox.openprocurement.org
 
 201 Created
 Content-Type: application/json; charset=UTF-8
-Location: http://api-sandbox.openprocurement.org/api/2.3/tenders/b74c14bbee6f44a9a0c8408c13a4c1a8/bids/77b0a756628d46829ae889f20beb235e/documents/c3591bd3c19345519be005fafca9b2b6
+Location: http://api-sandbox.openprocurement.org/api/2.3/tenders/3d59d3514f8d44cbbc946731d71c69e2/bids/ec85348a49104431802f1d0e1ba0aea6/documents/5fd0b1dce84740f28138394d21b3f7f4
 
 {
   "data": {
     "hash": "md5:00000000000000000000000000000000", 
     "title": "Proposal.pdf", 
-    "url": "http://api-sandbox.openprocurement.org/api/2.3/tenders/b74c14bbee6f44a9a0c8408c13a4c1a8/bids/77b0a756628d46829ae889f20beb235e/documents/c3591bd3c19345519be005fafca9b2b6?download=dcef8be122194a93a69b3e73c1ad630c", 
+    "url": "http://api-sandbox.openprocurement.org/api/2.3/tenders/3d59d3514f8d44cbbc946731d71c69e2/bids/ec85348a49104431802f1d0e1ba0aea6/documents/5fd0b1dce84740f28138394d21b3f7f4?download=884579a2c16342d9a47e85d195b9247b", 
     "format": "application/pdf", 
     "documentOf": "tender", 
-    "datePublished": "2016-07-21T17:18:07.142412+03:00", 
-    "id": "c3591bd3c19345519be005fafca9b2b6", 
-    "dateModified": "2016-07-21T17:18:07.142454+03:00"
+    "datePublished": "2017-06-19T18:27:55.716156+03:00", 
+    "id": "5fd0b1dce84740f28138394d21b3f7f4", 
+    "dateModified": "2017-06-19T18:27:55.716188+03:00"
   }
 }
 
