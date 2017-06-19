@@ -1,4 +1,4 @@
-PATCH /api/2.3/tenders/b74c14bbee6f44a9a0c8408c13a4c1a8/contracts/7806df6a0ceb42cc9c7fff929ed03024?acc_token=6241dc3adcf04c33b4f86f08e8e6e591 HTTP/1.0
+PATCH /api/2.3/tenders/3d59d3514f8d44cbbc946731d71c69e2/contracts/fa9332f796784e82a4c1e0e2ae3f5b86?acc_token=494217ad83444f8db5850c07715e774d HTTP/1.0
 Authorization: Basic YnJva2VyOg==
 Content-Length: 73
 Content-Type: application/json
@@ -24,7 +24,7 @@ Content-Type: application/json; charset=UTF-8
       {
         "description": "футляри до державних нагород", 
         "classification": {
-          "scheme": "CPV", 
+          "scheme": "ДК021", 
           "description": "Cartons", 
           "id": "44617100-9"
         }, 
@@ -43,10 +43,10 @@ Content-Type: application/json; charset=UTF-8
           "locality": "м. Київ"
         }, 
         "deliveryDate": {
-          "startDate": "2016-07-23T17:17:48.184527+03:00", 
-          "endDate": "2016-07-26T17:17:48.184527+03:00"
+          "startDate": "2017-06-21T18:27:40.871871+03:00", 
+          "endDate": "2017-06-24T18:27:40.871871+03:00"
         }, 
-        "id": "93b5e35b0ece40b88af4114d4c8017fe", 
+        "id": "6aed12e3cd774761a22acb17ed0aea11", 
         "unit": {
           "code": "44617100-9", 
           "name": "item"
@@ -82,10 +82,10 @@ Content-Type: application/json; charset=UTF-8
       "amount": 238.0, 
       "valueAddedTaxIncluded": true
     }, 
-    "date": "2016-07-21T17:18:08.600240+03:00", 
-    "awardID": "4d6c14e4bf39434cb637a431367fa9ad", 
-    "id": "7806df6a0ceb42cc9c7fff929ed03024", 
-    "contractID": "UA-2016-07-21-000001-1"
+    "date": "2017-06-19T18:27:56.672074+03:00", 
+    "awardID": "65199710afdc4c618a01888e125c653a", 
+    "id": "fa9332f796784e82a4c1e0e2ae3f5b86", 
+    "contractID": "UA-2017-06-19-000001-1"
   }
 }
 

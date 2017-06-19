@@ -1,12 +1,12 @@
-POST /api/2.3/tenders/b74c14bbee6f44a9a0c8408c13a4c1a8/documents?acc_token=6241dc3adcf04c33b4f86f08e8e6e591 HTTP/1.0
+POST /api/2.3/tenders/3d59d3514f8d44cbbc946731d71c69e2/documents?acc_token=494217ad83444f8db5850c07715e774d HTTP/1.0
 Authorization: Basic YnJva2VyOg==
-Content-Length: 337
+Content-Length: 339
 Content-Type: application/json
 Host: api-sandbox.openprocurement.org
 
 {
   "data": {
-    "url": "http://public.docs-sandbox.openprocurement.org/get/9cd76c39b44a46498898025570db2549?KeyID=ef5aa287&Signature=NC5yw36V7G%2FOyriq15WGaNAhmkFWge9vLZr0fsww%2FQsFUXGmOrQjV0soB40%2FOjwV7W%2Fi1z9dFmQ5e3FMLiHSBg%3D%3D", 
+    "url": "http://public.docs-sandbox.openprocurement.org/get/fd58978ef93547fa837b2a7f0798d122?KeyID=ad57153b&Signature=UjgG2xBBls%2B5KeeOG7Ync09YvDOt3%2Bn0pKybsY3qrU00qzR0DMv8%2B8bGRolSL77r9UCYwuN3T7LQ7%2BIXXZ%2FLDw%3D%3D", 
     "title": "AwardCriteria.pdf", 
     "hash": "md5:00000000000000000000000000000000", 
     "format": "application/pdf"
@@ -16,18 +16,18 @@ Host: api-sandbox.openprocurement.org
 
 201 Created
 Content-Type: application/json; charset=UTF-8
-Location: http://api-sandbox.openprocurement.org/api/2.3/tenders/b74c14bbee6f44a9a0c8408c13a4c1a8/documents/4c37fa0aee1348a1abe668a015e475c9
+Location: http://api-sandbox.openprocurement.org/api/2.3/tenders/3d59d3514f8d44cbbc946731d71c69e2/documents/4f84a7eba14f4957bc4e3dd0ef719a9f
 
 {
   "data": {
     "hash": "md5:00000000000000000000000000000000", 
     "title": "AwardCriteria.pdf", 
-    "url": "http://public.docs-sandbox.openprocurement.org/get/9cd76c39b44a46498898025570db2549?KeyID=ef5aa287&Signature=B4Gsqg25U743USAcQ1aQP3VoOogQqOL9aYcXms%2FKwZBuHPPVano%2F%2F9nkpqz6C8tltqbQjJvsd7In0O05tQAKCzkAAABjAAAAZAAAADcAAAA2AAAAYwAAADMAAAA5AAAA", 
+    "url": "http://public.docs-sandbox.openprocurement.org/get/fd58978ef93547fa837b2a7f0798d122?KeyID=ad57153b&Signature=GZ8gmMqjOsAgUQfDYI3mcKoKKwh9qxfJ2L5ipHkSuF0Wf7eBF057B5I9JrQvf%252BNY0ps1XP1MIBu7lv1SQSwCDQ%253D%253D", 
     "format": "application/pdf", 
     "documentOf": "tender", 
-    "datePublished": "2016-07-21T17:18:06.086634+03:00", 
-    "id": "4c37fa0aee1348a1abe668a015e475c9", 
-    "dateModified": "2016-07-21T17:18:06.086671+03:00"
+    "datePublished": "2017-06-19T18:27:55.110662+03:00", 
+    "id": "4f84a7eba14f4957bc4e3dd0ef719a9f", 
+    "dateModified": "2017-06-19T18:27:55.110693+03:00"
   }
 }
 
