@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 import unittest
 
-from openprocurement.api.models import Tender
+from openprocurement.api.models import Tender, get_now
 from openprocurement.api.migration import migrate_data, get_db_schema_version, set_db_schema_version, SCHEMA_VERSION
 from openprocurement.api.tests.base import BaseWebTest, test_tender_data
 from email.header import Header
@@ -768,8 +768,10 @@ class MigrateTest(BaseWebTest):
         self.app.app.registry.docservice_url = 'http://localhost.ds'
         u = Tender(test_tender_data)
         u.tenderID = "UA-X"
+        u.dateModified = get_now().isoformat()
         u.store(self.db)
         tender_raw = self.db.get(u.id)
+        date_modified_before = tender_raw['dateModified']
         bid = {"id": "1b4da15470e84c4d948a5d1660d29776"}
         bid["documents"] = [
             {
@@ -828,6 +830,8 @@ class MigrateTest(BaseWebTest):
         migrate_data(self.app.app.registry, 24)
         migrated= self.db.get(u.id)
         migrated_bid = migrated['bids'][0]
+
+        self.assertGreater(migrated['dateModified'], date_modified_before)
 
         # url should be corrected
         self.assertIn("/tenders/{}/bids/1b4da15470e84c4d948a5d1660d29776/documents/1801ca2749bd40b0944e58adc3e09c46?download=a65ef5c688884931aed1a472620d3a00".format(u.id), migrated_bid['documents'][0]['url'])
