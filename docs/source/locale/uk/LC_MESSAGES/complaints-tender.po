@@ -15,6 +15,9 @@ msgstr ""
 "=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
 "X-Generator: Lokalize 1.5\n"
 
+msgid "Claim/Complaint Retrieval"
+msgstr "Отримання інформації про звернення/скарги"
+
 #: ../../source/complaints-tender.rst:79
 msgid "Rejecting Tender Conditions Complaint"
 msgstr "Відхилення скарги на умови закупівлі"
@@ -44,8 +47,8 @@ msgid "Satisfying resolution"
 msgstr "Рішення про задовільнення вимоги"
 
 #: ../../source/complaints-tender.rst:69
-msgid "Escalate claim to complaint"
-msgstr "Перетворення вимоги в скаргу"
+msgid "Disagreement with decision"
+msgstr "Незгода з рішенням"
 
 #: ../../source/complaints-tender.rst:11
 msgid "At first create a claim:"

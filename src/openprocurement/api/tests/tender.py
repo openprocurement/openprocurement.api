@@ -5,7 +5,7 @@ from copy import deepcopy
 from datetime import timedelta
 
 from openprocurement.api import ROUTE_PREFIX
-from openprocurement.api.models import Tender, get_now, CANT_DELETE_PERIOD_START_DATE_FROM, CPV_ITEMS_CLASS_FROM
+from openprocurement.api.models import Tender, get_now, CANT_DELETE_PERIOD_START_DATE_FROM, CPV_ITEMS_CLASS_FROM, CPV_BLOCK_FROM
 from openprocurement.api.tests.base import test_tender_data, test_organization, BaseWebTest, BaseTenderWebTest
 from uuid import uuid4
 
@@ -573,6 +573,32 @@ class TenderResourceTest(BaseWebTest):
                 {u'description': [u'CPV group of items be identical'], u'location': u'body', u'name': u'items'}
             ])
 
+        cpv = test_tender_data["items"][0]['classification']["id"]
+        test_tender_data["items"][0]['classification']["id"] = u'160173000-1'
+        response = self.app.post_json(request_path, {'data': test_tender_data}, status=422)
+        test_tender_data["items"][0]['classification']["id"] = cpv
+        self.assertEqual(response.status, '422 Unprocessable Entity')
+        self.assertEqual(response.content_type, 'application/json')
+        self.assertEqual(response.json['status'], 'error')
+        self.assertIn(u'classification', response.json['errors'][0][u'description'][0])
+        self.assertIn(u'id', response.json['errors'][0][u'description'][0][u'classification'])
+        self.assertIn("Value must be one of [u", response.json['errors'][0][u'description'][0][u'classification'][u'id'][0])
+
+        cpv = test_tender_data["items"][0]['classification']["id"]
+        if get_now() < CPV_BLOCK_FROM:
+            test_tender_data["items"][0]['classification']["scheme"] = u'CPV'
+        test_tender_data["items"][0]['classification']["id"] = u'00000000-0'
+        response = self.app.post_json(request_path, {'data': test_tender_data}, status=422)
+        if get_now() < CPV_BLOCK_FROM:
+            test_tender_data["items"][0]['classification']["scheme"] = u'CPV'
+        test_tender_data["items"][0]['classification']["id"] = cpv
+        self.assertEqual(response.status, '422 Unprocessable Entity')
+        self.assertEqual(response.content_type, 'application/json')
+        self.assertEqual(response.json['status'], 'error')
+        self.assertIn(u'classification', response.json['errors'][0][u'description'][0])
+        self.assertIn(u'id', response.json['errors'][0][u'description'][0][u'classification'])
+        self.assertIn("Value must be one of [u", response.json['errors'][0][u'description'][0][u'classification'][u'id'][0])
+
         data = test_tender_data["items"][0].copy()
         classification = data['classification'].copy()
         classification["id"] = u'33600000-6'
@@ -1001,7 +1027,7 @@ class TenderResourceTest(BaseWebTest):
         self.assertEqual(len(response.json['data']['items']), 1)
 
         response = self.app.patch_json('/tenders/{}'.format(tender['id']), {'data': {'items': [{"classification": {
-            "scheme": "CPV",
+            "scheme": "ДК021",
             "id": "55523100-3",
             "description": "Послуги з харчування у школах"
         }}]}})
@@ -1209,6 +1235,28 @@ class TenderResourceTest(BaseWebTest):
         self.assertEqual(response.content_type, 'application/json')
         self.assertEqual(response.json['data']['mode'], u'test')
 
+    def test_patch_not_author(self):
+        response = self.app.post_json('/tenders', {'data': test_tender_data})
+        self.assertEqual(response.status, '201 Created')
+        tender = response.json['data']
+        owner_token = response.json['access']['token']
+
+        authorization = self.app.authorization
+        self.app.authorization = ('Basic', ('bot', 'bot'))
+
+        response = self.app.post('/tenders/{}/documents'.format(tender['id']),
+                                 upload_files=[('file', 'name.doc', 'content')])
+        self.assertEqual(response.status, '201 Created')
+        self.assertEqual(response.content_type, 'application/json')
+        doc_id = response.json["data"]['id']
+        self.assertIn(doc_id, response.headers['Location'])
+
+        self.app.authorization = authorization
+        response = self.app.patch_json('/tenders/{}/documents/{}?acc_token={}'.format(tender['id'], doc_id, owner_token),
+                                       {"data": {"description": "document description"}}, status=403)
+        self.assertEqual(response.status, '403 Forbidden')
+        self.assertEqual(response.content_type, 'application/json')
+        self.assertEqual(response.json['errors'][0]["description"], "Can update document only author")
 
 class TenderProcessTest(BaseTenderWebTest):
     setUp = BaseWebTest.setUp

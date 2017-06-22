@@ -1,5 +1,22 @@
 .. Kicking page rebuild 2014-10-30 17:00:08
 
+Claim/Complaint Retrieval
+=========================
+
+Tender Conditions Claim/Complaint Retrieval
+-------------------------------------------
+
+You can list all Tender Conditions Claims/Complaints:
+
+.. include:: complaints/complaints-list.http
+   :code:
+
+And check individual complaint or claim:
+
+.. include:: complaints/complaint.http
+   :code:
+
+
 Claim Submission
 ================
 
@@ -31,20 +48,6 @@ Create claim that does not need additional documents:
 .. include:: complaints/complaint-submission-claim.http
    :code:
 
-Tender Conditions Claim/Complaint Retrieval
--------------------------------------------
-
-You can list all Tender Conditions Claims/Complaints:
-
-.. include:: complaints/complaints-list.http
-   :code:
-
-And check individual complaint or claim:
-
-.. include:: complaints/complaint.http
-   :code:
-
-
 Claim's Answer
 ==============
 
@@ -65,37 +68,8 @@ Satisfying resolution
    :code:
 
 
-Escalate claim to complaint
----------------------------
+Disagreement with decision
+--------------------------
 
 .. include:: complaints/complaint-escalate.http
-   :code:
-
-
-Complaint Resolution
-====================
-
-Rejecting Tender Conditions Complaint
--------------------------------------
-
-.. include:: complaints/complaint-reject.http
-   :code:
-
-
-Submitting Tender Conditions Complaint Resolution
--------------------------------------------------
-
-The Complaint Review Body uploads the resolution document:
-
-.. include:: complaints/complaint-resolution-upload.http
-   :code:
-
-And either resolves complaint:
-
-.. include:: complaints/complaint-resolve.http
-   :code:
-
-Or declines it:
-
-.. include:: complaints/complaint-decline.http
    :code:
