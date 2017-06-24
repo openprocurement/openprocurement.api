@@ -1,13 +1,13 @@
 POST /api/2.3/tenders?opt_pretty=1 HTTP/1.0
 Authorization: Basic YnJva2VyOg==
-Content-Length: 2347
+Content-Length: 2359
 Content-Type: application/json
 Host: api-sandbox.openprocurement.org
 
 {
   "data": {
     "tenderPeriod": {
-      "endDate": "2016-08-04T17:17:48.184527"
+      "endDate": "2017-07-08T18:00:25.084270"
     }, 
     "title": "футляри до державних нагород", 
     "minimalStep": {
@@ -15,7 +15,7 @@ Host: api-sandbox.openprocurement.org
       "amount": 35
     }, 
     "enquiryPeriod": {
-      "endDate": "2016-07-28T17:17:48.184527"
+      "endDate": "2017-07-01T18:00:25.084270"
     }, 
     "procurementMethodType": "belowThreshold", 
     "value": {
@@ -46,7 +46,7 @@ Host: api-sandbox.openprocurement.org
       {
         "description": "футляри до державних нагород", 
         "classification": {
-          "scheme": "CPV", 
+          "scheme": "ДК021", 
           "id": "44617100-9", 
           "description": "Cartons"
         }, 
@@ -65,8 +65,8 @@ Host: api-sandbox.openprocurement.org
           "locality": "м. Київ"
         }, 
         "deliveryDate": {
-          "startDate": "2016-07-23T17:17:48.184527", 
-          "endDate": "2016-07-26T17:17:48.184527"
+          "startDate": "2017-06-26T18:00:25.084270", 
+          "endDate": "2017-06-29T18:00:25.084270"
         }, 
         "unit": {
           "code": "44617100-9", 
@@ -81,19 +81,19 @@ Host: api-sandbox.openprocurement.org
 
 201 Created
 Content-Type: application/json; charset=UTF-8
-Location: http://api-sandbox.openprocurement.org/api/2.3/tenders/b74c14bbee6f44a9a0c8408c13a4c1a8
+Location: http://api-sandbox.openprocurement.org/api/2.3/tenders/abd7bd35532d4b2999f85bc87c80d23f
 
 {
   "access": {
-    "token": "6241dc3adcf04c33b4f86f08e8e6e591"
+    "token": "c1066473eb5840bcb84b5256710c9dfd"
   }, 
   "data": {
     "procurementMethod": "open", 
     "status": "active.enquiries", 
     "awardCriteria": "lowestCost", 
     "tenderPeriod": {
-      "startDate": "2016-07-28T17:17:48.184527+03:00", 
-      "endDate": "2016-08-04T17:17:48.184527+03:00"
+      "startDate": "2017-07-01T18:00:25.084270+03:00", 
+      "endDate": "2017-07-08T18:00:25.084270+03:00"
     }, 
     "title": "футляри до державних нагород", 
     "minimalStep": {
@@ -105,7 +105,7 @@ Location: http://api-sandbox.openprocurement.org/api/2.3/tenders/b74c14bbee6f44a
       {
         "description": "футляри до державних нагород", 
         "classification": {
-          "scheme": "CPV", 
+          "scheme": "ДК021", 
           "description": "Cartons", 
           "id": "44617100-9"
         }, 
@@ -124,10 +124,10 @@ Location: http://api-sandbox.openprocurement.org/api/2.3/tenders/b74c14bbee6f44a
           "locality": "м. Київ"
         }, 
         "deliveryDate": {
-          "startDate": "2016-07-23T17:17:48.184527+03:00", 
-          "endDate": "2016-07-26T17:17:48.184527+03:00"
+          "startDate": "2017-06-26T18:00:25.084270+03:00", 
+          "endDate": "2017-06-29T18:00:25.084270+03:00"
         }, 
-        "id": "93b5e35b0ece40b88af4114d4c8017fe", 
+        "id": "06ec4c9a52ba49db9e15671c062249ad", 
         "unit": {
           "code": "44617100-9", 
           "name": "item"
@@ -142,8 +142,8 @@ Location: http://api-sandbox.openprocurement.org/api/2.3/tenders/b74c14bbee6f44a
       "valueAddedTaxIncluded": true
     }, 
     "submissionMethod": "electronicAuction", 
-    "date": "2016-07-21T17:18:04.728611+03:00", 
-    "next_check": "2016-07-28T17:17:48.184527+03:00", 
+    "date": "2017-06-24T18:00:36.849359+03:00", 
+    "next_check": "2017-07-01T18:00:25.084270+03:00", 
     "procuringEntity": {
       "contactPoint": {
         "name": "Державне управління справами", 
@@ -165,13 +165,13 @@ Location: http://api-sandbox.openprocurement.org/api/2.3/tenders/b74c14bbee6f44a
       }
     }, 
     "enquiryPeriod": {
-      "startDate": "2016-07-21T17:18:04.728536+03:00", 
-      "endDate": "2016-07-28T17:17:48.184527+03:00"
+      "startDate": "2017-06-24T18:00:36.849280+03:00", 
+      "endDate": "2017-07-01T18:00:25.084270+03:00"
     }, 
     "owner": "broker", 
-    "dateModified": "2016-07-21T17:18:04.733149+03:00", 
-    "id": "b74c14bbee6f44a9a0c8408c13a4c1a8", 
-    "tenderID": "UA-2016-07-21-000001"
+    "dateModified": "2017-06-24T18:00:36.854732+03:00", 
+    "id": "abd7bd35532d4b2999f85bc87c80d23f", 
+    "tenderID": "UA-2017-06-24-000001"
   }
 }
 
