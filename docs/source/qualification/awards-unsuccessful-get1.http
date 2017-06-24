@@ -1,4 +1,4 @@
-GET /api/2.3/tenders/eeb9177097a14a8c80ca0d1c8b202a00/awards HTTP/1.0
+GET /api/2.3/tenders/b5f0fd0ef8684ba997e3cd344fd1d131/awards HTTP/1.0
 Authorization: Basic YnJva2VyOg==
 Host: api-sandbox.openprocurement.org
 
@@ -13,18 +13,19 @@ Content-Type: application/json; charset=UTF-8
       "documents": [
         {
           "hash": "md5:00000000000000000000000000000000", 
+          "author": "tender_owner", 
           "title": "Unsuccessful_Reason.pdf", 
-          "url": "http://public.docs-sandbox.openprocurement.org/get/d9f9cff141e9459daed074c56155676c?KeyID=a1a42480&Signature=rouGILe%2F%2FpZ8%2FhqYoXiGkMRAkP9EjjC5Y14mea%2Fm%2FJb1AjFSxXytafd3qovtPIm08XDJAwHv0wsJfk9hwoO8DmQAAAA5AAAAZgAAADkAAABjAAAAZgAAAGYAAAAxAAAA", 
+          "url": "http://public.docs-sandbox.openprocurement.org/get/dfbe44ca58bf47819ca01025492dfa01?KeyID=e440c6be&Signature=pourdZM%252B3WeTCkcThz2Xa%2FVm01tVF8oAAHD4P16Rfj%2FEsnrmY2mb8FyW3YmZFbfCB21uCQCEftcqllVIwy0aCQ%253D%253D", 
           "format": "application/pdf", 
           "documentOf": "tender", 
-          "datePublished": "2016-07-21T17:17:55.311634+03:00", 
-          "id": "acfbcdc5e39d4492b43af0cfa2db1a51", 
-          "dateModified": "2016-07-21T17:17:55.311664+03:00"
+          "datePublished": "2017-06-24T18:05:38.885223+03:00", 
+          "id": "68771b511e17464bb62410c95039aa21", 
+          "dateModified": "2017-06-24T18:05:38.885260+03:00"
         }
       ], 
       "complaintPeriod": {
-        "startDate": "2016-07-21T17:17:55.039093+03:00", 
-        "endDate": "2016-07-25T17:17:55.521707+03:00"
+        "startDate": "2017-06-24T18:05:38.655627+03:00", 
+        "endDate": "2017-06-29T00:00:00+03:00"
       }, 
       "suppliers": [
         {
@@ -48,13 +49,13 @@ Content-Type: application/json; charset=UTF-8
           }
         }
       ], 
-      "bid_id": "3074dddf0f8f4f3f88f21224d7898243", 
+      "bid_id": "3a9485f8bd6a485495059deee8a681c6", 
       "value": {
         "currency": "UAH", 
         "amount": 450.0, 
         "valueAddedTaxIncluded": true
       }, 
-      "date": "2016-07-21T17:17:55.533060+03:00", 
+      "date": "2017-06-24T18:05:39.085940+03:00", 
       "complaints": [
         {
           "status": "resolved", 
@@ -63,12 +64,12 @@ Content-Type: application/json; charset=UTF-8
               "hash": "md5:00000000000000000000000000000000", 
               "author": "complaint_owner", 
               "title": "Complaint_Attachement.pdf", 
-              "url": "http://public.docs-sandbox.openprocurement.org/get/b1d288ec9d35491c83d5953a79d45071?KeyID=a1a42480&Signature=twSUg3Pm7UJJUoKW0E5lJ9fyDBuGXW3VHAKfq8j7q%252B8ysx%2FjgW1Q9B3mLNrHDS3UGm0rNjbKeZcGbGylCQvCDWIAAAAxAAAAZAAAADIAAAA4AAAAOAAAAGUAAABjAAAA", 
+              "url": "http://public.docs-sandbox.openprocurement.org/get/e819bad42f6b4d978e82c905725bc0e8?KeyID=e440c6be&Signature=uKNUm6O3dKOqJOvmgswNPVXfu%2FdW8dgGhc8QdUfOdhiQtaLsQNduvB6ErmvXfCKpOtqP7yfg91UuMBg8CYSODA%253D%253D", 
               "format": "application/pdf", 
               "documentOf": "tender", 
-              "datePublished": "2016-07-21T17:17:57.441970+03:00", 
-              "id": "ae2cd7a20eab46c0b2d62cf2510936ca", 
-              "dateModified": "2016-07-21T17:17:57.442018+03:00"
+              "datePublished": "2017-06-24T18:05:40.656135+03:00", 
+              "id": "6ca2c2747ae74380ac3c7bfba9110e46", 
+              "dateModified": "2017-06-24T18:05:40.656169+03:00"
             }
           ], 
           "description": "complaint description", 
@@ -97,67 +98,20 @@ Content-Type: application/json; charset=UTF-8
           "title": "complaint title", 
           "satisfied": true, 
           "tendererAction": "Виправлено неконкурентні умови", 
-          "dateAnswered": "2016-07-21T17:17:58.552718+03:00", 
-          "tendererActionDate": "2016-07-21T17:17:58.552758+03:00", 
-          "dateSubmitted": "2016-07-21T17:17:57.747245+03:00", 
-          "complaintID": "UA-2016-07-21-000001.5", 
-          "date": "2016-07-21T17:17:58.874448+03:00", 
+          "dateAnswered": "2017-06-24T18:05:41.633849+03:00", 
+          "tendererActionDate": "2017-06-24T18:05:41.633883+03:00", 
+          "dateSubmitted": "2017-06-24T18:05:40.921127+03:00", 
+          "complaintID": "UA-2017-06-24-000001.5", 
+          "date": "2017-06-24T18:05:41.925328+03:00", 
           "resolution": "Виправлено неконкурентні умови", 
-          "id": "523f13eba5464cf1a5fe165009f78f3a"
-        }, 
-        {
-          "status": "invalid", 
-          "dateDecision": "2016-07-21T17:17:59.880278+03:00", 
-          "description": "complaint description", 
-          "author": {
-            "contactPoint": {
-              "email": "soleksuk@gmail.com", 
-              "telephone": "+380 (432) 21-69-30", 
-              "name": "Сергій Олексюк"
-            }, 
-            "identifier": {
-              "scheme": "UA-EDR", 
-              "id": "00137256", 
-              "uri": "http://www.sc.gov.ua/"
-            }, 
-            "name": "ДКП «Школяр»", 
-            "address": {
-              "postalCode": "21100", 
-              "countryName": "Україна", 
-              "streetAddress": "вул. Островського, 33", 
-              "region": "м. Вінниця", 
-              "locality": "м. Вінниця"
-            }
-          }, 
-          "resolutionType": "resolved", 
-          "type": "complaint", 
-          "title": "complaint title", 
-          "satisfied": false, 
-          "dateEscalated": "2016-07-21T17:17:59.510382+03:00", 
-          "dateAnswered": "2016-07-21T17:17:59.180286+03:00", 
-          "dateSubmitted": "2016-07-21T17:17:58.023389+03:00", 
-          "complaintID": "UA-2016-07-21-000001.6", 
-          "date": "2016-07-21T17:17:59.892951+03:00", 
-          "resolution": "Виправлено неконкурентні умови", 
-          "id": "0734e80e7f554fe0a874c16a1c52e206"
+          "id": "2bc1563d8b8847b89989fa9f46936cdf"
         }, 
         {
           "status": "resolved", 
-          "dateDecision": "2016-07-21T17:18:02.667772+03:00", 
-          "documents": [
-            {
-              "hash": "md5:00000000000000000000000000000000", 
-              "author": "reviewers", 
-              "title": "ComplaintResolution.pdf", 
-              "url": "http://public.docs-sandbox.openprocurement.org/get/fddb600727e24cbca910668c130af96f?KeyID=a1a42480&Signature=wB7r3gbiyuijB6Cv6lHHcFF4asw9kUgDSRV3Pz6cR1PUorYCaBYY8lkZADWEmqXBELB5LTlFFGawvMt6P2SBAGYAAABkAAAAZAAAAGIAAAA2AAAAMAAAADAAAAA3AAAA", 
-              "format": "application/pdf", 
-              "documentOf": "tender", 
-              "datePublished": "2016-07-21T17:18:02.305563+03:00", 
-              "id": "9bb5ad67bfad43a9a58bc972b1b31613", 
-              "dateModified": "2016-07-21T17:18:02.305597+03:00"
-            }
-          ], 
           "description": "complaint description", 
+          "title": "complaint title", 
+          "resolutionType": "resolved", 
+          "type": "claim", 
           "author": {
             "contactPoint": {
               "email": "soleksuk@gmail.com", 
@@ -178,22 +132,20 @@ Content-Type: application/json; charset=UTF-8
               "locality": "м. Вінниця"
             }
           }, 
-          "resolutionType": "resolved", 
-          "type": "complaint", 
-          "title": "complaint title", 
           "satisfied": false, 
-          "dateEscalated": "2016-07-21T17:18:00.867577+03:00", 
-          "dateAnswered": "2016-07-21T17:18:00.516074+03:00", 
-          "dateSubmitted": "2016-07-21T17:18:00.195924+03:00", 
-          "complaintID": "UA-2016-07-21-000001.7", 
-          "date": "2016-07-21T17:18:02.685259+03:00", 
+          "dateAnswered": "2017-06-24T18:05:42.179185+03:00", 
+          "dateSubmitted": "2017-06-24T18:05:41.175601+03:00", 
+          "complaintID": "UA-2017-06-24-000001.6", 
+          "date": "2017-06-24T18:05:42.469375+03:00", 
           "resolution": "Виправлено неконкурентні умови", 
-          "id": "b5c19009d623453b93ac13f2f0fe0b78"
+          "id": "8f6ee7f08fb846e9aa9b893a270cf437"
         }, 
         {
-          "status": "declined", 
-          "dateDecision": "2016-07-21T17:18:03.008371+03:00", 
+          "status": "resolved", 
           "description": "complaint description", 
+          "title": "complaint title", 
+          "resolutionType": "resolved", 
+          "type": "claim", 
           "author": {
             "contactPoint": {
               "email": "soleksuk@gmail.com", 
@@ -214,26 +166,56 @@ Content-Type: application/json; charset=UTF-8
               "locality": "м. Вінниця"
             }
           }, 
-          "resolutionType": "resolved", 
-          "type": "complaint", 
-          "title": "complaint title", 
           "satisfied": false, 
-          "dateEscalated": "2016-07-21T17:18:01.933290+03:00", 
-          "dateAnswered": "2016-07-21T17:18:01.603001+03:00", 
-          "dateSubmitted": "2016-07-21T17:18:01.246311+03:00", 
-          "complaintID": "UA-2016-07-21-000001.8", 
-          "date": "2016-07-21T17:18:03.022976+03:00", 
+          "dateAnswered": "2017-06-24T18:05:43.019173+03:00", 
+          "dateSubmitted": "2017-06-24T18:05:42.735622+03:00", 
+          "complaintID": "UA-2017-06-24-000001.7", 
+          "date": "2017-06-24T18:05:43.398083+03:00", 
           "resolution": "Виправлено неконкурентні умови", 
-          "id": "bec8a58fe2d54a6397977836d8577df4"
+          "id": "189eea55b34b4a008efd33fcd386e857"
+        }, 
+        {
+          "status": "resolved", 
+          "description": "complaint description", 
+          "title": "complaint title", 
+          "resolutionType": "resolved", 
+          "type": "claim", 
+          "author": {
+            "contactPoint": {
+              "email": "soleksuk@gmail.com", 
+              "telephone": "+380 (432) 21-69-30", 
+              "name": "Сергій Олексюк"
+            }, 
+            "identifier": {
+              "scheme": "UA-EDR", 
+              "id": "00137256", 
+              "uri": "http://www.sc.gov.ua/"
+            }, 
+            "name": "ДКП «Школяр»", 
+            "address": {
+              "postalCode": "21100", 
+              "countryName": "Україна", 
+              "streetAddress": "вул. Островського, 33", 
+              "region": "м. Вінниця", 
+              "locality": "м. Вінниця"
+            }
+          }, 
+          "satisfied": false, 
+          "dateAnswered": "2017-06-24T18:05:43.954658+03:00", 
+          "dateSubmitted": "2017-06-24T18:05:43.660739+03:00", 
+          "complaintID": "UA-2017-06-24-000001.8", 
+          "date": "2017-06-24T18:05:44.270326+03:00", 
+          "resolution": "Виправлено неконкурентні умови", 
+          "id": "10d768f9d8914057bba1ff9ff47cef4e"
         }
       ], 
-      "id": "86d3f73dd7094865a9fd4966584c62ae"
+      "id": "6a21aa7f911f424d85e354e59a7e7c84"
     }, 
     {
       "status": "cancelled", 
       "complaintPeriod": {
-        "startDate": "2016-07-21T17:17:55.522473+03:00", 
-        "endDate": "2016-07-21T17:17:56.195160+03:00"
+        "startDate": "2017-06-24T18:05:39.073951+03:00", 
+        "endDate": "2017-06-24T18:05:39.605379+03:00"
       }, 
       "suppliers": [
         {
@@ -256,32 +238,33 @@ Content-Type: application/json; charset=UTF-8
           }
         }
       ], 
-      "bid_id": "f904bf65cfc14a93bb4af123ebb48b2a", 
+      "bid_id": "a8e1478a504347999d3e005839e74bfb", 
       "value": {
         "currency": "UAH", 
         "amount": 469.0, 
         "valueAddedTaxIncluded": true
       }, 
-      "date": "2016-07-21T17:17:56.209593+03:00", 
-      "id": "ee904f5b047c46f29e0d221a940100ea"
+      "date": "2017-06-24T18:05:39.620302+03:00", 
+      "id": "18cac3d0e313416aa3cebbff0a0ab41c"
     }, 
     {
       "status": "unsuccessful", 
       "documents": [
         {
           "hash": "md5:00000000000000000000000000000000", 
+          "author": "tender_owner", 
           "title": "Cancellation_Reason.pdf", 
-          "url": "http://public.docs-sandbox.openprocurement.org/get/65c9de328cec4ff9ba8492038755f1cf?KeyID=a1a42480&Signature=AOwjLo%2F%252B2tTfq43K%252B6%252BAzVJ9x6qj%252BQ2YKs55hHvsowr8zKBdlEo12uWnXtfBuOVQIRIt8FmqywQ%2Fdr5WqUZkCjYAAAA1AAAAYwAAADkAAABkAAAAZQAAADMAAAAyAAAA", 
+          "url": "http://public.docs-sandbox.openprocurement.org/get/50a30d5c6afd489a985ab9807c7d8730?KeyID=e440c6be&Signature=RdrRBLsOdGT621LH3vLCGnW3QHWgFwGeNVZb6%252Bt356KyPZLYDwBlG%2F6xq1CwQvdpUpy9kz37NcjF0Mnm2cm7Cw%253D%253D", 
           "format": "application/pdf", 
           "documentOf": "tender", 
-          "datePublished": "2016-07-21T17:17:56.532625+03:00", 
-          "id": "da1c73f1478f4186a83afe754bd06e89", 
-          "dateModified": "2016-07-21T17:17:56.532661+03:00"
+          "datePublished": "2017-06-24T18:05:39.883919+03:00", 
+          "id": "6c84c50630424797b4f285359f7f9e9a", 
+          "dateModified": "2017-06-24T18:05:39.883953+03:00"
         }
       ], 
       "complaintPeriod": {
-        "startDate": "2016-07-21T17:17:56.195926+03:00", 
-        "endDate": "2016-07-25T17:17:56.800545+03:00"
+        "startDate": "2017-06-24T18:05:39.606188+03:00", 
+        "endDate": "2017-06-29T00:00:00+03:00"
       }, 
       "suppliers": [
         {
@@ -304,19 +287,19 @@ Content-Type: application/json; charset=UTF-8
           }
         }
       ], 
-      "bid_id": "f904bf65cfc14a93bb4af123ebb48b2a", 
+      "bid_id": "a8e1478a504347999d3e005839e74bfb", 
       "value": {
         "currency": "UAH", 
         "amount": 469.0, 
         "valueAddedTaxIncluded": true
       }, 
-      "date": "2016-07-21T17:17:56.814375+03:00", 
-      "id": "69f2611e848b4a83aa6f10c192dc1456"
+      "date": "2017-06-24T18:05:40.196553+03:00", 
+      "id": "9264560bc5aa40ca99bf825e6e9eb48d"
     }, 
     {
       "status": "pending", 
       "complaintPeriod": {
-        "startDate": "2016-07-21T17:17:56.801294+03:00"
+        "startDate": "2017-06-24T18:05:40.114565+03:00"
       }, 
       "suppliers": [
         {
@@ -340,14 +323,14 @@ Content-Type: application/json; charset=UTF-8
           }
         }
       ], 
-      "bid_id": "eacdcca5748646c3b1b40ab3754e561b", 
+      "bid_id": "e2db3f99f586413884a5454830a12ad6", 
       "value": {
         "currency": "UAH", 
         "amount": 475.0, 
         "valueAddedTaxIncluded": true
       }, 
-      "date": "2016-07-21T17:17:56.801276+03:00", 
-      "id": "423731db017b4cff9e48d477657534d6"
+      "date": "2017-06-24T18:05:40.114546+03:00", 
+      "id": "cf81d89e551346bb80d0f278a75716f3"
     }
   ]
 }

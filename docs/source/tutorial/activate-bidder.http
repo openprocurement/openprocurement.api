@@ -1,4 +1,4 @@
-PATCH /api/2.3/tenders/b74c14bbee6f44a9a0c8408c13a4c1a8/bids/77b0a756628d46829ae889f20beb235e?acc_token=f9c02acb74504cab99088ca6f7947e11 HTTP/1.0
+PATCH /api/2.3/tenders/f860f9fe94574d729c87f81cea222b46/bids/dcf9752855e543a391fd08ec13328ed3?acc_token=72610f3b588d40bbb2e592399d61929d HTTP/1.0
 Authorization: Basic YnJva2VyOg==
 Content-Length: 30
 Content-Type: application/json
@@ -16,9 +16,9 @@ Content-Type: application/json; charset=UTF-8
 
 {
   "data": {
-    "date": "2016-07-21T17:18:06.856825+03:00", 
+    "date": "2017-06-24T18:05:46.945461+03:00", 
     "status": "active", 
-    "id": "77b0a756628d46829ae889f20beb235e", 
+    "id": "dcf9752855e543a391fd08ec13328ed3", 
     "value": {
       "currency": "UAH", 
       "amount": 500.0, 
