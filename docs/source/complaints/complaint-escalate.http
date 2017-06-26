@@ -1,12 +1,12 @@
-PATCH /api/2.3/tenders/1c34544d0e6144f18886b6e59fb8256d/complaints/a747dabb573a4d5993d70ae7db2a09bf?acc_token=4b6f44d05348423c856708a35298db09 HTTP/1.0
+PATCH /api/2.3/tenders/6fb28391664b4e31b9002882b4d67573/complaints/4075434848f443499b4de400843e2464?acc_token=231a470a291f4faca883e3f992842544 HTTP/1.0
 Authorization: Basic YnJva2VyOg==
-Content-Length: 51
+Content-Length: 52
 Content-Type: application/json
 Host: api-sandbox.openprocurement.org
 
 {
   "data": {
-    "status": "pending", 
+    "status": "resolved", 
     "satisfied": false
   }
 }
@@ -17,39 +17,18 @@ Content-Type: application/json; charset=UTF-8
 
 {
   "data": {
-    "status": "pending", 
+    "status": "resolved", 
     "description": "complaint description", 
     "title": "complaint title", 
     "resolutionType": "resolved", 
-    "type": "complaint", 
-    "author": {
-      "contactPoint": {
-        "email": "soleksuk@gmail.com", 
-        "telephone": "+380 (432) 21-69-30", 
-        "name": "Сергій Олексюк"
-      }, 
-      "identifier": {
-        "scheme": "UA-EDR", 
-        "id": "00137256", 
-        "uri": "http://www.sc.gov.ua/"
-      }, 
-      "name": "ДКП «Школяр»", 
-      "address": {
-        "postalCode": "21100", 
-        "countryName": "Україна", 
-        "streetAddress": "вул. Островського, 33", 
-        "region": "м. Вінниця", 
-        "locality": "м. Вінниця"
-      }
-    }, 
+    "type": "claim", 
     "satisfied": false, 
-    "dateEscalated": "2016-06-10T15:29:35.551596+03:00", 
-    "dateAnswered": "2016-06-10T15:29:35.414932+03:00", 
-    "dateSubmitted": "2016-06-10T15:29:34.934718+03:00", 
-    "complaintID": "UA-2016-06-10-000001.2", 
-    "date": "2016-06-10T15:29:34.933163+03:00", 
+    "dateAnswered": "2017-06-24T18:00:28.003242+03:00", 
+    "dateSubmitted": "2017-06-24T18:00:27.619348+03:00", 
+    "complaintID": "UA-2017-06-24-000001.2", 
+    "date": "2017-06-24T18:00:28.113118+03:00", 
     "resolution": "Виправлено неконкурентні умови", 
-    "id": "a747dabb573a4d5993d70ae7db2a09bf"
+    "id": "4075434848f443499b4de400843e2464"
   }
 }
 

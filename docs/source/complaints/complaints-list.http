@@ -1,4 +1,4 @@
-GET /api/2.3/tenders/1c34544d0e6144f18886b6e59fb8256d/complaints HTTP/1.0
+GET /api/2.3/tenders/6fb28391664b4e31b9002882b4d67573/complaints HTTP/1.0
 Host: api-sandbox.openprocurement.org
 
 
@@ -11,33 +11,34 @@ Content-Type: application/json; charset=UTF-8
       "status": "claim", 
       "documents": [
         {
+          "hash": "md5:00000000000000000000000000000000", 
           "author": "complaint_owner", 
           "title": "Complaint_Attachement.pdf", 
-          "url": "http://api-sandbox.openprocurement.org/api/2.3/tenders/1c34544d0e6144f18886b6e59fb8256d/complaints/c504f4442b3c4103917145f405d5e6ea/documents/9ef0b09173464a3cbb04a814f10bd2a8?download=276f75ad62874327b5ab8a772d842aaf", 
+          "url": "http://public.docs-sandbox.openprocurement.org/get/b78096bc0a4d4ae1b7427b8730098ca1?KeyID=73cdfe25&Signature=3P6CkyA2RtT1ML1EqxrREH7uh%252BI7mdrpt9LfX72LUv4VqKhthAvxLqN7dMXsQdL2107VBUj%252BD5PUx1MYrn5YBg%253D%253D", 
           "format": "application/pdf", 
           "documentOf": "tender", 
-          "datePublished": "2016-06-10T15:29:34.667061+03:00", 
-          "id": "9ef0b09173464a3cbb04a814f10bd2a8", 
-          "dateModified": "2016-06-10T15:29:34.667099+03:00"
+          "datePublished": "2017-06-24T18:00:27.436436+03:00", 
+          "id": "6a37113bab1042be8af7d4c5595e3697", 
+          "dateModified": "2017-06-24T18:00:27.436470+03:00"
         }
       ], 
       "description": "complaint description", 
       "title": "complaint title", 
-      "dateSubmitted": "2016-06-10T15:29:34.802247+03:00", 
-      "complaintID": "UA-2016-06-10-000001.1", 
-      "date": "2016-06-10T15:29:34.292888+03:00", 
+      "dateSubmitted": "2017-06-24T18:00:27.531195+03:00", 
+      "complaintID": "UA-2017-06-24-000001.1", 
+      "date": "2017-06-24T18:00:27.535758+03:00", 
       "type": "claim", 
-      "id": "c504f4442b3c4103917145f405d5e6ea"
+      "id": "6ec3802538ad4643ac112a89a7e52f55"
     }, 
     {
       "status": "claim", 
       "description": "complaint description", 
       "title": "complaint title", 
-      "dateSubmitted": "2016-06-10T15:29:34.934718+03:00", 
-      "complaintID": "UA-2016-06-10-000001.2", 
-      "date": "2016-06-10T15:29:34.933163+03:00", 
+      "dateSubmitted": "2017-06-24T18:00:27.619348+03:00", 
+      "complaintID": "UA-2017-06-24-000001.2", 
+      "date": "2017-06-24T18:00:27.619323+03:00", 
       "type": "claim", 
-      "id": "a747dabb573a4d5993d70ae7db2a09bf"
+      "id": "4075434848f443499b4de400843e2464"
     }
   ]
 }

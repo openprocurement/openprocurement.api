@@ -1,4 +1,4 @@
-GET /api/2.3/tenders/1c34544d0e6144f18886b6e59fb8256d/awards/e9a940c30ca142af9cfc261a7536d8ff/complaints/cfa1dd69996642c1b00ed0693ef9f71c HTTP/1.0
+GET /api/2.3/tenders/6fb28391664b4e31b9002882b4d67573/awards/04f866d1fc3f4a14b463846b048a8a4e/complaints/b39ab6903efc45b4b7f51190037600fb HTTP/1.0
 Host: api-sandbox.openprocurement.org
 
 
@@ -10,14 +10,15 @@ Content-Type: application/json; charset=UTF-8
     "status": "claim", 
     "documents": [
       {
+        "hash": "md5:00000000000000000000000000000000", 
         "author": "complaint_owner", 
         "title": "Complaint_Attachement.pdf", 
-        "url": "http://api-sandbox.openprocurement.org/api/2.3/tenders/1c34544d0e6144f18886b6e59fb8256d/awards/e9a940c30ca142af9cfc261a7536d8ff/complaints/cfa1dd69996642c1b00ed0693ef9f71c/documents/98b8b4ec77a54382a4e66ca4d72c6add?download=46648e80263a4020b54907e1ecbebcfd", 
+        "url": "http://public.docs-sandbox.openprocurement.org/get/f44c4359313d48a8b63eac4c0fe1a3f2?KeyID=73cdfe25&Signature=GRBhU1Pf5tCSwip%252BjCSup%252B%2FQdmIW01XmTwKQ1gu%2FVdoKyHJEA5tVh59sGSYFh%252BWYGtPGiDdnY8Ck2zdcjStmBw%253D%253D", 
         "format": "application/pdf", 
         "documentOf": "tender", 
-        "datePublished": "2016-06-10T15:29:41.237732+03:00", 
-        "id": "98b8b4ec77a54382a4e66ca4d72c6add", 
-        "dateModified": "2016-06-10T15:29:41.237780+03:00"
+        "datePublished": "2017-06-24T18:00:31.912104+03:00", 
+        "id": "4f10201562904065a5983dce934d27a9", 
+        "dateModified": "2017-06-24T18:00:31.912138+03:00"
       }
     ], 
     "description": "complaint description", 
@@ -42,11 +43,11 @@ Content-Type: application/json; charset=UTF-8
         "locality": "м. Вінниця"
       }
     }, 
-    "dateSubmitted": "2016-06-10T15:29:41.517279+03:00", 
-    "complaintID": "UA-2016-06-10-000001.5", 
-    "date": "2016-06-10T15:29:40.968080+03:00", 
+    "dateSubmitted": "2017-06-24T18:00:32.171224+03:00", 
+    "complaintID": "UA-2017-06-24-000001.5", 
+    "date": "2017-06-24T18:00:32.184710+03:00", 
     "type": "claim", 
-    "id": "cfa1dd69996642c1b00ed0693ef9f71c"
+    "id": "b39ab6903efc45b4b7f51190037600fb"
   }
 }
 
