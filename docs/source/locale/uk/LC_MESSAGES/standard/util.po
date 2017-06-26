@@ -15,85 +15,63 @@ msgstr ""
 "Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<"
 "=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
 
-#: ../../source/standard/util.rst:8
 msgid "Period"
 msgstr "Period"
 
-#: ../../source/standard/util.rst:11 ../../source/standard/util.rst:41
-#: ../../source/standard/util.rst:67 ../../source/standard/util.rst:84
 msgid "Schema"
 msgstr "Схема"
 
-#: ../../source/standard/util.rst:14 ../../source/standard/util.rst:20
-#: ../../source/standard/util.rst:70
 msgid "string, :ref:`date`"
 msgstr "рядок, :ref:`date`"
 
-#: ../../source/standard/util.rst:22
 msgid "|ocdsDescription| The end date for the period."
 msgstr "|ocdsDescription| Кінцева дата періоду."
 
-#: ../../source/standard/util.rst:30
 msgid "Date"
 msgstr "Date"
 
-#: ../../source/standard/util.rst:32
 msgid "Date/time in :ref:`date-format`."
 msgstr "Дата/час у :ref:`date-format`."
 
-#: ../../source/standard/util.rst:38
 msgid "Value"
 msgstr "Value"
 
-#: ../../source/standard/util.rst:46 ../../source/standard/util.rst:89
 msgid "|ocdsDescription| Amount as a number."
 msgstr "|ocdsDescription| Кількість як число."
 
-#: ../../source/standard/util.rst:54 ../../source/standard/util.rst:97
 msgid "|ocdsDescription| The currency in 3-letter ISO 4217 format."
 msgstr "|ocdsDescription| Валюта у трибуквенному форматі ISO 4217."
 
-#: ../../source/standard/util.rst:64
 msgid "Revision"
 msgstr "Revision"
 
-#: ../../source/standard/util.rst:16
 msgid "|ocdsDescription| The start date for the period."
 msgstr "|ocdsDescription| Початкова дата періоду."
 
-#: ../../source/standard/util.rst:25
 msgid "`startDate` should always precede `endDate`."
 msgstr "Значення `startDate` завжди повинно йти перед `endDate`."
 
-#: ../../source/standard/util.rst:44 ../../source/standard/util.rst:87
 msgid "float, required"
 msgstr "float, обов’язково"
 
-#: ../../source/standard/util.rst:49 ../../source/standard/util.rst:92
 msgid "Should be positive."
 msgstr "Повинно бути додатнім."
 
-#: ../../source/standard/util.rst:52
 msgid "string, required"
 msgstr "рядок, обов’язковий"
 
-#: ../../source/standard/util.rst:58
 msgid "bool, required"
 msgstr "bool, обов’язково"
 
-#: ../../source/standard/util.rst:72
 msgid "Date when changes were recorded."
 msgstr "Дата, коли зміни були записані."
 
-#: ../../source/standard/util.rst:75
 msgid "List of `Change` objects"
 msgstr "Список об’єктів `Change`"
 
-#: ../../source/standard/util.rst:81
 msgid "Guarantee"
 msgstr "Guarantee"
 
-#: ../../source/standard/util.rst:95
 msgid "string, required, default = `UAH`"
 msgstr "рядок, обов’язковий, за замовчуванням = `UAH`"
 

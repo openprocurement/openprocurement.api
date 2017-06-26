@@ -15,68 +15,52 @@ msgstr ""
 "=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
 "X-Generator: Lokalize 1.5\n"
 
-#: ../../source/standard/award.rst:8
 msgid "Award"
 msgstr "Award"
 
-#: ../../source/standard/award.rst:11
 msgid "Schema"
 msgstr "Схема"
 
-#: ../../source/standard/award.rst:22
 msgid "The Id of a bid that the award relates to."
 msgstr "ID пропозиції, що виграла закупівлю"
 
-#: ../../source/standard/award.rst:25 ../../source/standard/award.rst:31
 msgid "string, multilingual"
 msgstr "рядок, багатомовний"
 
-#: ../../source/standard/award.rst:37 ../../source/standard/award.rst:88
 msgid "string"
 msgstr "рядок"
 
-#: ../../source/standard/award.rst:42
 msgid "Possible values are:"
 msgstr "Можливі значення:"
 
-#: ../../source/standard/award.rst:44
 msgid "`pending` - the award is under review of qualification committee"
 msgstr "`pending` - переможець розглядається кваліфікаційною комісією"
 
-#: ../../source/standard/award.rst:46
 msgid "`active` - the tender is awarded to the bidder from the `bid_id`"
 msgstr "`active` - закупівлю виграв учасник з пропозицією `bid_id`"
 
-#: ../../source/standard/award.rst:47
 msgid "`cancelled` - the award has been cancelled by complaint review body"
 msgstr ""
 "`cancelled` - орган, що розглядає скарги, відмінив результати закупівлі"
 
-#: ../../source/standard/award.rst:74
 msgid "List of :ref:`Document` objects"
 msgstr "Список об’єктів :ref:`Document`"
 
-#: ../../source/standard/award.rst:80
 msgid "List of :ref:`Complaint` objects"
 msgstr "Список об’єктів :ref:`Complaint`"
 
-#: ../../source/standard/award.rst:16
 msgid "|ocdsDescription| The identifier for this award."
 msgstr "|ocdsDescription| Ідентифікатор цього рішення."
 
-#: ../../source/standard/award.rst:27
 msgid "|ocdsDescription| Award title."
 msgstr "|ocdsDescription| Назва рішення."
 
-#: ../../source/standard/award.rst:33
 msgid "|ocdsDescription| Award description."
 msgstr "|ocdsDescription| Опис рішення."
 
-#: ../../source/standard/award.rst:52
 msgid "|ocdsDescription| The date of the contract award."
 msgstr "|ocdsDescription| Дата рішення про підписання договору."
 
-#: ../../source/standard/award.rst:70
 msgid ""
 "|ocdsDescription| The goods and services awarded in this award, broken into "
 "line items wherever possible. Items should not be duplicated, but the "
@@ -86,7 +70,6 @@ msgstr ""
 "на окремі рядки, де це можливо. Елементи не повинні бути продубльовані, а "
 "повинні мати вказану кількість."
 
-#: ../../source/standard/award.rst:76
 msgid ""
 "|ocdsDescription| All documents and attachments related to the award, "
 "including any notices."
@@ -94,17 +77,14 @@ msgstr ""
 "|ocdsDescription| Усі документи та додатки пов’язані з рішенням, включно з "
 "будь-якими повідомленнями."
 
-#: ../../source/standard/award.rst:58
 msgid "|ocdsDescription| The total value of this award."
 msgstr "|ocdsDescription| Загальна вартість згідно цього рішення."
 
-#: ../../source/standard/award.rst:64
 msgid "|ocdsDescription| The suppliers awarded with this award."
 msgstr ""
 "|ocdsDescription| Постачальники, що були визнані переможцями згідно цього "
 "рішення."
 
-#: ../../source/standard/award.rst:39
 msgid ""
 "|ocdsDescription| The current status of the award drawn from the "
 "`awardStatus` codelist."
@@ -112,41 +92,32 @@ msgstr ""
 "|ocdsDescription| Поточний статус рішення, взятий зі списку кодів "
 "`awardStatus`."
 
-#: ../../source/standard/award.rst:83
 msgid ":ref:`period`"
 msgstr ":ref:`period`"
 
-#: ../../source/standard/award.rst:85
 msgid "The timeframe when complaints can be submitted."
 msgstr "Період часу, під час якого можна подавати скарги."
 
-#: ../../source/standard/award.rst:90
 msgid "Id of related :ref:`lot`."
 msgstr "ID пов’язаного :ref:`lot`."
 
-#: ../../source/standard/award.rst:14 ../../source/standard/award.rst:20
 msgid "string, auto-generated, read-only"
 msgstr "рядок, генерується автоматично, лише для читання"
 
-#: ../../source/standard/award.rst:50
 msgid "string, :ref:`Date`, auto-generated, read-only"
 msgstr "рядок, :ref:`Date`, генерується автоматично, лише для читання"
 
-#: ../../source/standard/award.rst:56
 msgid "`Value` object, auto-generated, read-only"
 msgstr "О’єкт :ref:`Value`, генерується автоматично, лише для читання"
 
-#: ../../source/standard/award.rst:62
 msgid "List of :ref:`Organization` objects, auto-generated, read-only"
 msgstr ""
 "Список об’єктів :ref:`Organization`, генерується автоматично, лише для "
 "читання"
 
-#: ../../source/standard/award.rst:68
 msgid "List of :ref:`Item` objects, auto-generated, read-only"
 msgstr "Список об’єктів :ref:`Item`, генерується автоматично, лише для читання"
 
-#: ../../source/standard/award.rst:45
 msgid "`unsuccessful` - the award has been rejected by qualification committee"
 msgstr "`unsuccessful` - кваліфікаційна комісія відмовила переможцю"
 

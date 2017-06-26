@@ -3,68 +3,20 @@ msgid ""
 msgstr ""
 "Project-Id-Version: openprocurement.api 0.4\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2014-12-04 10:19+0200\n"
+"POT-Creation-Date: 2017-06-26 13:16+0300\n"
 "PO-Revision-Date: 2016-03-23 15:30+0200\n"
 "Last-Translator: Zoriana Zaiats <sorenabell@quintagroup.com>\n"
-"Language-Team: Ukrainian <info@quintagroup.com>\n"
-"MIME-Version: 1.0\n"
-"Content-Type: text/plain; charset=UTF-8\n"
-"Content-Transfer-Encoding: 8bit\n"
 "Language: uk\n"
-"Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<"
-"=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
-"X-Generator: Lokalize 1.5\n"
+"Language-Team: Ukrainian <info@quintagroup.com>\n"
+"Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && "
+"n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2)\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.4.0\n"
 
 msgid "Claim/Complaint Retrieval"
 msgstr "Отримання інформації про звернення/скарги"
-
-msgid "Rejecting Tender Award Complaint"
-msgstr "Відхилення скарги на визначення переможця"
-
-msgid "Submitting Tender Award Complaint Resolution"
-msgstr "Подання рішення по скарзі на визначення переможця"
-
-msgid "The Complaint Review Body uploads the resolution document:"
-msgstr "Орган, що розглядає скарги, завантажує документ з рішенням:"
-
-msgid "Or declines it:"
-msgstr "Або відхиляє:"
-
-msgid "And either resolves complaint:"
-msgstr "Який або вирішує скаргу:"
-
-msgid "Answer to resolved claim"
-msgstr "Відповідь на вирішену вимогу"
-
-msgid "Satisfying resolution"
-msgstr "Рішення про задовільнення вимоги"
-
-msgid "Escalate claim to complaint"
-msgstr "Перетворення вимоги в скаргу"
-
-msgid "Disagreement with decision"
-msgstr "Незгода з рішенням"
-
-msgid "Then upload necessary documents:"
-msgstr "Потім завантажте документи:"
-
-msgid "Claim Submission"
-msgstr "Подання вимоги"
-
-msgid "Tender Award Claim Submission (with documents)"
-msgstr "Подання вимоги про виправлення визначення переможця (з документами)"
-
-msgid "Tender Award Claim Submission (without documents)"
-msgstr "Подання вимоги про виправлення визначення переможця (без документів)"
-
-msgid "Claim's Answer"
-msgstr "Відповідь на вимогу"
-
-msgid "Satisfied Claim"
-msgstr "Задовільнена вимога"
-
-msgid "Complaint Resolution"
-msgstr "Вирішення скарги"
 
 msgid "Tender Award Claim/Complaint Retrieval"
 msgstr "Отримання інформації про вимоги/скарги на визначення переможця"
@@ -75,22 +27,49 @@ msgstr "Ви можете отримати список всіх вимог/ск
 msgid "And check individual complaint or claim:"
 msgstr "Або перевірити окрему скаргу чи вимогу:"
 
-msgid "You can submit claim that does not need additional documents:"
-msgstr "Ви можете подати скаргу, що не потребує додаткових документів:"
-
-msgid "At first create a claim. Send POST request with bidder's access token."
-msgstr ""
-"Спочатку створимо вимогу. В запиті потрібно передати токен доступу одного з "
-"учасників, який вже подав пропозицію."
-
-msgid "Submit tender award claim:"
-msgstr "Подамо вимогу про виправлення рішення по визначенню переможця:"
+msgid "Claim Submission"
+msgstr "Подання вимоги"
 
 msgid ""
 "If tender award is favoriting only one supplier, or in any other viable "
 "case, participants can submit Tender Award Claim."
 msgstr ""
-"Якщо при визначенні переможця надавалась перевага лише одному постачальнику "
-"або при будь-якому іншому серйозному порушенні, учасники можуть подати вимогу "
-"про виправлення результатів визначення переможця."
+"Якщо при визначенні переможця надавалась перевага лише одному "
+"постачальнику або при будь-якому іншому серйозному порушенні, учасники "
+"можуть подати вимогу про виправлення результатів визначення переможця."
+
+msgid "Tender Award Claim Submission (with documents)"
+msgstr "Подання вимоги про виправлення визначення переможця (з документами)"
+
+msgid "At first create a claim. Send POST request with bidder's access token."
+msgstr ""
+"Спочатку створимо вимогу. В запиті потрібно передати токен доступу одного"
+" з учасників, який вже подав пропозицію."
+
+msgid "Then upload necessary documents:"
+msgstr "Потім завантажте документи:"
+
+msgid "Submit tender award claim:"
+msgstr "Подамо вимогу про виправлення рішення по визначенню переможця:"
+
+msgid "Tender Award Claim Submission (without documents)"
+msgstr "Подання вимоги про виправлення визначення переможця (без документів)"
+
+msgid "You can submit claim that does not need additional documents:"
+msgstr "Ви можете подати скаргу, що не потребує додаткових документів:"
+
+msgid "Claim's Answer"
+msgstr "Відповідь на вимогу"
+
+msgid "Answer to resolved claim"
+msgstr "Відповідь на вирішену вимогу"
+
+msgid "Satisfied Claim"
+msgstr "Задовільнена вимога"
+
+msgid "Satisfying resolution"
+msgstr "Рішення про задовільнення вимоги"
+
+msgid "Disagreement with decision"
+msgstr "Незгода з рішенням"
 

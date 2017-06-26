@@ -13,45 +13,27 @@ msgstr ""
 "Language: uk\n"
 "X-Generator: Poedit 1.7.6\n"
 
-#: ../../source/standard/organization.rst:9
 msgid "Organization"
 msgstr "Organization"
 
-#: ../../source/standard/organization.rst:12
-#: ../../source/standard/organization.rst:42
-#: ../../source/standard/organization.rst:89
-#: ../../source/standard/organization.rst:130
 msgid "Schema"
 msgstr "Схема"
 
-#: ../../source/standard/organization.rst:15
-#: ../../source/standard/organization.rst:66
 msgid "string, multilingual"
 msgstr "рядок, багатомовний"
 
-#: ../../source/standard/organization.rst:21
 msgid ":ref:`Identifier`"
 msgstr ":ref:`Identifier`"
 
-#: ../../source/standard/organization.rst:27
 msgid "List of :ref:`identifier` objects"
 msgstr "Список об’єктів :ref:`identifier`"
 
-#: ../../source/standard/organization.rst:39
 msgid "Identifier"
 msgstr "Identifier"
 
-#: ../../source/standard/organization.rst:45
-#: ../../source/standard/organization.rst:92
-#: ../../source/standard/organization.rst:98
-#: ../../source/standard/organization.rst:104
-#: ../../source/standard/organization.rst:110
-#: ../../source/standard/organization.rst:145
-#: ../../source/standard/organization.rst:151
 msgid "string"
 msgstr "рядок"
 
-#: ../../source/standard/organization.rst:47
 msgid ""
 "|ocdsDescription| Organization identifiers be drawn from an existing "
 "identification scheme. This field is used to indicate the scheme or codelist"
@@ -63,20 +45,16 @@ msgstr ""
 "ідентифікатор організації. Це значення повинно братись зі Схеми "
 "Ідентифікації Організацій."
 
-#: ../../source/standard/organization.rst:56
 msgid ""
 "|ocdsDescription| The identifier of the organization in the selected scheme."
 msgstr "|ocdsDescription| Ідентифікатор організації у вибраній схемі."
 
-#: ../../source/standard/organization.rst:68
 msgid "|ocdsDescription| The legally registered name of the organization."
 msgstr "|ocdsDescription| Легально зареєстрована назва організації."
 
-#: ../../source/standard/organization.rst:72
 msgid "uri"
 msgstr "uri"
 
-#: ../../source/standard/organization.rst:74
 msgid ""
 "|ocdsDescription| A URI to identify the organization, such as those provided"
 " by Open Corporates or some other relevant URI provider.  This is not for "
@@ -87,40 +65,30 @@ msgstr ""
 "надають Open Corporates або інші постачальники URI. Це не для вебсайту "
 "організації, його можна надати в полі url в ContactPoint організації."
 
-#: ../../source/standard/organization.rst:86
 msgid "Address"
 msgstr "Address"
 
-#: ../../source/standard/organization.rst:127
 msgid "ContactPoint"
 msgstr "ContactPoint"
 
-#: ../../source/standard/organization.rst:139
 msgid "email"
 msgstr "email"
 
-#: ../../source/standard/organization.rst:157
 msgid "url"
 msgstr "url"
 
-#: ../../source/standard/organization.rst:29
 msgid ":ref:`Address`, required"
 msgstr ":ref:`Address`, обов’язково"
 
-#: ../../source/standard/organization.rst:31
 msgid ":ref:`ContactPoint`, required"
 msgstr ":ref:`ContactPoint`, обов’язково"
 
-#: ../../source/standard/organization.rst:54
 msgid "string, required"
 msgstr "рядок, обов’язковий"
 
-#: ../../source/standard/organization.rst:116
-#: ../../source/standard/organization.rst:133
 msgid "string, multilingual, required"
 msgstr "рядок, багатомовний, обов’язковий"
 
-#: ../../source/standard/organization.rst:59
 msgid ""
 "The allowed codes are the ones found in `\"Organisation Registration "
 "Agency\" codelist of IATI Standard "
@@ -134,36 +102,28 @@ msgstr ""
 "додаванням коду `UA-EDR` для організацій, зареєстрованих в Україні (ЄДРПОУ "
 "та ІПН)."
 
-#: ../../source/standard/organization.rst:17
 msgid "|ocdsDescription| The common name of the organization."
 msgstr "|ocdsDescription| Назва організації."
 
-#: ../../source/standard/organization.rst:23
 msgid "|ocdsDescription| The primary identifier for this organization."
 msgstr "|ocdsDescription| Ідентифікатор цієї організації."
 
-#: ../../source/standard/organization.rst:94
 msgid ""
 "|ocdsDescription| The street address. For example, 1600 Amphitheatre Pkwy."
 msgstr "|ocdsDescription| Вулиця. Наприклад, вул.Хрещатик, 22."
 
-#: ../../source/standard/organization.rst:100
 msgid "|ocdsDescription| The locality. For example, Mountain View."
 msgstr "|ocdsDescription| Населений пункт. Наприклад, Київ."
 
-#: ../../source/standard/organization.rst:106
 msgid "|ocdsDescription| The region. For example, CA."
 msgstr "|ocdsDescription| Область. Наприклад, Київська."
 
-#: ../../source/standard/organization.rst:112
 msgid "|ocdsDescription| The postal code. For example, 94043."
 msgstr "|ocdsDescription| Поштовий індекс, Наприклад, 78043."
 
-#: ../../source/standard/organization.rst:118
 msgid "|ocdsDescription| The country name. For example, United States."
 msgstr "|ocdsDescription| Назва країни. Наприклад, Україна."
 
-#: ../../source/standard/organization.rst:135
 msgid ""
 "|ocdsDescription| The name of the contact person, department, or contact "
 "point, for correspondence relating to this contracting process."
@@ -171,11 +131,9 @@ msgstr ""
 "|ocdsDescription| Ім’я контактної особи, назва відділу чи контактного пункту"
 " для листування, що стосується цього процесу укладання договору."
 
-#: ../../source/standard/organization.rst:141
 msgid "|ocdsDescription| The e-mail address of the contact point/person."
 msgstr "|ocdsDescription| Адреса електронної пошти контактної особи/пункту."
 
-#: ../../source/standard/organization.rst:147
 msgid ""
 "|ocdsDescription| The telephone number of the contact point/person. This "
 "should include the international dialling code."
@@ -183,7 +141,6 @@ msgstr ""
 "|ocdsDescription| Номер телефону контактної особи/пункту. Повинен включати "
 "міжнародний телефонний код."
 
-#: ../../source/standard/organization.rst:153
 msgid ""
 "|ocdsDescription| The fax number of the contact point/person. This should "
 "include the international dialling code."
@@ -191,11 +148,9 @@ msgstr ""
 "|ocdsDescription| Номер факсу контактної особи/пункту. Повинен включати "
 "міжнародний телефонний код."
 
-#: ../../source/standard/organization.rst:159
 msgid "|ocdsDescription| A web address for the contact point/person."
 msgstr "|ocdsDescription| Веб адреса контактної особи/пункту."
 
-#: ../../source/standard/organization.rst:163
 msgid "Either `email` or `telephone` field has to be provided."
 msgstr ""
 "Повинне бути заповнене хоча б одне з полів: або `email`, або `telephone`."
