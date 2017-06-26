@@ -172,11 +172,11 @@ msgstr "рядок, багатомовний, обов’язковий"
 
 #: ../../source/standard/item.rst:31
 msgid ""
-"It is mandatory for `classification.scheme` to be `CPV`. The "
-"`classification.id` should be valid CPV code."
+"It is mandatory for `classification.scheme` to be `CPV` or `ДК021`. The "
+"`classification.id` should be valid CPV or ДК021 code."
 msgstr ""
-"Класифікація `classification.scheme` обов’язково повинна бути `CPV`.  "
-"`classification.id` повинно бути дійсним CPV кодом."
+"Класифікація `classification.scheme` обов’язково повинна бути `CPV` або "
+"`ДК021`. `classification.id` повинно бути дійсним CPV або ДК021 кодом."
 
 #: ../../source/standard/item.rst:43
 msgid "It is mandatory to have at least one item with `ДКПП` as `scheme`."
