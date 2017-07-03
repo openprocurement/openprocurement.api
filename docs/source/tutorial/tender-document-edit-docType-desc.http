@@ -1,4 +1,4 @@
-PATCH /api/2.3/tenders/f860f9fe94574d729c87f81cea222b46/documents/0d34d2cd91f14650af325f081014e682?acc_token=b84904c40e484b2e9be9af92d1cca8ae HTTP/1.0
+PATCH /api/2.3/tenders/70dbf1c8670e41c0a50733581322ef94/documents/7006d2b24fd14dbb9a7a58a678b7cc1f?acc_token=e7157881912d4d4ab70e252c984400e0 HTTP/1.0
 Authorization: Basic YnJva2VyOg==
 Content-Length: 58
 Content-Type: application/json
@@ -19,14 +19,14 @@ Content-Type: application/json; charset=UTF-8
     "hash": "md5:00000000000000000000000000000000", 
     "description": "document description modified", 
     "title": "Notice.pdf", 
-    "url": "http://public.docs-sandbox.openprocurement.org/get/789735fb78a349da9f22a4bb3cb6b32f?KeyID=661750a8&Signature=b1y%252BWqNZyRMzQ08R49e8ajjS5Io1JCpsHXdiB7AyfjAYwJLqRtrU%2Fdnj3oSEhiAgw87czAsRdlpWiQi5k23xDA%253D%253D", 
+    "url": "http://public.docs-sandbox.openprocurement.org/get/61d0b5adde7a42238b38ac3dbd3163d9?KeyID=1f29d837&Signature=av8M4Q0Ykgw1d49XrwC9RkfndZ3tzamJnBtDEN44W%2FnXPQLfE1W1D%252BOcU7guWys43R%2FJMHynyOElBLYhCT%2FYBg%253D%253D", 
     "format": "application/pdf", 
     "documentOf": "tender", 
-    "datePublished": "2017-06-24T18:05:46.316547+03:00", 
+    "datePublished": "2017-07-03T18:45:29.273399+03:00", 
     "author": "tender_owner", 
     "documentType": "technicalSpecifications", 
-    "id": "0d34d2cd91f14650af325f081014e682", 
-    "dateModified": "2017-06-24T18:05:46.316590+03:00"
+    "id": "7006d2b24fd14dbb9a7a58a678b7cc1f", 
+    "dateModified": "2017-07-03T18:45:29.273447+03:00"
   }
 }
 
