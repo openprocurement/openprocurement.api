@@ -1,12 +1,12 @@
-POST /api/2.3/tenders/f860f9fe94574d729c87f81cea222b46/contracts/be93b79784d745eaa2bb651168e319df/documents?acc_token=b84904c40e484b2e9be9af92d1cca8ae HTTP/1.0
+POST /api/2.3/tenders/70dbf1c8670e41c0a50733581322ef94/contracts/d2e114431d2841dbb24f4ccfc4f89a92/documents?acc_token=e7157881912d4d4ab70e252c984400e0 HTTP/1.0
 Authorization: Basic YnJva2VyOg==
-Content-Length: 343
+Content-Length: 347
 Content-Type: application/json
 Host: api-sandbox.openprocurement.org
 
 {
   "data": {
-    "url": "http://public.docs-sandbox.openprocurement.org/get/9c6d6cbe55724eb4bee1cb3599c0c81f?KeyID=661750a8&Signature=fCDZpq67tU5gAGMvKiLE3GplwFpxVGQ94Ma37in7rgLaLX0BPnESCtRACNdEjgIqmZ4IitBMhMFMiKBVkrMBAQ%3D%3D", 
+    "url": "http://public.docs-sandbox.openprocurement.org/get/9a6d6a72b3e54b329dac807a4241e322?KeyID=1f29d837&Signature=1lRjb1bYXe1ZMO6nqeJmtNxMP9Cf6hbuklubpHgYZREVOLtDoD1R%2FTFcwoLzd6eOs0sja3N2Ld0xLD4a%2BWMlBA%3D%3D", 
     "title": "contract_second_document.doc", 
     "hash": "md5:00000000000000000000000000000000", 
     "format": "application/msword"
@@ -16,18 +16,18 @@ Host: api-sandbox.openprocurement.org
 
 201 Created
 Content-Type: application/json; charset=UTF-8
-Location: http://api-sandbox.openprocurement.org/api/2.3/tenders/f860f9fe94574d729c87f81cea222b46/contracts/be93b79784d745eaa2bb651168e319df/documents/32850838fb004ac1a41e6fd13d979ec3
+Location: http://api-sandbox.openprocurement.org/api/2.3/tenders/70dbf1c8670e41c0a50733581322ef94/contracts/d2e114431d2841dbb24f4ccfc4f89a92/documents/29e5fb6eb9a847b6a197d528e3298e49
 
 {
   "data": {
     "hash": "md5:00000000000000000000000000000000", 
     "title": "contract_second_document.doc", 
-    "url": "http://public.docs-sandbox.openprocurement.org/get/9c6d6cbe55724eb4bee1cb3599c0c81f?KeyID=661750a8&Signature=YTVIGEbzrT%252Bw40%252BuIMX4kUVI3Z6z9IhpEWP6SSm93Q%2FeWCrk4J%2F1oC7ABH2FqbQXXvvLR1Wix0fBRKiCT2tUBg%253D%253D", 
+    "url": "http://public.docs-sandbox.openprocurement.org/get/9a6d6a72b3e54b329dac807a4241e322?KeyID=1f29d837&Signature=a9CJ6yK%2FIi5xnOlJTnasWA1BpXx1%2F2Hd4XGGD6yM8vIxXdBr8o83WIeNcfCFZhG6TTXNtMtlwyawwRZyrpw1CA%253D%253D", 
     "format": "application/msword", 
     "documentOf": "tender", 
-    "datePublished": "2017-06-24T18:05:49.076192+03:00", 
-    "id": "32850838fb004ac1a41e6fd13d979ec3", 
-    "dateModified": "2017-06-24T18:05:49.076225+03:00"
+    "datePublished": "2017-07-03T18:45:32.065974+03:00", 
+    "id": "29e5fb6eb9a847b6a197d528e3298e49", 
+    "dateModified": "2017-07-03T18:45:32.066007+03:00"
   }
 }
 

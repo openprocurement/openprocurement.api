@@ -1,12 +1,12 @@
-PUT /api/2.3/tenders/f860f9fe94574d729c87f81cea222b46/documents/9f28e5dbb5254b8abba2b6eca5f46bb1?acc_token=b84904c40e484b2e9be9af92d1cca8ae HTTP/1.0
+PUT /api/2.3/tenders/70dbf1c8670e41c0a50733581322ef94/documents/30a5941ce1f241c18a117c21c5983cd9?acc_token=e7157881912d4d4ab70e252c984400e0 HTTP/1.0
 Authorization: Basic YnJva2VyOg==
-Content-Length: 339
+Content-Length: 335
 Content-Type: application/json
 Host: api-sandbox.openprocurement.org
 
 {
   "data": {
-    "url": "http://public.docs-sandbox.openprocurement.org/get/5f93abc2decd401fbee841489bfdc85c?KeyID=661750a8&Signature=FcL0qq4PcFtH9CXccrG1t%2B7kSfPvasCPJ4Q7FFOupnoEfjPEPDnHrDAmy3ZkG%2Bb2aP0PV%2Bo%2FPPyyMyJnvCusAA%3D%3D", 
+    "url": "http://public.docs-sandbox.openprocurement.org/get/ecdb294e5f4942d682588948935fa8ca?KeyID=1f29d837&Signature=53Bu64tVNpYbT58UrLm48POdACM%2BurJybnF0QtWcH1FRz5NEUiJ3VYJPSr4jkaqo75NJXFCoOfJskF%2Bq6cPjDA%3D%3D", 
     "title": "AwardCriteria-2.pdf", 
     "hash": "md5:00000000000000000000000000000000", 
     "format": "application/pdf"
@@ -22,12 +22,12 @@ Content-Type: application/json; charset=UTF-8
     "hash": "md5:00000000000000000000000000000000", 
     "author": "tender_owner", 
     "title": "AwardCriteria-2.pdf", 
-    "url": "http://public.docs-sandbox.openprocurement.org/get/5f93abc2decd401fbee841489bfdc85c?KeyID=661750a8&Signature=hKSFUPpGZs%252BJH24dxTeF9QmxEVY8%252BtQRg54NzTQa2LXCgy8r3OZsAPi0L5aP6NnAs4sGZErqhAMkNjBChlylBw%253D%253D", 
+    "url": "http://public.docs-sandbox.openprocurement.org/get/ecdb294e5f4942d682588948935fa8ca?KeyID=1f29d837&Signature=GJrJHQ%2Fe3dtN9sDAP0tY%252B6kDC%252BQtAgrU5%2FHOuUUg6xQDoHpw%252BKISOpe4JWmOUWu8GNlFGqrffa7MULoDz%252BDxBA%253D%253D", 
     "format": "application/pdf", 
     "documentOf": "tender", 
-    "datePublished": "2017-06-24T18:05:46.511984+03:00", 
-    "id": "9f28e5dbb5254b8abba2b6eca5f46bb1", 
-    "dateModified": "2017-06-24T18:05:46.593214+03:00"
+    "datePublished": "2017-07-03T18:45:29.482658+03:00", 
+    "id": "30a5941ce1f241c18a117c21c5983cd9", 
+    "dateModified": "2017-07-03T18:45:29.564455+03:00"
   }
 }
 
