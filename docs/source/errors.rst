@@ -41,7 +41,10 @@ containing additional information.
   Not found. Either the request method and path supplied do not specify a
   known action in the API, or the object specified by the request does not
   exist.
-  
+
+410
+  Archived. The resource requested is not and will not be available.
+
 412
   Precondition Failed. See :ref:`API in cluster mode <cluster>`.
 

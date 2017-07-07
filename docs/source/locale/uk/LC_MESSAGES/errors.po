@@ -62,10 +62,10 @@ msgstr "401"
 
 #: ../../source/errors.rst:32
 msgid ""
-"No authorization. A valid API key was not provided with the request, so the "
-"API could not associate a user with the request."
+"No authorization. A valid API key was not provided with the request, so "
+"the API could not associate a user with the request."
 msgstr ""
-" Несанкційонований доступ. Не було надано дійсного API ключа разом із запитом, "
+"Несанкційонований доступ. Не було надано дійсного API ключа разом із запитом, "
 "тому API не може зв'язати користувача із запитом."
 
 #: ../../source/errors.rst:38
@@ -83,6 +83,16 @@ msgid ""
 msgstr ""
 "Ресурс не знайдено. Або даний метод та шлях запиту не вказують відому дію для "
 "API, або об’єкт, вказаний у запиті, не існує."
+
+#: ../../source/errors.rst:43
+msgid "410"
+msgstr "410"
+
+#: ../../source/errors.rst:41
+msgid ""
+"Archived. The resource requested is not and will not be available."
+msgstr ""
+"Архівовано. Шуканий ресурс не є й не буде доступним."
 
 #: ../../source/errors.rst:49
 msgid "429"
