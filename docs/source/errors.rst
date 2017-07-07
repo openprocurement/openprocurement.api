@@ -44,7 +44,10 @@ containing additional information.
 
 409
   Document update conflict. The request could not be completed due to a conflict with the current state of the target resource. Please repeat your request.
-  
+
+410
+  Archived. The resource requested is not and will not be available.
+
 412
   Precondition Failed. See :ref:`API in cluster mode <cluster>`.
   
