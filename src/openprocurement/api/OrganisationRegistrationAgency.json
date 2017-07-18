@@ -174,6 +174,14 @@
          "description":"The Registry of the Francophone Brussels Commercial Court"
       },
       {
+         "category":"BG",
+         "code":"BG-EIK",
+         "name":"\u0415\u0434\u0438\u043d\u043d\u0438\u044f\u0442 \u0438\u0434\u0435\u043d\u0442\u0438\u0444\u0438\u043a\u0430\u0446\u0438\u043e\u043d\u0435\u043d \u043a\u043e\u0434 (\u0415\u0418\u041a)/Unified identification code (UIC)",
+         "url":"https://public.brra.bg/CheckUps/Verifications/VerificationPersonOrg.ra",
+         "public-database":true,
+         "description":"A unified code which certifies the legality of one's business and under which one's company is signed in the National Statistics Agency"
+      },
+      {
          "category":"BY",
          "code":"BY-UNP",
          "name":"Unified State Register of Legal Entities and Individual Entrepreneurs (Ministry of Justice of the Republic of Belarus)",
@@ -502,6 +510,14 @@
          "description":null
       },
       {
+         "category": "JP",
+         "code": "JP-JCN",
+         "description": "A code allocated to a company by the Japanese National Tax Agency. The registry itself is open and searchable by JCN (in Japanese only), but only limited information is available. More information on the corporate number (JCN) can be found here - http://www.nta.go.jp/foreign_language/corporate_number/ (National Tax Agency website). ",
+         "name": "JCN (Japanese Corporate Number). Japanese Corporate Registry - Houjintouki (\u6cd5\u4eba\u767b\u8a18)",
+         "public-database": true,
+         "url": "http://www.houjin-bangou.nta.go.jp/"
+      },
+      {
          "category":"KE",
          "code":"KE-NCB",
          "name":"NGO's Coordination Board",
@@ -524,6 +540,14 @@
          "url":"http://www.attorney-general.go.ke/",
          "public-database":false,
          "description":null
+      },
+      {
+         "category":"KZ",
+         "code":"KZ-BIN",
+         "name":"\u0411\u0438\u0437\u043d\u0435\u0441 \u0441\u04d9\u0439\u043a\u0435\u0441\u0442\u0435\u043d\u0434\u0456\u0440\u0443 \u043d\u043e\u043c\u0435\u0440\u0456 (\u0411\u0418\u041d) / Business Identification Number (BIN)",
+         "url":"http://kgd.gov.kz/en/services/taxpayer_search/legal_entity",
+         "public-database":true,
+         "description":"A unique code every legal entity or an individual enterpreneur must obtain."
       },
       {
          "category":"LS",
@@ -555,6 +579,14 @@
          "url":"http://www.ur.gov.lv/",
          "public-database":true,
          "description":"Free of charge information includes type of legal entity; registered office; new or current name or trade name and previously registered or historical name or trade name; registration number; Single Euro Payment Area beneficiary identification code (if allocated); registration date; date of deletion of the legal entity from the register (or the date of reorganisation if the reason for the deletion is a reorganisation); deadline for registration of religious organisations that are subject to re-registration."
+      },
+      {
+         "category":"MD",
+         "code":"MD-IDNO",
+         "name":"State Chamber of Registration of the Republic of Moldova, Ministry of Justice",
+         "url":"http://cis.gov.md/",
+         "public-database":true,
+         "description":"General information about the legal entities incorporated on the Republic of Moldova\u2019s territory, except political parties, non-governmental organizations and press agencies. Data from the State Chamber of Registration is published once per month on the Government Portal of Open Data http://date.gov.md/ckan/ro/dataset/11736-date-din-registrul-de-stat-al-unitatilor-de-drept-privind-intreprinderile-inregistrate-in-repu and can be searched in a convenient way via dedicated platform http://www.idno.md/."
       },
       {
          "category":"MM",
@@ -733,12 +765,44 @@
          "description":"The Accounting and Corporate Regulatory Authority (ACRA) is the national regulator of business entities, public accountants and corporate service providers in Singapore"
       },
       {
+         "category":"SI",
+         "code":"SI-PRS",
+         "name":"Company Identification Number/Mati\u010dna \u0161tevilka",
+         "url":"http://www.ajpes.eu/prs/",
+         "public-database":true,
+         "description":"The Slovenian Business Register (PRS) is a central database containing information about all business entities involved in a profit or non-profit activity having their principal place of business located on the territory of the Republic of Slovenia, as well as information on their subsidiaries and other divisions of business entities performing business activities in the territory of the Republic of Slovenia."
+      },
+      {
+         "category":"SI",
+         "code":"SI-TIN",
+         "name":"Tax Identification Number/Dav\u010dna \u0161tevilka, Ministry of Finance of the Republic of Slovenia",
+         "url":"http://www.ajpes.eu/prs/",
+         "public-database":true,
+         "description":"A unique code every legal entity or an individual enterpreneur must obtain."
+      },
+      {
          "category":"SK",
          "code":"SK-ZRSR",
          "name":"Slovakia Ministry Of Interior Trade Register",
          "url":"http://www.zrsr.sk/default.aspx?LANG=en",
          "public-database":true,
          "description":"Most organisations (including NGOs) have to be registered with the Ministry of Interior for the Trade Register Of The Slovak Republic (\u017divnostensky Register Slovenskej Republiky) and are allocated a unique registration number"
+      },
+      {
+         "category":"TR",
+         "code":"TR-MERSIS",
+         "name":"MERSIS - central trade registry system / Merkezi Sicil Kay\u0131t Sistemi",
+         "url":"http://mersis.gumrukticaret.gov.tr/Login/tabid/110/Default.aspx?returnurl=%2fMersis%2f%C5%9EirketSorgulama.aspx",
+         "public-database":false,
+         "description":"Central Trade Registry System (MERSIS) is a centralized information system allowing for the implementation of the commercial registry processes and storing them and commercial registry data electronically. Mersis may be reached by the username-password or the e-signature from the website address of Ministry of Customs and Trade. It contains titles of companies, addresses, contact information, capital information, companies' partners, joint capital information, field of business, executive bodies of companies. Some information can also be found at http://www.ticaretsicil.gov.tr/english/index.php"
+      },
+      {
+         "category":"TR",
+         "code":"TR-VAT",
+         "name":"Vergi Kimlik Numaras\u0131 - VAT",
+         "url":"http://mersis.gumrukticaret.gov.tr/Login/tabid/110/Default.aspx?returnurl=%2fMersis%2f%C5%9EirketSorgulama.aspx",
+         "public-database":false,
+         "description":"All resident legal entities obtain a TIN (Vergi Kimlik Numarasi) automatically since they are subject to tax. Although legal\narrangements like ordinary partnerships are not subject to corporate income tax, TIN is issued to\nthem while registering to local tax offices. Consists of 10 digits. Information can be found at http://mersis.gumrukticaret.gov.tr/Login/tabid/110/Default.aspx?returnurl=%2fMersis%2f%C5%9EirketSorgulama.aspx. Only in Turkish, not available to the broad audience."
       },
       {
          "category":"TZ",

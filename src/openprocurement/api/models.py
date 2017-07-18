@@ -31,6 +31,8 @@ schematics_default_role = SchematicsDocument.Options.roles['default'] + blacklis
 TZ = timezone(os.environ['TZ'] if 'TZ' in os.environ else 'Europe/Kiev')
 CANT_DELETE_PERIOD_START_DATE_FROM = datetime(2016, 9, 23, tzinfo=TZ)
 BID_LOTVALUES_VALIDATION_FROM = datetime(2016, 10, 21, tzinfo=TZ)
+CPV_ITEMS_CLASS_FROM = datetime(2017, 1, 1, tzinfo=TZ)
+CPV_BLOCK_FROM = datetime(2017, 6, 2, tzinfo=TZ)
 
 
 def get_now():
@@ -49,6 +51,7 @@ def read_json(name):
 
 CPV_CODES = read_json('cpv.json')
 CPV_CODES.append('99999999-9')
+DK_CODES = read_json('dk021.json')
 #DKPP_CODES = read_json('dkpp.json')
 ORA_CODES = [i['code'] for i in read_json('OrganisationRegistrationAgency.json')['data']]
 WORKING_DAYS = read_json('working_days.json')
@@ -87,6 +90,12 @@ def set_parent(item, parent):
 
 def get_tender(model):
     while not ITender.providedBy(model):
+        model = model.__parent__
+    return model
+
+
+def get_schematics_document(model):
+    while not isinstance(model, SchematicsDocument):
         model = model.__parent__
     return model
 
@@ -300,8 +309,19 @@ class Classification(Model):
 
 
 class CPVClassification(Classification):
-    scheme = StringType(required=True, default=u'CPV', choices=[u'CPV'])
-    id = StringType(required=True, choices=CPV_CODES)
+    scheme = StringType(required=True, default=u'CPV', choices=[u'CPV', u'ДК021'])
+    id = StringType(required=True)
+
+    def validate_id(self, data, code):
+        if data.get('scheme') == u'CPV' and code not in CPV_CODES:
+            raise ValidationError(BaseType.MESSAGES['choices'].format(unicode(CPV_CODES)))
+        elif data.get('scheme') == u'ДК021' and code not in DK_CODES:
+            raise ValidationError(BaseType.MESSAGES['choices'].format(unicode(DK_CODES)))
+
+    def validate_scheme(self, data, scheme):
+        schematics_document = get_schematics_document(data['__parent__'])
+        if (schematics_document.get('revisions')[0].date if schematics_document.get('revisions') else get_now()) > CPV_BLOCK_FROM and scheme != u'ДК021':
+            raise ValidationError(BaseType.MESSAGES['choices'].format(unicode([u'ДК021'])))
 
 
 class Unit(Model):
@@ -333,6 +353,7 @@ class Location(Model):
 
 
 ADDITIONAL_CLASSIFICATIONS_SCHEMES = [u'ДКПП', u'NONE', u'ДК003', u'ДК015', u'ДК018']
+ADDITIONAL_CLASSIFICATIONS_SCHEMES_2017 = [u'ДК003', u'ДК015', u'ДК018', u'specialNorms']
 
 
 def validate_dkpp(items, *args):
@@ -348,7 +369,7 @@ class Item(Model):
     description_en = StringType()
     description_ru = StringType()
     classification = ModelType(CPVClassification, required=True)
-    additionalClassifications = ListType(ModelType(Classification), default=list(), required=True, min_size=1, validators=[validate_dkpp])
+    additionalClassifications = ListType(ModelType(Classification), default=list())
     unit = ModelType(Unit)  # Description of the unit which the good comes in e.g. hours, kilograms
     quantity = IntType()  # The number of units required
     deliveryDate = ModelType(Period)
@@ -356,9 +377,21 @@ class Item(Model):
     deliveryLocation = ModelType(Location)
     relatedLot = MD5Type()
 
+    def validate_additionalClassifications(self, data, items):
+        tender = get_tender(data['__parent__'])
+        tender_from_2017 = (tender.get('revisions')[0].date if tender.get('revisions') else get_now()) > CPV_ITEMS_CLASS_FROM
+        not_cpv = data['classification']['id'] == '99999999-9'
+        if not items and (not tender_from_2017 or tender_from_2017 and not_cpv):
+            raise ValidationError(u'This field is required.')
+        elif tender_from_2017 and not_cpv and items and not any([i.scheme in ADDITIONAL_CLASSIFICATIONS_SCHEMES_2017 for i in items]):
+            raise ValidationError(u"One of additional classifications should be one of [{0}].".format(', '.join(ADDITIONAL_CLASSIFICATIONS_SCHEMES_2017)))
+        elif not tender_from_2017 and items and not any([i.scheme in ADDITIONAL_CLASSIFICATIONS_SCHEMES for i in items]):
+            raise ValidationError(u"One of additional classifications should be one of [{0}].".format(', '.join(ADDITIONAL_CLASSIFICATIONS_SCHEMES)))
+
     def validate_relatedLot(self, data, relatedLot):
         if relatedLot and isinstance(data['__parent__'], Model) and relatedLot not in [i.id for i in get_tender(data['__parent__']).lots]:
             raise ValidationError(u"relatedLot should be one of lots")
+
 
 class HashType(StringType):
 
@@ -410,7 +443,7 @@ class Document(Model):
         'contractSigned', 'contractArrangements', 'contractSchedule',
         'contractAnnexe', 'contractGuarantees', 'subContract',
         'eligibilityCriteria', 'contractProforma', 'commercialProposal',
-        'qualificationDocuments', 'eligibilityDocuments',
+        'qualificationDocuments', 'eligibilityDocuments', 'registerExtract',
     ])
     title = StringType(required=True)  # A title of the document.
     title_en = StringType()
@@ -608,7 +641,7 @@ class Bid(Model):
             'Administrator': Administrator_bid_role,
             'embedded': view_bid_role,
             'view': view_bid_role,
-            'create': whitelist('value', 'status', 'tenderers', 'parameters', 'lotValues'),
+            'create': whitelist('value', 'status', 'tenderers', 'parameters', 'lotValues', 'documents'),
             'edit': whitelist('value', 'status', 'tenderers', 'parameters', 'lotValues'),
             'auction_view': whitelist('value', 'lotValues', 'id', 'date', 'parameters', 'participationUrl'),
             'auction_post': whitelist('value', 'lotValues', 'id', 'date'),
@@ -780,7 +813,7 @@ class Complaint(Model):
     id = MD5Type(required=True, default=lambda: uuid4().hex)
     complaintID = StringType()
     date = IsoDateTimeType(default=get_now)  # autogenerated date of posting
-    status = StringType(choices=['draft', 'claim', 'answered', 'pending', 'invalid', 'resolved', 'declined', 'cancelled'], default='draft')
+    status = StringType(choices=['draft', 'claim', 'answered', 'pending', 'invalid', 'resolved', 'declined', 'cancelled', 'ignored'], default='draft')
     documents = ListType(ModelType(Document), default=list())
     type = StringType(choices=['claim', 'complaint'], default='claim')  # 'complaint' if status in ['pending'] or 'claim' if status in ['draft', 'claim', 'answered']
     owner_token = StringType()
@@ -824,12 +857,12 @@ class Complaint(Model):
             role = 'draft'
         elif request.authenticated_role == 'tender_owner' and self.status == 'claim':
             role = 'answer'
-        elif request.authenticated_role == 'tender_owner' and self.status == 'pending':
-            role = 'action'
+        #elif request.authenticated_role == 'tender_owner' and self.status == 'pending':
+            #role = 'action'
         elif request.authenticated_role == 'complaint_owner' and self.status == 'answered':
             role = 'satisfy'
-        elif request.authenticated_role == 'reviewers' and self.status == 'pending':
-            role = 'review'
+        #elif request.authenticated_role == 'reviewers' and self.status == 'pending':
+            #role = 'review'
         else:
             role = 'invalid'
         return role
@@ -1208,7 +1241,7 @@ class Tender(SchematicsDocument, Model):
     description_ru = StringType()
     date = IsoDateTimeType()
     tenderID = StringType()  # TenderID should always be the same as the OCID. It is included to make the flattened data structure more convenient.
-    items = ListType(ModelType(Item), required=True, min_size=1, validators=[validate_cpv_group, validate_items_uniq])  # The goods and services to be purchased, broken into line items wherever possible. Items should not be duplicated, but a quantity of 2 specified instead.
+    items = ListType(ModelType(Item), required=True, min_size=1, validators=[validate_items_uniq])  # The goods and services to be purchased, broken into line items wherever possible. Items should not be duplicated, but a quantity of 2 specified instead.
     value = ModelType(Value, required=True)  # The total estimated value of the procurement.
     procurementMethod = StringType(choices=['open', 'selective', 'limited'], default='open')  # Specify tendering method as per GPA definitions of Open, Selective, Limited (http://www.wto.org/english/docs_e/legal_e/rev-gpr-94_01_e.htm)
     procurementMethodRationale = StringType()  # Justification of procurement method, especially in the case of Limited tendering.
@@ -1261,7 +1294,7 @@ class Tender(SchematicsDocument, Model):
     create_accreditation = 1
     edit_accreditation = 2
     procuring_entity_kinds = ['general', 'special', 'defense', 'other']
-    block_complaint_status = ['claim', 'answered', 'pending']
+    block_complaint_status = ['answered', 'pending']
 
     __name__ = ''
 
@@ -1373,16 +1406,18 @@ class Tender(SchematicsDocument, Model):
         if self.status.startswith('active'):
             from openprocurement.api.utils import calculate_business_date
             for complaint in self.complaints:
-                if complaint.status == 'claim' and complaint.dateSubmitted:
-                    checks.append(calculate_business_date(complaint.dateSubmitted, COMPLAINT_STAND_STILL_TIME, self))
-                elif complaint.status == 'answered' and complaint.dateAnswered:
+                if complaint.status == 'answered' and complaint.dateAnswered:
                     checks.append(calculate_business_date(complaint.dateAnswered, COMPLAINT_STAND_STILL_TIME, self))
+                elif complaint.status == 'pending':
+                    checks.append(self.dateModified)
             for award in self.awards:
+                if award.status == 'active' and not any([i.awardID == award.id for i in self.contracts]):
+                    checks.append(award.date)
                 for complaint in award.complaints:
-                    if complaint.status == 'claim' and complaint.dateSubmitted:
-                        checks.append(calculate_business_date(complaint.dateSubmitted, COMPLAINT_STAND_STILL_TIME, self))
-                    elif complaint.status == 'answered' and complaint.dateAnswered:
+                    if complaint.status == 'answered' and complaint.dateAnswered:
                         checks.append(calculate_business_date(complaint.dateAnswered, COMPLAINT_STAND_STILL_TIME, self))
+                    elif complaint.status == 'pending':
+                        checks.append(self.dateModified)
         return min(checks).isoformat() if checks else None
 
     def validate_procurementMethodDetails(self, *args, **kw):
@@ -1440,6 +1475,13 @@ class Tender(SchematicsDocument, Model):
 
         self._data.update(data)
         return self
+
+    def validate_items(self, data, items):
+        cpv_336_group = items[0].classification.id[:3] == '336' if items else False
+        if not cpv_336_group and (data.get('revisions')[0].date if data.get('revisions') else get_now()) > CPV_ITEMS_CLASS_FROM and items and len(set([i.classification.id[:4] for i in items])) != 1:
+            raise ValidationError(u"CPV class of items should be identical")
+        else:
+            validate_cpv_group(items)
 
     def validate_features(self, data, features):
         if features and data['lots'] and any([

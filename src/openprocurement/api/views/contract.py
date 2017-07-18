@@ -121,9 +121,38 @@ class TenderAwardContractResource(APIResource):
         if self.request.context.status != 'active' and 'status' in data and data['status'] == 'active':
             if not self.award_valid(self.request, self.request.context.awardID):  # check main contract
                 return
+
+            award = [a for a in tender.awards if a.id == self.request.context.awardID][0]
+            stand_still_end = award.complaintPeriod.endDate
+
+            if stand_still_end > get_now():
+                self.request.errors.add(
+                    'body', 'data', 'Can\'t sign contract before stand-still period end ({})'.format(
+                        stand_still_end.isoformat()
+                    )
+                )
+                self.request.errors.status = 403
+                return
+            pending_complaints = [
+                i
+                for i in tender.complaints
+                if i.status in tender.block_complaint_status and i.relatedLot in [None, award.lotID]
+            ]
+            pending_awards_complaints = [
+                i
+                for a in tender.awards
+                for i in a.complaints
+                if i.status in tender.block_complaint_status and a.lotID == award.lotID
+            ]
+            if pending_complaints or pending_awards_complaints:
+                self.request.errors.add('body', 'data', 'Can\'t sign contract before reviewing all complaints')
+                self.request.errors.status = 403
+
+                return
             for awardID in contract.get('additionalAwardIDs'):
                 if not self.award_valid(self.request, awardID, additional=True):  # if get errors then return them
                     return
+
         if check_merged_contracts(self.request) is not None:
             return
         contract_status = self.request.context.status

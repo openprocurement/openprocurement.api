@@ -51,7 +51,7 @@ test_tender_data = {
         {
             "description": u"футляри до державних нагород",
             "classification": {
-                "scheme": u"CPV",
+                "scheme": u"ДК021",
                 "id": u"44617100-9",
                 "description": u"Cartons"
             },
@@ -219,13 +219,15 @@ class BaseWebTest(unittest.TestCase):
 
     @classmethod
     def setUpClass(cls):
-        while True:
+        for _ in range(10):
             try:
                 cls.app = webtest.TestApp("config:tests.ini", relative_to=cls.relative_to)
             except:
                 pass
             else:
                 break
+        else:
+            cls.app = webtest.TestApp("config:tests.ini", relative_to=cls.relative_to)
         cls.app.RequestClass = PrefixedRequestClass
         cls.couchdb_server = cls.app.app.registry.couchdb_server
         cls.db = cls.app.app.registry.db
@@ -410,7 +412,6 @@ class BaseTenderWebTest(BaseWebTest):
 
         authorization = self.app.authorization
         self.app.authorization = ('Basic', ('chronograph', ''))
-        #response = self.app.patch_json('/tenders/{}'.format(self.tender_id), {'data': {'id': self.tender_id}})
         response = self.app.get('/tenders/{}'.format(self.tender_id))
         self.app.authorization = authorization
         self.assertEqual(response.status, '200 OK')

@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 import unittest
-from datetime import timedelta, datetime
+from datetime import timedelta
 from copy import deepcopy
 from uuid import uuid4
 
