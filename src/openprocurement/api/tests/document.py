@@ -529,10 +529,13 @@ class TenderDocumentWithDSResourceTest(TenderDocumentResourceTest):
         self.assertEqual(response.json['errors'][0]["description"], "Document url invalid.")
 
     def test_create_tender_document_json(self):
-        response = self.app.post(
-            '/tenders/{}/documents?acc_token={}'.format(
-                self.tender_id, self.tender_token
-            ), upload_files=[('file', u'укр.doc', 'content')]
+        response = self.app.post_json(
+            '/tenders/{}/documents?acc_token={}'.format(self.tender_id, self.tender_token), {'data': {
+                'title': u'укр.doc',
+                'url': self.generate_docservice_url(),
+                'hash': 'md5:' + '0' * 32,
+                'format': 'application/msword'
+            }}
         )
         self.assertEqual(response.status, '201 Created')
         self.assertEqual(response.content_type, 'application/json')
@@ -590,13 +593,18 @@ class TenderDocumentWithDSResourceTest(TenderDocumentResourceTest):
             }}, status=403)
         self.assertEqual(response.status, '403 Forbidden')
         self.assertEqual(response.content_type, 'application/json')
-        self.assertEqual(response.json['errors'][0]["description"], "Can't add document in current (active.tendering) tender status")
+        self.assertEqual(
+            response.json['errors'][0]["description"], "Can't add document in current (active.tendering) tender status"
+        )
 
     def test_put_tender_document_json(self):
-        response = self.app.post(
-            '/tenders/{}/documents?acc_token={}'.format(
-                self.tender_id, self.tender_token
-            ), upload_files=[('file', 'name.doc', 'content')]
+        response = self.app.post_json(
+            '/tenders/{}/documents?acc_token={}'.format(self.tender_id, self.tender_token), {'data': {
+                'title': u'name.doc',
+                'url': self.generate_docservice_url(),
+                'hash': 'md5:' + '0' * 32,
+                'format': 'application/msword'
+            }}
         )
         self.assertEqual(response.status, '201 Created')
         self.assertEqual(response.content_type, 'application/json')
@@ -606,11 +614,12 @@ class TenderDocumentWithDSResourceTest(TenderDocumentResourceTest):
         datePublished = response.json["data"]['datePublished']
         self.assertIn(doc_id, response.headers['Location'])
 
-        response = self.app.put(
-            '/tenders/{}/documents/{}?acc_token={}'.format(
-                self.tender_id, doc_id, self.tender_token
-            ), upload_files=[('file', 'name.doc', 'content')]
-        )
+        response = self.app.put_json('/tenders/{}/documents/{}'.format(self.tender_id, doc_id), {'data': {
+            'title': u'name.doc',
+            'url': self.generate_docservice_url(),
+            'hash': 'md5:' + '0' * 32,
+            'format': 'application/msword'
+        }})
 
         self.assertEqual(response.status, '200 OK')
         self.assertEqual(response.content_type, 'application/json')
@@ -650,10 +659,13 @@ class TenderDocumentWithDSResourceTest(TenderDocumentResourceTest):
         self.assertEqual(dateModified, response.json["data"][0]['dateModified'])
         self.assertEqual(dateModified2, response.json["data"][1]['dateModified'])
 
-        response = self.app.post(
-            '/tenders/{}/documents?acc_token={}'.format(
-                self.tender_id, self.tender_token
-            ), upload_files=[('file', 'name.doc', 'content')]
+        response = self.app.post_json(
+            '/tenders/{}/documents'.format(self.tender_id), {'data': {
+                'title': 'name.doc',
+                'url': self.generate_docservice_url(),
+                'hash': 'md5:' + '0' * 32,
+                'format': 'application/msword'
+            }}
         )
         self.assertEqual(response.status, '201 Created')
         self.assertEqual(response.content_type, 'application/json')
@@ -667,10 +679,13 @@ class TenderDocumentWithDSResourceTest(TenderDocumentResourceTest):
         self.assertEqual(dateModified2, response.json["data"][0]['dateModified'])
         self.assertEqual(dateModified, response.json["data"][1]['dateModified'])
 
-        response = self.app.put(
-            '/tenders/{}/documents/{}?acc_token={}'.format(
-                self.tender_id, doc_id, self.tender_token
-            ), upload_files=[('file', 'name.doc', 'content')]
+        response = self.app.put_json(
+            '/tenders/{}/documents/{}'.format(self.tender_id, doc_id), {'data': {
+                'title': u'укр.doc',
+                'url': self.generate_docservice_url(),
+                'hash': 'md5:' + '0' * 32,
+                'format': 'application/msword'
+            }}
         )
         self.assertEqual(response.status, '200 OK')
         self.assertEqual(response.content_type, 'application/json')
