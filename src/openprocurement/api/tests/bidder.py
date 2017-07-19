@@ -979,7 +979,7 @@ class TenderBidderDocumentWithDSResourceTest(TenderBidderDocumentResourceTest):
         self.assertEqual(response.status, '200 OK')
         self.assertEqual(response.content_type, 'application/json')
         self.assertEqual(doc_id, response.json["data"]["id"])
-        self.assertEqual('test description', response.json["data"])
+        self.assertEqual('test description', response.json["data"]['description'])
         self.assertEqual(response.json['data']['documentOf'], 'tender')
         self.assertEqual(response.json['data']['format'], 'application/msword')
         self.assertIn(self.bid_id + '/documents/' + doc_id, response.json["data"]["url"])

@@ -614,7 +614,7 @@ class TenderDocumentWithDSResourceTest(TenderDocumentResourceTest):
         datePublished = response.json["data"]['datePublished']
         self.assertIn(doc_id, response.headers['Location'])
 
-        response = self.app.put_json('/tenders/{}/documents/{}'.format(self.tender_id, doc_id), {'data': {
+        response = self.app.put_json('/tenders/{}/documents/{}?acc_token={}'.format(self.tender_id, doc_id, self.tender_token), {'data': {
             'title': u'name.doc',
             'url': self.generate_docservice_url(),
             'hash': 'md5:' + '0' * 32,

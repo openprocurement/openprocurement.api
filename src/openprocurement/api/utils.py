@@ -108,7 +108,7 @@ def upload_file(request, blacklisted_fields=DOCUMENT_BLACKLISTED_FIELDS,
 
         conditions = list()
         conditions.append(not url.startswith(request.registry.docservice_url))
-        conditions.append(len(parsed_url.path.split('/')))
+        conditions.append(len(parsed_url.path.split('/')) != 3)
         conditions.append(set(['Signature', 'KeyID']) != set(parsed_query))
 
         if any(conditions):
