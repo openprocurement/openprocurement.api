@@ -1,4 +1,4 @@
-GET /api/2.3/tenders/eeb9177097a14a8c80ca0d1c8b202a00/awards HTTP/1.0
+GET /api/2.3/tenders/b5f0fd0ef8684ba997e3cd344fd1d131/awards HTTP/1.0
 Authorization: Basic YnJva2VyOg==
 Host: api-sandbox.openprocurement.org
 
@@ -11,7 +11,7 @@ Content-Type: application/json; charset=UTF-8
     {
       "status": "pending", 
       "complaintPeriod": {
-        "startDate": "2016-07-21T17:17:55.039093+03:00"
+        "startDate": "2017-06-24T18:05:38.655627+03:00"
       }, 
       "suppliers": [
         {
@@ -34,15 +34,15 @@ Content-Type: application/json; charset=UTF-8
             "locality": "м. Вінниця"
           }
         }
-      ], 
-      "bid_id": "3074dddf0f8f4f3f88f21224d7898243", 
+      ],
+      "bid_id": "3a9485f8bd6a485495059deee8a681c6",
       "value": {
         "currency": "UAH", 
         "amount": 450.0, 
         "valueAddedTaxIncluded": true
-      }, 
-      "date": "2016-07-21T17:17:55.039076+03:00", 
-      "id": "86d3f73dd7094865a9fd4966584c62ae"
+      },
+      "date": "2017-06-24T18:05:38.655607+03:00", 
+      "id": "6a21aa7f911f424d85e354e59a7e7c84"
     }
   ]
 }

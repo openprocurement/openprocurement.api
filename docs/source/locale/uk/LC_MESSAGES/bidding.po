@@ -13,39 +13,30 @@ msgstr ""
 "X-Generator: Poedit 1.7.6\n"
 "Language: uk\n"
 
-#: ../../source/bidding.rst:5
 msgid "Bidder Operations"
 msgstr "Операції для учасників закупівлі"
 
-#: ../../source/bidding.rst:8
 msgid "Registration of Bid proposal"
 msgstr "Реєстрація цінової пропозиції "
 
-#: ../../source/bidding.rst:20
 msgid "Uploading Bid documents"
 msgstr "Завантаження документів пропозиції"
 
-#: ../../source/bidding.rst:33
 msgid "Update of proposal"
 msgstr "Оновлення пропозиції"
 
-#: ../../source/bidding.rst:44
 msgid "Updating Bid documents"
 msgstr "Оновлення документів пропозиції"
 
-#: ../../source/bidding.rst:64
 msgid "Cancelling the proposal"
 msgstr "Відміна пропозиції"
 
-#: ../../source/bidding.rst:75
 msgid "Bids Listing"
 msgstr "Список пропозицій"
 
-#: ../../source/bidding.rst:201
 msgid "Retrieving the proposal"
 msgstr "Вичитка пропозиції"
 
-#: ../../source/bidding.rst:77
 msgid ""
 "After auction ends it is possible to get full information about bids and "
 "bidders that submitted them:"
@@ -53,6 +44,5 @@ msgstr ""
 "Після закінчення аукціону можна отримати повну інформацію про пропозиції та "
 "учасників, які їх подали:"
 
-#: ../../source/bidding.rst:203
 msgid "Individual bid can be retrieved via its `id`:"
 msgstr "Окрему пропозицію можна прочитати за її `id`:"

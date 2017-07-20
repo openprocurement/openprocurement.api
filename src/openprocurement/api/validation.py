@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from openprocurement.api.models import get_now
+from openprocurement.api.models import get_now, SANDBOX_MODE
 from schematics.exceptions import ModelValidationError, ModelConversionError
 from openprocurement.api.utils import apply_data_patch, update_logging_context, check_document_batch
 
@@ -168,10 +168,17 @@ def validate_tender_auction_data(request):
         data = {}
     if request.method == 'POST':
         now = get_now().isoformat()
-        if tender.lots:
-            data['lots'] = [{'auctionPeriod': {'endDate': now}} if i.id == lot_id else {} for i in tender.lots]
+        if (SANDBOX_MODE and tender.submissionMethodDetails and tender.submissionMethodDetails in [u'quick(mode:no-auction)', u'quick(mode:fast-forward)']):
+            if tender.lots:
+                data['lots'] = [{'auctionPeriod': {'startDate': now, 'endDate': now}} if i.id == lot_id else {} for i in tender.lots]
+            else:
+                data['auctionPeriod'] = {'startDate': now, 'endDate': now}
         else:
-            data['auctionPeriod'] = {'endDate': now}
+            if tender.lots:
+                data['lots'] = [{'auctionPeriod': {'endDate': now}} if i.id == lot_id else {} for i in tender.lots]
+            else:
+                data['auctionPeriod'] = {'endDate': now}
+
     request.validated['data'] = data
 
 
