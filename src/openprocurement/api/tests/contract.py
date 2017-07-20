@@ -520,6 +520,24 @@ class TenderMergedContracts2LotsResourceTest(BaseTenderWebTest):
         self.assertEqual(response.json['errors'][0]["description"],
                          "Value amount should be less or equal to awarded amount ({value:.1f})".format(value=max_value))
 
+    def test_value_and_merge_contract_in_one_patch(self):
+        """ Set new value and merge contract in one  """
+        first_award, second_award = self.create_awards()
+        first_award_id = first_award['id']
+        second_award_id = second_award['id']
+        self.active_awards(first_award_id, second_award_id)
+
+        response = self.app.get('/tenders/{}/contracts?acc_token={}'.format(self.tender_id, self.tender_token))
+        first_contract, second_contract = response.json['data']
+
+        additionalAwardIDs = [second_contract['awardID']]
+
+        max_value = first_contract["value"]["amount"] + second_award["value"]["amount"]
+
+        self.app.patch_json('/tenders/{}/contracts/{}?acc_token={}'.format(
+            self.tender_id, first_contract['id'], self.tender_token),
+            {"data": {"value": {"amount": max_value},
+                      "additionalAwardIDs": additionalAwardIDs}})
 
 class TenderMergedContracts3LotsResourceTest(BaseTenderWebTest):
     initial_status = 'active.qualification'
