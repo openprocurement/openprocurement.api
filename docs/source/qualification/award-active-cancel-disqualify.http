@@ -1,4 +1,4 @@
-PATCH /api/2.3/tenders/eeb9177097a14a8c80ca0d1c8b202a00/awards/69f2611e848b4a83aa6f10c192dc1456?acc_token=a8d118cc5aab4c9e8e6fafe89d2c4615 HTTP/1.0
+PATCH /api/2.3/tenders/b5f0fd0ef8684ba997e3cd344fd1d131/awards/9264560bc5aa40ca99bf825e6e9eb48d?acc_token=41f50461be174ae1bee022aefeeb1744 HTTP/1.0
 Authorization: Basic YnJva2VyOg==
 Content-Length: 36
 Content-Type: application/json
@@ -13,7 +13,7 @@ Host: api-sandbox.openprocurement.org
 
 200 OK
 Content-Type: application/json; charset=UTF-8
-Location: http://api-sandbox.openprocurement.org/api/2.3/tenders/eeb9177097a14a8c80ca0d1c8b202a00/awards/423731db017b4cff9e48d477657534d6
+Location: http://api-sandbox.openprocurement.org/api/2.3/tenders/b5f0fd0ef8684ba997e3cd344fd1d131/awards/cf81d89e551346bb80d0f278a75716f3
 
 {
   "data": {
@@ -21,18 +21,19 @@ Location: http://api-sandbox.openprocurement.org/api/2.3/tenders/eeb9177097a14a8
     "documents": [
       {
         "hash": "md5:00000000000000000000000000000000", 
-        "title": "Cancellation_Reason.pdf", 
-        "url": "http://public.docs-sandbox.openprocurement.org/get/65c9de328cec4ff9ba8492038755f1cf?KeyID=a1a42480&Signature=AOwjLo%2F%252B2tTfq43K%252B6%252BAzVJ9x6qj%252BQ2YKs55hHvsowr8zKBdlEo12uWnXtfBuOVQIRIt8FmqywQ%2Fdr5WqUZkCjYAAAA1AAAAYwAAADkAAABkAAAAZQAAADMAAAAyAAAA", 
+        "author": "tender_owner", 
+        "title": "Cancellation_Reason.pdf",
+        "url": "http://public.docs-sandbox.openprocurement.org/get/50a30d5c6afd489a985ab9807c7d8730?KeyID=e440c6be&Signature=RdrRBLsOdGT621LH3vLCGnW3QHWgFwGeNVZb6%252Bt356KyPZLYDwBlG%2F6xq1CwQvdpUpy9kz37NcjF0Mnm2cm7Cw%253D%253D", 
         "format": "application/pdf", 
         "documentOf": "tender", 
-        "datePublished": "2016-07-21T17:17:56.532625+03:00", 
-        "id": "da1c73f1478f4186a83afe754bd06e89", 
-        "dateModified": "2016-07-21T17:17:56.532661+03:00"
+        "datePublished": "2017-06-24T18:05:39.883919+03:00", 
+        "id": "6c84c50630424797b4f285359f7f9e9a", 
+        "dateModified": "2017-06-24T18:05:39.883953+03:00"
       }
     ], 
     "complaintPeriod": {
-      "startDate": "2016-07-21T17:17:56.195926+03:00", 
-      "endDate": "2016-07-25T17:17:56.800545+03:00"
+      "startDate": "2017-06-24T18:05:39.606188+03:00", 
+      "endDate": "2017-06-29T00:00:00+03:00"
     }, 
     "suppliers": [
       {
@@ -54,15 +55,15 @@ Location: http://api-sandbox.openprocurement.org/api/2.3/tenders/eeb9177097a14a8
           "locality": "м. Київ"
         }
       }
-    ], 
-    "bid_id": "f904bf65cfc14a93bb4af123ebb48b2a", 
+    ],
+    "bid_id": "a8e1478a504347999d3e005839e74bfb",
     "value": {
       "currency": "UAH", 
       "amount": 469.0, 
       "valueAddedTaxIncluded": true
-    }, 
-    "date": "2016-07-21T17:17:56.814375+03:00", 
-    "id": "69f2611e848b4a83aa6f10c192dc1456"
+    },
+    "date": "2017-06-24T18:05:40.196553+03:00", 
+    "id": "9264560bc5aa40ca99bf825e6e9eb48d"
   }
 }
 

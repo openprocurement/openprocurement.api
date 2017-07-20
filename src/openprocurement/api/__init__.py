@@ -9,12 +9,14 @@ from base64 import b64decode, b64encode
 from couchdb import Server as CouchdbServer, Session
 from couchdb.http import Unauthorized, extract_credentials
 from libnacl.sign import Signer, Verifier
+from libnacl.public import SecretKey, PublicKey
 from logging import getLogger
 from openprocurement.api.auth import AuthenticationPolicy, authenticated_role, check_accreditation
 from openprocurement.api.design import sync_design
 from openprocurement.api.migration import migrate_data
 from openprocurement.api.models import Tender
-from openprocurement.api.utils import forbidden, add_logging_context, set_logging_context, extract_tender, request_params, isTender, set_renderer, beforerender, register_tender_procurementMethodType, tender_from_data, ROUTE_PREFIX
+from openprocurement.api.utils import forbidden, add_logging_context, set_logging_context, extract_tender, request_params, isTender, set_renderer, beforerender, register_tender_procurementMethodType, tender_from_data, route_prefix
+from openprocurement.api.utils import ROUTE_PREFIX  # BBB
 from pbkdf2 import PBKDF2
 from pkg_resources import iter_entry_points
 from pyramid.authorization import ACLAuthorizationPolicy as AuthorizationPolicy
@@ -62,7 +64,7 @@ def main(global_config, **settings):
         settings=settings,
         authentication_policy=AuthenticationPolicy(settings['auth.file'], __name__),
         authorization_policy=AuthorizationPolicy(),
-        route_prefix=ROUTE_PREFIX,
+        route_prefix=route_prefix(settings),
     )
     config.include('pyramid_exclog')
     config.include("cornice")
@@ -168,6 +170,10 @@ def main(global_config, **settings):
     dockeys = settings.get('dockeys') if 'dockeys' in settings else dockey.hex_vk()
     for key in dockeys.split('\0'):
         keyring[key[:8]] = Verifier(key)
+
+    # Archive keys
+    arch_pubkey = settings.get('arch_pubkey', None)
+    config.registry.arch_pubkey = PublicKey(arch_pubkey.decode('hex') if arch_pubkey else SecretKey().pk)
 
     # migrate data
     if not os.environ.get('MIGRATION_SKIP'):

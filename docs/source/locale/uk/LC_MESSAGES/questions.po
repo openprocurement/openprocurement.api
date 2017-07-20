@@ -13,35 +13,27 @@ msgstr ""
 "X-Generator: Poedit 1.7.6\n"
 "Language: uk\n"
 
-#: ../../source/questions.rst:5
 msgid "Asking Questions"
 msgstr "Питання замовнику"
 
-#: ../../source/questions.rst:8
 msgid "Submitting Questions"
 msgstr "Як подати питання"
 
-#: ../../source/questions.rst:10
 msgid "Anybody (who provides their identity) can ask questions:"
 msgstr "Будь-хто (але не анонімно) може задати питання:"
 
-#: ../../source/questions.rst:16
 msgid "Retrieving Questions"
 msgstr "Як прочитати питання"
 
-#: ../../source/questions.rst:24
 msgid "Answering"
 msgstr "Відповіді"
 
-#: ../../source/questions.rst:27
 msgid "Submitting Answers"
 msgstr "Як надати відповідь"
 
-#: ../../source/questions.rst:29
 msgid "Tender creator can answer questions:"
 msgstr "Замовник закупівлі може відповісти на питання:"
 
-#: ../../source/questions.rst:18
 msgid "Question author identities are not revealed before auction ends:"
 msgstr "До закінчення аукціону особистість автора питання не розкривається:"
 

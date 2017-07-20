@@ -1,4 +1,4 @@
-PATCH /api/2.3/tenders/eeb9177097a14a8c80ca0d1c8b202a00/complaints/f19052e57bb74ee3a754eb355b1d3898?acc_token=a50cd6cfde284f33a483907a768f9afb HTTP/1.0
+PATCH /api/2.3/tenders/b5f0fd0ef8684ba997e3cd344fd1d131/complaints/f1b5ae848fdc482ebc4f142e0f2307a6?acc_token=c78d60ab002749d6bae812de5328578a HTTP/1.0
 Authorization: Basic YnJva2VyOg==
 Content-Length: 51
 Content-Type: application/json
@@ -42,14 +42,13 @@ Content-Type: application/json; charset=UTF-8
         "locality": "м. Вінниця"
       }
     }, 
-    "satisfied": false, 
-    "dateEscalated": "2016-07-21T17:17:51.872191+03:00", 
-    "dateAnswered": "2016-07-21T17:17:51.730761+03:00", 
-    "dateSubmitted": "2016-07-21T17:17:51.188415+03:00", 
-    "complaintID": "UA-2016-07-21-000001.2", 
-    "date": "2016-07-21T17:17:51.877004+03:00", 
+    "satisfied": false,
+    "dateAnswered": "2017-06-24T18:05:36.766886+03:00", 
+    "dateSubmitted": "2017-06-24T18:05:36.388275+03:00", 
+    "complaintID": "UA-2017-06-24-000001.2", 
+    "date": "2017-06-24T18:05:36.875733+03:00", 
     "resolution": "Виправлено неконкурентні умови", 
-    "id": "f19052e57bb74ee3a754eb355b1d3898"
+    "id": "f1b5ae848fdc482ebc4f142e0f2307a6"
   }
 }
 
