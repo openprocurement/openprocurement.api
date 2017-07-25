@@ -1,4 +1,4 @@
-﻿#
+#
 msgid ""
 msgstr ""
 "Project-Id-Version: openprocurement.api 0.4\n"
