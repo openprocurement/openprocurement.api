@@ -3,7 +3,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: openprocurement.api 0.4\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-07-25 15:18+0300\n"
+"POT-Creation-Date: 2017-07-25 18:41+0300\n"
 "PO-Revision-Date: 2016-03-23 15:30+0200\n"
 "Last-Translator: Zoriana Zaiats <sorenabell@quintagroup.com>\n"
 "Language: uk\n"
@@ -17,12 +17,6 @@ msgstr ""
 
 msgid "Claim/Complaint Retrieval"
 msgstr "Отримання інформації про звернення/скарги"
-
-msgid "Rejecting Tender Award Complaint"
-msgstr "Відхилення скарги на визначення переможця"
-
-msgid "Submitting Tender Award Complaint Resolution"
-msgstr "Подання рішення по скарзі на визначення переможця"
 
 msgid "Tender Award Claim/Complaint Retrieval"
 msgstr "Отримання інформації про вимоги/скарги на визначення переможця"
@@ -46,9 +40,6 @@ msgstr ""
 
 msgid "Tender Award Claim Submission (with documents)"
 msgstr "Подання вимоги про виправлення визначення переможця (з документами)"
-
-msgid "Disagreement with decision"
-msgstr "Незгода з рішенням"
 
 msgid "At first create a claim. Send POST request with bidder's access token."
 msgstr ""
