@@ -1,12 +1,16 @@
 #
+# Zoriana Zaiats <sorenabell@quintagroup.com>, 2017.
 msgid ""
 msgstr ""
 "Project-Id-Version: openprocurement.api 0.1\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-10-07 13:04+0300\n"
-"PO-Revision-Date: 2016-10-07 13:06+0200\n"
+"POT-Creation-Date: 2017-07-25 15:18+0300\n"
+"PO-Revision-Date: 2017-07-25 15:26+0200\n"
 "Last-Translator: Zoriana Zaiats <sorenabell@quintagroup.com>\n"
+"Language: uk\n"
 "Language-Team: Ukrainian <info@quintagroup.com>\n"
+"Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<"
+"=4 && (n%100<10 || n%100>=20) ? 1 : 2)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -26,7 +30,7 @@ msgstr ""
 "набір правил."
 
 msgid "Upload document with registration"
-msgstr "Завантаження документа з реєстрацією"
+msgstr "Завантажити документ з реєстрацією"
 
 msgid ""
 ":ref:`Register document upload in document service <documentservice"
@@ -46,7 +50,7 @@ msgstr ""
 "document>`."
 
 msgid "Upload document w/o registration"
-msgstr "Завантаження документа без реєстрації"
+msgstr "Завантажити документ без реєстрації"
 
 msgid ""
 ":ref:`Register document upload in document service <documentservice"
@@ -54,4 +58,3 @@ msgid ""
 msgstr ""
 ":ref:`Зареєструвати завантаження документа в Document Service <documentservice"
 ":upload-document-w-o-registration>`."
-

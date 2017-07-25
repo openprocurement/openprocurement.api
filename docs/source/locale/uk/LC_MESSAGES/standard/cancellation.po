@@ -15,54 +15,39 @@ msgstr ""
 "=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
 "X-Generator: Lokalize 1.5\n"
 
-#: ../../source/standard/cancellation.rst:8
 msgid "Cancellation"
 msgstr "Cancellation"
 
-#: ../../source/standard/cancellation.rst:11
 msgid "Schema"
 msgstr "Схема"
 
-#: ../../source/standard/cancellation.rst:17
 msgid "string, multilingual, required"
 msgstr "рядок, багатомовний, обов’язковий"
 
-#: ../../source/standard/cancellation.rst:22
-#: ../../source/standard/cancellation.rst:42
-#: ../../source/standard/cancellation.rst:50
 msgid "string"
 msgstr "рядок"
 
-#: ../../source/standard/cancellation.rst:28
-#: ../../source/standard/cancellation.rst:44
 msgid "Possible values are:"
 msgstr "Можливі значення:"
 
-#: ../../source/standard/cancellation.rst:31
 msgid "List of :ref:`Document` objects"
 msgstr "Список об’єктів :ref:`Document`"
 
-#: ../../source/standard/cancellation.rst:37
 msgid "string, :ref:`date`"
 msgstr "рядок, :ref:`date`"
 
-#: ../../source/standard/cancellation.rst:39
 msgid "Cancellation date."
 msgstr "Дата скасування"
 
-#: ../../source/standard/cancellation.rst:19
 msgid "The reason, why Tender is being cancelled."
 msgstr "Причина, з якої скасовується закупівля."
 
-#: ../../source/standard/cancellation.rst:26
 msgid "Default. The request is being prepared."
 msgstr "За замовчуванням. Запит оформляється."
 
-#: ../../source/standard/cancellation.rst:28
 msgid "Cancellation activated."
 msgstr "Скасування активоване."
 
-#: ../../source/standard/cancellation.rst:33
 msgid ""
 "Documents accompanying the Cancellation: Protocol of Tender Committee with "
 "decision to cancel the Tender."
@@ -70,19 +55,15 @@ msgstr ""
 "Супровідна документація скасування: Протокол рішення Тендерного комітету "
 "Замовника про скасування закупівлі."
 
-#: ../../source/standard/cancellation.rst:46
 msgid "`tender`"
 msgstr "`tender` - закупівля"
 
-#: ../../source/standard/cancellation.rst:47
 msgid "`lot`"
 msgstr "`lot` - лот"
 
-#: ../../source/standard/cancellation.rst:52
 msgid "Id of related :ref:`lot`."
 msgstr "ID пов’язаного :ref:`lot`."
 
-#: ../../source/standard/cancellation.rst:14
 msgid "uid, auto-generated"
 msgstr "uid, генерується автоматично"
 

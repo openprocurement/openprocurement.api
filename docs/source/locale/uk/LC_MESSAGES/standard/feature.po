@@ -16,47 +16,36 @@ msgstr ""
 "=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
 "X-Generator: Lokalize 2.0\n"
 
-#: ../../source/standard/feature.rst:9
 msgid "Feature"
 msgstr "Feature"
 
-#: ../../source/standard/feature.rst:12
 msgid "Schema"
 msgstr "Схема"
 
-#: ../../source/standard/feature.rst:15
 msgid "string, auto-generated"
 msgstr "рядок, генерується автоматично"
 
-#: ../../source/standard/feature.rst:17
 msgid "Code of the feature."
 msgstr "Код нецінового критерію."
 
-#: ../../source/standard/feature.rst:20
 msgid "string, required"
 msgstr "рядок, обов’язковий"
 
-#: ../../source/standard/feature.rst:22
 msgid "Possible values are:"
 msgstr "Можливі значення:"
 
-#: ../../source/standard/feature.rst:24
 msgid "`tenderer`"
 msgstr "`tenderer` - учасник закупівлі"
 
-#: ../../source/standard/feature.rst:25
 msgid "`lot`"
 msgstr "`lot`"
 
-#: ../../source/standard/feature.rst:26
 msgid "`item`"
 msgstr "`item`"
 
-#: ../../source/standard/feature.rst:29
 msgid "string"
 msgstr "рядок"
 
-#: ../../source/standard/feature.rst:31
 msgid ""
 "Id of related :ref:`item` or :ref:`lot` (only if the ``featureOf`` value "
 "is ``item`` or ``lot``)."
@@ -64,43 +53,33 @@ msgstr ""
 "ID пов’язаного :ref:`item` або :ref:`lot` (якщо значення ``featureOf`` "
 "дорівнює ``item`` або ``lot``)."
 
-#: ../../source/standard/feature.rst:34 ../../source/standard/feature.rst:54
 msgid "string, multilingual, required"
 msgstr "рядок, багатомовний, обов’язковий"
 
-#: ../../source/standard/feature.rst:36
 msgid "Title of the feature."
 msgstr "Назва критерію."
 
-#: ../../source/standard/feature.rst:39 ../../source/standard/feature.rst:59
 msgid "string, multilingual"
 msgstr "рядок, багатомовний"
 
-#: ../../source/standard/feature.rst:41
 msgid "Description of the feature."
 msgstr "Опис критерію."
 
-#: ../../source/standard/feature.rst:44
 msgid "list"
 msgstr "список"
 
-#: ../../source/standard/feature.rst:46
 msgid "List of values:"
 msgstr "Список значень:"
 
-#: ../../source/standard/feature.rst:49
 msgid "float, required"
 msgstr "float, обов’язково"
 
-#: ../../source/standard/feature.rst:51
 msgid "Value of the feature."
 msgstr "Значення критерію."
 
-#: ../../source/standard/feature.rst:56
 msgid "Title of the value."
 msgstr "Назва значення."
 
-#: ../../source/standard/feature.rst:61
 msgid "Description of the value."
 msgstr "Опис значення."
 

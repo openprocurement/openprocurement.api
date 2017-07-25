@@ -15,24 +15,18 @@ msgstr ""
 "Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<"
 "=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
 
-#: ../../source/standard/item.rst:9
 msgid "Item"
 msgstr "Item"
 
-#: ../../source/standard/item.rst:12 ../../source/standard/item.rst:94
-#: ../../source/standard/item.rst:131
 msgid "Schema"
 msgstr "Схема"
 
-#: ../../source/standard/item.rst:20
 msgid "|ocdsDescription| A description of the goods, services to be provided."
 msgstr "|ocdsDescription| Опис товарів та послуг, які повинні бути надані."
 
-#: ../../source/standard/item.rst:24
 msgid ":ref:`Classification`"
 msgstr ":ref:`Classification`"
 
-#: ../../source/standard/item.rst:26
 msgid ""
 "|ocdsDescription| The primary classification for the item. See the "
 "itemClassificationScheme to identify preferred classification lists, "
@@ -42,11 +36,9 @@ msgstr ""
 "itemClassificationScheme, щоб визначити бажані списки класифікації, включно "
 "з CPV та GSIN."
 
-#: ../../source/standard/item.rst:35
 msgid "List of :ref:`Classification` objects"
 msgstr "Список об’єктів :ref:`Classification`"
 
-#: ../../source/standard/item.rst:37
 msgid ""
 "|ocdsDescription| An array of additional classifications for the item. See "
 "the itemClassificationScheme codelist for common options to use in OCDS. "
@@ -58,11 +50,9 @@ msgstr ""
 "OCDS. Також можна використовувати для представлення кодів з внутрішньої "
 "схеми класифікації."
 
-#: ../../source/standard/item.rst:46
 msgid ":ref:`Unit`"
 msgstr ":ref:`Unit`"
 
-#: ../../source/standard/item.rst:48
 msgid ""
 "|ocdsDescription| Description of the unit which the good comes in e.g.  "
 "hours, kilograms. Made up of a unit name, and the value of a single unit."
@@ -70,34 +60,25 @@ msgstr ""
 "|ocdsDescription| Опис одиниці виміру товару, наприклад, години, кілограми. "
 "Складається з назви одиниці та значення однієї одиниці."
 
-#: ../../source/standard/item.rst:53
 msgid "integer"
 msgstr "ціле число"
 
-#: ../../source/standard/item.rst:55
 msgid "|ocdsDescription| The number of units required"
 msgstr "|ocdsDescription| Кількість необхідних одиниць."
 
-#: ../../source/standard/item.rst:91
 msgid "Classification"
 msgstr "Classification"
 
-#: ../../source/standard/item.rst:83 ../../source/standard/item.rst:97
-#: ../../source/standard/item.rst:106 ../../source/standard/item.rst:112
-#: ../../source/standard/item.rst:139
 msgid "string"
 msgstr "рядок"
 
-#: ../../source/standard/item.rst:108
 msgid ""
 "|ocdsDescription| The classification code drawn from the selected scheme."
 msgstr "|ocdsDescription| Код класифікації взятий з вибраної схеми."
 
-#: ../../source/standard/item.rst:114
 msgid "|ocdsDescription| A textual description or title for the code."
 msgstr "|ocdsDescription| Текстовий опис або назва коду."
 
-#: ../../source/standard/item.rst:120
 msgid ""
 "|ocdsDescription| A URI to identify the code. In the event individual URIs "
 "are not available for items in the identifier scheme this value should be "
@@ -107,15 +88,12 @@ msgstr ""
 "доступні для елементів у схемі ідентифікації це значення треба залишити "
 "пустим."
 
-#: ../../source/standard/item.rst:128
 msgid "Unit"
 msgstr "Unit"
 
-#: ../../source/standard/item.rst:141
 msgid "|ocdsDescription| Name of the unit"
 msgstr "|ocdsDescription| Назва одиниці"
 
-#: ../../source/standard/item.rst:99
 msgid ""
 "|ocdsDescription| A classification should be drawn from an existing scheme "
 "or list of codes.  This field is used to indicate the scheme/codelist from "
@@ -128,36 +106,27 @@ msgstr ""
 "значення повинно представляти відому Схему Класифікації Елементів, де це "
 "можливо."
 
-#: ../../source/standard/item.rst:118
 msgid "uri"
 msgstr "uri"
 
-#: ../../source/standard/item.rst:59
 msgid ":ref:`Period`"
 msgstr ":ref:`Period`"
 
-#: ../../source/standard/item.rst:61
 msgid "Period during which the item should be delivered."
 msgstr "Період, протягом якого елемент повинен бути доставлений."
 
-#: ../../source/standard/item.rst:64
 msgid ":ref:`Address`"
 msgstr ":ref:`Address`"
 
-#: ../../source/standard/item.rst:66
 msgid "Address, where the item should be delivered."
 msgstr "Адреса місця, куди елемент повинен бути доставлений."
 
-#: ../../source/standard/item.rst:69
 msgid "dictionary"
 msgstr "словник"
 
-#: ../../source/standard/item.rst:74 ../../source/standard/item.rst:76
-#: ../../source/standard/item.rst:134
 msgid "string, required"
 msgstr "рядок, обов’язковий"
 
-#: ../../source/standard/item.rst:80
 msgid ""
 "`deliveryLocation` usually takes precedence over `deliveryAddress` if both "
 "are present."
@@ -165,11 +134,9 @@ msgstr ""
 "`deliveryLocation` зазвичай має вищий пріоритет ніж `deliveryAddress`, якщо "
 "вони обидва вказані."
 
-#: ../../source/standard/item.rst:18
 msgid "string, multilingual, required"
 msgstr "рядок, багатомовний, обов’язковий"
 
-#: ../../source/standard/item.rst:31
 msgid ""
 "It is mandatory for `classification.scheme` to be `CPV` or `ДК021`. The "
 "`classification.id` should be valid CPV or ДК021 code."
@@ -177,30 +144,24 @@ msgstr ""
 "Класифікація `classification.scheme` обов’язково повинна бути `CPV` або "
 "`ДК021`. `classification.id` повинно бути дійсним CPV або ДК021 кодом."
 
-#: ../../source/standard/item.rst:43
 msgid "It is mandatory to have at least one item with `ДКПП` as `scheme`."
 msgstr "Обов’язково мати хоча б один елемент з `ДКПП` у стрічці `scheme`."
 
-#: ../../source/standard/item.rst:136
 msgid "UN/CEFACT Recommendation 20 unit code."
 msgstr "Код одиниці в UN/CEFACT Recommendation 20."
 
-#: ../../source/standard/item.rst:71
 msgid ""
 "Geographical coordinates of delivery location. Element consist of the "
 "following items:"
 msgstr ""
 "Географічні координати місця доставки. Складається з таких компонентів:"
 
-#: ../../source/standard/item.rst:78
 msgid "string, optional, usually not used"
 msgstr "рядок, не обов’язково, переважно не використовується"
 
-#: ../../source/standard/item.rst:85
 msgid "Id of related :ref:`lot`."
 msgstr "ID пов’язаного :ref:`lot`."
 
-#: ../../source/standard/item.rst:15
 msgid "string, auto-generated"
 msgstr "рядок, генерується автоматично"
 
