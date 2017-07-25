@@ -1,12 +1,12 @@
-POST /api/2.3/tenders/6fb28391664b4e31b9002882b4d67573/awards/b5a76391adbc43fd9b4d17582c9cfb5c/documents?acc_token=71c2431dfe474d03a20bd49fe076f152 HTTP/1.0
+POST /api/2.3/tenders/6e33b56945624315afece8e75af7193c/awards/3ff474e4f3a843fba101c561e5cffb14/documents?acc_token=e96bd05708744828a13d48aa6e282cb9 HTTP/1.0
 Authorization: Basic YnJva2VyOg==
-Content-Length: 343
+Content-Length: 341
 Content-Type: application/json
 Host: api-sandbox.openprocurement.org
 
 {
   "data": {
-    "url": "http://public.docs-sandbox.openprocurement.org/get/fd65287c91cb4b7badf198ff57b9ff67?KeyID=73cdfe25&Signature=GrW0ndnwf8ZsfHTv7O%2B%2Fpg4OyS6J2amPow5xuLbuaGCoQYOhq9CXPM59ij%2FuCqYEyqD%2BbccDTbEUZnDAROooDQ%3D%3D", 
+    "url": "http://public.docs-sandbox.openprocurement.org/get/6bd74e04745d4eeb99b4806f1dae82c9?KeyID=1a1ebb61&Signature=LAgDr%2B6y5LMCNb6bB7UPlkjL7JhiesqZ5QFPxZCHsPpJX5xpFFyc%2FYBKfYPhiDlHGcR6l9ObYpar4lpbkJ%2BBDw%3D%3D", 
     "title": "Cancellation_Reason.pdf", 
     "hash": "md5:00000000000000000000000000000000", 
     "format": "application/pdf"
@@ -16,19 +16,19 @@ Host: api-sandbox.openprocurement.org
 
 201 Created
 Content-Type: application/json; charset=UTF-8
-Location: http://api-sandbox.openprocurement.org/api/2.3/tenders/6fb28391664b4e31b9002882b4d67573/awards/b5a76391adbc43fd9b4d17582c9cfb5c/documents/1ea87178c1ca496f975ee3d8ce68e0dd
+Location: http://api-sandbox.openprocurement.org/api/2.3/tenders/6e33b56945624315afece8e75af7193c/awards/3ff474e4f3a843fba101c561e5cffb14/documents/6eec6788a5cb494589a9f3cab1661d99
 
 {
   "data": {
     "hash": "md5:00000000000000000000000000000000", 
     "author": "tender_owner", 
     "title": "Cancellation_Reason.pdf", 
-    "url": "http://public.docs-sandbox.openprocurement.org/get/fd65287c91cb4b7badf198ff57b9ff67?KeyID=73cdfe25&Signature=4d5hN%2FRi1qo93JiIzod4lvRq2ClTn%2FkN8keN3LLPmfr0QZi4ScpqVGKFsr6EMdjA%2FUkeli31UTNffI1n2efRCw%253D%253D", 
+    "url": "http://public.docs-sandbox.openprocurement.org/get/6bd74e04745d4eeb99b4806f1dae82c9?KeyID=1a1ebb61&Signature=qtr%252BRVTvbXo%2F%252BEsVgsfE%2Ff385WPW6pMjiTja4cwoCt2koVF19VA6%2FiSzHzcY5JvG7UmUl04wQa%2FBZSAmUVTcBw%253D%253D", 
     "format": "application/pdf", 
     "documentOf": "tender", 
-    "datePublished": "2017-06-24T18:00:31.122721+03:00", 
-    "id": "1ea87178c1ca496f975ee3d8ce68e0dd", 
-    "dateModified": "2017-06-24T18:00:31.122755+03:00"
+    "datePublished": "2017-07-25T17:36:52.594571+03:00", 
+    "id": "6eec6788a5cb494589a9f3cab1661d99", 
+    "dateModified": "2017-07-25T17:36:52.594591+03:00"
   }
 }
 

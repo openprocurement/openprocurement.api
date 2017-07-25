@@ -1,4 +1,4 @@
-PUT /api/2.3/tenders/abd7bd35532d4b2999f85bc87c80d23f/documents/514691fd0254426f96781abb94e8419b?acc_token=c1066473eb5840bcb84b5256710c9dfd HTTP/1.0
+PUT /api/2.3/tenders/f3641d0ba0f042e8b49de06d5c7921af/documents/14f948894bcc4ddc9da4d2129b028116?acc_token=2ef61fa89e8a451ba4149d2f8e31173b HTTP/1.0
 Authorization: Basic YnJva2VyOg==
 Content-Length: 339
 Content-Type: application/json
@@ -6,7 +6,7 @@ Host: api-sandbox.openprocurement.org
 
 {
   "data": {
-    "url": "http://public.docs-sandbox.openprocurement.org/get/ce9c576408764fa8ae0af0dd218c16ba?KeyID=4a468cd9&Signature=S6SSJDudpIz8eI1rZ5%2FqVTcs32HKc%2FEA0RXp%2BudQGUF5DzpP7bFI5T3rpZGCwtS%2BJQK2jVWphtbS8iM4HGcuDQ%3D%3D", 
+    "url": "http://public.docs-sandbox.openprocurement.org/get/1e600751d31c434987977980878dbd8b?KeyID=459f8ecf&Signature=EC1QzFOXAe%2BawGOy%2FJR3YMrURSrxoUXQMtC%2BIIrTcHlCcL26Uj1%2BSbggyBg1H87VOEn9EBtEgBde0s8zxohcDQ%3D%3D", 
     "title": "AwardCriteria-2.pdf", 
     "hash": "md5:00000000000000000000000000000000", 
     "format": "application/pdf"
@@ -22,12 +22,12 @@ Content-Type: application/json; charset=UTF-8
     "hash": "md5:00000000000000000000000000000000", 
     "author": "tender_owner", 
     "title": "AwardCriteria-2.pdf", 
-    "url": "http://public.docs-sandbox.openprocurement.org/get/ce9c576408764fa8ae0af0dd218c16ba?KeyID=4a468cd9&Signature=OlVdHKzXEUxZbY1sdaIgiVGHWcqH1WCo9Dly9JV%2Fblg7qp6aoPj8wmevKSHn3SJwqsI4oLsx0%252Bc6%2FFv1fiGFBQ%253D%253D", 
+    "url": "http://public.docs-sandbox.openprocurement.org/get/1e600751d31c434987977980878dbd8b?KeyID=459f8ecf&Signature=76AeflAK4BuZ734jGky7PBC9Tk3HAmi6UmSE1ElFiy2jLkYGA1%2FMdT7NIF7Hto%2F5PmrqAktZ%2FYovZYW6QptFBg%253D%253D", 
     "format": "application/pdf", 
     "documentOf": "tender", 
-    "datePublished": "2017-06-24T18:00:37.707937+03:00", 
-    "id": "514691fd0254426f96781abb94e8419b", 
-    "dateModified": "2017-06-24T18:00:37.792733+03:00"
+    "datePublished": "2017-07-25T17:36:56.140078+03:00", 
+    "id": "14f948894bcc4ddc9da4d2129b028116", 
+    "dateModified": "2017-07-25T17:36:56.181719+03:00"
   }
 }
 
