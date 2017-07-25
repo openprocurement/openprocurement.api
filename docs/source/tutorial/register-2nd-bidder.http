@@ -1,11 +1,25 @@
-POST /api/2.3/tenders/a4f89b85bdc041f080c73ca5b06ee953/bids HTTP/1.0
+POST /api/2.3/tenders/abd7bd35532d4b2999f85bc87c80d23f/bids HTTP/1.0
 Authorization: Basic YnJva2VyOg==
-Content-Length: 704
+Content-Length: 1373
 Content-Type: application/json
 Host: api-sandbox.openprocurement.org
 
 {
   "data": {
+    "documents": [
+      {
+        "url": "http://public.docs-sandbox.openprocurement.org/get/11636a84e21a4c30817a3493123eabe1?KeyID=4a468cd9&Signature=Js9eChTXDMNd%2BC86gTG%2BviplgLHfeD%2Be0BBRvUKUhJUYhY4xIK9mJfIk3RojGBX1uGDh3YhjnP1o%2Beti0vi%2BCg%3D%3D", 
+        "title": "Proposal_part1.pdf", 
+        "hash": "md5:00000000000000000000000000000000", 
+        "format": "application/pdf"
+      }, 
+      {
+        "url": "http://public.docs-sandbox.openprocurement.org/get/26102d998965473b90cb08490280bfef?KeyID=4a468cd9&Signature=6WVS82gOKGVDHiRqUoVtofr66OZqdFZd3yp1k9foEBWc3bzphai9gkuBFZSnTyH1WhCaOXgXajo9ua8j7B8rAQ%3D%3D", 
+        "title": "Proposal_part2.pdf", 
+        "hash": "md5:00000000000000000000000000000000", 
+        "format": "application/pdf"
+      }
+    ], 
     "value": {
       "amount": 499
     }, 
@@ -37,16 +51,36 @@ Host: api-sandbox.openprocurement.org
 
 201 Created
 Content-Type: application/json; charset=UTF-8
-Location: http://api-sandbox.openprocurement.org/api/2.3/tenders/a4f89b85bdc041f080c73ca5b06ee953/bids/7f89957a3dbb43ccbddb1b821b0fff3d
+Location: http://api-sandbox.openprocurement.org/api/2.3/tenders/abd7bd35532d4b2999f85bc87c80d23f/bids/2062ba6d14584967892766b4309add96
 
 {
   "access": {
-    "token": "c53478d3b8a4462b87416156a5dc206d"
+    "token": "007bb72649aa4c638b80a40ae981d039"
   }, 
   "data": {
-    "date": "2016-06-10T15:29:51.357653+03:00", 
     "status": "active", 
-    "id": "7f89957a3dbb43ccbddb1b821b0fff3d", 
+    "documents": [
+      {
+        "hash": "md5:00000000000000000000000000000000", 
+        "title": "Proposal_part1.pdf", 
+        "url": "http://api-sandbox.openprocurement.org/api/2.3/tenders/abd7bd35532d4b2999f85bc87c80d23f/bids/2062ba6d14584967892766b4309add96/documents/886fd6d8d1e341f392e96aef3a1d7c34?download=11636a84e21a4c30817a3493123eabe1", 
+        "format": "application/pdf", 
+        "documentOf": "tender", 
+        "datePublished": "2017-06-24T18:00:38.457115+03:00", 
+        "id": "886fd6d8d1e341f392e96aef3a1d7c34", 
+        "dateModified": "2017-06-24T18:00:38.457148+03:00"
+      }, 
+      {
+        "hash": "md5:00000000000000000000000000000000", 
+        "title": "Proposal_part2.pdf", 
+        "url": "http://api-sandbox.openprocurement.org/api/2.3/tenders/abd7bd35532d4b2999f85bc87c80d23f/bids/2062ba6d14584967892766b4309add96/documents/b4097372c7fd4b30986d89c611c123eb?download=26102d998965473b90cb08490280bfef", 
+        "format": "application/pdf", 
+        "documentOf": "tender", 
+        "datePublished": "2017-06-24T18:00:38.458006+03:00", 
+        "id": "b4097372c7fd4b30986d89c611c123eb", 
+        "dateModified": "2017-06-24T18:00:38.458038+03:00"
+      }
+    ], 
     "value": {
       "currency": "UAH", 
       "amount": 499.0, 
@@ -73,7 +107,9 @@ Location: http://api-sandbox.openprocurement.org/api/2.3/tenders/a4f89b85bdc041f
           "locality": "м. Львів"
         }
       }
-    ]
+    ], 
+    "date": "2017-06-24T18:00:38.456072+03:00", 
+    "id": "2062ba6d14584967892766b4309add96"
   }
 }
 

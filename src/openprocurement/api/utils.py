@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 from barbecue import chef
-from base64 import b64encode
+from base64 import b64encode, b64decode
 from datetime import datetime, time, timedelta
 from cornice.resource import resource, view
 from cornice.util import json_error
@@ -16,9 +16,9 @@ from openprocurement.api.traversal import factory
 from pkg_resources import get_distribution
 from rfc6266 import build_header
 from schematics.exceptions import ModelValidationError
-from time import sleep
-from urllib import quote
-from urlparse import urlparse, parse_qs
+from time import sleep, time as ttime
+from urllib import quote, unquote, urlencode
+from urlparse import urlparse, urljoin, urlunsplit, parse_qsl
 from uuid import uuid4
 from webob.multidict import NestedMultiDict
 from pyramid.exceptions import URLDecodeError
@@ -26,14 +26,17 @@ from pyramid.compat import decode_path_info
 from binascii import hexlify, unhexlify
 from Crypto.Cipher import AES
 from re import compile
+from requests import Session
 
 
 PKG = get_distribution(__package__)
 LOGGER = getLogger(PKG.project_name)
 VERSION = '{}.{}'.format(int(PKG.parsed_version[0]), int(PKG.parsed_version[1]) if PKG.parsed_version[1].isdigit() else 0)
 ROUTE_PREFIX = '/api/{}'.format(VERSION)
-DOCUMENT_BLACKLISTED_FIELDS = ('title', 'format', '__parent__', 'id', 'url', 'dateModified', )
+DOCUMENT_BLACKLISTED_FIELDS = ('title', 'format', 'url', 'dateModified', 'hash')
+DOCUMENT_WHITELISTED_FIELDS = ('id', 'datePublished', 'author', '__parent__')
 ACCELERATOR_RE = compile(r'.accelerator=(?P<accelerator>\d+)')
+SESSION = Session()
 json_view = partial(view, renderer='json')
 
 
@@ -73,8 +76,40 @@ def get_filename(data):
         return header[0]
 
 
-def upload_file(request, blacklisted_fields=DOCUMENT_BLACKLISTED_FIELDS):
-    first_document = request.validated['documents'][0] if 'documents' in request.validated and request.validated['documents'] else None
+def generate_docservice_url(request, doc_id, temporary=True, prefix=None):
+    docservice_key = getattr(request.registry, 'docservice_key', None)
+    parsed_url = urlparse(request.registry.docservice_url)
+    query = {}
+    if temporary:
+        expires = int(ttime()) + 300  # EXPIRES
+        mess = "{}\0{}".format(doc_id, expires)
+        query['Expires'] = expires
+    else:
+        mess = doc_id
+    if prefix:
+        mess = '{}/{}'.format(prefix, mess)
+        query['Prefix'] = prefix
+    query['Signature'] = quote(b64encode(docservice_key.signature(mess.encode("utf-8"))))
+    query['KeyID'] = docservice_key.hex_vk()[:8]
+    return urlunsplit((parsed_url.scheme, parsed_url.netloc, '/get/{}'.format(doc_id), urlencode(query), ''))
+
+
+def upload_file(request, blacklisted_fields=DOCUMENT_BLACKLISTED_FIELDS, whitelisted_fields=DOCUMENT_WHITELISTED_FIELDS):
+    first_document = request.validated['documents'][-1] if 'documents' in request.validated and request.validated['documents'] else None
+    if 'data' in request.validated and request.validated['data']:
+        document = request.validated['document']
+        check_document(request, document, 'body')
+
+        if first_document:
+            for attr_name in type(first_document)._fields:
+                if attr_name in whitelisted_fields:
+                    setattr(document, attr_name, getattr(first_document, attr_name))
+                elif attr_name not in blacklisted_fields and attr_name not in request.validated['json_data']:
+                    setattr(document, attr_name, getattr(first_document, attr_name))
+
+        document_route = request.matched_route.name.replace("collection_", "")
+        document = update_document_url(request, document, document_route, {})
+        return document
     if request.content_type == 'multipart/form-data':
         data = request.validated['file']
         filename = get_filename(data)
@@ -99,58 +134,84 @@ def upload_file(request, blacklisted_fields=DOCUMENT_BLACKLISTED_FIELDS):
         for attr_name in type(first_document)._fields:
             if attr_name not in blacklisted_fields:
                 setattr(document, attr_name, getattr(first_document, attr_name))
-    key = generate_id()
-    document_route = request.matched_route.name.replace("collection_", "")
-    document_path = request.current_route_path(_route_name=document_route, document_id=document.id, _query={'download': key})
-    document.url = '/' + '/'.join(document_path.split('/')[3:])
-    conn = getattr(request.registry, 's3_connection', None)
-    if conn:
-        bucket = conn.get_bucket(request.registry.bucket_name)
-        filename = "{}/{}/{}".format(request.validated['tender_id'], document.id, key)
-        key = bucket.new_key(filename)
-        key.set_metadata('Content-Type', document.format)
-        key.set_metadata("Content-Disposition", build_header(document.title, filename_compat=quote(document.title.encode('utf-8'))))
-        key.set_contents_from_file(in_file)
-        key.set_acl('private')
+    if request.registry.docservice_url:
+        parsed_url = urlparse(request.registry.docservice_url)
+        url = request.registry.docservice_upload_url or urlunsplit((parsed_url.scheme, parsed_url.netloc, '/upload', '', ''))
+        files = {'file': (filename, in_file, content_type)}
+        doc_url = None
+        index = 10
+        while index:
+            try:
+                r = SESSION.post(url,
+                                files=files,
+                                headers={'X-Client-Request-ID': request.environ.get('REQUEST_ID', '')},
+                                auth=(request.registry.docservice_username, request.registry.docservice_password)
+                                )
+                json_data = r.json()
+            except Exception, e:
+                LOGGER.warning("Raised exception '{}' on uploading document to document service': {}.".format(type(e), e),
+                               extra=context_unpack(request, {'MESSAGE_ID': 'document_service_exception'}, {'file_size': in_file.tell()}))
+            else:
+                if r.status_code == 200 and json_data.get('data', {}).get('url'):
+                    doc_url = json_data['data']['url']
+                    doc_hash = json_data['data']['hash']
+                    break
+                else:
+                    LOGGER.warning("Error {} on uploading document to document service '{}': {}".format(r.status_code, url, r.text),
+                                   extra=context_unpack(request, {'MESSAGE_ID': 'document_service_error'}, {'ERROR_STATUS': r.status_code, 'file_size': in_file.tell()}))
+            in_file.seek(0)
+            index -= 1
+        else:
+            request.errors.add('body', 'data', "Can't upload document to document service.")
+            request.errors.status = 422
+            raise error_handler(request.errors)
+        document.hash = doc_hash
+        key = urlparse(doc_url).path.split('/')[-1]
     else:
+        key = generate_id()
         filename = "{}_{}".format(document.id, key)
-        request.validated['tender']['_attachments'][filename] = {
+        request.validated['db_doc']['_attachments'][filename] = {
             "content_type": document.format,
             "data": b64encode(in_file.read())
         }
+    document_route = request.matched_route.name.replace("collection_", "")
+    document_path = request.current_route_path(_route_name=document_route, document_id=document.id, _query={'download': key})
+    document.url = '/' + '/'.join(document_path.split('/')[3:])
     update_logging_context(request, {'file_size': in_file.tell()})
     return document
 
 
 def update_file_content_type(request):
-    conn = getattr(request.registry, 's3_connection', None)
-    if conn:
-        document = request.validated['document']
-        key = parse_qs(urlparse(document.url).query).get('download').pop()
-        bucket = conn.get_bucket(request.registry.bucket_name)
-        filename = "{}/{}/{}".format(request.validated['tender_id'], document.id, key)
-        key = bucket.get_key(filename)
-        if key.content_type != document.format:
-            key.set_remote_metadata({'Content-Type': document.format}, {}, True)
+    pass
 
 
 def get_file(request):
-    tender_id = request.validated['tender_id']
+    db_doc_id = request.validated['db_doc'].id
     document = request.validated['document']
     key = request.params.get('download')
-    conn = getattr(request.registry, 's3_connection', None)
+    if not any([key in i.url for i in request.validated['documents']]):
+        request.errors.add('url', 'download', 'Not Found')
+        request.errors.status = 404
+        return
     filename = "{}_{}".format(document.id, key)
-    if conn and filename not in request.validated['tender']['_attachments']:
-        filename = "{}/{}/{}".format(tender_id, document.id, key)
-        url = conn.generate_url(method='GET', bucket=request.registry.bucket_name, key=filename, expires_in=300)
+    if request.registry.docservice_url and filename not in request.validated['db_doc']['_attachments']:
+        document = [i for i in request.validated['documents'] if key in i.url][-1]
+        if 'Signature=' in document.url and 'KeyID' in document.url:
+            url = document.url
+        else:
+            if 'download=' not in document.url:
+                key = urlparse(document.url).path.replace('/get/', '')
+            if not document.hash:
+                url = generate_docservice_url(request, key, prefix='{}/{}'.format(db_doc_id, document.id))
+            else:
+                url = generate_docservice_url(request, key)
         request.response.content_type = document.format.encode('utf-8')
         request.response.content_disposition = build_header(document.title, filename_compat=quote(document.title.encode('utf-8')))
         request.response.status = '302 Moved Temporarily'
         request.response.location = url
         return url
     else:
-        filename = "{}_{}".format(document.id, key)
-        data = request.registry.db.get_attachment(tender_id, filename)
+        data = request.registry.db.get_attachment(db_doc_id, filename)
         if data:
             request.response.content_type = document.format.encode('utf-8')
             request.response.content_disposition = build_header(document.title, filename_compat=quote(document.title.encode('utf-8')))
@@ -202,7 +263,8 @@ def get_revision_changes(dst, src):
 
 
 def set_ownership(item, request):
-    item.owner = request.authenticated_userid
+    if not item.get('owner'):
+        item.owner = request.authenticated_userid
     item.owner_token = generate_id()
 
 
@@ -308,17 +370,93 @@ def check_bids(request):
         if tender.numberOfBids == 1:
             #tender.status = 'active.qualification'
             add_next_award(request)
+    check_ignored_claim(tender)
+
+
+def check_document(request, document, document_container):
+    url = document.url
+    parsed_url = urlparse(url)
+    parsed_query = dict(parse_qsl(parsed_url.query))
+    if not url.startswith(request.registry.docservice_url) or \
+            len(parsed_url.path.split('/')) != 3 or \
+            set(['Signature', 'KeyID']) != set(parsed_query):
+        request.errors.add(document_container, 'url', "Can add document only from document service.")
+        request.errors.status = 403
+        raise error_handler(request.errors)
+    if not document.hash:
+        request.errors.add(document_container, 'hash', "This field is required.")
+        request.errors.status = 422
+        raise error_handler(request.errors)
+    keyid = parsed_query['KeyID']
+    if keyid not in request.registry.keyring:
+        request.errors.add(document_container, 'url', "Document url expired.")
+        request.errors.status = 422
+        raise error_handler(request.errors)
+    dockey = request.registry.keyring[keyid]
+    signature = parsed_query['Signature']
+    key = urlparse(url).path.split('/')[-1]
+    try:
+        signature = b64decode(unquote(signature))
+    except TypeError:
+        request.errors.add(document_container, 'url', "Document url signature invalid.")
+        request.errors.status = 422
+        raise error_handler(request.errors)
+    mess = "{}\0{}".format(key, document.hash.split(':', 1)[-1])
+    try:
+        if mess != dockey.verify(signature + mess.encode("utf-8")):
+            raise ValueError
+    except ValueError:
+        request.errors.add(document_container, 'url', "Document url invalid.")
+        request.errors.status = 422
+        raise error_handler(request.errors)
+
+
+def update_document_url(request, document, document_route, route_kwargs):
+    key = urlparse(document.url).path.split('/')[-1]
+    route_kwargs.update({'_route_name': document_route,
+                         'document_id': document.id,
+                         '_query': {'download': key}})
+    document_path = request.current_route_path(**route_kwargs)
+    document.url = '/' + '/'.join(document_path.split('/')[3:])
+    return document
+
+
+def check_document_batch(request, document, document_container, route_kwargs):
+    check_document(request, document, document_container)
+
+    document_route = request.matched_route.name.replace("collection_", "")
+    # Following piece of code was written by leits, so no one knows how it works
+    # and why =)
+    # To redefine document_route to get appropriate real document route when bid
+    # is created with documents? I hope so :)
+    if "Documents" not in document_route:
+        specified_document_route_end = (document_container.lower().rsplit('documents')[0] + ' documents').lstrip().title()
+        document_route = ' '.join([document_route[:-1], specified_document_route_end])
+
+    return update_document_url(request, document, document_route, route_kwargs)
 
 
 def check_complaint_status(request, complaint, now=None):
     if not now:
         now = get_now()
-    if complaint.status == 'claim' and calculate_business_date(complaint.dateSubmitted, COMPLAINT_STAND_STILL_TIME, request.tender) < now:
-        complaint.status = 'pending'
-        complaint.type = 'complaint'
-        complaint.dateEscalated = now
-    elif complaint.status == 'answered' and calculate_business_date(complaint.dateAnswered, COMPLAINT_STAND_STILL_TIME, request.tender) < now:
+    if complaint.status == 'answered' and calculate_business_date(complaint.dateAnswered, COMPLAINT_STAND_STILL_TIME, request.tender) < now:
         complaint.status = complaint.resolutionType
+    elif complaint.status == 'pending' and complaint.resolutionType and complaint.dateEscalated:
+        complaint.status = complaint.resolutionType
+    elif complaint.status == 'pending':
+        complaint.status = 'ignored'
+
+
+def check_ignored_claim(tender):
+    complete_lot_ids = [None] if tender.status in ['complete', 'cancelled', 'unsuccessful'] else []
+    complete_lot_ids.extend([i.id for i in tender.lots if i.status in ['complete', 'cancelled', 'unsuccessful']])
+    for complaint in tender.complaints:
+        if complaint.status == 'claim' and complaint.relatedLot in complete_lot_ids:
+            complaint.status = 'ignored'
+    for award in tender.awards:
+        for complaint in award.complaints:
+            if complaint.status == 'claim' and complaint.relatedLot in complete_lot_ids:
+                complaint.status = 'ignored'
 
 
 def check_status(request):
@@ -327,6 +465,15 @@ def check_status(request):
     for complaint in tender.complaints:
         check_complaint_status(request, complaint, now)
     for award in tender.awards:
+        if award.status == 'active' and not any([i.awardID == award.id for i in tender.contracts]):
+            tender.contracts.append(type(tender).contracts.model_class({
+                'awardID': award.id,
+                'suppliers': award.suppliers,
+                'value': award.value,
+                'date': now,
+                'items': [i for i in tender.items if i.relatedLot == award.lotID ],
+                'contractID': '{}-{}{}'.format(tender.tenderID, request.registry.server_id, len(tender.contracts) + 1) }))
+            add_next_award(request)
         for complaint in award.complaints:
             check_complaint_status(request, complaint, now)
     if tender.status == 'active.enquiries' and not tender.tenderPeriod.startDate and tender.enquiryPeriod.endDate.astimezone(TZ) <= now:
@@ -461,6 +608,8 @@ def check_tender_status(request):
             tender.status = 'unsuccessful'
         if tender.contracts and tender.contracts[-1].status == 'active':
             tender.status = 'complete'
+    if tender.procurementMethodType == "belowThreshold":
+        check_ignored_claim(tender)
 
 
 def add_next_award(request):
@@ -793,7 +942,6 @@ def calculate_business_date(date_obj, timedelta_obj, context=None, working_days=
         if re_obj and 'accelerator' in re_obj.groupdict():
             return date_obj + (timedelta_obj / int(re_obj.groupdict()['accelerator']))
     if working_days:
-        date = date_obj
         if timedelta_obj > timedelta():
             if date_obj.weekday() in [5, 6] and WORKING_DAYS.get(date_obj.date().isoformat(), True) or WORKING_DAYS.get(date_obj.date().isoformat(), False):
                 date_obj = datetime.combine(date_obj.date(), time(0, tzinfo=date_obj.tzinfo)) + timedelta(1)

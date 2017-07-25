@@ -1,4 +1,4 @@
-PATCH /api/2.3/tenders/a4f89b85bdc041f080c73ca5b06ee953?acc_token=be391cdea4bf4d04b9794dc15d5f4b41 HTTP/1.0
+PATCH /api/2.3/tenders/abd7bd35532d4b2999f85bc87c80d23f?acc_token=c1066473eb5840bcb84b5256710c9dfd HTTP/1.0
 Authorization: Basic YnJva2VyOg==
 Content-Length: 57
 Content-Type: application/json
@@ -21,10 +21,10 @@ Content-Type: application/json; charset=UTF-8
   "data": {
     "procurementMethod": "open", 
     "status": "active.enquiries", 
-    "tenderID": "UA-2016-06-10-000001", 
+    "awardCriteria": "lowestCost", 
     "tenderPeriod": {
-      "startDate": "2016-06-17T15:29:31.511759+03:00", 
-      "endDate": "2016-06-25T15:29:59.225162+03:00"
+      "startDate": "2017-07-01T18:00:25.084270+03:00", 
+      "endDate": "2017-07-09T18:00:47.197932+03:00"
     }, 
     "title": "футляри до державних нагород", 
     "minimalStep": {
@@ -36,7 +36,7 @@ Content-Type: application/json; charset=UTF-8
       {
         "description": "футляри до державних нагород", 
         "classification": {
-          "scheme": "CPV", 
+          "scheme": "ДК021", 
           "description": "Cartons", 
           "id": "44617100-9"
         }, 
@@ -55,10 +55,10 @@ Content-Type: application/json; charset=UTF-8
           "locality": "м. Київ"
         }, 
         "deliveryDate": {
-          "startDate": "2016-06-12T15:29:31.511759+03:00", 
-          "endDate": "2016-06-15T15:29:31.511759+03:00"
+          "startDate": "2017-06-26T18:00:25.084270+03:00", 
+          "endDate": "2017-06-29T18:00:25.084270+03:00"
         }, 
-        "id": "bc8a07adf2df4c98aa22e8d598eb06d3", 
+        "id": "06ec4c9a52ba49db9e15671c062249ad", 
         "unit": {
           "code": "44617100-9", 
           "name": "item"
@@ -73,7 +73,8 @@ Content-Type: application/json; charset=UTF-8
       "valueAddedTaxIncluded": true
     }, 
     "submissionMethod": "electronicAuction", 
-    "next_check": "2016-06-17T15:29:31.511759+03:00", 
+    "date": "2017-06-24T18:00:36.849359+03:00", 
+    "next_check": "2017-07-01T18:00:25.084270+03:00", 
     "procuringEntity": {
       "contactPoint": {
         "name": "Державне управління справами", 
@@ -95,17 +96,17 @@ Content-Type: application/json; charset=UTF-8
       }
     }, 
     "enquiryPeriod": {
-      "startDate": "2016-06-10T15:29:48.639408+03:00", 
-      "endDate": "2016-06-17T15:29:31.511759+03:00"
+      "startDate": "2017-06-24T18:00:36.849280+03:00", 
+      "endDate": "2017-07-01T18:00:25.084270+03:00"
     }, 
     "owner": "broker", 
-    "dateModified": "2016-06-10T15:29:49.464237+03:00", 
+    "dateModified": "2017-06-24T18:00:37.444717+03:00", 
     "guarantee": {
       "currency": "USD", 
       "amount": 8.0
     }, 
-    "id": "a4f89b85bdc041f080c73ca5b06ee953", 
-    "awardCriteria": "lowestCost"
+    "id": "abd7bd35532d4b2999f85bc87c80d23f", 
+    "tenderID": "UA-2017-06-24-000001"
   }
 }
 

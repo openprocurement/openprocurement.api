@@ -15,72 +15,56 @@ msgstr ""
 "=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
 "X-Generator: Lokalize 1.5\n"
 
-#: ../../source/standard/procuringentity.rst:9
 msgid "ProcuringEntity"
 msgstr "ProcuringEntity"
 
-#: ../../source/standard/procuringentity.rst:12
 msgid "Schema"
 msgstr "Схема"
 
-#: ../../source/standard/procuringentity.rst:15
 msgid "string, multilingual"
 msgstr "рядок, багатомовний"
 
-#: ../../source/standard/procuringentity.rst:17
 msgid "|ocdsDescription| The common name of the organization."
 msgstr "|ocdsDescription| Назва організації."
 
-#: ../../source/standard/procuringentity.rst:21
 msgid ":ref:`Identifier`"
 msgstr ":ref:`Identifier`"
 
-#: ../../source/standard/procuringentity.rst:23
 msgid "|ocdsDescription| The primary identifier for this organization."
 msgstr "|ocdsDescription| Ідентифікатор цієї організації."
 
-#: ../../source/standard/procuringentity.rst:27
 msgid "List of :ref:`identifier` objects"
 msgstr "Список об’єктів :ref:`identifier`"
 
-#: ../../source/standard/procuringentity.rst:30
 msgid ":ref:`Address`, required"
 msgstr ":ref:`Address`, обов’язково"
 
-#: ../../source/standard/procuringentity.rst:33
 msgid ":ref:`ContactPoint`, required"
 msgstr ":ref:`ContactPoint`, обов’язково"
 
-#: ../../source/standard/procuringentity.rst:36
 msgid "string"
 msgstr "рядок"
 
-#: ../../source/standard/procuringentity.rst:38
 msgid "Type of procuring entity"
 msgstr "Тип замовника"
 
-#: ../../source/standard/procuringentity.rst:44
 msgid "Possible values:"
 msgstr "Можливі значення:"
 
-#: ../../source/standard/procuringentity.rst:41
 msgid "``general`` - Procuring entity (general)"
 msgstr "``general`` - Замовник (загальний)"
 
-#: ../../source/standard/procuringentity.rst:42
 msgid ""
 "``special`` - Procuring entity that operates in certain spheres of economic "
 "activity"
 msgstr ""
 "``special`` - Замовник, що здійснює діяльність в окремих сферах господарювання"
 
-#: ../../source/standard/procuringentity.rst:43
 msgid ""
 "``defense`` - Procuring entity that conducts procurement for the defense "
 "needs"
 msgstr "``defense`` - Замовник, що здійснює закупівлі для потреб оборони"
 
-#: ../../source/standard/procuringentity.rst:44
 msgid ""
 "``other`` -  Legal persons that are not procuring entities in the sense of "
 "the Law, but are state, utility, public enterprises, economic partnerships "

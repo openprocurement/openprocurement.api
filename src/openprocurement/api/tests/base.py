@@ -5,9 +5,12 @@ import os
 from copy import deepcopy
 from datetime import datetime, timedelta
 from uuid import uuid4
+from requests.models import Response
+from base64 import b64encode
+from urllib import urlencode
 
 from openprocurement.api.models import SANDBOX_MODE
-from openprocurement.api.utils import VERSION, apply_data_patch
+from openprocurement.api.utils import VERSION, SESSION, apply_data_patch
 from openprocurement.api.design import sync_design
 
 
@@ -48,7 +51,7 @@ test_tender_data = {
         {
             "description": u"футляри до державних нагород",
             "classification": {
-                "scheme": u"CPV",
+                "scheme": u"ДК021",
                 "id": u"44617100-9",
                 "description": u"Cartons"
             },
@@ -216,13 +219,15 @@ class BaseWebTest(unittest.TestCase):
 
     @classmethod
     def setUpClass(cls):
-        while True:
+        for _ in range(10):
             try:
                 cls.app = webtest.TestApp("config:tests.ini", relative_to=cls.relative_to)
             except:
                 pass
             else:
                 break
+        else:
+            cls.app = webtest.TestApp("config:tests.ini", relative_to=cls.relative_to)
         cls.app.RequestClass = PrefixedRequestClass
         cls.couchdb_server = cls.app.app.registry.couchdb_server
         cls.db = cls.app.app.registry.db
@@ -255,6 +260,7 @@ class BaseTenderWebTest(BaseWebTest):
     initial_status = None
     initial_bids = None
     initial_lots = None
+    docservice = False
 
     def set_status(self, status, extra=None):
         data = {'status': status}
@@ -416,6 +422,45 @@ class BaseTenderWebTest(BaseWebTest):
     def setUp(self):
         super(BaseTenderWebTest, self).setUp()
         self.create_tender()
+        if self.docservice:
+            self.setUpDS()
+
+    def setUpDS(self):
+        self.app.app.registry.docservice_url = 'http://localhost'
+        test = self
+        def request(method, url, **kwargs):
+            response = Response()
+            if method == 'POST' and '/upload' in url:
+                url = test.generate_docservice_url()
+                response.status_code = 200
+                response.encoding = 'application/json'
+                response._content = '{{"data":{{"url":"{url}","hash":"md5:{md5}","format":"application/msword","title":"name.doc"}},"get_url":"{url}"}}'.format(url=url, md5='0'*32)
+                response.reason = '200 OK'
+            return response
+
+        self._srequest = SESSION.request
+        SESSION.request = request
+
+    def setUpBadDS(self):
+        self.app.app.registry.docservice_url = 'http://localhost'
+        def request(method, url, **kwargs):
+            response = Response()
+            response.status_code = 403
+            response.encoding = 'application/json'
+            response._content = '"Unauthorized: upload_view failed permission check"'
+            response.reason = '403 Forbidden'
+            return response
+
+        self._srequest = SESSION.request
+        SESSION.request = request
+
+    def generate_docservice_url(self):
+        uuid = uuid4().hex
+        key = self.app.app.registry.docservice_key
+        keyid = key.hex_vk()[:8]
+        signature = b64encode(key.signature("{}\0{}".format(uuid, '0' * 32)))
+        query = {'Signature': signature, 'KeyID': keyid}
+        return "http://localhost/get/{}?{}".format(uuid, urlencode(query))
 
     def create_tender(self):
         data = deepcopy(self.initial_data)
@@ -457,5 +502,11 @@ class BaseTenderWebTest(BaseWebTest):
         if self.initial_status != status:
             self.set_status(self.initial_status)
 
+    def tearDownDS(self):
+        SESSION.request = self._srequest
+
     def tearDown(self):
+        if self.docservice:
+            self.tearDownDS()
+        del self.db[self.tender_id]
         super(BaseTenderWebTest, self).tearDown()

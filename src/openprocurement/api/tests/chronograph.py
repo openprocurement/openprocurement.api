@@ -7,18 +7,6 @@ from openprocurement.api.tests.base import BaseTenderWebTest, test_lots, test_bi
 
 class TenderSwitchTenderingResourceTest(BaseTenderWebTest):
 
-    def test_switch_to_tendering_by_enquiryPeriod_endDate(self):
-        self.app.authorization = ('Basic', ('chronograph', ''))
-        response = self.app.patch_json('/tenders/{}'.format(self.tender_id), {'data': {'id': self.tender_id}})
-        self.assertEqual(response.status, '200 OK')
-        date_1 = response.json['data']['date']
-        self.assertNotEqual(response.json['data']["status"], "active.tendering")
-        self.set_status('active.tendering', {'status': 'active.enquiries', "tenderPeriod": {"startDate": None}})
-        response = self.app.patch_json('/tenders/{}'.format(self.tender_id), {'data': {'id': self.tender_id}})
-        self.assertEqual(response.status, '200 OK')
-        self.assertEqual(response.json['data']["status"], "active.tendering")
-        self.assertNotEqual(date_1, response.json['data']['date'])
-
     def test_switch_to_tendering_by_tenderPeriod_startDate(self):
         self.set_status('active.tendering', {'status': 'active.enquiries', "tenderPeriod": {}})
         self.app.authorization = ('Basic', ('chronograph', ''))
@@ -29,14 +17,6 @@ class TenderSwitchTenderingResourceTest(BaseTenderWebTest):
         response = self.app.patch_json('/tenders/{}'.format(self.tender_id), {'data': {'id': self.tender_id}})
         self.assertEqual(response.status, '200 OK')
         self.assertEqual(response.json['data']["status"], "active.tendering")
-
-    def test_switch_to_tendering_auctionPeriod(self):
-        self.set_status('active.tendering', {'status': 'active.enquiries', "tenderPeriod": {"startDate": None}})
-        self.app.authorization = ('Basic', ('chronograph', ''))
-        response = self.app.patch_json('/tenders/{}'.format(self.tender_id), {'data': {'id': self.tender_id}})
-        self.assertEqual(response.status, '200 OK')
-        self.assertEqual(response.json['data']["status"], "active.tendering")
-        self.assertIn('auctionPeriod', response.json['data'])
 
 
 class TenderSwitchQualificationResourceTest(BaseTenderWebTest):
@@ -249,7 +229,26 @@ class TenderLotAuctionPeriodResourceTest(TenderAuctionPeriodResourceTest):
 
 class TenderComplaintSwitchResourceTest(BaseTenderWebTest):
 
-    def test_switch_to_pending(self):
+    def test_switch_to_ignored_on_complete(self):
+        response = self.app.post_json('/tenders/{}/complaints'.format(self.tender_id), {'data': {
+            'title': 'complaint title',
+            'description': 'complaint description',
+            'author': test_organization,
+            'status': 'claim'
+        }})
+        self.assertEqual(response.status, '201 Created')
+        self.assertEqual(response.json['data']['status'], 'claim')
+
+        self.set_status('active.auction', {'status': self.initial_status})
+        self.app.authorization = ('Basic', ('chronograph', ''))
+        response = self.app.patch_json('/tenders/{}'.format(self.tender_id), {'data': {'id': self.tender_id}})
+        self.assertEqual(response.status, '200 OK')
+        response = self.app.patch_json('/tenders/{}'.format(self.tender_id), {'data': {'id': self.tender_id}})
+        self.assertEqual(response.status, '200 OK')
+        self.assertEqual(response.json['data']["status"], "unsuccessful")
+        self.assertEqual(response.json['data']["complaints"][0]['status'], 'ignored')
+
+    def test_switch_from_pending_to_ignored(self):
         response = self.app.post_json('/tenders/{}/complaints'.format(self.tender_id), {'data': {
             'title': 'complaint title',
             'description': 'complaint description',
@@ -260,13 +259,37 @@ class TenderComplaintSwitchResourceTest(BaseTenderWebTest):
         self.assertEqual(response.json['data']['status'], 'claim')
 
         tender = self.db.get(self.tender_id)
-        tender['complaints'][0]['dateSubmitted'] = (get_now() - timedelta(days=1 if 'procurementMethodDetails' in tender else 4)).isoformat()
+        tender['complaints'][0]['status'] = "pending"
         self.db.save(tender)
 
         self.app.authorization = ('Basic', ('chronograph', ''))
         response = self.app.patch_json('/tenders/{}'.format(self.tender_id), {'data': {'id': self.tender_id}})
         self.assertEqual(response.status, '200 OK')
-        self.assertEqual(response.json['data']["complaints"][0]['status'], 'pending')
+        self.assertEqual(response.json['data']["complaints"][0]['status'], 'ignored')
+
+    def test_switch_from_pending(self):
+        for status in ['invalid', 'resolved', 'declined']:
+            response = self.app.post_json('/tenders/{}/complaints'.format(self.tender_id), {'data': {
+                'title': 'complaint title',
+                'description': 'complaint description',
+                'author': test_organization,
+                'status': 'claim'
+            }})
+            self.assertEqual(response.status, '201 Created')
+            self.assertEqual(response.json['data']['status'], 'claim')
+
+        tender = self.db.get(self.tender_id)
+        for index, status in enumerate(['invalid', 'resolved', 'declined']):
+            tender['complaints'][index]['status'] = "pending"
+            tender['complaints'][index]['resolutionType'] = status
+            tender['complaints'][index]['dateEscalated'] = "2017-06-01"
+        self.db.save(tender)
+
+        self.app.authorization = ('Basic', ('chronograph', ''))
+        response = self.app.patch_json('/tenders/{}'.format(self.tender_id), {'data': {'id': self.tender_id}})
+        self.assertEqual(response.status, '200 OK')
+        for index, status in enumerate(['invalid', 'resolved', 'declined']):
+            self.assertEqual(response.json['data']["complaints"][index]['status'], status)
 
     def test_switch_to_complaint(self):
         for status in ['invalid', 'resolved', 'declined']:
@@ -317,7 +340,7 @@ class TenderAwardComplaintSwitchResourceTest(BaseTenderWebTest):
         award = response.json['data']
         self.award_id = award['id']
 
-    def test_switch_to_pending(self):
+    def test_switch_to_ignored_on_complete(self):
         response = self.app.post_json('/tenders/{}/awards/{}/complaints'.format(self.tender_id, self.award_id), {'data': {
             'title': 'complaint title',
             'description': 'complaint description',
@@ -332,14 +355,65 @@ class TenderAwardComplaintSwitchResourceTest(BaseTenderWebTest):
         self.assertEqual(response.content_type, 'application/json')
         self.assertEqual(response.json['data']["status"], "active")
 
+        response = self.app.get('/tenders/{}'.format(self.tender_id))
+        contract_id = response.json['data']['contracts'][-1]['id']
+
         tender = self.db.get(self.tender_id)
-        tender['awards'][0]['complaints'][0]['dateSubmitted'] = (get_now() - timedelta(days=1 if 'procurementMethodDetails' in tender else 4)).isoformat()
+        for i in tender.get('awards', []):
+            i['complaintPeriod']['endDate'] = i['complaintPeriod']['startDate']
+        self.db.save(tender)
+
+        response = self.app.patch_json('/tenders/{}/contracts/{}'.format(self.tender_id, contract_id), {"data": {"status": "active"}})
+        self.assertEqual(response.status, '200 OK')
+        self.assertEqual(response.content_type, 'application/json')
+        self.assertEqual(response.json['data']["status"], "active")
+
+        response = self.app.get('/tenders/{}'.format(self.tender_id))
+        self.assertEqual(response.status, '200 OK')
+        self.assertEqual(response.json['data']['awards'][0]["complaints"][0]['status'], 'ignored')
+
+    def test_switch_from_pending_to_ignored(self):
+        response = self.app.post_json('/tenders/{}/awards/{}/complaints'.format(self.tender_id, self.award_id), {'data': {
+            'title': 'complaint title',
+            'description': 'complaint description',
+            'author': test_organization,
+            'status': 'claim'
+        }})
+        self.assertEqual(response.status, '201 Created')
+        self.assertEqual(response.json['data']['status'], 'claim')
+
+        tender = self.db.get(self.tender_id)
+        tender['awards'][0]['complaints'][0]['status'] = "pending"
         self.db.save(tender)
 
         self.app.authorization = ('Basic', ('chronograph', ''))
         response = self.app.patch_json('/tenders/{}'.format(self.tender_id), {'data': {'id': self.tender_id}})
         self.assertEqual(response.status, '200 OK')
-        self.assertEqual(response.json['data']['awards'][0]["complaints"][0]['status'], 'pending')
+        self.assertEqual(response.json['data']['awards'][0]["complaints"][0]['status'], 'ignored')
+
+    def test_switch_from_pending(self):
+        for status in ['invalid', 'resolved', 'declined']:
+            response = self.app.post_json('/tenders/{}/awards/{}/complaints'.format(self.tender_id, self.award_id), {'data': {
+                'title': 'complaint title',
+                'description': 'complaint description',
+                'author': test_organization,
+                'status': 'claim'
+            }})
+            self.assertEqual(response.status, '201 Created')
+            self.assertEqual(response.json['data']['status'], 'claim')
+
+        tender = self.db.get(self.tender_id)
+        for index, status in enumerate(['invalid', 'resolved', 'declined']):
+            tender['awards'][0]['complaints'][index]['status'] = "pending"
+            tender['awards'][0]['complaints'][index]['resolutionType'] = status
+            tender['awards'][0]['complaints'][index]['dateEscalated'] = "2017-06-01"
+        self.db.save(tender)
+
+        self.app.authorization = ('Basic', ('chronograph', ''))
+        response = self.app.patch_json('/tenders/{}'.format(self.tender_id), {'data': {'id': self.tender_id}})
+        self.assertEqual(response.status, '200 OK')
+        for index, status in enumerate(['invalid', 'resolved', 'declined']):
+            self.assertEqual(response.json['data']['awards'][0]["complaints"][index]['status'], status)
 
     def test_switch_to_complaint(self):
         response = self.app.patch_json('/tenders/{}/awards/{}'.format(self.tender_id, self.award_id), {"data": {"status": "active"}})

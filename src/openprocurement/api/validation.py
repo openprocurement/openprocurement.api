@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from openprocurement.api.models import get_now
 from schematics.exceptions import ModelValidationError, ModelConversionError
-from openprocurement.api.utils import apply_data_patch, update_logging_context
+from openprocurement.api.utils import apply_data_patch, update_logging_context, check_document_batch
 
 
 def validate_json_data(request):
@@ -15,6 +15,7 @@ def validate_json_data(request):
         request.errors.add('body', 'data', "Data not available")
         request.errors.status = 422
         return
+    request.validated['json_data'] = json['data']
     return json['data']
 
 
@@ -72,7 +73,9 @@ def validate_tender_data(request):
         return
 
     model = request.tender_from_data(data, create=False)
-    if not request.check_accreditation(model.create_accreditation):
+    #if not request.check_accreditation(model.create_accreditation):
+    #if not any([request.check_accreditation(acc) for acc in getattr(model, 'create_accreditations', [getattr(model, 'create_accreditation', '')])]):
+    if not any([request.check_accreditation(acc) for acc in iter(str(model.create_accreditation))]):
         request.errors.add('procurementMethodType', 'accreditation', 'Broker Accreditation level does not permit tender creation')
         request.errors.status = 403
         return
@@ -183,7 +186,16 @@ def validate_bid_data(request):
         return
     update_logging_context(request, {'bid_id': '__new__'})
     model = type(request.tender).bids.model_class
-    return validate_data(request, model)
+    bid = validate_data(request, model)
+    validated_bid = request.validated.get('bid')
+    if validated_bid:
+        if any([key == 'documents' or 'Documents' in key for key in validated_bid.keys()]):
+            bid_documents = validate_bid_documents(request)
+            if not bid_documents:
+                return
+            for documents_type, documents in bid_documents.items():
+                validated_bid[documents_type] = documents
+    return bid
 
 
 def validate_patch_bid_data(request):
@@ -278,8 +290,16 @@ def validate_patch_lot_data(request):
     return validate_data(request, model, True)
 
 
+def validate_document_data(request):
+    context = request.context if 'documents' in request.context else request.context.__parent__
+    model = type(context).documents.model_class
+    return validate_data(request, model)
+
+
 def validate_file_upload(request):
     update_logging_context(request, {'document_id': '__new__'})
+    if request.registry.docservice_url and request.content_type == "application/json":
+        return validate_document_data(request)
     if 'file' not in request.POST or not hasattr(request.POST['file'], 'filename'):
         request.errors.add('body', 'file', 'Not Found')
         request.errors.status = 404
@@ -288,5 +308,22 @@ def validate_file_upload(request):
 
 
 def validate_file_update(request):
+    if request.registry.docservice_url and request.content_type == "application/json":
+        return validate_document_data(request)
     if request.content_type == 'multipart/form-data':
         validate_file_upload(request)
+
+
+def validate_bid_documents(request):
+    bid_documents = [key for key in request.validated['bid'].keys() if key == 'documents' or 'Documents' in key]
+    documents = {}
+    for doc_type in bid_documents:
+        documents[doc_type] = []
+        for document in request.validated['bid'][doc_type]:
+            model = getattr(type(request.validated['bid']), doc_type).model_class
+            document = model(document)
+            document.validate()
+            route_kwargs = {'bid_id': request.validated['bid'].id}
+            document = check_document_batch(request, document, doc_type, route_kwargs)
+            documents[doc_type].append(document)
+    return documents

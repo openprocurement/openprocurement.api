@@ -1,4 +1,4 @@
-GET /api/2.3/tenders/a4f89b85bdc041f080c73ca5b06ee953/contracts/80d26391f3474fe9bf390201639cca05/documents HTTP/1.0
+GET /api/2.3/tenders/abd7bd35532d4b2999f85bc87c80d23f/contracts/05cf268e73504064b5bdc579155e545c/documents HTTP/1.0
 Authorization: Basic YnJva2VyOg==
 Host: api-sandbox.openprocurement.org
 
@@ -9,22 +9,24 @@ Content-Type: application/json; charset=UTF-8
 {
   "data": [
     {
+      "hash": "md5:00000000000000000000000000000000", 
       "title": "contract_first_document.doc", 
-      "url": "http://api-sandbox.openprocurement.org/api/2.3/tenders/a4f89b85bdc041f080c73ca5b06ee953/contracts/80d26391f3474fe9bf390201639cca05/documents/c2718742f2c64c21a734438905ad8b21?download=699b6834ead2453db19407dc7850ba27", 
+      "url": "http://public.docs-sandbox.openprocurement.org/get/cf0f59a477c841429c7ddacca9b066ac?KeyID=4a468cd9&Signature=2jamqchk5YkqhEVF3qraaHLTVz5ufJNzZpbDPNnsQrAdtdZLeqWAyU2tOxoSlN4B2zpYVbnzwBl7shEJZNJfBw%253D%253D", 
       "format": "application/msword", 
       "documentOf": "tender", 
-      "datePublished": "2016-06-10T15:29:53.712743+03:00", 
-      "id": "c2718742f2c64c21a734438905ad8b21", 
-      "dateModified": "2016-06-10T15:29:53.712792+03:00"
+      "datePublished": "2017-06-24T18:00:40.066895+03:00", 
+      "id": "11b04b142d714868a6d68588c64200fe", 
+      "dateModified": "2017-06-24T18:00:40.066929+03:00"
     }, 
     {
+      "hash": "md5:00000000000000000000000000000000", 
       "title": "contract_second_document.doc", 
-      "url": "http://api-sandbox.openprocurement.org/api/2.3/tenders/a4f89b85bdc041f080c73ca5b06ee953/contracts/80d26391f3474fe9bf390201639cca05/documents/430bef40925b4c1e87430cc1c977ce77?download=3536436229e14926b04121cbaa433b24", 
+      "url": "http://public.docs-sandbox.openprocurement.org/get/b5728479edda4a32857cfecef833af84?KeyID=4a468cd9&Signature=qjZWnlocFka4DAqoVaPus2T30wixXPoNtXJZrrqmW25eDmy246LtCMndYDlVWLv6epPU9HBB%252Bp0YF3k8OUGAAA%253D%253D", 
       "format": "application/msword", 
       "documentOf": "tender", 
-      "datePublished": "2016-06-10T15:29:54.005192+03:00", 
-      "id": "430bef40925b4c1e87430cc1c977ce77", 
-      "dateModified": "2016-06-10T15:29:54.005235+03:00"
+      "datePublished": "2017-06-24T18:00:40.278395+03:00", 
+      "id": "52093963431b4ebcade082dc3c00eb11", 
+      "dateModified": "2017-06-24T18:00:40.278428+03:00"
     }
   ]
 }

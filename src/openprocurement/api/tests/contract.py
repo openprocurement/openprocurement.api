@@ -207,11 +207,6 @@ class TenderContractResourceTest(BaseTenderWebTest):
         response = self.app.patch_json('/tenders/{}/contracts/{}'.format(self.tender_id, contract['id']), {"data": {"dateSigned": custom_signature_date}})
         self.assertEqual(response.status, '200 OK')
 
-        response = self.app.patch_json('/tenders/{}/contracts/{}'.format(self.tender_id, contract['id']), {"data": {"status": "active"}}, status=403)
-        self.assertEqual(response.status, '403 Forbidden')
-        self.assertEqual(response.content_type, 'application/json')
-        self.assertEqual(response.json['errors'][0]["description"], "Can't sign contract before reviewing all complaints")
-
         response = self.app.patch_json('/tenders/{}/awards/{}/complaints/{}?acc_token={}'.format(self.tender_id, self.award_id, complaint['id'], self.tender_token), {"data": {
             "status": "answered",
             "resolutionType": "resolved",
@@ -222,6 +217,11 @@ class TenderContractResourceTest(BaseTenderWebTest):
         self.assertEqual(response.json['data']["status"], "answered")
         self.assertEqual(response.json['data']["resolutionType"], "resolved")
         self.assertEqual(response.json['data']["resolution"], "resolution text " * 2)
+
+        response = self.app.patch_json('/tenders/{}/contracts/{}'.format(self.tender_id, contract['id']), {"data": {"status": "active"}}, status=403)
+        self.assertEqual(response.status, '403 Forbidden')
+        self.assertEqual(response.content_type, 'application/json')
+        self.assertEqual(response.json['errors'][0]["description"], "Can't sign contract before reviewing all complaints")
 
         response = self.app.patch_json('/tenders/{}/awards/{}/complaints/{}?acc_token={}'.format(self.tender_id, self.award_id, complaint['id'], owner_token), {"data": {
             "satisfied": True,

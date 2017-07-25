@@ -1,4 +1,4 @@
-PATCH /api/2.3/tenders/1c34544d0e6144f18886b6e59fb8256d/awards/e9a940c30ca142af9cfc261a7536d8ff?acc_token=cc248e7ef9674336aa17d4528e5e5c77 HTTP/1.0
+PATCH /api/2.3/tenders/6fb28391664b4e31b9002882b4d67573/awards/04f866d1fc3f4a14b463846b048a8a4e?acc_token=71c2431dfe474d03a20bd49fe076f152 HTTP/1.0
 Authorization: Basic YnJva2VyOg==
 Content-Length: 33
 Content-Type: application/json
@@ -13,25 +13,27 @@ Host: api-sandbox.openprocurement.org
 
 200 OK
 Content-Type: application/json; charset=UTF-8
-Location: http://api-sandbox.openprocurement.org/api/2.3/tenders/1c34544d0e6144f18886b6e59fb8256d/awards/7e11c239cb9943279af0ae8ad80cbadb
+Location: http://api-sandbox.openprocurement.org/api/2.3/tenders/6fb28391664b4e31b9002882b4d67573/awards/a92f1d26365d4d5781057957f901855f
 
 {
   "data": {
     "status": "cancelled", 
     "documents": [
       {
+        "hash": "md5:00000000000000000000000000000000", 
+        "author": "tender_owner", 
         "title": "Unsuccessful_Reason.pdf", 
-        "url": "http://api-sandbox.openprocurement.org/api/2.3/tenders/1c34544d0e6144f18886b6e59fb8256d/awards/e9a940c30ca142af9cfc261a7536d8ff/documents/729fafe3e52d4712913edfe2af49c8c6?download=112d7834ba504a3dae587cc3617ea1e7", 
+        "url": "http://public.docs-sandbox.openprocurement.org/get/59f69ae678d540e2b07fedd95ebc10d4?KeyID=73cdfe25&Signature=hx2jcJKAkCGkELQuqvAoHn51aMaMJh3xXl7pCzUPXOGItHU%252B4IqEK1hr5mjDyNzjYxDHWZmeSxg23rJ%2F1FPbAg%253D%253D", 
         "format": "application/pdf", 
         "documentOf": "tender", 
-        "datePublished": "2016-06-10T15:29:39.093821+03:00", 
-        "id": "729fafe3e52d4712913edfe2af49c8c6", 
-        "dateModified": "2016-06-10T15:29:39.093871+03:00"
+        "datePublished": "2017-06-24T18:00:30.120965+03:00", 
+        "id": "387da6dbe4b942cdabb4075eb089b0d0", 
+        "dateModified": "2017-06-24T18:00:30.120998+03:00"
       }
     ], 
     "complaintPeriod": {
-      "startDate": "2016-06-10T15:29:38.776962+03:00", 
-      "endDate": "2016-06-10T15:29:47.330529+03:00"
+      "startDate": "2017-06-24T18:00:29.896879+03:00", 
+      "endDate": "2017-06-24T18:00:35.887954+03:00"
     }, 
     "suppliers": [
       {
@@ -55,26 +57,27 @@ Location: http://api-sandbox.openprocurement.org/api/2.3/tenders/1c34544d0e6144f
         }
       }
     ], 
-    "bid_id": "96ab03b899fd4df4a16873aaa48b627a", 
+    "bid_id": "78fd62edb0ef44bf8de3477f3b24cce3", 
     "value": {
       "currency": "UAH", 
       "amount": 450.0, 
       "valueAddedTaxIncluded": true
     }, 
-    "date": "2016-06-10T15:29:47.330482+03:00", 
+    "date": "2017-06-24T18:00:35.907265+03:00", 
     "complaints": [
       {
         "status": "resolved", 
         "documents": [
           {
+            "hash": "md5:00000000000000000000000000000000", 
             "author": "complaint_owner", 
             "title": "Complaint_Attachement.pdf", 
-            "url": "http://api-sandbox.openprocurement.org/api/2.3/tenders/1c34544d0e6144f18886b6e59fb8256d/awards/e9a940c30ca142af9cfc261a7536d8ff/complaints/cfa1dd69996642c1b00ed0693ef9f71c/documents/98b8b4ec77a54382a4e66ca4d72c6add?download=46648e80263a4020b54907e1ecbebcfd", 
+            "url": "http://public.docs-sandbox.openprocurement.org/get/f44c4359313d48a8b63eac4c0fe1a3f2?KeyID=73cdfe25&Signature=GRBhU1Pf5tCSwip%252BjCSup%252B%2FQdmIW01XmTwKQ1gu%2FVdoKyHJEA5tVh59sGSYFh%252BWYGtPGiDdnY8Ck2zdcjStmBw%253D%253D", 
             "format": "application/pdf", 
             "documentOf": "tender", 
-            "datePublished": "2016-06-10T15:29:41.237732+03:00", 
-            "id": "98b8b4ec77a54382a4e66ca4d72c6add", 
-            "dateModified": "2016-06-10T15:29:41.237780+03:00"
+            "datePublished": "2017-06-24T18:00:31.912104+03:00", 
+            "id": "4f10201562904065a5983dce934d27a9", 
+            "dateModified": "2017-06-24T18:00:31.912138+03:00"
           }
         ], 
         "description": "complaint description", 
@@ -103,66 +106,20 @@ Location: http://api-sandbox.openprocurement.org/api/2.3/tenders/1c34544d0e6144f
         "title": "complaint title", 
         "satisfied": true, 
         "tendererAction": "Виправлено неконкурентні умови", 
-        "dateAnswered": "2016-06-10T15:29:42.291775+03:00", 
-        "tendererActionDate": "2016-06-10T15:29:42.291818+03:00", 
-        "dateSubmitted": "2016-06-10T15:29:41.517279+03:00", 
-        "complaintID": "UA-2016-06-10-000001.5", 
-        "date": "2016-06-10T15:29:40.968080+03:00", 
+        "dateAnswered": "2017-06-24T18:00:32.868688+03:00", 
+        "tendererActionDate": "2017-06-24T18:00:32.868714+03:00", 
+        "dateSubmitted": "2017-06-24T18:00:32.171224+03:00", 
+        "complaintID": "UA-2017-06-24-000001.5", 
+        "date": "2017-06-24T18:00:33.151241+03:00", 
         "resolution": "Виправлено неконкурентні умови", 
-        "id": "cfa1dd69996642c1b00ed0693ef9f71c"
-      }, 
-      {
-        "status": "invalid", 
-        "dateDecision": "2016-06-10T15:29:43.551083+03:00", 
-        "description": "complaint description", 
-        "author": {
-          "contactPoint": {
-            "email": "soleksuk@gmail.com", 
-            "telephone": "+380 (432) 21-69-30", 
-            "name": "Сергій Олексюк"
-          }, 
-          "identifier": {
-            "scheme": "UA-EDR", 
-            "id": "00137256", 
-            "uri": "http://www.sc.gov.ua/"
-          }, 
-          "name": "ДКП «Школяр»", 
-          "address": {
-            "postalCode": "21100", 
-            "countryName": "Україна", 
-            "streetAddress": "вул. Островського, 33", 
-            "region": "м. Вінниця", 
-            "locality": "м. Вінниця"
-          }
-        }, 
-        "resolutionType": "resolved", 
-        "type": "complaint", 
-        "title": "complaint title", 
-        "satisfied": false, 
-        "dateEscalated": "2016-06-10T15:29:43.221630+03:00", 
-        "dateAnswered": "2016-06-10T15:29:42.917902+03:00", 
-        "dateSubmitted": "2016-06-10T15:29:41.806602+03:00", 
-        "complaintID": "UA-2016-06-10-000001.6", 
-        "date": "2016-06-10T15:29:41.805069+03:00", 
-        "resolution": "Виправлено неконкурентні умови", 
-        "id": "02c3ff8c9ee24ee39b562e0dfacb7278"
+        "id": "b39ab6903efc45b4b7f51190037600fb"
       }, 
       {
         "status": "resolved", 
-        "dateDecision": "2016-06-10T15:29:46.291460+03:00", 
-        "documents": [
-          {
-            "author": "reviewers", 
-            "title": "ComplaintResolution.pdf", 
-            "url": "http://api-sandbox.openprocurement.org/api/2.3/tenders/1c34544d0e6144f18886b6e59fb8256d/awards/e9a940c30ca142af9cfc261a7536d8ff/complaints/acb6eb180acf4dc9b49d0b4d2c8134e4/documents/c21aa81511e140f8bf9b603a425bf330?download=b877f92857f4416cb011aab4cb45d057", 
-            "format": "application/pdf", 
-            "documentOf": "tender", 
-            "datePublished": "2016-06-10T15:29:45.926543+03:00", 
-            "id": "c21aa81511e140f8bf9b603a425bf330", 
-            "dateModified": "2016-06-10T15:29:45.926580+03:00"
-          }
-        ], 
         "description": "complaint description", 
+        "title": "complaint title", 
+        "resolutionType": "resolved", 
+        "type": "claim", 
         "author": {
           "contactPoint": {
             "email": "soleksuk@gmail.com", 
@@ -183,22 +140,20 @@ Location: http://api-sandbox.openprocurement.org/api/2.3/tenders/1c34544d0e6144f
             "locality": "м. Вінниця"
           }
         }, 
-        "resolutionType": "resolved", 
-        "type": "complaint", 
-        "title": "complaint title", 
         "satisfied": false, 
-        "dateEscalated": "2016-06-10T15:29:44.525556+03:00", 
-        "dateAnswered": "2016-06-10T15:29:44.209365+03:00", 
-        "dateSubmitted": "2016-06-10T15:29:43.898361+03:00", 
-        "complaintID": "UA-2016-06-10-000001.7", 
-        "date": "2016-06-10T15:29:43.896812+03:00", 
+        "dateAnswered": "2017-06-24T18:00:33.438437+03:00", 
+        "dateSubmitted": "2017-06-24T18:00:32.426487+03:00", 
+        "complaintID": "UA-2017-06-24-000001.6", 
+        "date": "2017-06-24T18:00:33.726646+03:00", 
         "resolution": "Виправлено неконкурентні умови", 
-        "id": "acb6eb180acf4dc9b49d0b4d2c8134e4"
+        "id": "cacaab14b638490cbdc7e54e1dd5a899"
       }, 
       {
-        "status": "declined", 
-        "dateDecision": "2016-06-10T15:29:46.670270+03:00", 
+        "status": "resolved", 
         "description": "complaint description", 
+        "title": "complaint title", 
+        "resolutionType": "resolved", 
+        "type": "claim", 
         "author": {
           "contactPoint": {
             "email": "soleksuk@gmail.com", 
@@ -219,20 +174,50 @@ Location: http://api-sandbox.openprocurement.org/api/2.3/tenders/1c34544d0e6144f
             "locality": "м. Вінниця"
           }
         }, 
-        "resolutionType": "resolved", 
-        "type": "complaint", 
-        "title": "complaint title", 
         "satisfied": false, 
-        "dateEscalated": "2016-06-10T15:29:45.591475+03:00", 
-        "dateAnswered": "2016-06-10T15:29:45.214843+03:00", 
-        "dateSubmitted": "2016-06-10T15:29:44.862170+03:00", 
-        "complaintID": "UA-2016-06-10-000001.8", 
-        "date": "2016-06-10T15:29:44.860089+03:00", 
+        "dateAnswered": "2017-06-24T18:00:34.253154+03:00", 
+        "dateSubmitted": "2017-06-24T18:00:33.977742+03:00", 
+        "complaintID": "UA-2017-06-24-000001.7", 
+        "date": "2017-06-24T18:00:34.550656+03:00", 
         "resolution": "Виправлено неконкурентні умови", 
-        "id": "c8ce075b26a842f4a4c8678f477cb7d0"
+        "id": "749c89833e2c4cc48fddc058ec71a42a"
+      }, 
+      {
+        "status": "resolved", 
+        "description": "complaint description", 
+        "title": "complaint title", 
+        "resolutionType": "resolved", 
+        "type": "claim", 
+        "author": {
+          "contactPoint": {
+            "email": "soleksuk@gmail.com", 
+            "telephone": "+380 (432) 21-69-30", 
+            "name": "Сергій Олексюк"
+          }, 
+          "identifier": {
+            "scheme": "UA-EDR", 
+            "id": "00137256", 
+            "uri": "http://www.sc.gov.ua/"
+          }, 
+          "name": "ДКП «Школяр»", 
+          "address": {
+            "postalCode": "21100", 
+            "countryName": "Україна", 
+            "streetAddress": "вул. Островського, 33", 
+            "region": "м. Вінниця", 
+            "locality": "м. Вінниця"
+          }
+        }, 
+        "satisfied": false, 
+        "dateAnswered": "2017-06-24T18:00:35.105123+03:00", 
+        "dateSubmitted": "2017-06-24T18:00:34.811685+03:00", 
+        "complaintID": "UA-2017-06-24-000001.8", 
+        "date": "2017-06-24T18:00:35.429662+03:00", 
+        "resolution": "Виправлено неконкурентні умови", 
+        "id": "575451af214b4db0967b4d3a0a71a219"
       }
     ], 
-    "id": "e9a940c30ca142af9cfc261a7536d8ff"
+    "id": "04f866d1fc3f4a14b463846b048a8a4e"
   }
 }
 

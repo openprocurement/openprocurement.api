@@ -1,4 +1,4 @@
-# 
+﻿# 
 msgid ""
 msgstr ""
 "Project-Id-Version: openprocurement.api 0.4\n"
@@ -44,17 +44,20 @@ msgstr "Скаржник може відкликати вимогу."
 msgid "Reviewer can upload documents and review complaint."
 msgstr "Орган оскарження може завантажувати документи та розглядати скарги."
 
-msgid "Complaint recognized as invalid."
-msgstr "Скаргу визнано недійсною."
+msgid "Claim recognized as invalid."
+msgstr "Вимогу визнано недійсною."
 
-msgid "Complaint recognized as declined."
-msgstr "Скаргу визнано відхиленою."
+msgid "Claim recognized as declined."
+msgstr "Вимогу визнано відхиленою."
 
-msgid "Complaint recognized as resolved."
-msgstr "Скаргу визнано вирішеною."
+msgid "Claim recognized as resolved."
+msgstr "Вимогу визнано вирішеною."
 
-msgid "Complaint cancelled by complainant."
-msgstr "Скаргу відкликано скаржником."
+msgid "Claim cancelled by complainant."
+msgstr "Вимогу відкликано скаржником."
+
+msgid "Claim ignored by procuring entity."
+msgstr "Замовник залишив вимогу без відповіді."
 
 msgid "Initial status"
 msgstr "Початковий статус"
@@ -70,11 +73,11 @@ msgid "Procuring entity can upload documents and answer to claim."
 msgstr "Замовник може завантажити документи та відповісти на вимогу."
 
 msgid ""
-"Complainant can cancel claim, upload documents, accept solution or escalate "
-"claim to complaint."
+"Complainant can cancel claim, upload documents, agree or disagree with "
+"decision."
 msgstr ""
-"Скаржник може відкликати вимогу, завантажити документи, погодитись з "
-"вирішенням або перетворити вимогу на скаргу."
+"Скаржник може відкликати вимогу, завантажити документи, згодитись або не "
+"згодитись з вирішенням."
 
 msgid "Terminal status"
 msgstr "Кінцевий статус"

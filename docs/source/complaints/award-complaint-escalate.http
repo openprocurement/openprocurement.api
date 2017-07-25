@@ -1,12 +1,12 @@
-PATCH /api/2.3/tenders/1c34544d0e6144f18886b6e59fb8256d/awards/e9a940c30ca142af9cfc261a7536d8ff/complaints/02c3ff8c9ee24ee39b562e0dfacb7278?acc_token=2ded96646c7c4f70a1e471abbeb099fd HTTP/1.0
+PATCH /api/2.3/tenders/6fb28391664b4e31b9002882b4d67573/awards/04f866d1fc3f4a14b463846b048a8a4e/complaints/cacaab14b638490cbdc7e54e1dd5a899?acc_token=5d25015e843b403094954f8d2225abc1 HTTP/1.0
 Authorization: Basic YnJva2VyOg==
-Content-Length: 51
+Content-Length: 52
 Content-Type: application/json
 Host: api-sandbox.openprocurement.org
 
 {
   "data": {
-    "status": "pending", 
+    "status": "resolved", 
     "satisfied": false
   }
 }
@@ -17,11 +17,11 @@ Content-Type: application/json; charset=UTF-8
 
 {
   "data": {
-    "status": "pending", 
+    "status": "resolved", 
     "description": "complaint description", 
     "title": "complaint title", 
     "resolutionType": "resolved", 
-    "type": "complaint", 
+    "type": "claim", 
     "author": {
       "contactPoint": {
         "email": "soleksuk@gmail.com", 
@@ -43,13 +43,12 @@ Content-Type: application/json; charset=UTF-8
       }
     }, 
     "satisfied": false, 
-    "dateEscalated": "2016-06-10T15:29:43.221630+03:00", 
-    "dateAnswered": "2016-06-10T15:29:42.917902+03:00", 
-    "dateSubmitted": "2016-06-10T15:29:41.806602+03:00", 
-    "complaintID": "UA-2016-06-10-000001.6", 
-    "date": "2016-06-10T15:29:41.805069+03:00", 
+    "dateAnswered": "2017-06-24T18:00:33.438437+03:00", 
+    "dateSubmitted": "2017-06-24T18:00:32.426487+03:00", 
+    "complaintID": "UA-2017-06-24-000001.6", 
+    "date": "2017-06-24T18:00:33.726646+03:00", 
     "resolution": "Виправлено неконкурентні умови", 
-    "id": "02c3ff8c9ee24ee39b562e0dfacb7278"
+    "id": "cacaab14b638490cbdc7e54e1dd5a899"
   }
 }
 
