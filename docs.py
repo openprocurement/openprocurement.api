@@ -961,7 +961,6 @@ class TenderResourceTest(BaseTenderWebTest):
         self.app.patch_json('/tenders/{}/complaints/{}?acc_token={}'.format(
                 self.tender_id, complaint4_id, complaint4_token), {"data": {"status": "resolved", "satisfied": False}})
 
-        # FIXME STRing comment
         self.app.authorization = ('Basic', ('reviewer', ''))
 
         with open('docs/source/complaints/complaint-resolution-upload.http', 'w') as self.app.file_obj:
