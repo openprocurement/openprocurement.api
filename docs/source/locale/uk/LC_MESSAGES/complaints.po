@@ -1,21 +1,35 @@
-# 
+#
 msgid ""
 msgstr ""
 "Project-Id-Version: openprocurement.api 0.4\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2014-12-04 10:19+0200\n"
+"POT-Creation-Date: 2017-07-25 15:18+0300\n"
 "PO-Revision-Date: 2016-01-13 13:57+0200\n"
 "Last-Translator: Zoriana Zaiats <sorenabell@quintagroup.com>\n"
-"Language-Team: Ukrainian <info@quintagroup.com>\n"
-"MIME-Version: 1.0\n"
-"Content-Type: text/plain; charset=UTF-8\n"
-"Content-Transfer-Encoding: 8bit\n"
 "Language: uk\n"
-"Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
-"X-Generator: Poedit 1.8.5\n"
+"Language-Team: Ukrainian <info@quintagroup.com>\n"
+"Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && "
+"n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2)\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.4.0\n"
 
 msgid "Complaint Workflow"
 msgstr "Схема роботи оскаржень"
+
+msgid ""
+"For more detailed information read `Complaints "
+"<http://openprocurement.org/en/complaints.html>`_."
+msgstr ""
+"Більш детальну інформацію шукайте на сторінці `Оскарження "
+"<http://openprocurement.org/ua/complaints.html>`_."
+
+msgid "Tender Conditions Claims/Complaints"
+msgstr "Вимоги/Скарги на умови закупівлі"
+
+msgid "Tender Award Claims/Complaints"
+msgstr "Вимоги/Скарги на визначення переможця"
 
 msgid "Workflow"
 msgstr "Схема роботи"
@@ -29,20 +43,40 @@ msgstr "пунктирна лінія"
 msgid "plain"
 msgstr "звичайна лінія"
 
-msgid "bold"
-msgstr "жирна лінія"
-
 msgid "dotted"
 msgstr "лінія з крапками"
 
 msgid "Statuses"
 msgstr "Статуси"
 
+msgid "Initial status"
+msgstr "Початковий статус"
+
+msgid ""
+"Complainant can submit claim, upload documents, cancel claim, and re-"
+"submit it."
+msgstr ""
+"На цьому етапі скаржник може подати вимогу, завантажити документи, "
+"відкликати вимогу та подати її знову."
+
+msgid "Procuring entity can upload documents and answer to claim."
+msgstr "Замовник може завантажити документи та відповісти на вимогу."
+
 msgid "Complainant can cancel claim."
 msgstr "Скаржник може відкликати вимогу."
 
+msgid ""
+"Complainant can cancel claim, upload documents, agree or disagree with "
+"decision."
+msgstr ""
+"Скаржник може відкликати вимогу, завантажити документи, згодитись або не "
+"згодитись з вирішенням."
+
 msgid "Reviewer can upload documents and review complaint."
 msgstr "Орган оскарження може завантажувати документи та розглядати скарги."
+
+msgid "Terminal status"
+msgstr "Кінцевий статус"
 
 msgid "Claim recognized as invalid."
 msgstr "Вимогу визнано недійсною."
@@ -59,39 +93,6 @@ msgstr "Вимогу відкликано скаржником."
 msgid "Claim ignored by procuring entity."
 msgstr "Замовник залишив вимогу без відповіді."
 
-msgid "Initial status"
-msgstr "Початковий статус"
-
-msgid ""
-"Complainant can submit claim, upload documents, cancel claim, and re-submit "
-"it."
-msgstr ""
-"На цьому етапі скаржник може подати вимогу, завантажити документи, "
-"відкликати вимогу та подати її знову."
-
-msgid "Procuring entity can upload documents and answer to claim."
-msgstr "Замовник може завантажити документи та відповісти на вимогу."
-
-msgid ""
-"Complainant can cancel claim, upload documents, agree or disagree with "
-"decision."
-msgstr ""
-"Скаржник може відкликати вимогу, завантажити документи, згодитись або не "
-"згодитись з вирішенням."
-
-msgid "Terminal status"
-msgstr "Кінцевий статус"
-
-msgid ""
-"For more detailed information read `Complaints "
-"<http://openprocurement.org/en/complaints.html>`_."
-msgstr ""
-"Більш детальну інформацію шукайте на сторінці `Оскарження "
-"<http://openprocurement.org/ua/complaints.html>`_."
-
-msgid "Tender Conditions Claims/Complaints"
-msgstr "Вимоги/Скарги на умови закупівлі"
-
-msgid "Tender Award Claims/Complaints"
-msgstr "Вимоги/Скарги на визначення переможця"
+#~ msgid "bold"
+#~ msgstr "жирна лінія"
 
