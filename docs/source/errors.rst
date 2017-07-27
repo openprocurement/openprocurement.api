@@ -42,15 +42,21 @@ containing additional information.
   known action in the API, or the object specified by the request does not
   exist.
 
+409
+  Document update conflict. The request could not be completed due to a conflict with the current state of the target resource. Please repeat your request.
+
 410
   Archived. The resource requested is not and will not be available.
 
 412
   Precondition Failed. See :ref:`API in cluster mode <cluster>`.
 
+422
+  Unprocessable Entity. This status code means the server understands the content type of the request entity. For example, this error condition may occur if a JSON request body contains well-formed (i.e., syntactically correct), but semantically erroneous, JSON instructions.
+
 429
   Rate Limit Enforced. See :ref:`Rate control <performance>`.
-  
+
 500
   Server error. There was a problem on OpenProcurement's end.
 

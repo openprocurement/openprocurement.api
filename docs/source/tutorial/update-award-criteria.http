@@ -1,12 +1,12 @@
-PUT /api/2.3/tenders/b74c14bbee6f44a9a0c8408c13a4c1a8/documents/4c37fa0aee1348a1abe668a015e475c9?acc_token=6241dc3adcf04c33b4f86f08e8e6e591 HTTP/1.0
+PUT /api/2.3/tenders/f3641d0ba0f042e8b49de06d5c7921af/documents/14f948894bcc4ddc9da4d2129b028116?acc_token=2ef61fa89e8a451ba4149d2f8e31173b HTTP/1.0
 Authorization: Basic YnJva2VyOg==
-Content-Length: 337
+Content-Length: 339
 Content-Type: application/json
 Host: api-sandbox.openprocurement.org
 
 {
   "data": {
-    "url": "http://public.docs-sandbox.openprocurement.org/get/dbed15c868604bf99984907efa669c1b?KeyID=ef5aa287&Signature=SJr%2B60AaDEm3Eej%2FepSZVtheuwNaKn4Cz%2B1LyPORFqLdduxVd4oidU2GU0LBSrr8J8MxAsGMD3p3AU5SaPZbCg%3D%3D", 
+    "url": "http://public.docs-sandbox.openprocurement.org/get/1e600751d31c434987977980878dbd8b?KeyID=459f8ecf&Signature=EC1QzFOXAe%2BawGOy%2FJR3YMrURSrxoUXQMtC%2BIIrTcHlCcL26Uj1%2BSbggyBg1H87VOEn9EBtEgBde0s8zxohcDQ%3D%3D", 
     "title": "AwardCriteria-2.pdf", 
     "hash": "md5:00000000000000000000000000000000", 
     "format": "application/pdf"
@@ -20,13 +20,14 @@ Content-Type: application/json; charset=UTF-8
 {
   "data": {
     "hash": "md5:00000000000000000000000000000000", 
+    "author": "tender_owner", 
     "title": "AwardCriteria-2.pdf", 
-    "url": "http://public.docs-sandbox.openprocurement.org/get/dbed15c868604bf99984907efa669c1b?KeyID=ef5aa287&Signature=jfTlZ0XuxAr2JdMjc2WjKBPwd8fYIg6PN1maCvuof1WhyrqY4EdY9atyM2RkFbc3lVnPeTRFfqqbsEUBG9PDAmQAAABiAAAAZQAAAGQAAAAxAAAANQAAAGMAAAA4AAAA", 
+    "url": "http://public.docs-sandbox.openprocurement.org/get/1e600751d31c434987977980878dbd8b?KeyID=459f8ecf&Signature=76AeflAK4BuZ734jGky7PBC9Tk3HAmi6UmSE1ElFiy2jLkYGA1%2FMdT7NIF7Hto%2F5PmrqAktZ%2FYovZYW6QptFBg%253D%253D", 
     "format": "application/pdf", 
     "documentOf": "tender", 
-    "datePublished": "2016-07-21T17:18:06.086634+03:00", 
-    "id": "4c37fa0aee1348a1abe668a015e475c9", 
-    "dateModified": "2016-07-21T17:18:06.260877+03:00"
+    "datePublished": "2017-07-25T17:36:56.140078+03:00", 
+    "id": "14f948894bcc4ddc9da4d2129b028116", 
+    "dateModified": "2017-07-25T17:36:56.181719+03:00"
   }
 }
 

@@ -170,7 +170,7 @@ test_tender_maximum_data = {
             "description_en": u"Cases with state awards",
             "description_ru": u"футляры к государственным наградам",
             "classification": {
-                "scheme": u"CPV",
+                "scheme": u"ДК021",
                 "id": u"44617100-9",
                 "description": u"Cartons"
             },
@@ -376,7 +376,7 @@ class TenderResourceTest(BaseTenderWebTest):
         self.assertEqual(response.status, '201 Created')
 
         with open('docs/source/tutorial/tender-listing-after-procuringEntity.http', 'w') as self.app.file_obj:
-            response = self.app.get('/tenders')
+            response = self.app.get('/tenders?mode=__all__')
             self.assertEqual(response.status, '200 OK')
 
         self.app.authorization = ('Basic', ('broker', ''))

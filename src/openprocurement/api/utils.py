@@ -608,7 +608,8 @@ def check_tender_status(request):
             tender.status = 'unsuccessful'
         if tender.contracts and tender.contracts[-1].status == 'active':
             tender.status = 'complete'
-    check_ignored_claim(tender)
+    if tender.procurementMethodType == "belowThreshold":
+        check_ignored_claim(tender)
 
 
 def add_next_award(request):

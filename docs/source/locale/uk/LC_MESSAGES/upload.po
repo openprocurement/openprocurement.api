@@ -1,58 +1,86 @@
 #
+# Zoriana Zaiats <sorenabell@quintagroup.com>, 2017.
 msgid ""
 msgstr ""
 "Project-Id-Version: openprocurement.api 0.1\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2014-11-10 10:50+0200\n"
-"PO-Revision-Date: 2014-11-10 12:36+0300\n"
+"POT-Creation-Date: 2017-07-25 15:18+0300\n"
+"PO-Revision-Date: 2017-07-25 15:26+0200\n"
 "Last-Translator: Zoriana Zaiats <sorenabell@quintagroup.com>\n"
+"Language: uk\n"
 "Language-Team: Ukrainian <info@quintagroup.com>\n"
+"Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<"
+"=4 && (n%100<10 || n%100>=20) ? 1 : 2)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Generator: Poedit 1.7.6\n"
-"Language: uk\n"
+"Generated-By: Babel 2.4.0\n"
+"X-Generator: Lokalize 2.0\n"
 
-#: ../../source/upload.rst:4
 msgid "Documents Uploading"
 msgstr "Завантаження документів"
 
-#: ../../source/upload.rst:9
-msgid "Content-Type: multipart/form-data"
-msgstr "Content-Type: multipart/form-data"
-
-#: ../../source/upload.rst:11
-msgid ""
-"This is standard approach of HTML form file uploading defined by `RFC 1867 "
-"<http://www.faqs.org/rfcs/rfc1867.html>`_.  The requirements are:"
-msgstr ""
-"Це стандартний підхід до HTML форми завантаження файлів, що визначається "
-"`RFC 1867 <http://www.faqs.org/rfcs/rfc1867.html>`_. Вимоги:"
-
-#: ../../source/upload.rst:14
-msgid "Form element should have name `file`"
-msgstr "Елемент форми повинен мати назву `file`."
-
-#: ../../source/upload.rst:15
-msgid "Only one document can be uploaded."
-msgstr "Завантажити можна лише один документ."
-
-#: ../../source/upload.rst:17
-msgid "The cURL example::"
-msgstr "Приклад cURL::"
-
-#: ../../source/upload.rst:21
-msgid "HTTPie example::"
-msgstr "Приклад HTTPie::"
-
-#: ../../source/upload.rst:25
-msgid "The request itself should look like::"
-msgstr "Сам запит повинен виглядати так::"
-
-#: ../../source/upload.rst:6
 msgid ""
 "All of the document uploading API endpoints follow the same set of rules."
 msgstr ""
-"Всі точки входу API завантаження документів використовують той самий набір "
-"правил."
+"Всі точки входу API завантаження документів використовують той самий "
+"набір правил."
+
+msgid "Upload document with registration"
+msgstr "Завантажити документ з реєстрацією"
+
+msgid ""
+":ref:`Register document upload in document service <documentservice"
+":register-document-upload>`."
+msgstr ""
+":ref:`Зареєструвати завантаження документа в Document Service <documentservice"
+":register-document-upload>`."
+
+msgid "Add document in API:"
+msgstr "Додати документ в API:"
+
+msgid ""
+":ref:`Upload document in document service <documentservice:upload-"
+"document>`."
+msgstr ""
+":ref:`Завантажити документ в document service <documentservice:upload-"
+"document>`."
+
+msgid "Upload document w/o registration"
+msgstr "Завантажити документ без реєстрації"
+
+msgid ""
+":ref:`Register document upload in document service <documentservice"
+":upload-document-w-o-registration>`."
+msgstr ""
+":ref:`Зареєструвати завантаження документа в Document Service <documentservice"
+":upload-document-w-o-registration>`."
+
+#~ msgid "Content-Type: multipart/form-data"
+#~ msgstr "Content-Type: multipart/form-data"
+
+#~ msgid ""
+#~ "This is standard approach of HTML "
+#~ "form file uploading defined by `RFC "
+#~ "1867 <http://www.faqs.org/rfcs/rfc1867.html>`_.  The "
+#~ "requirements are:"
+#~ msgstr ""
+#~ "Це стандартний підхід до HTML форми "
+#~ "завантаження файлів, що визначається `RFC "
+#~ "1867 <http://www.faqs.org/rfcs/rfc1867.html>`_. Вимоги:"
+
+#~ msgid "Form element should have name `file`"
+#~ msgstr "Елемент форми повинен мати назву `file`."
+
+#~ msgid "Only one document can be uploaded."
+#~ msgstr "Завантажити можна лише один документ."
+
+#~ msgid "The cURL example::"
+#~ msgstr "Приклад cURL::"
+
+#~ msgid "HTTPie example::"
+#~ msgstr "Приклад HTTPie::"
+
+#~ msgid "The request itself should look like::"
+#~ msgstr "Сам запит повинен виглядати так::"
 
