@@ -35,6 +35,9 @@ BID_LOTVALUES_VALIDATION_FROM = datetime(2016, 10, 24, tzinfo=TZ)
 CPV_ITEMS_CLASS_FROM = datetime(2017, 1, 1, tzinfo=TZ)
 CPV_BLOCK_FROM = datetime(2017, 6, 1, tzinfo=TZ)
 ITEMS_LOCATION_VALIDATION_FROM = datetime(2016, 11, 22, tzinfo=TZ)
+# TODO ------------------------------------
+VALUE_ADDED_TAX = [7, 20]
+# TODO ------------------------------------
 
 coordinates_reg_exp = re.compile(r'-?\d{1,3}\.\d+|-?\d{1,3}')
 
@@ -220,11 +223,17 @@ class Model(SchematicsModel):
 
 
 class Value(Model):
-
     amount = FloatType(required=True, min_value=0)  # Amount as a number.
     currency = StringType(required=True, default=u'UAH', max_length=3, min_length=3)  # The currency in 3-letter ISO 4217 format.
     valueAddedTaxIncluded = BooleanType(required=True, default=True)
 
+# TODO ------------------------------------
+class ValueAddedTax(Value):
+    valueAddedTax = IntType(min_value=0)
+    amountWithoutValueAddedTax = FloatType(min_value=0)
+    sumValueAddedTax = FloatType(min_value=0)
+    amountWithValueAddedTax = FloatType(min_value=0)
+# TODO ------------------------------------
 
 class Guarantee(Model):
     amount = FloatType(required=True, min_value=0)  # Amount as a number.
@@ -643,14 +652,21 @@ class LotValue(Model):
             'auction_patch': whitelist('participationUrl', 'relatedLot'),
         }
 
-    value = ModelType(Value, required=True)
+    value = ModelType(ValueAddedTax, required=True)
     relatedLot = MD5Type(required=True)
     participationUrl = URLType()
     date = IsoDateTimeType(default=get_now)
 
     def validate_value(self, data, value):
         if value and isinstance(data['__parent__'], Model) and data['relatedLot']:
+            # TODO ------------------------------------
+            value.valueAddedTax = None
+            value.amountWithoutValueAddedTax = None
+            value.amountWithValueAddedTax = None
+            value.sumValueAddedTax = None
+            # TODO ------------------------------------
             lots = [i for i in get_tender(data['__parent__']).lots if i.id == data['relatedLot']]
+
             if not lots:
                 return
             lot = lots[0]
@@ -700,7 +716,7 @@ class Bid(Model):
     date = IsoDateTimeType(default=get_now)
     id = MD5Type(required=True, default=lambda: uuid4().hex)
     status = StringType(choices=['active', 'draft'], default='active')
-    value = ModelType(Value)
+    value = ModelType(ValueAddedTax) # TODO ------------------------------------
     documents = ListType(ModelType(Document), default=list())
     participationUrl = URLType()
     owner_token = StringType()
@@ -717,7 +733,7 @@ class Bid(Model):
             The data to be imported.
         """
         data = self.convert(raw_data, **kw)
-        del_keys = [ k for k in data.keys() if k != "value" and data[k] is None]
+        del_keys = [k for k in data.keys() if k != "value" and data[k] is None]
         for k in del_keys:
             del data[k]
 
@@ -747,7 +763,7 @@ class Bid(Model):
         if isinstance(data['__parent__'], Model):
             tender = data['__parent__']
             if tender.lots:
-                if value:
+                if value:# and type(value).__name__ not in ['ValueAddedTax']: # TODO ------------------------------------
                     raise ValidationError(u"value should be posted for each lot of bid")
             else:
                 if not value:
@@ -758,7 +774,19 @@ class Bid(Model):
                     raise ValidationError(u"currency of bid should be identical to currency of value of tender")
                 if tender.get('value').valueAddedTaxIncluded != value.valueAddedTaxIncluded:
                     raise ValidationError(u"valueAddedTaxIncluded of bid should be identical to valueAddedTaxIncluded of value of tender")
-
+                # TODO ------------------------------------
+                if value.valueAddedTaxIncluded is False and value.valueAddedTax:
+                    raise ValidationError(u'Can\'t add bid valueAddedTax if valueAddedTaxIncluded is false')
+                if value.valueAddedTaxIncluded is True:
+                    if not value.valueAddedTax:
+                        raise ValidationError({u'valueAddedTax': [u'This field is required.']})
+                if value.valueAddedTax not in VALUE_ADDED_TAX:
+                    raise ValidationError(
+                        u'valueAddedTax should be {} or {} percent'.format(
+                            VALUE_ADDED_TAX[0], VALUE_ADDED_TAX[1]
+                        )
+                    )
+                # TODO ------------------------------------
     def validate_parameters(self, data, parameters):
         if isinstance(data['__parent__'], Model):
             tender = data['__parent__']
@@ -972,7 +1000,7 @@ class Contract(Model):
     description_ru = StringType()
     status = StringType(choices=['pending', 'terminated', 'active', 'cancelled'], default='pending')
     period = ModelType(Period)
-    value = ModelType(Value)
+    value = ModelType(ValueAddedTax) # TODO ------------------------------------
     dateSigned = IsoDateTimeType()
     documents = ListType(ModelType(Document), default=list())
     items = ListType(ModelType(Item))
@@ -1018,7 +1046,7 @@ class Award(Model):
     description_ru = StringType()
     status = StringType(required=True, choices=['pending', 'unsuccessful', 'active', 'cancelled'], default='pending')
     date = IsoDateTimeType(default=get_now)
-    value = ModelType(Value)
+    value = ModelType(ValueAddedTax) # TODO ------------------------------------
     suppliers = ListType(ModelType(Organization), required=True, min_size=1, max_size=1)
     items = ListType(ModelType(Item))
     documents = ListType(ModelType(Document), default=list())
@@ -1138,7 +1166,6 @@ class Lot(Model):
         if value and value.amount and data.get('value'):
             if data.get('value').amount < value.amount:
                 raise ValidationError(u"value should be less than value of lot")
-
 
 
 def validate_features_uniq(features, *args):

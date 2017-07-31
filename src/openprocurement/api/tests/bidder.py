@@ -1317,6 +1317,106 @@ class TenderBidderBatchDocumentWithDSResourceTest(BaseTenderWebTest):
             self.assertEqual(document['id'], response.json["data"]["id"])
 
 
+class TenderBidderValueAddedTaxInclude(BaseTenderWebTest):
+    initial_data = test_features_tender_data
+    initial_status = 'active.tendering'
+    
+    RESPONSE_CODE = {
+        '200': '200 OK',
+        '201': '201 Created',
+        '422': '422 Unprocessable Entity'
+    }
+    
+    def test_create_tender_with_invalid_value_added_tax_bidder(self):
+        # dateModified = self.db.get(self.tender_id).get('dateModified')
+
+        request_path = '/tenders/{}/bids'.format(self.tender_id)
+
+        # Try update tender VAT
+        response = self.app.patch_json(
+            '/tenders/{}?acc_token={}'.format(self.tender_id, self.tender_token),
+            {'data': {
+                'value': {'valueAddedTaxIncluded': False},
+                'minimalStep': {'valueAddedTaxIncluded': False}
+            }}
+        )
+        self.assertEqual(response.status, self.RESPONSE_CODE['200'])
+
+        response = self.app.get('/tenders/{}?acc_token={}'.format(self.tender_id, self.tender_token))
+        self.assertEqual(response.status, self.RESPONSE_CODE['200'])
+        self.assertEqual(response.content_type, 'application/json')
+
+        tender = response.json['data']
+
+        self.assertTrue(tender['value']['valueAddedTaxIncluded'])
+        # Create bidder without valueAddedTax
+        response = self.app.post_json(
+            request_path,
+            {'data': {
+                'tenderers': [test_organization],
+                'value': {'amount': 500},
+                'parameters': [
+                    {
+                        'code': i['code'],
+                        'value': 0.15,
+                    }
+                    for i in self.initial_data['features']
+                ]}}, status=422
+        )
+        self.assertEqual(response.status, self.RESPONSE_CODE['422'])
+        self.assertEqual(response.content_type, 'application/json')
+        self.assertEqual(response.json['errors'][0]['description']['valueAddedTax'], ['This field is required.'])
+
+        # Create two bidder with invalid valueAddedTax
+        response = self.app.post_json(
+            request_path,
+            {'data': {
+                'tenderers': [test_organization],
+                'value': {'amount': 500, 'valueAddedTax': 10},
+                'parameters': [
+                    {
+                        'code': i['code'],
+                        'value': 0.15,
+                    }
+                    for i in self.initial_data['features']
+                ]}}, status=422
+        )
+        self.assertEqual(response.status, self.RESPONSE_CODE['422'])
+        self.assertEqual(response.content_type, 'application/json')
+        self.assertEqual(
+            response.json['errors'][0]['description'], ['valueAddedTax should be 7 or 20 percent']
+        )
+
+        response = self.app.post_json(
+            request_path,
+            {'data': {
+                'tenderers': [test_organization],
+                'value': {'amount': 500, 'valueAddedTax': 21},
+                'parameters': [
+                    {
+                        'code': i['code'],
+                        'value': 0.15,
+                    }
+                    for i in self.initial_data['features']
+                ]}}, status=422
+        )
+        self.assertEqual(response.status, self.RESPONSE_CODE['422'])
+        self.assertEqual(response.content_type, 'application/json')
+        self.assertEqual(
+            response.json['errors'][0]['description'], ['valueAddedTax should be 7 or 20 percent']
+        )
+
+        # Create bidder for tender with valueAddedTaxIncluded is false
+
+
+
+        # bidder = response.json['data']
+        # self.assertEqual(bidder['tenderers'][0]['name'], test_organization['name'])
+        # self.assertIn('id', bidder)
+        # self.assertIn(bidder['id'], response.headers['Location'])
+
+
+
 
 def suite():
     suite = unittest.TestSuite()
@@ -1324,6 +1424,7 @@ def suite():
     suite.addTest(unittest.makeSuite(TenderBidderDocumentWithDSResourceTest))
     suite.addTest(unittest.makeSuite(TenderBidderFeaturesResourceTest))
     suite.addTest(unittest.makeSuite(TenderBidderResourceTest))
+    suite.addTest(unittest.makeSuite(TenderBidderValueAddedTaxInclude))
     return suite
 
 

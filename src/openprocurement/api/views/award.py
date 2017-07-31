@@ -165,6 +165,14 @@ class TenderAwardResource(APIResource):
             self.request.errors.status = 403
             return
         award = self.request.validated['award']
+        # TODO ------------------------------------
+        for bid in tender.bids:
+            if award.bid_id == bid['id'] and bid['value'] and bid['value']['valueAddedTaxIncluded']:
+                try:
+                    award.value.valueAddedTax = bid['value']['valueAddedTax']
+                except AttributeError:
+                    pass
+        # TODO ------------------------------------
         if any([i.status != 'active' for i in tender.lots if i.id == award.lotID]):
             self.request.errors.add('body', 'data', 'Can create award only in active lot status')
             self.request.errors.status = 403
@@ -302,13 +310,32 @@ class TenderAwardResource(APIResource):
         apply_patch(self.request, save=False, src=self.request.context.serialize())
         if award_status == 'pending' and award.status == 'active':
             award.complaintPeriod.endDate = calculate_business_date(get_now(), STAND_STILL_TIME, tender, True)
+            # TODO ------------------------------------
+            if tender.value.valueAddedTaxIncluded:
+                for bid in tender.bids:
+                    if bid['value'] and bid['value']['valueAddedTaxIncluded']:
+                        if award.bid_id == bid['id'] and bid['value']['valueAddedTax']:
+                            amount = bid['value']['amount']
+                            sumVat = amount * int(bid['value']['valueAddedTax']) / 100
+                            award.value.sumValueAddedTax = sumVat
+                            withoutVat = amount / (1+bid['value']['valueAddedTax'] / 100)
+                            award.value.amountWithoutValueAddedTax = withoutVat
+                            award.value.amountWithValueAddedTax = amount
+            else:
+                for bid in tender.bids:
+                    if award.bid_id == bid['id'] and bid['value']['valueAddedTaxIncluded'] is False:
+                        withVat = bid['value']['amount'] * (1+bid['value']['valueAddedTax'] / 100)
+                        award.value.amountWithValueAddedTax = withVat
+
+                        award.value.amountWithoutValueAddedTax = bid['value']['amount']
+            # TODO ------------------------------------
             tender.contracts.append(type(tender).contracts.model_class({
                 'awardID': award.id,
                 'suppliers': award.suppliers,
                 'value': award.value,
                 'date': get_now(),
-                'items': [i for i in tender.items if i.relatedLot == award.lotID ],
-                'contractID': '{}-{}{}'.format(tender.tenderID, self.server_id, len(tender.contracts) + 1) }))
+                'items': [i for i in tender.items if i.relatedLot == award.lotID],
+                'contractID': '{}-{}{}'.format(tender.tenderID, self.server_id, len(tender.contracts) + 1)}))
             add_next_award(self.request)
         elif award_status == 'active' and award.status == 'cancelled':
             now = get_now()
