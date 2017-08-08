@@ -68,7 +68,7 @@ class TenderAwardContractResource(APIResource):
         data = self.request.validated['data']
 
         if data['value']:
-            for ro_attr in ('valueAddedTaxIncluded', 'currency'):
+            for ro_attr in ('valueAddedTaxPayer', 'currency'):
                 if data['value'][ro_attr] != getattr(self.context.value, ro_attr):
                     self.request.errors.add('body', 'data', 'Can\'t update {} for contract value'.format(ro_attr))
                     self.request.errors.status = 403

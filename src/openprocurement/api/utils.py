@@ -11,7 +11,7 @@ from json import dumps
 from jsonpatch import make_patch, apply_patch as _apply_patch
 from jsonpointer import resolve_pointer
 from logging import getLogger
-from openprocurement.api.models import get_now, TZ, COMPLAINT_STAND_STILL_TIME, WORKING_DAYS
+from openprocurement.api.models import get_now, TZ, COMPLAINT_STAND_STILL_TIME, WORKING_DAYS, ValueAddedTax
 from openprocurement.api.traversal import factory
 from pkg_resources import get_distribution
 from rfc6266 import build_header
@@ -658,11 +658,21 @@ def add_next_award(request):
             bids = chef(bids, features, unsuccessful_awards)
             if bids:
                 bid = bids[0]
+
+                if type(tender).awards.model_class({'value': {}}).value.__ne__(bid['value']):
+                    bid_value = ValueAddedTax({
+                        'amount': bid['value']['amount'],
+                        'currency': bid['value']['currency'],
+                        'valueAddedTaxPayer': bid['value']['valueAddedTaxIncluded']
+                    })
+                else:
+                    bid_value = bid['value']
+
                 award = type(tender).awards.model_class({
                     'bid_id': bid['id'],
                     'lotID': lot.id,
                     'status': 'pending',
-                    'value': bid['value'],
+                    'value': bid_value,
                     'date': get_now(),
                     'suppliers': bid['tenderers'],
                     'complaintPeriod': {
