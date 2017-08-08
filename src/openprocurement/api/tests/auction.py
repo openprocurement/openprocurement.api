@@ -102,7 +102,7 @@ class TenderAuctionResourceTest(BaseTenderWebTest):
                     "value": {
                         "amount": 409,
                         "currency": "UAH",
-                        "valueAddedTaxIncluded": True
+                        "valueAddedTaxPayer": True
                     }
                 }
             ]
@@ -117,7 +117,7 @@ class TenderAuctionResourceTest(BaseTenderWebTest):
             "value": {
                 "amount": 419,
                 "currency": "UAH",
-                "valueAddedTaxIncluded": True
+                "valueAddedTaxPayer": True
             }
         })
 
@@ -245,7 +245,7 @@ class TenderAuctionResourceTest(BaseTenderWebTest):
                     "value": {
                         "amount": 409,
                         "currency": "UAH",
-                        "valueAddedTaxIncluded": True
+                        "valueAddedTaxPayer": True
                     }
                 },
                 {
@@ -253,7 +253,7 @@ class TenderAuctionResourceTest(BaseTenderWebTest):
                     "value": {
                         "amount": 419,
                         "currency": "UAH",
-                        "valueAddedTaxIncluded": True
+                        "valueAddedTaxPayer": True
                     }
                 }
             ]
@@ -287,7 +287,7 @@ class TenderSameValueAuctionResourceTest(BaseTenderWebTest):
             "value": {
                 "amount": 469,
                 "currency": "UAH",
-                "valueAddedTaxIncluded": True
+                "valueAddedTaxPayer": True
             }
         }
         for i in range(3)
@@ -1002,7 +1002,7 @@ class TenderFeaturesAuctionResourceTest(BaseTenderWebTest):
             "value": {
                 "amount": 469,
                 "currency": "UAH",
-                "valueAddedTaxIncluded": True
+                "valueAddedTaxPayer": True
             }
         },
         {
@@ -1019,7 +1019,7 @@ class TenderFeaturesAuctionResourceTest(BaseTenderWebTest):
             "value": {
                 "amount": 479,
                 "currency": "UAH",
-                "valueAddedTaxIncluded": True
+                "valueAddedTaxPayer": True
             }
         }
     ]

@@ -143,7 +143,8 @@ test_bids = [
         "value": {
             "amount": 469,
             "currency": "UAH",
-            "valueAddedTaxIncluded": True
+            "valueAddedTaxPayer": True,
+            "valueAddedTax": 20
         }
     },
     {
@@ -153,7 +154,8 @@ test_bids = [
         "value": {
             "amount": 479,
             "currency": "UAH",
-            "valueAddedTaxIncluded": True
+            "valueAddedTaxPayer": True,
+            "valueAddedTax": 20
         }
     }
 ]
@@ -487,6 +489,13 @@ class BaseTenderWebTest(BaseWebTest):
                 if self.initial_lots:
                     i = i.copy()
                     value = i.pop('value')
+
+                    if 'valueAddedTaxPayer' in value:
+                        del value['valueAddedTaxPayer']
+
+                    if 'valueAddedTax' in value:
+                        del value['valueAddedTax']
+
                     i['lotValues'] = [
                         {
                             'value': value,
