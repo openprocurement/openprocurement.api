@@ -1556,6 +1556,20 @@ class TenderBidderValueAddedTaxPayer(BaseTenderWebTest):
 
         self.assertEqual(response_bidder_2.status, self.RESPONSE_CODE['201'])
 
+        # Get bids
+        response = self.app.get('/tenders/{}/bids'.format(self.tender_id), status=403)
+        self.assertEqual(response.status, self.RESPONSE_CODE['403'])
+        self.assertEqual(response.content_type, 'application/json')
+        self.assertEqual(response.json['status'], 'error')
+        self.assertEqual(
+            response.json['errors'],
+            [{
+                u'description': u"Can't view bids in current (active.tendering) tender status",
+                u'location': u'body',
+                u'name': u'data'
+            }]
+        )
+
         self.set_status('active.qualification')
 
         response = self.app.get('/tenders/{}/bids'.format(self.tender_id))
@@ -1593,6 +1607,25 @@ class TenderBidderValueAddedTaxPayer(BaseTenderWebTest):
         self.assertEqual(
             response.json['errors'][0]['description'],
             'Can\'t update bid in current (active.qualification) tender status'
+        )
+
+        # Change valueAddedTaxPayer to False
+        response = self.app.patch_json(
+            '/tenders/{}/bids/{}?acc_token={}'.format(self.tender_id, bids[0]['id'], self.tender_token),
+            {'data': {'value': {'valueAddedTaxPayer': False}}}, status=422
+        )
+        self.assertEqual(response.status, self.RESPONSE_CODE['422'])
+        self.assertEqual(response.content_type, 'application/json')
+        self.assertEqual(response.json['status'], 'error')
+        self.assertEqual(
+            response.json['errors'],
+            [{
+                u'description': [
+                    u'valueAddedTaxPayer of bid should be identical to valueAddedTaxIncluded of value of tender'
+                ],
+                u'location': u'body',
+                u'name': u'value'
+            }]
         )
 
         # Create bidder with valueAddedTax = 0
@@ -1727,6 +1760,49 @@ class TenderBidderValueAddedTaxPayer(BaseTenderWebTest):
         self.assertEqual(response.content_type, 'application/json')
         self.assertTrue(response.json['data']['value']['valueAddedTaxPayer'])
         self.assertEqual(response.json['data']['value']['valueAddedTax'], 7)
+
+        # Change bidder sumValueAddedTax
+        response = self.app.patch_json(
+            '/tenders/{}/bids/{}?acc_token={}'.format(self.tender_id, bids['id'], self.tender_token),
+            {'data': {'value': {'sumValueAddedTax': 10}}}, status=422
+        )
+        self.assertEqual(response.status, self.RESPONSE_CODE['422'])
+        self.assertEqual(response.content_type, 'application/json')
+        self.assertEqual(response.json['status'], 'error')
+        self.assertEqual(
+            response.json['errors'],
+            [{u'description': {u'sumValueAddedTax': [u'Rogue field']}, u'location': u'body', u'name': u'value'}]
+        )
+
+        # Change bidder amountWithValueAddedTax
+        response = self.app.patch_json(
+            '/tenders/{}/bids/{}?acc_token={}'.format(self.tender_id, bids['id'], self.tender_token),
+            {'data': {'value': {'amountWithValueAddedTax': 10}}}, status=422
+        )
+        self.assertEqual(response.status, self.RESPONSE_CODE['422'])
+        self.assertEqual(response.content_type, 'application/json')
+        self.assertEqual(response.json['status'],  'error')
+        self.assertEqual(
+            response.json['errors'],
+            [{u'description': {u'amountWithValueAddedTax': [u'Rogue field']}, u'location': u'body', u'name': u'value'}]
+        )
+
+        # Change bidder amountWithoutValueAddedTax
+        response = self.app.patch_json(
+            '/tenders/{}/bids/{}?acc_token={}'.format(self.tender_id, bids['id'], self.tender_token),
+            {'data': {'value': {'amountWithoutValueAddedTax': 10}}}, status=422
+        )
+        self.assertEqual(response.status, self.RESPONSE_CODE['422'])
+        self.assertEqual(response.content_type, 'application/json')
+        self.assertEqual(response.json['status'], 'error')
+        self.assertEqual(
+            response.json['errors'],
+            [{
+                u'description': {u'amountWithoutValueAddedTax': [u'Rogue field']},
+                u'location': u'body',
+                u'name': u'value'
+            }]
+        )
 
         # Change bidder value:valueAddedTaxPayer to False
         response = self.app.patch_json(
