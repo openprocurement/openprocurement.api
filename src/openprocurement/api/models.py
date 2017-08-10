@@ -782,6 +782,18 @@ class Bid(Model):
                                 VALUE_ADDED_TAX[0], VALUE_ADDED_TAX[1], VALUE_ADDED_TAX[2]
                             )
                         )
+                    if 'sumValueAddedTax' in value and value.sumValueAddedTax is not None:
+                        raise ValidationError(
+                            {'sumValueAddedTax': ['Rogue field']}
+                        )
+                    if 'amountWithValueAddedTax' in value and value.amountWithValueAddedTax is not None:
+                        raise ValidationError(
+                            {'amountWithValueAddedTax': ['Rogue field']}
+                        )
+                    if 'amountWithoutValueAddedTax' in value and value.amountWithoutValueAddedTax is not None:
+                        raise ValidationError(
+                            {'amountWithoutValueAddedTax': ['Rogue field']}
+                        )
 
     def validate_parameters(self, data, parameters):
         if isinstance(data['__parent__'], Model):
