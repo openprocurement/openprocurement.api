@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 from barbecue import chef
 from base64 import b64encode, b64decode
+from collections import namedtuple
 from datetime import datetime, time, timedelta
 from cornice.resource import resource, view
 from cornice.util import json_error
@@ -977,3 +978,20 @@ def calculate_business_date(date_obj, timedelta_obj, context=None, working_days=
                 date_obj += timedelta(1) if timedelta_obj > timedelta() else -timedelta(1)
         return date_obj
     return date_obj + timedelta_obj
+
+
+def calculate_amount(tenderValueAddedTaxIncluded, amount, valueAddedTax):
+    _amount = amount
+    amount = namedtuple('Amount', ['sumValueAddedTax', 'withValueAddedTax', 'withoutValueAddedTax'])
+
+    vat = round(float(valueAddedTax / float(100)), 2)
+    amount.sumValueAddedTax = round(_amount * vat, 2)
+
+    if tenderValueAddedTaxIncluded:
+        amount.withValueAddedTax = _amount
+        amount.withoutValueAddedTax = round(_amount / (float(1) + vat), 2)
+    else:
+        amount.withValueAddedTax = round(_amount * (float(1) + vat), 2)
+        amount.withoutValueAddedTax = _amount
+
+    return amount

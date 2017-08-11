@@ -2985,7 +2985,7 @@ class TenderAwardValueAddedTaxPayer(BaseTenderWebTest):
         self.assertIn('amountWithValueAddedTax', award['value'])
         self.assertEqual(award['value']['amountWithValueAddedTax'], 500)
         self.assertIn('amountWithoutValueAddedTax', award['value'])
-        self.assertEqual(award['value']['amountWithoutValueAddedTax'], 500.2)
+        self.assertEqual(award['value']['amountWithoutValueAddedTax'], 416.67)
 
         # Edit award value in active status
         response = self.app.patch_json(
@@ -3054,7 +3054,7 @@ class TenderAwardValueAddedTaxPayer(BaseTenderWebTest):
         self.assertIn('amountWithValueAddedTax', award['value'])
         self.assertEqual(award['value']['amountWithValueAddedTax'], 500.0)
         self.assertIn('amountWithoutValueAddedTax', award['value'])
-        self.assertEqual(award['value']['amountWithoutValueAddedTax'], 500.07)
+        self.assertEqual(award['value']['amountWithoutValueAddedTax'], 467.29)
 
         # Create award with bidder vat = 0
         self.set_status('active.qualification')
@@ -3201,7 +3201,7 @@ class TenderAwardValueAddedTaxPayer(BaseTenderWebTest):
         self.assertIn('amountWithValueAddedTax', award['value'])
         self.assertEqual(award['value']['amountWithValueAddedTax'], 500.0)
         self.assertIn('amountWithoutValueAddedTax', award['value'])
-        self.assertEqual(award['value']['amountWithoutValueAddedTax'], 500.2)
+        self.assertEqual(award['value']['amountWithoutValueAddedTax'], 416.67)
 
         # Editing award sumValueAddedTax
         response = self.app.patch_json(
@@ -3428,7 +3428,7 @@ class TenderAwardValueAddedTaxPayer(BaseTenderWebTest):
         self.assertFalse(award['value']['valueAddedTaxPayer'])
         self.assertEqual(award['value']['amount'], 100500.0)
         self.assertEqual(award['value']['sumValueAddedTax'], 35.0)
-        self.assertEqual(award['value']['amountWithValueAddedTax'], 500.07)
+        self.assertEqual(award['value']['amountWithValueAddedTax'], 535.0)
         self.assertEqual(award['value']['amountWithoutValueAddedTax'], 500.0)
 
         # Editing value in active award

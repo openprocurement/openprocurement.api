@@ -9,6 +9,7 @@ from openprocurement.api.utils import (
     context_unpack,
     APIResource,
     calculate_business_date,
+    calculate_amount
 )
 from openprocurement.api.validation import (
     validate_award_data,
@@ -310,39 +311,14 @@ class TenderAwardResource(APIResource):
             award.complaintPeriod.endDate = calculate_business_date(get_now(), STAND_STILL_TIME, tender, True)
 
             for bid in tender.bids:
-                if tender.value.valueAddedTaxIncluded and all([bid['value'], award.value, award.bid_id == bid['id']]):
-                    amount = bid['value']['amount']
-                    vat = round(float(bid['value']['valueAddedTax']) / float(100), 2)
+                if all([bid['value'], award.value, award.bid_id == bid['id']]):
+                    amount = calculate_amount(
+                        tender.value.valueAddedTaxIncluded, bid['value']['amount'], bid['value']['valueAddedTax']
+                    )
 
-                    # Amount without vat if tender with vat
-                    amountWithoutValueAddedTax = round((amount / float(1)) + vat, 2)
-                    award.value.amountWithoutValueAddedTax = amountWithoutValueAddedTax
-
-                    # Vat sum
-                    sumValueAddedTax = amount * vat
-                    award.value.sumValueAddedTax = sumValueAddedTax
-
-                    # Amount with vat if tender with vat
-                    amountWithValueAddedTax = amount
-                    award.value.amountWithValueAddedTax = amountWithValueAddedTax
-                elif not tender.value.valueAddedTaxIncluded and all(
-                        [bid['value'], award.value, award.bid_id == bid['id']]
-                ):
-                    amount = bid['value']['amount']
-                    vat = round(float(bid['value']['valueAddedTax']) / float(100), 2)
-
-                    # Amount without vat if tender without vat
-                    award.value.amountWithoutValueAddedTax = amount
-
-                    # Amount with vat if tender without vat
-                    amountWithValueAddedTax = amount * 1 + vat
-                    award.value.amountWithValueAddedTax = amountWithValueAddedTax
-
-                    # Vat sum
-                    sumValueAddedTax = amount * vat
-                    award.value.sumValueAddedTax = sumValueAddedTax
-                else:
-                    pass
+                    award.value.amountWithValueAddedTax = amount.withValueAddedTax
+                    award.value.amountWithoutValueAddedTax = amount.withoutValueAddedTax
+                    award.value.sumValueAddedTax = amount.sumValueAddedTax
 
             tender.contracts.append(type(tender).contracts.model_class({
                 'awardID': award.id,

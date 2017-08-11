@@ -1027,6 +1027,17 @@ class Contract(Model):
             if value > get_now():
                 raise ValidationError(u"Contract signature date can't be in the future")
 
+    def validate_value(self, data, value):
+        from openprocurement.api.utils import calculate_amount
+
+        if isinstance(data['__parent__'], Model) and value:
+            tender = data['__parent__']
+            amount = calculate_amount(tender.value.valueAddedTaxIncluded, value.amount, value.valueAddedTax)
+
+            value.sumValueAddedTax = amount.sumValueAddedTax
+            value.amountWithValueAddedTax = amount.withValueAddedTax
+            value.amountWithoutValueAddedTax = amount.withoutValueAddedTax
+
 
 class Award(Model):
     """ An award for the given procurement. There may be more than one award
