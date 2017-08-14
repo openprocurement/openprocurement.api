@@ -15,61 +15,39 @@ msgstr ""
 "=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
 "X-Generator: Lokalize 1.5\n"
 
-#: ../../source/standard/complaint.rst:9
 msgid "Complaint"
 msgstr "Complaint"
 
-#: ../../source/standard/complaint.rst:12
 msgid "Schema"
 msgstr "Схема"
 
-#: ../../source/standard/complaint.rst:23
 msgid "string, required"
 msgstr "рядок, обов’язковий"
 
-#: ../../source/standard/complaint.rst:61
-#: ../../source/standard/complaint.rst:75
-#: ../../source/standard/complaint.rst:83
-#: ../../source/standard/complaint.rst:88
-#: ../../source/standard/complaint.rst:102
-#: ../../source/standard/complaint.rst:107
-#: ../../source/standard/complaint.rst:115
-#: ../../source/standard/complaint.rst:120
 msgid "string"
 msgstr "рядок"
 
-#: ../../source/standard/complaint.rst:63
 msgid "Possible values are:"
 msgstr "Можливі значення:"
 
-#: ../../source/standard/complaint.rst:68
 msgid "`pending`"
 msgstr "`pending` - не вирішено, ще обробляється"
 
-#: ../../source/standard/complaint.rst:69
-#: ../../source/standard/complaint.rst:92
 msgid "`invalid`"
 msgstr "`invalid` - недійсно"
 
-#: ../../source/standard/complaint.rst:70
-#: ../../source/standard/complaint.rst:93
 msgid "`declined`"
 msgstr "`declined` - відхилено"
 
-#: ../../source/standard/complaint.rst:71
-#: ../../source/standard/complaint.rst:94
 msgid "`resolved`"
 msgstr "`resolved` - вирішено"
 
-#: ../../source/standard/complaint.rst:112
 msgid "List of :ref:`Document` objects"
 msgstr "Список об’єктів :ref:`Document`"
 
-#: ../../source/standard/complaint.rst:18
 msgid ":ref:`Organization`, required"
 msgstr ":ref:`Organization`, обов’язково"
 
-#: ../../source/standard/complaint.rst:20
 msgid ""
 "Organization filing a complaint (contactPoint - person, identification - "
 "organization that person represents)."
@@ -77,110 +55,78 @@ msgstr ""
 "Організація, яка подає скаргу (contactPoint - людина, identification - "
 "організація, яку ця людина представляє)."
 
-#: ../../source/standard/complaint.rst:25
 msgid "Title of the complaint."
 msgstr "Заголовок скарги."
 
-#: ../../source/standard/complaint.rst:28
 msgid "Description of the issue."
 msgstr "Опис запитання."
 
-#: ../../source/standard/complaint.rst:33
 msgid "Date of posting."
 msgstr "Дата подання."
 
-#: ../../source/standard/complaint.rst:53
 msgid "Date of complaint decision."
 msgstr "День прийняття рішення по вимозі."
 
-#: ../../source/standard/complaint.rst:58
 msgid "Date of cancelling."
 msgstr "Дата відхилення."
 
-#: ../../source/standard/complaint.rst:65
 msgid "`draft`"
 msgstr "`draft` - чорновик, початковий етап"
 
-#: ../../source/standard/complaint.rst:66
-#: ../../source/standard/complaint.rst:79
 msgid "`claim`"
 msgstr "`claim` - вимога"
 
-#: ../../source/standard/complaint.rst:67
 msgid "`answered`"
 msgstr "`answered` - дано відповідь"
 
-#: ../../source/standard/complaint.rst:72
 msgid "`cancelled`"
 msgstr "`cancelled` - відхилено"
 
-#: ../../source/standard/complaint.rst:77
 msgid "Possible values of type are:"
 msgstr "Можливі значення типу:"
 
-#: ../../source/standard/complaint.rst:80
 msgid "`complaint`"
 msgstr "`complaint` - скарга"
 
-#: ../../source/standard/complaint.rst:90
 msgid "Possible values of resolution type are:"
 msgstr "Можливі значення типу вирішення:"
 
-#: ../../source/standard/complaint.rst:97
 msgid "bool"
 msgstr "булеве значення"
 
-#: ../../source/standard/complaint.rst:99
 msgid "Claim is satisfied?"
 msgstr "Вимога задовільнена?"
 
-#: ../../source/standard/complaint.rst:104
 msgid "Reviewer decision."
 msgstr "Рішення органу оскарження."
 
-#: ../../source/standard/complaint.rst:109
 msgid "Cancellation reason."
 msgstr "Причини відхилення."
 
-#: ../../source/standard/complaint.rst:38
 msgid "Date when claim was submitted."
 msgstr "Дата, коли вимога була подана."
 
-#: ../../source/standard/complaint.rst:43
 msgid "Date when Procuring entity answered the claim."
 msgstr "Дата, коли замовник відповів на вимогу."
 
-#: ../../source/standard/complaint.rst:48
 msgid "Date of claim to complaint escalation."
 msgstr "Дата ескалації (перетворення вимоги на скаргу)."
 
-#: ../../source/standard/complaint.rst:85
 msgid "Resolution of Procuring entity."
 msgstr "Рішення замовника."
 
-#: ../../source/standard/complaint.rst:117
 msgid "Id of related :ref:`lot`."
 msgstr "Ідентифікатор пов’язаного :ref:`lot`-а."
 
-#: ../../source/standard/complaint.rst:122
 msgid "Tenderer action."
 msgstr "Дія учасника."
 
-#: ../../source/standard/complaint.rst:127
 msgid "Date of tenderer action."
 msgstr "Дата дії учасника."
 
-#: ../../source/standard/complaint.rst:15
 msgid "uid, auto-generated"
 msgstr "uid, генерується автоматично"
 
-#: ../../source/standard/complaint.rst:31
-#: ../../source/standard/complaint.rst:36
-#: ../../source/standard/complaint.rst:41
-#: ../../source/standard/complaint.rst:46
-#: ../../source/standard/complaint.rst:51
-#: ../../source/standard/complaint.rst:56
-#: ../../source/standard/complaint.rst:125
 msgid "string, :ref:`date`, auto-generated"
 msgstr "рядок, :ref:`date`, генерується автоматично"
 

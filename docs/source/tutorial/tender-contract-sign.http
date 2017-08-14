@@ -1,4 +1,4 @@
-PATCH /api/2.3/tenders/f860f9fe94574d729c87f81cea222b46/contracts/be93b79784d745eaa2bb651168e319df?acc_token=b84904c40e484b2e9be9af92d1cca8ae HTTP/1.0
+PATCH /api/2.3/tenders/44c7f9d034dd48629bee829830d084ec/contracts/fa6a13ecfa434c87af90afa3e13a4c09?acc_token=fa100b2f961a46b79f166acd90e1b4bc HTTP/1.0
 Authorization: Basic YnJva2VyOg==
 Content-Length: 30
 Content-Type: application/json
@@ -20,30 +20,30 @@ Content-Type: application/json; charset=UTF-8
     "documents": [
       {
         "hash": "md5:00000000000000000000000000000000", 
-        "title": "contract_first_document.doc",
-        "url": "http://public.docs-sandbox.openprocurement.org/get/e31c10ac0e7740e4afa7f99bef99ae74?KeyID=661750a8&Signature=UkMdxxPVsjQDmoHg61O6un8hZZ0bNgvJsyH24hiJSJpfmrsYr4UwPoiHTpblc%2FWV5gMdjzMPIqkqhB7%2Ff4hECw%253D%253D", 
+        "title": "contract_first_document.doc", 
+        "url": "http://public.docs-sandbox.openprocurement.org/get/3d1ee2c4045e4eeaa2b8d7fe2aec48e3?KeyID=49dd14eb&Signature=2WDw5hrx8l0Pk8Kpcmp5e%2Fpa0Nl5Hz9ExGxO2FNobSldFsgDEyGSM1hL%2FAObRpdgDWIQZqqy9FGmR%252BLeyMB5BQ%253D%253D", 
         "format": "application/msword", 
         "documentOf": "tender", 
-        "datePublished": "2017-06-24T18:05:48.872623+03:00", 
-        "id": "a34e02a52a2b457cb540baed8690a41d", 
-        "dateModified": "2017-06-24T18:05:48.872657+03:00"
+        "datePublished": "2017-07-25T17:49:24.056973+03:00", 
+        "id": "b9cbff9ae6a24bbb9c1cb80dc532765c", 
+        "dateModified": "2017-07-25T17:49:24.056992+03:00"
       }, 
       {
         "hash": "md5:00000000000000000000000000000000", 
-        "title": "contract_second_document.doc",
-        "url": "http://public.docs-sandbox.openprocurement.org/get/9c6d6cbe55724eb4bee1cb3599c0c81f?KeyID=661750a8&Signature=YTVIGEbzrT%252Bw40%252BuIMX4kUVI3Z6z9IhpEWP6SSm93Q%2FeWCrk4J%2F1oC7ABH2FqbQXXvvLR1Wix0fBRKiCT2tUBg%253D%253D", 
+        "title": "contract_second_document.doc", 
+        "url": "http://public.docs-sandbox.openprocurement.org/get/8f69ec3fc751456e89b02e1b73b5202a?KeyID=49dd14eb&Signature=PZoQ%2Fom8ZRWzUpbIt7tYAJvxMxd9rQ9Qvk6zuj9ZYMbx21LO74cAddVl1NjWzLfO7YDTEhhyFGSAxRFi18leBQ%253D%253D", 
         "format": "application/msword", 
         "documentOf": "tender", 
-        "datePublished": "2017-06-24T18:05:49.076192+03:00", 
-        "id": "32850838fb004ac1a41e6fd13d979ec3", 
-        "dateModified": "2017-06-24T18:05:49.076225+03:00"
+        "datePublished": "2017-07-25T17:49:24.156066+03:00", 
+        "id": "a719e6e4c4154b1ab637f220e412b636", 
+        "dateModified": "2017-07-25T17:49:24.156084+03:00"
       }
     ], 
     "items": [
       {
         "description": "футляри до державних нагород", 
         "classification": {
-          "scheme": "CPV", 
+          "scheme": "ДК021", 
           "description": "Cartons", 
           "id": "44617100-9"
         }, 
@@ -62,10 +62,10 @@ Content-Type: application/json; charset=UTF-8
           "locality": "м. Київ"
         }, 
         "deliveryDate": {
-          "startDate": "2017-06-26T18:05:33.770353+03:00", 
-          "endDate": "2017-06-29T18:05:33.770353+03:00"
+          "startDate": "2017-07-27T17:49:15.508651+03:00", 
+          "endDate": "2017-07-30T17:49:15.508651+03:00"
         }, 
-        "id": "19e00fd134d041c0a63f8c6463000392",
+        "id": "d3e749c485954231b9ef3e7951933d5b", 
         "unit": {
           "code": "44617100-9", 
           "name": "item"
@@ -97,19 +97,19 @@ Content-Type: application/json; charset=UTF-8
     ], 
     "contractNumber": "contract #13111", 
     "period": {
-      "startDate": "2017-06-24T18:05:33.802174+03:00", 
-      "endDate": "2018-06-24T18:05:33.802174+03:00"
+      "startDate": "2017-07-25T17:49:15.526165+03:00", 
+      "endDate": "2018-07-25T17:49:15.526165+03:00"
     }, 
     "value": {
       "currency": "UAH", 
       "amount": 238.0, 
       "valueAddedTaxIncluded": true
-    },
-    "dateSigned": "2017-06-24T18:05:49.224287+03:00", 
-    "date": "2017-06-24T18:05:49.558156+03:00", 
-    "awardID": "9c9dd19ea23d43c49ca0d903e02c4fda", 
-    "id": "be93b79784d745eaa2bb651168e319df", 
-    "contractID": "UA-2017-06-24-000001-1"
+    }, 
+    "dateSigned": "2017-07-25T17:49:24.230728+03:00", 
+    "date": "2017-07-25T17:49:24.386696+03:00", 
+    "awardID": "9f3fa995a36c49d298a8c52c170b578f", 
+    "id": "fa6a13ecfa434c87af90afa3e13a4c09", 
+    "contractID": "UA-2017-07-25-000001-1"
   }
 }
 

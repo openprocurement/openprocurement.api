@@ -15,37 +15,24 @@ msgstr ""
 "=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
 "X-Generator: Lokalize 2.0\n"
 
-#: ../../source/standard/document.rst:9
 msgid "Document"
 msgstr "Document"
 
-#: ../../source/standard/document.rst:12
 msgid "Schema"
 msgstr "Схема"
 
-#: ../../source/standard/document.rst:18
-#: ../../source/standard/document.rst:123
-#: ../../source/standard/document.rst:147
-#: ../../source/standard/document.rst:153
-#: ../../source/standard/document.rst:162
 msgid "string"
 msgstr "рядок"
 
-#: ../../source/standard/document.rst:111
-#: ../../source/standard/document.rst:117
 msgid "string, multilingual"
 msgstr "рядок, багатомовний"
 
-#: ../../source/standard/document.rst:135
-#: ../../source/standard/document.rst:141
 msgid "string, :ref:`date`"
 msgstr "рядок, :ref:`date`"
 
-#: ../../source/standard/document.rst:113
 msgid "|ocdsDescription| The document title."
 msgstr "|ocdsDescription| Назва документа."
 
-#: ../../source/standard/document.rst:119
 msgid ""
 "|ocdsDescription| A short description of the document. In the event the "
 "document is not accessible online, the description field can be used to "
@@ -55,7 +42,6 @@ msgstr ""
 "онлайн, то поле опису можна використати для вказання способу отримання копії"
 " документа."
 
-#: ../../source/standard/document.rst:125
 msgid ""
 "|ocdsDescription| The format of the document taken from the `IANA Media "
 "Types code list <http://www.iana.org/assignments/media-types/>`_, with the "
@@ -67,19 +53,15 @@ msgstr ""
 "значенням 'offline/print', що буде використовуватись, коли запис цього "
 "документа використовується для опису офлайнової публікації документа."
 
-#: ../../source/standard/document.rst:131
 msgid "|ocdsDescription| Direct link to the document or attachment."
 msgstr "|ocdsDescription| Пряме посилання на документ чи додаток."
 
-#: ../../source/standard/document.rst:137
 msgid "|ocdsDescription| The date on which the document was first published."
 msgstr "|ocdsDescription| Дата, коли документ був опублікований вперше."
 
-#: ../../source/standard/document.rst:143
 msgid "|ocdsDescription| Date that the document was last modified"
 msgstr "|ocdsDescription| Дата, коли документ був змінений востаннє."
 
-#: ../../source/standard/document.rst:149
 msgid ""
 "|ocdsDescription| Specifies the language of the linked document using either"
 " two-digit `ISO 639-1 "
@@ -92,11 +74,9 @@ msgstr ""
 "розширений `BCP47 language tags <http://www.w3.org/International/articles"
 "/language-tags/>`_."
 
-#: ../../source/standard/document.rst:20
 msgid "Possible values for :ref:`tender`"
 msgstr "Можливі значення для :ref:`tender`"
 
-#: ../../source/standard/document.rst:25
 msgid ""
 "The formal notice that gives details of a tender. This may be a link to a "
 "downloadable document, to a web page, or to an official gazette in which the"
@@ -106,7 +86,6 @@ msgstr ""
 "на документ, веб-сторінку, чи на офіційний бюлетень, де розміщено "
 "повідомлення."
 
-#: ../../source/standard/document.rst:29
 msgid ""
 "Information for potential suppliers, describing the goals of the contract "
 "(e.g. goods and services to be procured), and the bidding process."
@@ -114,66 +93,51 @@ msgstr ""
 "Інформація для потенційних постачальників, що описує цілі договору "
 "(наприклад, товари та послуги, які будуть закуплені) і процес торгів."
 
-#: ../../source/standard/document.rst:23
 msgid "`notice` - **Tender notice**"
 msgstr "`notice` - **Повідомлення про закупівлю**"
 
-#: ../../source/standard/document.rst:27
 msgid "`biddingDocuments` - **Bidding Documents**"
 msgstr "`biddingDocuments` - **Документи закупівлі**"
 
-#: ../../source/standard/document.rst:31
 msgid "`technicalSpecifications` - **Technical Specifications**"
 msgstr "`technicalSpecifications` - **Технічні специфікації**"
 
-#: ../../source/standard/document.rst:33
 msgid "Detailed technical information about goods or services to be provided."
 msgstr ""
 "Детальна технічна інформація про товари або послуги, що повинні бути надані."
 
-#: ../../source/standard/document.rst:35
 msgid "`evaluationCriteria` - **Evaluation Criteria**"
 msgstr "`evaluationCriteria` - **Критерії оцінки**"
 
-#: ../../source/standard/document.rst:37
 msgid "Information about how bids will be evaluated."
 msgstr "Інформація про те, як будуть оцінюватись пропозиції."
 
-#: ../../source/standard/document.rst:39
 msgid "`clarifications` - **Clarifications to bidders questions**"
 msgstr "`clarifications` - **Пояснення до питань заданих учасниками**"
 
-#: ../../source/standard/document.rst:41
 msgid "Including replies to issues raised in pre-bid conferences."
 msgstr "Включає відповіді на питання, підняті на передтендерних конференціях."
 
-#: ../../source/standard/document.rst:43
 msgid "`eligibilityCriteria` - **Eligibility Criteria**"
 msgstr "`eligibilityCriteria` - **Критерії прийнятності**"
 
-#: ../../source/standard/document.rst:45
 msgid "Detailed documents about the eligibility of bidders."
 msgstr "Докладні документи про критерії відбору."
 
-#: ../../source/standard/document.rst:47
 msgid "`shortlistedFirms` - **Shortlisted Firms**"
 msgstr "`shortlistedFirms` - **Фірми у короткому списку**"
 
-#: ../../source/standard/document.rst:49
 msgid ""
 "`riskProvisions` - **Provisions for management of risks and liabilities**"
 msgstr ""
 "`riskProvisions` - **Положення для управління ризиками та зобов'язаннями**"
 
-#: ../../source/standard/document.rst:51
 msgid "`billOfQuantity` - **Bill Of Quantity**"
 msgstr "`billOfQuantity` - **Кошторис**"
 
-#: ../../source/standard/document.rst:53
 msgid "`bidders` - **Information on bidders**"
 msgstr "`bidders` - **Інформація про учасників**"
 
-#: ../../source/standard/document.rst:55
 msgid ""
 "Information on bidders or participants, their validation documents and any "
 "procedural exemptions for which they qualify."
@@ -181,15 +145,12 @@ msgstr ""
 "Інформація про учасників, їхні документи для перевірки та будь-які "
 "процесуальні пільги, на які вони можуть претендувати."
 
-#: ../../source/standard/document.rst:64
 msgid "Possible values for :ref:`award`"
 msgstr "Можливі значення для :ref:`award`"
 
-#: ../../source/standard/document.rst:67
 msgid "`notice` - **Award Notice**"
 msgstr "`notice` - **Повідомлення про рішення**"
 
-#: ../../source/standard/document.rst:69
 msgid ""
 "The formal notice that gives details of the contract award. This may be a "
 "link to a downloadable document, to a web page, or to an official gazette in"
@@ -199,11 +160,9 @@ msgstr ""
 "Це може бути посилання на документ, веб-сторінку, чи на офіційний бюлетень, "
 "де розміщено повідомлення."
 
-#: ../../source/standard/document.rst:71
 msgid "`evaluationReports` - **Evaluation report**"
 msgstr "`evaluationReports` - **Звіт про оцінку**"
 
-#: ../../source/standard/document.rst:73
 msgid ""
 "Report on the evaluation of the bids and the application of the evaluation "
 "criteria, including the justification fo the award."
@@ -211,23 +170,18 @@ msgstr ""
 "Звіт про оцінку пропозицій і застосування критеріїв оцінки, у тому числі, "
 "обґрунтування рішення про визначення переможця."
 
-#: ../../source/standard/document.rst:75
 msgid "`winningBid` - **Winning Bid**"
 msgstr "`winningBid` - **Пропозиція, що перемогла**"
 
-#: ../../source/standard/document.rst:77
 msgid "`complaints` - **Complaints and decisions**"
 msgstr "`complaints` - **Скарги та рішення**"
 
-#: ../../source/standard/document.rst:80
 msgid "Possible values for :ref:`contract`"
 msgstr "Можливі значення для :ref:`contract`"
 
-#: ../../source/standard/document.rst:83
 msgid "`notice` - **Contract notice**"
 msgstr "`notice` - **Повідомлення про договір**"
 
-#: ../../source/standard/document.rst:85
 msgid ""
 "The formal notice that gives details of a contract being signed and valid to"
 " start implementation. This may be a link to a downloadable document, to a "
@@ -237,82 +191,62 @@ msgstr ""
 "реалізації. Це може бути посилання на документ, веб-сторінку, чи на "
 "офіційний бюлетень, де розміщено повідомлення."
 
-#: ../../source/standard/document.rst:87
 msgid "`contractSigned` - **Signed Contract**"
 msgstr "`contractSigned` - **Підписаний договір**"
 
-#: ../../source/standard/document.rst:89
 msgid "`contractArrangements` - **Arrangements for ending contract**"
 msgstr "`contractArrangements` - **Заходи для припинення договору**"
 
-#: ../../source/standard/document.rst:91
 msgid "`contractSchedule` - **Schedules and milestones**"
 msgstr "`contractSchedule` - **Розклад та етапи**"
 
-#: ../../source/standard/document.rst:93
 msgid "`contractAnnexe` - **Annexes to the Contract**"
 msgstr "`contractAnnexe` - **Додатки до договору**"
 
-#: ../../source/standard/document.rst:95
 msgid "`contractGuarantees` - **Guarantees**"
 msgstr "`contractGuarantees` - **Забезпечення тендерних пропозицій**"
 
-#: ../../source/standard/document.rst:97
 msgid "`subContract` - **Subcontracts**"
 msgstr "`subContract` - **Субпідряд**"
 
-#: ../../source/standard/document.rst:57
 msgid "`conflictOfInterest` - **Conflicts of interest uncovered**"
 msgstr "`conflictOfInterest` - **Виявлені конфлікти інтересів**"
 
-#: ../../source/standard/document.rst:59
 msgid "`debarments` - **Debarments issued**"
 msgstr "`debarments` - **Відмова у допуску до закупівлі**"
 
-#: ../../source/standard/document.rst:155
 msgid "Possible values are:"
 msgstr "Можливі значення:"
 
-#: ../../source/standard/document.rst:157
 msgid "`tender`"
 msgstr "`tender`"
 
-#: ../../source/standard/document.rst:158
 msgid "`item`"
 msgstr "`item`"
 
-#: ../../source/standard/document.rst:159
 msgid "`lot`"
 msgstr "`lot`"
 
-#: ../../source/standard/document.rst:164
 msgid "Id of related :ref:`lot` or :ref:`item`."
 msgstr "ID пов’язаних :ref:`lot` або :ref:`item`."
 
-#: ../../source/standard/document.rst:15
-#: ../../source/standard/document.rst:129
 msgid "string, auto-generated"
 msgstr "рядок, генерується автоматично"
 
-#: ../../source/standard/document.rst:61
 msgid "`contractProforma` - **Draft contract**"
 msgstr "`contractProforma` - **Проект договору**"
 
-#: ../../source/standard/document.rst:100
 msgid "Possible values for :ref:`bid`"
 msgstr "Можливі значення для :ref:`bid`"
 
-#: ../../source/standard/document.rst:103
 msgid "`commercialProposal` - **Сommercial proposal**"
 msgstr "`commercialProposal` - **Цінова пропозиція**"
 
-#: ../../source/standard/document.rst:107
 msgid "`eligibilityDocuments` - **Eligibility documents**"
 msgstr ""
 "`eligibilityDocuments` - **Документи, що підтверджують відповідність** (в "
 "тому числі, відповідність вимогам ст. 17)"
 
-#: ../../source/standard/document.rst:105
 msgid "`qualificationDocuments` - **Qualification documents**"
 msgstr ""
 "`qualificationDocuments` - **Документи, що підтверджують кваліфікацію**"

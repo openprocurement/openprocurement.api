@@ -1,6 +1,6 @@
-POST /api/2.3/tenders/f860f9fe94574d729c87f81cea222b46/bids HTTP/1.0
+POST /api/2.3/tenders/44c7f9d034dd48629bee829830d084ec/bids HTTP/1.0
 Authorization: Basic YnJva2VyOg==
-Content-Length: 1377
+Content-Length: 1373
 Content-Type: application/json
 Host: api-sandbox.openprocurement.org
 
@@ -8,18 +8,18 @@ Host: api-sandbox.openprocurement.org
   "data": {
     "documents": [
       {
-        "url": "http://public.docs-sandbox.openprocurement.org/get/a6a010ec141e4c2b8d6197d3f1c68f0f?KeyID=661750a8&Signature=%2BFDxLL7Ss52mLPP%2Fk6dvrpXNgmSSOAbMcGqLelmLr4TekhvK%2F5oXR5%2BidbLq9OqQpkfjF8VUeLCrsHS%2BmOfBBQ%3D%3D", 
+        "url": "http://public.docs-sandbox.openprocurement.org/get/2a2d0262a6174c6bbf1b3113d0e2eaa1?KeyID=49dd14eb&Signature=H1w0w%2F05tyvdsOyUtD2VCotbJBuGqHkIZbBHsWndFXfJbaUZiYYobWiNDArFbzmjVaawPMVu6SilRowJwjoxDw%3D%3D", 
         "title": "Proposal_part1.pdf", 
         "hash": "md5:00000000000000000000000000000000", 
         "format": "application/pdf"
       }, 
       {
-        "url": "http://public.docs-sandbox.openprocurement.org/get/ad2e984d49f541689ca0ed155adef063?KeyID=661750a8&Signature=Rli79c00TqvfjP6fnbhHdDnqiniIJcc8I2%2Bc%2BouweWabNxLBajvq3r8ddf3jyaSjD3F5xqYPBkqnQUyawbdIDw%3D%3D", 
+        "url": "http://public.docs-sandbox.openprocurement.org/get/83c591c3759c4c91bea684b023328a34?KeyID=49dd14eb&Signature=FrmONZeeY5fhynyx6MAfQCdIN%2BIhGUrYXhWynUzl%2FinuwkaR3G%2BmH0sYXvSJ0txxFHT92ZXB%2FV30qWJhcS0ZDA%3D%3D", 
         "title": "Proposal_part2.pdf", 
         "hash": "md5:00000000000000000000000000000000", 
         "format": "application/pdf"
       }
-    ],
+    ], 
     "value": {
       "amount": 499
     }, 
@@ -51,37 +51,36 @@ Host: api-sandbox.openprocurement.org
 
 201 Created
 Content-Type: application/json; charset=UTF-8
-Location: http://api-sandbox.openprocurement.org/api/2.3/tenders/f860f9fe94574d729c87f81cea222b46/bids/3310692784ce42bfb7cd8fac8add180f
+Location: http://api-sandbox.openprocurement.org/api/2.3/tenders/44c7f9d034dd48629bee829830d084ec/bids/8750483e4fa3427294a9a5f491b00fbb
 
 {
   "access": {
-    "token": "cbef7d4282894ae9b51eae637d97b2c6"
+    "token": "63981df0a661403c9c9140fde1999f4e"
   }, 
   "data": {
-    "date": "2016-07-21T17:18:07.358915+03:00", 
-    "status": "active",
+    "status": "active", 
     "documents": [
       {
         "hash": "md5:00000000000000000000000000000000", 
         "title": "Proposal_part1.pdf", 
-        "url": "http://api-sandbox.openprocurement.org/api/2.3/tenders/f860f9fe94574d729c87f81cea222b46/bids/3310692784ce42bfb7cd8fac8add180f/documents/f872e90507f14f48bca386fe0eadf502?download=a6a010ec141e4c2b8d6197d3f1c68f0f", 
+        "url": "http://api-sandbox.openprocurement.org/api/2.3/tenders/44c7f9d034dd48629bee829830d084ec/bids/8750483e4fa3427294a9a5f491b00fbb/documents/fe9b4fa6b4394b0da9fe9a62486e2d6a?download=2a2d0262a6174c6bbf1b3113d0e2eaa1", 
         "format": "application/pdf", 
         "documentOf": "tender", 
-        "datePublished": "2017-06-24T18:05:47.259310+03:00", 
-        "id": "f872e90507f14f48bca386fe0eadf502", 
-        "dateModified": "2017-06-24T18:05:47.259343+03:00"
+        "datePublished": "2017-07-25T17:49:23.271633+03:00", 
+        "id": "fe9b4fa6b4394b0da9fe9a62486e2d6a", 
+        "dateModified": "2017-07-25T17:49:23.271649+03:00"
       }, 
       {
         "hash": "md5:00000000000000000000000000000000", 
         "title": "Proposal_part2.pdf", 
-        "url": "http://api-sandbox.openprocurement.org/api/2.3/tenders/f860f9fe94574d729c87f81cea222b46/bids/3310692784ce42bfb7cd8fac8add180f/documents/a6cf8c26526e4ccb94e23fa979c3cd58?download=ad2e984d49f541689ca0ed155adef063", 
+        "url": "http://api-sandbox.openprocurement.org/api/2.3/tenders/44c7f9d034dd48629bee829830d084ec/bids/8750483e4fa3427294a9a5f491b00fbb/documents/0d3ad1723ca04144ba98e1cc8913eb44?download=83c591c3759c4c91bea684b023328a34", 
         "format": "application/pdf", 
         "documentOf": "tender", 
-        "datePublished": "2017-06-24T18:05:47.260182+03:00", 
-        "id": "a6cf8c26526e4ccb94e23fa979c3cd58", 
-        "dateModified": "2017-06-24T18:05:47.260213+03:00"
+        "datePublished": "2017-07-25T17:49:23.272062+03:00", 
+        "id": "0d3ad1723ca04144ba98e1cc8913eb44", 
+        "dateModified": "2017-07-25T17:49:23.272078+03:00"
       }
-    ],
+    ], 
     "value": {
       "currency": "UAH", 
       "amount": 499.0, 
@@ -109,8 +108,8 @@ Location: http://api-sandbox.openprocurement.org/api/2.3/tenders/f860f9fe94574d7
         }
       }
     ], 
-    "date": "2017-06-24T18:05:47.258272+03:00", 
-    "id": "3310692784ce42bfb7cd8fac8add180f"
+    "date": "2017-07-25T17:49:23.271107+03:00", 
+    "id": "8750483e4fa3427294a9a5f491b00fbb"
   }
 }
 

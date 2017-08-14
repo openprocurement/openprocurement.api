@@ -42,7 +42,6 @@ Contents:
    2pc
    acceleration
    reference
-   merged_contacts
 
 Indices and tables
 ==================

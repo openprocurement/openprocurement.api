@@ -16,35 +16,27 @@ msgstr ""
 "=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
 "X-Generator: Lokalize 2.0\n"
 
-#: ../../source/standard/lot.rst:9
 msgid "Lot"
 msgstr "Lot"
 
-#: ../../source/standard/lot.rst:12
 msgid "Schema"
 msgstr "Схема"
 
-#: ../../source/standard/lot.rst:15
 msgid "string, auto-generated"
 msgstr "рядок, генерується автоматично"
 
-#: ../../source/standard/lot.rst:18 ../../source/standard/lot.rst:23
 msgid "string, multilingual"
 msgstr "рядок, багатомовний"
 
-#: ../../source/standard/lot.rst:20
 msgid "The name of the tender lot."
 msgstr "Назва лота закупівлі."
 
-#: ../../source/standard/lot.rst:25
 msgid "Detailed description of tender lot."
 msgstr "Детальний опис лота закупівлі."
 
-#: ../../source/standard/lot.rst:28 ../../source/standard/lot.rst:41
 msgid ":ref:`value`, required"
 msgstr ":ref:`value`, обов’язково"
 
-#: ../../source/standard/lot.rst:30
 msgid ""
 "Total available tender lot budget. Bids greater then ``value`` will be "
 "rejected."
@@ -52,33 +44,26 @@ msgstr ""
 "Повний доступний бюджет лота закупівлі. Цінові пропозиції, більші ніж "
 "``value``, будуть відхилені."
 
-#: ../../source/standard/lot.rst:33
 msgid ":ref:`Guarantee`"
 msgstr ":ref:`Guarantee`"
 
-#: ../../source/standard/lot.rst:35
 msgid "Bid guarantee"
 msgstr "Забезпечення тендерної пропозиції"
 
-#: ../../source/standard/lot.rst:38
 msgid "string, :ref:`date`, auto-generated"
 msgstr "рядок, :ref:`date`, генерується автоматично"
 
-#: ../../source/standard/lot.rst:43
 msgid "The minimal step of auction (reduction). Validation rules:"
 msgstr "Мінімальний крок аукціону (редукціону). Правила валідації:"
 
-#: ../../source/standard/lot.rst:45
 msgid "`amount` should be less then `Lot.value.amount`"
 msgstr "`amount` повинно бути меншим, ніж `Lot.value.amount`"
 
-#: ../../source/standard/lot.rst:46
 msgid "`currency` should either be absent or match `Lot.value.currency`"
 msgstr ""
 "`currency` повинно або бути відсутнім, або відповідати "
 "`Lot.value.currency`"
 
-#: ../../source/standard/lot.rst:47
 msgid ""
 "`valueAddedTaxIncluded` should either be absent or match "
 "`Lot.value.valueAddedTaxIncluded`"
@@ -86,42 +71,41 @@ msgstr ""
 "`valueAddedTaxIncluded` повинно або бути відсутнім, або відповідати "
 "`Lot.value.valueAddedTaxIncluded`"
 
-#: ../../source/standard/lot.rst:50
 msgid ":ref:`period`, read-only"
 msgstr ":ref:`period`, доступно лише для читання"
 
-#: ../../source/standard/lot.rst:52
 msgid "Period when Auction is conducted."
 msgstr "Період проведення аукціону."
 
-#: ../../source/standard/lot.rst:55
 msgid "url"
 msgstr "URL-адреса"
 
-#: ../../source/standard/lot.rst:57
 msgid "A web address for view auction."
 msgstr "Веб-адреса для перегляду аукціону."
 
-#: ../../source/standard/lot.rst:60
 msgid "string"
 msgstr "рядок"
 
-#: ../../source/standard/lot.rst:63
 msgid "Active tender lot (active)"
 msgstr "Активний лот закупівлі (активний)"
 
-#: ../../source/standard/lot.rst:65
 msgid "Unsuccessful tender lot (unsuccessful)"
 msgstr "Неуспішний лот закупівлі (не відбувся)"
 
-#: ../../source/standard/lot.rst:67
 msgid "Complete tender lot (complete)"
 msgstr "Завершено лот закупівлі (завершено)"
 
-#: ../../source/standard/lot.rst:69
 msgid "Cancelled tender lot (cancelled)"
 msgstr "Скасовано лот закупівлі (скасовано)"
 
-#: ../../source/standard/lot.rst:71
 msgid "Status of the Lot."
 msgstr "Статус лота."
+
+msgid "string, auto-generated"
+msgstr "рядок, генерується автоматично"
+
+msgid ":ref:`Guarantee`"
+msgstr ":ref:`Guarantee`"
+
+msgid "Bid guarantee"
+msgstr "Забезпечення тендерної пропозиції"

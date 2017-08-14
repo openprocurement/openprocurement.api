@@ -1,4 +1,4 @@
-POST /api/2.3/tenders/b5f0fd0ef8684ba997e3cd344fd1d131/awards/6a21aa7f911f424d85e354e59a7e7c84/complaints?acc_token=4d1b40a093f04d0bbcc046a4468b1961 HTTP/1.0
+POST /api/2.3/tenders/81a0e2e3a6134c28bf7e1e1e128be4ec/awards/c77c51eb4dd24069984c68550de429c6/complaints?acc_token=ee5af63604344f8b8f6991d0bdbda7c8 HTTP/1.0
 Authorization: Basic YnJva2VyOg==
 Content-Length: 775
 Content-Type: application/json
@@ -34,11 +34,11 @@ Host: api-sandbox.openprocurement.org
 
 201 Created
 Content-Type: application/json; charset=UTF-8
-Location: http://api-sandbox.openprocurement.org/api/2.3/tenders/b5f0fd0ef8684ba997e3cd344fd1d131/awards/6a21aa7f911f424d85e354e59a7e7c84/complaints/2bc1563d8b8847b89989fa9f46936cdf
+Location: http://api-sandbox.openprocurement.org/api/2.3/tenders/81a0e2e3a6134c28bf7e1e1e128be4ec/awards/c77c51eb4dd24069984c68550de429c6/complaints/f2b1bdd5f6134a41a6e4538602d43101
 
 {
   "access": {
-    "token": "1701194854bd4ab0bda89d03fababb85"
+    "token": "bab27e9244de4fe3b55ddda229cf0048"
   }, 
   "data": {
     "status": "draft", 
@@ -63,11 +63,11 @@ Location: http://api-sandbox.openprocurement.org/api/2.3/tenders/b5f0fd0ef8684ba
         "region": "м. Вінниця", 
         "locality": "м. Вінниця"
       }
-    },
-    "complaintID": "UA-2017-06-24-000001.5", 
-    "date": "2017-06-24T18:05:40.414801+03:00", 
+    }, 
+    "complaintID": "UA-2017-07-25-000001.5", 
+    "date": "2017-07-25T17:49:19.550749+03:00", 
     "type": "claim", 
-    "id": "2bc1563d8b8847b89989fa9f46936cdf"
+    "id": "f2b1bdd5f6134a41a6e4538602d43101"
   }
 }
 

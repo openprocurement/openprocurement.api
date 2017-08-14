@@ -1,4 +1,4 @@
-PATCH /api/2.3/tenders/b5f0fd0ef8684ba997e3cd344fd1d131/complaints/2c0ea8dac10745688bef0736a884d06f?acc_token=695f070b088c4fc0818a6bf700bbe0bd HTTP/1.0
+PATCH /api/2.3/tenders/81a0e2e3a6134c28bf7e1e1e128be4ec/complaints/ea2c94e9e49748adbb91c928f6693bd0?acc_token=7091655963f44aafab5d2b507a150b9a HTTP/1.0
 Authorization: Basic YnJva2VyOg==
 Content-Length: 51
 Content-Type: application/json
@@ -22,13 +22,13 @@ Content-Type: application/json; charset=UTF-8
       {
         "hash": "md5:00000000000000000000000000000000", 
         "author": "complaint_owner", 
-        "title": "Complaint_Attachement.pdf",
-        "url": "http://public.docs-sandbox.openprocurement.org/get/b5ced5d191c34b94b21dcb1cd5d0c3a3?KeyID=e440c6be&Signature=mmCk8%2FSJt63Yt4LLGw6DN7MPjtuDZ7EvepNvuJgtErPiaC2KVtfSLkYCUTl566KvwnEpflED2eKJAMVtytsRCQ%253D%253D", 
+        "title": "Complaint_Attachement.pdf", 
+        "url": "http://public.docs-sandbox.openprocurement.org/get/2ff55d051e9d4b21b2274a9e5e1b8007?KeyID=425d5e40&Signature=DpIvAm6k7Zj5FYlYi7mq0D3IFg6qoZfqkixZwYbsjGFxEw5xi1iYFv2MUIFYfPM0CdFqRAwzDy91seR%252BauAnDQ%253D%253D", 
         "format": "application/pdf", 
         "documentOf": "tender", 
-        "datePublished": "2017-06-24T18:05:36.193792+03:00", 
-        "id": "18bfde167f6b4d38b8309e922e73f464", 
-        "dateModified": "2017-06-24T18:05:36.193827+03:00"
+        "datePublished": "2017-07-25T17:49:16.913990+03:00", 
+        "id": "ec4734d8ac6d470fbd6fcd1db5ecc9b9", 
+        "dateModified": "2017-07-25T17:49:16.914019+03:00"
       }
     ], 
     "description": "complaint description", 
@@ -36,14 +36,14 @@ Content-Type: application/json; charset=UTF-8
     "resolutionType": "resolved", 
     "type": "claim", 
     "satisfied": true, 
-    "tendererAction": "Виправлено неконкурентні умови",
-    "dateAnswered": "2017-06-24T18:05:36.556112+03:00", 
-    "tendererActionDate": "2017-06-24T18:05:36.556140+03:00", 
-    "dateSubmitted": "2017-06-24T18:05:36.296586+03:00", 
-    "complaintID": "UA-2017-06-24-000001.1", 
-    "date": "2017-06-24T18:05:36.671177+03:00", 
+    "tendererAction": "Виправлено неконкурентні умови", 
+    "dateAnswered": "2017-07-25T17:49:17.214330+03:00", 
+    "tendererActionDate": "2017-07-25T17:49:17.214356+03:00", 
+    "dateSubmitted": "2017-07-25T17:49:16.994558+03:00", 
+    "complaintID": "UA-2017-07-25-000001.1", 
+    "date": "2017-07-25T17:49:17.322651+03:00", 
     "resolution": "Виправлено неконкурентні умови", 
-    "id": "2c0ea8dac10745688bef0736a884d06f"
+    "id": "ea2c94e9e49748adbb91c928f6693bd0"
   }
 }
 

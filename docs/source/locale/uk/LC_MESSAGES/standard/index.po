@@ -13,11 +13,9 @@ msgstr ""
 "X-Generator: Poedit 1.7.6\n"
 "Language: uk\n"
 
-#: ../../source/standard/index.rst:5
 msgid "Data Standard"
 msgstr "Стандарт даних"
 
-#: ../../source/standard/index.rst:7
 msgid ""
 "Data standard is modelled along the `Open Contracting Standard <http://"
 "standard.open-contracting.org/>`_ with extensions in areas that were not "
