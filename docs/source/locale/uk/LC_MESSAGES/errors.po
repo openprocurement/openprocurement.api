@@ -142,17 +142,14 @@ msgstr ""
 " JSON містить добре сформовані (тобто синтаксично правильні), але семантично"
 " помилкові, інструкції у форматі JSON."
 
-#: ../../source/errors.rst:43
 msgid "410"
 msgstr "410"
 
-#: ../../source/errors.rst:41
 msgid ""
 "Archived. The resource requested is not and will not be available."
 msgstr ""
 "Архівовано. Шуканий ресурс не є й не буде доступним."
 
-#: ../../source/errors.rst:49
 msgid "429"
 msgstr "429"
 

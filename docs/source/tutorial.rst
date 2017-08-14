@@ -185,6 +185,9 @@ And individual answer:
 Registering bid
 ---------------
 
+Step-by-step registration
+~~~~~~~~~~~~~~~~~~~~~~~~~
+
 When ``Tender.tenderingPeriod.startDate`` comes, Tender switches to `active.tendering` status that allows registration of bids.
 
 Bidder can register a bid in `draft` status:
@@ -207,7 +210,10 @@ It is possible to check the uploaded documents:
 .. include:: tutorial/bidder-documents.http
    :code:
 
-For best effect (biggest economy) Tender should have multiple bidders registered:
+Batch-mode registration
+~~~~~~~~~~~~~~~~~~~~~~~
+
+Register bid with documents using one request:
 
 .. include:: tutorial/register-2nd-bidder.http
    :code:
