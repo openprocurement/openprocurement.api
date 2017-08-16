@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 import unittest
 
-from openprocurement.api.tests.base import BaseTenderWebTest, test_tender_data, test_features_tender_data, test_organization
+from openprocurement.api.tests.base import BaseTenderWebTest, test_features_tender_data, test_organization
 
 
 class TenderBidderResourceTest(BaseTenderWebTest):
@@ -961,7 +961,7 @@ class TenderBidderDocumentWithDSResourceTest(TenderBidderDocumentResourceTest):
                 'title': 'name.doc',
                 'url': self.generate_docservice_url(),
                 'hash': 'md5:' + '0' * 32,
-                'format': 'application/msword',
+                'format': 'application/msword'
             }})
         self.assertEqual(response.status, '201 Created')
         self.assertEqual(response.content_type, 'application/json')
@@ -974,12 +974,14 @@ class TenderBidderDocumentWithDSResourceTest(TenderBidderDocumentResourceTest):
                 'url': self.generate_docservice_url(),
                 'hash': 'md5:' + '0' * 32,
                 'format': 'application/msword',
-                'description': 'test description',
+                'description': 'test description'
             }})
         self.assertEqual(response.status, '200 OK')
         self.assertEqual(response.content_type, 'application/json')
-        self.assertEqual('test description', response.json["data"]["description"])
         self.assertEqual(doc_id, response.json["data"]["id"])
+        self.assertEqual('test description', response.json["data"]['description'])
+        self.assertEqual(response.json['data']['documentOf'], 'tender')
+        self.assertEqual(response.json['data']['format'], 'application/msword')
         self.assertIn(self.bid_id + '/documents/' + doc_id, response.json["data"]["url"])
         key = response.json["data"]["url"].split('?')[-1]
 
@@ -1038,7 +1040,7 @@ class TenderBidderBatchDocumentWithDSResourceTest(BaseTenderWebTest):
     initial_status = 'active.tendering'
 
     def test_create_tender_bidder_with_document_invalid(self):
-        response = self.app.post_json('/tenders/{}/bids'.format( self.tender_id),
+        response = self.app.post_json('/tenders/{}/bids'.format(self.tender_id),
             {'data': {
                  'tenderers': [test_organization],
                  "value": {"amount": 500},
@@ -1068,7 +1070,7 @@ class TenderBidderBatchDocumentWithDSResourceTest(BaseTenderWebTest):
         self.assertEqual(response.content_type, 'application/json')
         self.assertEqual(response.json['errors'][0]["description"], "Can add document only from document service.")
 
-        response = self.app.post_json('/tenders/{}/bids'.format( self.tender_id),
+        response = self.app.post_json('/tenders/{}/bids'.format(self.tender_id),
             {'data': {
                  'tenderers': [test_organization],
                  "value": {"amount": 500},
@@ -1143,7 +1145,6 @@ class TenderBidderBatchDocumentWithDSResourceTest(BaseTenderWebTest):
         self.assertEqual(response.status, '422 Unprocessable Entity')
         self.assertEqual(response.content_type, 'application/json')
         self.assertEqual(response.json['errors'][0]["description"], "Document url invalid.")
-
 
     def test_create_tender_bidder_with_document(self):
         response = self.app.post_json('/tenders/{}/bids'.format( self.tender_id),
@@ -1221,7 +1222,6 @@ class TenderBidderBatchDocumentWithDSResourceTest(BaseTenderWebTest):
         self.assertEqual(response.content_type, 'application/json')
         self.assertEqual(document['id'], response.json["data"]["id"])
         self.assertEqual('name.doc', response.json["data"]["title"])
-
 
     def test_create_tender_bidder_with_documents(self):
         dateModified = self.db.get(self.tender_id).get('dateModified')
@@ -1315,7 +1315,6 @@ class TenderBidderBatchDocumentWithDSResourceTest(BaseTenderWebTest):
             self.assertEqual(response.status, '200 OK')
             self.assertEqual(response.content_type, 'application/json')
             self.assertEqual(document['id'], response.json["data"]["id"])
-
 
 
 def suite():

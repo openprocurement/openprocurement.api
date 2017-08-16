@@ -138,7 +138,7 @@ test_features_tender_data["features"] = [
 test_bids = [
     {
         "tenderers": [
-            test_organization
+            deepcopy(test_organization)
         ],
         "value": {
             "amount": 469,
@@ -148,7 +148,7 @@ test_bids = [
     },
     {
         "tenderers": [
-            test_organization
+            deepcopy(test_organization)
         ],
         "value": {
             "amount": 479,
@@ -412,7 +412,6 @@ class BaseTenderWebTest(BaseWebTest):
 
         authorization = self.app.authorization
         self.app.authorization = ('Basic', ('chronograph', ''))
-        #response = self.app.patch_json('/tenders/{}'.format(self.tender_id), {'data': {'id': self.tender_id}})
         response = self.app.get('/tenders/{}'.format(self.tender_id))
         self.app.authorization = authorization
         self.assertEqual(response.status, '200 OK')
@@ -504,6 +503,20 @@ class BaseTenderWebTest(BaseWebTest):
 
     def tearDownDS(self):
         SESSION.request = self._srequest
+
+    def edit_award_complaint(self, award_id, award_compliant_id, token, data):
+        """
+        Creates PATCH request to edit award complaint and checks response fields.
+        :param award_id: uuid4().hex
+        :param award_compliant_id: uuid4().hex
+        :param token: uuid4().hex, tender's token or award compliant token
+        :param data: dict
+        """
+        response = self.app.patch_json('/tenders/{}/awards/{}/complaints/{}?acc_token={}'.
+                                       format(self.tender_id, award_id, award_compliant_id, token), data)
+        self.assertEqual(response.status, '200 OK')
+        self.assertEqual(response.content_type, 'application/json')
+        self.assertDictContainsSubset(data['data'], response.json['data'])
 
     def tearDown(self):
         if self.docservice:

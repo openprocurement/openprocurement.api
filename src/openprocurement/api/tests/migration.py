@@ -763,6 +763,7 @@ class MigrateTest(BaseWebTest):
         self.assertIn('KeyID=', migrated_item['documents'][0]['url'])
         self.assertIn('Signature=', migrated_item['documents'][0]['url'])
 
+
     def test_migrate_from23to24(self):
         set_db_schema_version(self.db, 23)
         self.app.app.registry.docservice_url = 'http://localhost.ds'
@@ -840,7 +841,6 @@ class MigrateTest(BaseWebTest):
 
         # url remained the same as before migration
         self.assertIn("http://localhost.ds/get/b893bf5d2fb44a26bd6896178afe5953?KeyID=i_am_ds_url_lalalalala", migrated_bid['documents'][2]['url'])
-
 
 
 def suite():

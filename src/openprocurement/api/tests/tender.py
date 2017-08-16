@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
 import unittest
-from pkg_resources import get_distribution
 from copy import deepcopy
 from datetime import timedelta
 
@@ -563,11 +562,19 @@ class TenderResourceTest(BaseWebTest):
         self.assertEqual(response.json['status'], 'error')
         if get_now() > CPV_ITEMS_CLASS_FROM:
             self.assertEqual(response.json['errors'], [
-                {u'description': [{u'additionalClassifications': [u"One of additional classifications should be one of [ДК003, ДК015, ДК018, specialNorms]."]}], u'location': u'body', u'name': u'items'}
+                {u'description': [
+                    {u'additionalClassifications': [
+                        u"One of additional classifications should be one of [ДК003, ДК015, ДК018, specialNorms]."
+                    ]}
+                ], u'location': u'body', u'name': u'items'}
             ])
         else:
             self.assertEqual(response.json['errors'], [
-                {u'description': [{u'additionalClassifications': [u"One of additional classifications should be one of [ДКПП, NONE, ДК003, ДК015, ДК018]."]}], u'location': u'body', u'name': u'items'}
+                {u'description': [
+                    {u'additionalClassifications': [
+                        u"One of additional classifications should be one of [ДКПП, NONE, ДК003, ДК015, ДК018]."
+                    ]}
+                ], u'location': u'body', u'name': u'items'}
             ])
 
         data = test_organization["contactPoint"]["telephone"]
@@ -609,7 +616,9 @@ class TenderResourceTest(BaseWebTest):
         self.assertEqual(response.json['status'], 'error')
         self.assertIn(u'classification', response.json['errors'][0][u'description'][0])
         self.assertIn(u'id', response.json['errors'][0][u'description'][0][u'classification'])
-        self.assertIn("Value must be one of [u", response.json['errors'][0][u'description'][0][u'classification'][u'id'][0])
+        self.assertIn(
+            "Value must be one of [u", response.json['errors'][0][u'description'][0][u'classification'][u'id'][0]
+        )
 
         cpv = test_tender_data["items"][0]['classification']["id"]
         if get_now() < CPV_BLOCK_FROM:
@@ -624,7 +633,9 @@ class TenderResourceTest(BaseWebTest):
         self.assertEqual(response.json['status'], 'error')
         self.assertIn(u'classification', response.json['errors'][0][u'description'][0])
         self.assertIn(u'id', response.json['errors'][0][u'description'][0][u'classification'])
-        self.assertIn("Value must be one of [u", response.json['errors'][0][u'description'][0][u'classification'][u'id'][0])
+        self.assertIn(
+            "Value must be one of [u", response.json['errors'][0][u'description'][0][u'classification'][u'id'][0]
+        )
 
         data = test_tender_data["items"][0].copy()
         classification = data['classification'].copy()
@@ -1543,6 +1554,7 @@ class TenderResourceTest(BaseWebTest):
         self.assertEqual(response.status, '403 Forbidden')
         self.assertEqual(response.content_type, 'application/json')
         self.assertEqual(response.json['errors'][0]["description"], "Can update document only author")
+
 
 class TenderProcessTest(BaseTenderWebTest):
     setUp = BaseWebTest.setUp

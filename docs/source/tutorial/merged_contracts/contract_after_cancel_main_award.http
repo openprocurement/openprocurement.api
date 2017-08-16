@@ -1,0 +1,152 @@
+GET /api/2.3/tenders/a981052b1e34408e8d6daa4bacfe27c4/contracts?acc_token=e53a917e823d4b9aba2c710ab97cc125 HTTP/1.0
+Authorization: Basic YnJva2VyOg==
+Host: api-sandbox.openprocurement.org
+
+
+200 OK
+Content-Type: application/json; charset=UTF-8
+
+{
+  "data": [
+    {
+      "status": "cancelled", 
+      "items": [
+        {
+          "relatedLot": "cb4a939d3ab640739699093db0166d3e", 
+          "description": "футляри до державних нагород", 
+          "classification": {
+            "scheme": "ДК021", 
+            "description": "Cartons", 
+            "id": "44617100-9"
+          }, 
+          "additionalClassifications": [
+            {
+              "scheme": "ДКПП", 
+              "id": "17.21.1", 
+              "description": "папір і картон гофровані, паперова й картонна тара"
+            }
+          ], 
+          "deliveryAddress": {
+            "postalCode": "79000", 
+            "countryName": "Україна", 
+            "streetAddress": "вул. Банкова 1", 
+            "region": "м. Київ", 
+            "locality": "м. Київ"
+          }, 
+          "deliveryDate": {
+            "startDate": "2017-07-20T13:47:00.256368+03:00", 
+            "endDate": "2017-07-23T13:47:00.256368+03:00"
+          }, 
+          "id": "2d403275890d4e3985c2dcfe5b97fcb9", 
+          "unit": {
+            "code": "44617100-9", 
+            "name": "item"
+          }, 
+          "quantity": 5
+        }
+      ], 
+      "suppliers": [
+        {
+          "contactPoint": {
+            "email": "soleksuk@gmail.com", 
+            "telephone": "+380 (432) 21-69-30", 
+            "name": "Сергій Олексюк"
+          }, 
+          "identifier": {
+            "scheme": "UA-EDR", 
+            "id": "00137256", 
+            "uri": "http://www.sc.gov.ua/"
+          }, 
+          "name": "ДКП «Школяр»", 
+          "address": {
+            "postalCode": "21100", 
+            "countryName": "Україна", 
+            "streetAddress": "вул. Островського, 33", 
+            "region": "м. Вінниця", 
+            "locality": "м. Вінниця"
+          }
+        }
+      ], 
+      "value": {
+        "currency": "UAH", 
+        "amount": 100.0, 
+        "valueAddedTaxIncluded": true
+      }, 
+      "dateSigned": "2017-07-18T13:47:05.051233+03:00", 
+      "date": "2017-07-18T13:47:05.484481+03:00", 
+      "awardID": "19787751eef34e00ae7f90c6f9319d93", 
+      "id": "b5e6c83895e548aabd04389f37639b9e", 
+      "contractID": "UA-2017-07-18-000001-1"
+    }, 
+    {
+      "status": "pending", 
+      "items": [
+        {
+          "relatedLot": "6022d123c71d4c5bbf2e52dc361030f8", 
+          "description": "футляри до державних нагород", 
+          "classification": {
+            "scheme": "ДК021", 
+            "description": "Cartons", 
+            "id": "44617100-9"
+          }, 
+          "additionalClassifications": [
+            {
+              "scheme": "ДКПП", 
+              "id": "17.21.1", 
+              "description": "папір і картон гофровані, паперова й картонна тара"
+            }
+          ], 
+          "deliveryAddress": {
+            "postalCode": "79000", 
+            "countryName": "Україна", 
+            "streetAddress": "вул. Банкова 1", 
+            "region": "м. Київ", 
+            "locality": "м. Київ"
+          }, 
+          "deliveryDate": {
+            "startDate": "2017-07-20T13:47:00.256368+03:00", 
+            "endDate": "2017-07-23T13:47:00.256368+03:00"
+          }, 
+          "id": "8082923c42a14cff8ac624afc0efe5ef", 
+          "unit": {
+            "code": "44617100-9", 
+            "name": "item"
+          }, 
+          "quantity": 5
+        }
+      ], 
+      "suppliers": [
+        {
+          "contactPoint": {
+            "email": "soleksuk@gmail.com", 
+            "telephone": "+380 (432) 21-69-30", 
+            "name": "Сергій Олексюк"
+          }, 
+          "identifier": {
+            "scheme": "UA-EDR", 
+            "id": "00137256", 
+            "uri": "http://www.sc.gov.ua/"
+          }, 
+          "name": "ДКП «Школяр»", 
+          "address": {
+            "postalCode": "21100", 
+            "countryName": "Україна", 
+            "streetAddress": "вул. Островського, 33", 
+            "region": "м. Вінниця", 
+            "locality": "м. Вінниця"
+          }
+        }
+      ], 
+      "value": {
+        "currency": "UAH", 
+        "amount": 100.0, 
+        "valueAddedTaxIncluded": true
+      }, 
+      "date": "2017-07-18T13:47:04.843448+03:00", 
+      "awardID": "445cb629523242d98781a381de2b221e", 
+      "id": "4161ebbef7f7468cb6cb28a64f369de7", 
+      "contractID": "UA-2017-07-18-000001-2"
+    }
+  ]
+}
+
