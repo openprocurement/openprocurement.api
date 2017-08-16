@@ -164,6 +164,8 @@ def main(global_config, **settings):
     config.registry.docservice_password = settings.get('docservice_password')
     config.registry.docservice_upload_url = settings.get('docservice_upload_url')
     config.registry.docservice_key = dockey = Signer(settings.get('dockey', '').decode('hex'))
+    config.registry.auction_module_url = settings.get('auction_url')
+    config.registry.signer = Signer(settings.get('auction_public_key', '').decode('hex'))
     config.registry.keyring = keyring = {}
     dockeys = settings.get('dockeys') if 'dockeys' in settings else dockey.hex_vk()
     for key in dockeys.split('\0'):
