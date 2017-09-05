@@ -967,4 +967,4 @@ def calculate_business_date(date_obj, timedelta_obj, context=None, working_days=
             while date_obj.weekday() in [5, 6] and WORKING_DAYS.get(date_obj.date().isoformat(), True) or WORKING_DAYS.get(date_obj.date().isoformat(), False):
                 date_obj += timedelta(1) if timedelta_obj > timedelta() else -timedelta(1)
         return date_obj
-    return date_obj + timedelta_obj
+    return (date_obj + timedelta_obj).astimezone(TZ)
