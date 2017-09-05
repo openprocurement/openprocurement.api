@@ -1,4 +1,4 @@
-PUT /api/2.3/tenders/44c7f9d034dd48629bee829830d084ec/documents/d087bd91bfb8476b919015c01f3f5e28?acc_token=fa100b2f961a46b79f166acd90e1b4bc HTTP/1.0
+PUT /api/2.3/tenders/f3641d0ba0f042e8b49de06d5c7921af/documents/14f948894bcc4ddc9da4d2129b028116?acc_token=2ef61fa89e8a451ba4149d2f8e31173b HTTP/1.0
 Authorization: Basic YnJva2VyOg==
 Content-Length: 337
 Content-Type: application/json
@@ -6,7 +6,7 @@ Host: api-sandbox.openprocurement.org
 
 {
   "data": {
-    "url": "http://public.docs-sandbox.openprocurement.org/get/6d1826a138bc4fb29f3bc7aa1023e6ca?KeyID=49dd14eb&Signature=2US0WLjJhkwbtzOCfip2VfAOjYI6E%2Bb2SrDBxDrT9xzcUbex4UsxtGG9pbxQf7ZfxkpEp6iLxic%2Bk%2B72SkAGAg%3D%3D", 
+    "url": "http://public.docs-sandbox.openprocurement.org/get/1e600751d31c434987977980878dbd8b?KeyID=459f8ecf&Signature=EC1QzFOXAe%2BawGOy%2FJR3YMrURSrxoUXQMtC%2BIIrTcHlCcL26Uj1%2BSbggyBg1H87VOEn9EBtEgBde0s8zxohcDQ%3D%3D", 
     "title": "AwardCriteria-2.pdf", 
     "hash": "md5:00000000000000000000000000000000", 
     "format": "application/pdf"
@@ -22,12 +22,12 @@ Content-Type: application/json; charset=UTF-8
     "hash": "md5:00000000000000000000000000000000", 
     "author": "tender_owner", 
     "title": "AwardCriteria-2.pdf", 
-    "url": "http://public.docs-sandbox.openprocurement.org/get/6d1826a138bc4fb29f3bc7aa1023e6ca?KeyID=49dd14eb&Signature=uN2gro8zQZX%252BeYRAtswFMtPwR2eHhVgVlwZCr8JwpBd%252BBxiTKZns5uWLr6e094q5It3SIxCXFno%252BTZc2tqBBAQ%253D%253D", 
+    "url": "http://public.docs-sandbox.openprocurement.org/get/1e600751d31c434987977980878dbd8b?KeyID=459f8ecf&Signature=76AeflAK4BuZ734jGky7PBC9Tk3HAmi6UmSE1ElFiy2jLkYGA1%2FMdT7NIF7Hto%2F5PmrqAktZ%2FYovZYW6QptFBg%253D%253D", 
     "format": "application/pdf", 
     "documentOf": "tender", 
-    "datePublished": "2017-07-25T17:49:22.910524+03:00", 
-    "id": "d087bd91bfb8476b919015c01f3f5e28", 
-    "dateModified": "2017-07-25T17:49:22.950692+03:00"
+    "datePublished": "2017-07-25T17:36:56.140078+03:00", 
+    "id": "14f948894bcc4ddc9da4d2129b028116", 
+    "dateModified": "2017-07-25T17:36:56.181719+03:00"
   }
 }
 

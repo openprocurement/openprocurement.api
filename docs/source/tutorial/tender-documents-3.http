@@ -1,4 +1,4 @@
-GET /api/2.3/tenders/44c7f9d034dd48629bee829830d084ec/documents HTTP/1.0
+GET /api/2.3/tenders/f3641d0ba0f042e8b49de06d5c7921af/documents HTTP/1.0
 Authorization: Basic YnJva2VyOg==
 Host: api-sandbox.openprocurement.org
 
@@ -12,25 +12,25 @@ Content-Type: application/json; charset=UTF-8
       "hash": "md5:00000000000000000000000000000000", 
       "description": "document description modified", 
       "title": "Notice.pdf", 
-      "url": "http://public.docs-sandbox.openprocurement.org/get/53e169e286a849f4b4c06412c73fd57f?KeyID=49dd14eb&Signature=zEHTRVdp80Nz1KHqFMZm%252BijjV%252Bx2kdhlFe%252BbNH8JJv4lYm79iUHY%252BbPYROAkFfOmtTd08YKbVHRlLgMo7xhSCQ%253D%253D", 
+      "url": "http://public.docs-sandbox.openprocurement.org/get/33bd696eba8a4877af96fc267df48c21?KeyID=459f8ecf&Signature=ddH8OS09K%252BBpHxgERTqBTtRkfEU1q6Lj65I1JeIn%2FlcdEC6e2eOs936ScnDmRUAtryWyyLR75Zt6aaB1%2FLtWBw%253D%253D", 
       "format": "application/pdf", 
       "documentOf": "tender", 
-      "datePublished": "2017-07-25T17:49:22.822083+03:00", 
+      "datePublished": "2017-07-25T17:36:56.044656+03:00", 
       "author": "tender_owner", 
       "documentType": "technicalSpecifications", 
-      "id": "2e3f51f16e424cc6aaabb17d9770f446", 
-      "dateModified": "2017-07-25T17:49:22.822106+03:00"
+      "id": "8c4f7355fed4463b98eb429237a2e6a5", 
+      "dateModified": "2017-07-25T17:36:56.044677+03:00"
     }, 
     {
       "hash": "md5:00000000000000000000000000000000", 
       "author": "tender_owner", 
       "title": "AwardCriteria-2.pdf", 
-      "url": "http://public.docs-sandbox.openprocurement.org/get/6d1826a138bc4fb29f3bc7aa1023e6ca?KeyID=49dd14eb&Signature=uN2gro8zQZX%252BeYRAtswFMtPwR2eHhVgVlwZCr8JwpBd%252BBxiTKZns5uWLr6e094q5It3SIxCXFno%252BTZc2tqBBAQ%253D%253D", 
+      "url": "http://public.docs-sandbox.openprocurement.org/get/1e600751d31c434987977980878dbd8b?KeyID=459f8ecf&Signature=76AeflAK4BuZ734jGky7PBC9Tk3HAmi6UmSE1ElFiy2jLkYGA1%2FMdT7NIF7Hto%2F5PmrqAktZ%2FYovZYW6QptFBg%253D%253D", 
       "format": "application/pdf", 
       "documentOf": "tender", 
-      "datePublished": "2017-07-25T17:49:22.910524+03:00", 
-      "id": "d087bd91bfb8476b919015c01f3f5e28", 
-      "dateModified": "2017-07-25T17:49:22.950692+03:00"
+      "datePublished": "2017-07-25T17:36:56.140078+03:00", 
+      "id": "14f948894bcc4ddc9da4d2129b028116", 
+      "dateModified": "2017-07-25T17:36:56.181719+03:00"
     }
   ]
 }

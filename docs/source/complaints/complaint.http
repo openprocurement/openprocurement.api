@@ -1,4 +1,4 @@
-GET /api/2.3/tenders/81a0e2e3a6134c28bf7e1e1e128be4ec/complaints/ea2c94e9e49748adbb91c928f6693bd0 HTTP/1.0
+GET /api/2.3/tenders/6e33b56945624315afece8e75af7193c/complaints/3b36519c7e994663a75935a29c0ddbcf HTTP/1.0
 Host: api-sandbox.openprocurement.org
 
 
@@ -13,21 +13,21 @@ Content-Type: application/json; charset=UTF-8
         "hash": "md5:00000000000000000000000000000000", 
         "author": "complaint_owner", 
         "title": "Complaint_Attachement.pdf", 
-        "url": "http://public.docs-sandbox.openprocurement.org/get/2ff55d051e9d4b21b2274a9e5e1b8007?KeyID=425d5e40&Signature=DpIvAm6k7Zj5FYlYi7mq0D3IFg6qoZfqkixZwYbsjGFxEw5xi1iYFv2MUIFYfPM0CdFqRAwzDy91seR%252BauAnDQ%253D%253D", 
+        "url": "http://public.docs-sandbox.openprocurement.org/get/a6eda494834f49f884bc2202b833eb9f?KeyID=1a1ebb61&Signature=HVXI2lfBb%252BTHfNMrSh%2F0cH0hv3YYQ032UDnmB2%252Bu4ntVsOJcqAhScdCfpjFxBUnKOMBTS1co3W35T972IxdpBA%253D%253D", 
         "format": "application/pdf", 
         "documentOf": "tender", 
-        "datePublished": "2017-07-25T17:49:16.913990+03:00", 
-        "id": "ec4734d8ac6d470fbd6fcd1db5ecc9b9", 
-        "dateModified": "2017-07-25T17:49:16.914019+03:00"
+        "datePublished": "2017-07-25T17:36:50.767640+03:00", 
+        "id": "8ebcc96606e941bc89d601c3d11270d1", 
+        "dateModified": "2017-07-25T17:36:50.767661+03:00"
       }
     ], 
     "description": "complaint description", 
     "title": "complaint title", 
-    "dateSubmitted": "2017-07-25T17:49:16.994558+03:00", 
+    "dateSubmitted": "2017-07-25T17:36:50.813612+03:00", 
     "complaintID": "UA-2017-07-25-000001.1", 
-    "date": "2017-07-25T17:49:16.998626+03:00", 
+    "date": "2017-07-25T17:36:50.815647+03:00", 
     "type": "claim", 
-    "id": "ea2c94e9e49748adbb91c928f6693bd0"
+    "id": "3b36519c7e994663a75935a29c0ddbcf"
   }
 }
 
