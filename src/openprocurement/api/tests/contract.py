@@ -3,7 +3,8 @@ import unittest
 from datetime import timedelta
 
 from openprocurement.api.models import get_now
-from openprocurement.api.tests.base import BaseTenderWebTest, test_tender_data, test_bids, test_lots, test_organization
+from openprocurement.api.tests.base import BaseTenderWebTest, test_tender_data, test_bids, test_lots, \
+    test_organization, test_features_tender_data
 
 
 class TenderContractResourceTest(BaseTenderWebTest):
@@ -182,9 +183,9 @@ class TenderContractResourceTest(BaseTenderWebTest):
         self.assertEqual(response.status, '403 Forbidden')
         self.assertEqual(response.json['errors'][0]["description"], "Can\'t update currency for contract value")
 
-        response = self.app.patch_json('/tenders/{}/contracts/{}'.format(self.tender_id, contract['id']), {"data": {"value": {"valueAddedTaxIncluded": False}}}, status=403)
+        response = self.app.patch_json('/tenders/{}/contracts/{}'.format(self.tender_id, contract['id']), {"data": {"value": {"valueAddedTaxPayer": False}}}, status=403)
         self.assertEqual(response.status, '403 Forbidden')
-        self.assertEqual(response.json['errors'][0]["description"], "Can\'t update valueAddedTaxIncluded for contract value")
+        self.assertEqual(response.json['errors'][0]["description"], "Can\'t update valueAddedTaxPayer for contract value")
 
         response = self.app.patch_json('/tenders/{}/contracts/{}'.format(self.tender_id, contract['id']), {"data": {"value": {"amount": 501}}}, status=403)
         self.assertEqual(response.status, '403 Forbidden')
@@ -786,11 +787,776 @@ class Tender2LotContractDocumentResourceTest(BaseTenderWebTest):
         self.assertEqual(response.json['errors'][0]["description"], "Can update document only in active lot status")
 
 
+class TenderContractValueAddedTaxPayer(BaseTenderWebTest):
+    initial_status = 'active.tendering'
+    initial_data = test_features_tender_data
+
+    RESPONSE_CODE = {
+        '200': '200 OK',
+        '201': '201 Created',
+        '403': '403 Forbidden',
+        '422': '422 Unprocessable Entity'
+    }
+
+    def test_create_tender_contract_with_invalid_data(self):
+        # Create bidder
+        response = self.app.post_json(
+            '/tenders/{}/bids'.format(self.tender_id),
+            {'data': {
+                'tenderers': [test_organization],
+                'value': {'amount': 500, 'valueAddedTax': 20, 'valueAddedTaxPayer': False},
+                'parameters': [
+                    {
+                        'code': i['code'],
+                        'value': 0.15,
+                    }
+                    for i in self.initial_data['features']]
+            }}, status=422
+        )
+        self.assertEqual(response.status, self.RESPONSE_CODE['422'])
+        self.assertEqual(response.content_type, 'application/json')
+        self.assertEqual(response.json['status'], 'error')
+        self.assertEqual(
+            response.json['errors'][0],
+            {
+                u'description': [
+                    u'valueAddedTaxPayer of bid should be identical to valueAddedTaxIncluded of value of tender'
+                ],
+                u'location': u'body',
+                u'name': u'value'
+            }
+        )
+
+        # Create bidder
+        response = self.app.post_json(
+            '/tenders/{}/bids'.format(self.tender_id),
+            {'data': {
+                'tenderers': [test_organization],
+                'value': {'amount': 500, 'valueAddedTax': 20, 'valueAddedTaxPayer': True},
+                'parameters': [
+                    {
+                        'code': i['code'],
+                        'value': 0.15,
+                    }
+                    for i in self.initial_data['features']]
+            }}
+        )
+        self.assertEqual(response.status, self.RESPONSE_CODE['201'])
+        self.assertEqual(response.content_type, 'application/json')
+        self.assertTrue(response.json['data']['value']['valueAddedTaxPayer'])
+        self.assertEqual(response.json['data']['value']['valueAddedTax'], 20)
+
+        bid = response.json['data']
+
+        # Change bidder status
+        response = self.app.patch_json(
+            '/tenders/{}/bids/{}?acc_token={}'.format(self.tender_id, bid['id'], self.tender_token),
+            {'data': {'value': {'valueAddedTaxPayer': False}}}, status=422
+        )
+        self.assertEqual(response.status, self.RESPONSE_CODE['422'])
+        self.assertEqual(response.content_type, 'application/json')
+        self.assertEqual(response.json['status'], 'error')
+        self.assertEqual(
+            response.json['errors'][0],
+            {
+                u'description': [
+                    u'valueAddedTaxPayer of bid should be identical to valueAddedTaxIncluded of value of tender'
+                ],
+                u'location': u'body',
+                u'name': u'value'
+            }
+        )
+
+        # Create award
+        self.set_status('active.qualification')
+        response = self.app.post_json(
+            '/tenders/{}/awards'.format(self.tender_id), {'data': {
+                'suppliers': [test_organization],
+                'status': 'pending',
+                'bid_id': bid['id'],
+                'value': {'amount': 100500, 'valueAddedTaxPayer': False}
+            }}
+        )
+        self.assertEqual(response.status, '201 Created')
+        self.assertEqual(response.content_type, 'application/json')
+
+        award = response.json['data']
+
+        # But value:valueAddedTaxPayer currency stays unchanged
+        self.assertTrue(award['value']['valueAddedTaxPayer'])
+        self.assertEqual(award['value']['valueAddedTax'], 20)
+
+        # Path award
+        response = self.app.patch_json(
+            '/tenders/{}/awards/{}?acc_token={}'.format(self.tender_id, award['id'], self.tender_token),
+            {'data': {'value': {'valueAddedTaxPayer': False}}}
+        )
+        self.assertEqual(response.status, self.RESPONSE_CODE['200'])
+        self.assertEqual(response.content_type, 'application/json')
+
+        # Get award
+        response = self.app.get(
+            '/tenders/{}/awards'.format(self.tender_id, award['id'])
+        )
+        self.assertEqual(response.status, self.RESPONSE_CODE['200'])
+        self.assertEqual(response.content_type, 'application/json')
+
+        awards = response.json['data']
+
+        # But value:valueAddedTaxPayer currency stays unchanged
+        self.assertTrue(awards[0]['value']['valueAddedTaxPayer'])
+
+    def test_create_tender_contract(self):
+        # Create bidder with valueAddedTax = 20
+        response = self.app.post_json(
+            '/tenders/{}/bids'.format(self.tender_id),
+            {'data': {
+                'tenderers': [test_organization],
+                'value': {'amount': 500, 'valueAddedTax': 20},
+                'parameters': [
+                    {
+                        'code': i['code'],
+                        'value': 0.15,
+                    }
+                    for i in self.initial_data['features']]
+            }}
+        )
+        self.assertEqual(response.status, self.RESPONSE_CODE['201'])
+        self.assertEqual(response.content_type, 'application/json')
+        self.assertTrue(response.json['data']['value']['valueAddedTaxPayer'])
+        self.assertEqual(response.json['data']['value']['valueAddedTax'], 20)
+
+        bid_vat_20 = response.json['data']
+
+        # Create bidder with valueAddedTax = 7
+        response = self.app.post_json(
+            '/tenders/{}/bids'.format(self.tender_id),
+            {'data': {
+                'tenderers': [test_organization],
+                'value': {'amount': 500, 'valueAddedTax': 7},
+                'parameters': [
+                    {
+                        'code': i['code'],
+                        'value': 0.15,
+                    }
+                    for i in self.initial_data['features']]
+            }}
+        )
+        self.assertEqual(response.status, self.RESPONSE_CODE['201'])
+        self.assertEqual(response.content_type, 'application/json')
+        self.assertTrue(response.json['data']['value']['valueAddedTaxPayer'])
+        self.assertEqual(response.json['data']['value']['valueAddedTax'], 7)
+
+        bid_vat_7 = response.json['data']
+
+        # Create bidder with valueAddedTax = 0
+        response = self.app.post_json(
+            '/tenders/{}/bids'.format(self.tender_id),
+            {'data': {
+                'tenderers': [test_organization],
+                'value': {'amount': 500, 'valueAddedTax': 0},
+                'parameters': [
+                    {
+                        'code': i['code'],
+                        'value': 0.15,
+                    }
+                    for i in self.initial_data['features']]
+            }}
+        )
+        self.assertEqual(response.status, self.RESPONSE_CODE['201'])
+        self.assertEqual(response.content_type, 'application/json')
+        self.assertTrue(response.json['data']['value']['valueAddedTaxPayer'])
+        self.assertEqual(response.json['data']['value']['valueAddedTax'], 0)
+
+        bid_vat_0 = response.json['data']
+
+        # Create first award
+        self.set_status('active.qualification')
+        response = self.app.post_json(
+            '/tenders/{}/awards'.format(self.tender_id), {'data': {
+                'suppliers': [test_organization],
+                'status': 'pending',
+                'bid_id': bid_vat_20['id'],
+                'value': {'amount': 100500}
+            }}
+        )
+        self.assertEqual(response.status, '201 Created')
+        self.assertEqual(response.content_type, 'application/json')
+
+        first_award = response.json['data']
+
+        self.assertTrue(first_award['value']['valueAddedTaxPayer'])
+        self.assertEqual(first_award['value']['valueAddedTax'], 20)
+
+        # Create second award
+        response = self.app.post_json(
+            '/tenders/{}/awards'.format(self.tender_id), {'data': {
+                'suppliers': [test_organization],
+                'status': 'pending',
+                'bid_id': bid_vat_7['id'],
+                'value': {'amount': 100500}
+            }}
+        )
+        self.assertEqual(response.status, '201 Created')
+        self.assertEqual(response.content_type, 'application/json')
+
+        second_award = response.json['data']
+
+        self.assertTrue(second_award['value']['valueAddedTaxPayer'])
+        self.assertEqual(second_award['value']['valueAddedTax'], 7)
+
+        # Create third award
+        response = self.app.post_json(
+            '/tenders/{}/awards'.format(self.tender_id), {'data': {
+                'suppliers': [test_organization],
+                'status': 'pending',
+                'bid_id': bid_vat_0['id'],
+                'value': {'amount': 100500}
+            }}
+        )
+        self.assertEqual(response.status, '201 Created')
+        self.assertEqual(response.content_type, 'application/json')
+
+        third_award = response.json['data']
+
+        self.assertTrue(third_award['value']['valueAddedTaxPayer'])
+        self.assertEqual(third_award['value']['valueAddedTax'], 0)
+
+        # Activate first award
+        response = self.app.patch_json(
+            '/tenders/{}/awards/{}?acc_token={}'.format(self.tender_id, first_award['id'], self.tender_token),
+            {'data': {'status': 'active'}}
+        )
+        self.assertEqual(response.status, self.RESPONSE_CODE['200'])
+        self.assertEqual(response.content_type, 'application/json')
+
+        first_award = response.json['data']
+
+        self.assertEqual(first_award['status'], 'active')
+        self.assertTrue(first_award['value']['valueAddedTaxPayer'])
+        self.assertEqual(first_award['value']['valueAddedTax'], 20)
+        self.assertIn('sumValueAddedTax', first_award['value'])
+        self.assertEqual(first_award['value']['sumValueAddedTax'], 100)
+        self.assertIn('amountWithValueAddedTax', first_award['value'])
+        self.assertEqual(first_award['value']['amountWithValueAddedTax'], 500)
+        self.assertIn('amountWithoutValueAddedTax', first_award['value'])
+        self.assertEqual(first_award['value']['amountWithoutValueAddedTax'], 416.67)
+
+        # Get contracts
+        response = self.app.get('/tenders/{}/contracts'.format(self.tender_id))
+
+        self.assertEqual(response.status, self.RESPONSE_CODE['200'])
+        self.assertEqual(response.content_type, 'application/json')
+
+        contracts = response.json['data']
+
+        self.assertEqual(contracts[0]['status'], 'pending')
+        self.assertIn('value', contracts[0])
+        self.assertTrue(contracts[0]['value']['valueAddedTaxPayer'])
+        self.assertEqual(contracts[0]['value']['valueAddedTax'], 20)
+        self.assertEqual(contracts[0]['value']['sumValueAddedTax'], 100)
+        self.assertEqual(contracts[0]['value']['amountWithValueAddedTax'], 500)
+        self.assertEqual(contracts[0]['value']['amountWithoutValueAddedTax'], 416.67)
+
+        # Activate second award
+        response = self.app.patch_json(
+            '/tenders/{}/awards/{}?acc_token={}'.format(self.tender_id, second_award['id'], self.tender_token),
+            {'data': {'status': 'active'}}
+        )
+        self.assertEqual(response.status, self.RESPONSE_CODE['200'])
+        self.assertEqual(response.content_type, 'application/json')
+
+        first_award = response.json['data']
+
+        self.assertEqual(first_award['status'], 'active')
+        self.assertTrue(first_award['value']['valueAddedTaxPayer'])
+        self.assertEqual(first_award['value']['valueAddedTax'], 7)
+        self.assertIn('sumValueAddedTax', first_award['value'])
+        self.assertEqual(first_award['value']['sumValueAddedTax'], 35.0)
+        self.assertIn('amountWithValueAddedTax', first_award['value'])
+        self.assertEqual(first_award['value']['amountWithValueAddedTax'], 500)
+        self.assertIn('amountWithoutValueAddedTax', first_award['value'])
+        self.assertEqual(first_award['value']['amountWithoutValueAddedTax'], 467.29)
+
+        # Get contracts
+        response = self.app.get('/tenders/{}/contracts'.format(self.tender_id))
+
+        self.assertEqual(response.status, self.RESPONSE_CODE['200'])
+        self.assertEqual(response.content_type, 'application/json')
+
+        contracts = response.json['data']
+
+        self.assertEqual(contracts[1]['status'], 'pending')
+        self.assertIn('value', contracts[1])
+        self.assertTrue(contracts[1]['value']['valueAddedTaxPayer'])
+        self.assertEqual(contracts[1]['value']['valueAddedTax'], 7)
+        self.assertEqual(contracts[1]['value']['sumValueAddedTax'], 35.0)
+        self.assertEqual(contracts[1]['value']['amountWithValueAddedTax'], 500)
+        self.assertEqual(contracts[1]['value']['amountWithoutValueAddedTax'], 467.29)
+
+        # Activate third award
+        response = self.app.patch_json(
+            '/tenders/{}/awards/{}?acc_token={}'.format(self.tender_id, third_award['id'], self.tender_token),
+            {'data': {'status': 'active'}}
+        )
+        self.assertEqual(response.status, self.RESPONSE_CODE['200'])
+        self.assertEqual(response.content_type, 'application/json')
+
+        first_award = response.json['data']
+
+        self.assertEqual(first_award['status'], 'active')
+        self.assertTrue(first_award['value']['valueAddedTaxPayer'])
+        self.assertEqual(first_award['value']['valueAddedTax'], 0)
+        self.assertIn('sumValueAddedTax', first_award['value'])
+        self.assertEqual(first_award['value']['sumValueAddedTax'], 0.0)
+        self.assertIn('amountWithValueAddedTax', first_award['value'])
+        self.assertEqual(first_award['value']['amountWithValueAddedTax'], 500)
+        self.assertIn('amountWithoutValueAddedTax', first_award['value'])
+        self.assertEqual(first_award['value']['amountWithoutValueAddedTax'], 500.0)
+
+        # Get contracts
+        response = self.app.get('/tenders/{}/contracts'.format(self.tender_id))
+
+        self.assertEqual(response.status, self.RESPONSE_CODE['200'])
+        self.assertEqual(response.content_type, 'application/json')
+
+        contracts = response.json['data']
+
+        self.assertEqual(contracts[2]['status'], 'pending')
+        self.assertIn('value', contracts[1])
+        self.assertTrue(contracts[2]['value']['valueAddedTaxPayer'])
+        self.assertEqual(contracts[2]['value']['valueAddedTax'], 0)
+        self.assertEqual(contracts[2]['value']['sumValueAddedTax'], 0.0)
+        self.assertEqual(contracts[2]['value']['amountWithValueAddedTax'], 500)
+        self.assertEqual(contracts[2]['value']['amountWithoutValueAddedTax'], 500.0)
+
+        # Edit contract
+        response = self.app.get('/tenders/{}/contracts'.format(self.tender_id))
+        self.assertEqual(response.status, self.RESPONSE_CODE['200'])
+        self.assertEqual(response.content_type, 'application/json')
+
+        contract = response.json['data'][0]
+
+        self.assertEqual(contract['status'], 'pending')
+        self.assertEqual(contract['value']['amount'], 100500)
+        self.assertTrue(contract['value']['valueAddedTaxPayer'])
+        self.assertEqual(contract['value']['valueAddedTax'], 20)
+
+        # Change contract amount
+        response = self.app.patch_json(
+            '/tenders/{}/contracts/{}?acc_token={}'.format(self.tender_id, contract['id'], self.tender_token),
+            {'data': {'value': {'amount': 550}}}
+        )
+        self.assertEqual(response.status, self.RESPONSE_CODE['200'])
+        self.assertEqual(response.content_type, 'application/json')
+
+        contract = response.json['data']
+
+        self.assertEqual(contract['value']['amount'], 550)
+        self.assertEqual(contract['value']['valueAddedTax'], 20)
+
+        # Change contract valueAddedTax
+        response = self.app.patch_json(
+            '/tenders/{}/contracts/{}?acc_token={}'.format(self.tender_id, contract['id'], self.tender_token),
+            {'data': {'value': {'valueAddedTax': 7}}}
+        )
+        self.assertEqual(response.status, self.RESPONSE_CODE['200'])
+        self.assertEqual(response.content_type, 'application/json')
+
+        contract = response.json['data']
+
+        self.assertEqual(contract['value']['amount'], 550)
+        self.assertEqual(contract['value']['valueAddedTax'], 7)
+        self.assertTrue(contract['value']['valueAddedTaxPayer'])
+
+        # Change contract valueAddedTaxPayer
+        response = self.app.patch_json(
+            '/tenders/{}/contracts/{}?acc_token={}'.format(self.tender_id, contract['id'], self.tender_token),
+            {'data': {'value': {'valueAddedTaxPayer': False}}}, status=403
+        )
+        self.assertEqual(response.status, self.RESPONSE_CODE['403'])
+        self.assertEqual(response.content_type, 'application/json')
+        self.assertEqual(response.json['status'], 'error')
+        self.assertEqual(
+            response.json['errors'][0],
+            {u'description': u"Can't update valueAddedTaxPayer for contract value", u'location': u'body',
+             u'name': u'data'}
+        )
+
+        # Editing value in contract
+        response = self.app.patch_json(
+            '/tenders/{}/contracts/{}?acc_token={}'.format(self.tender_id, contract['id'], self.tender_token),
+            {'data': {'value': {
+                'amount': 200.0,
+                'sumValueAddedTax': 35.1,
+            }}}
+        )
+        self.assertEqual(response.status, self.RESPONSE_CODE['200'])
+        self.assertEqual(response.content_type, 'application/json')
+
+        response = self.app.get(
+            '/tenders/{}/contracts/{}'.format(self.tender_id, contract['id'])
+        )
+        self.assertEqual(response.status, self.RESPONSE_CODE['200'])
+        self.assertEqual(response.content_type, 'application/json')
+
+        contract = response.json['data']
+
+        # Recalculation value in accordance with amount
+        self.assertEqual(contract['value']['sumValueAddedTax'], 14.0)
+
+        # Editing value in contract
+        response = self.app.patch_json(
+            '/tenders/{}/contracts/{}?acc_token={}'.format(self.tender_id, contract['id'], self.tender_token),
+            {'data': {'value': {
+                'amount': 200.0,
+                'amountWithValueAddedTax': 35.1,
+            }}}
+        )
+        self.assertEqual(response.status, self.RESPONSE_CODE['200'])
+        self.assertEqual(response.content_type, 'application/json')
+
+        response = self.app.get(
+            '/tenders/{}/contracts/{}'.format(self.tender_id, contract['id'])
+        )
+        self.assertEqual(response.status, self.RESPONSE_CODE['200'])
+        self.assertEqual(response.content_type, 'application/json')
+
+        contract = response.json['data']
+
+        # Recalculation value in accordance with amount
+        self.assertEqual(contract['value']['amountWithValueAddedTax'], 200.0)
+
+        # Editing value in contract
+        response = self.app.patch_json(
+            '/tenders/{}/contracts/{}?acc_token={}'.format(self.tender_id, contract['id'], self.tender_token),
+            {'data': {'value': {
+                'amount': 200.0,
+                'amountWithoutValueAddedTax': 35.1,
+            }}}
+        )
+        self.assertEqual(response.status, self.RESPONSE_CODE['200'])
+        self.assertEqual(response.content_type, 'application/json')
+
+        response = self.app.get(
+            '/tenders/{}/contracts/{}'.format(self.tender_id, contract['id'])
+        )
+        self.assertEqual(response.status, self.RESPONSE_CODE['200'])
+        self.assertEqual(response.content_type, 'application/json')
+
+        contract = response.json['data']
+
+        # Recalculation value in accordance with amount
+        self.assertEqual(contract['value']['amountWithoutValueAddedTax'], 186.92)
+
+        # Update only value:amountWithoutValueAddedTax field
+        response = self.app.patch_json(
+            '/tenders/{}/contracts/{}?acc_token={}'.format(self.tender_id, contract['id'], self.tender_token),
+            {'data': {'value': {
+                'amountWithoutValueAddedTax': 500.08
+            }}}
+        )
+        self.assertEqual(response.status, self.RESPONSE_CODE['200'])
+        self.assertEqual(response.content_type, 'application/json')
+
+        response = self.app.get(
+            '/tenders/{}/contracts/{}'.format(self.tender_id, contract['id'])
+        )
+        self.assertEqual(response.status, self.RESPONSE_CODE['200'])
+        self.assertEqual(response.content_type, 'application/json')
+
+        contract = response.json['data']
+
+        # But value:amountWithoutValueAddedTax currency stays unchanged
+        self.assertEqual(contract['value']['amountWithoutValueAddedTax'], 186.92)
+
+        # Update only value:amountWithValueAddedTax field
+        response = self.app.patch_json(
+            '/tenders/{}/contracts/{}?acc_token={}'.format(self.tender_id, contract['id'], self.tender_token),
+            {'data': {'value': {
+                'amountWithValueAddedTax': 500.08
+            }}}
+        )
+        self.assertEqual(response.status, self.RESPONSE_CODE['200'])
+        self.assertEqual(response.content_type, 'application/json')
+
+        response = self.app.get(
+            '/tenders/{}/contracts/{}'.format(self.tender_id, contract['id'])
+        )
+        self.assertEqual(response.status, self.RESPONSE_CODE['200'])
+        self.assertEqual(response.content_type, 'application/json')
+
+        contract = response.json['data']
+
+        # But value:amountWithValueAddedTax currency stays unchanged
+        self.assertEqual(contract['value']['amountWithValueAddedTax'], 200.0)
+
+        # Update only value:sumValueAddedTax field
+        response = self.app.patch_json(
+            '/tenders/{}/contracts/{}?acc_token={}'.format(self.tender_id, contract['id'], self.tender_token),
+            {'data': {'value': {
+                'sumValueAddedTax': 500.08
+            }}}
+        )
+        self.assertEqual(response.status, self.RESPONSE_CODE['200'])
+        self.assertEqual(response.content_type, 'application/json')
+
+        response = self.app.get(
+            '/tenders/{}/contracts/{}'.format(self.tender_id, contract['id'])
+        )
+        self.assertEqual(response.status, self.RESPONSE_CODE['200'])
+        self.assertEqual(response.content_type, 'application/json')
+
+        contract = response.json['data']
+
+        # But value:sumValueAddedTax currency stays unchanged
+        self.assertEqual(contract['value']['sumValueAddedTax'], 14.0)
+
+    def test_create_tender_contract_with_not_tender_vat(self):
+        # Change tender value:valueAddedTaxIncluded to False
+        self.set_status(
+            'active.tendering',
+            {'minimalStep': {'valueAddedTaxIncluded': False}, 'value': {'valueAddedTaxIncluded': False}}
+        )
+
+        response = self.app.get(
+            '/tenders/{}'.format(self.tender_id)
+        )
+        self.assertEqual(response.status, self.RESPONSE_CODE['200'])
+        self.assertEqual(response.content_type, 'application/json')
+
+        tender = response.json['data']
+
+        self.assertFalse(tender['value']['valueAddedTaxIncluded'])
+        self.assertFalse(tender['minimalStep']['valueAddedTaxIncluded'])
+        self.assertEqual(tender['status'], 'active.tendering')
+
+        # Create bid
+        response = self.app.post_json(
+            '/tenders/{}/bids'.format(self.tender_id),
+            {'data': {
+                'tenderers': [test_organization],
+                'value': {'amount': 500, 'valueAddedTax': 7, 'valueAddedTaxPayer': False},
+                'parameters': [
+                    {
+                        'code': i['code'],
+                        'value': 0.15,
+                    }
+                    for i in self.initial_data['features']]
+            }}
+        )
+        self.assertEqual(response.status, self.RESPONSE_CODE['201'])
+        self.assertEqual(response.content_type, 'application/json')
+
+        bid = response.json['data']
+
+        self.assertFalse(bid['value']['valueAddedTaxPayer'])
+        self.assertEqual(bid['value']['valueAddedTax'], 7)
+
+        self.set_status('active.qualification')
+
+        response = self.app.get('/tenders/{}'.format(self.tender_id))
+        self.assertEqual(response.status, self.RESPONSE_CODE['200'])
+        self.assertEqual(response.content_type, 'application/json')
+
+        tender = response.json['data']
+
+        self.assertFalse(tender['value']['valueAddedTaxIncluded'])
+        self.assertFalse(tender['minimalStep']['valueAddedTaxIncluded'])
+
+        # Create award
+        response = self.app.post_json(
+            '/tenders/{}/awards'.format(self.tender_id), {'data': {
+                'suppliers': [test_organization],
+                'status': 'pending',
+                'bid_id': bid['id'],
+                'value': {'amount': 500}
+            }}
+        )
+        self.assertEqual(response.status, self.RESPONSE_CODE['201'])
+        self.assertEqual(response.content_type, 'application/json')
+
+        award = response.json['data']
+
+        self.assertFalse(award['value']['valueAddedTaxPayer'])
+        self.assertEqual(award['value']['amount'], 500)
+        self.assertEqual(award['value']['valueAddedTax'], 7)
+
+        # Change award status to active
+        self.assertEqual(award['status'], 'pending')
+
+        response = self.app.patch_json(
+            '/tenders/{}/awards/{}?acc_token={}'.format(self.tender_id, award['id'], self.tender_token),
+            {'data': {'status': 'active'}}
+        )
+        self.assertEqual(response.status, self.RESPONSE_CODE['200'])
+        self.assertEqual(response.content_type, 'application/json')
+
+        award = response.json['data']
+
+        self.assertEqual(award['status'], 'active')
+        self.assertIn('sumValueAddedTax', award['value'])
+        self.assertIn('amountWithValueAddedTax', award['value'])
+        self.assertIn('amountWithoutValueAddedTax', award['value'])
+
+        self.assertFalse(award['value']['valueAddedTaxPayer'])
+        self.assertEqual(award['value']['amount'], 500)
+        self.assertEqual(award['value']['valueAddedTax'], 7)
+        self.assertEqual(award['value']['sumValueAddedTax'], 35.0)
+        self.assertEqual(award['value']['amountWithValueAddedTax'], 535.0)
+        self.assertEqual(award['value']['amountWithoutValueAddedTax'], 500.0)
+
+        # Get contract
+        response = self.app.get(
+            '/tenders/{}/contracts'.format(self.tender_id)
+        )
+        self.assertEqual(response.status, self.RESPONSE_CODE['200'])
+        self.assertEqual(response.content_type, 'application/json')
+
+        contract = response.json['data'][0]
+
+        self.assertFalse(contract['value']['valueAddedTaxPayer'])
+        self.assertEqual(contract['value']['amount'], 500)
+        self.assertEqual(contract['value']['valueAddedTax'], 7)
+        self.assertEqual(contract['value']['sumValueAddedTax'], 35.0)
+        self.assertEqual(contract['value']['amountWithValueAddedTax'], 535.0)
+        self.assertEqual(contract['value']['amountWithoutValueAddedTax'], 500.0)
+
+        # Editing value in contract
+        response = self.app.patch_json(
+            '/tenders/{}/contracts/{}?acc_token={}'.format(self.tender_id, contract['id'], self.tender_token),
+            {'data': {'value': {
+                'amount': 200.0,
+                'sumValueAddedTax': 35.1,
+            }}}
+        )
+        self.assertEqual(response.status, self.RESPONSE_CODE['200'])
+        self.assertEqual(response.content_type, 'application/json')
+
+        response = self.app.get(
+            '/tenders/{}/contracts/{}'.format(self.tender_id, contract['id'])
+        )
+        self.assertEqual(response.status, self.RESPONSE_CODE['200'])
+        self.assertEqual(response.content_type, 'application/json')
+
+        contract = response.json['data']
+
+        # Recalculation value in accordance with amount
+        self.assertEqual(contract['value']['sumValueAddedTax'], 14.0)
+
+        # Editing value in contract
+        response = self.app.patch_json(
+            '/tenders/{}/contracts/{}?acc_token={}'.format(self.tender_id, contract['id'], self.tender_token),
+            {'data': {'value': {
+                'amount': 200.0,
+                'amountWithValueAddedTax': 35.1,
+            }}}
+        )
+        self.assertEqual(response.status, self.RESPONSE_CODE['200'])
+        self.assertEqual(response.content_type, 'application/json')
+
+        response = self.app.get(
+            '/tenders/{}/contracts/{}'.format(self.tender_id, contract['id'])
+        )
+        self.assertEqual(response.status, self.RESPONSE_CODE['200'])
+        self.assertEqual(response.content_type, 'application/json')
+
+        contract = response.json['data']
+
+        # Recalculation value in accordance with amount
+        self.assertEqual(contract['value']['amountWithValueAddedTax'], 214.0)
+
+        # Editing value in contract
+        response = self.app.patch_json(
+            '/tenders/{}/contracts/{}?acc_token={}'.format(self.tender_id, contract['id'], self.tender_token),
+            {'data': {'value': {
+                'amount': 200.0,
+                'amountWithoutValueAddedTax': 35.1,
+            }}}
+        )
+        self.assertEqual(response.status, self.RESPONSE_CODE['200'])
+        self.assertEqual(response.content_type, 'application/json')
+
+        response = self.app.get(
+            '/tenders/{}/contracts/{}'.format(self.tender_id, contract['id'])
+        )
+        self.assertEqual(response.status, self.RESPONSE_CODE['200'])
+        self.assertEqual(response.content_type, 'application/json')
+
+        contract = response.json['data']
+
+        # Recalculation value in accordance with amount
+        self.assertEqual(contract['value']['amountWithoutValueAddedTax'], 200.0)
+
+        # Update only value:amountWithoutValueAddedTax field
+        response = self.app.patch_json(
+            '/tenders/{}/contracts/{}?acc_token={}'.format(self.tender_id, contract['id'], self.tender_token),
+            {'data': {'value': {
+                'amountWithoutValueAddedTax': 500.08
+            }}}
+        )
+        self.assertEqual(response.status, self.RESPONSE_CODE['200'])
+        self.assertEqual(response.content_type, 'application/json')
+
+        response = self.app.get(
+            '/tenders/{}/contracts/{}'.format(self.tender_id, contract['id'])
+        )
+        self.assertEqual(response.status, self.RESPONSE_CODE['200'])
+        self.assertEqual(response.content_type, 'application/json')
+
+        contract = response.json['data']
+
+        # But value:amountWithoutValueAddedTax currency stays unchanged
+        self.assertEqual(contract['value']['amountWithoutValueAddedTax'], 200.0)
+
+        # Update only value:amountWithValueAddedTax field
+        response = self.app.patch_json(
+            '/tenders/{}/contracts/{}?acc_token={}'.format(self.tender_id, contract['id'], self.tender_token),
+            {'data': {'value': {
+                'amountWithValueAddedTax': 500.08
+            }}}
+        )
+        self.assertEqual(response.status, self.RESPONSE_CODE['200'])
+        self.assertEqual(response.content_type, 'application/json')
+
+        response = self.app.get(
+            '/tenders/{}/contracts/{}'.format(self.tender_id, contract['id'])
+        )
+        self.assertEqual(response.status, self.RESPONSE_CODE['200'])
+        self.assertEqual(response.content_type, 'application/json')
+
+        contract = response.json['data']
+
+        # But value:amountWithValueAddedTax currency stays unchanged
+        self.assertEqual(contract['value']['amountWithValueAddedTax'], 214.0)
+
+        # Update only value:sumValueAddedTax field
+        response = self.app.patch_json(
+            '/tenders/{}/contracts/{}?acc_token={}'.format(self.tender_id, contract['id'], self.tender_token),
+            {'data': {'value': {
+                'sumValueAddedTax': 500.08
+            }}}
+        )
+        self.assertEqual(response.status, self.RESPONSE_CODE['200'])
+        self.assertEqual(response.content_type, 'application/json')
+
+        response = self.app.get(
+            '/tenders/{}/contracts/{}'.format(self.tender_id, contract['id'])
+        )
+        self.assertEqual(response.status, self.RESPONSE_CODE['200'])
+        self.assertEqual(response.content_type, 'application/json')
+
+        contract = response.json['data']
+
+        # But value:sumValueAddedTax currency stays unchanged
+        self.assertEqual(contract['value']['sumValueAddedTax'], 14.0)
+
 
 def suite():
     suite = unittest.TestSuite()
     suite.addTest(unittest.makeSuite(TenderContractResourceTest))
     suite.addTest(unittest.makeSuite(TenderContractDocumentResourceTest))
+    suite.addTest(unittest.makeSuite(TenderContractValueAddedTaxPayer))
     return suite
 
 

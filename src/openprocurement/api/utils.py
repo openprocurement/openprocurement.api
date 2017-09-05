@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 from barbecue import chef
 from base64 import b64encode, b64decode
+from collections import namedtuple
 from datetime import datetime, time, timedelta
 from cornice.resource import resource, view
 from cornice.util import json_error
@@ -11,7 +12,7 @@ from json import dumps
 from jsonpatch import make_patch, apply_patch as _apply_patch
 from jsonpointer import resolve_pointer
 from logging import getLogger
-from openprocurement.api.models import get_now, TZ, COMPLAINT_STAND_STILL_TIME, WORKING_DAYS
+from openprocurement.api.models import get_now, TZ, COMPLAINT_STAND_STILL_TIME, WORKING_DAYS, ValueAddedTax
 from openprocurement.api.traversal import factory
 from pkg_resources import get_distribution
 from rfc6266 import build_header
@@ -659,11 +660,21 @@ def add_next_award(request):
             bids = chef(bids, features, unsuccessful_awards)
             if bids:
                 bid = bids[0]
+
+                if type(tender).awards.model_class({'value': {}}).value.__ne__(bid['value']):
+                    bid_value = ValueAddedTax({
+                        'amount': bid['value']['amount'],
+                        'currency': bid['value']['currency'],
+                        'valueAddedTaxPayer': bid['value']['valueAddedTaxIncluded']
+                    })
+                else:
+                    bid_value = bid['value']
+
                 award = type(tender).awards.model_class({
                     'bid_id': bid['id'],
                     'lotID': lot.id,
                     'status': 'pending',
-                    'value': bid['value'],
+                    'value': bid_value,
                     'date': get_now(),
                     'suppliers': bid['tenderers'],
                     'complaintPeriod': {
@@ -968,3 +979,20 @@ def calculate_business_date(date_obj, timedelta_obj, context=None, working_days=
                 date_obj += timedelta(1) if timedelta_obj > timedelta() else -timedelta(1)
         return date_obj
     return date_obj + timedelta_obj
+
+
+def calculate_amount(tenderValueAddedTaxIncluded, amount, valueAddedTax):
+    _amount = amount
+    amount = namedtuple('Amount', ['sumValueAddedTax', 'withValueAddedTax', 'withoutValueAddedTax'])
+
+    vat = round(float(valueAddedTax / float(100)), 2)
+    amount.sumValueAddedTax = round(_amount * vat, 2)
+
+    if tenderValueAddedTaxIncluded:
+        amount.withValueAddedTax = _amount
+        amount.withoutValueAddedTax = round(_amount / (float(1) + vat), 2)
+    else:
+        amount.withValueAddedTax = round(_amount * (float(1) + vat), 2)
+        amount.withoutValueAddedTax = _amount
+
+    return amount
