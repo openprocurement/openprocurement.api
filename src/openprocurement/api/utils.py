@@ -255,6 +255,7 @@ def tender_serialize(request, tender_data, fields):
     tender = request.tender_from_data(tender_data, raise_error=False)
     if tender is None:
         return dict([(i, tender_data.get(i, '')) for i in ['procurementMethodType', 'dateModified', 'id']])
+    tender.__parent__ = request.context
     return dict([(i, j) for i, j in tender.serialize(tender.status).items() if i in fields])
 
 
