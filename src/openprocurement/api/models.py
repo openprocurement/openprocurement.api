@@ -17,7 +17,8 @@ from schematics.types.serializable import serializable
 
 from openprocurement.api.utils import get_now, set_parent, get_schematics_document
 from openprocurement.api.constants import (
-    CPV_CODES, ORA_CODES, TZ, DK_CODES, CPV_BLOCK_FROM, ITEMS_LOCATION_VALIDATION_FROM
+    CPV_CODES, ORA_CODES, TZ, DK_CODES, CPV_BLOCK_FROM,
+    ITEMS_LOCATION_VALIDATION_FROM, COORDINATES_REG_EXP,
 )
 
 schematics_default_role = SchematicsDocument.Options.roles['default'] + blacklist("__parent__")
@@ -265,7 +266,7 @@ class Location(Model):
             if (parent_object.get('revisions') and
                 parent_object['revisions'][0].date >
                     ITEMS_LOCATION_VALIDATION_FROM):
-                valid_latitude = coordinates_reg_exp.match(str(latitude))
+                valid_latitude = COORDINATES_REG_EXP.match(str(latitude))
                 if (valid_latitude is not None and
                         valid_latitude.group() == str(latitude)):
                     if not -90 <= float(latitude) <= 90:
@@ -281,7 +282,7 @@ class Location(Model):
             if (parent_object.get('revisions') and
                 parent_object['revisions'][0].date >
                     ITEMS_LOCATION_VALIDATION_FROM):
-                valid_longitude = coordinates_reg_exp.match(str(longitude))
+                valid_longitude = COORDINATES_REG_EXP.match(str(longitude))
                 if (valid_longitude is not None and
                         valid_longitude.group() == str(longitude)):
                     if not -180 <= float(longitude) <= 180:
