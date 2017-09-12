@@ -150,3 +150,4 @@ def bootstrap_api_security():
         conf.read(params.config)
         settings = {k: v for k, v in conf.items(params.section)}
         set_api_security(settings)
+
