@@ -42,4 +42,4 @@ ADDITIONAL_CLASSIFICATIONS_SCHEMES_2017 = [u'ДК003', u'ДК015', u'ДК018', u
 COORDINATES_REG_EXP = re.compile(r'-?\d{1,3}\.\d+|-?\d{1,3}')
 
 CPV_ITEMS_CLASS_FROM = datetime(2017, 1, 1, tzinfo=TZ)
-CPV_BLOCK_FROM = datetime(2017, 6, 2, tzinfo=TZ)
+CPV_BLOCK_FROM = datetime(2017, 6, 1, tzinfo=TZ)
