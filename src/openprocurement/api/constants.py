@@ -12,7 +12,7 @@ LOGGER = getLogger(PKG.project_name)
 VERSION = '{}.{}'.format(int(PKG.parsed_version[0]), int(PKG.parsed_version[1]) if PKG.parsed_version[1].isdigit() else 0)
 ROUTE_PREFIX = '/api/{}'.format(VERSION)
 SESSION = Session()
-SCHEMA_VERSION = 23
+SCHEMA_VERSION = 24
 SCHEMA_DOC = 'openprocurement_schema'
 
 TZ = timezone(os.environ['TZ'] if 'TZ' in os.environ else 'Europe/Kiev')
