@@ -18,7 +18,6 @@ from schematics.types.serializable import serializable
 from openprocurement.api.utils import get_now, set_parent, get_schematics_document
 from openprocurement.api.constants import (
     CPV_CODES, ORA_CODES, TZ, DK_CODES, CPV_BLOCK_FROM,
-    ITEMS_LOCATION_VALIDATION_FROM, COORDINATES_REG_EXP,
 )
 
 schematics_default_role = SchematicsDocument.Options.roles['default'] + blacklist("__parent__")
@@ -259,38 +258,6 @@ class Location(Model):
     latitude = BaseType(required=True)
     longitude = BaseType(required=True)
     elevation = BaseType()
-
-    def validate_latitude(self, data, latitude):
-        if latitude:
-            parent_object = data.get('__parent__', {}).get('__parent__', {})
-            if (parent_object.get('revisions') and
-                parent_object['revisions'][0].date >
-                    ITEMS_LOCATION_VALIDATION_FROM):
-                valid_latitude = COORDINATES_REG_EXP.match(str(latitude))
-                if (valid_latitude is not None and
-                        valid_latitude.group() == str(latitude)):
-                    if not -90 <= float(latitude) <= 90:
-                        raise ValidationError(
-                            u"Invalid value. Latitude must be between -90 and 90 degree.")
-                else:
-                    raise ValidationError(
-                        u"Invalid value. Required latitude format 12.0123456789")
-
-    def validate_longitude(self, data, longitude):
-        if longitude:
-            parent_object = data.get('__parent__', {}).get('__parent__', {})
-            if (parent_object.get('revisions') and
-                parent_object['revisions'][0].date >
-                    ITEMS_LOCATION_VALIDATION_FROM):
-                valid_longitude = COORDINATES_REG_EXP.match(str(longitude))
-                if (valid_longitude is not None and
-                        valid_longitude.group() == str(longitude)):
-                    if not -180 <= float(longitude) <= 180:
-                        raise ValidationError(
-                            u"Invalid value. Longitude must be between -180 and 180 degree.")
-                else:
-                    raise ValidationError(
-                        u"Invalid value. Required longitude format 12.0123456789")
 
 
 class HashType(StringType):
