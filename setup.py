@@ -26,7 +26,7 @@ requires = [
 test_requires = requires + [
     'webtest',
     'python-coveralls',
-    'mock',
+    'mock'
 ]
 docs_requires = requires + [
     'sphinxcontrib-httpdomain',
@@ -34,10 +34,10 @@ docs_requires = requires + [
 
 entry_points = {
     'paste.app_factory': [
-        'main = openprocurement.api:main'
+        'main = openprocurement.api.app:main'
     ],
     'openprocurement.api.plugins': [
-        'belowThreshold = openprocurement.api:includeme'
+        'api = openprocurement.api.includeme:includeme'
     ],
     'openprocurement.api.migrations': [
         'tenders = openprocurement.api.migration:migrate_data'
@@ -48,7 +48,7 @@ entry_points = {
 }
 
 setup(name='openprocurement.api',
-      version='2.3.66',
+      version='2.4',
       description='openprocurement.api',
       long_description=README,
       classifiers=[

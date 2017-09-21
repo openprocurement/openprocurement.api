@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 import unittest
 
-from openprocurement.api.utils import VERSION
+from openprocurement.api.constants import VERSION
 from openprocurement.api.tests.base import BaseWebTest
 
 
