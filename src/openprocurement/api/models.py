@@ -32,9 +32,9 @@ draft_role = whitelist('status')
 class DecimalType(BaseDecimalType):
 
     def __init__(self, precision=-3, min_value=None, max_value=None, **kwargs):
+        super(DecimalType, self).__init__(**kwargs)
         self.min_value, self.max_value = min_value, max_value
         self.precision = Decimal("1E{:d}".format(precision))
-        super(DecimalType, self).__init__(**kwargs)
 
     def to_primitive(self, value, context=None):
         return value
