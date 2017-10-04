@@ -5,6 +5,7 @@ if 'test' not in __import__('sys').argv[0]:
     import gevent.monkey
     gevent.monkey.patch_all()
 import os
+import simplejson
 from couchdb import Server as CouchdbServer, Session
 from couchdb.http import Unauthorized, extract_credentials
 from libnacl.sign import Signer, Verifier
@@ -12,7 +13,7 @@ from libnacl.public import SecretKey, PublicKey
 from logging import getLogger
 from openprocurement.api.auth import AuthenticationPolicy, authenticated_role, check_accreditation
 from openprocurement.api.database import set_api_security
-from openprocurement.api.utils import forbidden, request_params, route_prefix
+from openprocurement.api.utils import forbidden, request_params, route_prefix, couchdb_json_decode
 from pkg_resources import iter_entry_points
 from pyramid.authorization import ACLAuthorizationPolicy as AuthorizationPolicy
 from pyramid.config import Configurator
@@ -37,9 +38,10 @@ def main(global_config, **settings):
     config.add_request_method(request_params, 'params', reify=True)
     config.add_request_method(authenticated_role, reify=True)
     config.add_request_method(check_accreditation)
-    config.add_renderer('prettyjson', JSON(indent=4))
-    config.add_renderer('jsonp', JSONP(param_name='opt_jsonp'))
-    config.add_renderer('prettyjsonp', JSONP(indent=4, param_name='opt_jsonp'))
+    config.add_renderer('json', JSON(serializer=simplejson.dumps))
+    config.add_renderer('prettyjson', JSON(indent=4, serializer=simplejson.dumps))
+    config.add_renderer('jsonp', JSONP(param_name='opt_jsonp', serializer=simplejson.dumps))
+    config.add_renderer('prettyjsonp', JSONP(indent=4, param_name='opt_jsonp', serializer=simplejson.dumps))
 
     # search for plugins
     plugins = settings.get('plugins') and settings['plugins'].split(',')
@@ -54,6 +56,8 @@ def main(global_config, **settings):
     if aserver:
         config.registry.admin_couchdb_server = aserver
     config.registry.db = db
+    # readjust couchdb json decoder
+    couchdb_json_decode()
 
     # Document Service key
     config.registry.docservice_url = settings.get('docservice_url')
