@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 from datetime import datetime
+from decimal import Decimal, InvalidOperation, ROUND_HALF_UP
 from iso8601 import parse_date, ParseError
 from uuid import uuid4
 from urlparse import urlparse, parse_qs
@@ -10,14 +11,14 @@ from schematics.exceptions import ConversionError, ValidationError
 from schematics.models import Model as SchematicsModel
 from schematics.transforms import whitelist, blacklist, export_loop, convert
 from schematics.types import (StringType, FloatType, URLType, IntType,
-                              BooleanType, BaseType, EmailType, MD5Type)
+                              BooleanType, BaseType, EmailType, MD5Type, DecimalType as BaseDecimalType)
 from schematics.types.compound import (ModelType, DictType,
                                        ListType as BaseListType)
 from schematics.types.serializable import serializable
 
 from openprocurement.api.utils import get_now, set_parent, get_schematics_document
 from openprocurement.api.constants import (
-    CPV_CODES, ORA_CODES, TZ, DK_CODES, CPV_BLOCK_FROM
+    CPV_CODES, ORA_CODES, TZ, DK_CODES, CPV_BLOCK_FROM,
 )
 
 schematics_default_role = SchematicsDocument.Options.roles['default'] + blacklist("__parent__")
@@ -26,6 +27,27 @@ schematics_embedded_role = SchematicsDocument.Options.roles['embedded'] + blackl
 plain_role = (blacklist('_attachments', 'revisions', 'dateModified') + schematics_embedded_role)
 listing_role = whitelist('dateModified', 'doc_id')
 draft_role = whitelist('status')
+
+
+class DecimalType(BaseDecimalType):
+
+    def __init__(self, precision=-3, min_value=None, max_value=None, **kwargs):
+        super(DecimalType, self).__init__(**kwargs)
+        self.min_value, self.max_value = min_value, max_value
+        self.precision = Decimal("1E{:d}".format(precision))
+
+    def _apply_precision(self, value):
+        try:
+            value = Decimal(value).quantize(self.precision, rounding=ROUND_HALF_UP).normalize()
+        except (TypeError, InvalidOperation):
+            raise ConversionError(self.messages['number_coerce'].format(value))
+        return value
+
+    def to_primitive(self, value, context=None):
+        return self._apply_precision(value)
+
+    def to_native(self, value, context=None):
+        return self._apply_precision(value)
 
 
 class IsoDateTimeType(BaseType):

@@ -1,6 +1,6 @@
 PUT /api/2.3/tenders/f3641d0ba0f042e8b49de06d5c7921af/documents/14f948894bcc4ddc9da4d2129b028116?acc_token=2ef61fa89e8a451ba4149d2f8e31173b HTTP/1.0
 Authorization: Basic YnJva2VyOg==
-Content-Length: 339
+Content-Length: 337
 Content-Type: application/json
 Host: api-sandbox.openprocurement.org
 

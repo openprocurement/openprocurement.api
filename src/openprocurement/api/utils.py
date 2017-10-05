@@ -1,5 +1,10 @@
 # -*- coding: utf-8 -*-
 import os
+import json
+import decimal
+import simplejson
+import couchdb.json
+from couchdb import util
 from logging import getLogger
 from datetime import datetime, timedelta
 from base64 import b64encode, b64decode
@@ -25,12 +30,12 @@ from openprocurement.api.events import ErrorDesctiptorEvent
 from openprocurement.api.constants import LOGGER
 from openprocurement.api.constants import (
     ADDITIONAL_CLASSIFICATIONS_SCHEMES, DOCUMENT_BLACKLISTED_FIELDS,
-    DOCUMENT_WHITELISTED_FIELDS, ROUTE_PREFIX, TZ, SESSION
+    DOCUMENT_WHITELISTED_FIELDS, ROUTE_PREFIX, TZ, SESSION, VERSION
 )
 from openprocurement.api.interfaces import IOPContent
 from openprocurement.api.interfaces import IContentConfigurator
 
-json_view = partial(view, renderer='json')
+json_view = partial(view, renderer='simplejson')
 
 
 def validate_dkpp(items, *args):
@@ -38,8 +43,16 @@ def validate_dkpp(items, *args):
         raise ValidationError(u"One of additional classifications should be one of [{0}].".format(', '.join(ADDITIONAL_CLASSIFICATIONS_SCHEMES)))
 
 
+def route_prefix(settings={}):
+    return '/api/{}'.format(settings.get('api_version', VERSION))
+
+
 def get_now():
     return datetime.now(TZ)
+
+
+def request_get_now(request):
+    return get_now()
 
 
 def set_parent(item, parent):
@@ -527,20 +540,20 @@ def get_content_configurator(request):
                                                   IContentConfigurator)
 
 
-def fix_url(item, app_url):
+def fix_url(item, app_url, settings={}):
     if isinstance(item, list):
         [
-            fix_url(i, app_url)
+            fix_url(i, app_url, settings)
             for i in item
             if isinstance(i, dict) or isinstance(i, list)
         ]
     elif isinstance(item, dict):
         if "format" in item and "url" in item and '?download=' in item['url']:
             path = item["url"] if item["url"].startswith('/') else '/' + '/'.join(item['url'].split('/')[5:])
-            item["url"] = app_url + ROUTE_PREFIX + path
+            item["url"] = app_url + route_prefix(settings) + path
             return
         [
-            fix_url(item[i], app_url)
+            fix_url(item[i], app_url, settings)
             for i in item
             if isinstance(item[i], dict) or isinstance(item[i], list)
         ]
@@ -568,3 +581,21 @@ def set_modetest_titles(item):
         item.title_en = u'[TESTING] {}'.format(item.title_en or u'')
     if not item.title_ru or u'[ТЕСТИРОВАНИЕ]' not in item.title_ru:
         item.title_ru = u'[ТЕСТИРОВАНИЕ] {}'.format(item.title_ru or u'')
+
+
+class DecimalEncoder(json.JSONEncoder):
+    def default(self, obj):
+        if isinstance(obj, decimal.Decimal):
+            return str(obj)
+        return super(DecimalEncoder, self).default(obj)
+
+
+def couchdb_json_decode():
+    my_encode = lambda obj, dumps=dumps: dumps(obj, cls=DecimalEncoder)
+
+    def my_decode(string_):
+        if isinstance(string_, util.btype):
+            string_ = string_.decode("utf-8")
+        return json.loads(string_, parse_float=decimal.Decimal)
+
+    couchdb.json.use(decode=my_decode, encode=my_encode)

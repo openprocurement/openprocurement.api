@@ -1,5 +1,4 @@
 #
-# Zoriana Zaiats <sorenabell@quintagroup.com>, 2016.
 msgid ""
 msgstr ""
 "Project-Id-Version: openprocurement.api 0.12a1\n"
@@ -99,19 +98,4 @@ msgstr ""
 " аукціону. Це означає, що етап `active.auction` буде завершений по"
 " результатах вхідних пропозицій; хоча посилання `auctionURL` буде створено і"
 " буде можливість переглянути по ньому аукціон."
-
-#~ msgid ""
-#~ msgstr ""
-
-#~ msgid ""
-#~ "To enable this option: set ``quick(mode"
-#~ ":no-auction)`` as a value for "
-#~ "`submissionMethodDetails`"
-#~ msgstr ""
-
-#~ msgid ""
-#~ "To enable this option: set ``quick(mode"
-#~ ":fast-forward)`` as a value for "
-#~ "`submissionMethodDetails`"
-#~ msgstr ""
 

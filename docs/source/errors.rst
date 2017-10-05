@@ -60,6 +60,28 @@ containing additional information.
 500
   Server error. There was a problem on OpenProcurement's end.
 
+501
+  Not Implemented. The server either does not recognize the request method,
+  or it lacks the ability to fulfill the request. Re-check the request consistency.
+
+502
+  Bad Gateway. The server received an invalid response or backend is not ready
+  to handle requests. Repeat request for repeatable operations or check object
+  data with interval 1-5 min.
+
+503
+  Service Unavailable. The server is currently unavailable (because it is
+  overloaded or down for maintenance). Generally, this is a temporary state.
+
+504
+  Gateway Time-out. The server did not receive a timely response. Repeat
+  request for repeatable operations or check object data with interval 1-5 min.
+
+505
+  HTTP Version Not Supported. The server does not support the HTTP protocol
+  version used in the request. Re-check the request consistency.
+
+
 Success Response
 ----------------
 Every successful get, create, update, replace request results in response

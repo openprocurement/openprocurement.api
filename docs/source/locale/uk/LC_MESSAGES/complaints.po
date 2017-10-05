@@ -3,7 +3,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: openprocurement.api 0.4\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-07-25 15:18+0300\n"
+"POT-Creation-Date: 2017-07-25 18:41+0300\n"
 "PO-Revision-Date: 2016-01-13 13:57+0200\n"
 "Last-Translator: Zoriana Zaiats <sorenabell@quintagroup.com>\n"
 "Language: uk\n"
@@ -95,4 +95,16 @@ msgstr "Замовник залишив вимогу без відповіді."
 
 #~ msgid "bold"
 #~ msgstr "жирна лінія"
+
+#~ msgid "Complaint recognized as invalid."
+#~ msgstr "Скаргу визнано недійсною."
+
+#~ msgid "Complaint recognized as declined."
+#~ msgstr "Скаргу визнано відхиленою."
+
+#~ msgid "Complaint recognized as resolved."
+#~ msgstr "Скаргу визнано вирішеною."
+
+#~ msgid "Complaint cancelled by complainant."
+#~ msgstr "Скаргу відкликано скаржником."
 

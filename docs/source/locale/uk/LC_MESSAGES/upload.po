@@ -14,7 +14,10 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Generated-By: Babel 2.4.0\n"
+"Generated-By: Babel 2.3.4\n"
+"Language: uk\n"
+"Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<"
+"=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
 "X-Generator: Lokalize 2.0\n"
 
 msgid "Documents Uploading"
@@ -55,32 +58,3 @@ msgid ""
 msgstr ""
 ":ref:`Зареєструвати завантаження документа в Document Service <documentservice"
 ":upload-document-w-o-registration>`."
-
-#~ msgid "Content-Type: multipart/form-data"
-#~ msgstr "Content-Type: multipart/form-data"
-
-#~ msgid ""
-#~ "This is standard approach of HTML "
-#~ "form file uploading defined by `RFC "
-#~ "1867 <http://www.faqs.org/rfcs/rfc1867.html>`_.  The "
-#~ "requirements are:"
-#~ msgstr ""
-#~ "Це стандартний підхід до HTML форми "
-#~ "завантаження файлів, що визначається `RFC "
-#~ "1867 <http://www.faqs.org/rfcs/rfc1867.html>`_. Вимоги:"
-
-#~ msgid "Form element should have name `file`"
-#~ msgstr "Елемент форми повинен мати назву `file`."
-
-#~ msgid "Only one document can be uploaded."
-#~ msgstr "Завантажити можна лише один документ."
-
-#~ msgid "The cURL example::"
-#~ msgstr "Приклад cURL::"
-
-#~ msgid "HTTPie example::"
-#~ msgstr "Приклад HTTPie::"
-
-#~ msgid "The request itself should look like::"
-#~ msgstr "Сам запит повинен виглядати так::"
-
