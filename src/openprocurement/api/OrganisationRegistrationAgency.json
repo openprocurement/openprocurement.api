@@ -629,6 +629,14 @@
          "description":null
       },
       {
+        "category": "MY",
+        "code": "MY-SSM",
+        "description": "The Companies Commission of Malaysia (SSM) is a statutory body formed as a result of a merger between the Registrar of Companies (ROC) and the Registrar of Businesses (ROB) in Malaysia which regulates companies and businesses. SSM came into operation on 16 April 2002. You can search a company by its company, business, or LLP Registration Number",
+        "name": "Suruhanjaya Syarikat Malaysia/Companies Commission of Malaysia",
+        "public-database": true,
+        "url": "http://www.ssm.com.my/ms"
+      },
+      {
          "category":"MZ",
          "code":"MZ-MOJ",
          "name":"Mozambique Ministry of Justice",
