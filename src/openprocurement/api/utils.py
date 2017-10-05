@@ -42,6 +42,10 @@ def get_now():
     return datetime.now(TZ)
 
 
+def request_get_now(request):
+    return get_now()
+
+
 def set_parent(item, parent):
     if hasattr(item, '__parent__') and item.__parent__ is None:
         item.__parent__ = parent
