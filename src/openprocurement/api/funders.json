@@ -1,61 +1,16 @@
 {
     "data": [
         {
-            "name": "Державне управління справами",
-            "identifier": {
-                "scheme": "UA-EDR",
-                "id": "00037256",
-                "uri": "http://www.dus.gov.ua/"
-            },
-            "address": {
-                "countryName": "Україна",
-                "postalCode": "01220",
-                "region": "м. Київ",
-                "locality": "м. Київ",
-                "streetAddress": "вул. Банкова, 11, корпус 1"
-            },
-            "contactPoint": {
-                "name": "Державне управління справами",
-                "telephone": "0440000000"
-            }
+            "scheme": "UA-EDR",
+            "id": "00037256"
         },
         {
-            "name": "Державне управління справами",
-            "identifier": {
-                "scheme": "UA-EDR",
-                "id": "11111111",
-                "uri": "http://www.dus.gov.ua/"
-            },
-            "address": {
-                "countryName": "Україна",
-                "postalCode": "01220",
-                "region": "м. Київ",
-                "locality": "м. Київ",
-                "streetAddress": "вул. Банкова, 11, корпус 1"
-            },
-            "contactPoint": {
-                "name": "Державне управління справами",
-                "telephone": "0440000000"
-            }
+            "scheme": "UA-EDR",
+            "id": "11111111"
         },
         {
-            "name": "Державне управління справами",
-            "identifier": {
-                "scheme": "UA-EDR",
-                "id": "22222222",
-                "uri": "http://www.dus.gov.ua/"
-            },
-            "address": {
-                "countryName": "Україна",
-                "postalCode": "01220",
-                "region": "м. Київ",
-                "locality": "м. Київ",
-                "streetAddress": "вул. Банкова, 11, корпус 1"
-            },
-            "contactPoint": {
-                "name": "Державне управління справами",
-                "telephone": "0440000000"
-            }
+            "scheme": "UA-EDR",
+            "id": "22222222"
         }
     ]
 }
