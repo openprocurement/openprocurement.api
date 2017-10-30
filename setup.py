@@ -30,6 +30,7 @@ test_requires = requires + [
 ]
 docs_requires = requires + [
     'sphinxcontrib-httpdomain',
+    'openprocurement.tender.core'
 ]
 
 entry_points = {
@@ -48,7 +49,7 @@ entry_points = {
 }
 
 setup(name='openprocurement.api',
-      version='2.4.2',
+      version='2.4.4',
       description='openprocurement.api',
       long_description=README,
       classifiers=[
