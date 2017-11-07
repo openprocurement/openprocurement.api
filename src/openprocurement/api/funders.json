@@ -1,16 +1,8 @@
 {
     "data": [
         {
-            "scheme": "UA-EDR",
-            "id": "00037256"
-        },
-        {
-            "scheme": "UA-EDR",
-            "id": "11111111"
-        },
-        {
-            "scheme": "UA-EDR",
-            "id": "22222222"
+            "scheme": "XM-DAC",
+            "id": "44000"
         }
     ]
 }
