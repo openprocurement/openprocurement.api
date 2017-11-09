@@ -725,6 +725,14 @@
          "description":"Every business entry in Poland is assigned an ID in 3 different registries:business, court, and tax. This is the court register."
       },
       {
+         "category": "PT",
+         "code": "PT-NIPPC",
+         "name": "Tax identification number of the entity",
+         "url": "https://www.portaldocidadao.pt/",
+         "public-database": true,
+         "description": "The business register is governed by the Business Registry Code, adopted by Decree-Law No 403/86 of 3 December 1986, and is the responsibility of the business registry offices throughout the country; these offices are external services of the Institute of Registrars and Notaries (IRN), a public body under aegis of the Ministry of Justice."
+      },
+      {
          "category":"RO",
          "code":"RO-CUI",
          "name":"National Trade Register Office, Ministry of Finance",
