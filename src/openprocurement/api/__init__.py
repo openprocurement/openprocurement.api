@@ -66,6 +66,7 @@ def main(global_config, **settings):
     )
     config.include('pyramid_exclog')
     config.include("cornice")
+    config.include("cornice_swagger")
     config.add_forbidden_view(forbidden)
     config.add_request_method(request_params, 'params', reify=True)
     config.add_request_method(authenticated_role, reify=True)
@@ -79,6 +80,7 @@ def main(global_config, **settings):
     config.add_subscriber(set_renderer, NewRequest)
     config.add_subscriber(beforerender, BeforeRender)
     config.scan("openprocurement.api.views.spore")
+    config.scan("openprocurement.api.views.swagger_docs")
     config.scan("openprocurement.api.views.health")
 
     # tender procurementMethodType plugins support
