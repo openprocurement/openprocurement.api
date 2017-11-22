@@ -8,7 +8,7 @@ Host: api-sandbox.openprocurement.org
   "data": {
     "contractNumber": "contract #13111", 
     "value": {
-      "amount": 238
+      "amount": 238, "amountNet": 238
     }
   }
 }
@@ -79,7 +79,8 @@ Content-Type: application/json; charset=UTF-8
     "contractNumber": "contract #13111", 
     "value": {
       "currency": "UAH", 
-      "amount": 238.0, 
+      "amount": 238.0,
+      "amountNet": 238.0,
       "valueAddedTaxIncluded": true
     }, 
     "date": "2017-07-25T17:36:57.134377+03:00", 
