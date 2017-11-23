@@ -57,7 +57,7 @@ Schema
 :valueAddedTaxIncluded:
     bool, required
 
-FinalValue
+FullValue
 ==========
 
 Schema

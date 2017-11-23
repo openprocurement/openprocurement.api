@@ -41,7 +41,7 @@ Schema
     Contract description
 
 :value:
-    `FinalValue` object, auto-generated, read-only
+    `FullValue` object, auto-generated, read-only
 
     |ocdsDescription|
     The total value of this contract.
