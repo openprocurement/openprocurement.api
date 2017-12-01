@@ -190,7 +190,7 @@ class Value(Model):
     valueAddedTaxIncluded = BooleanType(required=True, default=True)
 
 
-class FullValue(Value):
+class ContractValue(Value):
     amountNet = FloatType(min_value=0)
 
 
@@ -453,7 +453,7 @@ class Contract(Model):
     description_ru = StringType()
     status = StringType(choices=['pending', 'terminated', 'active', 'cancelled'], default='pending')
     period = ModelType(Period)
-    value = ModelType(FullValue)
+    value = ModelType(ContractValue)
     dateSigned = IsoDateTimeType()
     documents = ListType(ModelType(Document), default=list())
     items = ListType(ModelType(Item))
