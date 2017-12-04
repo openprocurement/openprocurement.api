@@ -206,6 +206,13 @@
          "description":"The Federal Office of Justice maintains Zefix for the purpose of accessing the companies decentrally recorded in the cantonal databases. Access to general company information is free of charge. The entries and changes in the Commercial Registry are published in the Swiss Official Gazette of Commerce and on the Internet (http://zefix.admin.ch/shab)."
       },
       {
+         "category":"CL",
+         "code":"CL-RUT",
+         "description":"Internal Revenue Service of Chile (Servicio de Impuestos Internos de Chile) maintains the register of economic activity of legal entities and self-employed. Tax Identication Number is the same as National Identification Number.",
+         "public-database":true,
+         "url":"https://zeus.sii.cl/cvc/stc/stc.html"
+      },
+      {
          "category":"CN",
          "code":"CN-SAIC",
          "name":"State Administration for Industry and Commerce (SAIC)",
