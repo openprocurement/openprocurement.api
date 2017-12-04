@@ -53,7 +53,7 @@ Schema
     The date of the contract award.
     
 :value:
-    `Value` object, auto-generated, read-only
+    `ContractValue` object, auto-generated, read-only
     
     |ocdsDescription|
     The total value of this award.
