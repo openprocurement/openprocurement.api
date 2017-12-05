@@ -73,4 +73,3 @@ msgstr "`lot`"
 
 msgid "Id of related :ref:`lot` or :ref:`item`."
 msgstr "ID пов’язаних :ref:`lot` або :ref:`item`."
-

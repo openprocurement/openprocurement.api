@@ -33,6 +33,7 @@ def read_json(name):
 CPV_CODES = read_json('cpv.json')
 CPV_CODES.append('99999999-9')
 DK_CODES = read_json('dk021.json')
+FUNDERS = [(i['scheme'], i['id']) for i in read_json('funders.json')['data']]
 #DKPP_CODES = read_json('dkpp.json')
 ORA_CODES = [i['code'] for i in read_json('OrganisationRegistrationAgency.json')['data']]
 WORKING_DAYS = read_json('working_days.json')
@@ -42,4 +43,4 @@ ADDITIONAL_CLASSIFICATIONS_SCHEMES_2017 = [u'ДК003', u'ДК015', u'ДК018', u
 COORDINATES_REG_EXP = re.compile(r'-?\d{1,3}\.\d+|-?\d{1,3}')
 
 CPV_ITEMS_CLASS_FROM = datetime(2017, 1, 1, tzinfo=TZ)
-CPV_BLOCK_FROM = datetime(2017, 6, 2, tzinfo=TZ)
+CPV_BLOCK_FROM = datetime(2017, 6, 1, tzinfo=TZ)

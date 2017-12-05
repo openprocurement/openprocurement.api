@@ -725,6 +725,14 @@
          "description":"Every business entry in Poland is assigned an ID in 3 different registries:business, court, and tax. This is the court register."
       },
       {
+         "category": "PT",
+         "code": "PT-NIPPC",
+         "name": "Tax identification number of the entity",
+         "url": "https://www.portaldocidadao.pt/",
+         "public-database": true,
+         "description": "The business register is governed by the Business Registry Code, adopted by Decree-Law No 403/86 of 3 December 1986, and is the responsibility of the business registry offices throughout the country; these offices are external services of the Institute of Registrars and Notaries (IRN), a public body under aegis of the Ministry of Justice."
+      },
+      {
          "category":"RO",
          "code":"RO-CUI",
          "name":"National Trade Register Office, Ministry of Finance",
@@ -867,6 +875,14 @@
          "url":"http://www.usa.gov/directory/federal/index.shtml",
          "public-database":true,
          "description":"Use the final segment of the url (below /federal and excluding the extension) as the \"registration number\", converting all \"-\" to \"_\". Keep \"registration number\" portion all lowercase."
+      },
+      {
+         "category": "UZ",
+         "code": "UZ-KTUT",
+         "name": "Legal entity indentification code",
+         "url": "https://my.gov.uz/uz/regService/413",
+         "public-database": false,
+         "description": "The State Statistics Committee of the Republic of Uzbekistan maintans the United State Register of corporate entites and organizations (\u041a\u043e\u0440\u0445\u043e\u043d\u0430\u043b\u0430\u0440 \u0432\u0430 \u0442\u0430\u0448\u043a\u0438\u043b\u043e\u0442\u043b\u0430\u0440\u043d\u0438\u043d\u0433 \u044f\u0433\u043e\u043d\u0430 \u0434\u0430\u0432\u043b\u0430\u0442)"
       },
       {
          "category":"XI",

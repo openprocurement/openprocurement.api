@@ -57,6 +57,37 @@ Schema
 :valueAddedTaxIncluded:
     bool, required
 
+ContractValue
+=============
+
+Schema
+------
+
+:amount:
+    float, required
+
+    |ocdsDescription|
+    Amount as a number.
+
+    Should be positive.
+
+:currency:
+    string, required
+
+    |ocdsDescription|
+    The currency in 3-letter ISO 4217 format.
+
+:valueAddedTaxIncluded:
+    bool, required
+
+:amountNet:
+    float
+
+    |ocdsDescription|
+    AmountNet as a number.
+
+    Should be positive.
+
 .. index:: Revision, Change Tracking
 .. _revision:
 

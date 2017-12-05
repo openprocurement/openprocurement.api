@@ -18,7 +18,7 @@ from schematics.types.serializable import serializable
 
 from openprocurement.api.utils import get_now, set_parent, get_schematics_document
 from openprocurement.api.constants import (
-    CPV_CODES, ORA_CODES, TZ, DK_CODES, CPV_BLOCK_FROM
+    CPV_CODES, ORA_CODES, TZ, DK_CODES, CPV_BLOCK_FROM,
 )
 
 schematics_default_role = SchematicsDocument.Options.roles['default'] + blacklist("__parent__")
@@ -210,6 +210,10 @@ class Value(Model):
     amount = FloatType(required=True, min_value=0)  # Amount as a number.
     currency = StringType(required=True, default=u'UAH', max_length=3, min_length=3)  # The currency in 3-letter ISO 4217 format.
     valueAddedTaxIncluded = BooleanType(required=True, default=True)
+
+
+class ContractValue(Value):
+    amountNet = FloatType(min_value=0)
 
 
 class Guarantee(Model):
@@ -471,7 +475,7 @@ class Contract(Model):
     description_ru = StringType()
     status = StringType(choices=['pending', 'terminated', 'active', 'cancelled'], default='pending')
     period = ModelType(Period)
-    value = ModelType(Value)
+    value = ModelType(ContractValue)
     dateSigned = IsoDateTimeType()
     documents = ListType(ModelType(Document), default=list())
     items = ListType(ModelType(Item))

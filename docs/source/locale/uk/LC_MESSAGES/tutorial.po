@@ -427,12 +427,3 @@ msgstr "Завантаження нової версії документа"
 
 msgid "Activating the request and cancelling tender"
 msgstr "Активація запиту та скасування закупівлі"
-
-#~ msgid ""
-#~ "For best effect (biggest economy) Tender"
-#~ " should have multiple bidders registered:"
-#~ msgstr ""
-#~ "Для найкращого результату (найбільшої "
-#~ "економії) Закупівля повинна мати багато "
-#~ "зареєстрованих учасників."
-

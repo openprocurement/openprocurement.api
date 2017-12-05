@@ -1,5 +1,4 @@
 #
-# Zoriana Zaiats <sorenabell@quintagroup.com>, 2016.
 msgid ""
 msgstr ""
 "Project-Id-Version: openprocurement.api 0.5\n"
@@ -76,5 +75,3 @@ msgstr "`access.token` в тілі запитів POST/PUT/PATCH"
 
 msgid "See the example of the action with token passed as URL query string:"
 msgstr "Ось приклад, де токен передається як рядок URL запиту:"
-
-

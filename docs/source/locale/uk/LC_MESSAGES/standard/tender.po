@@ -3,17 +3,18 @@ msgid ""
 msgstr ""
 "Project-Id-Version: openprocurement.api 0.10\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2014-11-24 18:25+0200\n"
-"PO-Revision-Date: 2016-04-15 14:05+0300\n"
+"POT-Creation-Date: 2016-08-02 12:46+0300\n"
+"PO-Revision-Date: 2016-08-02 12:47+0200\n"
 "Last-Translator: Zoriana Zaiats <sorenabell@quintagroup.com>\n"
 "Language-Team: Ukrainian <info@quintagroup.com>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.3.4\n"
 "Language: uk\n"
 "Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<"
 "=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
-"X-Generator: Lokalize 1.5\n"
+"X-Generator: Lokalize 2.0\n"
 
 msgid "Tender"
 msgstr "Tender"
@@ -24,6 +25,15 @@ msgstr "Схема"
 msgid "string, multilingual"
 msgstr "рядок, багатомовний"
 
+msgid ""
+"The name of the tender, displayed in listings. You can include the "
+"following items:"
+msgstr ""
+"Назва тендера, яка відображається у списках. Можна включити такі елементи:"
+
+msgid "tender code (in procuring organization management system)"
+msgstr "код закупівлі (у системі управління організації-замовника)"
+
 msgid "periodicity of the tender (annual, quarterly, etc.)"
 msgstr "періодичність закупівлі (щороку, щокварталу, і т.д.)"
 
@@ -33,12 +43,27 @@ msgstr "елемент, що закуповується"
 msgid "some other info"
 msgstr "інша інформація"
 
+msgid "Detailed description of tender."
+msgstr "Детальний опис закупівлі"
+
+msgid "string, auto-generated, read-only"
+msgstr "рядок, генерується автоматично, лише для читання"
+
+msgid "The tender identifier to refer tender to in \"paper\" documentation."
+msgstr ""
+"Ідентифікатор закупівлі, щоб знайти закупівлю у  \"паперовій\" "
+"документації"
+
 msgid ""
 "|ocdsDescription| TenderID should always be the same as the OCID. It is "
 "included to make the flattened data structure more convenient."
 msgstr ""
-"|ocdsDescription| Ідентифікатор тендера `TenderID` повинен завжди співпадати"
-" з OCID. Його включають, щоб зробити структуру даних більш зручною."
+"|ocdsDescription| Ідентифікатор тендера `TenderID` повинен завжди "
+"співпадати з OCID. Його включають, щоб зробити структуру даних більш "
+"зручною."
+
+msgid ":ref:`ProcuringEntity`, required"
+msgstr ":ref:`ProcuringEntity`, обов’язково"
 
 msgid "Organization conducting the tender."
 msgstr "Замовник (організація, що проводить закупівлю)."
@@ -50,17 +75,56 @@ msgstr ""
 "|ocdsDescription| Об’єкт, що управляє закупівлею. Він не обов’язково є "
 "покупцем, який платить / використовує закуплені елементи."
 
+msgid ":ref:`value`, required"
+msgstr ":ref:`value`, обов’язково"
+
+msgid ""
+"Total available tender budget. Bids greater then ``value`` will be "
+"rejected."
+msgstr ""
+"Повний доступний бюджет закупівлі. Пропозиції, що більші за ``value`` "
+"будуть відхилені."
+
 msgid "|ocdsDescription| The total estimated value of the procurement."
 msgstr "|ocdsDescription| Загальна кошторисна вартість закупівлі."
 
+msgid ":ref:`Guarantee`"
+msgstr ":ref:`Guarantee`"
+
+msgid "Bid guarantee"
+msgstr "Забезпечення тендерної пропозиції"
+
+msgid "string, :ref:`date`, auto-generated"
+msgstr "рядок, :ref:`date`, генерується автоматично"
+
+msgid "list of :ref:`item` objects, required"
+msgstr "список об’єктів :ref:`item`, обов’язково"
+
+msgid "List that contains single item being procured."
+msgstr "Список, який містить елемент, що закуповується."
+
 msgid ""
-"|ocdsDescription| The goods and services to be purchased, broken into line "
-"items wherever possible. Items should not be duplicated, but a quantity of 2"
-" specified instead."
+"|ocdsDescription| The goods and services to be purchased, broken into "
+"line items wherever possible. Items should not be duplicated, but a "
+"quantity of 2 specified instead."
 msgstr ""
 "|ocdsDescription| Товари та послуги, що будуть закуплені, поділені на "
-"спискові елементи, де це можливо. Елементи не повинні дублюватись, замість "
-"цього вкажіть кількість 2."
+"спискові елементи, де це можливо. Елементи не повинні дублюватись, "
+"замість цього вкажіть кількість 2."
+
+msgid "list of :ref:`Feature` objects"
+msgstr "список об’єктів :ref:`Feature`"
+
+msgid "Features of tender."
+msgstr "Властивості закупівлі."
+
+msgid ""
+"A list of all bids placed in the tender with information about tenderers,"
+" their proposal and other qualification documentation."
+msgstr ""
+"Список усіх пропозицій зроблених під час закупівлі разом із інформацією "
+"про учасників закупівлі, їхні пропозиції та інша кваліфікаційна "
+"документація."
 
 msgid "List of :ref:`document` objects"
 msgstr "Список об’єктів :ref:`document`"
@@ -84,11 +148,35 @@ msgid "List of :ref:`bid` objects"
 msgstr "Список об’єктів :ref:`bid`"
 
 msgid ""
-"|ocdsDescription| A list of all the companies who entered submissions for "
-"the tender."
+"|ocdsDescription| A list of all the companies who entered submissions for"
+" the tender."
 msgstr ""
 "|ocdsDescription| Список усіх компаній, які подали заявки для участі у "
 "закупівлі."
+
+msgid "The minimal step of auction (reduction). Validation rules:"
+msgstr "Мінімальний крок аукціону (редукціону). Правила валідації:"
+
+msgid "`amount` should be less then `Tender.value.amount`"
+msgstr "Значення `amount` повинно бути меншим за `Tender.value.amount`"
+
+msgid "`currency` should either be absent or match `Tender.value.currency`"
+msgstr ""
+"Значення `currency` повинно бути або відсутнім, або співпадати з "
+"`Tender.value.currency`"
+
+msgid ""
+"`valueAddedTaxIncluded` should either be absent or match "
+"`Tender.value.valueAddedTaxIncluded`"
+msgstr ""
+"Значення `valueAddedTaxIncluded` повинно бути або відсутнім, або "
+"співпадати з `Tender.value.valueAddedTaxIncluded`"
+
+msgid "List of :ref:`Contract` objects"
+msgstr "Список об’єктів :ref:`Contract`"
+
+msgid ":ref:`period`, required"
+msgstr ":ref:`period`, обов’язково"
 
 msgid "List of :ref:`award` objects"
 msgstr "Список об’єктів :ref:`award`"
@@ -97,18 +185,39 @@ msgid "All qualifications (disqualifications and awards)."
 msgstr "Усі  кваліфікації (дискваліфікації та переможці)."
 
 msgid ""
-"|ocdsDescription| The period during which enquiries may be made and will be "
-"answered."
+"Period when questions are allowed. At least `endDate` has to be provided."
 msgstr ""
-"|ocdsDescription| Період, коли можна зробити уточнення та отримати відповіді"
-" на них."
+"Період, коли дозволено задавати питання. Повинна бути вказана хоча б "
+"`endDate` дата."
 
 msgid ""
-"|ocdsDescription| The period when the tender is open for submissions. The "
-"end date is the closing date for tender submissions."
+"|ocdsDescription| The period during which enquiries may be made and will "
+"be answered."
+msgstr ""
+"|ocdsDescription| Період, коли можна зробити уточнення та отримати "
+"відповіді на них."
+
+msgid ""
+"Period when bids can be submitted. At least `endDate` has to be provided."
+msgstr ""
+"Період, коли подаються пропозиції. Повинна бути вказана хоча б `endDate` "
+"дата."
+
+msgid ""
+"|ocdsDescription| The period when the tender is open for submissions. The"
+" end date is the closing date for tender submissions."
 msgstr ""
 "|ocdsDescription| Період, коли закупівля відкрита для подачі пропозицій. "
 "Кінцева дата - це дата, коли перестають прийматись пропозиції."
+
+msgid "url"
+msgstr "URL-адреса"
+
+msgid "A web address for view auction."
+msgstr "Веб-адреса для перегляду аукціону."
+
+msgid "Awarding process period."
+msgstr "Період, коли відбувається визначення переможця."
 
 msgid ":ref:`period`, read-only"
 msgstr ":ref:`period`,  лише для читання"
@@ -148,34 +257,6 @@ msgstr ""
 "Значення `currency` повинно бути або відсутнім, або співпадати з "
 "`Tender.value.currency`"
 
-msgid ""
-"`valueAddedTaxIncluded` should either be absent or match "
-"`Tender.value.valueAddedTaxIncluded`"
-msgstr ""
-"Значення `valueAddedTaxIncluded` повинно бути або відсутнім, або співпадати "
-"з `Tender.value.valueAddedTaxIncluded`"
-
-msgid ":ref:`period`, required"
-msgstr ":ref:`period`, обов’язково"
-
-msgid "The Tender dates should be sequential:"
-msgstr "Дати закупівлі повинні бути послідовними:"
-
-msgid "Current time"
-msgstr "Поточний час"
-
-msgid "`enquiryPeriod.startDate`"
-msgstr "`enquiryPeriod.startDate`"
-
-msgid "`enquiryPeriod.endDate`"
-msgstr "`enquiryPeriod.endDate`"
-
-msgid "`tenderPeriod.startDate`"
-msgstr "`tenderPeriod.startDate`"
-
-msgid "`tenderPeriod.endDate`"
-msgstr "`tenderPeriod.endDate`"
-
 msgid "string"
 msgstr "рядок"
 
@@ -203,6 +284,39 @@ msgstr "Завершена закупівля (завершена)"
 msgid "Cancelled tender (cancelled)"
 msgstr "Відмінена закупівля (відмінена)"
 
+msgid "Status of the Tender."
+msgstr "Статус Закупівлі."
+
+msgid "List of :ref:`lot` objects."
+msgstr "Список об’єктів :ref:`lot`."
+
+msgid "Contains all tender lots."
+msgstr "Містить всі лоти закупівлі."
+
+msgid "List of :ref:`cancellation` objects."
+msgstr "Список об’єктів :ref:`cancellation`."
+
+msgid ":ref:`period`, required"
+msgstr ":ref:`period`, обов’язково"
+
+msgid "The Tender dates should be sequential:"
+msgstr "Дати закупівлі повинні бути послідовними:"
+
+msgid "Current time"
+msgstr "Поточний час"
+
+msgid "`enquiryPeriod.startDate`"
+msgstr "`enquiryPeriod.startDate`"
+
+msgid "`enquiryPeriod.endDate`"
+msgstr "`enquiryPeriod.endDate`"
+
+msgid "`tenderPeriod.startDate`"
+msgstr "`tenderPeriod.startDate`"
+
+msgid "`tenderPeriod.endDate`"
+msgstr "`tenderPeriod.endDate`"
+
 msgid "List of :ref:`cancellation` objects."
 msgstr "Список об’єктів :ref:`cancellation`."
 
@@ -210,6 +324,13 @@ msgid "Contains 1 object with `active` status in case of cancelled Tender."
 msgstr ""
 "Містить 1 об’єкт зі статусом `active` на випадок, якщо закупівлю буде "
 "відмінено."
+
+msgid ""
+"The :ref:`cancellation` object describes the reason of tender "
+"cancellation contains accompanying documents  if any."
+msgstr ""
+"Об’єкт :ref:`cancellation` описує причину скасування закупівлі та надає "
+"відповідні документи, якщо такі є."
 
 msgid ""
 "The name of the tender, displayed in listings. You can include the following"
@@ -255,18 +376,8 @@ msgstr ""
 msgid "Awarding process period."
 msgstr "Період, коли відбувається визначення переможця."
 
-msgid ""
-"The :ref:`cancellation` object describes the reason of tender cancellation "
-"contains accompanying documents  if any."
-msgstr ""
-"Об’єкт :ref:`cancellation` описує причину скасування закупівлі та надає "
-"відповідні документи, якщо такі є."
-
 msgid "List of :ref:`Contract` objects"
 msgstr "Список об’єктів :ref:`Contract`"
-
-msgid "url"
-msgstr "URL-адреса"
 
 msgid "A web address for view auction."
 msgstr "Веб-адреса для перегляду аукціону."
@@ -277,12 +388,6 @@ msgstr "Список об’єктів :ref:`lot`."
 msgid "Contains all tender lots."
 msgstr "Містить всі лоти закупівлі."
 
-msgid "list of :ref:`Feature` objects"
-msgstr "список об’єктів :ref:`Feature`"
-
-msgid "Features of tender."
-msgstr "Властивості закупівлі."
-
 msgid "string, auto-generated, read-only"
 msgstr "рядок, генерується автоматично, лише для читання"
 
@@ -290,12 +395,8 @@ msgid "List of :ref:`revision` objects, auto-generated"
 msgstr ""
 "Список об’єктів :ref:`revision`, генерується автоматично, лише для читання"
 
-msgid ":ref:`Guarantee`"
-msgstr ":ref:`Guarantee`"
+msgid "Historical changes to Tender object properties."
+msgstr "Зміни властивостей об’єктів Закупівлі"
 
-msgid "Bid guarantee"
-msgstr "Забезпечення тендерної пропозиції"
-
-msgid ":ref:`ProcuringEntity`, required"
-msgstr ":ref:`ProcuringEntity`, обов’язково"
-
+msgid "The Tender dates should be sequential:"
+msgstr "Дати закупівлі повинні бути послідовними:"
