@@ -18,7 +18,7 @@ from schematics.types.serializable import serializable
 
 from openprocurement.api.utils import get_now, set_parent, get_schematics_document
 from openprocurement.api.constants import (
-    CPV_CODES, ORA_CODES, TZ, DK_CODES, CPV_BLOCK_FROM
+    CPV_CODES, ORA_CODES, TZ, DK_CODES, CPV_BLOCK_FROM, INN_CODES
 )
 
 schematics_default_role = SchematicsDocument.Options.roles['default'] + blacklist("__parent__")
@@ -240,7 +240,7 @@ class Classification(Model):
 
 
 class CPVClassification(Classification):
-    scheme = StringType(required=True, default=u'CPV', choices=[u'CPV', u'ДК021'])
+    scheme = StringType(required=True, default=u'CPV', choices=[u'CPV', u'ДК021', u'inn'])
     id = StringType(required=True)
 
     def validate_id(self, data, code):
@@ -248,6 +248,8 @@ class CPVClassification(Classification):
             raise ValidationError(BaseType.MESSAGES['choices'].format(unicode(CPV_CODES)))
         elif data.get('scheme') == u'ДК021' and code not in DK_CODES:
             raise ValidationError(BaseType.MESSAGES['choices'].format(unicode(DK_CODES)))
+        elif data.get('scheme') == u'inn' and code not in INN_CODES:
+            raise ValidationError(BaseType.MESSAGES['choices'].format(unicode(INN_CODES)))
 
     def validate_scheme(self, data, scheme):
         schematics_document = get_schematics_document(data['__parent__'])
