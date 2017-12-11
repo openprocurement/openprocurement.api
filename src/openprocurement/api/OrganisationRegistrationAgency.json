@@ -62,14 +62,6 @@
          "description":"There is no search available, but there is a listing of companies with telephone and fax numbers"
       },
       {
-         "category":"AT",
-         "code":"AT-FN",
-         "description":"Available only in German. Access can be obtained by using services of special companies like http://www.advokat.at/Advokat-Online/Module/Firmenbuch.aspx that are entitled to provide it (for full list see https://www.justiz.gv.at/web2013/html/default/2c9484852308c2a601240b693e1c0860.de.html)",
-	 "name":"Firmenbuch (the Ministry of Justice of Austria)",
-         "public-database":true,
-         "url":"https://www.justiz.gv.at/web2013/html/default/2c9484852308c2a601240b693e1c0860.de.html"
-      },
-      {
          "category":"AE",
          "code":"AE-FUJCCI",
          "name":"Fujairah Chamber of Commerce and Industry",
@@ -132,6 +124,14 @@
          "url":"http://moec.gov.af/en",
          "public-database":true,
          "description":null
+      },
+      {
+         "category":"AT",
+         "code":"AT-FN",
+         "description":"Available only in German. Access can be obtained by using services of special companies like http://www.advokat.at/Advokat-Online/Module/Firmenbuch.aspx that are entitled to provide it (for full list see https://www.justiz.gv.at/web2013/html/default/2c9484852308c2a601240b693e1c0860.de.html)",
+         "name":"Firmenbuch (the Ministry of Justice of Austria)",
+         "public-database":true,
+         "url":"https://www.justiz.gv.at/web2013/html/default/2c9484852308c2a601240b693e1c0860.de.html"
       },
       {
          "category":"AU",
@@ -204,6 +204,13 @@
          "url":"http://www.zefix.ch/",
          "public-database":true,
          "description":"The Federal Office of Justice maintains Zefix for the purpose of accessing the companies decentrally recorded in the cantonal databases. Access to general company information is free of charge. The entries and changes in the Commercial Registry are published in the Swiss Official Gazette of Commerce and on the Internet (http://zefix.admin.ch/shab)."
+      },
+      {
+         "category":"CL",
+         "code":"CL-RUT",
+         "description":"Internal Revenue Service of Chile (Servicio de Impuestos Internos de Chile) maintains the register of economic activity of legal entities and self-employed. Tax Identication Number is the same as National Identification Number.",
+         "public-database":true,
+         "url":"https://zeus.sii.cl/cvc/stc/stc.html"
       },
       {
          "category":"CN",
@@ -510,12 +517,12 @@
          "description":null
       },
       {
-         "category": "JP",
-         "code": "JP-JCN",
-         "description": "A code allocated to a company by the Japanese National Tax Agency. The registry itself is open and searchable by JCN (in Japanese only), but only limited information is available. More information on the corporate number (JCN) can be found here - http://www.nta.go.jp/foreign_language/corporate_number/ (National Tax Agency website). ",
-         "name": "JCN (Japanese Corporate Number). Japanese Corporate Registry - Houjintouki (\u6cd5\u4eba\u767b\u8a18)",
-         "public-database": true,
-         "url": "http://www.houjin-bangou.nta.go.jp/"
+         "category":"JP",
+         "code":"JP-JCN",
+         "description":"A code allocated to a company by the Japanese National Tax Agency. The registry itself is open and searchable by JCN (in Japanese only), but only limited information is available. More information on the corporate number (JCN) can be found here - http://www.nta.go.jp/foreign_language/corporate_number/ (National Tax Agency website). ",
+         "name":"JCN (Japanese Corporate Number). Japanese Corporate Registry - Houjintouki (\u6cd5\u4eba\u767b\u8a18)",
+         "public-database":true,
+         "url":"http://www.houjin-bangou.nta.go.jp/"
       },
       {
          "category":"KE",
@@ -629,12 +636,12 @@
          "description":null
       },
       {
-        "category": "MY",
-        "code": "MY-SSM",
-        "description": "The Companies Commission of Malaysia (SSM) is a statutory body formed as a result of a merger between the Registrar of Companies (ROC) and the Registrar of Businesses (ROB) in Malaysia which regulates companies and businesses. SSM came into operation on 16 April 2002. You can search a company by its company, business, or LLP Registration Number",
-        "name": "Suruhanjaya Syarikat Malaysia/Companies Commission of Malaysia",
-        "public-database": true,
-        "url": "http://www.ssm.com.my/ms"
+         "category":"MY",
+         "code":"MY-SSM",
+         "description":"The Companies Commission of Malaysia (SSM) is a statutory body formed as a result of a merger between the Registrar of Companies (ROC) and the Registrar of Businesses (ROB) in Malaysia which regulates companies and businesses. SSM came into operation on 16 April 2002. You can search a company by its company, business, or LLP Registration Number",
+         "name":"Suruhanjaya Syarikat Malaysia/Companies Commission of Malaysia",
+         "public-database":true,
+         "url":"http://www.ssm.com.my/ms"
       },
       {
          "category":"MZ",
@@ -702,11 +709,11 @@
       },
       {
          "category":"PL",
-         "code":"PL-REGON",
-         "name":"National Official Business Register",
-         "url":"http://www.stat.gov.pl/regon/, http://bip.stat.gov.pl/en/regon/",
+         "code":"PL-KRS",
+         "name":"The National Court Register",
+         "url":"https://ems.ms.gov.pl/krs/wyszukiwaniepodmiotu",
          "public-database":true,
-         "description":"Every business entry in Poland is assigned an ID in 3 different registries:business, court, and tax. This is the business register."
+         "description":"Every business entry in Poland is assigned an ID in 3 different registries:business, court, and tax. This is the court register."
       },
       {
          "category":"PL",
@@ -718,19 +725,19 @@
       },
       {
          "category":"PL",
-         "code":"PL-KRS",
-         "name":"The National Court Register",
-         "url":"https://ems.ms.gov.pl/krs/wyszukiwaniepodmiotu",
+         "code":"PL-REGON",
+         "name":"National Official Business Register",
+         "url":"http://www.stat.gov.pl/regon/, http://bip.stat.gov.pl/en/regon/",
          "public-database":true,
-         "description":"Every business entry in Poland is assigned an ID in 3 different registries:business, court, and tax. This is the court register."
+         "description":"Every business entry in Poland is assigned an ID in 3 different registries:business, court, and tax. This is the business register."
       },
       {
-         "category": "PT",
-         "code": "PT-NIPPC",
-         "name": "Tax identification number of the entity",
-         "url": "https://www.portaldocidadao.pt/",
-         "public-database": true,
-         "description": "The business register is governed by the Business Registry Code, adopted by Decree-Law No 403/86 of 3 December 1986, and is the responsibility of the business registry offices throughout the country; these offices are external services of the Institute of Registrars and Notaries (IRN), a public body under aegis of the Ministry of Justice."
+         "category":"PT",
+         "code":"PT-NIPPC",
+         "name":"Tax identification number of the entity",
+         "url":"https://www.portaldocidadao.pt/",
+         "public-database":true,
+         "description":"The business register is governed by the Business Registry Code, adopted by Decree-Law No 403/86 of 3 December 1986, and is the responsibility of the business registry offices throughout the country; these offices are external services of the Institute of Registrars and Notaries (IRN), a public body under aegis of the Ministry of Justice."
       },
       {
          "category":"RO",
@@ -877,12 +884,12 @@
          "description":"Use the final segment of the url (below /federal and excluding the extension) as the \"registration number\", converting all \"-\" to \"_\". Keep \"registration number\" portion all lowercase."
       },
       {
-         "category": "UZ",
-         "code": "UZ-KTUT",
-         "name": "Legal entity indentification code",
-         "url": "https://my.gov.uz/uz/regService/413",
-         "public-database": false,
-         "description": "The State Statistics Committee of the Republic of Uzbekistan maintans the United State Register of corporate entites and organizations (\u041a\u043e\u0440\u0445\u043e\u043d\u0430\u043b\u0430\u0440 \u0432\u0430 \u0442\u0430\u0448\u043a\u0438\u043b\u043e\u0442\u043b\u0430\u0440\u043d\u0438\u043d\u0433 \u044f\u0433\u043e\u043d\u0430 \u0434\u0430\u0432\u043b\u0430\u0442)"
+         "category":"UZ",
+         "code":"UZ-KTUT",
+         "name":"Legal entity indentification code",
+         "url":"https://my.gov.uz/uz/regService/413",
+         "public-database":false,
+         "description":"The State Statistics Committee of the Republic of Uzbekistan maintans the United State Register of corporate entites and organizations (\u041a\u043e\u0440\u0445\u043e\u043d\u0430\u043b\u0430\u0440 \u0432\u0430 \u0442\u0430\u0448\u043a\u0438\u043b\u043e\u0442\u043b\u0430\u0440\u043d\u0438\u043d\u0433 \u044f\u0433\u043e\u043d\u0430 \u0434\u0430\u0432\u043b\u0430\u0442)"
       },
       {
          "category":"XI",
