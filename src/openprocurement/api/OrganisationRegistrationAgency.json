@@ -209,6 +209,7 @@
          "category":"CL",
          "code":"CL-RUT",
          "description":"Internal Revenue Service of Chile (Servicio de Impuestos Internos de Chile) maintains the register of economic activity of legal entities and self-employed. Tax Identication Number is the same as National Identification Number.",
+         "name":"Tax Identification Number",
          "public-database":true,
          "url":"https://zeus.sii.cl/cvc/stc/stc.html"
       },
