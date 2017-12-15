@@ -37,6 +37,12 @@ DK_CODES = read_json('dk021.json')
 ORA_CODES = [i['code'] for i in read_json('OrganisationRegistrationAgency.json')['data']]
 WORKING_DAYS = read_json('working_days.json')
 
+ATC_CODES = read_json('atc.json')
+INN_CODES = read_json('inn.json')
+MOZ_ATX = read_json('moz_atx.json')
+MOZ_MNN = read_json('moz_mnn.json')
+
+
 ADDITIONAL_CLASSIFICATIONS_SCHEMES = [u'ДКПП', u'NONE', u'ДК003', u'ДК015', u'ДК018']
 ADDITIONAL_CLASSIFICATIONS_SCHEMES_2017 = [u'ДК003', u'ДК015', u'ДК018', u'specialNorms']
 COORDINATES_REG_EXP = re.compile(r'-?\d{1,3}\.\d+|-?\d{1,3}')
