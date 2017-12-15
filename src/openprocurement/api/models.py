@@ -18,7 +18,7 @@ from schematics.types.serializable import serializable
 
 from openprocurement.api.utils import get_now, set_parent, get_schematics_document
 from openprocurement.api.constants import (
-    CPV_CODES, ORA_CODES, TZ, DK_CODES, CPV_BLOCK_FROM
+    CPV_CODES, ORA_CODES, TZ, DK_CODES, CPV_BLOCK_FROM, ATC_CODES, INN_CODES, ADDITIONAL_CLASSIFICATIONS_FROM,
 )
 
 schematics_default_role = SchematicsDocument.Options.roles['default'] + blacklist("__parent__")
@@ -255,6 +255,17 @@ class CPVClassification(Classification):
             raise ValidationError(BaseType.MESSAGES['choices'].format(unicode([u'ДК021'])))
 
 
+class AdditionalClassification(Classification):
+
+    def validate_id(self, data, code):
+        schematics_document = get_schematics_document(data['__parent__'])
+        if (schematics_document.get('revisions')[0].date if schematics_document.get('revisions') else get_now()) > ADDITIONAL_CLASSIFICATIONS_FROM:
+            if data.get('scheme') == u'ATC' and code not in ATC_CODES:
+                raise ValidationError(BaseType.MESSAGES['choices'].format(unicode(ATC_CODES)))
+            elif data.get('scheme') == u'INN' and code not in INN_CODES:
+                raise ValidationError(BaseType.MESSAGES['choices'].format(unicode(INN_CODES)))
+
+
 class Unit(Model):
     """Description of the unit which the good comes in e.g. hours, kilograms. Made up of a unit name, and the value of a single unit."""
 
@@ -411,7 +422,7 @@ class Item(Model):
     description_en = StringType()
     description_ru = StringType()
     classification = ModelType(CPVClassification)
-    additionalClassifications = ListType(ModelType(Classification), default=list())
+    additionalClassifications = ListType(ModelType(AdditionalClassification), default=list())
     unit = ModelType(Unit)  # Description of the unit which the good comes in e.g. hours, kilograms
     quantity = IntType()  # The number of units required
     deliveryDate = ModelType(Period)
