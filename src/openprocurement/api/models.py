@@ -2,13 +2,14 @@
 import os
 from couchdb_schematics.document import SchematicsDocument
 from datetime import datetime, timedelta, time
+from decimal import Decimal, InvalidOperation, ROUND_HALF_UP
 from iso8601 import parse_date, ParseError
 from pytz import timezone
 from pyramid.security import Allow
 from schematics.exceptions import ConversionError, ValidationError
 from schematics.models import Model as SchematicsModel
 from schematics.transforms import whitelist, blacklist, export_loop, convert
-from schematics.types import StringType, FloatType, IntType, URLType, BooleanType, BaseType, EmailType, MD5Type
+from schematics.types import StringType, FloatType, IntType, URLType, BooleanType, BaseType, EmailType, MD5Type, DecimalType as BaseDecimalType
 from schematics.types.compound import ModelType, DictType, ListType as BaseListType
 from schematics.types.serializable import serializable
 from uuid import uuid4
@@ -54,6 +55,30 @@ WORKING_DAYS = read_json('working_days.json')
 
 class ITender(Interface):
     """ Base tender marker interface """
+
+
+class DecimalType(BaseDecimalType):
+
+    def __init__(self, precision=-3, min_value=None, max_value=None, **kwargs):
+        self.min_value, self.max_value = min_value, max_value
+        self.precision = Decimal("1E{:d}".format(precision))
+        super(DecimalType, self).__init__(**kwargs)
+
+    def to_primitive(self, value, context=None):
+        return value
+
+    def to_native(self, value, context=None):
+        try:
+            value = Decimal(value).quantize(self.precision, rounding=ROUND_HALF_UP).normalize()
+        except (TypeError, InvalidOperation):
+            raise ConversionError(self.messages['number_coerce'].format(value))
+
+        if self.min_value is not None and value < self.min_value:
+            raise ConversionError(self.messages['number_min'].format(value))
+        if self.max_value is not None and self.max_value < value:
+            raise ConversionError(self.messages['number_max'].format(value))
+            
+        return value
 
 
 class IsoDateTimeType(BaseType):
@@ -341,7 +366,7 @@ class Item(Model):
     classification = ModelType(CPVClassification, required=True)
     additionalClassifications = ListType(ModelType(Classification), default=list(), required=True, min_size=1, validators=[validate_dkpp])
     unit = ModelType(Unit)  # Description of the unit which the good comes in e.g. hours, kilograms
-    quantity = IntType()  # The number of units required
+    quantity = DecimalType()  # The number of units required
     deliveryDate = ModelType(Period)
     deliveryAddress = ModelType(Address)
     deliveryLocation = ModelType(Location)
@@ -350,6 +375,7 @@ class Item(Model):
     def validate_relatedLot(self, data, relatedLot):
         if relatedLot and isinstance(data['__parent__'], Model) and relatedLot not in [i.id for i in get_tender(data['__parent__']).lots]:
             raise ValidationError(u"relatedLot should be one of lots")
+
 
 class HashType(StringType):
 
