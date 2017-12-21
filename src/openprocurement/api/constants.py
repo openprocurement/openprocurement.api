@@ -48,4 +48,4 @@ COORDINATES_REG_EXP = re.compile(r'-?\d{1,3}\.\d+|-?\d{1,3}')
 CPV_ITEMS_CLASS_FROM = datetime(2017, 1, 1, tzinfo=TZ)
 CPV_BLOCK_FROM = datetime(2017, 6, 2, tzinfo=TZ)
 
-ATC_INN_CLASSIFICATIONS_FROM = datetime(2017, 12, 15, tzinfo=TZ)
+ATC_INN_CLASSIFICATIONS_FROM = datetime(2017, 12, 22, tzinfo=TZ)
