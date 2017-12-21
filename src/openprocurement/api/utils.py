@@ -31,6 +31,7 @@ from binascii import hexlify, unhexlify
 from Crypto.Cipher import AES
 from re import compile
 from requests import Session
+from openprocurement.api.interfaces import IContentConfigurator
 
 
 PKG = get_distribution(__package__)
@@ -310,6 +311,13 @@ def set_modetest_titles(tender):
     if not tender.title_ru or u'[ТЕСТИРОВАНИЕ]' not in tender.title_ru:
         tender.title_ru = u'[ТЕСТИРОВАНИЕ] {}'.format(tender.title_ru or u'')
 
+
+def get_content_configurator(request):
+    content_type = request.path[len(ROUTE_PREFIX)+1:].split('/')[0][:-1]
+    if hasattr(request, content_type):  # content is constructed
+        context = getattr(request, content_type)
+        return request.registry.queryMultiAdapter((context, request),
+                                                  IContentConfigurator)
 
 def save_tender(request):
     tender = request.validated['tender']
