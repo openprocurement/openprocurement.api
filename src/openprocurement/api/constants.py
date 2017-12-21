@@ -38,9 +38,14 @@ FUNDERS = [(i['scheme'], i['id']) for i in read_json('funders.json')['data']]
 ORA_CODES = [i['code'] for i in read_json('OrganisationRegistrationAgency.json')['data']]
 WORKING_DAYS = read_json('working_days.json')
 
+ATC_CODES = read_json('atc.json')
+INN_CODES = read_json('inn.json')
+
 ADDITIONAL_CLASSIFICATIONS_SCHEMES = [u'ДКПП', u'NONE', u'ДК003', u'ДК015', u'ДК018']
 ADDITIONAL_CLASSIFICATIONS_SCHEMES_2017 = [u'ДК003', u'ДК015', u'ДК018', u'specialNorms']
 COORDINATES_REG_EXP = re.compile(r'-?\d{1,3}\.\d+|-?\d{1,3}')
 
 CPV_ITEMS_CLASS_FROM = datetime(2017, 1, 1, tzinfo=TZ)
 CPV_BLOCK_FROM = datetime(2017, 6, 2, tzinfo=TZ)
+
+ATC_INN_CLASSIFICATIONS_FROM = datetime(2017, 12, 15, tzinfo=TZ)
