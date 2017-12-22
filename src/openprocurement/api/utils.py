@@ -319,6 +319,7 @@ def get_content_configurator(request):
         return request.registry.queryMultiAdapter((context, request),
                                                   IContentConfigurator)
 
+
 def save_tender(request):
     tender = request.validated['tender']
     if tender.mode == u'test':
