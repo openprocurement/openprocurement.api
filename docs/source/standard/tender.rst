@@ -180,6 +180,13 @@ Schema
    The :ref:`cancellation` object describes the reason of tender cancellation contains accompanying
    documents  if any.
 
+:funders:
+  List of :ref:`organization` objects.
+
+  Optional field.
+
+  The funder is an entity providing money or finance for contracting process.
+
 :revisions:
    List of :ref:`revision` objects, auto-generated
 
