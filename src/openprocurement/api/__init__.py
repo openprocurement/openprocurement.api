@@ -16,7 +16,6 @@ from pbkdf2 import PBKDF2
 
 from openprocurement.api.auth import AuthenticationPolicy, authenticated_role, check_accreditation
 from openprocurement.api.design import sync_design
-from openprocurement.api.models import Tender
 from openprocurement.api.utils import (
     forbidden,
     add_logging_context,
@@ -201,8 +200,3 @@ def main(global_config, **settings):
     config.registry.health_threshold = float(settings.get('health_threshold', 99))
     config.registry.update_after = asbool(settings.get('update_after', True))
     return config.make_wsgi_app()
-
-
-def includeme(config):
-    config.add_tender_procurementMethodType(Tender)
-    config.scan("openprocurement.api.views")
