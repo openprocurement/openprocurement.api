@@ -406,6 +406,14 @@
          "description":null
       },
       {
+         "category":"HR",
+         "code":"HR-OIB",
+         "name":"Personal Identification Number",
+         "public-database":true,
+         "url":"https://sudreg.pravosudje.hr/registar/f?p=150:3",
+         "description":"The registry is maintained by the Ministry of Justice of the Republic of Croatia. Company can be searched by MBS, OIB number or legal name. Search results provide MBS and OIB numbers, registration court, company name, status, company name current status, and address. There is no English interface, search is free-of-charge."
+      },
+      {
          "category":"HU",
          "code":"HU-VAT",
          "name":"K\u00f6z\u00f6ss\u00e9gi ad\u00f3sz\u00e1m/ VAT ID (Ministry of Justice of Hungary)",
