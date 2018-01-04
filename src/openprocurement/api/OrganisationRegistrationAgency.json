@@ -558,6 +558,14 @@
          "description":null
       },
       {
+         "category":"KR",
+         "code":"KR-BIZID",
+         "name":"National Tax Office of the Republic of Korea",
+         "public-database":true,
+         "url":"https://www.hometax.go.kr/websquare/websquare.wq?w2xPath=/ui/pp/index.xml&tmIdx=0&tm2lIdx=&tm3lIdx=",
+         "description":"Only in Korean. All new companies register at http://www.startbiz.go.kr/EP/web/portal/jsp/EP_Default1.jsp and get their Biz ID Num. at the local tax office, which can be found at National Tax Service(http://www.nts.go.kr/eng/). Business code number is equivalent to TIN."
+      },
+      {
          "category":"KZ",
          "code":"KZ-BIN",
          "name":"\u0411\u0438\u0437\u043d\u0435\u0441 \u0441\u04d9\u0439\u043a\u0435\u0441\u0442\u0435\u043d\u0434\u0456\u0440\u0443 \u043d\u043e\u043c\u0435\u0440\u0456 (\u0411\u0418\u041d) / Business Identification Number (BIN)",
