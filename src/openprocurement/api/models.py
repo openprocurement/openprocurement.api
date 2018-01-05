@@ -9,8 +9,13 @@ from pyramid.security import Allow
 from schematics.exceptions import ConversionError, ValidationError
 from schematics.models import Model as SchematicsModel
 from schematics.transforms import whitelist, blacklist, export_loop, convert
-from schematics.types import StringType, FloatType, IntType, URLType, BooleanType, BaseType, EmailType, MD5Type, DecimalType as BaseDecimalType
-from schematics.types.compound import ModelType, DictType, ListType as BaseListType
+from schematics.types import (
+    StringType, FloatType, IntType, URLType, BooleanType, BaseType, EmailType,
+    MD5Type, DecimalType as BaseDecimalType
+)
+from schematics.types.compound import (
+    ModelType, DictType, ListType as BaseListType
+)
 from schematics.types.serializable import serializable
 from uuid import uuid4
 from barbecue import vnmax
@@ -943,11 +948,16 @@ class Award(Model):
     """
     class Options:
         roles = {
-            'create': blacklist('id', 'status', 'date', 'documents', 'complaints', 'complaintPeriod'),
-            'edit': whitelist('status', 'title', 'title_en', 'title_ru',
-                              'description', 'description_en', 'description_ru'),
+            'create': blacklist(
+                'id', 'status', 'date', 'documents',
+                'complaints', 'complaintPeriod'
+            ),
+            'edit': whitelist(
+                'status', 'title', 'title_en', 'title_ru',
+                'description', 'description_en', 'description_ru'
+            ),
             'embedded': schematics_embedded_role,
-            'view': schematics_default_role,
+            'view': schematics_default_role + blacklist('_meta'),
             'Administrator': whitelist('complaintPeriod'),
         }
 
@@ -968,6 +978,7 @@ class Award(Model):
     documents = ListType(ModelType(Document), default=list())
     complaints = ListType(ModelType(Complaint), default=list())
     complaintPeriod = ModelType(Period)
+    _meta = DictType(StringType)
 
     def validate_lotID(self, data, lotID):
         if isinstance(data['__parent__'], Model):

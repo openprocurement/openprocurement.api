@@ -2456,6 +2456,22 @@ class Tender2LotAwardDocumentWithDSResourceTest(Tender2LotAwardDocumentResourceT
     docservice = True
 
 
+class AwardModelTest(unittest.TestCase):
+    """Test hidden `_meta` field of Award model"""
+
+    def test_meta_field_visibility(self):
+        from openprocurement.api.models import Award
+        award = Award()
+        award._meta = {
+            'awardingType': 'awarding_1_0',
+            'foo': {
+                'bar': 'some metadata'
+            }
+        }
+        primitive_award = award.serialize('view')
+        self.assertNotIn('_meta', primitive_award)
+
+
 def suite():
     suite = unittest.TestSuite()
     suite.addTest(unittest.makeSuite(Tender2LotAwardComplaintDocumentResourceTest))
@@ -2467,8 +2483,10 @@ def suite():
     suite.addTest(unittest.makeSuite(TenderAwardDocumentResourceTest))
     suite.addTest(unittest.makeSuite(TenderAwardResourceTest))
     suite.addTest(unittest.makeSuite(TenderLotAwardResourceTest))
+    suite.addTest(unittest.makeSuite(AwardModelTest))
     return suite
 
 
 if __name__ == '__main__':
     unittest.main(defaultTest='suite')
+
