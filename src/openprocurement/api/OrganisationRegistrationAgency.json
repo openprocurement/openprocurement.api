@@ -150,6 +150,14 @@
          "description":null
       },
       {
+         "category":"AZ",
+         "code":"AZ-IVI",
+         "name":"State Register of Commercial Entities",
+         "public-database":true,
+         "url":"https://www.e-taxes.gov.az/ebyn/commersialChecker.jsp",
+         "description":"State Register of Commercial Entities is maintained by the the Ministry of Taxes of Azerbaijan Republic. Available only in Azerbaijani."
+      },
+      {
          "category":"BD",
          "code":"BD-NAB",
          "name":"Bangladesh NGO Affairs Bureau",
