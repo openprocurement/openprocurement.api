@@ -70,3 +70,4 @@ setup(name='openprocurement.api',
       extras_require={'test': test_requires, 'docs': docs_requires},
       test_suite="openprocurement.api.tests.main.suite",
       entry_points=entry_points)
+

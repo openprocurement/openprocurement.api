@@ -9,8 +9,13 @@ from pyramid.security import Allow
 from schematics.exceptions import ConversionError, ValidationError
 from schematics.models import Model as SchematicsModel
 from schematics.transforms import whitelist, blacklist, export_loop, convert
-from schematics.types import StringType, FloatType, IntType, URLType, BooleanType, BaseType, EmailType, MD5Type, DecimalType as BaseDecimalType
-from schematics.types.compound import ModelType, DictType, ListType as BaseListType
+from schematics.types import (
+    StringType, FloatType, IntType, URLType, BooleanType, BaseType, EmailType,
+    MD5Type, DecimalType as BaseDecimalType
+)
+from schematics.types.compound import (
+    ModelType, DictType, ListType as BaseListType
+)
 from schematics.types.serializable import serializable
 from uuid import uuid4
 from barbecue import vnmax
@@ -25,9 +30,15 @@ BIDDER_TIME = timedelta(minutes=6)
 SERVICE_TIME = timedelta(minutes=9)
 AUCTION_STAND_STILL_TIME = timedelta(minutes=15)
 SANDBOX_MODE = os.environ.get('SANDBOX_MODE', False)
+AWAILABLE_AWARDING_TYPE = [
+    'awarding_1_0',
+    'awarding_2_0',
+]
 
-schematics_embedded_role = SchematicsDocument.Options.roles['embedded'] + blacklist("__parent__")
-schematics_default_role = SchematicsDocument.Options.roles['default'] + blacklist("__parent__")
+schematics_embedded_role = SchematicsDocument.Options.roles['embedded'] + \
+    blacklist("__parent__")
+schematics_default_role = SchematicsDocument.Options.roles['default'] + \
+    blacklist("__parent__", "_meta")
 
 TZ = timezone(os.environ['TZ'] if 'TZ' in os.environ else 'Europe/Kiev')
 
@@ -936,6 +947,22 @@ class Contract(Model):
                 raise ValidationError(u"Contract signature date can't be in the future")
 
 
+class AwardMetadata(Model):
+
+    _awarding_type = StringType(default='')
+
+    @property
+    def awarding_type(self):
+        return self._awarding_type
+
+    @awarding_type.setter
+    def awarding_type(self, value):
+        if value in AWAILABLE_AWARDING_TYPE:
+            self._awarding_type = value
+        else:
+            raise ValueError('Invalid awarding type')
+
+
 class Award(Model):
     """ An award for the given procurement. There may be more than one award
         per contracting process e.g. because the contract is split amongst
@@ -943,9 +970,14 @@ class Award(Model):
     """
     class Options:
         roles = {
-            'create': blacklist('id', 'status', 'date', 'documents', 'complaints', 'complaintPeriod'),
-            'edit': whitelist('status', 'title', 'title_en', 'title_ru',
-                              'description', 'description_en', 'description_ru'),
+            'create': blacklist(
+                'id', 'status', 'date', 'documents',
+                'complaints', 'complaintPeriod'
+            ),
+            'edit': whitelist(
+                'status', 'title', 'title_en', 'title_ru',
+                'description', 'description_en', 'description_ru'
+            ),
             'embedded': schematics_embedded_role,
             'view': schematics_default_role,
             'Administrator': whitelist('complaintPeriod'),
@@ -968,6 +1000,7 @@ class Award(Model):
     documents = ListType(ModelType(Document), default=list())
     complaints = ListType(ModelType(Complaint), default=list())
     complaintPeriod = ModelType(Period)
+    _meta = ModelType(AwardMetadata)
 
     def validate_lotID(self, data, lotID):
         if isinstance(data['__parent__'], Model):
