@@ -1,7 +1,18 @@
 # -*- coding: utf-8 -*-
 import unittest
 
-from openprocurement.api.tests.base import BaseTenderWebTest, test_tender_data, test_bids, test_lots, test_organization
+from openprocurement.api.tests.base import (
+    BaseTenderWebTest,
+    test_tender_data,
+    test_bids,
+    test_lots,
+    test_organization
+)
+from openprocurement.api.models import (
+    Award,
+    AwardMetadata,
+    AWAILABLE_AWARDING_TYPE
+)
 
 
 class TenderAwardResourceTest(BaseTenderWebTest):
@@ -2460,16 +2471,23 @@ class AwardModelTest(unittest.TestCase):
     """Test hidden `_meta` field of Award model"""
 
     def test_meta_field_visibility(self):
-        from openprocurement.api.models import Award
         award = Award()
-        award._meta = {
-            'awardingType': 'awarding_1_0',
-            'foo': {
-                'bar': 'some metadata'
-            }
-        }
+        metadata = AwardMetadata()
+        award._meta = metadata
+        self.assertEqual(award._meta.awarding_type, '')
         primitive_award = award.serialize('view')
         self.assertNotIn('_meta', primitive_award)
+
+class MetadataModelTest(unittest.TestCase):
+
+    def test_wrong_awarding_type_set(self):
+        meta = AwardMetadata()
+        with self.assertRaises(ValueError) as context:
+            meta.awarding_type = 'blabla-2/0'
+
+    def test_good_awarding_type_set(self):
+        meta = AwardMetadata()
+        meta.awarding_type = AWAILABLE_AWARDING_TYPE[0]
 
 
 def suite():
@@ -2484,6 +2502,7 @@ def suite():
     suite.addTest(unittest.makeSuite(TenderAwardResourceTest))
     suite.addTest(unittest.makeSuite(TenderLotAwardResourceTest))
     suite.addTest(unittest.makeSuite(AwardModelTest))
+    suite.addTest(unittest.makeSuite(MetadataModelTest))
     return suite
 
 
