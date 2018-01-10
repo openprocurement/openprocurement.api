@@ -15,7 +15,11 @@ from json import dumps
 from jsonpatch import make_patch, apply_patch as _apply_patch
 from jsonpointer import resolve_pointer
 from logging import getLogger
-from openprocurement.api.models import get_now, TZ, COMPLAINT_STAND_STILL_TIME, WORKING_DAYS
+from openprocurement.api.models import (
+    get_now, TZ,
+    COMPLAINT_STAND_STILL_TIME,
+    WORKING_DAYS
+)
 from openprocurement.api.traversal import factory
 from pkg_resources import get_distribution
 from rfc6266 import build_header
@@ -32,6 +36,7 @@ from Crypto.Cipher import AES
 from re import compile
 from requests import Session
 from openprocurement.api.interfaces import IContentConfigurator
+from openprocurement.api.constants import AWARDING_OF_PROCUREMENT_METHOD_TYPE
 
 
 PKG = get_distribution(__package__)
@@ -808,6 +813,34 @@ class isTender(object):
     def __call__(self, context, request):
         if request.tender is not None:
             return getattr(request.tender, 'procurementMethodType', None) == self.val
+        return False
+
+
+class awardingTypePredicate(object):
+    def __init__(self, val, config):
+        self.val = val
+
+    def text(self):
+        return 'awardingType = %s' % (self.val,)
+
+    phash = text
+
+    def __call__(self, context, request):
+        if request.auction is not None:
+            procurement_method_type = getattr(
+                request.auction,
+                'procurementMethodType',
+                None
+            )
+            if not procurement_method_type:
+                return False
+
+            desirable_awarding_version = \
+                AWARDING_OF_PROCUREMENT_METHOD_TYPE.get(
+                    procurement_method_type
+                )
+            return desirable_awarding_version == self.val
+
         return False
 
 
