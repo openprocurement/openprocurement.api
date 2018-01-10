@@ -23,6 +23,7 @@ from openprocurement.api.utils import (
     extract_tender,
     request_params,
     isTender,
+    awardingTypePredicate,
     set_renderer,
     beforerender,
     register_tender_procurementMethodType,
@@ -100,6 +101,7 @@ def main(global_config, **settings):
 
     # tender procurementMethodType plugins support
     config.add_route_predicate('procurementMethodType', isTender)
+    config.add_route_predicate('awardingType', awardingTypePredicate)
     config.registry.tender_procurementMethodTypes = {}
     config.add_request_method(tender_from_data)
     config.add_directive('add_tender_procurementMethodType', register_tender_procurementMethodType)
