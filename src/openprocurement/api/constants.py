@@ -3,9 +3,9 @@ from pkg_resources import get_distribution
 
 AWARDING_OF_PROCUREMENT_METHOD_TYPE = {
     'belowThreshold': 'awarding_1_0',
-    'dgfFinancialAssets': 'awarding_2_0',
-    'dgfOtherAssets': 'awarding_2_0',
-    'dgfInsider': 'awarding_2_0',
+    'dgfFinancialAssets': 'awarding_3_0',
+    'dgfOtherAssets': 'awarding_3_0',
+    'dgfInsider': 'awarding_3_0',
 }
 PKG = get_distribution(__package__)
 LOGGER = getLogger(PKG.project_name)
