@@ -963,3 +963,11 @@ def couchdb_json_decode():
         return simplejson.loads(string_, parse_float=decimal.Decimal)
 
     couchdb.json.use(decode=my_decode, encode=my_encode)
+
+
+def get_awarding_type_by_procurement_method_type(procurement_method_type):
+    awarding_type = AWARDING_OF_PROCUREMENT_METHOD_TYPE.get(procurement_method_type)
+    if not awarding_type:
+        raise ValueError
+    return awarding_type
+
