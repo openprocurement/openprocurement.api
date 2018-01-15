@@ -46,36 +46,6 @@ SESSION = Session()
 json_view = partial(view, renderer='json')
 
 
-def error_handler(errors, request_params=True):
-    params = {
-        'ERROR_STATUS': errors.status
-    }
-    if request_params:
-        params['ROLE'] = str(errors.request.authenticated_role)
-        if errors.request.params:
-            params['PARAMS'] = str(dict(errors.request.params))
-    if errors.request.matchdict:
-        for x, j in errors.request.matchdict.items():
-            params[x.upper()] = j
-    if 'auction' in errors.request.validated:
-        params['AUCTION_REV'] = errors.request.validated['auction'].rev
-        params['AUCTIONID'] = errors.request.validated['auction'].auctionID
-        params['AUCTION_STATUS'] = errors.request.validated['auction'].status
-    LOGGER.info('Error on processing request "{}"'.format(dumps(errors, indent=4)),
-                extra=context_unpack(errors.request, {'MESSAGE_ID': 'error_handler'}, params))
-    return json_error(errors)
-
-
-def raise_operation_error(request, message):
-    """
-    This function mostly used in views validators to add access errors and
-    raise exceptions if requested operation is forbidden.
-    """
-    request.errors.add('body', 'data', message)
-    request.errors.status = 403
-    raise error_handler(request.errors)
-
-
 def route_prefix(settings={}):
     return '/api/{}'.format(settings.get('api_version', VERSION))
 
@@ -719,9 +689,21 @@ def error_handler(errors, request_params=True):
         params['TENDER_REV'] = errors.request.validated['tender'].rev
         params['TENDERID'] = errors.request.validated['tender'].tenderID
         params['TENDER_STATUS'] = errors.request.validated['tender'].status
+    if 'auction' in errors.request.validated:
+        params['AUCTION_REV'] = errors.request.validated['auction'].rev
+        params['AUCTIONID'] = errors.request.validated['auction'].auctionID
+        params['AUCTION_STATUS'] = errors.request.validated['auction'].status
     LOGGER.info('Error on processing request "{}"'.format(dumps(errors, indent=4)),
                 extra=context_unpack(errors.request, {'MESSAGE_ID': 'error_handler'}, params))
     return json_error(errors)
+
+
+def raise_operation_error(request):
+    """
+    This function use for raise exceptions if requested operation is forbidden.
+    """
+    request.errors.status = 403
+    raise error_handler(request.errors)
 
 
 opresource = partial(resource, error_handler=error_handler, factory=factory)
