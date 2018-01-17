@@ -45,6 +45,7 @@ body of response reveals the information about the created tender: its internal
 `dateModified` datestamp stating the moment in time when tender was last
 modified. Pay attention to the `procurementMethodType`. Note that tender is
 created with `active.enquiries` status.
+Also, you can create a test tender by simply adding `"mode": "test"` field to the body of your request. This tender can be used for experimental purposes. Test mode can be set only during creation of a new tender and can not be changed later.
 
 Let's access the URL of the created object (the `Location` header of the response):
 
@@ -76,6 +77,7 @@ Let's check what tender registry contains:
    :code:
 
 And indeed we have 2 tenders now.
+If you want to retrieve only test tenders, you can add `?mode=test` option to the URI. Both real and test tenders can be requested if `?mode=_all_` option is specified.
 
 
 Modifying tender
