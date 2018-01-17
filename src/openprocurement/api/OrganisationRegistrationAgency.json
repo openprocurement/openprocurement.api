@@ -935,10 +935,10 @@
       {
          "category":"XM",
          "code":"XM-DAC",
-         "name":"OECD Development Assistance Committee",
+         "name":"Development Assistance Committee",
          "url":"http://www.oecd.org/dac/stats/dacandcrscodelists.htm",
          "public-database":true,
-         "description":"See Donor, Agency, and Delivery Channel codes"
+         "description":"The OECD Development Assistance Committee (DAC) maintains code lists which are used by donors to report on their aid flows to the DAC databases."
       },
       {
          "category":"AD",
