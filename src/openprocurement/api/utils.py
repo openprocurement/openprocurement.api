@@ -698,14 +698,6 @@ def error_handler(errors, request_params=True):
     return json_error(errors)
 
 
-def raise_operation_error(request):
-    """
-    This function use for raise exceptions if requested operation is forbidden.
-    """
-    request.errors.status = 403
-    raise error_handler(request.errors)
-
-
 opresource = partial(resource, error_handler=error_handler, factory=factory)
 
 
