@@ -14,13 +14,15 @@ class IContentConfigurator(Interface):
     award_model = Attribute('Model of Award')
 
     def start_awarding():
-        """
-            Method that call for start awarding process(create awards)
-        """
-        pass
+        """Launching awarding proccess."""
+        raise NotImplementedError
 
     def back_to_awarding():
+        """Relaunch awarding process with another award,    
+           when owner has not qualified the previous one.
         """
-            Method that call when we need to qualify another bidder
-        """
-        pass
+        raise NotImplementedError
+
+    def check_award_status():
+        """Checking protocol and contract loading by the owner in time."""
+        raise NotImplementedError
