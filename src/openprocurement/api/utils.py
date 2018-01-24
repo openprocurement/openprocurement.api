@@ -36,13 +36,10 @@ from Crypto.Cipher import AES
 from re import compile
 from requests import Session
 from openprocurement.api.interfaces import IContentConfigurator
-from openprocurement.api.constants import AWARDING_OF_PROCUREMENT_METHOD_TYPE
+from openprocurement.api.constants import (
+    AWARDING_OF_PROCUREMENT_METHOD_TYPE, LOGGER, ROUTE_PREFIX, VERSION
+)
 
-
-PKG = get_distribution(__package__)
-LOGGER = getLogger(PKG.project_name)
-VERSION = '{}.{}'.format(int(PKG.parsed_version[0]), int(PKG.parsed_version[1]) if PKG.parsed_version[1].isdigit() else 0)
-ROUTE_PREFIX = '/api/{}'.format(VERSION)
 DOCUMENT_BLACKLISTED_FIELDS = ('title', 'format', 'url', 'dateModified', 'hash')
 ACCELERATOR_RE = compile(r'.accelerator=(?P<accelerator>\d+)')
 SESSION = Session()
@@ -692,6 +689,10 @@ def error_handler(errors, request_params=True):
         params['TENDER_REV'] = errors.request.validated['tender'].rev
         params['TENDERID'] = errors.request.validated['tender'].tenderID
         params['TENDER_STATUS'] = errors.request.validated['tender'].status
+    if 'auction' in errors.request.validated:
+        params['AUCTION_REV'] = errors.request.validated['auction'].rev
+        params['AUCTIONID'] = errors.request.validated['auction'].auctionID
+        params['AUCTION_STATUS'] = errors.request.validated['auction'].status
     LOGGER.info('Error on processing request "{}"'.format(dumps(errors, indent=4)),
                 extra=context_unpack(errors.request, {'MESSAGE_ID': 'error_handler'}, params))
     return json_error(errors)
