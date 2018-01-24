@@ -13,5 +13,14 @@ class IContentConfigurator(Interface):
     model = Attribute('Model of content type')
     award_model = Attribute('Model of Award')
 
-    def add_award():
-        """Add award"""
+    def start_awarding():
+        """
+            Method that call for start awarding process(create awards)
+        """
+        pass
+
+    def back_to_awarding():
+        """
+            Method that call when we need to qualify another bidder
+        """
+        pass
