@@ -1,4 +1,8 @@
 # -*- coding: utf-8 -*-
+import decimal
+import simplejson
+import couchdb.json
+from couchdb import util
 from barbecue import chef
 from base64 import b64encode, b64decode
 from datetime import datetime, time, timedelta
@@ -22,7 +26,7 @@ from urlparse import urlparse, urljoin, urlunsplit, parse_qsl
 from uuid import uuid4
 from webob.multidict import NestedMultiDict
 from pyramid.exceptions import URLDecodeError
-from pyramid.compat import decode_path_info
+from pyramid.compat import decode_path_info, text_
 from binascii import hexlify, unhexlify
 from Crypto.Cipher import AES
 from re import compile
@@ -902,3 +906,18 @@ def calculate_business_date(date_obj, timedelta_obj, context=None, working_days=
                 date_obj += timedelta(1) if timedelta_obj > timedelta() else -timedelta(1)
         return date_obj
     return date_obj + timedelta_obj
+
+
+def json_body(self):
+    return simplejson.loads(text_(self.body, self.charset), parse_float=decimal.Decimal)
+
+
+def couchdb_json_decode():
+    my_encode = lambda obj, dumps=simplejson.dumps: dumps(obj, allow_nan=False, ensure_ascii=False)
+
+    def my_decode(string_):
+        if isinstance(string_, util.btype):
+            string_ = string_.decode("utf-8")
+        return simplejson.loads(string_, parse_float=decimal.Decimal)
+
+    couchdb.json.use(decode=my_decode, encode=my_encode)

@@ -343,7 +343,7 @@ class TenderResourceTest(BaseWebTest):
         self.assertEqual(response.content_type, 'application/json')
         self.assertEqual(response.json['status'], 'error')
         self.assertEqual(response.json['errors'], [
-            {u'description': u'No JSON object could be decoded',
+            {u'description': u'Expecting value: line 1 column 1 (char 0)',
                 u'location': u'body', u'name': u'data'}
         ])
 
@@ -1002,6 +1002,39 @@ class TenderResourceTest(BaseWebTest):
         self.assertEqual(response.status, '403 Forbidden')
         self.assertEqual(response.content_type, 'application/json')
         self.assertEqual(response.json['errors'][0]["description"], "Can't update tender in current (complete) status")
+
+    def test_patch_decimal_quantity(self):
+        response = self.app.get('/tenders')
+        self.assertEqual(response.status, '200 OK')
+        self.assertEqual(len(response.json['data']), 0)
+
+        response = self.app.post_json('/tenders', {'data': test_tender_data})
+        self.assertEqual(response.status, '201 Created')
+        tender = response.json['data']
+        owner_token = response.json['access']['token']
+        dateModified = tender.pop('dateModified')
+
+        item = deepcopy(test_tender_data['items'][0])
+
+        # Decimal Field
+        for quantity in [1, '1', 1.111, '1.111', 1.1111, '1.1111']:
+            item['quantity'] = quantity
+            response = self.app.patch_json('/tenders/{}'.format(
+                tender['id']), {'data': {'items': [item]}})
+            self.assertEqual(response.status, '200 OK')
+            self.assertEqual(response.content_type, 'application/json')
+            self.assertNotIsInstance(response.json['data']['items'][0]['quantity'], basestring)
+            rounded_quantity = float("{0:.3f}".format(float(quantity)))
+            self.assertEqual(response.json['data']['items'][0]['quantity'], rounded_quantity)
+
+
+            # Float Field
+            for amount in [10000, '10000', 10000.111, '10000.111', 10000.11111, '10000.11111']:
+                response = self.app.patch_json('/tenders/{}'.format(
+                    tender['id']), {'data': {'value': {'amount': amount}}})
+                self.assertEqual(response.status, '200 OK')
+                self.assertEqual(response.content_type, 'application/json')
+                self.assertEqual(response.json['data']['value']['amount'], float(amount))
 
     def test_dateModified_tender(self):
         response = self.app.get('/tenders')
