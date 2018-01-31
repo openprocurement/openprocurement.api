@@ -66,7 +66,7 @@ test_tender_data = {
                 "name": u"item",
                 "code": u"44617100-9"
             },
-            "quantity": 5,
+            "quantity": 5.001,
             "deliveryDate": {
                 "startDate": (now + timedelta(days=2)).isoformat(),
                 "endDate": (now + timedelta(days=5)).isoformat()

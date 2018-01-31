@@ -26,7 +26,7 @@ class TenderAwardResourceTest(BaseTenderWebTest):
         self.assertEqual(response.content_type, 'application/json')
         self.assertEqual(response.json['status'], 'error')
         self.assertEqual(response.json['errors'], [
-            {u'description': u'No JSON object could be decoded',
+            {u'description': u'Expecting value: line 1 column 1 (char 0)',
                 u'location': u'body', u'name': u'data'}
         ])
 
@@ -679,7 +679,7 @@ class TenderAwardComplaintResourceTest(BaseTenderWebTest):
         self.assertEqual(response.content_type, 'application/json')
         self.assertEqual(response.json['status'], 'error')
         self.assertEqual(response.json['errors'], [
-            {u'description': u'No JSON object could be decoded',
+            {u'description': u'Expecting value: line 1 column 1 (char 0)',
                 u'location': u'body', u'name': u'data'}
         ])
 
