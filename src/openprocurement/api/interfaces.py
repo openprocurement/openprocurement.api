@@ -23,6 +23,14 @@ class IContentConfigurator(Interface):
         """
         raise NotImplementedError
 
-    def check_award_status():
+    def check_award_status(request, award, now):
         """Checking protocol and contract loading by the owner in time."""
+        raise NotImplementedError
+
+
+class IAwardingNextCheck(Interface):
+    """Awarding part of next_check field"""
+    name = Attribute("Awarding Type Name")
+
+    def add_awarding_checks(auction):
         raise NotImplementedError

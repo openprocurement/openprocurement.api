@@ -972,3 +972,10 @@ def get_awarding_type_by_procurement_method_type(procurement_method_type):
         raise ValueError
     return awarding_type
 
+
+def get_request_from_root(model):
+    """Getting parent from model recursively until we reach Root"""
+    if hasattr(model, '__parent__') and model.__parent__ is not None:
+        return get_request_from_root(model.__parent__)
+    else:
+        return model.request if hasattr(model, 'request') else None
