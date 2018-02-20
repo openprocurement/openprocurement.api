@@ -15,9 +15,9 @@ class SporeTest(BaseWebTest):
 
 
 def suite():
-    suite = unittest.TestSuite()
-    suite.addTest(unittest.makeSuite(SporeTest))
-    return suite
+    tests = unittest.TestSuite()
+    tests.addTest(unittest.makeSuite(SporeTest))
+    return tests
 
 
 if __name__ == '__main__':

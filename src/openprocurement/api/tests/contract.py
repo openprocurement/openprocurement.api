@@ -786,12 +786,13 @@ class Tender2LotContractDocumentResourceTest(BaseTenderWebTest):
         self.assertEqual(response.json['errors'][0]["description"], "Can update document only in active lot status")
 
 
-
 def suite():
-    suite = unittest.TestSuite()
-    suite.addTest(unittest.makeSuite(TenderContractResourceTest))
-    suite.addTest(unittest.makeSuite(TenderContractDocumentResourceTest))
-    return suite
+    tests = unittest.TestSuite()
+    tests.addTest(unittest.makeSuite(TenderContractResourceTest))
+    tests.addTest(unittest.makeSuite(Tender2LotContractResourceTest))
+    tests.addTest(unittest.makeSuite(TenderContractDocumentResourceTest))
+    tests.addTest(unittest.makeSuite(Tender2LotContractDocumentResourceTest))
+    return tests
 
 
 if __name__ == '__main__':

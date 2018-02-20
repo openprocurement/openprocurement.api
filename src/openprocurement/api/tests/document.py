@@ -701,10 +701,10 @@ class TenderDocumentWithDSResourceTest(TenderDocumentResourceTest):
 
 
 def suite():
-    suite = unittest.TestSuite()
-    suite.addTest(unittest.makeSuite(TenderDocumentResourceTest))
-    suite.addTest(unittest.makeSuite(TenderDocumentWithDSResourceTest))
-    return suite
+    tests = unittest.TestSuite()
+    tests.addTest(unittest.makeSuite(TenderDocumentResourceTest))
+    tests.addTest(unittest.makeSuite(TenderDocumentWithDSResourceTest))
+    return tests
 
 
 if __name__ == '__main__':

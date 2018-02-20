@@ -396,18 +396,21 @@ class TenderLotAwardComplaintSwitchResourceTest(TenderAwardComplaintSwitchResour
 
 
 def suite():
-    suite = unittest.TestSuite()
-    suite.addTest(unittest.makeSuite(TenderAwardComplaintSwitchResourceTest))
-    suite.addTest(unittest.makeSuite(TenderComplaintSwitchResourceTest))
-    suite.addTest(unittest.makeSuite(TenderLotAwardComplaintSwitchResourceTest))
-    suite.addTest(unittest.makeSuite(TenderLotComplaintSwitchResourceTest))
-    suite.addTest(unittest.makeSuite(TenderLotSwitchAuctionResourceTest))
-    suite.addTest(unittest.makeSuite(TenderLotSwitchQualificationResourceTest))
-    suite.addTest(unittest.makeSuite(TenderLotSwitchUnsuccessfulResourceTest))
-    suite.addTest(unittest.makeSuite(TenderSwitchAuctionResourceTest))
-    suite.addTest(unittest.makeSuite(TenderSwitchQualificationResourceTest))
-    suite.addTest(unittest.makeSuite(TenderSwitchUnsuccessfulResourceTest))
-    return suite
+    tests = unittest.TestSuite()
+    tests.addTest(unittest.makeSuite(TenderSwitchTenderingResourceTest))
+    tests.addTest(unittest.makeSuite(TenderSwitchQualificationResourceTest))
+    tests.addTest(unittest.makeSuite(TenderSwitchAuctionResourceTest))
+    tests.addTest(unittest.makeSuite(TenderSwitchUnsuccessfulResourceTest))
+    tests.addTest(unittest.makeSuite(TenderLotSwitchQualificationResourceTest))
+    tests.addTest(unittest.makeSuite(TenderLotSwitchAuctionResourceTest))
+    tests.addTest(unittest.makeSuite(TenderLotSwitchUnsuccessfulResourceTest))
+    tests.addTest(unittest.makeSuite(TenderAuctionPeriodResourceTest))
+    tests.addTest(unittest.makeSuite(TenderLotAuctionPeriodResourceTest))
+    tests.addTest(unittest.makeSuite(TenderComplaintSwitchResourceTest))
+    tests.addTest(unittest.makeSuite(TenderLotComplaintSwitchResourceTest))
+    tests.addTest(unittest.makeSuite(TenderAwardComplaintSwitchResourceTest))
+    tests.addTest(unittest.makeSuite(TenderLotAwardComplaintSwitchResourceTest))
+    return tests
 
 
 if __name__ == '__main__':
