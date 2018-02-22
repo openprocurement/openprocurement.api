@@ -1,3 +1,6 @@
+# -*- coding: utf-8 -*-
+import unittest
+
 from openprocurement.api.models import (
     Tender,
     Bid
@@ -59,3 +62,9 @@ class TestCoreUtils(BaseWebTest):
 
         # get_request_from_root should return None
         self.assertIsNone(get_request_from_root(test_tender))
+
+
+def suite():
+    tests = unittest.TestSuite()
+    tests.addTest(unittest.makeSuite(TestCoreUtils))
+    return tests

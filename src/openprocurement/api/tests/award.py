@@ -2457,17 +2457,20 @@ class Tender2LotAwardDocumentWithDSResourceTest(Tender2LotAwardDocumentResourceT
 
 
 def suite():
-    suite = unittest.TestSuite()
-    suite.addTest(unittest.makeSuite(Tender2LotAwardComplaintDocumentResourceTest))
-    suite.addTest(unittest.makeSuite(Tender2LotAwardComplaintResourceTest))
-    suite.addTest(unittest.makeSuite(Tender2LotAwardDocumentResourceTest))
-    suite.addTest(unittest.makeSuite(Tender2LotAwardResourceTest))
-    suite.addTest(unittest.makeSuite(TenderAwardComplaintDocumentResourceTest))
-    suite.addTest(unittest.makeSuite(TenderAwardComplaintResourceTest))
-    suite.addTest(unittest.makeSuite(TenderAwardDocumentResourceTest))
-    suite.addTest(unittest.makeSuite(TenderAwardResourceTest))
-    suite.addTest(unittest.makeSuite(TenderLotAwardResourceTest))
-    return suite
+    tests = unittest.TestSuite()
+    tests.addTest(unittest.makeSuite(TenderAwardResourceTest))
+    tests.addTest(unittest.makeSuite(TenderLotAwardResourceTest))
+    tests.addTest(unittest.makeSuite(Tender2LotAwardResourceTest))
+    tests.addTest(unittest.makeSuite(TenderAwardComplaintResourceTest))
+    tests.addTest(unittest.makeSuite(TenderLotAwardComplaintResourceTest))
+    tests.addTest(unittest.makeSuite(Tender2LotAwardComplaintResourceTest))
+    tests.addTest(unittest.makeSuite(TenderAwardComplaintDocumentResourceTest))
+    tests.addTest(unittest.makeSuite(Tender2LotAwardComplaintDocumentResourceTest))
+    tests.addTest(unittest.makeSuite(TenderAwardDocumentResourceTest))
+    tests.addTest(unittest.makeSuite(TenderAwardDocumentWithDSResourceTest))
+    tests.addTest(unittest.makeSuite(Tender2LotAwardDocumentResourceTest))
+    tests.addTest(unittest.makeSuite(Tender2LotAwardDocumentWithDSResourceTest))
+    return tests
 
 
 if __name__ == '__main__':

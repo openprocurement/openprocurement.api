@@ -1037,11 +1037,13 @@ class TenderFeaturesAuctionResourceTest(BaseTenderWebTest):
 
 
 def suite():
-    suite = unittest.TestSuite()
-    suite.addTest(unittest.makeSuite(TenderAuctionResourceTest))
-    suite.addTest(unittest.makeSuite(TenderSameValueAuctionResourceTest))
-    suite.addTest(unittest.makeSuite(TenderFeaturesAuctionResourceTest))
-    return suite
+    tests = unittest.TestSuite()
+    tests.addTest(unittest.makeSuite(TenderAuctionResourceTest))
+    tests.addTest(unittest.makeSuite(TenderSameValueAuctionResourceTest))
+    tests.addTest(unittest.makeSuite(TenderLotAuctionResourceTest))
+    tests.addTest(unittest.makeSuite(TenderMultipleLotAuctionResourceTest))
+    tests.addTest(unittest.makeSuite(TenderFeaturesAuctionResourceTest))
+    return tests
 
 
 if __name__ == '__main__':

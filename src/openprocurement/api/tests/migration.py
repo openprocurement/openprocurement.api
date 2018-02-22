@@ -765,9 +765,9 @@ class MigrateTest(BaseWebTest):
 
 
 def suite():
-    suite = unittest.TestSuite()
-    suite.addTest(unittest.makeSuite(MigrateTest))
-    return suite
+    tests = unittest.TestSuite()
+    tests.addTest(unittest.makeSuite(MigrateTest))
+    return tests
 
 
 if __name__ == '__main__':
