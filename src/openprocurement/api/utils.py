@@ -9,6 +9,7 @@ from logging import getLogger
 from datetime import datetime, timedelta
 from base64 import b64encode, b64decode
 from cornice.resource import resource, view
+from pkg_resources import iter_entry_points
 from email.header import decode_header
 from functools import partial
 from jsonpatch import make_patch, apply_patch as _apply_patch
@@ -106,21 +107,22 @@ def generate_docservice_url(request, doc_id, temporary=True, prefix=None):
     return urlunsplit((parsed_url.scheme, parsed_url.netloc, '/get/{}'.format(doc_id), urlencode(query), ''))
 
 
-def error_handler(errors, request_params=True):
+def error_handler(request, request_params=True):
+    errors = request.errors
     params = {
         'ERROR_STATUS': errors.status
     }
     if request_params:
-        params['ROLE'] = str(errors.request.authenticated_role)
-        if errors.request.params:
-            params['PARAMS'] = str(dict(errors.request.params))
-    if errors.request.matchdict:
+        params['ROLE'] = str(request.authenticated_role)
+        if request.params:
+            params['PARAMS'] = str(dict(request.params))
+    if request.matchdict:
         for x, j in errors.request.matchdict.items():
             params[x.upper()] = j
-    errors.request.registry.notify(ErrorDesctiptorEvent(errors, params))
+    request.registry.notify(ErrorDesctiptorEvent(request, params))
     LOGGER.info('Error on processing request "{}"'.format(dumps(errors, indent=4)),
-                extra=context_unpack(errors.request, {'MESSAGE_ID': 'error_handler'}, params))
-    return json_error(errors)
+                extra=context_unpack(request, {'MESSAGE_ID': 'error_handler'}, params))
+    return json_error(request)
 
 
 def raise_operation_error(request, message):
@@ -434,9 +436,9 @@ class APIResourceListing(APIResource):
                 if view_offset and view_offset.isdigit():
                     view_offset = int(view_offset)
                 else:
-                    self.request.errors.add('params', 'offset', 'Offset expired/invalid')
+                    self.request.errors.add('querystring', 'offset', 'Offset expired/invalid')
                     self.request.errors.status = 404
-                    raise error_handler(self.request.errors)
+                    raise error_handler(self.request)
             if not offset:
                 view_offset = 'now' if descending else 0
         else:
@@ -595,3 +597,36 @@ def couchdb_json_decode():
         return json.loads(string_, parse_float=decimal.Decimal)
 
     couchdb.json.use(decode=my_decode, encode=my_encode)
+
+
+def prepare_revision(item, patch, author):
+    now = get_now()
+    status_changes = [
+        p
+        for p in patch
+        if not p['path'].startswith('/bids/') and p['path'].endswith("/status") and p['op'] == "replace"
+    ]
+    for change in status_changes:
+        obj = resolve_pointer(item, change['path'].replace('/status', ''))
+        if obj and hasattr(obj, "date"):
+            date_path = change['path'].replace('/status', '/date')
+            if obj.date and not any([p for p in patch if date_path == p['path']]):
+                patch.append({"op": "replace",
+                              "path": date_path,
+                              "value": obj.date.isoformat()})
+            elif not obj.date:
+                patch.append({"op": "remove", "path": date_path})
+            obj.date = now
+    return {
+        'author': author,
+        'changes': patch,
+        'rev': item.rev
+    }
+
+
+def load_plugins(config, group, **kwargs):
+    plugins = kwargs.get('plugins')
+    for entry_point in iter_entry_points(group, kwargs.get('name')):
+        if not plugins or entry_point.name in plugins:
+            plugin = entry_point.load()
+            plugin(config)

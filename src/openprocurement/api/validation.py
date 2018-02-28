@@ -105,3 +105,29 @@ def validate_items_uniq(items, *args):
 def validate_cpv_group(items, *args):
     if items and len(set([i.classification.id[:3] for i in items])) != 1:
         raise ValidationError(u"CPV group of items be identical")
+
+def validate_change_status(request, error_handler, **kwargs):
+    """
+        This validator get dict from adapter and validate availibility
+        to change status by dict.
+    """
+    # Get resource_type
+    resource_type = request.validated['resource_type']
+    # Get status from PATCH validated data
+    new_status = request.json['data'].get("status")
+    # Get model from context
+    model = request.context
+
+    # Check status in data and not equal to context status
+    if not new_status or new_status == model.status:
+        return
+
+    # get available statuses from dict
+    statuses = request.content_configurator.available_statuses[model.status]['next_status']
+    # verify right status change (auth_role and target status)
+    msg = 'Can\'t update {} in current ({}) status'.format(resource_type,
+                                                           model.status)
+
+    if new_status not in statuses or \
+            request.authenticated_role not in statuses.get(new_status, {}):
+        raise_operation_error(request, error_handler, msg)
