@@ -1437,11 +1437,11 @@ class TenderProcessTest(BaseTenderWebTest):
 
 
 def suite():
-    suite = unittest.TestSuite()
-    suite.addTest(unittest.makeSuite(TenderProcessTest))
-    suite.addTest(unittest.makeSuite(TenderResourceTest))
-    suite.addTest(unittest.makeSuite(TenderTest))
-    return suite
+    tests = unittest.TestSuite()
+    tests.addTest(unittest.makeSuite(TenderProcessTest))
+    tests.addTest(unittest.makeSuite(TenderResourceTest))
+    tests.addTest(unittest.makeSuite(TenderTest))
+    return tests
 
 
 if __name__ == '__main__':

@@ -667,10 +667,12 @@ class TenderCancellationDocumentResourceTest(BaseTenderWebTest):
 
 
 def suite():
-    suite = unittest.TestSuite()
-    suite.addTest(unittest.makeSuite(TenderCancellationDocumentResourceTest))
-    suite.addTest(unittest.makeSuite(TenderCancellationResourceTest))
-    return suite
+    tests = unittest.TestSuite()
+    tests.addTest(unittest.makeSuite(TenderCancellationResourceTest))
+    tests.addTest(unittest.makeSuite(TenderLotCancellationResourceTest))
+    tests.addTest(unittest.makeSuite(TenderLotsCancellationResourceTest))
+    tests.addTest(unittest.makeSuite(TenderCancellationDocumentResourceTest))
+    return tests
 
 
 if __name__ == '__main__':

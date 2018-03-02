@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*-
+import os
 import unittest
+
 from pyramid import testing
 from openprocurement.api.auth import AuthenticationPolicy
 from pyramid.tests.test_authentication import TestBasicAuthAuthenticationPolicy
@@ -8,10 +10,12 @@ from openprocurement.api.tests.base import test_tender_data, test_organization, 
 test_tender_data_mode_test = test_tender_data.copy()
 test_tender_data_mode_test["mode"] = "test"
 
+dir_path = os.path.dirname(os.path.realpath(__file__))
+
 
 class AuthTest(TestBasicAuthAuthenticationPolicy):
     def _makeOne(self, check):
-        return AuthenticationPolicy('src/openprocurement/api/tests/auth.ini', 'SomeRealm')
+        return AuthenticationPolicy(os.path.join(dir_path, 'auth.ini'), 'SomeRealm')
 
     test_authenticated_userid_utf8 = None
     test_authenticated_userid_latin1 = None
@@ -125,9 +129,15 @@ class AccreditationTenderBidModeTest(BaseTenderWebTest):
 
 
 def suite():
-    suite = unittest.TestSuite()
-    suite.addTest(unittest.makeSuite(AuthTest))
-    return suite
+    tests = unittest.TestSuite()
+    tests.addTest(unittest.makeSuite(TestBasicAuthAuthenticationPolicy))
+    tests.addTest(unittest.makeSuite(AuthTest))
+    tests.addTest(unittest.makeSuite(AccreditationTenderTest))
+    tests.addTest(unittest.makeSuite(AccreditationTenderQuestionTest))
+    tests.addTest(unittest.makeSuite(AccreditationTenderQuestionModeTest))
+    tests.addTest(unittest.makeSuite(AccreditationTenderBidTest))
+    tests.addTest(unittest.makeSuite(AccreditationTenderBidModeTest))
+    return tests
 
 
 if __name__ == '__main__':

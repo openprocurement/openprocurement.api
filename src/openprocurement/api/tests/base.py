@@ -208,6 +208,12 @@ class PrefixedRequestClass(webtest.app.TestRequest):
         return webtest.app.TestRequest.blank(path, *args, **kwargs)
 
 
+class RequestWithRegistry(object):
+    """Reqeust with registry for using Root in Tests"""
+    def __init__(self, registry):
+        self.registry = registry
+
+
 class BaseWebTest(unittest.TestCase):
 
     """Base Web Test to test openprocurement.api.

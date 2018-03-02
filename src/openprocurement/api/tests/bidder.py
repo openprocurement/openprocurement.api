@@ -1030,12 +1030,12 @@ class TenderBidderDocumentWithDSResourceTest(TenderBidderDocumentResourceTest):
 
 
 def suite():
-    suite = unittest.TestSuite()
-    suite.addTest(unittest.makeSuite(TenderBidderDocumentResourceTest))
-    suite.addTest(unittest.makeSuite(TenderBidderDocumentWithDSResourceTest))
-    suite.addTest(unittest.makeSuite(TenderBidderFeaturesResourceTest))
-    suite.addTest(unittest.makeSuite(TenderBidderResourceTest))
-    return suite
+    tests = unittest.TestSuite()
+    tests.addTest(unittest.makeSuite(TenderBidderResourceTest))
+    tests.addTest(unittest.makeSuite(TenderBidderFeaturesResourceTest))
+    tests.addTest(unittest.makeSuite(TenderBidderDocumentResourceTest))
+    tests.addTest(unittest.makeSuite(TenderBidderDocumentWithDSResourceTest))
+    return tests
 
 
 if __name__ == '__main__':
