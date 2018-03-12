@@ -192,13 +192,13 @@ def main(global_config, **settings):
     for key in dockeys.split('\0'):
         keyring[key[:8]] = Verifier(key)
 
+    config.registry.server_id = settings.get('id', '')
     # migrate data
     if not os.environ.get('MIGRATION_SKIP'):
         for entry_point in iter_entry_points('openprocurement.api.migrations'):
             plugin = entry_point.load()
             plugin(config.registry)
 
-    config.registry.server_id = settings.get('id', '')
     config.registry.health_threshold = float(settings.get('health_threshold', 99))
     config.registry.update_after = asbool(settings.get('update_after', True))
     return config.make_wsgi_app()
