@@ -1,13 +1,18 @@
 # -*- coding: utf-8 -*-
 import os
+import json
 import webtest
 import unittest
 from uuid import uuid4
+from copy import deepcopy
+from urllib import urlencode
+from base64 import b64encode
 from datetime import datetime
 from types import FunctionType
+from requests.models import Response
 
-
-from openprocurement.api.constants import VERSION
+from openprocurement.api.utils import apply_data_patch
+from openprocurement.api.constants import VERSION, SESSION
 from openprocurement.api.design import sync_design
 
 
@@ -26,6 +31,29 @@ def snitch(func):
     """
     return FunctionType(func.func_code, func.func_globals,
                         'test_' + func.func_name, closure=func.func_closure)
+
+
+def create_blacklist(status_changes, statuses, roles):
+    """
+        This function is used to create blacklist for every status and
+        auth role of different objects(lot, asset, e.t.c.).
+        Since name of some role, depends on type of an object(lot - lot_owner, e.t.c.),
+        we need `roles` argument.
+        This function get `status_changes` and go through it keys(i.e. statuses).
+        For every iteration we take one of roles and create white list for this auth role and status.
+        Then from white list and `statuses` argument(actually all statuses of a certain object)
+        we get black list.
+    """
+    status_blacklist = {}
+    for status in statuses:
+        status_blacklist[status] = {}
+        for auth_role in roles:
+            status_whitelist = {w for w in status_changes[status]['next_status']
+                                if auth_role in status_changes[status]['next_status'][w]}
+            if auth_role in status_changes[status]['editing_permissions']:
+                status_whitelist.add(status)
+            status_blacklist[status].update({auth_role: list(set(statuses) - status_whitelist)})
+    return  status_blacklist
 
 
 class PrefixedRequestClass(webtest.app.TestRequest):
@@ -84,7 +112,7 @@ class BaseWebTest(unittest.TestCase):
 
 class BaseResourceWebTest(BaseWebTest):
 
-    """Base Resource Web Test to test openregistry.api.
+    """Base Resource Web Test to test openprocurement.api.
 
     It takes care of database setup and cleanup,
     creates testing resource before each test,
@@ -206,3 +234,39 @@ class BaseResourceWebTest(BaseWebTest):
         if hasattr(self, 'resource_id'):
             del self.db[self.resource_id]
         super(BaseResourceWebTest, self).tearDown()
+
+
+class DumpsTestAppwebtest(webtest.TestApp):
+    hostname = "lb.api-sandbox.registry.ea.openprocurement.net"
+
+    def do_request(self, req, status=None, expect_errors=None):
+        req.headers.environ["HTTP_HOST"] = self.hostname
+        if hasattr(self, 'file_obj') and not self.file_obj.closed:
+            self.file_obj.write(req.as_bytes(True))
+            self.file_obj.write("\n")
+            if req.body:
+                try:
+                    self.file_obj.write(
+                            'DATA:\n' + json.dumps(json.loads(req.body), indent=2, ensure_ascii=False).encode('utf8'))
+                    self.file_obj.write("\n")
+                except:
+                    pass
+            self.file_obj.write("\n")
+        resp = super(DumpsTestAppwebtest, self).do_request(req, status=status, expect_errors=expect_errors)
+        if hasattr(self, 'file_obj') and not self.file_obj.closed:
+            headers = [(n.title(), v)
+                       for n, v in resp.headerlist
+                       if n.lower() != 'content-length']
+            headers.sort()
+            self.file_obj.write(str('Response: %s\n%s\n') % (
+                resp.status,
+                str('\n').join([str('%s: %s') % (n, v) for n, v in headers]),
+            ))
+
+            if resp.testbody:
+                try:
+                    self.file_obj.write(json.dumps(json.loads(resp.testbody), indent=2, ensure_ascii=False).encode('utf8'))
+                except:
+                    pass
+            self.file_obj.write("\n\n")
+        return resp

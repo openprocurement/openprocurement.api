@@ -30,8 +30,18 @@ def read_json(name):
         data = lang_file.read()
     return loads(data)
 
+DEBTOR_TYPES = ['naturalPerson', 'legalPerson']
+
+DEFAULT_CURRENCY = u'UAH'
+
+DEFAULT_ITEM_CLASSIFICATION = u'CAV'
+
+DOCUMENT_TYPES = ['notice', 'technicalSpecifications', 'illustration', 'virtualDataRoom', 'x_presentation']
+
 CPV_CODES = read_json('cpv.json')
 CPV_CODES.append('99999999-9')
+CAV_CODES = read_json('cav.json')
+
 DK_CODES = read_json('dk021.json')
 FUNDERS = [(i['scheme'], i['id']) for i in read_json('funders.json')['data']]
 #DKPP_CODES = read_json('dkpp.json')
@@ -41,7 +51,7 @@ WORKING_DAYS = read_json('working_days.json')
 ATC_CODES = read_json('atc.json')
 INN_CODES = read_json('inn.json')
 
-ADDITIONAL_CLASSIFICATIONS_SCHEMES = [u'ДКПП', u'NONE', u'ДК003', u'ДК015', u'ДК018']
+ADDITIONAL_CLASSIFICATIONS_SCHEMES = [u'ДКПП', u'NONE', u'ДК003', u'ДК015', u'ДК018', u'CPVS']
 ADDITIONAL_CLASSIFICATIONS_SCHEMES_2017 = [u'ДК003', u'ДК015', u'ДК018', u'specialNorms']
 COORDINATES_REG_EXP = re.compile(r'-?\d{1,3}\.\d+|-?\d{1,3}')
 
@@ -49,3 +59,11 @@ CPV_ITEMS_CLASS_FROM = datetime(2017, 1, 1, tzinfo=TZ)
 CPV_BLOCK_FROM = datetime(2017, 6, 2, tzinfo=TZ)
 
 ATC_INN_CLASSIFICATIONS_FROM = datetime(2017, 12, 22, tzinfo=TZ)
+
+ITEM_CLASSIFICATIONS = {
+    u'CAV': CAV_CODES,
+    #u'CAV': CAV_CODES,
+    #u'CAV-PS': []
+}
+
+IDENTIFIER_CODES = ORA_CODES

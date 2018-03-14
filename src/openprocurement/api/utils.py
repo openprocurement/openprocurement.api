@@ -8,6 +8,7 @@ from couchdb import util
 from logging import getLogger
 from datetime import datetime, timedelta
 from base64 import b64encode, b64decode
+from hashlib import sha512
 from cornice.resource import resource, view
 from pkg_resources import iter_entry_points
 from email.header import decode_header
@@ -17,15 +18,18 @@ from openprocurement.api.traversal import factory
 from rfc6266 import build_header
 from time import time as ttime
 from urllib import quote, unquote, urlencode
-from urlparse import urlparse, urlunsplit, parse_qsl
+from urlparse import urlparse, urlunsplit, parse_qsl, parse_qs
 from uuid import uuid4
 from webob.multidict import NestedMultiDict
 from binascii import hexlify, unhexlify
 from Crypto.Cipher import AES
 from cornice.util import json_error
 from json import dumps
+from jsonpointer import resolve_pointer
+
 
 from schematics.exceptions import ValidationError
+from schematics.types import StringType
 from couchdb_schematics.document import SchematicsDocument
 from openprocurement.api.events import ErrorDesctiptorEvent
 from openprocurement.api.constants import LOGGER
@@ -117,7 +121,7 @@ def error_handler(request, request_params=True):
         if request.params:
             params['PARAMS'] = str(dict(request.params))
     if request.matchdict:
-        for x, j in errors.request.matchdict.items():
+        for x, j in request.matchdict.items():
             params[x.upper()] = j
     request.registry.notify(ErrorDesctiptorEvent(request, params))
     LOGGER.info('Error on processing request "{}"'.format(dumps(errors, indent=4)),
@@ -125,14 +129,14 @@ def error_handler(request, request_params=True):
     return json_error(request)
 
 
-def raise_operation_error(request, message):
+def raise_operation_error(request, error_handler, message):
     """
     This function mostly used in views validators to add access errors and
     raise exceptions if requested operation is forbidden.
     """
     request.errors.add('body', 'data', message)
     request.errors.status = 403
-    raise error_handler(request.errors)
+    raise error_handler(request)
 
 
 def upload_file(request, blacklisted_fields=DOCUMENT_BLACKLISTED_FIELDS, whitelisted_fields=DOCUMENT_WHITELISTED_FIELDS):
@@ -205,7 +209,7 @@ def upload_file(request, blacklisted_fields=DOCUMENT_BLACKLISTED_FIELDS, whiteli
         else:
             request.errors.add('body', 'data', "Can't upload document to document service.")
             request.errors.status = 422
-            raise error_handler(request.errors)
+            raise error_handler(request)
         document.hash = doc_hash
         key = urlparse(doc_url).path.split('/')[-1]
     else:
@@ -299,7 +303,14 @@ def get_revision_changes(dst, src):
 def set_ownership(item, request):
     if not item.get('owner'):
         item.owner = request.authenticated_userid
-    item.owner_token = generate_id()
+    owner_token = generate_id()
+    item.owner_token = sha512(owner_token).hexdigest()
+    acc = {'token': owner_token}
+    if isinstance(getattr(type(item), 'transfer_token', None), StringType):
+        transfer_token = generate_id()
+        item.transfer_token = sha512(transfer_token).hexdigest()
+        acc['transfer'] = transfer_token
+    return acc
 
 
 def check_document(request, document, document_container):
@@ -311,16 +322,16 @@ def check_document(request, document, document_container):
             set(['Signature', 'KeyID']) != set(parsed_query):
         request.errors.add(document_container, 'url', "Can add document only from document service.")
         request.errors.status = 403
-        raise error_handler(request.errors)
+        raise error_handler(request)
     if not document.hash:
         request.errors.add(document_container, 'hash', "This field is required.")
         request.errors.status = 422
-        raise error_handler(request.errors)
+        raise error_handler(request)
     keyid = parsed_query['KeyID']
     if keyid not in request.registry.keyring:
         request.errors.add(document_container, 'url', "Document url expired.")
         request.errors.status = 422
-        raise error_handler(request.errors)
+        raise error_handler(request)
     dockey = request.registry.keyring[keyid]
     signature = parsed_query['Signature']
     key = urlparse(url).path.split('/')[-1]
@@ -329,7 +340,7 @@ def check_document(request, document, document_container):
     except TypeError:
         request.errors.add(document_container, 'url', "Document url signature invalid.")
         request.errors.status = 422
-        raise error_handler(request.errors)
+        raise error_handler(request)
     mess = "{}\0{}".format(key, document.hash.split(':', 1)[-1])
     try:
         if mess != dockey.verify(signature + mess.encode("utf-8")):
@@ -337,7 +348,7 @@ def check_document(request, document, document_container):
     except ValueError:
         request.errors.add(document_container, 'url', "Document url invalid.")
         request.errors.status = 422
-        raise error_handler(request.errors)
+        raise error_handler(request)
 
 
 def update_document_url(request, document, document_route, route_kwargs):
@@ -371,11 +382,11 @@ def request_params(request):
     except UnicodeDecodeError:
         request.errors.add('body', 'data', 'could not decode params')
         request.errors.status = 422
-        raise error_handler(request.errors, False)
+        raise error_handler(request, False)
     except Exception, e:
         request.errors.add('body', str(e.__class__.__name__), str(e))
         request.errors.status = 422
-        raise error_handler(request.errors, False)
+        raise error_handler(request, False)
     return params
 
 
@@ -509,7 +520,7 @@ class APIResourceListing(APIResource):
 def forbidden(request):
     request.errors.add('url', 'permission', 'Forbidden')
     request.errors.status = 403
-    return error_handler(request.errors)
+    return error_handler(request)
 
 
 def update_logging_context(request, params):
@@ -630,3 +641,33 @@ def load_plugins(config, group, **kwargs):
         if not plugins or entry_point.name in plugins:
             plugin = entry_point.load()
             plugin(config)
+
+
+def serialize_document_url(document):
+    url = document.url
+    if not url or '?download=' not in url:
+        return url
+    doc_id = parse_qs(urlparse(url).query)['download'][-1]
+    root = document.__parent__
+    parents = []
+    while root.__parent__ is not None:
+        parents[0:0] = [root]
+        root = root.__parent__
+    request = root.request
+    if not request.registry.docservice_url:
+        return url
+    if 'status' in parents[0] and parents[0].status in type(parents[0])._options.roles:
+        role = parents[0].status
+        for index, obj in enumerate(parents):
+            if obj.id != url.split('/')[(index - len(parents)) * 2 - 1]:
+                break
+            field = url.split('/')[(index - len(parents)) * 2]
+            if "_" in field:
+                field = field[0] + field.title().replace("_", "")[1:]
+            roles = type(obj)._options.roles
+            if roles[role if role in roles else 'default'](field, []):
+                return url
+    if not document.hash:
+        path = [i for i in urlparse(url).path.split('/') if len(i) == 32 and not set(i).difference(hexdigits)]
+        return generate_docservice_url(request, doc_id, False, '{}/{}'.format(path[0], path[-1]))
+    return generate_docservice_url(request, doc_id, False)
