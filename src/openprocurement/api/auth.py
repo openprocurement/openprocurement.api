@@ -32,6 +32,10 @@ class AuthenticationPolicy(BasicAuthAuthenticationPolicy):
             user = self.users.get(token)
             if user:
                 return user['name']
+            toket_sha512 = sha512(token).hexdigest()
+            user = self.users.get(toket_sha512)
+            if user:
+                return user['name']
 
     def check(self, user, request):
         token = request.params.get('acc_token')
@@ -62,7 +66,10 @@ class AuthenticationPolicy(BasicAuthAuthenticationPolicy):
             user = self.users.get(token)
             if user:
                 return self.check(user, request)
-
+            toket_sha512 = sha512(token).hexdigest()
+            user = self.users.get(toket_sha512)
+            if user:
+                return self.check(user, request)
     def _get_credentials(self, request):
         authorization = request.headers.get('Authorization')
         if not authorization:
