@@ -15,7 +15,7 @@ from openprocurement.api.validation import (
     validate_file_upload,
     validate_patch_document_data,
 )
-from openprocurement.api.views.complaint_document import STATUS4ROLE
+from openprocurement.api.constants import STATUS4ROLE
 
 
 @opresource(name='Tender Award Complaint Documents',
