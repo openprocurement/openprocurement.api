@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+from openprocurement.api.constants import STATUS4ROLE
 from openprocurement.api.utils import (
     get_file,
     save_tender,
@@ -15,13 +16,6 @@ from openprocurement.api.validation import (
     validate_file_upload,
     validate_patch_document_data,
 )
-
-
-STATUS4ROLE = {
-    'complaint_owner': ['draft', 'answered'],
-    'reviewers': ['pending'],
-    'tender_owner': ['claim'],
-}
 
 
 @opresource(name='Tender Complaint Documents',
