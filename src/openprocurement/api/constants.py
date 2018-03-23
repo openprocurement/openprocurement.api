@@ -1,10 +1,12 @@
 # -*- coding: utf-8 -*-
 import os
 import re
-from pytz import timezone
-from datetime import datetime
-from pkg_resources import get_distribution
+
+from datetime import datetime, timedelta
 from logging import getLogger
+
+from pkg_resources import get_distribution
+from pytz import timezone
 from requests import Session
 
 PKG = get_distribution(__package__)
@@ -17,9 +19,18 @@ SCHEMA_DOC = 'openprocurement_schema'
 
 TZ = timezone(os.environ['TZ'] if 'TZ' in os.environ else 'Europe/Kiev')
 SANDBOX_MODE = os.environ.get('SANDBOX_MODE', False)
+AUCTIONS_COMPLAINT_STAND_STILL_TIME = timedelta(days=3)
 
 DOCUMENT_BLACKLISTED_FIELDS = ('title', 'format', 'url', 'dateModified', 'hash')
 DOCUMENT_WHITELISTED_FIELDS = ('id', 'datePublished', 'author', '__parent__')
+
+AWARDING_OF_PROCUREMENT_METHOD_TYPE = {
+    'belowThreshold': 'awarding_1_0',
+    'dgfFinancialAssets': 'awarding_3_0',
+    'dgfOtherAssets': 'awarding_3_0',
+    'dgfInsider': 'awarding_3_0',
+}
+
 
 def read_json(name):
     import os.path
@@ -29,6 +40,7 @@ def read_json(name):
     with open(file_path) as lang_file:
         data = lang_file.read()
     return loads(data)
+
 
 DEBTOR_TYPES = ['naturalPerson', 'legalPerson']
 

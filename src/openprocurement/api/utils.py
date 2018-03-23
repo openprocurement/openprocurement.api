@@ -1,45 +1,45 @@
 # -*- coding: utf-8 -*-
-import os
-import json
 import decimal
-import simplejson
-import couchdb.json
-from couchdb import util
-from logging import getLogger
-from datetime import datetime, timedelta
+import json
 from base64 import b64encode, b64decode
-from hashlib import sha512
-from cornice.resource import resource, view
-from pkg_resources import iter_entry_points
+from binascii import hexlify, unhexlify
+from datetime import datetime, timedelta, time
 from email.header import decode_header
 from functools import partial
-from jsonpatch import make_patch, apply_patch as _apply_patch
-from openprocurement.api.traversal import factory
-from rfc6266 import build_header
+from hashlib import sha512
+from json import dumps
+from logging import getLogger
+from re import compile
 from time import time as ttime
 from urllib import quote, unquote, urlencode
 from urlparse import urlparse, urlunsplit, parse_qsl, parse_qs
 from uuid import uuid4
-from webob.multidict import NestedMultiDict
-from binascii import hexlify, unhexlify
-from Crypto.Cipher import AES
+
+import couchdb.json
+from cornice.resource import resource, view
 from cornice.util import json_error
-from json import dumps
+from couchdb import util
+from couchdb_schematics.document import SchematicsDocument
+from Crypto.Cipher import AES
+from jsonpatch import make_patch, apply_patch as _apply_patch
 from jsonpointer import resolve_pointer
-
-
+from pkg_resources import iter_entry_points
+from rfc6266 import build_header
 from schematics.exceptions import ValidationError
 from schematics.types import StringType
-from couchdb_schematics.document import SchematicsDocument
-from openprocurement.api.events import ErrorDesctiptorEvent
-from openprocurement.api.constants import LOGGER
+from webob.multidict import NestedMultiDict
+
 from openprocurement.api.constants import (
     ADDITIONAL_CLASSIFICATIONS_SCHEMES, DOCUMENT_BLACKLISTED_FIELDS,
-    DOCUMENT_WHITELISTED_FIELDS, ROUTE_PREFIX, TZ, SESSION
+    DOCUMENT_WHITELISTED_FIELDS, ROUTE_PREFIX, TZ, SESSION, LOGGER,
+    AWARDING_OF_PROCUREMENT_METHOD_TYPE, WORKING_DAYS
 )
+from openprocurement.api.events import ErrorDesctiptorEvent
 from openprocurement.api.interfaces import IOPContent
 from openprocurement.api.interfaces import IContentConfigurator
+from openprocurement.api.traversal import factory
 
+ACCELERATOR_RE = compile(r'.accelerator=(?P<accelerator>\d+)')
 json_view = partial(view, renderer='simplejson')
 
 
@@ -123,6 +123,14 @@ def error_handler(request, request_params=True):
     if request.matchdict:
         for x, j in request.matchdict.items():
             params[x.upper()] = j
+    if 'tender' in request.validated:
+        params['TENDER_REV'] = request.validated['tender'].rev
+        params['TENDERID'] = request.validated['tender'].tenderID
+        params['TENDER_STATUS'] = request.validated['tender'].status
+    if 'auction' in request.validated:
+        params['AUCTION_REV'] = request.validated['auction'].rev
+        params['AUCTIONID'] = request.validated['auction'].auctionID
+        params['AUCTION_STATUS'] = request.validated['auction'].status
     request.registry.notify(ErrorDesctiptorEvent(request, params))
     LOGGER.info('Error on processing request "{}"'.format(dumps(errors, indent=4)),
                 extra=context_unpack(request, {'MESSAGE_ID': 'error_handler'}, params))
@@ -671,3 +679,43 @@ def serialize_document_url(document):
         path = [i for i in urlparse(url).path.split('/') if len(i) == 32 and not set(i).difference(hexdigits)]
         return generate_docservice_url(request, doc_id, False, '{}/{}'.format(path[0], path[-1]))
     return generate_docservice_url(request, doc_id, False)
+
+
+def get_request_from_root(model):
+    """Getting parent from model recursively until we reach Root"""
+    if hasattr(model, '__parent__') and model.__parent__ is not None:
+        return get_request_from_root(model.__parent__)
+    else:
+        return model.request if hasattr(model, 'request') else None
+
+
+def get_awarding_type_by_procurement_method_type(procurement_method_type):
+    awarding_type = AWARDING_OF_PROCUREMENT_METHOD_TYPE.get(procurement_method_type)
+    if not awarding_type:
+        raise ValueError
+    return awarding_type
+
+
+def calculate_business_date(date_obj, timedelta_obj, context=None, working_days=False):
+    if context and 'procurementMethodDetails' in context and context['procurementMethodDetails']:
+        re_obj = ACCELERATOR_RE.search(context['procurementMethodDetails'])
+        if re_obj and 'accelerator' in re_obj.groupdict():
+            return date_obj + (timedelta_obj / int(re_obj.groupdict()['accelerator']))
+    if working_days:
+        if timedelta_obj > timedelta():
+            if date_obj.weekday() in [5, 6] and WORKING_DAYS.get(date_obj.date().isoformat(), True) or WORKING_DAYS.get(date_obj.date().isoformat(), False):
+                date_obj = datetime.combine(date_obj.date(), time(0, tzinfo=date_obj.tzinfo)) + timedelta(1)
+                while date_obj.weekday() in [5, 6] and WORKING_DAYS.get(date_obj.date().isoformat(), True) or WORKING_DAYS.get(date_obj.date().isoformat(), False):
+                    date_obj += timedelta(1)
+        else:
+            if date_obj.weekday() in [5, 6] and WORKING_DAYS.get(date_obj.date().isoformat(), True) or WORKING_DAYS.get(date_obj.date().isoformat(), False):
+                date_obj = datetime.combine(date_obj.date(), time(0, tzinfo=date_obj.tzinfo))
+                while date_obj.weekday() in [5, 6] and WORKING_DAYS.get(date_obj.date().isoformat(), True) or WORKING_DAYS.get(date_obj.date().isoformat(), False):
+                    date_obj -= timedelta(1)
+                date_obj += timedelta(1)
+        for _ in xrange(abs(timedelta_obj.days)):
+            date_obj += timedelta(1) if timedelta_obj > timedelta() else -timedelta(1)
+            while date_obj.weekday() in [5, 6] and WORKING_DAYS.get(date_obj.date().isoformat(), True) or WORKING_DAYS.get(date_obj.date().isoformat(), False):
+                date_obj += timedelta(1) if timedelta_obj > timedelta() else -timedelta(1)
+        return date_obj
+    return date_obj + timedelta_obj
