@@ -6,9 +6,7 @@ from openprocurement.api.models import (
     Bid
 )
 from openprocurement.api.traversal import Root
-from openprocurement.api.constants import AWARDING_OF_PROCUREMENT_METHOD_TYPE
 from openprocurement.api.utils import (
-    get_awarding_type_by_procurement_method_type,
     get_request_from_root
 )
 from openprocurement.api.tests.base import (
@@ -20,19 +18,6 @@ from openprocurement.api.tests.base import (
 
 
 class TestCoreUtils(BaseWebTest):
-
-    def test_get_awarding_type_by_procurement_method_type(self):
-        for key in AWARDING_OF_PROCUREMENT_METHOD_TYPE.keys():
-            awarding_type = get_awarding_type_by_procurement_method_type(key)
-            self.assertEqual(
-                awarding_type,
-                AWARDING_OF_PROCUREMENT_METHOD_TYPE[key],
-                'Awarding type was resolved wrong'
-            )
-
-    def test_get_awarding_type_by_procurement_method_type_raises(self):
-        with self.assertRaises(ValueError) as context:
-            get_awarding_type_by_procurement_method_type('jdfvhdlkjv')
 
     def test_get_request_from_root_with_request(self):
         # Create tender with Tender model

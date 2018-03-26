@@ -1,14 +1,6 @@
 from logging import getLogger
 from pkg_resources import get_distribution
 
-AWARDING_OF_PROCUREMENT_METHOD_TYPE = {
-    'belowThreshold': 'awarding_1_0',
-    'dgfFinancialAssets': 'awarding_2_1',
-    'dgfOtherAssets': 'awarding_2_1',
-    'dgfInsider': 'awarding_2_1',
-}
-
-
 # Declares what roles can interact with document in different statuses
 STATUS4ROLE = {
     'complaint_owner': ['draft', 'answered'],
