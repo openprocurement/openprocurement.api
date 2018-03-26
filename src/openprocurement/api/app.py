@@ -17,9 +17,8 @@ from pyramid.renderers import JSON, JSONP
 from pyramid.settings import asbool
 
 from openprocurement.api.auth import AuthenticationPolicy, authenticated_role, check_accreditation
-from openprocurement.api.constants import ROUTE_PREFIX
 from openprocurement.api.database import set_api_security
-from openprocurement.api.utils import forbidden, request_params, couchdb_json_decode
+from openprocurement.api.utils import forbidden, request_params, couchdb_json_decode, route_prefix
 
 LOGGER = getLogger("{}.init".format(__name__))
 
@@ -30,7 +29,7 @@ def main(global_config, **settings):
         settings=settings,
         authentication_policy=AuthenticationPolicy(settings['auth.file'], __name__),
         authorization_policy=AuthorizationPolicy(),
-        route_prefix=ROUTE_PREFIX,
+        route_prefix=route_prefix(settings),
     )
     config.include('pyramid_exclog')
     config.include("cornice")

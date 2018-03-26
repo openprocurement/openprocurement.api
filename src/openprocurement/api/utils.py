@@ -32,7 +32,7 @@ from webob.multidict import NestedMultiDict
 from openprocurement.api.constants import (
     ADDITIONAL_CLASSIFICATIONS_SCHEMES, DOCUMENT_BLACKLISTED_FIELDS,
     DOCUMENT_WHITELISTED_FIELDS, ROUTE_PREFIX, TZ, SESSION, LOGGER,
-    AWARDING_OF_PROCUREMENT_METHOD_TYPE, WORKING_DAYS
+    AWARDING_OF_PROCUREMENT_METHOD_TYPE, WORKING_DAYS, VERSION
 )
 from openprocurement.api.events import ErrorDesctiptorEvent
 from openprocurement.api.interfaces import IOPContent
@@ -41,6 +41,10 @@ from openprocurement.api.traversal import factory
 
 ACCELERATOR_RE = compile(r'.accelerator=(?P<accelerator>\d+)')
 json_view = partial(view, renderer='simplejson')
+
+
+def route_prefix(settings):
+    return '/api/{}'.format(settings.get('api_version', VERSION))
 
 
 def validate_dkpp(items, *args):
@@ -557,20 +561,22 @@ def get_content_configurator(request):
                                                   IContentConfigurator)
 
 
-def fix_url(item, app_url):
+def fix_url(item, app_url, settings=None):
+    if not settings:
+        settings = {}
     if isinstance(item, list):
         [
-            fix_url(i, app_url)
+            fix_url(i, app_url, settings)
             for i in item
             if isinstance(i, dict) or isinstance(i, list)
         ]
     elif isinstance(item, dict):
         if "format" in item and "url" in item and '?download=' in item['url']:
             path = item["url"] if item["url"].startswith('/') else '/' + '/'.join(item['url'].split('/')[5:])
-            item["url"] = app_url + ROUTE_PREFIX + path
+            item["url"] = app_url + route_prefix(settings) + path
             return
         [
-            fix_url(item[i], app_url)
+            fix_url(item[i], app_url, settings)
             for i in item
             if isinstance(item[i], dict) or isinstance(item[i], list)
         ]
