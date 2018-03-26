@@ -1,12 +1,13 @@
 # -*- coding: utf-8 -*-
 from datetime import datetime
 from decimal import Decimal, InvalidOperation, ROUND_HALF_UP
-from iso8601 import parse_date, ParseError
-from uuid import uuid4
-from urlparse import urlparse, parse_qs
-from string import hexdigits
 from hashlib import algorithms, new as hash_new
+from string import hexdigits
+from urlparse import urlparse, parse_qs
+from uuid import uuid4
+
 from couchdb_schematics.document import SchematicsDocument
+from iso8601 import parse_date, ParseError
 from schematics.exceptions import ConversionError, ValidationError
 from schematics.models import Model as SchematicsModel
 from schematics.transforms import whitelist, blacklist, export_loop, convert
@@ -16,10 +17,10 @@ from schematics.types.compound import (ModelType, DictType,
                                        ListType as BaseListType)
 from schematics.types.serializable import serializable
 
-from openprocurement.api.utils import get_now, set_parent, get_schematics_document
 from openprocurement.api.constants import (
     CPV_CODES, ORA_CODES, TZ, DK_CODES, CPV_BLOCK_FROM, ATC_CODES, INN_CODES, ATC_INN_CLASSIFICATIONS_FROM,
 )
+from openprocurement.api.utils import get_now, set_parent, get_schematics_document
 
 schematics_default_role = SchematicsDocument.Options.roles['default'] + blacklist("__parent__")
 schematics_embedded_role = SchematicsDocument.Options.roles['embedded'] + blacklist("__parent__")
@@ -212,12 +213,53 @@ class Value(Model):
     valueAddedTaxIncluded = BooleanType(required=True, default=True)
 
 
+class FeatureValue(Model):
+
+    value = FloatType(required=True, min_value=0.0, max_value=0.3)
+    title = StringType(required=True, min_length=1)
+    title_en = StringType()
+    title_ru = StringType()
+    description = StringType()
+    description_en = StringType()
+    description_ru = StringType()
+
+
+def validate_values_uniq(values, *args):
+    codes = [i.value for i in values]
+    if any([codes.count(i) > 1 for i in set(codes)]):
+        raise ValidationError(u"Feature value should be uniq for feature")
+
+
+class Feature(Model):
+
+    code = StringType(required=True, min_length=1, default=lambda: uuid4().hex)
+    featureOf = StringType(required=True, choices=['tenderer', 'lot', 'item'], default='tenderer')
+    relatedItem = StringType(min_length=1)
+    title = StringType(required=True, min_length=1)
+    title_en = StringType()
+    title_ru = StringType()
+    description = StringType()
+    description_en = StringType()
+    description_ru = StringType()
+    enum = ListType(ModelType(FeatureValue), default=list(), min_size=1, validators=[validate_values_uniq])
+
+    def validate_relatedItem(self, data, relatedItem):
+        if not relatedItem and data.get('featureOf') in ['item', 'lot']:
+            raise ValidationError(u'This field is required.')
+        if data.get('featureOf') == 'item' and isinstance(data['__parent__'], Model) and relatedItem not in [i.id for i in data['__parent__'].items]:
+            raise ValidationError(u"relatedItem should be one of items")
+        if data.get('featureOf') == 'lot' and isinstance(data['__parent__'], Model) and relatedItem not in [i.id for i in data['__parent__'].lots]:
+            raise ValidationError(u"relatedItem should be one of lots")
+
+
 class Guarantee(Model):
     amount = FloatType(required=True, min_value=0)  # Amount as a number.
     currency = StringType(required=True, default=u'UAH', max_length=3, min_length=3)  # The currency in 3-letter ISO 4217 format.
 
 
 class Period(Model):
+    """The period when the tender is open for submissions. The end date is the closing date for tender submissions."""
+
     startDate = IsoDateTimeType()  # The state date for the period.
     endDate = IsoDateTimeType()  # The end date for the period.
 
@@ -237,6 +279,35 @@ class Classification(Model):
     description_en = StringType()
     description_ru = StringType()
     uri = URLType()
+
+
+class ComplaintModelType(ModelType):
+    view_claim_statuses = ['active.enquiries', 'active.tendering', 'active.auction']
+
+    def export_loop(self, model_instance, field_converter,
+                    role=None, print_none=False):
+        """
+        Calls the main `export_loop` implementation because they are both
+        supposed to operate on models.
+        """
+        if isinstance(model_instance, self.model_class):
+            model_class = model_instance.__class__
+        else:
+            model_class = self.model_class
+
+        if role in self.view_claim_statuses and getattr(model_instance, 'type') == 'claim':
+            role = 'view_claim'
+
+        shaped = export_loop(model_class, model_instance,
+                             field_converter,
+                             role=role, print_none=print_none)
+
+        if shaped and len(shaped) == 0 and self.allow_none():
+            return shaped
+        elif shaped:
+            return shaped
+        elif print_none:
+            return shaped
 
 
 class CPVClassification(Classification):
@@ -488,3 +559,50 @@ class Contract(Model):
     items = ListType(ModelType(Item))
     suppliers = ListType(ModelType(Organization), min_size=1, max_size=1)
     date = IsoDateTimeType()
+
+
+class Cancellation(Model):
+    class Options:
+        roles = {
+            'create': whitelist('reason', 'status', 'cancellationOf', 'relatedLot'),
+            'edit': whitelist('status'),
+            'embedded': schematics_embedded_role,
+            'view': schematics_default_role,
+        }
+
+    id = MD5Type(required=True, default=lambda: uuid4().hex)
+    reason = StringType(required=True)
+    reason_en = StringType()
+    reason_ru = StringType()
+    date = IsoDateTimeType(default=get_now)
+    status = StringType(choices=['pending', 'active'], default='pending')
+    documents = ListType(ModelType(Document), default=list())
+    cancellationOf = StringType(required=True, choices=['tender', 'lot'], default='tender')
+    relatedLot = MD5Type()
+
+    def validate_relatedLot(self, data, relatedLot):
+        if not relatedLot and data.get('cancellationOf') == 'lot':
+            raise ValidationError(u'This field is required.')
+        if relatedLot and isinstance(data['__parent__'], Model) and relatedLot not in [i.id for i in data['__parent__'].lots]:
+            raise ValidationError(u"relatedLot should be one of lots")
+
+
+def validate_features_uniq(features, *args):
+    if features:
+        codes = [i.code for i in features]
+        if any([codes.count(i) > 1 for i in set(codes)]):
+            raise ValidationError(u"Feature code should be uniq for all features")
+
+
+def validate_items_uniq(items, *args):
+    if items:
+        ids = [i.id for i in items]
+        if [i for i in set(ids) if ids.count(i) > 1]:
+            raise ValidationError(u"Item id should be uniq for all items")
+
+
+def validate_lots_uniq(lots, *args):
+    if lots:
+        ids = [i.id for i in lots]
+        if [i for i in set(ids) if ids.count(i) > 1]:
+            raise ValidationError(u"Lot id should be uniq for all lots")

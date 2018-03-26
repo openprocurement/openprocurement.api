@@ -6,21 +6,20 @@ if 'test' not in __import__('sys').argv[0]:
     gevent.monkey.patch_all()
 import os
 import simplejson
-from couchdb import Server as CouchdbServer, Session
-from couchdb.http import Unauthorized, extract_credentials
-from libnacl.sign import Signer, Verifier
-from libnacl.public import SecretKey, PublicKey
 from logging import getLogger
-from openprocurement.api.auth import AuthenticationPolicy, authenticated_role, check_accreditation
-from openprocurement.api.database import set_api_security
-from openprocurement.api.utils import forbidden, request_params, couchdb_json_decode
-from openprocurement.api.constants import ROUTE_PREFIX
+
+from libnacl.public import SecretKey, PublicKey
+from libnacl.sign import Signer, Verifier
 from pkg_resources import iter_entry_points
 from pyramid.authorization import ACLAuthorizationPolicy as AuthorizationPolicy
 from pyramid.config import Configurator
-from pyramid.events import NewRequest, BeforeRender, ContextFound
 from pyramid.renderers import JSON, JSONP
 from pyramid.settings import asbool
+
+from openprocurement.api.auth import AuthenticationPolicy, authenticated_role, check_accreditation
+from openprocurement.api.constants import ROUTE_PREFIX
+from openprocurement.api.database import set_api_security
+from openprocurement.api.utils import forbidden, request_params, couchdb_json_decode
 
 LOGGER = getLogger("{}.init".format(__name__))
 
@@ -66,6 +65,8 @@ def main(global_config, **settings):
     config.registry.docservice_password = settings.get('docservice_password')
     config.registry.docservice_upload_url = settings.get('docservice_upload_url')
     config.registry.docservice_key = dockey = Signer(settings.get('dockey', '').decode('hex'))
+    config.registry.auction_module_url = settings.get('auction_url')
+    config.registry.signer = Signer(settings.get('auction_public_key', '').decode('hex'))
     config.registry.keyring = keyring = {}
     dockeys = settings.get('dockeys') if 'dockeys' in settings else dockey.hex_vk()
     for key in dockeys.split('\0'):
