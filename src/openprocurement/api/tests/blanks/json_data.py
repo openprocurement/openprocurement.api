@@ -135,3 +135,31 @@ test_lot_data = {
     "lotCustodian": deepcopy(test_organization),
     "assets": []
 }
+test_ssp_document_data = deepcopy(test_document_data)
+test_ssp_lot_data = {
+    "title": u"Тестовий лот",
+    "description": u"Щось там тестове",
+    "lotIdentifier": u"Q81318b19827",
+    "lotType": "ssp",
+    "lotCustodian": deepcopy(test_organization),
+    "assets": []
+}
+
+
+test_ssp_publication_auctions_data = {
+    'procurementMethodType': '',
+    'auctionPeriod': {},
+    'tenderingDuration': '',
+    'value': {},
+    'minimalStep': {},
+    'guarantee': {},
+    'registrationFee': {}
+}
+test_ssp_publication_data = {
+    '': '',
+    '': '',
+    '': '',
+    '': '',
+}
+
+test_ssp_item_data = deepcopy(test_item_data)
