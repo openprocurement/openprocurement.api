@@ -78,8 +78,9 @@ def main(global_config, **settings):
     # migrate data
     if not os.environ.get('MIGRATION_SKIP'):
         for entry_point in iter_entry_points('openprocurement.api.migrations'):
-            plugin = entry_point.load()
-            plugin(config.registry)
+            if not plugins or entry_point.name in plugins:
+                plugin = entry_point.load()
+                plugin(config.registry)
 
     config.registry.server_id = settings.get('id', '')
 
