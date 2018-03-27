@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
-from datetime import datetime
+from datetime import datetime, timedelta
 from iso8601 import parse_date, ParseError
+from isodate.duration import Duration
+from isodate import parse_duration, ISO8601Error, duration_isoformat
 from hashlib import algorithms, new as hash_new
 from schematics.exceptions import ConversionError, ValidationError
 
@@ -33,6 +35,25 @@ class IsoDateTimeType(BaseType):
 
     def to_primitive(self, value, context=None):
         return value.isoformat()
+
+
+class IsoDurationType(BaseType):
+    MESSAGES = {
+        'parse': u'Could not parse {0}. Should be ISO8601 duration format.',
+    }
+
+    def to_native(self, value, context=None):
+        if isinstance(value, Duration):
+            return value
+        try:
+            return parse_duration(value)
+        except (ISO8601Error, TypeError):
+            raise ConversionError(self.messages['parse'].format(value))
+        except OverflowError as e:
+            raise ConversionError(e.message)
+
+    def to_primitive(self, value, context=None):
+        return duration_isoformat(value)
 
 
 class HashType(StringType):

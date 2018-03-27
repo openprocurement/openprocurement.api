@@ -3,6 +3,7 @@ import unittest
 import mock
 from copy import deepcopy
 from datetime import datetime, timedelta
+from isodate.duration import Duration
 from schematics.exceptions import ConversionError, ValidationError, ModelValidationError
 from decimal import Decimal
 
@@ -10,7 +11,7 @@ from openprocurement.api.utils import get_now
 
 from openprocurement.api.registry_models.roles import blacklist
 from openprocurement.api.registry_models.schematics_extender import (
-    IsoDateTimeType, HashType)
+    IsoDateTimeType, HashType, IsoDurationType)
 from openprocurement.api.registry_models.ocds import (
     Organization, ContactPoint, Identifier, Address,
     Item, Location, Unit, Value, ItemClassification, Classification,
@@ -93,6 +94,33 @@ class SchematicsExtenderTest(unittest.TestCase):
 
         result = 'md5:{}'.format(uuid4().hex)
         self.assertEqual(hash.to_native(result), result)
+
+    def test_IsoDuration_model(self):
+        dt = IsoDurationType()
+
+        duration = Duration(days=5, hours=6)
+        value = dt.to_primitive(duration)
+        self.assertEqual(duration, dt.to_native(duration))
+        self.assertEqual(duration, dt.to_native(value))
+
+        duration_string = "P1DT12H"
+        self.assertEqual(Duration(days=1, hours=12), dt.to_native(duration_string))
+        self.assertEqual("P1DT12H", dt.to_primitive(Duration(days=1, hours=12)))
+
+        duration_string = "P3Y1DT12H"
+        self.assertEqual(Duration(years=3, days=1, hours=12), dt.to_native(duration_string))
+        self.assertEqual("P3Y1DT12H", dt.to_primitive(Duration(years=3 ,days=1, hours=12)))
+
+        # Iso8601Error
+        for duration in (None, '', 2017, "X1DT12H"):
+            with self.assertRaisesRegexp(ConversionError,
+                      u'Could not parse %s. Should be ISO8601 duration format.' % duration):
+                dt.to_native(duration)
+        # OverflowError
+        # for date in (Duration(12), datetime.min):
+        #     self.assertEqual(date, dt.to_native(date))
+        #     with self.assertRaises(ConversionError):
+        #         dt.to_native(dt.to_primitive(date))
 
 
 class DummyOCDSModelsTest(unittest.TestCase):
