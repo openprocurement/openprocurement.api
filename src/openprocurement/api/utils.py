@@ -32,7 +32,7 @@ from webob.multidict import NestedMultiDict
 from openprocurement.api.constants import (
     ADDITIONAL_CLASSIFICATIONS_SCHEMES, DOCUMENT_BLACKLISTED_FIELDS,
     DOCUMENT_WHITELISTED_FIELDS, ROUTE_PREFIX, TZ, SESSION, LOGGER,
-    AWARDING_OF_PROCUREMENT_METHOD_TYPE, WORKING_DAYS, VERSION
+    WORKING_DAYS, VERSION
 )
 from openprocurement.api.events import ErrorDesctiptorEvent
 from openprocurement.api.interfaces import IOPContent
@@ -693,13 +693,6 @@ def get_request_from_root(model):
         return get_request_from_root(model.__parent__)
     else:
         return model.request if hasattr(model, 'request') else None
-
-
-def get_awarding_type_by_procurement_method_type(procurement_method_type):
-    awarding_type = AWARDING_OF_PROCUREMENT_METHOD_TYPE.get(procurement_method_type)
-    if not awarding_type:
-        raise ValueError
-    return awarding_type
 
 
 def is_holiday(date):

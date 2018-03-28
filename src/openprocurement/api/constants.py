@@ -24,13 +24,6 @@ AUCTIONS_COMPLAINT_STAND_STILL_TIME = timedelta(days=3)
 DOCUMENT_BLACKLISTED_FIELDS = ('title', 'format', 'url', 'dateModified', 'hash')
 DOCUMENT_WHITELISTED_FIELDS = ('id', 'datePublished', 'author', '__parent__')
 
-AWARDING_OF_PROCUREMENT_METHOD_TYPE = {
-    'belowThreshold': 'awarding_1_0',
-    'dgfFinancialAssets': 'awarding_3_0',
-    'dgfOtherAssets': 'awarding_3_0',
-    'dgfInsider': 'awarding_3_0',
-}
-
 
 def read_json(name):
     import os.path
