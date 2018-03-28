@@ -18,6 +18,9 @@ from openprocurement.api.design import sync_design
 
 now = datetime.now()
 
+JSON_RENDERER_ERROR = {u'description': u'Expecting value: line 1 column 1 (char 0)',
+                        u'location': u'body', u'name': u'data'}
+
 
 def snitch(func):
     """
