@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 import decimal
-import json
+import simplejson
 from base64 import b64encode, b64decode
 from binascii import hexlify, unhexlify
 from datetime import datetime, timedelta, time
@@ -28,6 +28,7 @@ from rfc6266 import build_header
 from schematics.exceptions import ValidationError
 from schematics.types import StringType
 from webob.multidict import NestedMultiDict
+from pyramid.compat import text_
 
 from openprocurement.api.constants import (
     ADDITIONAL_CLASSIFICATIONS_SCHEMES, DOCUMENT_BLACKLISTED_FIELDS,
@@ -40,7 +41,7 @@ from openprocurement.api.interfaces import IContentConfigurator
 from openprocurement.api.traversal import factory
 
 ACCELERATOR_RE = compile(r'.accelerator=(?P<accelerator>\d+)')
-json_view = partial(view, renderer='simplejson')
+json_view = partial(view, renderer='json')
 
 
 def route_prefix(settings):
@@ -606,20 +607,17 @@ def set_modetest_titles(item):
         item.title_ru = u'[ТЕСТИРОВАНИЕ] {}'.format(item.title_ru or u'')
 
 
-class DecimalEncoder(json.JSONEncoder):
-    def default(self, obj):
-        if isinstance(obj, decimal.Decimal):
-            return str(obj)
-        return super(DecimalEncoder, self).default(obj)
+def json_body(self):
+    return simplejson.loads(text_(self.body, self.charset), parse_float=decimal.Decimal)
 
 
 def couchdb_json_decode():
-    my_encode = lambda obj, dumps=dumps: dumps(obj, cls=DecimalEncoder)
+    my_encode = lambda obj, dumps=simplejson.dumps: dumps(obj, allow_nan=False, ensure_ascii=False)
 
     def my_decode(string_):
         if isinstance(string_, util.btype):
             string_ = string_.decode("utf-8")
-        return json.loads(string_, parse_float=decimal.Decimal)
+        return simplejson.loads(string_, parse_float=decimal.Decimal)
 
     couchdb.json.use(decode=my_decode, encode=my_encode)
 
