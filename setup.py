@@ -39,9 +39,6 @@ entry_points = {
     'openprocurement.api.plugins': [
         'api = openprocurement.api.includeme:includeme'
     ],
-    'openprocurement.api.migrations': [
-        'tenders = openprocurement.api.migration:migrate_data'
-    ],
     'console_scripts': [
         'bootstrap_api_security = openprocurement.api.database:bootstrap_api_security'
     ]

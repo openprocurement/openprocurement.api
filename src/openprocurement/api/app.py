@@ -18,7 +18,13 @@ from pyramid.settings import asbool
 
 from openprocurement.api.auth import AuthenticationPolicy, authenticated_role, check_accreditation
 from openprocurement.api.database import set_api_security
-from openprocurement.api.utils import forbidden, request_params, couchdb_json_decode, route_prefix
+from openprocurement.api.utils import (
+    forbidden,
+    request_params,
+    couchdb_json_decode,
+    route_prefix,
+    json_body
+)
 
 LOGGER = getLogger("{}.init".format(__name__))
 
@@ -37,18 +43,17 @@ def main(global_config, **settings):
     config.add_request_method(request_params, 'params', reify=True)
     config.add_request_method(authenticated_role, reify=True)
     config.add_request_method(check_accreditation)
+    config.add_request_method(json_body, 'json_body', reify=True)
     config.add_renderer('json', JSON(serializer=simplejson.dumps))
     config.add_renderer('prettyjson', JSON(indent=4, serializer=simplejson.dumps))
     config.add_renderer('jsonp', JSONP(param_name='opt_jsonp', serializer=simplejson.dumps))
     config.add_renderer('prettyjsonp', JSONP(indent=4, param_name='opt_jsonp', serializer=simplejson.dumps))
-
     # search for plugins
     plugins = settings.get('plugins') and settings['plugins'].split(',')
     for entry_point in iter_entry_points('openprocurement.api.plugins'):
         if not plugins or entry_point.name in plugins:
             plugin = entry_point.load()
             plugin(config)
-
     # CouchDB connection
     aserver, server, db = set_api_security(settings)
     config.registry.couchdb_server = server
@@ -78,8 +83,9 @@ def main(global_config, **settings):
     # migrate data
     if not os.environ.get('MIGRATION_SKIP'):
         for entry_point in iter_entry_points('openprocurement.api.migrations'):
-            plugin = entry_point.load()
-            plugin(config.registry)
+            if not plugins or entry_point.name in plugins:
+                plugin = entry_point.load()
+                plugin(config.registry)
 
     config.registry.server_id = settings.get('id', '')
 

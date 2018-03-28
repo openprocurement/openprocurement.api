@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 import decimal
-import json
+import simplejson
 from base64 import b64encode, b64decode
 from binascii import hexlify, unhexlify
 from datetime import datetime, timedelta, time
@@ -28,11 +28,12 @@ from rfc6266 import build_header
 from schematics.exceptions import ValidationError
 from schematics.types import StringType
 from webob.multidict import NestedMultiDict
+from pyramid.compat import text_
 
 from openprocurement.api.constants import (
     ADDITIONAL_CLASSIFICATIONS_SCHEMES, DOCUMENT_BLACKLISTED_FIELDS,
     DOCUMENT_WHITELISTED_FIELDS, ROUTE_PREFIX, TZ, SESSION, LOGGER,
-    AWARDING_OF_PROCUREMENT_METHOD_TYPE, WORKING_DAYS, VERSION
+    WORKING_DAYS, VERSION
 )
 from openprocurement.api.events import ErrorDesctiptorEvent
 from openprocurement.api.interfaces import IOPContent
@@ -40,7 +41,7 @@ from openprocurement.api.interfaces import IContentConfigurator
 from openprocurement.api.traversal import factory
 
 ACCELERATOR_RE = compile(r'.accelerator=(?P<accelerator>\d+)')
-json_view = partial(view, renderer='simplejson')
+json_view = partial(view, renderer='json')
 
 
 def route_prefix(settings):
@@ -606,20 +607,17 @@ def set_modetest_titles(item):
         item.title_ru = u'[ТЕСТИРОВАНИЕ] {}'.format(item.title_ru or u'')
 
 
-class DecimalEncoder(json.JSONEncoder):
-    def default(self, obj):
-        if isinstance(obj, decimal.Decimal):
-            return str(obj)
-        return super(DecimalEncoder, self).default(obj)
+def json_body(self):
+    return simplejson.loads(text_(self.body, self.charset), parse_float=decimal.Decimal)
 
 
 def couchdb_json_decode():
-    my_encode = lambda obj, dumps=dumps: dumps(obj, cls=DecimalEncoder)
+    my_encode = lambda obj, dumps=simplejson.dumps: dumps(obj, allow_nan=False, ensure_ascii=False)
 
     def my_decode(string_):
         if isinstance(string_, util.btype):
             string_ = string_.decode("utf-8")
-        return json.loads(string_, parse_float=decimal.Decimal)
+        return simplejson.loads(string_, parse_float=decimal.Decimal)
 
     couchdb.json.use(decode=my_decode, encode=my_encode)
 
@@ -695,33 +693,70 @@ def get_request_from_root(model):
         return model.request if hasattr(model, 'request') else None
 
 
-def get_awarding_type_by_procurement_method_type(procurement_method_type):
-    awarding_type = AWARDING_OF_PROCUREMENT_METHOD_TYPE.get(procurement_method_type)
-    if not awarding_type:
-        raise ValueError
-    return awarding_type
+def is_holiday(date):
+    """Check if date is holiday
+    Calculation is based on WORKING_DAYS dictionary, constructed in following format:
+        <date_string>: <bool>
+    
+    where:
+        - `date_string` - string representing the date in ISO 8601 format, `YYYY-MM-DD`.
+        - `bool` - boolean representing work status of the day:
+            - `True` **IF IT'S A HOLIDAY** but the day is not at weekend
+            - `False` if day is at weekend, but it's a working day
+    :param date: date to check
+    :type date: datetime.timedelta
+    :return: True if date is work day, False if it isn't
+    :rtype: bool
+    """
+
+    date_iso = date.date().isoformat()
+    return (
+        date.weekday() in [5, 6] and  # date's weekday is Saturday or Sunday
+        WORKING_DAYS.get(date_iso, True) or  # but it's not a holiday
+        WORKING_DAYS.get(date_iso, False)  # or date in't at weekend, but it's holiday
+    )
+
 
 
 def calculate_business_date(date_obj, timedelta_obj, context=None, working_days=False):
+    """This method calculates end of business period from given start and timedelta
+    The calculation of end of business period is complex, so this method is used project-wide.
+    Also this method provides support of accelerated calculation, useful while testing.
+    :param date_obj: the start of period
+    :param timedelta_obj: duration of the period
+    :param context: object, that holds data related to particular business process,
+        usually it's Auction model's instance. Must be present to use acceleration
+        mode.
+    :param working_days: make calculations taking into account working days
+    :type date_obj: datetime.datetime
+    :type timedelta_obj: datetime.timedelta
+    :type context: openprocurement.api.models.Tender
+    :type working_days: bool
+    :return: the end of period
+    :rtype: datetime.datetime
+    """
+
+    # Acceleration mode logic
     if context and 'procurementMethodDetails' in context and context['procurementMethodDetails']:
         re_obj = ACCELERATOR_RE.search(context['procurementMethodDetails'])
         if re_obj and 'accelerator' in re_obj.groupdict():
             return date_obj + (timedelta_obj / int(re_obj.groupdict()['accelerator']))
+
     if working_days:
         if timedelta_obj > timedelta():
-            if date_obj.weekday() in [5, 6] and WORKING_DAYS.get(date_obj.date().isoformat(), True) or WORKING_DAYS.get(date_obj.date().isoformat(), False):
+            if is_holiday(date_obj):
                 date_obj = datetime.combine(date_obj.date(), time(0, tzinfo=date_obj.tzinfo)) + timedelta(1)
-                while date_obj.weekday() in [5, 6] and WORKING_DAYS.get(date_obj.date().isoformat(), True) or WORKING_DAYS.get(date_obj.date().isoformat(), False):
+                while is_holiday(date_obj):
                     date_obj += timedelta(1)
         else:
-            if date_obj.weekday() in [5, 6] and WORKING_DAYS.get(date_obj.date().isoformat(), True) or WORKING_DAYS.get(date_obj.date().isoformat(), False):
+            if is_holiday(date_obj):
                 date_obj = datetime.combine(date_obj.date(), time(0, tzinfo=date_obj.tzinfo))
-                while date_obj.weekday() in [5, 6] and WORKING_DAYS.get(date_obj.date().isoformat(), True) or WORKING_DAYS.get(date_obj.date().isoformat(), False):
+                while is_holiday(date_obj):
                     date_obj -= timedelta(1)
                 date_obj += timedelta(1)
         for _ in xrange(abs(timedelta_obj.days)):
             date_obj += timedelta(1) if timedelta_obj > timedelta() else -timedelta(1)
-            while date_obj.weekday() in [5, 6] and WORKING_DAYS.get(date_obj.date().isoformat(), True) or WORKING_DAYS.get(date_obj.date().isoformat(), False):
+            while is_holiday(date_obj):
                 date_obj += timedelta(1) if timedelta_obj > timedelta() else -timedelta(1)
         return date_obj
     return date_obj + timedelta_obj
