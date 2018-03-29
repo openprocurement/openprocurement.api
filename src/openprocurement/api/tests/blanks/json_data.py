@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 from copy import deepcopy
-
+from datetime import timedelta
+from datetime import datetime
+from openprocurement.api.utils import get_now
 
 test_organization = {
     "name": u"Державне управління справами",
@@ -142,24 +144,48 @@ test_ssp_lot_data = {
     "lotIdentifier": u"Q81318b19827",
     "lotType": "ssp",
     "lotCustodian": deepcopy(test_organization),
-    "assets": []
+    "assets": [],
+    "lotHolder": {"name": "name"}
 }
 
-
-test_ssp_publication_auctions_data = {
-    'procurementMethodType': '',
-    'auctionPeriod': {},
-    'tenderingDuration': '',
-    'value': {},
-    'minimalStep': {},
-    'guarantee': {},
-    'registrationFee': {}
+now = get_now()
+publication_auction_common = {
+    'auctionPeriod': {
+        'startDate': (now + timedelta(days=5)).isoformat(),
+        'endDate': (now + timedelta(days=10)).isoformat()
+    },
+    'tenderingDuration': 'P25DT12H',
+    'value': {
+        'amount': 3000,
+        'currency': 'UAH',
+        'valueAddedTaxIncluded': True
+    },
+    'minimalStep': {
+        'amount': 300,
+        'currency': 'UAH',
+        'valueAddedTaxIncluded': True
+    },
+    'guarantee': {
+        'amount': 700,
+        'currency': 'UAH'
+    },
+    'registrationFee': {
+        'amount': 700,
+        'currency': 'UAH'
+    }
 }
+publication_auction_english_data = deepcopy(publication_auction_common)
+publication_auction_english_data.update({'procurementMethodType': 'SSP.english'})
+
+publication_auction_insider_data = deepcopy(publication_auction_common)
+publication_auction_insider_data.update({'procurementMethodType': 'SSP.insider'})
+
 test_ssp_publication_data = {
-    '': '',
-    '': '',
-    '': '',
-    '': '',
+    'auctions': [
+        publication_auction_english_data,
+        publication_auction_english_data,
+        publication_auction_insider_data
+    ],
 }
 
 test_ssp_item_data = deepcopy(test_item_data)
