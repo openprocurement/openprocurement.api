@@ -1,8 +1,5 @@
 # -*- coding: utf-8 -*-
 from copy import deepcopy
-from datetime import timedelta
-from datetime import datetime
-from openprocurement.api.utils import get_now
 
 test_organization = {
     "name": u"Державне управління справами",
