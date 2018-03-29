@@ -19,6 +19,11 @@ item_create_role = blacklist('id')
 item_edit_role = blacklist('id')
 item_view_role = (schematics_default_role)
 
+publication_create_role = blacklist('id', 'date', 'dateModified', 'documents')
+publication_edit_role = blacklist('id', 'date', 'dateModified', 'documents')
+publication_view_role = (schematics_default_role)
+
+
 
 document_roles = {
     'create': document_create_role,
@@ -29,9 +34,15 @@ document_roles = {
 }
 
 item_roles = {
-    'create': document_create_role,
-    'edit': document_edit_role,
-    'view': document_view_role,
+    'create': item_create_role,
+    'edit': item_edit_role,
+    'view': item_view_role,
+}
+
+publication_roles = {
+    'create': publication_create_role,
+    'edit': publication_edit_role,
+    'view': publication_view_role,
 }
 
 organization_roles = {
