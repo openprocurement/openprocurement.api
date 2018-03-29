@@ -1,13 +1,12 @@
 # -*- coding: utf-8 -*-
+import re
+
 from cornice.service import Service, get_services
 from openprocurement.api.constants import VERSION
 
 
 spore = Service(name='spore', path='/spore', renderer='json')
 
-#####
-# from cornice.ext.spore import generate_spore_description
-import re
 
 URL_PLACEHOLDER = re.compile(r'\{([a-zA-Z0-9_-]*)\}')
 
@@ -60,7 +59,11 @@ def generate_spore_description(services, name, base_url, version, **kwargs):
 
     return spore_doc
 ####
+
+
 @spore.get()
 def get_spore(request):
     services = get_services()
-    return generate_spore_description(services, 'Service name', request.application_url, request.registry.settings.get('api_version', VERSION))
+    return generate_spore_description(
+        services, 'Service name', request.application_url, request.registry.settings.get('api_version', VERSION)
+    )

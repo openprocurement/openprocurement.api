@@ -1,0 +1,12 @@
+[flake8]
+max-line-length = 120
+exclude =
+    .git,
+    bootstrap.py,
+    ez_setup.py,
+    docs.py,
+    bin/,
+    eggs/,
+    docs/,
+    src/openprocurement/api/tests,
+    src/cgi.py

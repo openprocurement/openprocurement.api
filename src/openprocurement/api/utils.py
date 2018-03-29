@@ -50,7 +50,11 @@ def route_prefix(settings):
 
 def validate_dkpp(items, *args):
     if items and not any([i.scheme in ADDITIONAL_CLASSIFICATIONS_SCHEMES for i in items]):
-        raise ValidationError(u"One of additional classifications should be one of [{0}].".format(', '.join(ADDITIONAL_CLASSIFICATIONS_SCHEMES)))
+        raise ValidationError(
+            u"One of additional classifications should be one of [{0}].".format(
+                ', '.join(ADDITIONAL_CLASSIFICATIONS_SCHEMES)
+            )
+        )
 
 
 def get_now():
@@ -152,8 +156,11 @@ def raise_operation_error(request, error_handler, message):
     raise error_handler(request)
 
 
-def upload_file(request, blacklisted_fields=DOCUMENT_BLACKLISTED_FIELDS, whitelisted_fields=DOCUMENT_WHITELISTED_FIELDS):
-    first_document = request.validated['documents'][-1] if 'documents' in request.validated and request.validated['documents'] else None
+def upload_file(
+    request, blacklisted_fields=DOCUMENT_BLACKLISTED_FIELDS, whitelisted_fields=DOCUMENT_WHITELISTED_FIELDS
+):
+    first_document = request.validated['documents'][-1] if 'documents' in request.validated and \
+            request.validated['documents'] else None
     if 'data' in request.validated and request.validated['data']:
         document = request.validated['document']
         check_document(request, document, 'body')
@@ -194,29 +201,46 @@ def upload_file(request, blacklisted_fields=DOCUMENT_BLACKLISTED_FIELDS, whiteli
                 setattr(document, attr_name, getattr(first_document, attr_name))
     if request.registry.docservice_url:
         parsed_url = urlparse(request.registry.docservice_url)
-        url = request.registry.docservice_upload_url or urlunsplit((parsed_url.scheme, parsed_url.netloc, '/upload', '', ''))
+        url = request.registry.docservice_upload_url or urlunsplit((
+            parsed_url.scheme, parsed_url.netloc, '/upload', '', ''
+        ))
         files = {'file': (filename, in_file, content_type)}
         doc_url = None
         index = 10
         while index:
             try:
-                r = SESSION.post(url,
-                                files=files,
-                                headers={'X-Client-Request-ID': request.environ.get('REQUEST_ID', '')},
-                                auth=(request.registry.docservice_username, request.registry.docservice_password)
-                                )
+                r = SESSION.post(
+                    url,
+                    files=files,
+                    headers={'X-Client-Request-ID': request.environ.get('REQUEST_ID', '')},
+                    auth=(request.registry.docservice_username, request.registry.docservice_password)
+                )
                 json_data = r.json()
             except Exception, e:
-                LOGGER.warning("Raised exception '{}' on uploading document to document service': {}.".format(type(e), e),
-                               extra=context_unpack(request, {'MESSAGE_ID': 'document_service_exception'}, {'file_size': in_file.tell()}))
+                LOGGER.warning(
+                    "Raised exception '{}' on uploading document to document service': {}.".format(type(e), e),
+                    extra=context_unpack(
+                        request,
+                        {'MESSAGE_ID': 'document_service_exception'},
+                        {'file_size': in_file.tell()}
+                    )
+                )
             else:
                 if r.status_code == 200 and json_data.get('data', {}).get('url'):
                     doc_url = json_data['data']['url']
                     doc_hash = json_data['data']['hash']
                     break
                 else:
-                    LOGGER.warning("Error {} on uploading document to document service '{}': {}".format(r.status_code, url, r.text),
-                                   extra=context_unpack(request, {'MESSAGE_ID': 'document_service_error'}, {'ERROR_STATUS': r.status_code, 'file_size': in_file.tell()}))
+                    LOGGER.warning(
+                        "Error {} on uploading document to document service '{}': {}".format(
+                            r.status_code, url, r.text
+                        ),
+                        extra=context_unpack(
+                            request,
+                            {'MESSAGE_ID': 'document_service_error'},
+                            {'ERROR_STATUS': r.status_code, 'file_size': in_file.tell()}
+                        )
+                    )
             in_file.seek(0)
             index -= 1
         else:
@@ -233,7 +257,11 @@ def upload_file(request, blacklisted_fields=DOCUMENT_BLACKLISTED_FIELDS, whiteli
             "data": b64encode(in_file.read())
         }
     document_route = request.matched_route.name.replace("collection_", "")
-    document_path = request.current_route_path(_route_name=document_route, document_id=document.id, _query={'download': key})
+    document_path = request.current_route_path(
+        _route_name=document_route,
+        document_id=document.id,
+        _query={'download': key}
+    )
     document.url = '/' + '/'.join(document_path.split('/')[3:])
     update_logging_context(request, {'file_size': in_file.tell()})
     return document
@@ -264,7 +292,10 @@ def get_file(request):
             else:
                 url = generate_docservice_url(request, key)
         request.response.content_type = document.format.encode('utf-8')
-        request.response.content_disposition = build_header(document.title, filename_compat=quote(document.title.encode('utf-8')))
+        request.response.content_disposition = build_header(
+            document.title,
+            filename_compat=quote(document.title.encode('utf-8'))
+        )
         request.response.status = '302 Moved Temporarily'
         request.response.location = url
         return url
@@ -272,7 +303,10 @@ def get_file(request):
         data = request.registry.db.get_attachment(db_doc_id, filename)
         if data:
             request.response.content_type = document.format.encode('utf-8')
-            request.response.content_disposition = build_header(document.title, filename_compat=quote(document.title.encode('utf-8')))
+            request.response.content_disposition = build_header(
+                document.title,
+                filename_compat=quote(document.title.encode('utf-8'))
+            )
             request.response.body_file = data
             return request.response
         request.errors.add('url', 'download', 'Not Found')
@@ -383,7 +417,9 @@ def check_document_batch(request, document, document_container, route_kwargs):
     # To redefine document_route to get appropriate real document route when bid
     # is created with documents? I hope so :)
     if "Documents" not in document_route:
-        specified_document_route_end = (document_container.lower().rsplit('documents')[0] + ' documents').lstrip().title()
+        specified_document_route_end = (
+            document_container.lower().rsplit('documents')[0] + ' documents'
+        ).lstrip().title()
         document_route = ' '.join([document_route[:-1], specified_document_route_end])
 
     return update_document_url(request, document, document_route, route_kwargs)
@@ -404,6 +440,7 @@ def request_params(request):
 
 
 opresource = partial(resource, error_handler=error_handler, factory=factory)
+
 
 class APIResource(object):
 
@@ -472,13 +509,22 @@ class APIResourceListing(APIResource):
                 view_offset = '9' if descending else ''
         list_view = view_map.get(mode, view_map[u''])
         if self.update_after:
-            view = partial(list_view, self.db, limit=view_limit, startkey=view_offset, descending=descending, stale='update_after')
+            view = partial(
+                list_view, self.db, limit=view_limit, startkey=view_offset, descending=descending, stale='update_after'
+            )
         else:
             view = partial(list_view, self.db, limit=view_limit, startkey=view_offset, descending=descending)
         if fields:
             if not changes and set(fields).issubset(set(self.FIELDS)):
                 results = [
-                    (dict([(i, j) for i, j in x.value.items() + [('id', x.id), ('dateModified', x.key)] if i in view_fields]), x.key)
+                    (
+                        dict([(i, j) for i, j in x.value.items() + [
+                            ('id', x.id),
+                            ('dateModified', x.key)
+                        ] if i in view_fields
+                        ]),
+                        x.key
+                    )
                     for x in view()
                 ]
             elif changes and set(fields).issubset(set(self.FIELDS)):
@@ -487,8 +533,13 @@ class APIResourceListing(APIResource):
                     for x in view()
                 ]
             elif fields:
-                self.LOGGER.info('Used custom fields for {} list: {}'.format(self.object_name_for_listing, ','.join(sorted(fields))),
-                            extra=context_unpack(self.request, {'MESSAGE_ID': self.log_message_id}))
+                self.LOGGER.info(
+                    'Used custom fields for {} list: {}'.format(
+                        self.object_name_for_listing,
+                        ','.join(sorted(fields))
+                    ),
+                    extra=context_unpack(self.request, {'MESSAGE_ID': self.log_message_id})
+                    )
 
                 results = [
                     (self.serialize_func(self.request, i[u'doc'], view_fields), i.key)
@@ -496,7 +547,10 @@ class APIResourceListing(APIResource):
                 ]
         else:
             results = [
-                ({'id': i.id, 'dateModified': i.value['dateModified']} if changes else {'id': i.id, 'dateModified': i.key}, i.key)
+                (
+                    {'id': i.id, 'dateModified': i.value['dateModified']} if changes else
+                    {'id': i.id, 'dateModified': i.key}, i.key
+                )
                 for i in view()
             ]
         if results:
@@ -593,7 +647,7 @@ def decrypt(uuid, name, key):
     iv = "{:^{}.{}}".format(name, AES.block_size, AES.block_size)
     try:
         text = AES.new(uuid, AES.MODE_CBC, iv).decrypt(unhexlify(key)).strip()
-    except:
+    except Exception:
         text = ''
     return text
 
@@ -612,7 +666,8 @@ def json_body(self):
 
 
 def couchdb_json_decode():
-    my_encode = lambda obj, dumps=simplejson.dumps: dumps(obj, allow_nan=False, ensure_ascii=False)
+    def my_encode(obj, dumps=simplejson.dumps):
+        return dumps(obj, allow_nan=False, ensure_ascii=False)
 
     def my_decode(string_):
         if isinstance(string_, util.btype):
@@ -680,7 +735,11 @@ def serialize_document_url(document):
             if roles[role if role in roles else 'default'](field, []):
                 return url
     if not document.hash:
-        path = [i for i in urlparse(url).path.split('/') if len(i) == 32 and not set(i).difference(hexdigits)]
+        path = [
+            i for i in urlparse(url).path.split('/') if
+            len(i) == 32 and
+            not set(i).difference(hexdigits)  # noqa: F821
+        ]
         return generate_docservice_url(request, doc_id, False, '{}/{}'.format(path[0], path[-1]))
     return generate_docservice_url(request, doc_id, False)
 
@@ -697,7 +756,7 @@ def is_holiday(date):
     """Check if date is holiday
     Calculation is based on WORKING_DAYS dictionary, constructed in following format:
         <date_string>: <bool>
-    
+
     where:
         - `date_string` - string representing the date in ISO 8601 format, `YYYY-MM-DD`.
         - `bool` - boolean representing work status of the day:
@@ -715,7 +774,6 @@ def is_holiday(date):
         WORKING_DAYS.get(date_iso, True) or  # but it's not a holiday
         WORKING_DAYS.get(date_iso, False)  # or date in't at weekend, but it's holiday
     )
-
 
 
 def calculate_business_date(date_obj, timedelta_obj, context=None, working_days=False):

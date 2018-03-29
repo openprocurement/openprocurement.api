@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 """Main entry point
 """
+# flake8: noqa
 if 'test' not in __import__('sys').argv[0]:
     import gevent.monkey
     gevent.monkey.patch_all()
