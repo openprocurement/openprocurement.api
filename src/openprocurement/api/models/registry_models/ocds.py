@@ -1,9 +1,15 @@
 # -*- coding: utf-8 -*-
 from uuid import uuid4
 
-from schematics.types import (StringType, FloatType, URLType, IntType,
-                              BooleanType, BaseType, EmailType, MD5Type,
-                              )
+from schematics.types import (
+    StringType,
+    FloatType,
+    URLType,
+    BooleanType,
+    BaseType,
+    EmailType,
+    MD5Type,
+)
 from schematics.exceptions import ValidationError
 from schematics.types.compound import ModelType, ListType
 from schematics.types.serializable import serializable
@@ -12,9 +18,13 @@ from schematics_flexible.schematics_flexible import FlexibleModelType
 from openprocurement.schemas.dgf.schemas_store import SchemaStore
 
 from openprocurement.api.models.schematics_extender import DecimalType
-from openprocurement.api.constants import (DEFAULT_CURRENCY,
-    DEFAULT_ITEM_CLASSIFICATION, ITEM_CLASSIFICATIONS, DOCUMENT_TYPES,
-    IDENTIFIER_CODES, DEBTOR_TYPES
+from openprocurement.api.constants import (
+    DEFAULT_CURRENCY,
+    DEFAULT_ITEM_CLASSIFICATION,
+    ITEM_CLASSIFICATIONS,
+    DOCUMENT_TYPES,
+    IDENTIFIER_CODES,
+    DEBTOR_TYPES
 )
 from openprocurement.api.utils import get_now, serialize_document_url
 
@@ -36,12 +46,13 @@ class BasicValue(Model):
 
 class Value(BasicValue):
     valueAddedTaxIncluded = BooleanType(required=True, default=True)
-    currency = StringType(required=True, default=DEFAULT_CURRENCY, max_length=3, min_length=3)  # The currency in 3-letter ISO 4217 format.
+    # The currency in 3-letter ISO 4217 format.
+    currency = StringType(required=True, default=DEFAULT_CURRENCY, max_length=3, min_length=3)
 
 
 class ValueUAH(BasicValue):
-    currency = StringType(required=True, choices=[u'UAH'], max_length=3, min_length=3)  # The currency in 3-letter ISO 4217 format.
-
+    # The currency in 3-letter ISO 4217 format.
+    currency = StringType(required=True, choices=[u'UAH'], max_length=3, min_length=3)
 
 
 class Classification(Model):
@@ -143,7 +154,8 @@ class Document(Model):
 
 
 class Identifier(Model):
-    scheme = StringType(required=True, choices=IDENTIFIER_CODES)  # The scheme that holds the unique identifiers used to identify the item being identified.
+    # The scheme that holds the unique identifiers used to identify the item being identified.
+    scheme = StringType(required=True, choices=IDENTIFIER_CODES)
     id = BaseType(required=True)  # The identifier of the organization in the selected scheme.
     legalName = StringType()  # The legally registered name of the organization.
     legalName_en = StringType()
@@ -170,6 +182,7 @@ class Item(Model):
             with classification id """
         if new_schema_properties and not data['classification']['id'].startswith(new_schema_properties['code']):
             raise ValidationError("classification id mismatch with schema_properties code")
+
 
 class ContactPoint(Model):
     name = StringType(required=True)

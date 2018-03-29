@@ -42,11 +42,10 @@ listing_role = whitelist('dateModified', 'doc_id')
 draft_role = whitelist('status')
 
 
-
-
 class Value(Model):
     amount = FloatType(required=True, min_value=0)  # Amount as a number.
-    currency = StringType(required=True, default=u'UAH', max_length=3, min_length=3)  # The currency in 3-letter ISO 4217 format.
+    # The currency in 3-letter ISO 4217 format.
+    currency = StringType(required=True, default=u'UAH', max_length=3, min_length=3)
     valueAddedTaxIncluded = BooleanType(required=True, default=True)
 
 
@@ -83,9 +82,19 @@ class Feature(Model):
     def validate_relatedItem(self, data, relatedItem):
         if not relatedItem and data.get('featureOf') in ['item', 'lot']:
             raise ValidationError(u'This field is required.')
-        if data.get('featureOf') == 'item' and isinstance(data['__parent__'], Model) and relatedItem not in [i.id for i in data['__parent__'].items]:
+        if (
+            data.get('featureOf') == 'item'
+            and isinstance(data['__parent__'], Model)
+            and relatedItem
+            not in [i.id for i in data['__parent__'].items]
+        ):
             raise ValidationError(u"relatedItem should be one of items")
-        if data.get('featureOf') == 'lot' and isinstance(data['__parent__'], Model) and relatedItem not in [i.id for i in data['__parent__'].lots]:
+        if (
+            data.get('featureOf') == 'lot'
+            and isinstance(data['__parent__'], Model)
+            and relatedItem
+            not in [i.id for i in data['__parent__'].lots]
+        ):
             raise ValidationError(u"relatedItem should be one of lots")
 
 
@@ -139,7 +148,15 @@ class CPVClassification(Classification):
 
     def validate_scheme(self, data, scheme):
         schematics_document = get_schematics_document(data['__parent__'])
-        if (schematics_document.get('revisions')[0].date if schematics_document.get('revisions') else get_now()) > CPV_BLOCK_FROM and scheme != u'ДК021':
+        if (
+            (
+                schematics_document.get('revisions')[0].date
+                if schematics_document.get('revisions')
+                else get_now()
+            )
+            > CPV_BLOCK_FROM
+            and scheme != u'ДК021'
+        ):
             raise ValidationError(BaseType.MESSAGES['choices'].format(unicode([u'ДК021'])))
 
 
@@ -147,7 +164,14 @@ class AdditionalClassification(Classification):
 
     def validate_id(self, data, code):
         schematics_document = get_schematics_document(data['__parent__'])
-        if (schematics_document.get('revisions')[0].date if schematics_document.get('revisions') else get_now()) > ATC_INN_CLASSIFICATIONS_FROM:
+        if (
+            (
+                schematics_document.get('revisions')[0].date
+                if schematics_document.get('revisions')
+                else get_now()
+            )
+            > ATC_INN_CLASSIFICATIONS_FROM
+        ):
             if data.get('scheme') == u'ATC' and code not in ATC_CODES:
                 raise ValidationError(BaseType.MESSAGES['choices'].format(unicode(ATC_CODES)))
             elif data.get('scheme') == u'INN' and code not in INN_CODES:
@@ -155,7 +179,9 @@ class AdditionalClassification(Classification):
 
 
 class Unit(Model):
-    """Description of the unit which the good comes in e.g. hours, kilograms. Made up of a unit name, and the value of a single unit."""
+    """Description of the unit which the good comes in e.g. hours, kilograms.
+    Made up of a unit name, and the value of a single unit.
+    """
 
     name = StringType()
     name_en = StringType()
@@ -267,7 +293,8 @@ class Document(Model):
 
 
 class Identifier(Model):
-    scheme = StringType(required=True, choices=ORA_CODES)  # The scheme that holds the unique identifiers used to identify the item being identified.
+    # The scheme that holds the unique identifiers used to identify the item being identified.
+    scheme = StringType(required=True, choices=ORA_CODES)
     id = BaseType(required=True)  # The identifier of the organization in the selected scheme.
     legalName = StringType()  # The legally registered name of the organization.
     legalName_en = StringType()
@@ -372,7 +399,12 @@ class Cancellation(Model):
     def validate_relatedLot(self, data, relatedLot):
         if not relatedLot and data.get('cancellationOf') == 'lot':
             raise ValidationError(u'This field is required.')
-        if relatedLot and isinstance(data['__parent__'], Model) and relatedLot not in [i.id for i in data['__parent__'].lots]:
+        if (
+            relatedLot
+            and isinstance(data['__parent__'], Model)
+            and relatedLot
+            not in [i.id for i in data['__parent__'].lots]
+        ):
             raise ValidationError(u"relatedLot should be one of lots")
 
 
