@@ -72,17 +72,24 @@ class ItemClassification(Classification):
             raise ValidationError(BaseType.MESSAGES['choices'].format(unicode(available_codes)))
 
 
-class Unit(Model):
+class BaseUnit(Model):
     """
     Description of the unit which the good comes in e.g. hours, kilograms.
-    Made up of a unit name, and the value of a single unit.
+    Made up of a unit name of a single unit.
     """
 
     name = StringType()
     name_en = StringType()
     name_ru = StringType()
-    value = ModelType(Value)
     code = StringType(required=True)
+
+
+class Unit(BaseUnit):
+    """
+    Extends BaseUnit adding value field to it.
+    """
+
+    value = ModelType(Value)
 
 
 class Address(Model):

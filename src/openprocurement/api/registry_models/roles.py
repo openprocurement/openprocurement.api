@@ -24,7 +24,6 @@ document_roles = {
     'revisions': document_revisions_role,
 }
 
-
 organization_roles = {
    'embedded': schematics_embedded_role,
    'view': schematics_default_role,

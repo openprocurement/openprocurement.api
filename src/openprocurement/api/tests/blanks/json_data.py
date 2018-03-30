@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 from copy import deepcopy
 
-
 test_organization = {
     "name": u"Державне управління справами",
     "identifier": {
