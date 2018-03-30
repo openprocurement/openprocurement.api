@@ -3,23 +3,26 @@ from uuid import uuid4
 
 from schematics.types import (StringType, FloatType, URLType, IntType,
                               BooleanType, BaseType, EmailType, MD5Type,
-                              DecimalType as BaseDecimalType)
-from schematics.exceptions import ValidationError, ConversionError
+                              )
+from schematics.exceptions import ValidationError
 from schematics.types.compound import ModelType, ListType
 from schematics.types.serializable import serializable
 from schematics_flexible.schematics_flexible import FlexibleModelType
 
 from openprocurement.schemas.dgf.schemas_store import SchemaStore
 
-from decimal import Decimal, InvalidOperation, ROUND_HALF_UP
-
+from openprocurement.api.models.schematics_extender import DecimalType
 from openprocurement.api.constants import (DEFAULT_CURRENCY,
     DEFAULT_ITEM_CLASSIFICATION, ITEM_CLASSIFICATIONS, DOCUMENT_TYPES,
     IDENTIFIER_CODES, DEBTOR_TYPES
 )
 from openprocurement.api.utils import get_now, serialize_document_url
 
-from .schematics_extender import Model, IsoDateTimeType, HashType
+from openprocurement.api.models.schematics_extender import (
+    Model,
+    IsoDateTimeType,
+    HashType
+)
 from .roles import document_roles, organization_roles
 
 
@@ -39,18 +42,6 @@ class Value(BasicValue):
 class ValueUAH(BasicValue):
     currency = StringType(required=True, choices=[u'UAH'], max_length=3, min_length=3)  # The currency in 3-letter ISO 4217 format.
 
-
-class Period(Model):
-    startDate = IsoDateTimeType()  # The state date for the period.
-    endDate = IsoDateTimeType()  # The end date for the period.
-
-    def validate_startDate(self, data, value):
-        if value and data.get('endDate') and data.get('endDate') < value:
-            raise ValidationError(u"period should begin before its end")
-
-
-class PeriodEndRequired(Period):
-    endDate = IsoDateTimeType(required=True)  # The end date for the period.
 
 
 class Classification(Model):
@@ -158,37 +149,6 @@ class Identifier(Model):
     legalName_en = StringType()
     legalName_ru = StringType()
     uri = URLType()  # A URI to identify the organization.
-
-
-class DecimalType(BaseDecimalType):
-
-    def __init__(self, precision=-3, min_value=None, max_value=None, **kwargs):
-        super(DecimalType, self).__init__(**kwargs)
-        self.min_value, self.max_value = min_value, max_value
-        self.precision = Decimal("1E{:d}".format(precision))
-
-    def _apply_precision(self, value):
-        try:
-            value = Decimal(value).quantize(self.precision, rounding=ROUND_HALF_UP).normalize()
-        except (TypeError, InvalidOperation):
-            raise ConversionError(self.messages['number_coerce'].format(value))
-        return value
-
-    def to_primitive(self, value, context=None):
-        return value
-
-    def to_native(self, value, context=None):
-        try:
-            value = Decimal(value).quantize(self.precision, rounding=ROUND_HALF_UP).normalize()
-        except (TypeError, InvalidOperation):
-            raise ConversionError(self.messages['number_coerce'].format(value))
-
-        if self.min_value is not None and value < self.min_value:
-            raise ConversionError(self.messages['number_min'].format(value))
-        if self.max_value is not None and self.max_value < value:
-            raise ConversionError(self.messages['number_max'].format(value))
-
-        return value
 
 
 class Item(Model):

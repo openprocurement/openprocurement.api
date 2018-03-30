@@ -5,14 +5,42 @@ from isodate.duration import Duration
 from isodate import parse_duration, ISO8601Error, duration_isoformat
 from hashlib import algorithms, new as hash_new
 from schematics.exceptions import ConversionError, ValidationError
+from decimal import Decimal, InvalidOperation, ROUND_HALF_UP
 
 from schematics.models import Model as SchematicsModel
 
 from schematics.types.compound import ListType as BaseListType
-from schematics.types import BaseType, StringType
+from schematics.types import (
+    BaseType,
+    StringType,
+    DecimalType as BaseDecimalType
+)
 from schematics.transforms import blacklist, export_loop, convert
 from openprocurement.api.constants import TZ
 from openprocurement.api.utils import set_parent
+
+
+class DecimalType(BaseDecimalType):
+    def __init__(self, precision=-3, min_value=None, max_value=None, **kwargs):
+        self.min_value, self.max_value = min_value, max_value
+        self.precision = Decimal("1E{:d}".format(precision))
+        super(DecimalType, self).__init__(**kwargs)
+
+    def to_primitive(self, value, context=None):
+        return value
+
+    def to_native(self, value, context=None):
+        try:
+            value = Decimal(value).quantize(self.precision, rounding=ROUND_HALF_UP).normalize()
+        except (TypeError, InvalidOperation):
+            raise ConversionError(self.messages['number_coerce'].format(value))
+
+        if self.min_value is not None and value < self.min_value:
+            raise ConversionError(self.messages['number_min'].format(value))
+        if self.max_value is not None and self.max_value < value:
+            raise ConversionError(self.messages['number_max'].format(value))
+
+        return value
 
 
 class IsoDateTimeType(BaseType):
@@ -56,34 +84,6 @@ class IsoDurationType(BaseType):
         return duration_isoformat(value)
 
 
-class HashType(StringType):
-
-    MESSAGES = {
-        'hash_invalid': "Hash type is not supported.",
-        'hash_length': "Hash value is wrong length.",
-        'hash_hex': "Hash value is not hexadecimal.",
-    }
-
-    def to_native(self, value, context=None):
-        value = super(HashType, self).to_native(value, context)
-
-        if ':' not in value:
-            raise ValidationError(self.messages['hash_invalid'])
-
-        hash_type, hash_value = value.split(':', 1)
-
-        if hash_type not in algorithms:
-            raise ValidationError(self.messages['hash_invalid'])
-
-        if len(hash_value) != hash_new(hash_type).digest_size * 2:
-            raise ValidationError(self.messages['hash_length'])
-        try:
-            int(hash_value, 16)
-        except ValueError:
-            raise ConversionError(self.messages['hash_hex'])
-        return value
-
-
 class ListType(BaseListType):
 
     def export_loop(self, list_instance, field_converter,
@@ -118,6 +118,82 @@ class ListType(BaseListType):
             return data
         elif print_none:
             return data
+
+
+class SifterListType(ListType):
+    def __init__(self, field, min_size=None, max_size=None,
+                 filter_by=None, filter_in_values=[], **kwargs):
+        self.filter_by = filter_by
+        self.filter_in_values = filter_in_values
+        super(SifterListType, self).__init__(field, min_size=min_size,
+                                             max_size=max_size, **kwargs)
+
+    def export_loop(self, list_instance, field_converter,
+                    role=None, print_none=False):
+        """ Use the same functionality as original method but apply
+        additional filters.
+        """
+        data = []
+        for value in list_instance:
+            if hasattr(self.field, 'export_loop'):
+                item_role = role
+                # apply filters
+                if role not in ['plain', None] and self.filter_by and hasattr(value, self.filter_by):
+                    val = getattr(value, self.filter_by)
+                    if val in self.filter_in_values:
+                        item_role = val
+
+                shaped = self.field.export_loop(value, field_converter,
+                                                role=item_role,
+                                                print_none=print_none)
+                feels_empty = shaped and len(shaped) == 0
+            else:
+                shaped = field_converter(self.field, value)
+                feels_empty = shaped is None
+
+            # Print if we want empty or found a value
+            if feels_empty and self.field.allow_none():
+                data.append(shaped)
+            elif shaped is not None:
+                data.append(shaped)
+            elif print_none:
+                data.append(shaped)
+
+        # Return data if the list contains anything
+        if len(data) > 0:
+            return data
+        elif len(data) == 0 and self.allow_none():
+            return data
+        elif print_none:
+            return data
+
+
+class HashType(StringType):
+
+    MESSAGES = {
+        'hash_invalid': "Hash type is not supported.",
+        'hash_length': "Hash value is wrong length.",
+        'hash_hex': "Hash value is not hexadecimal.",
+    }
+
+    def to_native(self, value, context=None):
+        value = super(HashType, self).to_native(value, context)
+
+        if ':' not in value:
+            raise ValidationError(self.messages['hash_invalid'])
+
+        hash_type, hash_value = value.split(':', 1)
+
+        if hash_type not in algorithms:
+            raise ValidationError(self.messages['hash_invalid'])
+
+        if len(hash_value) != hash_new(hash_type).digest_size * 2:
+            raise ValidationError(self.messages['hash_length'])
+        try:
+            int(hash_value, 16)
+        except ValueError:
+            raise ConversionError(self.messages['hash_hex'])
+        return value
 
 
 class Model(SchematicsModel):
@@ -168,51 +244,3 @@ class Model(SchematicsModel):
             root = root.__parent__
         request = root.request
         return 'Administrator' if request.authenticated_role == 'Administrator' else 'edit'
-
-
-class SifterListType(ListType):
-    def __init__(self, field, min_size=None, max_size=None,
-                 filter_by=None, filter_in_values=[], **kwargs):
-        self.filter_by = filter_by
-        self.filter_in_values = filter_in_values
-        super(SifterListType, self).__init__(field, min_size=min_size,
-                                             max_size=max_size, **kwargs)
-
-    def export_loop(self, list_instance, field_converter,
-                    role=None, print_none=False):
-        """ Use the same functionality as original method but apply
-        additional filters.
-        """
-        data = []
-        for value in list_instance:
-            if hasattr(self.field, 'export_loop'):
-                item_role = role
-                # apply filters
-                if role not in ['plain', None] and self.filter_by and hasattr(value, self.filter_by):
-                    val = getattr(value, self.filter_by)
-                    if val in self.filter_in_values:
-                        item_role = val
-
-                shaped = self.field.export_loop(value, field_converter,
-                                                role=item_role,
-                                                print_none=print_none)
-                feels_empty = shaped and len(shaped) == 0
-            else:
-                shaped = field_converter(self.field, value)
-                feels_empty = shaped is None
-
-            # Print if we want empty or found a value
-            if feels_empty and self.field.allow_none():
-                data.append(shaped)
-            elif shaped is not None:
-                data.append(shaped)
-            elif print_none:
-                data.append(shaped)
-
-        # Return data if the list contains anything
-        if len(data) > 0:
-            return data
-        elif len(data) == 0 and self.allow_none():
-            return data
-        elif print_none:
-            return data

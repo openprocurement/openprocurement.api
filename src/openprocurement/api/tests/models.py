@@ -1,25 +1,23 @@
 # -*- coding: utf-8 -*-
 import unittest
-import mock
-from copy import deepcopy
 from datetime import datetime, timedelta
-from isodate.duration import Duration
-from schematics.exceptions import ConversionError, ValidationError, ModelValidationError
 from decimal import Decimal
 
-from openprocurement.api.utils import get_now
-
-from openprocurement.api.registry_models.roles import blacklist
-from openprocurement.api.registry_models.schematics_extender import (
-    IsoDateTimeType, HashType, IsoDurationType)
-from openprocurement.api.registry_models.ocds import (
+import mock
+from isodate.duration import Duration
+from openprocurement.api.models.registry_models.roles import blacklist
+from openprocurement.api.models.schematics_extender import DecimalType
+from openprocurement.api.models.registry_models.ocds import (
     Organization, ContactPoint, Identifier, Address,
     Item, Location, Unit, Value, ItemClassification, Classification,
-    Period, PeriodEndRequired, Document
+    Document
 )
-from openprocurement.api.registry_models.ocds import DecimalType
+from openprocurement.api.models.models import Period, PeriodEndRequired
+from openprocurement.api.models.schematics_extender import (
+    IsoDateTimeType, HashType, IsoDurationType)
 from openprocurement.api.tests.blanks.json_data import test_item_data_with_schema
-
+from openprocurement.api.utils import get_now
+from schematics.exceptions import ConversionError, ValidationError, ModelValidationError
 
 now = get_now()
 
