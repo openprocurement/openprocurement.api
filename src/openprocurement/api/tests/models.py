@@ -67,11 +67,12 @@ class SchematicsExtenderTest(unittest.TestCase):
         self.assertEqual(Decimal('0.556'), dt.to_native('0.55555'))
 
         number = '-1.1'
-
+        dt = DecimalType(min_value=0)
         with self.assertRaisesRegexp(ConversionError, dt.messages['number_min'].format(number)):
             dt.to_native(dt.to_primitive(number))
 
         number = '11.1'
+        dt = DecimalType(max_value=0)
         with self.assertRaisesRegexp(ConversionError, dt.messages['number_max'].format(number)):
             dt.to_native(dt.to_primitive(number))
 
@@ -324,7 +325,7 @@ class DummyOCDSModelsTest(unittest.TestCase):
         item2.location = None
         self.assertEqual(item, item2)
 
-        with mock.patch.dict('openprocurement.api.registry_models.ocds.Item._options.roles', {'test': blacklist('__parent__', 'address')}):
+        with mock.patch.dict('openprocurement.api.models.registry_models.ocds.Item._options.roles', {'test': blacklist('__parent__', 'address')}):
             self.assertNotIn('address', item.serialize('test'))
             self.assertNotEqual(item.serialize('test'), item.serialize())
             self.assertEqual(item.serialize('test'), item2.serialize('test'))
@@ -367,7 +368,7 @@ class DummyOCDSModelsTest(unittest.TestCase):
         identifier.id = 'test'
         identifier.validate()
 
-        with mock.patch.dict('openprocurement.api.registry_models.ocds.Identifier._options.roles', {'test': blacklist('id')}):
+        with mock.patch.dict('openprocurement.api.models.registry_models.ocds.Identifier._options.roles', {'test': blacklist('id')}):
             self.assertIn('id', identifier.serialize().keys())
             self.assertNotIn('id', identifier.serialize('test').keys())
 
@@ -439,7 +440,7 @@ class DummyOCDSModelsTest(unittest.TestCase):
         with self.assertRaisesRegexp(ValueError, 'Organization Model has no role "test"'):
             organization.serialize('test')
 
-        with mock.patch.dict('openprocurement.api.registry_models.ocds.Identifier._options.roles', {'view': blacklist('id')}):
+        with mock.patch.dict('openprocurement.api.models.registry_models.ocds.Identifier._options.roles', {'view': blacklist('id')}):
             self.assertNotEqual(organization.serialize('view'),
                                 organization.serialize())
             self.assertIn('id', organization.serialize()['identifier'].keys())

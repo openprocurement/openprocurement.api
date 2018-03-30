@@ -24,7 +24,7 @@ class DecimalType(BaseDecimalType):
     def __init__(self, precision=-3, min_value=None, max_value=None, **kwargs):
         self.min_value, self.max_value = min_value, max_value
         self.precision = Decimal("1E{:d}".format(precision))
-        super(DecimalType, self).__init__(**kwargs)
+        super(DecimalType, self).__init__(min_value, max_value, **kwargs)
 
     def to_primitive(self, value, context=None):
         return value
@@ -34,7 +34,6 @@ class DecimalType(BaseDecimalType):
             value = Decimal(value).quantize(self.precision, rounding=ROUND_HALF_UP).normalize()
         except (TypeError, InvalidOperation):
             raise ConversionError(self.messages['number_coerce'].format(value))
-
         if self.min_value is not None and value < self.min_value:
             raise ConversionError(self.messages['number_min'].format(value))
         if self.max_value is not None and self.max_value < value:
