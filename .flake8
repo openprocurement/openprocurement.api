@@ -9,4 +9,6 @@ exclude =
     eggs/,
     docs/,
     src/openprocurement/api/tests,
+    src/openprocurement.schemas.dgf,
+    src/schematics-flexible,
     src/cgi.py
