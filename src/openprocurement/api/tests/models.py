@@ -12,6 +12,9 @@ from openprocurement.api.models.registry_models.ocds import (
     Item, Location, Unit, Value, ItemClassification, Classification,
     Document
 )
+from openprocurement.api.models.auction_models.models import (
+    Document as AuctionDocument
+)
 from openprocurement.api.models.models import Period, PeriodEndRequired
 from openprocurement.api.models.schematics_extender import (
     IsoDateTimeType, HashType, IsoDurationType)
@@ -506,9 +509,63 @@ class DummyOCDSModelsTest(unittest.TestCase):
         self.assertEqual(serialized_by_create, data)
 
 
+class DummyAuctionModelsTest(unittest.TestCase):
+    """ Test Case for testing openprocurement.api.auction_models'
+            - roles
+            - serialization
+            - validation
+    """
+    def test_Document_model(self):
+
+        data = {
+            'title': u'укр.doc',
+            'url': 'http://localhost/get',  # self.generate_docservice_url(),
+            'hash': 'md5:' + '0' * 32,
+            'format': 'application/msword',
+        }
+
+        document = AuctionDocument()
+
+        self.assertEqual(document.serialize('create'), None)
+        self.assertEqual(document.serialize('edit'), None)
+        with self.assertRaisesRegexp(ValueError, 'Document Model has no role "test"'):
+            document.serialize('test')
+
+        self.assertEqual(document.serialize().keys(),
+                         ['url', 'dateModified', 'id', 'datePublished'])
+
+        with self.assertRaises(ModelValidationError) as ex:
+            document.validate()
+        self.assertEqual(ex.exception.messages,
+                         {"url": ["This field is required."],
+                          "format": ["This field is required."],
+                          "title": ["This field is required."]})
+
+        document.import_data(data)
+        document.validate()
+        self.assertEqual(document.serialize('create'), data)
+        self.assertEqual(document.serialize('edit'),
+                         {'format': u'application/msword',
+                          'title': u'\u0443\u043a\u0440.doc'})
+
+        document.url = data['url'] = u'http://localhost/get/docs?download={}'.format(document.id)
+        document.__parent__ = mock.MagicMock(**{
+            '__parent__': mock.MagicMock(**{
+                '__parent__': None,
+                'request.registry.docservice_url': None})})
+        document.validate()
+
+        serialized_by_create = document.serialize('create')
+        self.assertEqual(serialized_by_create.keys(),
+                         ['url', 'format', 'hash', '__parent__', 'title'])
+        serialized_by_create.pop('__parent__')
+        self.assertEqual(serialized_by_create, data)
+
+
 def suite():
     tests = unittest.TestSuite()
     tests.addTest(unittest.makeSuite(DummyOCDSModelsTest))
+    tests.addTest(unittest.makeSuite(DummyAuctionModelsTest))
     tests.addTest(unittest.makeSuite(SchematicsExtenderTest))
     return tests
 
