@@ -1,14 +1,12 @@
 # -*- coding: utf-8 -*-
 import mock
-import os
 import unittest
 
+from datetime import timedelta
 from cornice.errors import Errors
 from couchdb.client import Document
-from datetime import datetime
 from libnacl.sign import Signer
 from pyramid.config import Configurator
-from pytz import timezone
 from uuid import UUID
 
 from openprocurement.api.utils import (
@@ -20,15 +18,15 @@ from openprocurement.api.utils import (
     generate_docservice_url,
     generate_id,
     get_content_configurator,
-    get_now,
     get_revision_changes,
     load_plugins,
     prepare_patch,
-    raise_operation_error,
     set_modetest_titles,
     set_ownership,
     set_parent,
-    update_logging_context
+    update_logging_context,
+    calculate_business_date,
+    get_now,
 )
 
 
@@ -304,7 +302,6 @@ class UtilsTest(unittest.TestCase):
         request.registry = mock.MagicMock()
         request.registry.docservice_key = Signer('1234567890abcdef1234567890abcdef')
         request.registry.docservice_url = 'url'
-        doc_id = '1234567890abcdef1234567890abcdef'
 
         expected_result = '/get/1234567890abcdef1234567890abcdef?KeyID=c6c4f29c&Signature=t8L5VW%252BK5vvDwMsxHBhzs%252BcBXFsYAZ%2FM9WJmzgYLVpc8HC9mPbQhsshgGK94XaCtvKFTb9IiTLlW59TM9mV7Bg%253D%253D'
         result = generate_docservice_url(request, '1234567890abcdef1234567890abcdef', False)
@@ -351,10 +348,35 @@ class UtilsTest(unittest.TestCase):
         self.assertEqual(changes, [{'path': '/status', 'value': 'pending', 'op': 'add'}])
 
 
+class CalculateBusinessDateTestCase(unittest.TestCase):
+
+    def auction_mock(self, procurementMethodDetails='quick, accelerator=1440'):
+        """Returns auction mock for accelerated mode testing.
+        """
+        auction = mock.MagicMock()
+        acceleration_field = {'procurementMethodDetails': procurementMethodDetails}
+
+        auction.__getitem__.side_effect = acceleration_field.__getitem__
+        auction.__iter__.side_effect = acceleration_field.__iter__
+        auction.__contains__.side_effect = acceleration_field.__contains__
+
+        return auction
+
+    def test_accelerated_calculation(self):
+        auction = self.auction_mock()
+        start = get_now()
+        period = timedelta(days=1440)
+        result = calculate_business_date(start, period, context=auction)
+        
+        self.assertEqual((result - start).days, 1)
+
+
 def suite():
     suite = unittest.TestSuite()
     suite.addTest(unittest.makeSuite(UtilsTest))
+    suite.addTest(unittest.makeSuite(CalculateBusinessDateTestCase))
     return suite
+
 
 if __name__ == '__main__':
     unittest.main(defaultTest='suite')
