@@ -13,7 +13,7 @@ document_create_role = blacklist('id', 'datePublished', 'dateModified', 'author'
 document_edit_role = blacklist('id', 'url', 'datePublished', 'dateModified', 'author', 'hash', 'download_url')
 document_embedded_role = (blacklist('url', 'download_url') + schematics_embedded_role)
 document_view_role = (blacklist('revisions') + schematics_default_role)
-document_revisions_role =  whitelist('url', 'dateModified')
+document_revisions_role = whitelist('url', 'dateModified')
 
 
 document_roles = {

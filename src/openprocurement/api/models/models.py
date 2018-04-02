@@ -7,9 +7,11 @@ from schematics.types import (
 from openprocurement.api.models.schematics_extender import IsoDateTimeType
 from schematics.exceptions import ValidationError
 
+
 class Guarantee(Model):
     amount = FloatType(required=True, min_value=0)  # Amount as a number.
-    currency = StringType(required=True, default=u'UAH', max_length=3, min_length=3)  # The currency in 3-letter ISO 4217 format.
+    # The currency in 3-letter ISO 4217 format.
+    currency = StringType(required=True, default=u'UAH', max_length=3, min_length=3)
 
 
 class Period(Model):
@@ -25,4 +27,3 @@ class Period(Model):
 
 class PeriodEndRequired(Period):
     endDate = IsoDateTimeType(required=True)  # The end date for the period.
-

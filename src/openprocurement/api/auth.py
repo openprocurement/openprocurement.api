@@ -70,6 +70,7 @@ class AuthenticationPolicy(BasicAuthAuthenticationPolicy):
             user = self.users.get(toket_sha512)
             if user:
                 return self.check(user, request)
+
     def _get_credentials(self, request):
         authorization = request.headers.get('Authorization')
         if not authorization:

@@ -16,6 +16,7 @@ from openprocurement.api.utils import (
 
 OPERATIONS = {"POST": "add", "PATCH": "update", "PUT": "update", "DELETE": "delete"}
 
+
 def validate_json_data(request):
     try:
         json = request.json_body
@@ -85,7 +86,8 @@ def validate_document_data(request, **kwargs):
     model = type(context).documents.model_class
     validate_data(request, model)
 
-    first_document = request.validated['documents'][-1] if 'documents' in request.validated and request.validated['documents'] else None
+    first_document = request.validated['documents'][-1] if 'documents' in request.validated and \
+        request.validated['documents'] else None
     document = request.validated['document']
     check_document(request, document, 'body')
 
@@ -100,6 +102,7 @@ def validate_document_data(request, **kwargs):
     document_route = request.matched_route.name.replace("collection_", "")
     document = update_document_url(request, document, document_route, {})
     request.validated['document'] = document
+
 
 def validate_file_upload(request, **kwargs):
     update_logging_context(request, {'document_id': '__new__'})
@@ -130,6 +133,7 @@ def validate_items_uniq(items, *args):
 def validate_cpv_group(items, *args):
     if items and len(set([i.classification.id[:3] for i in items])) != 1:
         raise ValidationError(u"CPV group of items be identical")
+
 
 def validate_change_status(request, error_handler, **kwargs):
     """

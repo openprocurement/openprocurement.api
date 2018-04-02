@@ -233,7 +233,9 @@ class Model(SchematicsModel):
         Return data as it would be validated. No filtering of output unless
         role is defined.
         """
-        field_converter = lambda field, value: field.to_primitive(value)
+        def field_converter(field, value):
+            return field.to_primitive(value)
+
         data = export_loop(self.__class__, self, field_converter, role=role, raise_error_on_role=True, print_none=True)
         return data
 

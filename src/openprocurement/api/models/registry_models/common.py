@@ -42,7 +42,10 @@ class BaseResourceItem(SchematicsDocument, Model):
             The data to be imported.
         """
         data = self.convert(raw_data, **kw)
-        del_keys = [k for k in data.keys() if data[k] == self.__class__.fields[k].default or data[k] == getattr(self, k)]
+        del_keys = [
+            k for k in data.keys() if data[k] == self.__class__.fields[k].default
+            or data[k] == getattr(self, k)
+        ]
         for k in del_keys:
             del data[k]
         self._data.update(data)

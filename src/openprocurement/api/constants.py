@@ -11,7 +11,10 @@ from requests import Session
 
 PKG = get_distribution(__package__)
 LOGGER = getLogger(PKG.project_name)
-VERSION = '{}.{}'.format(int(PKG.parsed_version[0]), int(PKG.parsed_version[1]) if PKG.parsed_version[1].isdigit() else 0)
+VERSION = '{}.{}'.format(
+    int(PKG.parsed_version[0]),
+    int(PKG.parsed_version[1]) if PKG.parsed_version[1].isdigit() else 0
+)
 ROUTE_PREFIX = '/api/{}'.format(VERSION)
 SESSION = Session()
 SCHEMA_VERSION = 24
@@ -49,7 +52,7 @@ CAV_CODES = read_json('cav.json')
 
 DK_CODES = read_json('dk021.json')
 FUNDERS = [(i['scheme'], i['id']) for i in read_json('funders.json')['data']]
-#DKPP_CODES = read_json('dkpp.json')
+# DKPP_CODES = read_json('dkpp.json')
 ORA_CODES = [i['code'] for i in read_json('OrganisationRegistrationAgency.json')['data']]
 WORKING_DAYS = read_json('working_days.json')
 
@@ -67,8 +70,7 @@ ATC_INN_CLASSIFICATIONS_FROM = datetime(2017, 12, 22, tzinfo=TZ)
 
 ITEM_CLASSIFICATIONS = {
     u'CAV': CAV_CODES,
-    #u'CAV': CAV_CODES,
-    #u'CAV-PS': []
+    # u'CAV-PS': []
 }
 
 IDENTIFIER_CODES = ORA_CODES
