@@ -789,6 +789,13 @@ def is_holiday(date):
     )
 
 
+def accelerated_calculate_business_date(date, period, context):
+    if context and 'procurementMethodDetails' in context and context['procurementMethodDetails']:
+        re_obj = ACCELERATOR_RE.search(context['procurementMethodDetails'])
+        if re_obj and 'accelerator' in re_obj.groupdict():
+            return date + (period / int(re_obj.groupdict()['accelerator']))
+
+
 def calculate_business_date(date_obj, timedelta_obj, context=None, working_days=False):
     """This method calculates end of business period from given start and timedelta
     The calculation of end of business period is complex, so this method is used project-wide.
@@ -807,11 +814,9 @@ def calculate_business_date(date_obj, timedelta_obj, context=None, working_days=
     :rtype: datetime.datetime
     """
 
-    # Acceleration mode logic
-    if context and 'procurementMethodDetails' in context and context['procurementMethodDetails']:
-        re_obj = ACCELERATOR_RE.search(context['procurementMethodDetails'])
-        if re_obj and 'accelerator' in re_obj.groupdict():
-            return date_obj + (timedelta_obj / int(re_obj.groupdict()['accelerator']))
+    accelerated_calculation = accelerated_calculate_business_date(date_obj, timedelta_obj, context)
+    if accelerated_calculation:
+        return accelerated_calculation
 
     if working_days:
         if timedelta_obj > timedelta():
