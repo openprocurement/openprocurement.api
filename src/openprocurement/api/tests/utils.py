@@ -2,7 +2,7 @@
 import mock
 import unittest
 
-from datetime import timedelta
+from datetime import timedelta, datetime
 from cornice.errors import Errors
 from couchdb.client import Document
 from libnacl.sign import Signer
@@ -350,7 +350,7 @@ class UtilsTest(unittest.TestCase):
 
 class CalculateBusinessDateTestCase(unittest.TestCase):
 
-    def auction_mock(self, procurementMethodDetails='quick, accelerator=1440'):
+    def auction_mock(self, procurementMethodDetails):
         """Returns auction mock for accelerated mode testing.
         """
         auction = mock.MagicMock()
@@ -363,12 +363,24 @@ class CalculateBusinessDateTestCase(unittest.TestCase):
         return auction
 
     def test_accelerated_calculation(self):
-        auction = self.auction_mock()
+        auction = self.auction_mock(procurementMethodDetails='quick, accelerator=1440')
         start = get_now()
-        period = timedelta(days=1440)
-        result = calculate_business_date(start, period, context=auction)
+        period_to_add = timedelta(days=1440)
+        result = calculate_business_date(start, period_to_add, context=auction)
         
         self.assertEqual((result - start).days, 1)
+
+    def test_common_calculation_with_working_days(self):
+        """This test assumes that <Mon 2018-4-9> is holiday, besides regular holidays
+        of that month. It must be fixed in `working_days.json` file, that translates
+        into `WORKING_DAYS` constant.
+        """
+        start = datetime(2018, 4, 2)
+        business_days_to_add = timedelta(days=10)
+        target_end_of_period = datetime(2018, 4, 17)
+        result = calculate_business_date(start, business_days_to_add, working_days=True)
+
+        self.assertEqual(result, target_end_of_period)
 
 
 def suite():
