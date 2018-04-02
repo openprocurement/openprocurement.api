@@ -11,6 +11,7 @@ from json import dumps
 from logging import getLogger
 from re import compile
 from time import time as ttime
+from string import hexdigits
 from urllib import quote, unquote, urlencode
 from urlparse import urlparse, urlunsplit, parse_qsl, parse_qs
 from uuid import uuid4

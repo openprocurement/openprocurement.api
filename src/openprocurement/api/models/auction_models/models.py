@@ -1,6 +1,4 @@
 # -*- coding: utf-8 -*-
-from string import hexdigits
-from urlparse import urlparse, parse_qs
 from uuid import uuid4
 
 from couchdb_schematics.document import SchematicsDocument
@@ -32,7 +30,7 @@ from openprocurement.api.models.schematics_extender import (
     HashType
 )
 from openprocurement.api.models.models import Period
-from openprocurement.api.utils import get_now, get_schematics_document
+from openprocurement.api.utils import get_now, get_schematics_document, serialize_document_url
 
 schematics_default_role = SchematicsDocument.Options.roles['default'] + blacklist("__parent__")
 schematics_embedded_role = SchematicsDocument.Options.roles['embedded'] + blacklist("__parent__")
@@ -247,34 +245,7 @@ class Document(Model):
 
     @serializable(serialized_name="url")
     def download_url(self):
-        url = self.url
-        if not url or '?download=' not in url:
-            return url
-        doc_id = parse_qs(urlparse(url).query)['download'][-1]
-        root = self.__parent__
-        parents = []
-        while root.__parent__ is not None:
-            parents[0:0] = [root]
-            root = root.__parent__
-        request = root.request
-        if not request.registry.docservice_url:
-            return url
-        if 'status' in parents[0] and parents[0].status in type(parents[0])._options.roles:
-            role = parents[0].status
-            for index, obj in enumerate(parents):
-                if obj.id != url.split('/')[(index - len(parents)) * 2 - 1]:
-                    break
-                field = url.split('/')[(index - len(parents)) * 2]
-                if "_" in field:
-                    field = field[0] + field.title().replace("_", "")[1:]
-                roles = type(obj)._options.roles
-                if roles[role if role in roles else 'default'](field, []):
-                    return url
-        from openprocurement.api.utils import generate_docservice_url
-        if not self.hash:
-            path = [i for i in urlparse(url).path.split('/') if len(i) == 32 and not set(i).difference(hexdigits)]
-            return generate_docservice_url(request, doc_id, False, '{}/{}'.format(path[0], path[-1]))
-        return generate_docservice_url(request, doc_id, False)
+        return serialize_document_url(self)
 
     def import_data(self, raw_data, **kw):
         """
