@@ -4,7 +4,7 @@ from urlparse import urlparse, parse_qs
 from uuid import uuid4
 
 from couchdb_schematics.document import SchematicsDocument
-from schematics.exceptions import ConversionError, ValidationError
+from schematics.exceptions import ValidationError
 from schematics.transforms import whitelist, blacklist, export_loop
 from schematics.types import (
     StringType,
@@ -23,7 +23,7 @@ from schematics.types.compound import (
 from schematics.types.serializable import serializable
 
 from openprocurement.api.constants import (
-    CPV_CODES, ORA_CODES, TZ, DK_CODES, CPV_BLOCK_FROM, ATC_CODES, INN_CODES, ATC_INN_CLASSIFICATIONS_FROM,
+    CPV_CODES, ORA_CODES, DK_CODES, CPV_BLOCK_FROM, ATC_CODES, INN_CODES, ATC_INN_CLASSIFICATIONS_FROM,
 )
 from openprocurement.api.models.schematics_extender import (
     Model,
@@ -32,7 +32,7 @@ from openprocurement.api.models.schematics_extender import (
     HashType
 )
 from openprocurement.api.models.models import Period
-from openprocurement.api.utils import get_now, set_parent, get_schematics_document
+from openprocurement.api.utils import get_now, get_schematics_document
 
 schematics_default_role = SchematicsDocument.Options.roles['default'] + blacklist("__parent__")
 schematics_embedded_role = SchematicsDocument.Options.roles['embedded'] + blacklist("__parent__")
