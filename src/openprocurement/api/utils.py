@@ -702,12 +702,16 @@ def prepare_revision(item, patch, author):
     }
 
 
-def load_plugins(config, group, **kwargs):
-    plugins = kwargs.get('plugins')
-    for entry_point in iter_entry_points(group, kwargs.get('name')):
+def _plugin(config, plugins, group, name=None):
+    for entry_point in iter_entry_points(group, name):
         if not plugins or entry_point.name in plugins:
             plugin = entry_point.load()
             plugin(config)
+
+
+def load_plugins(config, group, **kwargs):
+    plugins = kwargs.get('plugins')
+    _plugin(config, plugins, group, kwargs.get('name'))
 
 
 def serialize_document_url(document):
