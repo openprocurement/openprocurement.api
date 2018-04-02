@@ -5,7 +5,7 @@ from openprocurement.api.utils import get_now
 from schematics.types.serializable import serializable
 from couchdb_schematics.document import SchematicsDocument
 
-from .schematics_extender import Model, IsoDateTimeType
+from openprocurement.api.models.schematics_extender import Model, IsoDateTimeType
 
 
 class Revision(Model):
