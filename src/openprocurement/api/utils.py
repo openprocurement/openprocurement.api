@@ -831,3 +831,11 @@ def calculate_business_date(date_obj, timedelta_obj, context=None, working_days=
                 date_obj += timedelta(1) if timedelta_obj > timedelta() else -timedelta(1)
         return date_obj
     return date_obj + timedelta_obj
+
+
+def get_document_creation_date(document):
+    return (
+        document.get('revisions')[0].date
+        if document.get('revisions')
+        else get_now()
+    )
