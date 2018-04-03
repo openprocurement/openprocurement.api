@@ -382,6 +382,14 @@ class CalculateBusinessDateTestCase(unittest.TestCase):
 
         self.assertEqual(result, target_end_of_period)
 
+    def test_calculate_with_negative_time_period(self):
+        start = datetime(2018, 4, 17)
+        business_days_to_add = timedelta(days=-10)
+        target_end_of_period = datetime(2018, 4, 2)
+        result = calculate_business_date(start, business_days_to_add, working_days=True)
+
+        self.assertEqual(result, target_end_of_period)
+
 
 def suite():
     suite = unittest.TestSuite()
