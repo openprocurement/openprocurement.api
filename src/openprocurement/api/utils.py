@@ -765,6 +765,15 @@ def get_request_from_root(model):
         return model.request if hasattr(model, 'request') else None
 
 
+def reset_to_start_of_the_day(date_time):
+    """Reset datetime's time to 00:00, while saving timezone data
+
+    Example: 2018-1-1T14:12:55+02:00 -> 2018-1-1T00:00:00+02:00
+    """
+
+    return datetime.combine(date_time.date(), time(0, tzinfo=date_time.tzinfo))
+
+
 def is_holiday(date):
     """Check if date is holiday
     Calculation is based on WORKING_DAYS dictionary, constructed in following format:
@@ -819,17 +828,18 @@ def calculate_business_date(date_obj, timedelta_obj, context=None, working_days=
         return accelerated_calculation
 
     if working_days:
-        if timedelta_obj > timedelta():
+        if timedelta_obj > timedelta():  # calculations for the positive period
             if is_holiday(date_obj):
-                date_obj = datetime.combine(date_obj.date(), time(0, tzinfo=date_obj.tzinfo)) + timedelta(1)
+                date_obj = reset_to_start_of_the_day(date_obj) + timedelta(1)
                 while is_holiday(date_obj):
                     date_obj += timedelta(1)
         else:
-            if is_holiday(date_obj):
-                date_obj = datetime.combine(date_obj.date(), time(0, tzinfo=date_obj.tzinfo))
+            if is_holiday(date_obj):  # calculations for the negative period
+                date_obj = reset_to_start_of_the_day(date_obj)
                 while is_holiday(date_obj):
                     date_obj -= timedelta(1)
                 date_obj += timedelta(1)
+
         for _ in xrange(abs(timedelta_obj.days)):
             date_obj += timedelta(1) if timedelta_obj > timedelta() else -timedelta(1)
             while is_holiday(date_obj):
