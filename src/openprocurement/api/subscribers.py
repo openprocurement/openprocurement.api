@@ -29,14 +29,18 @@ def add_logging_context(event):
 def set_logging_context(event):
     request = event.request
 
-    params = {}
-    params['ROLE'] = str(request.authenticated_role)
+    params = {'ROLE': str(request.authenticated_role)}
     if request.params:
         params['PARAMS'] = str(dict(request.params))
     if request.matchdict:
         for x, j in request.matchdict.items():
             params[x.upper()] = j
     update_logging_context(request, params)
+
+
+def _get_renderer(jsonp, pretty):
+    renderer = 'pretty' if pretty else '' + 'json' + 'p' if jsonp else ''
+    return renderer if renderer != 'json' else None
 
 
 @subscriber(NewRequest)
@@ -49,15 +53,10 @@ def set_renderer(event):
         json = {}
     pretty = isinstance(json, dict) and json.get('options', {}).get('pretty') or request.params.get('opt_pretty')
     jsonp = request.params.get('opt_jsonp')
-    if jsonp and pretty:
-        request.override_renderer = 'prettyjsonp'
-        return True
-    if jsonp:
-        request.override_renderer = 'jsonp'
-        return True
-    if pretty:
-        request.override_renderer = 'prettyjson'
-        return True
+    renderer = _get_renderer(jsonp, pretty)
+    if renderer:
+        request.override_renderer = renderer
+    return jsonp or pretty
 
 
 @subscriber(BeforeRender)
