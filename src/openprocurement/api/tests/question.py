@@ -354,10 +354,10 @@ class TenderLotQuestionResourceTest(BaseTenderWebTest):
 
 
 def suite():
-    suite = unittest.TestSuite()
-    suite.addTest(unittest.makeSuite(TenderQuestionResourceTest))
-    suite.addTest(unittest.makeSuite(TenderLotQuestionResourceTest))
-    return suite
+    tests = unittest.TestSuite()
+    tests.addTest(unittest.makeSuite(TenderQuestionResourceTest))
+    tests.addTest(unittest.makeSuite(TenderLotQuestionResourceTest))
+    return tests
 
 
 if __name__ == '__main__':

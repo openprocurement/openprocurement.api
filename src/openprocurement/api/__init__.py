@@ -16,7 +16,6 @@ from pbkdf2 import PBKDF2
 
 from openprocurement.api.auth import AuthenticationPolicy, authenticated_role, check_accreditation
 from openprocurement.api.design import sync_design
-from openprocurement.api.models import Tender
 from openprocurement.api.utils import (
     forbidden,
     add_logging_context,
@@ -24,6 +23,7 @@ from openprocurement.api.utils import (
     extract_tender,
     request_params,
     isTender,
+    awardingTypePredicate,
     set_renderer,
     beforerender,
     register_tender_procurementMethodType,
@@ -101,6 +101,7 @@ def main(global_config, **settings):
 
     # tender procurementMethodType plugins support
     config.add_route_predicate('procurementMethodType', isTender)
+    config.add_route_predicate('awardingType', awardingTypePredicate)
     config.registry.tender_procurementMethodTypes = {}
     config.add_request_method(tender_from_data)
     config.add_directive('add_tender_procurementMethodType', register_tender_procurementMethodType)
@@ -191,18 +192,13 @@ def main(global_config, **settings):
     for key in dockeys.split('\0'):
         keyring[key[:8]] = Verifier(key)
 
+    config.registry.server_id = settings.get('id', '')
     # migrate data
     if not os.environ.get('MIGRATION_SKIP'):
         for entry_point in iter_entry_points('openprocurement.api.migrations'):
             plugin = entry_point.load()
             plugin(config.registry)
 
-    config.registry.server_id = settings.get('id', '')
     config.registry.health_threshold = float(settings.get('health_threshold', 99))
     config.registry.update_after = asbool(settings.get('update_after', True))
     return config.make_wsgi_app()
-
-
-def includeme(config):
-    config.add_tender_procurementMethodType(Tender)
-    config.scan("openprocurement.api.views")

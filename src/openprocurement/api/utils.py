@@ -15,7 +15,11 @@ from json import dumps
 from jsonpatch import make_patch, apply_patch as _apply_patch
 from jsonpointer import resolve_pointer
 from logging import getLogger
-from openprocurement.api.models import get_now, TZ, COMPLAINT_STAND_STILL_TIME, WORKING_DAYS
+from openprocurement.api.models import (
+    get_now, TZ,
+    COMPLAINT_STAND_STILL_TIME,
+    WORKING_DAYS
+)
 from openprocurement.api.traversal import factory
 from pkg_resources import get_distribution
 from rfc6266 import build_header
@@ -31,12 +35,11 @@ from binascii import hexlify, unhexlify
 from Crypto.Cipher import AES
 from re import compile
 from requests import Session
+from openprocurement.api.interfaces import IContentConfigurator
+from openprocurement.api.constants import (
+    AWARDING_OF_PROCUREMENT_METHOD_TYPE, LOGGER, ROUTE_PREFIX, VERSION
+)
 
-
-PKG = get_distribution(__package__)
-LOGGER = getLogger(PKG.project_name)
-VERSION = '{}.{}'.format(int(PKG.parsed_version[0]), int(PKG.parsed_version[1]) if PKG.parsed_version[1].isdigit() else 0)
-ROUTE_PREFIX = '/api/{}'.format(VERSION)
 DOCUMENT_BLACKLISTED_FIELDS = ('title', 'format', 'url', 'dateModified', 'hash')
 ACCELERATOR_RE = compile(r'.accelerator=(?P<accelerator>\d+)')
 SESSION = Session()
@@ -309,6 +312,14 @@ def set_modetest_titles(tender):
         tender.title_en = u'[TESTING] {}'.format(tender.title_en or u'')
     if not tender.title_ru or u'[ТЕСТИРОВАНИЕ]' not in tender.title_ru:
         tender.title_ru = u'[ТЕСТИРОВАНИЕ] {}'.format(tender.title_ru or u'')
+
+
+def get_content_configurator(request):
+    content_type = request.path[len(ROUTE_PREFIX)+1:].split('/')[0][:-1]
+    if hasattr(request, content_type):  # content is constructed
+        context = getattr(request, content_type)
+        return request.registry.queryMultiAdapter((context, request),
+                                                  IContentConfigurator)
 
 
 def save_tender(request):
@@ -678,6 +689,10 @@ def error_handler(errors, request_params=True):
         params['TENDER_REV'] = errors.request.validated['tender'].rev
         params['TENDERID'] = errors.request.validated['tender'].tenderID
         params['TENDER_STATUS'] = errors.request.validated['tender'].status
+    if 'auction' in errors.request.validated:
+        params['AUCTION_REV'] = errors.request.validated['auction'].rev
+        params['AUCTIONID'] = errors.request.validated['auction'].auctionID
+        params['AUCTION_STATUS'] = errors.request.validated['auction'].status
     LOGGER.info('Error on processing request "{}"'.format(dumps(errors, indent=4)),
                 extra=context_unpack(errors.request, {'MESSAGE_ID': 'error_handler'}, params))
     return json_error(errors)
@@ -802,6 +817,34 @@ class isTender(object):
         return False
 
 
+class awardingTypePredicate(object):
+    def __init__(self, val, config):
+        self.val = val
+
+    def text(self):
+        return 'awardingType = {value}'.format(value=self.val)
+
+    phash = text
+
+    def __call__(self, context, request):
+        if request.auction is not None:
+            procurement_method_type = getattr(
+                request.auction,
+                'procurementMethodType',
+                None
+            )
+            if not procurement_method_type:
+                return False
+
+            desirable_awarding_version = \
+                AWARDING_OF_PROCUREMENT_METHOD_TYPE.get(
+                    procurement_method_type
+                )
+            return desirable_awarding_version == self.val
+
+        return False
+
+
 def set_renderer(event):
     request = event.request
     try:
@@ -921,3 +964,18 @@ def couchdb_json_decode():
         return simplejson.loads(string_, parse_float=decimal.Decimal)
 
     couchdb.json.use(decode=my_decode, encode=my_encode)
+
+
+def get_awarding_type_by_procurement_method_type(procurement_method_type):
+    awarding_type = AWARDING_OF_PROCUREMENT_METHOD_TYPE.get(procurement_method_type)
+    if not awarding_type:
+        raise ValueError
+    return awarding_type
+
+
+def get_request_from_root(model):
+    """Getting parent from model recursively until we reach Root"""
+    if hasattr(model, '__parent__') and model.__parent__ is not None:
+        return get_request_from_root(model.__parent__)
+    else:
+        return model.request if hasattr(model, 'request') else None

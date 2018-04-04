@@ -777,10 +777,11 @@ class TenderComplaintDocumentResourceTest(BaseTenderWebTest):
 
 
 def suite():
-    suite = unittest.TestSuite()
-    suite.addTest(unittest.makeSuite(TenderComplaintDocumentResourceTest))
-    suite.addTest(unittest.makeSuite(TenderComplaintResourceTest))
-    return suite
+    tests = unittest.TestSuite()
+    tests.addTest(unittest.makeSuite(TenderComplaintResourceTest))
+    tests.addTest(unittest.makeSuite(TenderLotAwardComplaintResourceTest))
+    tests.addTest(unittest.makeSuite(TenderComplaintDocumentResourceTest))
+    return tests
 
 
 if __name__ == '__main__':
