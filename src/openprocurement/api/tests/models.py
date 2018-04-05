@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 import unittest
+from copy import deepcopy
 from datetime import datetime, timedelta
 from decimal import Decimal
 
@@ -18,10 +19,20 @@ from openprocurement.api.models.auction_models.models import (
 from openprocurement.api.models.models import Period, PeriodEndRequired
 from openprocurement.api.models.schematics_extender import (
     IsoDateTimeType, HashType, IsoDurationType)
-from openprocurement.api.tests.blanks.json_data import test_item_data_with_schema
+from openprocurement.api.tests.blanks.json_data import (
+    test_item_data_with_schema,
+    test_loki_item_data
+)
 from openprocurement.api.utils import get_now
 from schematics.exceptions import ConversionError, ValidationError, ModelValidationError
-
+from openprocurement.api.models.registry_models.loki import (
+    Document as LokiDocument,
+    RegistrationDetails,
+    Item as LokiItem,
+    AssetCustodian,
+    AssetHolder,
+    Decision,
+)
 now = get_now()
 
 
@@ -560,6 +571,238 @@ class DummyAuctionModelsTest(unittest.TestCase):
                          ['url', 'format', 'hash', '__parent__', 'title'])
         serialized_by_create.pop('__parent__')
         self.assertEqual(serialized_by_create, data)
+
+
+class DummyLokiModelsTest(unittest.TestCase):
+    """ Test Case for testing openprocurement.api.models.registry_models.loki'
+            - roles
+            - serialization
+            - validation
+    """
+
+    def test_Decision(self):
+        data = {
+            'decisionDate': now.isoformat(),
+            'decisionID': 'decisionID'
+        }
+
+        decision = Decision()
+        self.assertEqual(decision.serialize(), None)
+        with self.assertRaisesRegexp(ValueError, 'Decision Model has no role "test"'):
+            decision.serialize('test')
+
+        with self.assertRaises(ModelValidationError) as ex:
+            decision.validate()
+        self.assertEqual(
+            ex.exception.messages,
+            {'decisionDate': [u'This field is required.'],
+            'decisionID': [u'This field is required.']}
+        )
+
+        decision.import_data(data)
+        decision.validate()
+
+    def test_Document(self):
+        data = {
+            'title': u'укр.doc',
+            'url': 'http://localhost/get',  # self.generate_docservice_url(),
+            'hash': 'md5:' + '0' * 32,
+            'format': 'application/msword',
+        }
+
+        document = LokiDocument()
+
+        self.assertEqual(document.serialize('create'), None)
+        self.assertEqual(document.serialize('edit'), None)
+        with self.assertRaisesRegexp(ValueError, 'Document Model has no role "test"'):
+            document.serialize('test')
+
+        self.assertEqual(document.serialize().keys(),
+                         ['url', 'dateModified', 'id', 'datePublished'])
+
+        with self.assertRaises(ModelValidationError) as ex:
+            document.validate()
+        self.assertEqual(
+            ex.exception.messages,
+            {"url": ["This field is required."],
+            "format": ["This field is required."],
+            "title": ["This field is required."]}
+        )
+
+        document.import_data(data)
+        document.validate()
+        self.assertEqual(document.serialize('create'), data)
+        self.assertEqual(document.serialize('edit'),
+                         {'format': u'application/msword',
+                          'title': u'\u0443\u043a\u0440.doc'})
+
+        document.url = data['url'] = u'http://localhost/get/docs?download={}'.format(document.id)
+        document.__parent__ = mock.MagicMock(**{
+            '__parent__': mock.MagicMock(**{
+                '__parent__': None,
+                'request.registry.docservice_url': None})})
+        document.validate()
+
+        serialized_by_create = document.serialize('create')
+        self.assertEqual(serialized_by_create.keys(),
+                         ['url', 'format', 'hash', '__parent__', 'title'])
+        serialized_by_create.pop('__parent__')
+        self.assertEqual(serialized_by_create, data)
+
+        data.update({'documentType': 'x_dgfAssetFamiliarization'})
+        document.import_data(data)
+        with self.assertRaises(ModelValidationError) as ex:
+            document.validate()
+        self.assertEqual(
+            ex.exception.messages,
+            {"accessDetails": [u"accessDetails is required, when documentType is x_dgfAssetFamiliarization"]}
+        )
+
+        data.update({'accessDetails': 'Details'})
+        document.import_data(data)
+        document.validate()
+        data['accessDetails'] = None
+
+    def test_RegistrationDetails(self):
+        registration_details = RegistrationDetails()
+
+        self.assertEqual(registration_details.serialize(), None)
+        with self.assertRaisesRegexp(ValueError, 'RegistrationDetails Model has no role "test"'):
+            registration_details.serialize('test')
+
+        data = {
+            'status': 'unknown'
+        }
+        registration_details.import_data(data)
+        registration_details.validate()
+
+        data.update({
+            'registrationID': 'REG-ID',
+            'registrationDate': now.isoformat()
+        })
+        registration_details.import_data(data)
+
+        with self.assertRaises(ModelValidationError) as ex:
+            registration_details.validate()
+        self.assertEqual(
+            ex.exception.messages,
+            {'registrationID': [u'You can fill registrationID only when status is complete'],
+            'registrationDate': [u'You can fill registrationDate only when status is complete']}
+        )
+
+        data['status'] = 'proceed'
+        registration_details.import_data(data)
+
+        with self.assertRaises(ModelValidationError) as ex:
+            registration_details.validate()
+        self.assertEqual(
+            ex.exception.messages,
+            {'registrationID': [u'You can fill registrationID only when status is complete'],
+            'registrationDate': [u'You can fill registrationDate only when status is complete']}
+        )
+
+        data['status'] = 'complete'
+        registration_details.import_data(data)
+        registration_details.validate()
+
+    def test_Item(self):
+        item = LokiItem()
+
+        self.assertEqual(item.serialize('create'), None)
+        self.assertEqual(item.serialize('edit'), None)
+
+        with self.assertRaises(ModelValidationError) as ex:
+            item.validate()
+        self.assertEqual(
+            ex.exception.messages,
+            {
+                'registrationDetails': [u'This field is required.'],
+                'description': [u'This field is required.'],
+                'unit': [u'This field is required.'],
+                'quantity': [u'This field is required.'],
+                'classification': [u'This field is required.'],
+                'address': [u'This field is required.'],
+            }
+        )
+
+        loki_item_data = deepcopy(test_loki_item_data)
+        item = LokiItem(loki_item_data)
+        item.validate()
+        self.assertEqual(item.serialize()['description'], loki_item_data['description'])
+        self.assertEqual(item.serialize()['classification'], loki_item_data['classification'])
+        self.assertEqual(item.serialize()['additionalClassifications'], loki_item_data['additionalClassifications'])
+        self.assertEqual(item.serialize()['address'], loki_item_data['address'])
+        self.assertEqual(item.serialize()['id'], loki_item_data['id'])
+        self.assertEqual(item.serialize()['unit'], loki_item_data['unit'])
+        self.assertEqual(float(item.serialize()['quantity']), loki_item_data['quantity'])
+        self.assertEqual(item.serialize()['registrationDetails'], loki_item_data['registrationDetails'])
+
+        with self.assertRaisesRegexp(ValueError, 'Item Model has no role "test"'):
+            item.serialize('test')
+
+        loki_item_data['location'] = {'latitude': '123', 'longitude': '567'}
+        item2 = LokiItem(loki_item_data)
+        item2.validate()
+
+        self.assertNotEqual(item, item2)
+        item2.location = None
+        self.assertEqual(item, item2)
+
+    def test_AssetCustodian(self):
+        data = {
+            'name': 'Name'
+        }
+
+        asset_custodian = AssetCustodian()
+        self.assertEqual(asset_custodian.serialize(), None)
+        with self.assertRaisesRegexp(ValueError, 'AssetCustodian Model has no role "test"'):
+            asset_custodian.serialize('test')
+
+        asset_custodian.import_data(data)
+        asset_custodian.validate()
+
+    def test_AssetHolder(self):
+        data = {
+            'name': 'Name',
+            'identifier': {
+                'legalName_ru': "Some name"
+            }
+        }
+
+        asset_holder = AssetHolder()
+        self.assertEqual(asset_holder.serialize(), None)
+        with self.assertRaisesRegexp(ValueError, 'AssetHolder Model has no role "test"'):
+            asset_holder.serialize('test')
+
+        with self.assertRaises(ModelValidationError) as ex:
+            asset_holder.validate()
+        self.assertEqual(
+            ex.exception.messages,
+            {'name': [u'This field is required.'],
+            'identifier': [u'This field is required.']}
+        )
+
+        asset_holder.import_data(data)
+        with self.assertRaises(ModelValidationError) as ex:
+            asset_holder.validate()
+        self.assertEqual(
+            ex.exception.messages,
+            {
+                'identifier': {
+                    'uri': [u'This field is required.'],
+                    'legalName': [u'This field is required.'],
+                    'id': [u'This field is required.']
+                }
+            }
+        )
+        data.update({
+            'identifier': {
+                'legalName': 'Legal Name',
+                'uri': 'https://localhost/someuri',
+                'id': 'justID'
+            }})
+        asset_holder.import_data(data)
+        asset_holder.validate()
 
 
 def suite():
