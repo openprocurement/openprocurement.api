@@ -9,9 +9,23 @@ from isodate.duration import Duration
 from openprocurement.api.models.registry_models.roles import blacklist
 from openprocurement.api.models.schematics_extender import DecimalType
 from openprocurement.api.models.registry_models.ocds import (
-    Organization, ContactPoint, Identifier, Address,
-    Item, Location, Unit, Value, ItemClassification, Classification,
-    Document
+    Organization,
+    ContactPoint,
+    Identifier,
+    Address,
+    baseItem,
+    Location,
+    Unit,
+    Value,
+    ItemClassification,
+    Classification,
+    baseDocument,
+    lokiDocument,
+    RegistrationDetails,
+    lokiItem,
+    AssetCustodian,
+    AssetHolder,
+    Decision,
 )
 from openprocurement.api.models.auction_models.models import (
     Document as AuctionDocument
@@ -25,14 +39,7 @@ from openprocurement.api.tests.blanks.json_data import (
 )
 from openprocurement.api.utils import get_now
 from schematics.exceptions import ConversionError, ValidationError, ModelValidationError
-from openprocurement.api.models.registry_models.loki import (
-    Document as LokiDocument,
-    RegistrationDetails,
-    Item as LokiItem,
-    AssetCustodian,
-    AssetHolder,
-    Decision,
-)
+
 now = get_now()
 
 
@@ -316,7 +323,7 @@ class DummyOCDSModelsTest(unittest.TestCase):
 
     def test_Item_model(self):
 
-        item = Item(test_item_data_with_schema)
+        item = baseItem(test_item_data_with_schema)
         item.validate()
         self.assertEqual(item.serialize()['schema_properties']['properties'], test_item_data_with_schema['schema_properties']['properties'])
         self.assertEqual(item.serialize()['schema_properties']['code'][0:2], test_item_data_with_schema['schema_properties']['code'][:2])
@@ -332,14 +339,14 @@ class DummyOCDSModelsTest(unittest.TestCase):
             item.serialize('test')
 
         test_item_data_with_schema['location'] = {'latitude': '123', 'longitude': '567'}
-        item2 = Item(test_item_data_with_schema)
+        item2 = baseItem(test_item_data_with_schema)
         item2.validate()
 
         self.assertNotEqual(item, item2)
         item2.location = None
         self.assertEqual(item, item2)
 
-        with mock.patch.dict('openprocurement.api.models.registry_models.ocds.Item._options.roles', {'test': blacklist('__parent__', 'address')}):
+        with mock.patch.dict('openprocurement.api.models.registry_models.ocds.baseItem._options.roles', {'test': blacklist('__parent__', 'address')}):
             self.assertNotIn('address', item.serialize('test'))
             self.assertNotEqual(item.serialize('test'), item.serialize())
             self.assertEqual(item.serialize('test'), item2.serialize('test'))
@@ -482,7 +489,7 @@ class DummyOCDSModelsTest(unittest.TestCase):
             'format': 'application/msword',
         }
 
-        document = Document()
+        document = baseDocument()
 
         self.assertEqual(document.serialize('create'), None)
         self.assertEqual(document.serialize('edit'), None)
@@ -610,7 +617,7 @@ class DummyLokiModelsTest(unittest.TestCase):
             'format': 'application/msword',
         }
 
-        document = LokiDocument()
+        document = lokiDocument()
 
         self.assertEqual(document.serialize('create'), None)
         self.assertEqual(document.serialize('edit'), None)
@@ -706,7 +713,7 @@ class DummyLokiModelsTest(unittest.TestCase):
         registration_details.validate()
 
     def test_Item(self):
-        item = LokiItem()
+        item = lokiItem()
 
         self.assertEqual(item.serialize('create'), None)
         self.assertEqual(item.serialize('edit'), None)
@@ -726,7 +733,7 @@ class DummyLokiModelsTest(unittest.TestCase):
         )
 
         loki_item_data = deepcopy(test_loki_item_data)
-        item = LokiItem(loki_item_data)
+        item = lokiItem(loki_item_data)
         item.validate()
         self.assertEqual(item.serialize()['description'], loki_item_data['description'])
         self.assertEqual(item.serialize()['classification'], loki_item_data['classification'])
@@ -741,7 +748,7 @@ class DummyLokiModelsTest(unittest.TestCase):
             item.serialize('test')
 
         loki_item_data['location'] = {'latitude': '123', 'longitude': '567'}
-        item2 = LokiItem(loki_item_data)
+        item2 = lokiItem(loki_item_data)
         item2.validate()
 
         self.assertNotEqual(item, item2)
