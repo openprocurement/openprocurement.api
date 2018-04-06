@@ -31,6 +31,7 @@ from openprocurement.api.models.schematics_extender import (
 )
 from openprocurement.api.models.models import Period
 from openprocurement.api.utils import get_now, get_schematics_document, serialize_document_url
+from openprocurement.api.validation import validate_uniq
 
 schematics_default_role = SchematicsDocument.Options.roles['default'] + blacklist("__parent__")
 schematics_embedded_role = SchematicsDocument.Options.roles['embedded'] + blacklist("__parent__")
@@ -379,22 +380,9 @@ class Cancellation(Model):
             raise ValidationError(u"relatedLot should be one of lots")
 
 
-def validate_features_uniq(features, *args):
-    if features:
-        codes = [i.code for i in features]
-        if any([codes.count(i) > 1 for i in set(codes)]):
-            raise ValidationError(u"Feature code should be uniq for all features")
+def validate_features_uniq(features):
+    validate_uniq(features, u"Feature code should be uniq for all features")
 
 
-def validate_items_uniq(items, *args):
-    if items:
-        ids = [i.id for i in items]
-        if [i for i in set(ids) if ids.count(i) > 1]:
-            raise ValidationError(u"Item id should be uniq for all items")
-
-
-def validate_lots_uniq(lots, *args):
-    if lots:
-        ids = [i.id for i in lots]
-        if [i for i in set(ids) if ids.count(i) > 1]:
-            raise ValidationError(u"Lot id should be uniq for all lots")
+def validate_lots_uniq(lots):
+    validate_uniq(lots, u"Lot id should be uniq for all lots")
