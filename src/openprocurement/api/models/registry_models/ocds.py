@@ -292,7 +292,7 @@ class Decision(Model):
 
 
 LOKI_DOCUMENT_TYPES = deepcopy(DOCUMENT_TYPES)
-LOKI_DOCUMENT_TYPES += ['x_dgfAssetFamiliarization', 'procurementPlan', 'projectPlan', 'cancellationDetails']
+LOKI_DOCUMENT_TYPES += ['x_dgfAssetFamiliarization', 'informationDetails', 'procurementPlan', 'projectPlan', 'cancellationDetails']
 
 
 class Document(baseDocument):
@@ -300,6 +300,7 @@ class Document(baseDocument):
     documentType = StringType(choices=LOKI_DOCUMENT_TYPES)
     index = IntType(required=False)
     accessDetails = StringType()
+    format = StringType(regex='^[-\w]+/[-\.\w\+]+$')
 
     def validate_accessDetails(self, data, value):
         if value is None and data['documentType'] == 'x_dgfAssetFamiliarization':
