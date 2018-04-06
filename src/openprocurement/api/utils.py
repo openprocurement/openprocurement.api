@@ -166,8 +166,8 @@ def set_first_document_fields(request, first_document, document):
 
 
 def get_first_document(request):
-    documents = request.validated['documents']
-    return documents[-1] if 'documents' in request.validated and documents else None
+    documents = request.validated.get('documents')
+    return documents[-1] if documents else None
 
 
 def upload_file(
