@@ -157,21 +157,29 @@ def raise_operation_error(request, error_handler, message):
     raise error_handler(request)
 
 
+def set_first_document_fields(request, first_document, document):
+    for attr_name in type(first_document)._fields:
+        if attr_name in DOCUMENT_WHITELISTED_FIELDS:
+            setattr(document, attr_name, getattr(first_document, attr_name))
+        elif attr_name not in DOCUMENT_BLACKLISTED_FIELDS and attr_name not in request.validated['json_data']:
+            setattr(document, attr_name, getattr(first_document, attr_name))
+
+
+def get_first_document(request):
+    documents = request.validated['documents']
+    return documents[-1] if 'documents' in request.validated and documents else None
+
+
 def upload_file(
     request, blacklisted_fields=DOCUMENT_BLACKLISTED_FIELDS, whitelisted_fields=DOCUMENT_WHITELISTED_FIELDS
 ):
-    first_document = request.validated['documents'][-1] if 'documents' in request.validated and \
-            request.validated['documents'] else None
+    first_document = get_first_document(request)
     if 'data' in request.validated and request.validated['data']:
         document = request.validated['document']
         check_document(request, document, 'body')
 
         if first_document:
-            for attr_name in type(first_document)._fields:
-                if attr_name in whitelisted_fields:
-                    setattr(document, attr_name, getattr(first_document, attr_name))
-                elif attr_name not in blacklisted_fields and attr_name not in request.validated['json_data']:
-                    setattr(document, attr_name, getattr(first_document, attr_name))
+            set_first_document_fields(request, first_document, document)
 
         document_route = request.matched_route.name.replace("collection_", "")
         document = update_document_url(request, document, document_route, {})
@@ -703,12 +711,16 @@ def prepare_revision(item, patch, author):
     }
 
 
-def load_plugins(config, group, **kwargs):
-    plugins = kwargs.get('plugins')
-    for entry_point in iter_entry_points(group, kwargs.get('name')):
+def plugin_config(config, plugins, group, name=None):
+    for entry_point in iter_entry_points(group, name):
         if not plugins or entry_point.name in plugins:
             plugin = entry_point.load()
             plugin(config)
+
+
+def load_plugins(config, group, **kwargs):
+    plugins = kwargs.get('plugins')
+    plugin_config(config, plugins, group, kwargs.get('name'))
 
 
 def serialize_document_url(document):

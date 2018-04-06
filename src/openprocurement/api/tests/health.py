@@ -53,6 +53,7 @@ class HealthTestBase(BaseWebTest):
         response = self.app.get('/health?health_threshold_func=any', status=503)
         self.assertEqual(response.status, '503 Service Unavailable')
 
+
 class HealthTest503(HealthTestBase):
     return_value = [REPLICATION]
 
@@ -60,9 +61,9 @@ class HealthTest503(HealthTestBase):
         response = self.app.get('/health?health_threshold=10000', status=200)
         self.assertEqual(response.status, '200 OK')
 
+
 class HealthTest200(HealthTestBase):
     return_value = [REPLICATION_OK]
-
 
     def test_health_view(self):
         response = self.app.get('/health', status=200)
@@ -78,7 +79,6 @@ class HealthTest200(HealthTestBase):
 class HealthTest_all(HealthTestBase):
     return_value = [REPLICATION_OK, REPLICATION_OK]
 
-
     def test_health_view(self):
         response = self.app.get('/health', status=200)
         self.assertEqual(response.status, '200 OK')
@@ -89,7 +89,6 @@ class HealthTest_all(HealthTestBase):
 
 class HealthTest_any(HealthTestBase):
     return_value = [REPLICATION_OK, REPLICATION]
-
 
     def test_health_view(self):
         response = self.app.get('/health?health_threshold_func=any', status=200)

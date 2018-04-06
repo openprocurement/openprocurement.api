@@ -3,27 +3,29 @@ from schematics.exceptions import (
     ModelValidationError, ModelConversionError, ValidationError
 )
 
-from openprocurement.api.constants import (
-    DOCUMENT_BLACKLISTED_FIELDS,
-    DOCUMENT_WHITELISTED_FIELDS
-)
-
 from openprocurement.api.utils import (
     apply_data_patch, update_logging_context,
     error_handler, raise_operation_error, check_document,
-    update_document_url
+    update_document_url,
+    set_first_document_fields,
+    get_first_document
 )
 
 OPERATIONS = {"POST": "add", "PATCH": "update", "PUT": "update", "DELETE": "delete"}
 
 
-def validate_json_data(request):
+def _get_json_from_request(request):
     try:
         json = request.json_body
     except ValueError, e:
         request.errors.add('body', 'data', e.message)
         request.errors.status = 422
         raise error_handler(request)
+    return json
+
+
+def validate_json_data(request):
+    json = _get_json_from_request(request)
     if not isinstance(json, dict) or 'data' not in json or not isinstance(json.get('data'), dict):
         request.errors.add('body', 'data', "Data not available")
         request.errors.status = 422
@@ -32,26 +34,44 @@ def validate_json_data(request):
     return json['data']
 
 
+def _validation_model(request, model, partial=False, data=None):
+    if partial and isinstance(request.context, model):
+        initial_data = request.context.serialize()
+        m = model(initial_data)
+        new_patch = apply_data_patch(initial_data, data)
+        if new_patch:
+            m.import_data(new_patch, partial=True, strict=True)
+        m.__parent__ = request.context.__parent__
+        m.validate()
+        role = request.context.get_role()
+        method = m.to_patch
+    else:
+        m = model(data)
+        m.__parent__ = request.context
+        m.validate()
+        method = m.serialize
+        role = 'create'
+    return m, method, role
+
+
+def _validate_data(request, model, partial=False, data=None):
+    m, method, role = _validation_model(request, model, partial, data)
+    if hasattr(type(m), '_options') and role not in type(m)._options.roles:
+        request.errors.add('url', 'role', 'Forbidden')
+        request.errors.status = 403
+        raise error_handler(request)
+
+    request.validated['data'] = method(role)
+    if not partial:
+        request.validated[model.__name__.lower()] = m
+    return request.validated['data']
+
+
 def validate_data(request, model, partial=False, data=None):
     if data is None:
         data = validate_json_data(request)
     try:
-        if partial and isinstance(request.context, model):
-            initial_data = request.context.serialize()
-            m = model(initial_data)
-            new_patch = apply_data_patch(initial_data, data)
-            if new_patch:
-                m.import_data(new_patch, partial=True, strict=True)
-            m.__parent__ = request.context.__parent__
-            m.validate()
-            role = request.context.get_role()
-            method = m.to_patch
-        else:
-            m = model(data)
-            m.__parent__ = request.context
-            m.validate()
-            method = m.serialize
-            role = 'create'
+        return _validate_data(request, model, partial, data)
     except (ModelValidationError, ModelConversionError), e:
         for i in e.message:
             request.errors.add('body', i, e.message[i])
@@ -61,19 +81,6 @@ def validate_data(request, model, partial=False, data=None):
         request.errors.add('body', 'data', e.message)
         request.errors.status = 422
         raise error_handler(request)
-    else:
-        if hasattr(type(m), '_options') and role not in type(m)._options.roles:
-            request.errors.add('url', 'role', 'Forbidden')
-            request.errors.status = 403
-            raise error_handler(request)
-        else:
-            data = method(role)
-            request.validated['data'] = data
-            if not partial:
-                m = model(data)
-                m.__parent__ = request.context
-                request.validated[model.__name__.lower()] = m
-    return data
 
 
 def validate_patch_document_data(request, **kwargs):
@@ -86,17 +93,12 @@ def validate_document_data(request, **kwargs):
     model = type(context).documents.model_class
     validate_data(request, model)
 
-    first_document = request.validated['documents'][-1] if 'documents' in request.validated and \
-        request.validated['documents'] else None
+    first_document = get_first_document(request)
     document = request.validated['document']
     check_document(request, document, 'body')
 
     if first_document:
-        for attr_name in type(first_document)._fields:
-            if attr_name in DOCUMENT_WHITELISTED_FIELDS:
-                setattr(document, attr_name, getattr(first_document, attr_name))
-            elif attr_name not in DOCUMENT_BLACKLISTED_FIELDS and attr_name not in request.validated['json_data']:
-                setattr(document, attr_name, getattr(first_document, attr_name))
+        set_first_document_fields(request, first_document, document)
 
     document.documentOf = type(context).__name__.lower()
     document_route = request.matched_route.name.replace("collection_", "")
@@ -123,11 +125,15 @@ def validate_file_update(request):
         validate_file_upload(request)
 
 
-def validate_items_uniq(items, *args):
+def validate_uniq(items, error_message):
     if items:
         ids = [i.id for i in items]
         if [i for i in set(ids) if ids.count(i) > 1]:
-            raise ValidationError(u"Item id should be uniq for all items")
+            raise ValidationError(error_message)
+
+
+def validate_items_uniq(items):
+    validate_uniq(items, u"Item id should be uniq for all items")
 
 
 def validate_cpv_group(items, *args):
