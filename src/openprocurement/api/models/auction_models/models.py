@@ -380,6 +380,10 @@ class Cancellation(Model):
             raise ValidationError(u"relatedLot should be one of lots")
 
 
+def validate_items_uniq(items):
+    validate_uniq(items, u"Item id should be uniq for all items")
+
+
 def validate_features_uniq(features):
     validate_uniq(features, u"Feature code should be uniq for all features")
 
