@@ -381,8 +381,9 @@ class Cancellation(Model):
 
 
 def validate_features_uniq(features):
-    validate_uniq(features, u"Feature code should be uniq for all features")
+    validate_uniq(features,
+                  'code', u"Feature code should be uniq for all features")
 
 
 def validate_lots_uniq(lots):
-    validate_uniq(lots, u"Lot id should be uniq for all lots")
+    validate_uniq(lots, 'id', u"Lot id should be uniq for all lots")
