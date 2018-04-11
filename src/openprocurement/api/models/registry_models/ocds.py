@@ -154,8 +154,10 @@ class Document(Model):
         self._data.update(data)
         return self
 
+
 baseDocument = Document
 del Document
+
 
 class Identifier(Model):
     # The scheme that holds the unique identifiers used to identify the item being identified.
@@ -190,6 +192,7 @@ class Item(Model):
 
 baseItem = Item
 del Item
+
 
 class ContactPoint(Model):
     name = StringType(required=True)
@@ -277,6 +280,7 @@ class Item(baseItem):
 lokiItem = Item
 del Item
 
+
 class UAEDRIdentifier(Identifier):
     scheme = StringType(choices=['UA-EDR'])
     legalName = StringType(required=True)
@@ -292,7 +296,10 @@ class Decision(Model):
 
 
 LOKI_DOCUMENT_TYPES = deepcopy(DOCUMENT_TYPES)
-LOKI_DOCUMENT_TYPES += ['x_dgfAssetFamiliarization', 'informationDetails', 'procurementPlan', 'projectPlan', 'cancellationDetails']
+LOKI_DOCUMENT_TYPES += [
+    'x_dgfAssetFamiliarization', 'informationDetails', 'procurementPlan', 'projectPlan',
+    'cancellationDetails'
+]
 
 
 class Document(baseDocument):
@@ -309,6 +316,7 @@ class Document(baseDocument):
 
 lokiDocument = Document
 del Document
+
 
 class AssetCustodian(Organization):
     name = StringType()
