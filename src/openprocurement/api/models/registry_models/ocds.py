@@ -156,7 +156,6 @@ class Document(Model):
 
 
 baseDocument = Document
-del Document
 
 
 class Identifier(Model):
@@ -191,7 +190,6 @@ class Item(Model):
 
 
 baseItem = Item
-del Item
 
 
 class ContactPoint(Model):
@@ -278,7 +276,6 @@ class Item(baseItem):
 
 
 lokiItem = Item
-del Item
 
 
 class UAEDRIdentifier(Identifier):
@@ -315,7 +312,6 @@ class Document(baseDocument):
 
 
 lokiDocument = Document
-del Document
 
 
 class AssetCustodian(Organization):
