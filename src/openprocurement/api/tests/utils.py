@@ -368,7 +368,6 @@ class CalculateBusinessDateTestCase(unittest.TestCase):
         start = get_now()
         period_to_add = timedelta(days=1440)
         result = calculate_business_date(start, period_to_add, context=auction)
-        
         self.assertEqual((result - start).days, 1)
 
     def test_common_calculation_with_working_days(self):
