@@ -348,22 +348,23 @@ class UtilsTest(unittest.TestCase):
         self.assertEqual(changes, [{'path': '/status', 'value': 'pending', 'op': 'add'}])
 
 
+def auction_mock(procurementMethodDetails):
+    """Returns auction mock for accelerated mode testing.
+    """
+    auction = mock.MagicMock()
+    acceleration_field = {'procurementMethodDetails': procurementMethodDetails}
+
+    auction.__getitem__.side_effect = acceleration_field.__getitem__
+    auction.__iter__.side_effect = acceleration_field.__iter__
+    auction.__contains__.side_effect = acceleration_field.__contains__
+
+    return auction
+
+
 class CalculateBusinessDateTestCase(unittest.TestCase):
 
-    def auction_mock(self, procurementMethodDetails):
-        """Returns auction mock for accelerated mode testing.
-        """
-        auction = mock.MagicMock()
-        acceleration_field = {'procurementMethodDetails': procurementMethodDetails}
-
-        auction.__getitem__.side_effect = acceleration_field.__getitem__
-        auction.__iter__.side_effect = acceleration_field.__iter__
-        auction.__contains__.side_effect = acceleration_field.__contains__
-
-        return auction
-
     def test_accelerated_calculation(self):
-        auction = self.auction_mock(procurementMethodDetails='quick, accelerator=1440')
+        auction = auction_mock(procurementMethodDetails='quick, accelerator=1440')
         start = get_now()
         period_to_add = timedelta(days=1440)
         result = calculate_business_date(start, period_to_add, context=auction)
