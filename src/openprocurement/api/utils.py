@@ -765,6 +765,15 @@ def get_request_from_root(model):
         return model.request if hasattr(model, 'request') else None
 
 
+def reset_to_start_of_the_day(date_time):
+    """Reset datetime's time to 00:00, while saving timezone data
+
+    Example: 2018-1-1T14:12:55+02:00 -> 2018-1-1T00:00:00+02:00
+    """
+
+    return datetime.combine(date_time.date(), time(0, tzinfo=date_time.tzinfo))
+
+
 def is_holiday(date):
     """Check if date is holiday
     Calculation is based on WORKING_DAYS dictionary, constructed in following format:
@@ -789,10 +798,29 @@ def is_holiday(date):
     )
 
 
+def accelerated_calculate_business_date(date, period, context):
+    if context and 'procurementMethodDetails' in context and context['procurementMethodDetails']:
+        re_obj = ACCELERATOR_RE.search(context['procurementMethodDetails'])
+        if re_obj and 'accelerator' in re_obj.groupdict():
+            return date + (period / int(re_obj.groupdict()['accelerator']))
+
+
 def calculate_business_date(date_obj, timedelta_obj, context=None, working_days=False):
     """This method calculates end of business period from given start and timedelta
+
     The calculation of end of business period is complex, so this method is used project-wide.
     Also this method provides support of accelerated calculation, useful while testing.
+
+    The end of the period is calculated **exclusively**, for example:
+        Let the 1-5 days of month (e.g. September 2008) be working days.
+        So, when the caclulation will be initialized with following params:
+
+            date_obj = datetime(2008, 9, 1)
+            timedelta_obj = timedelta(days=2)
+            working_days = True
+
+        The result will be equal to `datetime(2008, 9, 3)`.
+
     :param date_obj: the start of period
     :param timedelta_obj: duration of the period
     :param context: object, that holds data related to particular business process,
@@ -805,29 +833,31 @@ def calculate_business_date(date_obj, timedelta_obj, context=None, working_days=
     :type working_days: bool
     :return: the end of period
     :rtype: datetime.datetime
+
     """
 
-    # Acceleration mode logic
-    if context and 'procurementMethodDetails' in context and context['procurementMethodDetails']:
-        re_obj = ACCELERATOR_RE.search(context['procurementMethodDetails'])
-        if re_obj and 'accelerator' in re_obj.groupdict():
-            return date_obj + (timedelta_obj / int(re_obj.groupdict()['accelerator']))
+    accelerated_calculation = accelerated_calculate_business_date(date_obj, timedelta_obj, context)
+    if accelerated_calculation:
+        return accelerated_calculation
 
-    if working_days:
-        if timedelta_obj > timedelta():
-            if is_holiday(date_obj):
-                date_obj = datetime.combine(date_obj.date(), time(0, tzinfo=date_obj.tzinfo)) + timedelta(1)
-                while is_holiday(date_obj):
-                    date_obj += timedelta(1)
+    if not working_days:
+        return date_obj + timedelta_obj
+
+    # reset datetime to exclude influence of time data (e.g. hour, minute) on calculations
+    # TODO (after 1-8-2018) switch to date object instead of datetime object
+    date_obj = reset_to_start_of_the_day(date_obj)
+    added_period_is_positive = timedelta_obj > timedelta()
+    working_days_count = abs(timedelta_obj.days)
+
+    while working_days_count > 0:
+        if is_holiday(date_obj):
+            date_obj += timedelta(1) if added_period_is_positive else -timedelta(1)
         else:
-            if is_holiday(date_obj):
-                date_obj = datetime.combine(date_obj.date(), time(0, tzinfo=date_obj.tzinfo))
-                while is_holiday(date_obj):
-                    date_obj -= timedelta(1)
-                date_obj += timedelta(1)
-        for _ in xrange(abs(timedelta_obj.days)):
-            date_obj += timedelta(1) if timedelta_obj > timedelta() else -timedelta(1)
-            while is_holiday(date_obj):
-                date_obj += timedelta(1) if timedelta_obj > timedelta() else -timedelta(1)
-        return date_obj
-    return date_obj + timedelta_obj
+            date_obj += timedelta(1) if added_period_is_positive else -timedelta(1)
+            working_days_count -= 1
+
+    return date_obj
+
+
+def get_document_creation_date(document):
+    return (document.get('revisions')[0].date if document.get('revisions') else get_now())

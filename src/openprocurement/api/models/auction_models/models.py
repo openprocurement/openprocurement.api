@@ -30,8 +30,13 @@ from openprocurement.api.models.schematics_extender import (
     HashType
 )
 from openprocurement.api.models.models import Period
-from openprocurement.api.utils import get_now, get_schematics_document, serialize_document_url
 from openprocurement.api.validation import validate_uniq
+from openprocurement.api.utils import (
+    get_now,
+    get_schematics_document,
+    get_document_creation_date,
+    serialize_document_url,
+)
 
 schematics_default_role = SchematicsDocument.Options.roles['default'] + blacklist("__parent__")
 schematics_embedded_role = SchematicsDocument.Options.roles['embedded'] + blacklist("__parent__")
@@ -148,12 +153,7 @@ class CPVClassification(Classification):
     def validate_scheme(self, data, scheme):
         schematics_document = get_schematics_document(data['__parent__'])
         if (
-            (
-                schematics_document.get('revisions')[0].date
-                if schematics_document.get('revisions')
-                else get_now()
-            )
-            > CPV_BLOCK_FROM
+            get_document_creation_date(schematics_document) > CPV_BLOCK_FROM
             and scheme != u'ДК021'
         ):
             raise ValidationError(BaseType.MESSAGES['choices'].format(unicode([u'ДК021'])))
@@ -164,12 +164,7 @@ class AdditionalClassification(Classification):
     def validate_id(self, data, code):
         schematics_document = get_schematics_document(data['__parent__'])
         if (
-            (
-                schematics_document.get('revisions')[0].date
-                if schematics_document.get('revisions')
-                else get_now()
-            )
-            > ATC_INN_CLASSIFICATIONS_FROM
+            get_document_creation_date(schematics_document) > ATC_INN_CLASSIFICATIONS_FROM
         ):
             if data.get('scheme') == u'ATC' and code not in ATC_CODES:
                 raise ValidationError(BaseType.MESSAGES['choices'].format(unicode(ATC_CODES)))
