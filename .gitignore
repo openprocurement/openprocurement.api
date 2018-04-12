@@ -55,6 +55,8 @@ target/
 
 # Buildout
 bin/
-
+src/schematics-flexible/
+src/openprocurement.schemas.dgf/
 cover/
 output.html
+.mr.developer.cfg

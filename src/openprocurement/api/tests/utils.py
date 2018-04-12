@@ -1,14 +1,12 @@
 # -*- coding: utf-8 -*-
 import mock
-import os
 import unittest
 
+from datetime import timedelta, datetime
 from cornice.errors import Errors
 from couchdb.client import Document
-from datetime import datetime
 from libnacl.sign import Signer
 from pyramid.config import Configurator
-from pytz import timezone
 from uuid import UUID
 
 from openprocurement.api.utils import (
@@ -20,15 +18,15 @@ from openprocurement.api.utils import (
     generate_docservice_url,
     generate_id,
     get_content_configurator,
-    get_now,
     get_revision_changes,
     load_plugins,
     prepare_patch,
-    raise_operation_error,
     set_modetest_titles,
     set_ownership,
     set_parent,
-    update_logging_context
+    update_logging_context,
+    calculate_business_date,
+    get_now,
 )
 
 
@@ -304,7 +302,6 @@ class UtilsTest(unittest.TestCase):
         request.registry = mock.MagicMock()
         request.registry.docservice_key = Signer('1234567890abcdef1234567890abcdef')
         request.registry.docservice_url = 'url'
-        doc_id = '1234567890abcdef1234567890abcdef'
 
         expected_result = '/get/1234567890abcdef1234567890abcdef?KeyID=c6c4f29c&Signature=t8L5VW%252BK5vvDwMsxHBhzs%252BcBXFsYAZ%2FM9WJmzgYLVpc8HC9mPbQhsshgGK94XaCtvKFTb9IiTLlW59TM9mV7Bg%253D%253D'
         result = generate_docservice_url(request, '1234567890abcdef1234567890abcdef', False)
@@ -351,10 +348,55 @@ class UtilsTest(unittest.TestCase):
         self.assertEqual(changes, [{'path': '/status', 'value': 'pending', 'op': 'add'}])
 
 
+def auction_mock(procurementMethodDetails):
+    """Returns auction mock for accelerated mode testing.
+    """
+    auction = mock.MagicMock()
+    acceleration_field = {'procurementMethodDetails': procurementMethodDetails}
+
+    auction.__getitem__.side_effect = acceleration_field.__getitem__
+    auction.__iter__.side_effect = acceleration_field.__iter__
+    auction.__contains__.side_effect = acceleration_field.__contains__
+
+    return auction
+
+
+class CalculateBusinessDateTestCase(unittest.TestCase):
+
+    def test_accelerated_calculation(self):
+        auction = auction_mock(procurementMethodDetails='quick, accelerator=1440')
+        start = get_now()
+        period_to_add = timedelta(days=1440)
+        result = calculate_business_date(start, period_to_add, context=auction)
+        self.assertEqual((result - start).days, 1)
+
+    def test_common_calculation_with_working_days(self):
+        """This test assumes that <Mon 2018-4-9> is holiday, besides regular holidays
+        of that month. It must be fixed in `working_days.json` file, that translates
+        into `WORKING_DAYS` constant.
+        """
+        start = datetime(2018, 4, 2)
+        business_days_to_add = timedelta(days=10)
+        target_end_of_period = datetime(2018, 4, 17)
+        result = calculate_business_date(start, business_days_to_add, working_days=True)
+
+        self.assertEqual(result, target_end_of_period)
+
+    def test_calculate_with_negative_time_period(self):
+        start = datetime(2018, 4, 17)
+        business_days_to_add = timedelta(days=-10)
+        target_end_of_period = datetime(2018, 4, 2)
+        result = calculate_business_date(start, business_days_to_add, working_days=True)
+
+        self.assertEqual(result, target_end_of_period)
+
+
 def suite():
     suite = unittest.TestSuite()
     suite.addTest(unittest.makeSuite(UtilsTest))
+    suite.addTest(unittest.makeSuite(CalculateBusinessDateTestCase))
     return suite
+
 
 if __name__ == '__main__':
     unittest.main(defaultTest='suite')

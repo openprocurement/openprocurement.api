@@ -63,6 +63,8 @@ def _validate_data(request, model, partial=False, data=None):
 
     request.validated['data'] = method(role)
     if not partial:
+        m = model(request.validated['data'])
+        m.__parent__ = request.context
         request.validated[model.__name__.lower()] = m
     return request.validated['data']
 
@@ -125,15 +127,15 @@ def validate_file_update(request):
         validate_file_upload(request)
 
 
-def validate_uniq(items, error_message):
+def validate_uniq(items, field, error_message):
     if items:
-        ids = [i.id for i in items]
+        ids = [i.get(field) for i in items]
         if [i for i in set(ids) if ids.count(i) > 1]:
             raise ValidationError(error_message)
 
 
 def validate_items_uniq(items):
-    validate_uniq(items, u"Item id should be uniq for all items")
+    validate_uniq(items, 'id', u"Item id should be uniq for all items")
 
 
 def validate_cpv_group(items, *args):

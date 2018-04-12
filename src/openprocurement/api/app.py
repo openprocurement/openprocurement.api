@@ -104,7 +104,7 @@ def main(_, **settings):
     config.registry.arch_pubkey = PublicKey(arch_pubkey.decode('hex') if arch_pubkey else SecretKey().pk)
     # migrate data
     if not os.environ.get('MIGRATION_SKIP'):
-        plugin_config(config, plugins, 'openprocurement.api.migrations')
+        plugin_config(config.registry, plugins, 'openprocurement.api.migrations')
     config.registry.server_id = settings.get('id', '')
     _search_subscribers(config, settings, plugins)
     config.registry.health_threshold = float(settings.get('health_threshold', 512))
