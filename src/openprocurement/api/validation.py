@@ -61,13 +61,12 @@ def _validate_data(request, model, partial=False, data=None):
         request.errors.status = 403
         raise error_handler(request)
     else:
-        data = method(role)
-        request.validated['data'] = data
+        request.validated['data'] = method(role)
         if not partial:
-            m = model(data)
+            m = model(request.validated['data'])
             m.__parent__ = request.context
             request.validated[model.__name__.lower()] = m
-    return data
+    return request.validated['data']
 
 
 def validate_data(request, model, partial=False, data=None):
