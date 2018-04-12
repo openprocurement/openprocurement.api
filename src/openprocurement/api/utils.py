@@ -844,6 +844,7 @@ def calculate_business_date(date_obj, timedelta_obj, context=None, working_days=
         return date_obj + timedelta_obj
 
     # reset datetime to exclude influence of time data (e.g. hour, minute) on calculations
+    # TODO (after 1-8-2018) switch to date object instead of datetime object
     date_obj = reset_to_start_of_the_day(date_obj)
     added_period_is_positive = timedelta_obj > timedelta()
     working_days_count = abs(timedelta_obj.days)
