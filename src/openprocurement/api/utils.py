@@ -765,13 +765,15 @@ def get_request_from_root(model):
         return model.request if hasattr(model, 'request') else None
 
 
-def reset_to_start_of_the_day(date_time):
-    """Reset datetime's time to 00:00, while saving timezone data
+def set_specific_hour(date_time, hour):
+    """Reset datetime's time to {hour}:00:00, while saving timezone data
 
-    Example: 2018-1-1T14:12:55+02:00 -> 2018-1-1T00:00:00+02:00
+    Example:
+        2018-1-1T14:12:55+02:00 -> 2018-1-1T02:00:00+02:00, for hour=2
+        2018-1-1T14:12:55+02:00 -> 2018-1-1T18:00:00+02:00, for hour=18
     """
 
-    return datetime.combine(date_time.date(), time(0, tzinfo=date_time.tzinfo))
+    return datetime.combine(date_time.date(), time(hour % 24, tzinfo=date_time.tzinfo))
 
 
 def is_holiday(date):
@@ -845,7 +847,7 @@ def calculate_business_date(date_obj, timedelta_obj, context=None, working_days=
 
     # reset datetime to exclude influence of time data (e.g. hour, minute) on calculations
     # TODO (after 1-8-2018) switch to date object instead of datetime object
-    date_obj = reset_to_start_of_the_day(date_obj)
+    date_obj = set_specific_hour(date_obj, 0)
     added_period_is_positive = timedelta_obj > timedelta()
     working_days_count = abs(timedelta_obj.days)
 
