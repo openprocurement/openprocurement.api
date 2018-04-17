@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*-
+from zope.deprecation import deprecated
 from uuid import uuid4
+from copy import deepcopy
 
 from schematics.types import (
     StringType,
@@ -9,6 +11,7 @@ from schematics.types import (
     BaseType,
     EmailType,
     MD5Type,
+    IntType
 )
 from schematics.exceptions import ValidationError
 from schematics.types.compound import ModelType, ListType
@@ -33,7 +36,7 @@ from openprocurement.api.models.schematics_extender import (
     IsoDateTimeType,
     HashType
 )
-from .roles import document_roles, organization_roles
+from .roles import document_roles, organization_roles, item_roles
 
 
 # OCDS Building Blocks.
@@ -111,7 +114,7 @@ class Location(Model):
     elevation = BaseType()
 
 
-class Document(Model):
+class BaseDocument(Model):
     class Options:
         roles = document_roles
 
@@ -153,6 +156,10 @@ class Document(Model):
         return self
 
 
+BaseDocument.__name__ = 'Document'
+Document = BaseDocument
+deprecated('Document', 'Document is renamed to BaseDocument')
+
 class Identifier(Model):
     # The scheme that holds the unique identifiers used to identify the item being identified.
     scheme = StringType(required=True, choices=IDENTIFIER_CODES)
@@ -163,7 +170,7 @@ class Identifier(Model):
     uri = URLType()  # A URI to identify the organization.
 
 
-class Item(Model):
+class BaseItem(Model):
     """A good, service, or work to be contracted."""
     id = StringType(required=True, min_length=1, default=lambda: uuid4().hex)
     description = StringType(required=True)  # A description of the goods, services to be provided.
@@ -182,6 +189,10 @@ class Item(Model):
             with classification id """
         if new_schema_properties and not data['classification']['id'].startswith(new_schema_properties['code']):
             raise ValidationError("classification id mismatch with schema_properties code")
+
+BaseItem.__name__ = 'Item'
+Item = BaseItem
+deprecated('Item', 'Item is renamed to BaseItem')
 
 
 class ContactPoint(Model):
@@ -218,3 +229,102 @@ class Debt(Model):
     dateSigned = IsoDateTimeType()
     value = ModelType(ValueUAH)
     debtCurrencyValue = ModelType(BasicValue)
+
+
+# Loki models
+
+class RegistrationDetails(Model):
+    status = StringType(choices=['unknown', 'proceed', 'complete'], required=True)
+    registrationID = StringType()
+    registrationDate = IsoDateTimeType()
+
+    def validate_registrationID(self, data, value):
+        if value and data['status'] != 'complete':
+            raise ValidationError(u"You can fill registrationID only when status is complete")
+
+    def validate_registrationDate(self, data, value):
+        if value and data['status'] != 'complete':
+            raise ValidationError(u"You can fill registrationDate only when status is complete")
+
+
+LOKI_ITEM_CLASSIFICATIONS = deepcopy(ITEM_CLASSIFICATIONS)
+LOKI_ITEM_CLASSIFICATIONS.update({'UA-EDR': []})
+
+
+class UAEDRAndCadastralItemClassification(ItemClassification):
+    scheme = StringType(required=True, default='UA-EDR', choices=['UA-EDR', 'cadastralNumber'])
+
+    def validate_id(self, data, code):
+        pass
+
+class LokiItem(BaseItem):
+    class Options:
+        roles = item_roles
+
+    unit = ModelType(BaseUnit, required=True)
+    quantity = DecimalType(precision=-4, required=True)
+    address = ModelType(Address, required=True)
+    classification = ModelType(ItemClassification, required=True)
+    additionalClassifications = ListType(ModelType(UAEDRAndCadastralItemClassification), default=list())
+    registrationDetails = ModelType(RegistrationDetails, required=True)
+
+    def validate_schema_properties(self, data, new_schema_properties):
+        if new_schema_properties:
+            raise ValidationError('Opportunity to use schema_properties is disabled')
+
+
+LokiItem.__name__ = 'Item'
+
+
+class UAEDRIdentifier(Identifier):
+    scheme = StringType(choices=['UA-EDR'])
+    legalName = StringType(required=True)
+    uri = URLType(required=True)
+
+
+class Decision(Model):
+    title = StringType()
+    title_ru = StringType()
+    title_en = StringType()
+    decisionDate = IsoDateTimeType(required=True)
+    decisionID = StringType(required=True)
+
+
+LOKI_DOCUMENT_TYPES = deepcopy(DOCUMENT_TYPES)
+LOKI_DOCUMENT_TYPES += [
+    'x_dgfAssetFamiliarization', 'informationDetails', 'procurementPlan', 'projectPlan',
+    'cancellationDetails'
+]
+
+
+class LokiDocument(BaseDocument):
+    documentOf = StringType(choices=['lot', 'item'])
+    documentType = StringType(choices=LOKI_DOCUMENT_TYPES)
+    index = IntType(required=False)
+    accessDetails = StringType()
+    format = StringType(regex='^[-\w]+/[-\.\w\+]+$')
+
+    def validate_accessDetails(self, data, value):
+        if value is None and data['documentType'] == 'x_dgfAssetFamiliarization':
+            raise ValidationError(u"accessDetails is required, when documentType is x_dgfAssetFamiliarization")
+
+
+LokiDocument.__name__ = 'Document'
+
+class AssetCustodian(Organization):
+    name = StringType()
+    identifier = ModelType(Identifier, serialize_when_none=False)
+    additionalIdentifiers = ListType(ModelType(UAEDRIdentifier), default=list())
+    address = ModelType(Address, serialize_when_none=False)
+    contactPoint = ModelType(ContactPoint, serialize_when_none=False)
+    kind = StringType(choices=['general', 'special', 'other'])
+
+
+class AssetHolder(Model):
+    name = StringType(required=True)
+    name_ru = StringType()
+    name_en = StringType()
+    identifier = ModelType(UAEDRIdentifier, required=True)
+    additionalIdentifiers = ListType(ModelType(UAEDRIdentifier), default=list())
+    address = ModelType(Address)
+    contactPoint = ModelType(ContactPoint)

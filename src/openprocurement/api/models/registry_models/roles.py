@@ -15,6 +15,17 @@ document_embedded_role = (blacklist('url', 'download_url') + schematics_embedded
 document_view_role = (blacklist('revisions') + schematics_default_role)
 document_revisions_role = whitelist('url', 'dateModified')
 
+item_create_role = blacklist('id')
+item_edit_role = blacklist('id')
+item_view_role = (schematics_default_role + blacklist())
+
+
+item_roles = {
+    'create': item_create_role,
+    'edit': item_edit_role,
+    'view': item_view_role,
+}
+
 
 document_roles = {
     'create': document_create_role,

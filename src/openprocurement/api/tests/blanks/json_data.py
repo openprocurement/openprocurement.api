@@ -154,3 +154,27 @@ test_lot_data = {
     "lotCustodian": deepcopy(test_organization),
     "assets": []
 }
+
+test_loki_item_data = deepcopy(test_item_data)
+test_loki_item_data['registrationDetails'] = {
+    'status': 'unknown'
+}
+test_loki_item_data.update(
+    {
+        "unit": {"code": "code"},
+        "classification": {
+            "scheme": "CAV",
+            "id": "42111000-7",
+            "description": "Description"
+        },
+        "address": {"countryName": "Ukraine"},
+        "quantity": 5.0001,
+        "additionalClassifications": [
+            {
+                "scheme": u"UA-EDR",
+                "id": u"17.21.1",
+                "description": u"папір і картон гофровані, паперова й картонна тара"
+            }
+        ],
+    }
+)
