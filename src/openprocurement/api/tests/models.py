@@ -13,16 +13,16 @@ from openprocurement.api.models.registry_models.ocds import (
     ContactPoint,
     Identifier,
     Address,
-    baseItem,
+    BaseItem,
     Location,
     Unit,
     Value,
     ItemClassification,
     Classification,
-    baseDocument,
-    lokiDocument,
+    BaseDocument,
+    LokiDocument,
     RegistrationDetails,
-    lokiItem,
+    LokiItem,
     AssetCustodian,
     AssetHolder,
     Decision,
@@ -324,7 +324,7 @@ class DummyOCDSModelsTest(unittest.TestCase):
 
     def test_Item_model(self):
 
-        item = baseItem(test_item_data_with_schema)
+        item = BaseItem(test_item_data_with_schema)
         item.validate()
         self.assertEqual(item.serialize()['schema_properties']['properties'], test_item_data_with_schema['schema_properties']['properties'])
         self.assertEqual(item.serialize()['schema_properties']['code'][0:2], test_item_data_with_schema['schema_properties']['code'][:2])
@@ -340,14 +340,14 @@ class DummyOCDSModelsTest(unittest.TestCase):
             item.serialize('test')
 
         test_item_data_with_schema['location'] = {'latitude': '123', 'longitude': '567'}
-        item2 = baseItem(test_item_data_with_schema)
+        item2 = BaseItem(test_item_data_with_schema)
         item2.validate()
 
         self.assertNotEqual(item, item2)
         item2.location = None
         self.assertEqual(item, item2)
 
-        with mock.patch.dict('openprocurement.api.models.registry_models.ocds.baseItem._options.roles', {'test': blacklist('__parent__', 'address')}):
+        with mock.patch.dict('openprocurement.api.models.registry_models.ocds.BaseItem._options.roles', {'test': blacklist('__parent__', 'address')}):
             self.assertNotIn('address', item.serialize('test'))
             self.assertNotEqual(item.serialize('test'), item.serialize())
             self.assertEqual(item.serialize('test'), item2.serialize('test'))
@@ -490,7 +490,7 @@ class DummyOCDSModelsTest(unittest.TestCase):
             'format': 'application/msword',
         }
 
-        document = baseDocument()
+        document = BaseDocument()
 
         self.assertEqual(document.serialize('create'), None)
         self.assertEqual(document.serialize('edit'), None)
@@ -618,7 +618,7 @@ class DummyLokiModelsTest(unittest.TestCase):
             'format': 'application/msword',
         }
 
-        document = lokiDocument()
+        document = LokiDocument()
 
         self.assertEqual(document.serialize('create'), None)
         self.assertEqual(document.serialize('edit'), None)
@@ -713,7 +713,7 @@ class DummyLokiModelsTest(unittest.TestCase):
         registration_details.validate()
 
     def test_Item(self):
-        item = lokiItem()
+        item = LokiItem()
 
         self.assertEqual(item.serialize('create'), None)
         self.assertEqual(item.serialize('edit'), None)
@@ -733,7 +733,7 @@ class DummyLokiModelsTest(unittest.TestCase):
         )
 
         loki_item_data = deepcopy(test_loki_item_data)
-        item = lokiItem(loki_item_data)
+        item = LokiItem(loki_item_data)
         item.validate()
         self.assertEqual(item.serialize()['description'], loki_item_data['description'])
         self.assertEqual(item.serialize()['classification'], loki_item_data['classification'])
@@ -748,7 +748,7 @@ class DummyLokiModelsTest(unittest.TestCase):
             item.serialize('test')
 
         loki_item_data['location'] = {'latitude': '123', 'longitude': '567'}
-        item2 = lokiItem(loki_item_data)
+        item2 = LokiItem(loki_item_data)
         item2.validate()
 
         self.assertNotEqual(item, item2)
@@ -765,7 +765,7 @@ class DummyLokiModelsTest(unittest.TestCase):
             }
         }
 
-        item3 = lokiItem(loki_item_data)
+        item3 = LokiItem(loki_item_data)
         if not IS_SCHEMAS_PROPERTIES_ENABLED_LOKI:
             with self.assertRaises(ModelValidationError) as ex:
                 item3.validate()

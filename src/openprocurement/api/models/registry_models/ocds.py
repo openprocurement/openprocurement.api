@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+from zope.deprecation import deprecated
 from uuid import uuid4
 from copy import deepcopy
 
@@ -113,7 +114,7 @@ class Location(Model):
     elevation = BaseType()
 
 
-class Document(Model):
+class BaseDocument(Model):
     class Options:
         roles = document_roles
 
@@ -155,9 +156,9 @@ class Document(Model):
         return self
 
 
-baseDocument = Document
-del Document
-
+BaseDocument.__name__ = 'document'
+Document = BaseDocument
+deprecated('Document', 'Document is renamed to BaseDocument')
 
 class Identifier(Model):
     # The scheme that holds the unique identifiers used to identify the item being identified.
@@ -169,7 +170,7 @@ class Identifier(Model):
     uri = URLType()  # A URI to identify the organization.
 
 
-class Item(Model):
+class BaseItem(Model):
     """A good, service, or work to be contracted."""
     id = StringType(required=True, min_length=1, default=lambda: uuid4().hex)
     description = StringType(required=True)  # A description of the goods, services to be provided.
@@ -189,9 +190,9 @@ class Item(Model):
         if new_schema_properties and not data['classification']['id'].startswith(new_schema_properties['code']):
             raise ValidationError("classification id mismatch with schema_properties code")
 
-
-baseItem = Item
-del Item
+BaseItem.__name__ = 'item'
+Item = BaseItem
+deprecated('Item', 'Item is renamed to BaseItem')
 
 
 class ContactPoint(Model):
@@ -250,18 +251,13 @@ LOKI_ITEM_CLASSIFICATIONS = deepcopy(ITEM_CLASSIFICATIONS)
 LOKI_ITEM_CLASSIFICATIONS.update({'UA-EDR': []})
 
 
-class UAEDRItemClassification(ItemClassification):
-    scheme = StringType(required=True, default=DEFAULT_ITEM_CLASSIFICATION, choices=LOKI_ITEM_CLASSIFICATIONS.keys())
+class UAEDRAndCadastralItemClassification(ItemClassification):
+    scheme = StringType(required=True, default='UA-EDR', choices=['UA-EDR', 'cadastralNumber'])
 
     def validate_id(self, data, code):
-        if data.get('scheme') == 'UA-EDR':
-            return
-        available_codes = LOKI_ITEM_CLASSIFICATIONS.get(data.get('scheme'), [])
-        if code not in available_codes:
-            raise ValidationError(BaseType.MESSAGES['choices'].format(unicode(available_codes)))
+        pass
 
-
-class Item(baseItem):
+class LokiItem(BaseItem):
     class Options:
         roles = item_roles
 
@@ -269,7 +265,7 @@ class Item(baseItem):
     quantity = DecimalType(precision=-4, required=True)
     address = ModelType(Address, required=True)
     classification = ModelType(ItemClassification, required=True)
-    additionalClassifications = ListType(ModelType(UAEDRItemClassification), default=list())
+    additionalClassifications = ListType(ModelType(UAEDRAndCadastralItemClassification), default=list())
     registrationDetails = ModelType(RegistrationDetails, required=True)
 
     def validate_schema_properties(self, data, new_schema_properties):
@@ -277,8 +273,7 @@ class Item(baseItem):
             raise ValidationError('Opportunity to use schema_properties is disabled')
 
 
-lokiItem = Item
-del Item
+LokiItem.__name__ = 'item'
 
 
 class UAEDRIdentifier(Identifier):
@@ -302,7 +297,7 @@ LOKI_DOCUMENT_TYPES += [
 ]
 
 
-class Document(baseDocument):
+class LokiDocument(BaseDocument):
     documentOf = StringType(choices=['lot', 'item'])
     documentType = StringType(choices=LOKI_DOCUMENT_TYPES)
     index = IntType(required=False)
@@ -314,9 +309,7 @@ class Document(baseDocument):
             raise ValidationError(u"accessDetails is required, when documentType is x_dgfAssetFamiliarization")
 
 
-lokiDocument = Document
-del Document
-
+LokiDocument.__name__ = 'document'
 
 class AssetCustodian(Organization):
     name = StringType()
