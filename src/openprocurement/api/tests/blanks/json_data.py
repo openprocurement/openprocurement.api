@@ -56,6 +56,7 @@ test_item_data = {
         "streetAddress": u"вул. Банкова 1"
     }
 }
+
 schema_properties = {
         u"code": "04000000-8",
         u"version": "latest",
@@ -66,9 +67,22 @@ schema_properties = {
         }
     }
 
+schema_properties_341 = {
+        u"code": "34100000-8",
+        u"version": "latest",
+        u"properties": {
+          u"make": u"Таврія",
+          u"model": u"Славута",
+          u"fuelType": ["petrol"]
+        }
+    }
 test_item_data_with_schema = deepcopy(test_item_data)
 test_item_data_with_schema['classification']['id'] = schema_properties['code']
 test_item_data_with_schema['schema_properties'] = schema_properties
+
+test_item_data_with_schema_341 = deepcopy(test_item_data)
+test_item_data_with_schema_341['classification']['id'] = schema_properties_341['code']
+test_item_data_with_schema_341['schema_properties'] = schema_properties_341
 
 test_asset_basic_data = {
     "title": u"Земля для космодрому",
@@ -101,6 +115,9 @@ test_asset_basic_data_with_schema = deepcopy(test_asset_basic_data)
 test_asset_basic_data_with_schema['classification']['id'] = schema_properties['code']
 test_asset_basic_data_with_schema['schema_properties'] = schema_properties
 
+test_asset_basic_data_with_schema_341 = deepcopy(test_asset_basic_data)
+test_asset_basic_data_with_schema_341['classification']['id'] = schema_properties_341['code']
+test_asset_basic_data_with_schema_341['schema_properties'] = schema_properties_341
 
 test_debt_data = {
     "agreementNumber": u"42",
@@ -118,8 +135,11 @@ test_debt_data = {
 
 test_asset_compound_data = deepcopy(test_asset_basic_data)
 test_asset_compound_data['assetType'] = 'compound'
-
 test_asset_compound_data['items'] = [test_item_data_with_schema, test_item_data_with_schema]
+
+test_asset_compound_data_341 = deepcopy(test_asset_basic_data)
+test_asset_compound_data_341['assetType'] = 'compound'
+test_asset_compound_data_341['items'] = [test_item_data_with_schema_341, test_item_data_with_schema_341]
 
 test_asset_claimrights_data = deepcopy(test_asset_compound_data)
 test_asset_claimrights_data['assetType'] = 'claimRights'
