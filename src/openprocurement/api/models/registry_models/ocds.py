@@ -156,7 +156,7 @@ class BaseDocument(Model):
         return self
 
 
-BaseDocument.__name__ = 'document'
+BaseDocument.__name__ = 'Document'
 Document = BaseDocument
 deprecated('Document', 'Document is renamed to BaseDocument')
 
@@ -190,7 +190,7 @@ class BaseItem(Model):
         if new_schema_properties and not data['classification']['id'].startswith(new_schema_properties['code']):
             raise ValidationError("classification id mismatch with schema_properties code")
 
-BaseItem.__name__ = 'item'
+BaseItem.__name__ = 'Item'
 Item = BaseItem
 deprecated('Item', 'Item is renamed to BaseItem')
 
@@ -273,7 +273,7 @@ class LokiItem(BaseItem):
             raise ValidationError('Opportunity to use schema_properties is disabled')
 
 
-LokiItem.__name__ = 'item'
+LokiItem.__name__ = 'Item'
 
 
 class UAEDRIdentifier(Identifier):
@@ -309,7 +309,7 @@ class LokiDocument(BaseDocument):
             raise ValidationError(u"accessDetails is required, when documentType is x_dgfAssetFamiliarization")
 
 
-LokiDocument.__name__ = 'document'
+LokiDocument.__name__ = 'Document'
 
 class AssetCustodian(Organization):
     name = StringType()
