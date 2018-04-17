@@ -38,7 +38,6 @@ from openprocurement.api.tests.blanks.json_data import (
     test_loki_item_data
 )
 from openprocurement.api.utils import get_now
-from openprocurement.api.constants import IS_SCHEMAS_PROPERTIES_ENABLED_LOKI
 from schematics.exceptions import ConversionError, ValidationError, ModelValidationError
 
 now = get_now()
@@ -766,17 +765,15 @@ class DummyLokiModelsTest(unittest.TestCase):
         }
 
         item3 = LokiItem(loki_item_data)
-        if not IS_SCHEMAS_PROPERTIES_ENABLED_LOKI:
-            with self.assertRaises(ModelValidationError) as ex:
-                item3.validate()
-            self.assertEqual(
-                ex.exception.messages,
-                {
-                    'schema_properties': [u'Opportunity to use schema_properties is disabled'],
-                }
-            )
-        else:
+        with self.assertRaises(ModelValidationError) as ex:
             item3.validate()
+        self.assertEqual(
+            ex.exception.messages,
+            {
+                'schema_properties': [u'Opportunity to use schema_properties is disabled'],
+            }
+        )
+        # item3.validate()
 
     def test_AssetCustodian(self):
         data = {
