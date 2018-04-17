@@ -7,11 +7,9 @@ from schematics.transforms import whitelist, blacklist, export_loop
 from schematics.types import (
     StringType,
     FloatType,
-    URLType,
     IntType,
     BooleanType,
     BaseType,
-    EmailType,
     MD5Type
 )
 from schematics.types.compound import (
@@ -21,7 +19,12 @@ from schematics.types.compound import (
 from schematics.types.serializable import serializable
 
 from openprocurement.api.constants import (
-    CPV_CODES, ORA_CODES, DK_CODES, CPV_BLOCK_FROM, ATC_CODES, INN_CODES, ATC_INN_CLASSIFICATIONS_FROM,
+    CPV_CODES,
+    DK_CODES,
+    CPV_BLOCK_FROM,
+    ATC_CODES,
+    INN_CODES,
+    ATC_INN_CLASSIFICATIONS_FROM,
 )
 from openprocurement.api.models.schematics_extender import (
     Model,
@@ -29,7 +32,14 @@ from openprocurement.api.models.schematics_extender import (
     IsoDateTimeType,
     HashType
 )
-from openprocurement.api.models.models import Period
+from openprocurement.api.models.models import (
+    Period,
+    ContactPoint,
+    Classification,
+    Address,
+    Identifier,
+    Location
+)
 from openprocurement.api.validation import validate_uniq
 from openprocurement.api.utils import (
     get_now,
@@ -100,15 +110,6 @@ class Feature(Model):
             not in [i.id for i in data['__parent__'].lots]
         ):
             raise ValidationError(u"relatedItem should be one of lots")
-
-
-class Classification(Model):
-    scheme = StringType(required=True)  # The classification scheme for the goods
-    id = StringType(required=True)  # The classification ID from the Scheme used
-    description = StringType(required=True)  # A description of the goods, services to be provided.
-    description_en = StringType()
-    description_ru = StringType()
-    uri = URLType()
 
 
 class ComplaintModelType(ModelType):
@@ -184,23 +185,6 @@ class Unit(Model):
     code = StringType(required=True)
 
 
-class Address(Model):
-
-    streetAddress = StringType()
-    locality = StringType()
-    region = StringType()
-    postalCode = StringType()
-    countryName = StringType(required=True)
-    countryName_en = StringType()
-    countryName_ru = StringType()
-
-
-class Location(Model):
-    latitude = BaseType(required=True)
-    longitude = BaseType(required=True)
-    elevation = BaseType()
-
-
 class Document(Model):
     class Options:
         roles = {
@@ -259,16 +243,6 @@ class Document(Model):
         return self
 
 
-class Identifier(Model):
-    # The scheme that holds the unique identifiers used to identify the item being identified.
-    scheme = StringType(required=True, choices=ORA_CODES)
-    id = BaseType(required=True)  # The identifier of the organization in the selected scheme.
-    legalName = StringType()  # The legally registered name of the organization.
-    legalName_en = StringType()
-    legalName_ru = StringType()
-    uri = URLType()  # A URI to identify the organization.
-
-
 class Item(Model):
     """A good, service, or work to be contracted."""
     id = StringType(required=True, min_length=1, default=lambda: uuid4().hex)
@@ -283,20 +257,6 @@ class Item(Model):
     deliveryAddress = ModelType(Address)
     deliveryLocation = ModelType(Location)
     relatedLot = MD5Type()
-
-
-class ContactPoint(Model):
-    name = StringType(required=True)
-    name_en = StringType()
-    name_ru = StringType()
-    email = EmailType()
-    telephone = StringType()
-    faxNumber = StringType()
-    url = URLType()
-
-    def validate_email(self, data, value):
-        if not value and not data.get('telephone'):
-            raise ValidationError(u"telephone or email should be present")
 
 
 class Organization(Model):

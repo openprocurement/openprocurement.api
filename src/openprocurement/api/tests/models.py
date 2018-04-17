@@ -285,7 +285,6 @@ class DummyOCDSModelsTest(unittest.TestCase):
         item_classification.import_data({'scheme': 'CAV', 'id': 'test'})
         item_classification.validate()
 
-
     def test_Location_model(self):
         location = Location()
 
