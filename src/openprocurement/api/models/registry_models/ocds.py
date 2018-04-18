@@ -234,7 +234,7 @@ class Debt(Model):
 # Loki models
 
 class RegistrationDetails(Model):
-    status = StringType(choices=['unknown', 'proceed', 'complete'], required=True)
+    status = StringType(choices=['unknown', 'registering', 'complete'], required=True)
     registrationID = StringType()
     registrationDate = IsoDateTimeType()
 
@@ -256,6 +256,7 @@ class UAEDRAndCadastralItemClassification(ItemClassification):
 
     def validate_id(self, data, code):
         pass
+
 
 class LokiItem(BaseItem):
     class Options:
@@ -310,6 +311,7 @@ class LokiDocument(BaseDocument):
 
 
 LokiDocument.__name__ = 'Document'
+
 
 class AssetCustodian(Organization):
     name = StringType()
