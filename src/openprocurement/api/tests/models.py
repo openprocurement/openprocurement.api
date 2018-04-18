@@ -696,7 +696,7 @@ class DummyLokiModelsTest(unittest.TestCase):
             'registrationDate': [u'You can fill registrationDate only when status is complete']}
         )
 
-        data['status'] = 'proceed'
+        data['status'] = 'registering'
         registration_details.import_data(data)
 
         with self.assertRaises(ModelValidationError) as ex:
