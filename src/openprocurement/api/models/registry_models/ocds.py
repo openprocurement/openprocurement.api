@@ -160,6 +160,7 @@ BaseDocument.__name__ = 'Document'
 Document = BaseDocument
 deprecated('Document', 'Document is renamed to BaseDocument')
 
+
 class Identifier(Model):
     # The scheme that holds the unique identifiers used to identify the item being identified.
     scheme = StringType(required=True, choices=IDENTIFIER_CODES)
@@ -189,6 +190,7 @@ class BaseItem(Model):
             with classification id """
         if new_schema_properties and not data['classification']['id'].startswith(new_schema_properties['code']):
             raise ValidationError("classification id mismatch with schema_properties code")
+
 
 BaseItem.__name__ = 'Item'
 Item = BaseItem
@@ -257,6 +259,7 @@ class UAEDRAndCadastralItemClassification(ItemClassification):
     def validate_id(self, data, code):
         pass
 
+
 class LokiItem(BaseItem):
     class Options:
         roles = item_roles
@@ -310,6 +313,7 @@ class LokiDocument(BaseDocument):
 
 
 LokiDocument.__name__ = 'Document'
+
 
 class AssetCustodian(Organization):
     name = StringType()
