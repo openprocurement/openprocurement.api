@@ -37,6 +37,23 @@ class AuthenticationPolicy(BasicAuthAuthenticationPolicy):
             if user:
                 return user['name']
 
+    def _validate_token(self, token, request, auth_groups):
+        if not token:
+            token = request.headers.get('X-Access-Token')
+            if token:
+                return token
+
+        if (not token and request.method in ['POST', 'PUT', 'PATCH'] and
+                request.content_type == 'application/json'):
+            try:
+                json = request.json_body
+            except ValueError:
+                json = None
+            token = (isinstance(json, dict)
+                    and json.get('access', {}).get('token'))
+
+        return token if token else auth_groups
+
     def check(self, user, request):
         token = request.params.get('acc_token')
         auth_groups = ['g:{}'.format(user['group'])]
