@@ -236,7 +236,7 @@ class Debt(Model):
 # Loki models
 
 class RegistrationDetails(Model):
-    status = StringType(choices=['unknown', 'proceed', 'complete'], required=True)
+    status = StringType(choices=['unknown', 'registering', 'complete'], required=True)
     registrationID = StringType()
     registrationDate = IsoDateTimeType()
 
