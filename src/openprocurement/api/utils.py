@@ -360,7 +360,7 @@ def set_ownership(item, request):
     if not item.get('owner'):
         item.owner = request.authenticated_userid
     owner_token = generate_id()
-    item.owner_token = sha512(owner_token).hexdigest()
+    item.owner_token = owner_token #sha512(owner_token).hexdigest()
     acc = {'token': owner_token}
     if isinstance(getattr(type(item), 'transfer_token', None), StringType):
         transfer_token = generate_id()
