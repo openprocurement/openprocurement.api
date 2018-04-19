@@ -277,7 +277,8 @@ class UtilsTest(unittest.TestCase):
         expected_result = {'token': '1234567890abcdef1234567890abcdef'}
         result = set_ownership(item, request)
         self.assertEqual(result, expected_result)
-        self.assertEqual(item.owner_token, '0f20c55ac78f7336576260487b865a89a72b396d761ac69d00902cf5bd021d1c51b17191098dc9626f4582ab125efd9053fff1c8b58782e2fe70f7cb4b7bd7ee')
+        self.assertEqual(item.owner_token, expected_result['token'])
+        #self.assertEqual(item.owner_token, '0f20c55ac78f7336576260487b865a89a72b396d761ac69d00902cf5bd021d1c51b17191098dc9626f4582ab125efd9053fff1c8b58782e2fe70f7cb4b7bd7ee')
 
         # with mock.patch('__builtin__.getattr') as mock_getattr:
         #     mock_getattr.return_value = True
