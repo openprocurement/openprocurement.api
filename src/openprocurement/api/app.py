@@ -6,7 +6,6 @@ if 'test' not in __import__('sys').argv[0]:
     import gevent.monkey
     gevent.monkey.patch_all()
 
-import os
 import simplejson
 from logging import getLogger
 
@@ -26,7 +25,8 @@ from openprocurement.api.utils import (
     couchdb_json_decode,
     route_prefix,
     json_body,
-    plugin_config
+    configure_plugins,
+    read_yaml
 )
 
 LOGGER = getLogger("{}.init".format(__name__))
@@ -90,25 +90,25 @@ def _search_subscribers(config, settings, plugins):
     for k in subscribers_keys:
         subscribers = settings[k].split(',')
         for subscriber in subscribers:
-            plugin_config(config, plugins, 'openprocurement.{}'.format(k), subscriber)
+            configure_plugins(config, plugins, 'openprocurement.{}'.format(k), subscriber)
+
+
+def _init_plugins(config, settings):
+    plugins = read_yaml(settings.get('plugins'))
+    for name in plugins:
+        configure_plugins(config, plugins, 'openprocurement.api.plugins', name)
 
 
 def main(_, **settings):
     config = _config_init(settings)
-    plugins = settings.get('plugins') and settings['plugins'].split(',')
-    plugin_config(config, plugins, 'openprocurement.api.plugins')
     _couchdb_connection(config, settings)
+    _init_plugins(config, settings)
     _document_service_key(config, settings)
     # Archive keys
     arch_pubkey = settings.get('arch_pubkey', None)
     config.registry.arch_pubkey = PublicKey(arch_pubkey.decode('hex') if arch_pubkey else SecretKey().pk)
-    # migrate data
-    if not os.environ.get('MIGRATION_SKIP'):
-        for entry_point in iter_entry_points('openprocurement.api.migrations'):
-            plugin = entry_point.load()
-            plugin(config.registry)
     config.registry.server_id = settings.get('id', '')
-    _search_subscribers(config, settings, plugins)
+    # _search_subscribers(config, settings, config.plugins)
     config.registry.health_threshold = float(settings.get('health_threshold', 512))
     config.registry.health_threshold_func = settings.get('health_threshold_func', 'all')
     config.registry.update_after = asbool(settings.get('update_after', True))
