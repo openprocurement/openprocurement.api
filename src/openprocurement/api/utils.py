@@ -865,10 +865,10 @@ def get_document_creation_date(document):
 def read_yaml(name):
     import inspect
     import os.path
-    from yaml import load
+    from yaml import safe_load
     caller_file = inspect.stack()[1][1]
     caller_dir = os.path.dirname(os.path.realpath(caller_file))
     file_path = os.path.join(caller_dir, name)
     with open(file_path) as _file:
         data = _file.read()
-    return load(data)
+    return safe_load(data)
