@@ -76,6 +76,17 @@ schema_properties_341 = {
           u"fuelType": ["petrol"]
         }
     }
+
+schema_properties_060 = {
+        u"code": "06000000-2",
+        u"version": "latest",
+        "properties": {
+          u"area": 1.2,
+          u"cadastralNumber": "1234567890:12:123:1234",
+          u"inUse": True
+        }
+    }
+
 test_item_data_with_schema = deepcopy(test_item_data)
 test_item_data_with_schema['classification']['id'] = schema_properties['code']
 test_item_data_with_schema['schema_properties'] = schema_properties
@@ -83,6 +94,10 @@ test_item_data_with_schema['schema_properties'] = schema_properties
 test_item_data_with_schema_341 = deepcopy(test_item_data)
 test_item_data_with_schema_341['classification']['id'] = schema_properties_341['code']
 test_item_data_with_schema_341['schema_properties'] = schema_properties_341
+
+test_item_data_with_schema_060 = deepcopy(test_item_data)
+test_item_data_with_schema_060['classification']['id'] = schema_properties_060['code']
+test_item_data_with_schema_060['schema_properties'] = schema_properties_060
 
 test_asset_basic_data = {
     "title": u"Земля для космодрому",
@@ -119,6 +134,10 @@ test_asset_basic_data_with_schema_341 = deepcopy(test_asset_basic_data)
 test_asset_basic_data_with_schema_341['classification']['id'] = schema_properties_341['code']
 test_asset_basic_data_with_schema_341['schema_properties'] = schema_properties_341
 
+test_asset_basic_data_with_schema_060 = deepcopy(test_asset_basic_data)
+test_asset_basic_data_with_schema_060['classification']['id'] = schema_properties_060['code']
+test_asset_basic_data_with_schema_060['schema_properties'] = schema_properties_060
+
 test_debt_data = {
     "agreementNumber": u"42",
     "debtorType": u"legalPerson",
@@ -140,6 +159,10 @@ test_asset_compound_data['items'] = [test_item_data_with_schema, test_item_data_
 test_asset_compound_data_341 = deepcopy(test_asset_basic_data)
 test_asset_compound_data_341['assetType'] = 'compound'
 test_asset_compound_data_341['items'] = [test_item_data_with_schema_341, test_item_data_with_schema_341]
+
+test_asset_compound_data_060 = deepcopy(test_asset_basic_data)
+test_asset_compound_data_060['assetType'] = 'compound'
+test_asset_compound_data_060['items'] = [test_item_data_with_schema_060, test_item_data_with_schema_060]
 
 test_asset_claimrights_data = deepcopy(test_asset_compound_data)
 test_asset_claimrights_data['assetType'] = 'claimRights'
