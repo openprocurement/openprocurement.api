@@ -2,6 +2,7 @@
 from schematics.exceptions import (
     ModelValidationError, ModelConversionError, ValidationError
 )
+from jsonpatch import JsonPointerException
 
 from openprocurement.api.utils import (
     apply_data_patch, update_logging_context,
@@ -80,6 +81,10 @@ def validate_data(request, model, partial=False, data=None):
         request.errors.status = 422
         raise error_handler(request)
     except ValueError, e:
+        request.errors.add('body', 'data', e.message)
+        request.errors.status = 422
+        raise error_handler(request)
+    except JsonPointerException, e:
         request.errors.add('body', 'data', e.message)
         request.errors.status = 422
         raise error_handler(request)
