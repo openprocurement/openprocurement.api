@@ -27,7 +27,10 @@ from openprocurement.api.constants import (
     ITEM_CLASSIFICATIONS,
     DOCUMENT_TYPES,
     IDENTIFIER_CODES,
-    DEBTOR_TYPES
+    DEBTOR_TYPES,
+    DEFAULT_LOKI_ITEM_CLASSIFICATION,
+    LOKI_ITEM_CLASSIFICATION,
+    LOKI_ITEM_ADDITIONAL_CLASSIFICATIONS
 )
 from openprocurement.api.utils import get_now, serialize_document_url
 
@@ -249,15 +252,24 @@ class RegistrationDetails(Model):
             raise ValidationError(u"You can fill registrationDate only when status is complete")
 
 
-LOKI_ITEM_CLASSIFICATIONS = deepcopy(ITEM_CLASSIFICATIONS)
-LOKI_ITEM_CLASSIFICATIONS.update({'UA-EDR': []})
+class LokiItemClassification(ItemClassification):
+    scheme = StringType(required=True, default=DEFAULT_LOKI_ITEM_CLASSIFICATION, choices=LOKI_ITEM_CLASSIFICATION.keys())
+
+    def validate_id(self, data, code):
+        available_codes = LOKI_ITEM_CLASSIFICATION.get(data.get('scheme'), [])
+        if code not in available_codes:
+            raise ValidationError(BaseType.MESSAGES['choices'].format(unicode(available_codes)))
 
 
 class UAEDRAndCadastralItemClassification(ItemClassification):
-    scheme = StringType(required=True, default='UA-EDR', choices=['UA-EDR', 'cadastralNumber'])
+    scheme = StringType(required=True, default='UA-EDR', choices=LOKI_ITEM_ADDITIONAL_CLASSIFICATIONS.keys())
 
     def validate_id(self, data, code):
-        pass
+        if data.get('scheme') in ['UA-EDR', 'cadastralNumber']:
+            return
+        available_codes = LOKI_ITEM_ADDITIONAL_CLASSIFICATIONS.get(data.get('scheme'), [])
+        if code not in available_codes:
+            raise ValidationError(BaseType.MESSAGES['choices'].format(unicode(available_codes)))
 
 
 class LokiItem(BaseItem):
@@ -267,7 +279,7 @@ class LokiItem(BaseItem):
     unit = ModelType(BaseUnit, required=True)
     quantity = DecimalType(precision=-4, required=True)
     address = ModelType(Address, required=True)
-    classification = ModelType(ItemClassification, required=True)
+    classification = ModelType(LokiItemClassification, required=True)
     additionalClassifications = ListType(ModelType(UAEDRAndCadastralItemClassification), default=list())
     registrationDetails = ModelType(RegistrationDetails, required=True)
 
