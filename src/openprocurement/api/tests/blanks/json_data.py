@@ -59,7 +59,7 @@ test_item_data = {
 
 schema_properties = {
         u"code": "04000000-8",
-        u"version": "latest",
+        u"version": "001",
         u"properties": {
           u"totalArea": 200,
           u"year": 1998,
@@ -69,7 +69,7 @@ schema_properties = {
 
 schema_properties_341 = {
         u"code": "34100000-8",
-        u"version": "latest",
+        u"version": "001",
         u"properties": {
           u"make": u"Таврія",
           u"model": u"Славута",
@@ -79,7 +79,7 @@ schema_properties_341 = {
 
 schema_properties_060 = {
         u"code": "06000000-2",
-        u"version": "latest",
+        u"version": "001",
         "properties": {
           u"area": 1.2,
           u"cadastralNumber": "1234567890:12:123:1234",
