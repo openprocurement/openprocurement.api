@@ -3,6 +3,7 @@ import unittest
 from copy import deepcopy
 from datetime import datetime, timedelta
 from decimal import Decimal
+from schematics.types import BaseType
 
 import mock
 from isodate.duration import Duration
@@ -30,6 +31,7 @@ from openprocurement.api.models.registry_models.ocds import (
 from openprocurement.api.models.auction_models.models import (
     Document as AuctionDocument
 )
+from openprocurement.api.constants import LOKI_ITEM_CLASSIFICATION
 from openprocurement.api.models.models import Period, PeriodEndRequired
 from openprocurement.api.models.schematics_extender import (
     IsoDateTimeType, HashType, IsoDurationType)
@@ -729,6 +731,34 @@ class DummyLokiModelsTest(unittest.TestCase):
                 'classification': [u'This field is required.'],
                 'address': [u'This field is required.'],
             }
+        )
+
+
+        loki_item_data = deepcopy(test_loki_item_data)
+        loki_item_data['classification']['scheme'] = 'CAV'
+        item = LokiItem(loki_item_data)
+
+        with self.assertRaises(ModelValidationError) as ex:
+            item.validate()
+        self.assertEqual(
+            ex.exception.messages,
+            {'classification': {'scheme': [u"Value must be one of [u'CAV-PS']."]}}
+        )
+
+        loki_item_data = deepcopy(test_loki_item_data)
+        loki_item_data['classification']['id'] = 'wrong-id'
+        item = LokiItem(loki_item_data)
+
+
+        with self.assertRaises(ModelValidationError) as ex:
+            item.validate()
+
+        available_codes = LOKI_ITEM_CLASSIFICATION.get('CAV-PS', [])
+        err_string = BaseType.MESSAGES['choices'].format(unicode(available_codes))
+
+        self.assertEqual(
+            ex.exception.messages,
+            {'classification': {'id': [err_string]}}
         )
 
         loki_item_data = deepcopy(test_loki_item_data)
