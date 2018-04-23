@@ -45,12 +45,17 @@ DEBTOR_TYPES = ['naturalPerson', 'legalPerson']
 DEFAULT_CURRENCY = u'UAH'
 
 DEFAULT_ITEM_CLASSIFICATION = u'CAV'
+DEFAULT_LOKI_ITEM_CLASSIFICATION = u'CAV-PS'
+
 
 DOCUMENT_TYPES = ['notice', 'technicalSpecifications', 'illustration', 'virtualDataRoom', 'x_presentation']
 
 CPV_CODES = read_json('cpv.json')
 CPV_CODES.append('99999999-9')
 CAV_CODES = read_json('cav.json')
+
+CPVS_CODES = read_json('cpvs.json')
+CAV_PS_CODES = read_json('cav_ps.json')
 
 DK_CODES = read_json('dk021.json')
 FUNDERS = [(i['scheme'], i['id']) for i in read_json('funders.json')['data']]
@@ -73,6 +78,15 @@ ATC_INN_CLASSIFICATIONS_FROM = datetime(2017, 12, 22, tzinfo=TZ)
 ITEM_CLASSIFICATIONS = {
     u'CAV': CAV_CODES,
     # u'CAV-PS': []
+}
+
+LOKI_ITEM_CLASSIFICATION = {
+    u'CAV-PS': CAV_PS_CODES
+}
+LOKI_ITEM_ADDITIONAL_CLASSIFICATIONS = {
+    u'UA-EDR': [],
+    u'CPVS': CPVS_CODES,
+    u'cadastralNumber': []
 }
 
 IDENTIFIER_CODES = ORA_CODES
