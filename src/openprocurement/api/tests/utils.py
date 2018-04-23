@@ -277,7 +277,8 @@ class UtilsTest(unittest.TestCase):
         expected_result = {'token': '1234567890abcdef1234567890abcdef'}
         result = set_ownership(item, request)
         self.assertEqual(result, expected_result)
-        self.assertEqual(item.owner_token, '0f20c55ac78f7336576260487b865a89a72b396d761ac69d00902cf5bd021d1c51b17191098dc9626f4582ab125efd9053fff1c8b58782e2fe70f7cb4b7bd7ee')
+        self.assertEqual(item.owner_token, expected_result['token'])
+        #self.assertEqual(item.owner_token, '0f20c55ac78f7336576260487b865a89a72b396d761ac69d00902cf5bd021d1c51b17191098dc9626f4582ab125efd9053fff1c8b58782e2fe70f7cb4b7bd7ee')
 
         # with mock.patch('__builtin__.getattr') as mock_getattr:
         #     mock_getattr.return_value = True
@@ -321,13 +322,13 @@ class UtilsTest(unittest.TestCase):
     def test_load_plugins(self, mock_includeme, mock_iter_entry_points):
         config = Configurator()
         group = 'openprocurement.api.plugins'
-        kwargs = {'plugins': ['api']}
+        kwargs = {'plugins': {'api': None}, 'name': 'api'}
         entry_point = mock.MagicMock()
         entry_point.name = 'api'
         mock_iter_entry_points.return_value = entry_point
         load_plugins(config, group, **kwargs)
 
-        mock_includeme.assert_called_once_with(config)
+        mock_includeme.assert_called_once_with(config, None)
 
     def test_prepare_patch(self):
         changes = []

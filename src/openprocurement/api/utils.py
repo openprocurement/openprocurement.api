@@ -360,7 +360,7 @@ def set_ownership(item, request):
     if not item.get('owner'):
         item.owner = request.authenticated_userid
     owner_token = generate_id()
-    item.owner_token = sha512(owner_token).hexdigest()
+    item.owner_token = owner_token  # sha512(owner_token).hexdigest()
     acc = {'token': owner_token}
     if isinstance(getattr(type(item), 'transfer_token', None), StringType):
         transfer_token = generate_id()
@@ -711,16 +711,15 @@ def prepare_revision(item, patch, author):
     }
 
 
-def plugin_config(config, plugins, group, name=None):
+def configure_plugins(config, plugins, group, name=None):
     for entry_point in iter_entry_points(group, name):
-        if not plugins or entry_point.name in plugins:
-            plugin = entry_point.load()
-            plugin(config)
+        plugin = entry_point.load()
+        plugin(config, plugins.get(name))
 
 
 def load_plugins(config, group, **kwargs):
-    plugins = kwargs.get('plugins')
-    plugin_config(config, plugins, group, kwargs.get('name'))
+    plugins = kwargs.get('plugins', {})
+    configure_plugins(config, plugins, group, kwargs.get('name'))
 
 
 def serialize_document_url(document):
@@ -861,3 +860,15 @@ def calculate_business_date(date_obj, timedelta_obj, context=None, working_days=
 
 def get_document_creation_date(document):
     return (document.get('revisions')[0].date if document.get('revisions') else get_now())
+
+
+def read_yaml(name):
+    import inspect
+    import os.path
+    from yaml import safe_load
+    caller_file = inspect.stack()[1][1]
+    caller_dir = os.path.dirname(os.path.realpath(caller_file))
+    file_path = os.path.join(caller_dir, name)
+    with open(file_path) as _file:
+        data = _file.read()
+    return safe_load(data)
