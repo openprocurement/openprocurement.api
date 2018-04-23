@@ -186,8 +186,8 @@ test_loki_item_data.update(
     {
         "unit": {"code": "code"},
         "classification": {
-            "scheme": "CAV",
-            "id": "42111000-7",
+            "scheme": "CAV-PS",
+            "id": "06121000-6",
             "description": "Description"
         },
         "address": {"countryName": "Ukraine"},
