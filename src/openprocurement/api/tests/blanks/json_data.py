@@ -79,7 +79,7 @@ schema_properties_341 = {
 
 schema_properties_060 = {
         u"code": "06000000-2",
-        u"version": "001",
+        u"version": "002",
         "properties": {
           u"area": 1.2,
           u"cadastralNumber": "1234567890:12:123:1234",
