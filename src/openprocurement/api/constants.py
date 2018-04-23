@@ -29,10 +29,12 @@ DOCUMENT_WHITELISTED_FIELDS = ('id', 'datePublished', 'author', '__parent__')
 
 
 def read_json(name):
+    import inspect
     import os.path
     from json import loads
-    curr_dir = os.path.dirname(os.path.realpath(__file__))
-    file_path = os.path.join(curr_dir, name)
+    caller_file = inspect.stack()[1][1]
+    caller_dir = os.path.dirname(os.path.realpath(caller_file))
+    file_path = os.path.join(caller_dir, name)
     with open(file_path) as lang_file:
         data = lang_file.read()
     return loads(data)

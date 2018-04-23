@@ -322,13 +322,13 @@ class UtilsTest(unittest.TestCase):
     def test_load_plugins(self, mock_includeme, mock_iter_entry_points):
         config = Configurator()
         group = 'openprocurement.api.plugins'
-        kwargs = {'plugins': ['api']}
+        kwargs = {'plugins': {'api': None}, 'name': 'api'}
         entry_point = mock.MagicMock()
         entry_point.name = 'api'
         mock_iter_entry_points.return_value = entry_point
         load_plugins(config, group, **kwargs)
 
-        mock_includeme.assert_called_once_with(config)
+        mock_includeme.assert_called_once_with(config, None)
 
     def test_prepare_patch(self):
         changes = []
