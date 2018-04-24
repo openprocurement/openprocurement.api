@@ -22,7 +22,8 @@ requires = [
     'rfc6266',
     'setuptools',
     'tzlocal',
-    'isodate'
+    'isodate',
+    'yaml'
 ]
 test_requires = requires + [
     'webtest',
