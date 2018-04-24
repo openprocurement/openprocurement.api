@@ -23,7 +23,7 @@ requires = [
     'setuptools',
     'tzlocal',
     'isodate',
-    'yaml'
+    'pyyaml'
 ]
 test_requires = requires + [
     'webtest',
