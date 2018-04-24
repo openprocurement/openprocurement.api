@@ -56,13 +56,6 @@ def _document_service_key(config, settings):
         keyring[key[:8]] = Verifier(key)
 
 
-def _subscriber_plugin(subscriber, config, key):
-    for entry_point in iter_entry_points('openprocurement.{}'.format(key), subscriber):
-        if entry_point:
-            plugin = entry_point.load()
-            plugin(config)
-
-
 def _config_init(settings):
     config = Configurator(
         autocommit=True,
@@ -94,9 +87,13 @@ def _search_subscribers(config, settings, plugins):
 
 
 def _init_plugins(config, settings):
-    plugins = read_yaml(settings.get('plugins'))
+    plugins = read_yaml(settings['plugins'])
+    LOGGER.info("Start plugins loading", extra={'MESSAGE_ID': 'included_plugin'})
     for name in plugins:
-        configure_plugins(config, plugins, 'openprocurement.api.plugins', name)
+        for entry_point in iter_entry_points('openprocurement.api.plugins', name):
+            plugin = entry_point.load()
+            plugin(config, plugins.get(name))
+    LOGGER.info("End plugins loading", extra={'MESSAGE_ID': 'included_plugin'})
 
 
 def main(_, **settings):
