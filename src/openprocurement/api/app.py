@@ -98,8 +98,8 @@ def _init_plugins(config, settings):
 
 def main(_, **settings):
     config = _config_init(settings)
-    _couchdb_connection(config, settings)
     _init_plugins(config, settings)
+    _couchdb_connection(config, settings)
     _document_service_key(config, settings)
     # Archive keys
     arch_pubkey = settings.get('arch_pubkey', None)
