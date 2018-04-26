@@ -137,10 +137,6 @@ def error_handler(request, request_params=True):
         params['TENDER_REV'] = request.validated['tender'].rev
         params['TENDERID'] = request.validated['tender'].tenderID
         params['TENDER_STATUS'] = request.validated['tender'].status
-    if 'auction' in request.validated:
-        params['AUCTION_REV'] = request.validated['auction'].rev
-        params['AUCTIONID'] = request.validated['auction'].auctionID
-        params['AUCTION_STATUS'] = request.validated['auction'].status
     request.registry.notify(ErrorDesctiptorEvent(request, params))
     LOGGER.info('Error on processing request "{}"'.format(dumps(errors, indent=4)),
                 extra=context_unpack(request, {'MESSAGE_ID': 'error_handler'}, params))
