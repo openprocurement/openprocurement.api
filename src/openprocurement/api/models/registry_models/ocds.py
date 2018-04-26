@@ -253,7 +253,9 @@ class RegistrationDetails(Model):
 
 
 class LokiItemClassification(ItemClassification):
-    scheme = StringType(required=True, default=DEFAULT_LOKI_ITEM_CLASSIFICATION, choices=LOKI_ITEM_CLASSIFICATION.keys())
+    scheme = StringType(
+        required=True, default=DEFAULT_LOKI_ITEM_CLASSIFICATION, choices=LOKI_ITEM_CLASSIFICATION.keys()
+    )
 
     def validate_id(self, data, code):
         available_codes = LOKI_ITEM_CLASSIFICATION.get(data.get('scheme'), [])
