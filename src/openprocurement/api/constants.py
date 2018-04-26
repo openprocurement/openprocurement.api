@@ -22,6 +22,7 @@ SCHEMA_DOC = 'openprocurement_schema'
 
 TZ = timezone(os.environ['TZ'] if 'TZ' in os.environ else 'Europe/Kiev')
 SANDBOX_MODE = os.environ.get('SANDBOX_MODE', False)
+SANDBOX_MODE = True
 AUCTIONS_COMPLAINT_STAND_STILL_TIME = timedelta(days=3)
 
 DOCUMENT_BLACKLISTED_FIELDS = ('title', 'format', 'url', 'dateModified', 'hash')
@@ -90,3 +91,7 @@ LOKI_ITEM_ADDITIONAL_CLASSIFICATIONS = {
 }
 
 IDENTIFIER_CODES = ORA_CODES
+SELLOUT_AUCTION_STATUSES = [
+    'draft', 'pending.activation', 'active.tendering', 'active.auction', 'active.qualification',
+    'active.awarded', 'complete', 'unsuccessful', 'cancelled'
+]
