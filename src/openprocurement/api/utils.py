@@ -711,6 +711,9 @@ def configure_plugins(config, plugins, group, name=None):
     for entry_point in iter_entry_points(group, name):
         plugin = entry_point.load()
         plugin(config, plugins.get(name))
+        LOGGER.info('Plugin {name} from group {group} has been loaded.'.format(
+            name=entry_point.name,
+            group=group))
 
 
 def load_plugins(config, group, **kwargs):
