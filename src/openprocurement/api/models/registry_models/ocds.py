@@ -30,7 +30,8 @@ from openprocurement.api.constants import (
     DEBTOR_TYPES,
     DEFAULT_LOKI_ITEM_CLASSIFICATION,
     LOKI_ITEM_CLASSIFICATION,
-    LOKI_ITEM_ADDITIONAL_CLASSIFICATIONS
+    LOKI_ITEM_ADDITIONAL_CLASSIFICATIONS,
+    ORA_CODES_UA_EDR
 )
 from openprocurement.api.utils import get_now, serialize_document_url
 
@@ -292,9 +293,7 @@ LokiItem.__name__ = 'Item'
 
 
 class UAEDRIdentifier(Identifier):
-    scheme = StringType(choices=['UA-EDR'])
-    legalName = StringType(required=True)
-    uri = URLType(required=True)
+    scheme = StringType(choices=ORA_CODES_UA_EDR)
 
 
 class Decision(Model):
