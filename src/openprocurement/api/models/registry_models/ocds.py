@@ -328,18 +328,10 @@ LokiDocument.__name__ = 'Document'
 
 class AssetCustodian(Organization):
     name = StringType()
-    identifier = ModelType(Identifier, serialize_when_none=False)
+    identifier = ModelType(UAEDRIdentifier, serialize_when_none=False)
     additionalIdentifiers = ListType(ModelType(UAEDRIdentifier), default=list())
-    address = ModelType(Address, serialize_when_none=False)
-    contactPoint = ModelType(ContactPoint, serialize_when_none=False)
     kind = StringType(choices=['general', 'special', 'other'])
 
+AssetHolder = AssetCustodian
+deprecated('AssetHolder', 'AssetHolder is removed because it is identical to AssetCustodian')
 
-class AssetHolder(Model):
-    name = StringType(required=True)
-    name_ru = StringType()
-    name_en = StringType()
-    identifier = ModelType(UAEDRIdentifier, required=True)
-    additionalIdentifiers = ListType(ModelType(UAEDRIdentifier), default=list())
-    address = ModelType(Address)
-    contactPoint = ModelType(ContactPoint)
