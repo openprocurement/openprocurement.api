@@ -30,7 +30,8 @@ from openprocurement.api.constants import (
     DEBTOR_TYPES,
     DEFAULT_LOKI_ITEM_CLASSIFICATION,
     LOKI_ITEM_CLASSIFICATION,
-    LOKI_ITEM_ADDITIONAL_CLASSIFICATIONS
+    LOKI_ITEM_ADDITIONAL_CLASSIFICATIONS,
+    LOKI_DOCUMENT_TYPES
 )
 from openprocurement.api.utils import get_now, serialize_document_url
 
@@ -299,13 +300,6 @@ class Decision(Model):
     title_en = StringType()
     decisionDate = IsoDateTimeType(required=True)
     decisionID = StringType(required=True)
-
-
-LOKI_DOCUMENT_TYPES = deepcopy(DOCUMENT_TYPES)
-LOKI_DOCUMENT_TYPES += [
-    'x_dgfAssetFamiliarization', 'informationDetails', 'procurementPlan', 'projectPlan',
-    'cancellationDetails'
-]
 
 
 class LokiDocument(BaseDocument):

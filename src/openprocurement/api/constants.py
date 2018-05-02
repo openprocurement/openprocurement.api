@@ -90,5 +90,10 @@ LOKI_ITEM_ADDITIONAL_CLASSIFICATIONS = {
     u'cadastralNumber': []
 }
 
+LOKI_DOCUMENT_TYPES = [
+    'notice', 'technicalSpecifications', 'illustration', 'x_presentation',
+    'informationDetails', 'cancellationDetails', 'x_dgfAssetFamiliarization',
+]
+
 
 IDENTIFIER_CODES = ORA_CODES
