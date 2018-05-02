@@ -674,7 +674,7 @@ class DummyLokiModelsTest(unittest.TestCase):
     def test_RegistrationDetails(self):
         registration_details = RegistrationDetails()
 
-        self.assertEqual(registration_details.serialize(), None)
+        self.assertEqual(registration_details.serialize(), {'status': 'unknown'})
         with self.assertRaisesRegexp(ValueError, 'RegistrationDetails Model has no role "test"'):
             registration_details.serialize('test')
 
