@@ -30,8 +30,7 @@ from openprocurement.api.constants import (
     DEBTOR_TYPES,
     DEFAULT_LOKI_ITEM_CLASSIFICATION,
     LOKI_ITEM_CLASSIFICATION,
-    LOKI_ITEM_ADDITIONAL_CLASSIFICATIONS,
-    ORA_CODES_UA_EDR
+    LOKI_ITEM_ADDITIONAL_CLASSIFICATIONS
 )
 from openprocurement.api.utils import get_now, serialize_document_url
 
@@ -294,10 +293,6 @@ class LokiItem(BaseItem):
 LokiItem.__name__ = 'Item'
 
 
-class UAEDRIdentifier(Identifier):
-    scheme = StringType(choices=ORA_CODES_UA_EDR, required=True)
-
-
 class Decision(Model):
     title = StringType()
     title_ru = StringType()
@@ -330,14 +325,11 @@ LokiDocument.__name__ = 'Document'
 
 class AssetCustodian(Organization):
     name = StringType()
-    identifier = ModelType(UAEDRIdentifier, serialize_when_none=False, required=True)
-    additionalIdentifiers = ListType(ModelType(UAEDRIdentifier), default=list())
     kind = StringType(choices=['general', 'special', 'other'])
 
 
 class AssetHolder(Organization):
     name = StringType()
-    identifier = ModelType(UAEDRIdentifier, required=True)
-    additionalIdentifiers = ListType(ModelType(UAEDRIdentifier), default=list())
     address = ModelType(Address)
     contactPoint = ModelType(ContactPoint)
+    kind = StringType(choices=['general', 'special', 'other'])

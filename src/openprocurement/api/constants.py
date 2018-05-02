@@ -90,5 +90,5 @@ LOKI_ITEM_ADDITIONAL_CLASSIFICATIONS = {
     u'cadastralNumber': []
 }
 
+
 IDENTIFIER_CODES = ORA_CODES
-ORA_CODES_UA_EDR = deepcopy(ORA_CODES).append('UA-EDR')
