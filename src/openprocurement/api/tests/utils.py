@@ -354,7 +354,7 @@ class CalculateBusinessDateTestCase(unittest.TestCase):
         auction = auction_mock(procurementMethodDetails='quick, accelerator=1440')
         start = get_now()
         period_to_add = timedelta(days=1440)
-        result = calculate_business_date(start, period_to_add, context=auction)
+        result = calculate_business_date(start, period_to_add, auction)
         self.assertEqual((result - start).days, 1)
 
     def test_accelerated_calculation_specific_hour(self):
@@ -373,7 +373,7 @@ class CalculateBusinessDateTestCase(unittest.TestCase):
         start = datetime(2018, 4, 2)
         business_days_to_add = timedelta(days=10)
         target_end_of_period = datetime(2018, 4, 17)
-        result = calculate_business_date(start, business_days_to_add, working_days=True)
+        result = calculate_business_date(start, business_days_to_add, None, working_days=True)
 
         self.assertEqual(result, target_end_of_period)
 
@@ -394,7 +394,7 @@ class CalculateBusinessDateTestCase(unittest.TestCase):
         start = datetime(2018, 4, 17)
         business_days_to_add = timedelta(days=-10)
         target_end_of_period = datetime(2018, 4, 2)
-        result = calculate_business_date(start, business_days_to_add, working_days=True)
+        result = calculate_business_date(start, business_days_to_add, None, working_days=True)
 
         self.assertEqual(result, target_end_of_period)
 
