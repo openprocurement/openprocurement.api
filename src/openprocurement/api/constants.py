@@ -3,6 +3,7 @@ import os
 import re
 
 from datetime import datetime, timedelta
+from copy import deepcopy
 from logging import getLogger
 
 from pkg_resources import get_distribution
@@ -90,3 +91,4 @@ LOKI_ITEM_ADDITIONAL_CLASSIFICATIONS = {
 }
 
 IDENTIFIER_CODES = ORA_CODES
+ORA_CODES_UA_EDR = deepcopy(ORA_CODES).append('UA-EDR')

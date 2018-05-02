@@ -30,7 +30,8 @@ from openprocurement.api.constants import (
     DEBTOR_TYPES,
     DEFAULT_LOKI_ITEM_CLASSIFICATION,
     LOKI_ITEM_CLASSIFICATION,
-    LOKI_ITEM_ADDITIONAL_CLASSIFICATIONS
+    LOKI_ITEM_ADDITIONAL_CLASSIFICATIONS,
+    ORA_CODES_UA_EDR
 )
 from openprocurement.api.utils import get_now, serialize_document_url
 
@@ -294,9 +295,7 @@ LokiItem.__name__ = 'Item'
 
 
 class UAEDRIdentifier(Identifier):
-    scheme = StringType(choices=['UA-EDR'])
-    legalName = StringType(required=True)
-    uri = URLType(required=True)
+    scheme = StringType(choices=ORA_CODES_UA_EDR, required=True)
 
 
 class Decision(Model):
@@ -331,18 +330,14 @@ LokiDocument.__name__ = 'Document'
 
 class AssetCustodian(Organization):
     name = StringType()
-    identifier = ModelType(Identifier, serialize_when_none=False)
+    identifier = ModelType(UAEDRIdentifier, serialize_when_none=False, required=True)
     additionalIdentifiers = ListType(ModelType(UAEDRIdentifier), default=list())
-    address = ModelType(Address, serialize_when_none=False)
-    contactPoint = ModelType(ContactPoint, serialize_when_none=False)
     kind = StringType(choices=['general', 'special', 'other'])
 
 
-class AssetHolder(Model):
-    name = StringType(required=True)
-    name_ru = StringType()
-    name_en = StringType()
+class AssetHolder(Organization):
+    name = StringType()
     identifier = ModelType(UAEDRIdentifier, required=True)
-    additionalIdentifiers = ListType(ModelType(UAEDRIdentifier), default=list())
+    additionalIdentifiers = ListType(ModelType(Identifier))
     address = ModelType(Address)
     contactPoint = ModelType(ContactPoint)
