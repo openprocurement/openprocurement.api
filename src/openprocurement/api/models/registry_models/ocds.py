@@ -338,6 +338,6 @@ class AssetCustodian(Organization):
 class AssetHolder(Organization):
     name = StringType()
     identifier = ModelType(UAEDRIdentifier, required=True)
-    additionalIdentifiers = ListType(ModelType(Identifier))
+    additionalIdentifiers = ListType(ModelType(UAEDRIdentifier), default=list())
     address = ModelType(Address)
     contactPoint = ModelType(ContactPoint)
