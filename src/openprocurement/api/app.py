@@ -95,14 +95,13 @@ def _auth_factory(auth_type):
 
 
 def _get_auth(app_meta):
-    auth_type = app_meta(('config', 'auth', 'type'))
+    auth_type = app_meta(('config', 'auth', 'type'), None)
     auth_func = _auth_factory(auth_type)
     return auth_func(app_meta)
 
 
 def _config_init(global_config, settings):
     app_meta = _create_app_meta(global_config)
-    res = _get_auth(app_meta)
     config = Configurator(
         autocommit=True,
         settings=settings,
