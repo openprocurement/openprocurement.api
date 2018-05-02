@@ -293,7 +293,7 @@ LokiItem.__name__ = 'Item'
 
 
 class UAEDRIdentifier(Identifier):
-    scheme = StringType(choices=ORA_CODES_UA_EDR)
+    scheme = StringType(choices=ORA_CODES_UA_EDR, required=True)
 
 
 class Decision(Model):
@@ -328,10 +328,14 @@ LokiDocument.__name__ = 'Document'
 
 class AssetCustodian(Organization):
     name = StringType()
-    identifier = ModelType(UAEDRIdentifier, serialize_when_none=False)
+    identifier = ModelType(UAEDRIdentifier, serialize_when_none=False, required=True)
     additionalIdentifiers = ListType(ModelType(UAEDRIdentifier), default=list())
     kind = StringType(choices=['general', 'special', 'other'])
 
-AssetHolder = AssetCustodian
-deprecated('AssetHolder', 'AssetHolder is removed because it is identical to AssetCustodian')
 
+class AssetHolder(Organization):
+    name = StringType()
+    identifier = ModelType(UAEDRIdentifier, required=True)
+    additionalIdentifiers = ListType(ModelType(Identifier))
+    address = ModelType(Address)
+    contactPoint = ModelType(ContactPoint)
