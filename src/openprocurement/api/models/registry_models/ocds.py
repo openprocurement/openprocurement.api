@@ -30,7 +30,8 @@ from openprocurement.api.constants import (
     DEBTOR_TYPES,
     DEFAULT_LOKI_ITEM_CLASSIFICATION,
     LOKI_ITEM_CLASSIFICATION,
-    LOKI_ITEM_ADDITIONAL_CLASSIFICATIONS
+    LOKI_ITEM_ADDITIONAL_CLASSIFICATIONS,
+    LOKI_DOCUMENT_TYPES
 )
 from openprocurement.api.utils import get_now, serialize_document_url
 
@@ -239,7 +240,7 @@ class Debt(Model):
 # Loki models
 
 class RegistrationDetails(Model):
-    status = StringType(choices=['unknown', 'registering', 'complete'], required=True)
+    status = StringType(choices=['unknown', 'registering', 'complete'], default='unknown')
     registrationID = StringType()
     registrationDate = IsoDateTimeType()
 
@@ -293,25 +294,12 @@ class LokiItem(BaseItem):
 LokiItem.__name__ = 'Item'
 
 
-class UAEDRIdentifier(Identifier):
-    scheme = StringType(choices=['UA-EDR'])
-    legalName = StringType(required=True)
-    uri = URLType(required=True)
-
-
 class Decision(Model):
     title = StringType()
     title_ru = StringType()
     title_en = StringType()
     decisionDate = IsoDateTimeType(required=True)
     decisionID = StringType(required=True)
-
-
-LOKI_DOCUMENT_TYPES = deepcopy(DOCUMENT_TYPES)
-LOKI_DOCUMENT_TYPES += [
-    'x_dgfAssetFamiliarization', 'informationDetails', 'procurementPlan', 'projectPlan',
-    'cancellationDetails'
-]
 
 
 class LokiDocument(BaseDocument):
@@ -331,18 +319,11 @@ LokiDocument.__name__ = 'Document'
 
 class AssetCustodian(Organization):
     name = StringType()
-    identifier = ModelType(Identifier, serialize_when_none=False)
-    additionalIdentifiers = ListType(ModelType(UAEDRIdentifier), default=list())
-    address = ModelType(Address, serialize_when_none=False)
-    contactPoint = ModelType(ContactPoint, serialize_when_none=False)
     kind = StringType(choices=['general', 'special', 'other'])
 
 
-class AssetHolder(Model):
-    name = StringType(required=True)
-    name_ru = StringType()
-    name_en = StringType()
-    identifier = ModelType(UAEDRIdentifier, required=True)
-    additionalIdentifiers = ListType(ModelType(UAEDRIdentifier), default=list())
+class AssetHolder(Organization):
+    name = StringType()
     address = ModelType(Address)
     contactPoint = ModelType(ContactPoint)
+    kind = StringType(choices=['general', 'special', 'other'])

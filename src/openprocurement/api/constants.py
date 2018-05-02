@@ -3,6 +3,7 @@ import os
 import re
 
 from datetime import datetime, timedelta
+from copy import deepcopy
 from logging import getLogger
 
 from pkg_resources import get_distribution
@@ -88,5 +89,11 @@ LOKI_ITEM_ADDITIONAL_CLASSIFICATIONS = {
     u'CPVS': CPVS_CODES,
     u'cadastralNumber': []
 }
+
+LOKI_DOCUMENT_TYPES = [
+    'notice', 'technicalSpecifications', 'illustration', 'x_presentation',
+    'informationDetails', 'cancellationDetails', 'x_dgfAssetFamiliarization',
+]
+
 
 IDENTIFIER_CODES = ORA_CODES
