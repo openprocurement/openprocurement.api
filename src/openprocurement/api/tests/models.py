@@ -816,6 +816,31 @@ class DummyLokiModelsTest(unittest.TestCase):
             asset_custodian.serialize('test')
 
         asset_custodian.import_data(data)
+        with self.assertRaises(ModelValidationError) as ex:
+            asset_custodian.validate()
+        self.assertEqual(
+            ex.exception.messages,
+            {'contactPoint': [u'This field is required.'],
+            'identifier': [u'This field is required.'],
+            'address': [u'This field is required.']
+             }
+        )
+        data = {
+            'contactPoint': {'name': 'name'},
+            'identifier': {'scheme': 'UA-EDR', 'id': '22222-2'},
+            'address': {'countryName': 'country name'}
+        }
+        asset_custodian.import_data(data)
+        with self.assertRaises(ModelValidationError) as ex:
+            asset_custodian.validate()
+        self.assertEqual(
+            ex.exception.messages,
+            {'contactPoint': {'email': [u'telephone or email should be present']}
+             }
+        )
+        data['contactPoint'] = {'name': 'name', 'telephone': '12345543'}
+
+        asset_custodian.import_data(data)
         asset_custodian.validate()
 
     def test_AssetHolder(self):
@@ -835,8 +860,7 @@ class DummyLokiModelsTest(unittest.TestCase):
             asset_holder.validate()
         self.assertEqual(
             ex.exception.messages,
-            {'name': [u'This field is required.'],
-            'identifier': [u'This field is required.']}
+            {'identifier': [u'This field is required.']}
         )
 
         asset_holder.import_data(data)
@@ -846,16 +870,14 @@ class DummyLokiModelsTest(unittest.TestCase):
             ex.exception.messages,
             {
                 'identifier': {
-                    'uri': [u'This field is required.'],
-                    'legalName': [u'This field is required.'],
-                    'id': [u'This field is required.']
+                    'scheme': [u'This field is required.'],
+                    'id': [u'This field is required.'],
                 }
             }
         )
         data.update({
             'identifier': {
-                'legalName': 'Legal Name',
-                'uri': 'https://localhost/someuri',
+                'scheme': 'UA-EDR',
                 'id': 'justID'
             }})
         asset_holder.import_data(data)
