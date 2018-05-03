@@ -7,20 +7,19 @@ if 'test' not in __import__('sys').argv[0]:
     gevent.monkey.patch_all()
 
 import os
-from collections import defaultdict
-from copy import deepcopy, copy
-from libnacl.public import SecretKey, PublicKey
-from libnacl.sign import Signer, Verifier
-from logging import getLogger
-from pkg_resources import iter_entry_points
-from pyramid.authorization import ACLAuthorizationPolicy as AuthorizationPolicy
-from pyramid.config import Configurator
-from pyramid.renderers import JSON, JSONP
-from pyramid.settings import asbool
 import simplejson
+from logging import getLogger
+from copy import deepcopy, copy
+from collections import defaultdict as dd
 
-from openprocurement.api.auth import AuthenticationPolicy, authenticated_role, check_accreditation
-from openprocurement.api.database import set_api_security
+from pyramid.settings import asbool
+from pyramid.config import Configurator
+from libnacl.sign import Signer, Verifier
+from pyramid.renderers import JSON, JSONP
+from pkg_resources import iter_entry_points
+from libnacl.public import SecretKey, PublicKey
+from pyramid.authorization import ACLAuthorizationPolicy as AuthorizationPolicy
+
 from openprocurement.api.utils import (
     forbidden,
     request_params,
@@ -30,6 +29,10 @@ from openprocurement.api.utils import (
     configure_plugins,
     read_yaml
 )
+from openprocurement.api.database import set_api_security
+from openprocurement.api.auth import AuthenticationPolicy, authenticated_role, check_accreditation
+
+from auth import get_auth
 
 LOGGER = getLogger("{}.init".format(__name__))
 APP_META_FILE = 'app_meta.yaml'
@@ -61,43 +64,64 @@ def _document_service_key(config):
 
 
 def _create_app_meta(global_config):
+    """This function returns the function that returns the configuration of the application
+    reading configuration file will be only once
+
+    call of creating_app_meta must be only once in app initalization
+    next times must call inner function
+
+    if we have configuration file like this:
+    plugins:
+      api:
+    config:
+      auth:
+        type: file
+        src: auth.ini
+      database:
+        db_name: test
+        couchdb.url: http://db.url
+
+    in order to get the embedded configuration it is necessary to list the nesting level
+    as the first argument, and it argument must be iterable
+    example:
+        app_meta = create_app_meta(global_config)
+        conf_db = app_meta(('config', 'database')]
+
+    If you want the default value, you can pass it to second argument
+    example:
+        conf_db = app_meta(('config', 'not_exist'), False]
+
+    :param global_config: it is instance of pyramid global config
+    :type global_config: dict
+    :rtype: function
+
+    inner return always copy of config it mean what you can change it and
+    origin config will be without changes
+
+    inner return defaultdict and it add flexibility to config
+    you dont need to care about checking return value if it does not exist will
+    be None
+
+    example:
+        conf_db = app_meta(('config', 'not_exist')]
+        conf_db['foo'] == None
+        True
+
+    """
     file_place = os.path.join(global_config['here'], APP_META_FILE)
-    config_data = defaultdict(lambda: None, read_yaml(file_place))
+    config_data = dd(lambda: None, read_yaml(file_place))
     config_data['here'] = copy(global_config['here'])
 
-    def inner(keys=(), alter=defaultdict(lambda: None)):
+    def inner(keys=(), alter=dd(lambda: None)):
         assert  hasattr(keys, '__iter__'), "keys must be iterable"
-        level = config_data if keys else defaultdict(lambda: None, config_data)
+        level = config_data if keys else dd(lambda: None, config_data)
         for key in keys:
             if not level: break
             nested = type(level[key]) is dict
-            level = defaultdict(lambda: None, level[key]) if nested else deepcopy(level[key])
+            level = dd(lambda: None, level[key]) if nested else deepcopy(level[key])
         meta = level if level else deepcopy(alter)
         return meta
     return inner
-
-auth_mapping = {}
-
-def auth(auth_type=None):
-    def decorator(func):
-        auth_mapping[auth_type] = func
-        return func
-    return decorator
-
-@auth(auth_type="file")
-def _file_auth(app_meta):
-    conf_auth = app_meta(('config', 'auth'))
-    return os.path.join(app_meta(['here']), conf_auth.get('src', None))
-
-def _auth_factory(auth_type):
-    auth_func = auth_mapping.get(auth_type, None)
-    return auth_func
-
-
-def _get_auth(app_meta):
-    auth_type = app_meta(('config', 'auth', 'type'), None)
-    auth_func = _auth_factory(auth_type)
-    return auth_func(app_meta)
 
 
 def _config_init(global_config, settings):
@@ -105,7 +129,7 @@ def _config_init(global_config, settings):
     config = Configurator(
         autocommit=True,
         settings=settings,
-        authentication_policy=AuthenticationPolicy(_get_auth(app_meta), __name__),
+        authentication_policy=AuthenticationPolicy(get_auth(app_meta), __name__),
         authorization_policy=AuthorizationPolicy(),
         route_prefix=route_prefix(app_meta(('config', 'main'))),
     )
@@ -132,20 +156,41 @@ def _search_subscribers(config, settings, plugins):
             configure_plugins(config, plugins, 'openprocurement.{}'.format(k), subscriber)
 
 
+def get_evenly_plugins(config, plugin_map, group):
+    """
+    Load plugin which fall into the group
+
+    :param config: app config
+    :param plugin_map: mapping of plugins names
+    :param group: group of entry point
+
+    :type config: Configurator
+    :type plugin_map: abs.Mapping
+    :type group: string
+
+    :rtype: None
+    """
+
+    if not hasattr(plugin_map, '__iter__'):
+        return
+    for name in plugin_map:
+        for entry_point in iter_entry_points(group, name):
+            plugin = entry_point.load()
+            value = plugin_map.get(name) if plugin_map.get(name) else {}
+            plugin(config, dd(lambda: None, value))
+
+
 def _init_plugins(config):
     plugins = config.registry.app_meta(['plugins'])
     LOGGER.info("Start plugins loading", extra={'MESSAGE_ID': 'included_plugin'})
-    for name in plugins:
-        for entry_point in iter_entry_points('openprocurement.api.plugins', name):
-            plugin = entry_point.load()
-            plugin(config, plugins.get(name))
+    get_evenly_plugins(config, plugins, 'openprocurement.api.plugins')
     LOGGER.info("End plugins loading", extra={'MESSAGE_ID': 'included_plugin'})
 
 
 def main(global_config, **settings):
     config = _config_init(global_config, settings)
-    _init_plugins(config)
     _couchdb_connection(config)
+    _init_plugins(config)
     _document_service_key(config)
     conf_main = config.registry.app_meta(('config', 'main'))
     config.registry.server_id = conf_main.get('id', '')
