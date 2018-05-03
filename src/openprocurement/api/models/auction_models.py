@@ -7,11 +7,9 @@ from schematics.transforms import whitelist, blacklist, export_loop
 from schematics.types import (
     StringType,
     FloatType,
-    URLType,
     IntType,
     BooleanType,
     BaseType,
-    EmailType,
     MD5Type
 )
 from schematics.types.compound import (
@@ -21,22 +19,28 @@ from schematics.types.compound import (
 from schematics.types.serializable import serializable
 
 from openprocurement.api.constants import (
-    CPV_CODES, ORA_CODES, DK_CODES, CPV_BLOCK_FROM, ATC_CODES, INN_CODES, ATC_INN_CLASSIFICATIONS_FROM,
+    CPV_CODES, ORA_CODES, DK_CODES, CPV_BLOCK_FROM, ATC_CODES, INN_CODES, ATC_INN_CLASSIFICATIONS_FROM, DEFAULT_CURRENCY
+)
+from openprocurement.api.models.common import (
+    Period,
+    Classification,
+    BaseUnit,
+    Organization as BaseOrganization,
+    Address,
+    Location,
+    BaseIdentifier,
+    BasicValue
 )
 from openprocurement.api.models.schematics_extender import (
-    Model,
-    ListType,
-    IsoDateTimeType,
-    HashType
+    Model, ListType, IsoDateTimeType, HashType
 )
-from openprocurement.api.models.models import Period
-from openprocurement.api.validation import validate_uniq
 from openprocurement.api.utils import (
     get_now,
     get_schematics_document,
     get_document_creation_date,
     serialize_document_url,
 )
+from openprocurement.api.validation import validate_uniq
 
 schematics_default_role = SchematicsDocument.Options.roles['default'] + blacklist("__parent__")
 schematics_embedded_role = SchematicsDocument.Options.roles['embedded'] + blacklist("__parent__")
@@ -46,11 +50,10 @@ listing_role = whitelist('dateModified', 'doc_id')
 draft_role = whitelist('status')
 
 
-class Value(Model):
-    amount = FloatType(required=True, min_value=0)  # Amount as a number.
-    # The currency in 3-letter ISO 4217 format.
-    currency = StringType(required=True, default=u'UAH', max_length=3, min_length=3)
+class Value(BasicValue):
     valueAddedTaxIncluded = BooleanType(required=True, default=True)
+    # The currency in 3-letter ISO 4217 format.
+    currency = StringType(required=True, default=DEFAULT_CURRENCY, max_length=3, min_length=3)
 
 
 class FeatureValue(Model):
@@ -100,15 +103,6 @@ class Feature(Model):
             not in [i.id for i in data['__parent__'].lots]
         ):
             raise ValidationError(u"relatedItem should be one of lots")
-
-
-class Classification(Model):
-    scheme = StringType(required=True)  # The classification scheme for the goods
-    id = StringType(required=True)  # The classification ID from the Scheme used
-    description = StringType(required=True)  # A description of the goods, services to be provided.
-    description_en = StringType()
-    description_ru = StringType()
-    uri = URLType()
 
 
 class ComplaintModelType(ModelType):
@@ -172,33 +166,12 @@ class AdditionalClassification(Classification):
                 raise ValidationError(BaseType.MESSAGES['choices'].format(unicode(INN_CODES)))
 
 
-class Unit(Model):
-    """Description of the unit which the good comes in e.g. hours, kilograms.
-    Made up of a unit name, and the value of a single unit.
+class Unit(BaseUnit):
+    """
+    Extends BaseUnit adding value field to it.
     """
 
-    name = StringType()
-    name_en = StringType()
-    name_ru = StringType()
     value = ModelType(Value)
-    code = StringType(required=True)
-
-
-class Address(Model):
-
-    streetAddress = StringType()
-    locality = StringType()
-    region = StringType()
-    postalCode = StringType()
-    countryName = StringType(required=True)
-    countryName_en = StringType()
-    countryName_ru = StringType()
-
-
-class Location(Model):
-    latitude = BaseType(required=True)
-    longitude = BaseType(required=True)
-    elevation = BaseType()
 
 
 class Document(Model):
@@ -259,14 +232,9 @@ class Document(Model):
         return self
 
 
-class Identifier(Model):
+class Identifier(BaseIdentifier):
     # The scheme that holds the unique identifiers used to identify the item being identified.
     scheme = StringType(required=True, choices=ORA_CODES)
-    id = BaseType(required=True)  # The identifier of the organization in the selected scheme.
-    legalName = StringType()  # The legally registered name of the organization.
-    legalName_en = StringType()
-    legalName_ru = StringType()
-    uri = URLType()  # A URI to identify the organization.
 
 
 class Item(Model):
@@ -285,35 +253,9 @@ class Item(Model):
     relatedLot = MD5Type()
 
 
-class ContactPoint(Model):
-    name = StringType(required=True)
-    name_en = StringType()
-    name_ru = StringType()
-    email = EmailType()
-    telephone = StringType()
-    faxNumber = StringType()
-    url = URLType()
-
-    def validate_email(self, data, value):
-        if not value and not data.get('telephone'):
-            raise ValidationError(u"telephone or email should be present")
-
-
-class Organization(Model):
-    """An organization."""
-    class Options:
-        roles = {
-            'embedded': schematics_embedded_role,
-            'view': schematics_default_role,
-        }
-
-    name = StringType(required=True)
-    name_en = StringType()
-    name_ru = StringType()
+class Organization(BaseOrganization):
     identifier = ModelType(Identifier, required=True)
     additionalIdentifiers = ListType(ModelType(Identifier))
-    address = ModelType(Address, required=True)
-    contactPoint = ModelType(ContactPoint, required=True)
 
 
 class Revision(Model):

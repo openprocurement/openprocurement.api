@@ -3,44 +3,50 @@ import unittest
 from copy import deepcopy
 from datetime import datetime, timedelta
 from decimal import Decimal
-from schematics.types import BaseType
 
 import mock
 from isodate.duration import Duration
-from openprocurement.api.models.registry_models.roles import blacklist
-from openprocurement.api.models.schematics_extender import DecimalType
-from openprocurement.api.models.registry_models.ocds import (
-    Organization,
+from schematics.exceptions import ConversionError, ValidationError, ModelValidationError
+from schematics.types import BaseType
+
+from openprocurement.api.constants import LOKI_ITEM_CLASSIFICATION
+from openprocurement.api.models.auction_models import (
+    Document as AuctionDocument
+)
+from openprocurement.api.models.common import (
+    Period,
+    PeriodEndRequired,
     ContactPoint,
-    Identifier,
+    Classification,
     Address,
+    Location
+)
+from openprocurement.api.models.ocds import (
+    Organization,
+    Identifier,
     BaseItem,
-    Location,
     Unit,
     Value,
     ItemClassification,
-    Classification,
     BaseDocument,
-    LokiDocument,
+)
+from openprocurement.api.models.registry_models import (
     RegistrationDetails,
     LokiItem,
-    AssetCustodian,
-    AssetHolder,
     Decision,
+    LokiDocument,
+    AssetCustodian,
+    AssetHolder
 )
-from openprocurement.api.models.auction_models.models import (
-    Document as AuctionDocument
-)
-from openprocurement.api.constants import LOKI_ITEM_CLASSIFICATION
-from openprocurement.api.models.models import Period, PeriodEndRequired
+from openprocurement.api.models.roles import blacklist
 from openprocurement.api.models.schematics_extender import (
-    IsoDateTimeType, HashType, IsoDurationType)
+    IsoDateTimeType, HashType, IsoDurationType, DecimalType
+)
 from openprocurement.api.tests.blanks.json_data import (
     test_item_data_with_schema,
     test_loki_item_data
 )
 from openprocurement.api.utils import get_now
-from schematics.exceptions import ConversionError, ValidationError, ModelValidationError
 
 now = get_now()
 
@@ -348,7 +354,7 @@ class DummyOCDSModelsTest(unittest.TestCase):
         item2.location = None
         self.assertEqual(item, item2)
 
-        with mock.patch.dict('openprocurement.api.models.registry_models.ocds.BaseItem._options.roles', {'test': blacklist('__parent__', 'address')}):
+        with mock.patch.dict('openprocurement.api.models.ocds.BaseItem._options.roles', {'test': blacklist('__parent__', 'address')}):
             self.assertNotIn('address', item.serialize('test'))
             self.assertNotEqual(item.serialize('test'), item.serialize())
             self.assertEqual(item.serialize('test'), item2.serialize('test'))
@@ -391,7 +397,7 @@ class DummyOCDSModelsTest(unittest.TestCase):
         identifier.id = 'test'
         identifier.validate()
 
-        with mock.patch.dict('openprocurement.api.models.registry_models.ocds.Identifier._options.roles', {'test': blacklist('id')}):
+        with mock.patch.dict('openprocurement.api.models.ocds.Identifier._options.roles', {'test': blacklist('id')}):
             self.assertIn('id', identifier.serialize().keys())
             self.assertNotIn('id', identifier.serialize('test').keys())
 
@@ -463,7 +469,7 @@ class DummyOCDSModelsTest(unittest.TestCase):
         with self.assertRaisesRegexp(ValueError, 'Organization Model has no role "test"'):
             organization.serialize('test')
 
-        with mock.patch.dict('openprocurement.api.models.registry_models.ocds.Identifier._options.roles', {'view': blacklist('id')}):
+        with mock.patch.dict('openprocurement.api.models.ocds.Identifier._options.roles', {'view': blacklist('id')}):
             self.assertNotEqual(organization.serialize('view'),
                                 organization.serialize())
             self.assertIn('id', organization.serialize()['identifier'].keys())
