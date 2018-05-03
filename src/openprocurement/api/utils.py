@@ -798,14 +798,16 @@ def is_holiday(date):
     )
 
 
-def accelerated_calculate_business_date(date, period, context):
+def accelerated_calculate_business_date(date, period, context, specific_hour):
     if context and 'procurementMethodDetails' in context and context['procurementMethodDetails']:
         re_obj = ACCELERATOR_RE.search(context['procurementMethodDetails'])
         if re_obj and 'accelerator' in re_obj.groupdict():
+            if specific_hour:
+                period = period + (set_specific_hour(date, specific_hour) - date)
             return date + (period / int(re_obj.groupdict()['accelerator']))
 
 
-def calculate_business_date(date_obj, timedelta_obj, context=None, working_days=False):
+def calculate_business_date(date_obj, timedelta_obj, context=None, working_days=False, specific_hour=None):
     """This method calculates end of business period from given start and timedelta
 
     The calculation of end of business period is complex, so this method is used project-wide.
@@ -827,6 +829,7 @@ def calculate_business_date(date_obj, timedelta_obj, context=None, working_days=
         usually it's Auction model's instance. Must be present to use acceleration
         mode.
     :param working_days: make calculations taking into account working days
+    :param specific_hour: specific hour, to which date of period end should be rounded
     :type date_obj: datetime.datetime
     :type timedelta_obj: datetime.timedelta
     :type context: openprocurement.api.models.Tender
@@ -836,7 +839,7 @@ def calculate_business_date(date_obj, timedelta_obj, context=None, working_days=
 
     """
 
-    accelerated_calculation = accelerated_calculate_business_date(date_obj, timedelta_obj, context)
+    accelerated_calculation = accelerated_calculate_business_date(date_obj, timedelta_obj, context, specific_hour)
     if accelerated_calculation:
         return accelerated_calculation
 
@@ -856,6 +859,8 @@ def calculate_business_date(date_obj, timedelta_obj, context=None, working_days=
             date_obj += timedelta(1) if added_period_is_positive else -timedelta(1)
             working_days_count -= 1
 
+    if specific_hour:
+        date_obj = set_specific_hour(date_obj, specific_hour)
     return date_obj
 
 
