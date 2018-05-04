@@ -371,6 +371,14 @@ class CalculateBusinessDateTestCase(unittest.TestCase):
         result = calculate_business_date(start, period_to_add, context=auction)
         self.assertEqual((result - start).days, 1)
 
+    def test_accelerated_calculation_specific_hour(self):
+        auction = auction_mock(procurementMethodDetails='quick, accelerator=1440')
+        start = datetime(2018, 4, 2, 16)
+        specific_hour = start.hour + 2
+        period_to_add = timedelta(days=20)
+        result = calculate_business_date(start, period_to_add, context=auction, specific_hour=specific_hour)
+        self.assertEqual((result - start).seconds, 20*60+5)
+
     def test_common_calculation_with_working_days(self):
         """This test assumes that <Mon 2018-4-9> is holiday, besides regular holidays
         of that month. It must be fixed in `working_days.json` file, that translates
@@ -382,6 +390,19 @@ class CalculateBusinessDateTestCase(unittest.TestCase):
         result = calculate_business_date(start, business_days_to_add, working_days=True)
 
         self.assertEqual(result, target_end_of_period)
+
+    def test_common_calculation_with_working_days_specific_hour(self):
+        """This test assumes that <Mon 2018-4-9> is holiday, besides regular holidays
+        of that month. It must be fixed in `working_days.json` file, that translates
+        into `WORKING_DAYS` constant.
+        """
+        start = datetime(2018, 4, 2)
+        specific_hour = 18
+        business_days_to_add = timedelta(days=10)
+        target_end_of_period = datetime(2018, 4, 17)
+        result = calculate_business_date(start, business_days_to_add, working_days=True, specific_hour=specific_hour)
+
+        self.assertEqual(result, target_end_of_period + timedelta(hours=specific_hour))
 
     def test_calculate_with_negative_time_period(self):
         start = datetime(2018, 4, 17)

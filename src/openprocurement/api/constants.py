@@ -3,7 +3,6 @@ import os
 import re
 
 from datetime import datetime, timedelta
-from copy import deepcopy
 from logging import getLogger
 
 from pkg_resources import get_distribution
