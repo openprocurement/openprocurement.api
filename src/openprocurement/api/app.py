@@ -117,7 +117,7 @@ def _create_app_meta(global_config):
         for key in keys:
             if not level:
                 break
-            nested = isinstance(level[key]) is dict
+            nested = isinstance(level[key], dict)
             level = dd(lambda: None, level[key]) if nested else deepcopy(level[key])
         meta = level if level else deepcopy(alter)
         return meta
