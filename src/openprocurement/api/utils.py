@@ -24,7 +24,6 @@ from couchdb_schematics.document import SchematicsDocument
 from Crypto.Cipher import AES
 from jsonpatch import make_patch, apply_patch as _apply_patch
 from jsonpointer import resolve_pointer
-from pkg_resources import iter_entry_points
 from rfc6266 import build_header
 from schematics.exceptions import ValidationError
 from schematics.types import StringType
