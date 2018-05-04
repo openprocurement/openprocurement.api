@@ -71,5 +71,7 @@ def generate_spore_description(services, name, base_url, version, **kwargs):
 def get_spore(request):
     services = get_services()
     return generate_spore_description(
-        services, 'Service name', request.application_url, request.registry.settings.get('api_version', VERSION)
+        services, 'Service name',
+        request.application_url,
+        request.registry.app_meta(('config', 'main', 'api_version'), VERSION)
     )

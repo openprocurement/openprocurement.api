@@ -24,7 +24,6 @@ from couchdb_schematics.document import SchematicsDocument
 from Crypto.Cipher import AES
 from jsonpatch import make_patch, apply_patch as _apply_patch
 from jsonpointer import resolve_pointer
-from pkg_resources import iter_entry_points
 from rfc6266 import build_header
 from schematics.exceptions import ValidationError
 from schematics.types import StringType
@@ -45,8 +44,9 @@ ACCELERATOR_RE = compile(r'.accelerator=(?P<accelerator>\d+)')
 json_view = partial(view, renderer='json')
 
 
-def route_prefix(settings):
-    return '/api/{}'.format(settings.get('api_version', VERSION))
+def route_prefix(conf_main):
+    version = conf_main.get('api_version', VERSION)
+    return '/api/{}'.format(version)
 
 
 def validate_dkpp(items, *args):
@@ -621,22 +621,20 @@ def get_content_configurator(request):
                                                   IContentConfigurator)
 
 
-def fix_url(item, app_url, settings=None):
-    if not settings:
-        settings = {}
+def fix_url(item, app_url, conf_main):
     if isinstance(item, list):
         [
-            fix_url(i, app_url, settings)
+            fix_url(i, app_url, conf_main)
             for i in item
             if isinstance(i, dict) or isinstance(i, list)
         ]
     elif isinstance(item, dict):
         if "format" in item and "url" in item and '?download=' in item['url']:
             path = item["url"] if item["url"].startswith('/') else '/' + '/'.join(item['url'].split('/')[5:])
-            item["url"] = app_url + route_prefix(settings) + path
+            item["url"] = app_url + route_prefix(conf_main) + path
             return
         [
-            fix_url(item[i], app_url, settings)
+            fix_url(item[i], app_url, conf_main)
             for i in item
             if isinstance(item[i], dict) or isinstance(item[i], list)
         ]
@@ -705,20 +703,6 @@ def prepare_revision(item, patch, author):
         'changes': patch,
         'rev': item.rev
     }
-
-
-def configure_plugins(config, plugins, group, name=None):
-    for entry_point in iter_entry_points(group, name):
-        plugin = entry_point.load()
-        plugin(config, plugins.get(name))
-        LOGGER.info('Plugin {name} from group {group} has been loaded.'.format(
-            name=entry_point.name,
-            group=group))
-
-
-def load_plugins(config, group, **kwargs):
-    plugins = kwargs.get('plugins', {})
-    configure_plugins(config, plugins, group, kwargs.get('name'))
 
 
 def serialize_document_url(document):

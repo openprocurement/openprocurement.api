@@ -1,8 +1,37 @@
 # -*- coding: utf-8 -*-
+import os
 import binascii
 from hashlib import sha512
+
 from pyramid.authentication import BasicAuthAuthenticationPolicy, b64decode
 from ConfigParser import ConfigParser
+
+
+auth_mapping = {}
+
+
+def auth(auth_type=None):
+    def decorator(func):
+        auth_mapping[auth_type] = func
+        return func
+    return decorator
+
+
+@auth(auth_type="file")
+def _file_auth(app_meta):
+    conf_auth = app_meta(('config', 'auth'))
+    return os.path.join(app_meta(['here']), conf_auth.get('src', None))
+
+
+def _auth_factory(auth_type):
+    auth_func = auth_mapping.get(auth_type, None)
+    return auth_func
+
+
+def get_auth(app_meta):
+    auth_type = app_meta(('config', 'auth', 'type'), None)
+    auth_func = _auth_factory(auth_type)
+    return auth_func(app_meta)
 
 
 class AuthenticationPolicy(BasicAuthAuthenticationPolicy):

@@ -19,7 +19,6 @@ from openprocurement.api.utils import (
     generate_id,
     get_content_configurator,
     get_revision_changes,
-    load_plugins,
     prepare_patch,
     set_modetest_titles,
     set_ownership,
@@ -316,19 +315,6 @@ class UtilsTest(unittest.TestCase):
         result = generate_docservice_url(request, '1234567890abcdef1234567890abcdef', True, 'test_prefix')
         for item in expected_result:
             self.assertIn(item, result)
-
-    @mock.patch('pkg_resources.iter_entry_points')
-    @mock.patch('openprocurement.api.includeme.includeme')
-    def test_load_plugins(self, mock_includeme, mock_iter_entry_points):
-        config = Configurator()
-        group = 'openprocurement.api.plugins'
-        kwargs = {'plugins': {'api': None}, 'name': 'api'}
-        entry_point = mock.MagicMock()
-        entry_point.name = 'api'
-        mock_iter_entry_points.return_value = entry_point
-        load_plugins(config, group, **kwargs)
-
-        mock_includeme.assert_called_once_with(config, None)
 
     def test_prepare_patch(self):
         changes = []
