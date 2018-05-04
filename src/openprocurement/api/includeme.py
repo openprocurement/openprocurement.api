@@ -1,10 +1,9 @@
 # -*- coding: utf-8 -*-
 import logging
-from collections import defaultdict as dd
 from pyramid.interfaces import IRequest
 from openprocurement.api.interfaces import IContentConfigurator, IOPContent
 from openprocurement.api.adapters import ContentConfigurator
-from openprocurement.api.utils import get_content_configurator, request_get_now, configure_plugins
+from openprocurement.api.utils import get_content_configurator, request_get_now
 from openprocurement.api.app import get_evenly_plugins
 
 LOGGER = logging.getLogger(__name__)

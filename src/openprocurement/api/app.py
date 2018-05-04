@@ -26,7 +26,6 @@ from openprocurement.api.utils import (
     couchdb_json_decode,
     route_prefix,
     json_body,
-    configure_plugins,
     read_yaml
 )
 from openprocurement.api.database import set_api_security
@@ -146,14 +145,6 @@ def _config_init(global_config, settings):
     config.add_renderer('jsonp', JSONP(param_name='opt_jsonp', serializer=simplejson.dumps))
     config.add_renderer('prettyjsonp', JSONP(indent=4, param_name='opt_jsonp', serializer=simplejson.dumps))
     return config
-
-
-def _search_subscribers(config, settings, plugins):
-    subscribers_keys = [k for k in settings if k.startswith('subscribers.')]
-    for k in subscribers_keys:
-        subscribers = settings[k].split(',')
-        for subscriber in subscribers:
-            configure_plugins(config, plugins, 'openprocurement.{}'.format(k), subscriber)
 
 
 def get_evenly_plugins(config, plugin_map, group):
