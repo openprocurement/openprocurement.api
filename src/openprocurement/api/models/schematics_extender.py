@@ -21,6 +21,15 @@ from openprocurement.api.utils import set_parent
 
 
 class DecimalType(BaseDecimalType):
+    """
+        DecimalType extends schematics.DecimalType, adding opportunity to set precision(amount of numbers after dot)
+        :param precision:
+            Amount of numbers after dot.
+        :param min_value:
+            Minimal value that can be written. If value is less than min_value ConversionError will be raised.
+        :param max_value:
+            Max value that can be written. If value is bigger than max_value ConversionError will be raised.
+    """
     def __init__(self, precision=-3, min_value=None, max_value=None, **kwargs):
         self.min_value, self.max_value = min_value, max_value
         self.precision = Decimal("1E{:d}".format(precision))
@@ -43,6 +52,9 @@ class DecimalType(BaseDecimalType):
 
 
 class IsoDateTimeType(BaseType):
+    """
+        Type for working with datetime according to ISO8601 standard.
+    """
     MESSAGES = {
         'parse': u'Could not parse {0}. Should be ISO8601.',
     }
@@ -65,6 +77,10 @@ class IsoDateTimeType(BaseType):
 
 
 class IsoDurationType(BaseType):
+    """
+        Type for working with duration according to ISO8601 standard.
+    """
+
     MESSAGES = {
         'parse': u'Could not parse {0}. Should be ISO8601 duration format.',
     }
@@ -84,6 +100,10 @@ class IsoDurationType(BaseType):
 
 
 class ListType(BaseListType):
+    """
+        This ListType differ from schematics.ListType only in fact that
+        'print_none' attribute is set in self.field.export_loop
+    """
 
     def export_loop(self, list_instance, field_converter,
                     role=None, print_none=False):
@@ -120,6 +140,13 @@ class ListType(BaseListType):
 
 
 class SifterListType(ListType):
+    """
+        Add opportunity to change role for exporting item in list depending on:
+        :param filter_by:
+            Field which we use to filter.
+        :param filter_in_values:
+            Values that used to check if item of list should change its role.
+    """
     def __init__(self, field, min_size=None, max_size=None,
                  filter_by=None, filter_in_values=[], **kwargs):
         self.filter_by = filter_by
@@ -168,6 +195,9 @@ class SifterListType(ListType):
 
 
 class HashType(StringType):
+    """
+        Type for saving and validating hash according to python hashlib module.
+    """
 
     MESSAGES = {
         'hash_invalid': "Hash type is not supported.",
@@ -196,6 +226,10 @@ class HashType(StringType):
 
 
 class Model(SchematicsModel):
+    """
+        Extended schematics.Model class.
+        Working with parent and setting it was added to existed functionality.
+    """
     class Options(object):
         """Export options for Document."""
         serialize_when_none = False
@@ -231,7 +265,10 @@ class Model(SchematicsModel):
     def to_patch(self, role=None):
         """
         Return data as it would be validated. No filtering of output unless
-        role is defined.
+        role is defined. It is actually schematics.models.to_primitive function
+        but calling export_loop going with raise_error_on_role and print_none always
+        setting to True.
+
         """
         def field_converter(field, value):
             return field.to_primitive(value)
@@ -240,6 +277,10 @@ class Model(SchematicsModel):
         return data
 
     def get_role(self):
+        """
+        Return role that should be used for validation. This method is fully custom
+        so it's called only in openprocurement code not in schematics.
+        """
         root = self.__parent__
         while root.__parent__ is not None:
             root = root.__parent__
