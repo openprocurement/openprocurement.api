@@ -23,6 +23,12 @@ from openprocurement.api.utils import set_parent
 class DecimalType(BaseDecimalType):
     """
         DecimalType extends schematics.DecimalType, adding opportunity to set precision(amount of numbers after dot)
+        :param precision:
+            Amount of numbers after dot.
+        :param min_value:
+            Minimal value that can be written. If value is less than min_value ConversionError will be raised.
+        :param max_value:
+            Max value that can be written. If value is bigger than max_value ConversionError will be raised.
     """
     def __init__(self, precision=-3, min_value=None, max_value=None, **kwargs):
         self.min_value, self.max_value = min_value, max_value
@@ -136,8 +142,10 @@ class ListType(BaseListType):
 class SifterListType(ListType):
     """
         Add opportunity to change role for exporting item in list depending on:
-        filter_by - field which we use to filter
-        filter_in_values - values that used to check if item of list should change its role
+        :param filter_by:
+            Field which we use to filter.
+        :param filter_in_values:
+            Values that used to check if item of list should change its role.
     """
     def __init__(self, field, min_size=None, max_size=None,
                  filter_by=None, filter_in_values=[], **kwargs):
@@ -220,14 +228,7 @@ class HashType(StringType):
 class Model(SchematicsModel):
     """
         Extended schematics.Model class.
-        Working with parent and setting it was added to existed functionality
-        Added two additional functions:
-        to_patch - return data that should be set in couchdb.
-        It is actually schematics.models.to_primitive function but calling export_loop
-        going with raise_error_on_role and print_none always setting to True.
-        get_role - return role that should be used for validation.
-        This method is fully custom so it called only in openprocurement code not in schematics.
-
+        Working with parent and setting it was added to existed functionality.
     """
     class Options(object):
         """Export options for Document."""
@@ -264,7 +265,10 @@ class Model(SchematicsModel):
     def to_patch(self, role=None):
         """
         Return data as it would be validated. No filtering of output unless
-        role is defined.
+        role is defined. It is actually schematics.models.to_primitive function
+        but calling export_loop going with raise_error_on_role and print_none always
+        setting to True.
+
         """
         def field_converter(field, value):
             return field.to_primitive(value)
@@ -273,6 +277,10 @@ class Model(SchematicsModel):
         return data
 
     def get_role(self):
+        """
+        Return role that should be used for validation. This method is fully custom
+        so it's called only in openprocurement code not in schematics.
+        """
         root = self.__parent__
         while root.__parent__ is not None:
             root = root.__parent__
