@@ -31,7 +31,7 @@ from openprocurement.api.utils import (
 from openprocurement.api.database import set_api_security
 from openprocurement.api.auth import AuthenticationPolicy, authenticated_role, check_accreditation
 
-from auth import get_auth
+from openprocurement.api.auth import get_auth
 
 LOGGER = getLogger("{}.init".format(__name__))
 APP_META_FILE = 'app_meta.yaml'
@@ -115,8 +115,9 @@ def _create_app_meta(global_config):
         assert  hasattr(keys, '__iter__'), "keys must be iterable"
         level = config_data if keys else dd(lambda: None, config_data)
         for key in keys:
-            if not level: break
-            nested = type(level[key]) is dict
+            if not level:
+                break
+            nested = isinstance(level[key]) is dict
             level = dd(lambda: None, level[key]) if nested else deepcopy(level[key])
         meta = level if level else deepcopy(alter)
         return meta
