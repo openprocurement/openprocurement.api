@@ -871,3 +871,37 @@ def read_yaml(name):
     with open(file_path) as _file:
         data = _file.read()
     return safe_load(data)
+
+
+def check_settings(settings, section=None):
+    settings_dict = {'_couchdb_connection': ['couchdb_server', 'db'],
+                     '_document_service_key': ['docservice_url', 'docservice_username',
+                                               'docservice_upload_url', 'docservice_password',
+                                               'docservice_key'],
+                     '_auction': ['auction_module_url', 'signer'],
+                     '_config_init': ['plugins', 'auth.file'],
+                     'main': ['server_id', 'arch_pubkey'],
+                     '_default': ['health_threshold', 'health_threshold_func',
+                                  'update_after']}
+    required_settings = settings_dict[section]
+    added_settings = {}
+    missing_settings = []
+    incorrect_urls = {}
+    for i in required_settings:
+        if i in settings:
+            if 'url' in i and settings[i] is not None:
+                parsed_url = urlparse(settings[i])
+                added_settings[i] = settings[i]
+                if not (parsed_url.scheme and parsed_url.netloc):
+                    incorrect_urls[i] = settings[i]
+            elif settings[i] == '' or settings[i] is not None:
+                missing_settings.append(i)
+            else:
+                added_settings[i] = settings[i]
+
+    if missing_settings or incorrect_urls:
+        LOGGER.warning('Failed to initialize {} section, {} must be added to the settings'.format(section, missing_settings))
+    else:
+        LOGGER.info('Successful {} section initialization, {} were added to settings'.format(section, added_settings))
+    if incorrect_urls:
+        LOGGER.warning('Incorrect url {} was added to settings section {}'.format(incorrect_urls, section))
