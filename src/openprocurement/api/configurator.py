@@ -36,6 +36,6 @@ class Configurator(object):
         if key in self.required_fields:
             if not isinstance(value, self.required_fields[key]):
                 raise ConfiguratorException(
-                    self.error_messages['type_error'].format(key, type(self.required_fields[key]()).__name__)
+                    self.error_messages['type_error'].format(key, self.required_fields[key].__name__)
                 )
         return super(Configurator, self).__setattr__(key, value)
