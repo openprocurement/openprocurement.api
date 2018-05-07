@@ -50,21 +50,21 @@ DEFAULT_LOKI_ITEM_CLASSIFICATION = u'CAV-PS'
 
 DOCUMENT_TYPES = ['notice', 'technicalSpecifications', 'illustration', 'virtualDataRoom', 'x_presentation']
 
-CPV_CODES = read_json('cpv.json')
+CPV_CODES = read_json('json_data/cpv.json')
 CPV_CODES.append('99999999-9')
-CAV_CODES = read_json('cav.json')
+CAV_CODES = read_json('json_data/cav.json')
 
-CPVS_CODES = read_json('cpvs.json')
-CAV_PS_CODES = read_json('cav_ps.json')
+CPVS_CODES = read_json('json_data/cpvs.json')
+CAV_PS_CODES = read_json('json_data/cav_ps.json')
 
-DK_CODES = read_json('dk021.json')
-FUNDERS = [(i['scheme'], i['id']) for i in read_json('funders.json')['data']]
-# DKPP_CODES = read_json('dkpp.json')
-ORA_CODES = [i['code'] for i in read_json('OrganisationRegistrationAgency.json')['data']]
-WORKING_DAYS = read_json('working_days.json')
+DK_CODES = read_json('json_data/dk021.json')
+FUNDERS = [(i['scheme'], i['id']) for i in read_json('json_data/funders.json')['data']]
+# DKPP_CODES = read_json('json_data/dkpp.json')
+ORA_CODES = [i['code'] for i in read_json('json_data/OrganisationRegistrationAgency.json')['data']]
+WORKING_DAYS = read_json('json_data/working_days.json')
 
-ATC_CODES = read_json('atc.json')
-INN_CODES = read_json('inn.json')
+ATC_CODES = read_json('json_data/atc.json')
+INN_CODES = read_json('json_data/inn.json')
 
 ADDITIONAL_CLASSIFICATIONS_SCHEMES = [u'ДКПП', u'NONE', u'ДК003', u'ДК015', u'ДК018', u'CPVS']
 ADDITIONAL_CLASSIFICATIONS_SCHEMES_2017 = [u'ДК003', u'ДК015', u'ДК018', u'specialNorms']
@@ -88,5 +88,11 @@ LOKI_ITEM_ADDITIONAL_CLASSIFICATIONS = {
     u'CPVS': CPVS_CODES,
     u'cadastralNumber': []
 }
+
+LOKI_DOCUMENT_TYPES = [
+    'notice', 'technicalSpecifications', 'illustration', 'x_presentation',
+    'informationDetails', 'cancellationDetails', 'x_dgfAssetFamiliarization',
+]
+
 
 IDENTIFIER_CODES = ORA_CODES

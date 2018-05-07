@@ -24,7 +24,6 @@ from couchdb_schematics.document import SchematicsDocument
 from Crypto.Cipher import AES
 from jsonpatch import make_patch, apply_patch as _apply_patch
 from jsonpointer import resolve_pointer
-from pkg_resources import iter_entry_points
 from rfc6266 import build_header
 from schematics.exceptions import ValidationError
 from schematics.types import StringType
@@ -45,8 +44,9 @@ ACCELERATOR_RE = compile(r'.accelerator=(?P<accelerator>\d+)')
 json_view = partial(view, renderer='json')
 
 
-def route_prefix(settings):
-    return '/api/{}'.format(settings.get('api_version', VERSION))
+def route_prefix(conf_main):
+    version = conf_main.get('api_version', VERSION)
+    return '/api/{}'.format(version)
 
 
 def validate_dkpp(items, *args):
@@ -621,22 +621,20 @@ def get_content_configurator(request):
                                                   IContentConfigurator)
 
 
-def fix_url(item, app_url, settings=None):
-    if not settings:
-        settings = {}
+def fix_url(item, app_url, conf_main):
     if isinstance(item, list):
         [
-            fix_url(i, app_url, settings)
+            fix_url(i, app_url, conf_main)
             for i in item
             if isinstance(i, dict) or isinstance(i, list)
         ]
     elif isinstance(item, dict):
         if "format" in item and "url" in item and '?download=' in item['url']:
             path = item["url"] if item["url"].startswith('/') else '/' + '/'.join(item['url'].split('/')[5:])
-            item["url"] = app_url + route_prefix(settings) + path
+            item["url"] = app_url + route_prefix(conf_main) + path
             return
         [
-            fix_url(item[i], app_url, settings)
+            fix_url(item[i], app_url, conf_main)
             for i in item
             if isinstance(item[i], dict) or isinstance(item[i], list)
         ]
@@ -707,20 +705,6 @@ def prepare_revision(item, patch, author):
     }
 
 
-def configure_plugins(config, plugins, group, name=None):
-    for entry_point in iter_entry_points(group, name):
-        plugin = entry_point.load()
-        plugin(config, plugins.get(name))
-        LOGGER.info('Plugin {name} from group {group} has been loaded.'.format(
-            name=entry_point.name,
-            group=group))
-
-
-def load_plugins(config, group, **kwargs):
-    plugins = kwargs.get('plugins', {})
-    configure_plugins(config, plugins, group, kwargs.get('name'))
-
-
 def serialize_document_url(document):
     url = document.url
     if not url or '?download=' not in url:
@@ -763,13 +747,15 @@ def get_request_from_root(model):
         return model.request if hasattr(model, 'request') else None
 
 
-def reset_to_start_of_the_day(date_time):
-    """Reset datetime's time to 00:00, while saving timezone data
+def set_specific_hour(date_time, hour):
+    """Reset datetime's time to {hour}:00:00, while saving timezone data
 
-    Example: 2018-1-1T14:12:55+02:00 -> 2018-1-1T00:00:00+02:00
+    Example:
+        2018-1-1T14:12:55+02:00 -> 2018-1-1T02:00:00+02:00, for hour=2
+        2018-1-1T14:12:55+02:00 -> 2018-1-1T18:00:00+02:00, for hour=18
     """
 
-    return datetime.combine(date_time.date(), time(0, tzinfo=date_time.tzinfo))
+    return datetime.combine(date_time.date(), time(hour % 24, tzinfo=date_time.tzinfo))
 
 
 def is_holiday(date):
@@ -796,14 +782,16 @@ def is_holiday(date):
     )
 
 
-def accelerated_calculate_business_date(date, period, context):
+def accelerated_calculate_business_date(date, period, context, specific_hour):
     if context and 'procurementMethodDetails' in context and context['procurementMethodDetails']:
         re_obj = ACCELERATOR_RE.search(context['procurementMethodDetails'])
         if re_obj and 'accelerator' in re_obj.groupdict():
+            if specific_hour:
+                period = period + (set_specific_hour(date, specific_hour) - date)
             return date + (period / int(re_obj.groupdict()['accelerator']))
 
 
-def calculate_business_date(date_obj, timedelta_obj, context=None, working_days=False):
+def calculate_business_date(date_obj, timedelta_obj, context=None, working_days=False, specific_hour=None):
     """This method calculates end of business period from given start and timedelta
 
     The calculation of end of business period is complex, so this method is used project-wide.
@@ -825,6 +813,7 @@ def calculate_business_date(date_obj, timedelta_obj, context=None, working_days=
         usually it's Auction model's instance. Must be present to use acceleration
         mode.
     :param working_days: make calculations taking into account working days
+    :param specific_hour: specific hour, to which date of period end should be rounded
     :type date_obj: datetime.datetime
     :type timedelta_obj: datetime.timedelta
     :type context: openprocurement.api.models.Tender
@@ -834,7 +823,7 @@ def calculate_business_date(date_obj, timedelta_obj, context=None, working_days=
 
     """
 
-    accelerated_calculation = accelerated_calculate_business_date(date_obj, timedelta_obj, context)
+    accelerated_calculation = accelerated_calculate_business_date(date_obj, timedelta_obj, context, specific_hour)
     if accelerated_calculation:
         return accelerated_calculation
 
@@ -843,7 +832,7 @@ def calculate_business_date(date_obj, timedelta_obj, context=None, working_days=
 
     # reset datetime to exclude influence of time data (e.g. hour, minute) on calculations
     # TODO (after 1-8-2018) switch to date object instead of datetime object
-    date_obj = reset_to_start_of_the_day(date_obj)
+    date_obj = set_specific_hour(date_obj, 0)
     added_period_is_positive = timedelta_obj > timedelta()
     working_days_count = abs(timedelta_obj.days)
 
@@ -854,6 +843,8 @@ def calculate_business_date(date_obj, timedelta_obj, context=None, working_days=
             date_obj += timedelta(1) if added_period_is_positive else -timedelta(1)
             working_days_count -= 1
 
+    if specific_hour:
+        date_obj = set_specific_hour(date_obj, specific_hour)
     return date_obj
 
 

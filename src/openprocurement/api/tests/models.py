@@ -3,44 +3,50 @@ import unittest
 from copy import deepcopy
 from datetime import datetime, timedelta
 from decimal import Decimal
-from schematics.types import BaseType
 
 import mock
 from isodate.duration import Duration
-from openprocurement.api.models.registry_models.roles import blacklist
-from openprocurement.api.models.schematics_extender import DecimalType
-from openprocurement.api.models.registry_models.ocds import (
-    Organization,
+from schematics.exceptions import ConversionError, ValidationError, ModelValidationError
+from schematics.types import BaseType
+
+from openprocurement.api.constants import LOKI_ITEM_CLASSIFICATION
+from openprocurement.api.models.auction_models import (
+    Document as AuctionDocument
+)
+from openprocurement.api.models.common import (
+    Period,
+    PeriodEndRequired,
     ContactPoint,
-    Identifier,
+    Classification,
     Address,
+    Location
+)
+from openprocurement.api.models.ocds import (
+    Organization,
+    Identifier,
     BaseItem,
-    Location,
     Unit,
     Value,
     ItemClassification,
-    Classification,
     BaseDocument,
-    LokiDocument,
+)
+from openprocurement.api.models.registry_models import (
     RegistrationDetails,
     LokiItem,
-    AssetCustodian,
-    AssetHolder,
     Decision,
+    LokiDocument,
+    AssetCustodian,
+    AssetHolder
 )
-from openprocurement.api.models.auction_models.models import (
-    Document as AuctionDocument
-)
-from openprocurement.api.constants import LOKI_ITEM_CLASSIFICATION
-from openprocurement.api.models.models import Period, PeriodEndRequired
+from openprocurement.api.models.roles import blacklist
 from openprocurement.api.models.schematics_extender import (
-    IsoDateTimeType, HashType, IsoDurationType)
+    IsoDateTimeType, HashType, IsoDurationType, DecimalType
+)
 from openprocurement.api.tests.blanks.json_data import (
     test_item_data_with_schema,
     test_loki_item_data
 )
 from openprocurement.api.utils import get_now
-from schematics.exceptions import ConversionError, ValidationError, ModelValidationError
 
 now = get_now()
 
@@ -348,7 +354,7 @@ class DummyOCDSModelsTest(unittest.TestCase):
         item2.location = None
         self.assertEqual(item, item2)
 
-        with mock.patch.dict('openprocurement.api.models.registry_models.ocds.BaseItem._options.roles', {'test': blacklist('__parent__', 'address')}):
+        with mock.patch.dict('openprocurement.api.models.ocds.BaseItem._options.roles', {'test': blacklist('__parent__', 'address')}):
             self.assertNotIn('address', item.serialize('test'))
             self.assertNotEqual(item.serialize('test'), item.serialize())
             self.assertEqual(item.serialize('test'), item2.serialize('test'))
@@ -391,7 +397,7 @@ class DummyOCDSModelsTest(unittest.TestCase):
         identifier.id = 'test'
         identifier.validate()
 
-        with mock.patch.dict('openprocurement.api.models.registry_models.ocds.Identifier._options.roles', {'test': blacklist('id')}):
+        with mock.patch.dict('openprocurement.api.models.ocds.Identifier._options.roles', {'test': blacklist('id')}):
             self.assertIn('id', identifier.serialize().keys())
             self.assertNotIn('id', identifier.serialize('test').keys())
 
@@ -463,7 +469,7 @@ class DummyOCDSModelsTest(unittest.TestCase):
         with self.assertRaisesRegexp(ValueError, 'Organization Model has no role "test"'):
             organization.serialize('test')
 
-        with mock.patch.dict('openprocurement.api.models.registry_models.ocds.Identifier._options.roles', {'view': blacklist('id')}):
+        with mock.patch.dict('openprocurement.api.models.ocds.Identifier._options.roles', {'view': blacklist('id')}):
             self.assertNotEqual(organization.serialize('view'),
                                 organization.serialize())
             self.assertIn('id', organization.serialize()['identifier'].keys())
@@ -674,7 +680,7 @@ class DummyLokiModelsTest(unittest.TestCase):
     def test_RegistrationDetails(self):
         registration_details = RegistrationDetails()
 
-        self.assertEqual(registration_details.serialize(), None)
+        self.assertEqual(registration_details.serialize(), {'status': 'unknown'})
         with self.assertRaisesRegexp(ValueError, 'RegistrationDetails Model has no role "test"'):
             registration_details.serialize('test')
 
@@ -816,6 +822,31 @@ class DummyLokiModelsTest(unittest.TestCase):
             asset_custodian.serialize('test')
 
         asset_custodian.import_data(data)
+        with self.assertRaises(ModelValidationError) as ex:
+            asset_custodian.validate()
+        self.assertEqual(
+            ex.exception.messages,
+            {'contactPoint': [u'This field is required.'],
+            'identifier': [u'This field is required.'],
+            'address': [u'This field is required.']
+             }
+        )
+        data = {
+            'contactPoint': {'name': 'name'},
+            'identifier': {'scheme': 'UA-EDR', 'id': '22222-2'},
+            'address': {'countryName': 'country name'}
+        }
+        asset_custodian.import_data(data)
+        with self.assertRaises(ModelValidationError) as ex:
+            asset_custodian.validate()
+        self.assertEqual(
+            ex.exception.messages,
+            {'contactPoint': {'email': [u'telephone or email should be present']}
+             }
+        )
+        data['contactPoint'] = {'name': 'name', 'telephone': '12345543'}
+
+        asset_custodian.import_data(data)
         asset_custodian.validate()
 
     def test_AssetHolder(self):
@@ -835,8 +866,7 @@ class DummyLokiModelsTest(unittest.TestCase):
             asset_holder.validate()
         self.assertEqual(
             ex.exception.messages,
-            {'name': [u'This field is required.'],
-            'identifier': [u'This field is required.']}
+            {'identifier': [u'This field is required.']}
         )
 
         asset_holder.import_data(data)
@@ -846,16 +876,14 @@ class DummyLokiModelsTest(unittest.TestCase):
             ex.exception.messages,
             {
                 'identifier': {
-                    'uri': [u'This field is required.'],
-                    'legalName': [u'This field is required.'],
-                    'id': [u'This field is required.']
+                    'scheme': [u'This field is required.'],
+                    'id': [u'This field is required.'],
                 }
             }
         )
         data.update({
             'identifier': {
-                'legalName': 'Legal Name',
-                'uri': 'https://localhost/someuri',
+                'scheme': 'UA-EDR',
                 'id': 'justID'
             }})
         asset_holder.import_data(data)

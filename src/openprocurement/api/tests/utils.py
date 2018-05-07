@@ -19,7 +19,6 @@ from openprocurement.api.utils import (
     generate_id,
     get_content_configurator,
     get_revision_changes,
-    load_plugins,
     prepare_patch,
     set_modetest_titles,
     set_ownership,
@@ -317,19 +316,6 @@ class UtilsTest(unittest.TestCase):
         for item in expected_result:
             self.assertIn(item, result)
 
-    @mock.patch('pkg_resources.iter_entry_points')
-    @mock.patch('openprocurement.api.includeme.includeme')
-    def test_load_plugins(self, mock_includeme, mock_iter_entry_points):
-        config = Configurator()
-        group = 'openprocurement.api.plugins'
-        kwargs = {'plugins': {'api': None}, 'name': 'api'}
-        entry_point = mock.MagicMock()
-        entry_point.name = 'api'
-        mock_iter_entry_points.return_value = entry_point
-        load_plugins(config, group, **kwargs)
-
-        mock_includeme.assert_called_once_with(config, None)
-
     def test_prepare_patch(self):
         changes = []
         orig = Document({
@@ -371,6 +357,14 @@ class CalculateBusinessDateTestCase(unittest.TestCase):
         result = calculate_business_date(start, period_to_add, context=auction)
         self.assertEqual((result - start).days, 1)
 
+    def test_accelerated_calculation_specific_hour(self):
+        auction = auction_mock(procurementMethodDetails='quick, accelerator=1440')
+        start = datetime(2018, 4, 2, 16)
+        specific_hour = start.hour + 2
+        period_to_add = timedelta(days=20)
+        result = calculate_business_date(start, period_to_add, context=auction, specific_hour=specific_hour)
+        self.assertEqual((result - start).seconds, 20*60+5)
+
     def test_common_calculation_with_working_days(self):
         """This test assumes that <Mon 2018-4-9> is holiday, besides regular holidays
         of that month. It must be fixed in `working_days.json` file, that translates
@@ -382,6 +376,19 @@ class CalculateBusinessDateTestCase(unittest.TestCase):
         result = calculate_business_date(start, business_days_to_add, working_days=True)
 
         self.assertEqual(result, target_end_of_period)
+
+    def test_common_calculation_with_working_days_specific_hour(self):
+        """This test assumes that <Mon 2018-4-9> is holiday, besides regular holidays
+        of that month. It must be fixed in `working_days.json` file, that translates
+        into `WORKING_DAYS` constant.
+        """
+        start = datetime(2018, 4, 2)
+        specific_hour = 18
+        business_days_to_add = timedelta(days=10)
+        target_end_of_period = datetime(2018, 4, 17)
+        result = calculate_business_date(start, business_days_to_add, working_days=True, specific_hour=specific_hour)
+
+        self.assertEqual(result, target_end_of_period + timedelta(hours=specific_hour))
 
     def test_calculate_with_negative_time_period(self):
         start = datetime(2018, 4, 17)
