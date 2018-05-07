@@ -5,6 +5,12 @@ from openprocurement.api.interfaces import IContentConfigurator, IOPContent
 from openprocurement.api.adapters import ContentConfigurator
 from openprocurement.api.utils import get_content_configurator, request_get_now
 from openprocurement.api.app import get_evenly_plugins
+try:
+    from openprocurement.configurator.configurator import configs
+except ImportError:
+    from openprocurement.api.configurator import configs
+from openprocurement.api.configurator import Configurator
+
 
 LOGGER = logging.getLogger(__name__)
 
@@ -14,6 +20,7 @@ def includeme(config, plugin_map):
     config.scan("openprocurement.api.subscribers")
     config.registry.registerAdapter(ContentConfigurator, (IOPContent, IRequest),
                                     IContentConfigurator)
+    config.registry.registerUtility(Configurator(configs), IContentConfigurator)
     config.add_request_method(
         get_content_configurator, 'content_configurator', reify=True
     )
