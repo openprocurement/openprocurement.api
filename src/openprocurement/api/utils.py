@@ -447,7 +447,6 @@ def request_params(request):
 opresource = partial(resource, error_handler=error_handler, factory=factory)
 
 
-
 class APIResource(object):
 
     def __init__(self, request, context):
@@ -575,12 +574,12 @@ class APIResourceListing(APIResource):
             ppoffset = offset
         return results, poffset, ppoffset
 
-
     @json_view(permission='view_listing')
     def get(self):
         params = {}
         pparams = {}
-        fields, view_fields, limit, offset, feed, descending, view_map, changes, mode = self._get_from_query_params(params, pparams)
+        (fields, view_fields, limit, offset,
+         feed, descending, view_map, changes, mode) = self._get_from_query_params(params, pparams)
         view_limit = limit + 1 if offset else limit
         view_offset = self._get_view_offset(changes, offset, descending)
         list_view = view_map.get(mode, view_map[u''])
