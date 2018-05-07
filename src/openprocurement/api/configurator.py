@@ -1,41 +1,54 @@
 # -*- coding: utf-8 -*-
+from types import FunctionType, MethodType
+from inspect import getargspec
+
 
 class ConfiguratorException(Exception):
     pass
 
-configs = {
+
+configuration_info = {
     'AUCTION_PREFIX': 'AU-EU'
 }
 
+
 class Configurator(object):
-    required_fields = {
-        'AUCTION_PREFIX': str
+    fields = {
+        'AUCTION_PREFIX': {'type': str, 'default': 'AU-EU'}
     }
-    not_allowed_fields = ['required_fields', 'not_allowed_fields', 'error_messages']
+    functions = {}
     error_messages = {
-        'required_fields': 'This fields are required {}',
+        'fields': 'You can input only this fields {}'.format(fields.keys()),
         'type_error': '{} should be {} type',
-        'not_allowed': 'You can\'t set this fields {}'.format(not_allowed_fields),
-        'change_attr': 'You can\'t change configurator after it was instantiated.'
+        'change_attr': 'You can\'t change configurator after it was instantiated.',
+        'functions': 'You can add only this functions {}'.format(functions.keys()),
+        'function_params': 'All function must have at least one argument.'
     }
 
-    def __init__(self, config):
-        if any(field in self.not_allowed_fields for field in config):
-            raise ConfiguratorException(self.error_messages['not_allowed'])
+    def __init__(self, config, functions):
+        if not all(field in self.fields for field in config):
+            raise ConfiguratorException(self.error_messages['fields'])
 
-        if not set(self.required_fields.keys()).issubset(set(config.keys())):
-            raise ConfiguratorException(self.error_messages['required_fields'].format(self.required_fields.keys()))
+        if not all(func in self.functions for func in functions):
+            raise ConfiguratorException(self.error_messages['functions'])
+        if not all(isinstance(func, FunctionType) for _, func in functions.items()):
+            raise ConfiguratorException(self.error_messages['type_error'].format('Functions', 'function'))
+        if not all(len(getargspec(func).args) > 0 for _, func in functions.items()):
+            raise ConfiguratorException(self.error_messages['function_params'])
 
-        for field in self.required_fields:
-            setattr(self, field, config[field])
+        for func in self.functions:
+            method = MethodType(functions.get(func, self.functions[func]['default']), self)
+            setattr(self, func, method)
+        for field in self.fields:
+            setattr(self, field, config.get(field, self.fields[field]['default']))
         self.created = True
 
     def __setattr__(self, key, value):
         if getattr(self, 'created', False):
             raise ConfiguratorException(self.error_messages['change_attr'])
-        if key in self.required_fields:
-            if not isinstance(value, self.required_fields[key]):
+        if key in self.fields:
+            if not isinstance(value, self.fields[key]['type']):
                 raise ConfiguratorException(
-                    self.error_messages['type_error'].format(key, self.required_fields[key].__name__)
+                    self.error_messages['type_error'].format(key, self.fields[key]['type'].__name__)
                 )
         return super(Configurator, self).__setattr__(key, value)
