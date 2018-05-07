@@ -862,3 +862,43 @@ def read_yaml(name):
     with open(file_path) as _file:
         data = _file.read()
     return safe_load(data)
+
+
+def _check_url(item, settings, added_settings, incorrect_urls):
+    if 'url' in item and settings[item] is not None:
+        parsed_url = urlparse(settings[item])
+        added_settings[item] = settings[item]
+        if not (parsed_url.scheme and parsed_url.netloc):
+            incorrect_urls[item] = settings[item]
+
+
+def create_check_settings():
+    settings_dict = {'_couchdb_connection': ['couchdb_server', 'db'],
+                     '_document_service_key': ['docservice_url', 'docservice_username',
+                                               'docservice_upload_url', 'docservice_password',
+                                               'docservice_key'],
+                     '_auction': ['auction_module_url', 'signer'],
+                     '_config_init': ['plugins', 'auth.file'],
+                     'main': ['server_id', 'arch_pubkey'],
+                     '_default': ['health_threshold', 'health_threshold_func',
+                                  'update_after']}
+
+    def inner(settings, section=None):
+        required_settings = settings_dict[section]
+        added_settings, incorrect_urls, missing_settings = {}, {}, []
+        for item in required_settings:
+            if item in settings:
+                _check_url(item, settings, added_settings, incorrect_urls)
+                if settings[item] == '' or settings[item] is None:
+                    missing_settings.append(item)
+                else:
+                    added_settings[item] = settings[item]
+        if missing_settings or incorrect_urls:
+            LOGGER.warning('Failed to initialize {} section, {} must be added to the settings'.format(section,
+                                                                                                      missing_settings))
+        else:
+            LOGGER.info('Successful {} section initialization, {} were added to settings'.format(section,
+                                                                                                 added_settings))
+        if incorrect_urls:
+            LOGGER.warning('Incorrect url {} was added to settings section {}'.format(incorrect_urls, section))
+    return inner

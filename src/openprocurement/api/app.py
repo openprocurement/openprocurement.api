@@ -26,7 +26,8 @@ from openprocurement.api.utils import (
     couchdb_json_decode,
     route_prefix,
     json_body,
-    read_yaml
+    read_yaml,
+    create_check_settings
 )
 from openprocurement.api.database import set_api_security
 from openprocurement.api.auth import AuthenticationPolicy, authenticated_role, check_accreditation
@@ -37,7 +38,14 @@ LOGGER = getLogger("{}.init".format(__name__))
 APP_META_FILE = 'app_meta.yaml'
 
 
-def _couchdb_connection(config):
+def _default(config, conf_main, check_settings):
+    config.registry.health_threshold = float(conf_main.get('health_threshold', 512))
+    config.registry.health_threshold_func = conf_main.get('health_threshold_func', 'all')
+    config.registry.update_after = asbool(conf_main.get('update_after', True))
+    check_settings(config.registry.__dict__, section='_default')
+
+
+def _couchdb_connection(config, check_settings):
     aserver, server, db = set_api_security(config)
     config.registry.couchdb_server = server
     if aserver:
@@ -45,21 +53,28 @@ def _couchdb_connection(config):
     config.registry.db = db
     # readjust couchdb json decoder
     couchdb_json_decode()
+    check_settings(config.registry.__dict__, section='_couchdb_connection')
 
 
-def _document_service_key(config):
+def _auction(config, docsrv_conf, check_settings):
+    config.registry.auction_module_url = docsrv_conf['auction_url']
+    config.registry.signer = Signer(docsrv_conf.get('auction_public_key', '').decode('hex'))
+    check_settings(config.registry.__dict__, section='_auction')
+
+
+def _document_service_key(config, check_settings):
     docsrv_conf = config.registry.app_meta(('config', 'docservice'))
     config.registry.docservice_url = docsrv_conf['docservice_url']
     config.registry.docservice_username = docsrv_conf['docservice_username']
     config.registry.docservice_password = docsrv_conf['docservice_password']
     config.registry.docservice_upload_url = docsrv_conf['docservice_upload_url']
     config.registry.docservice_key = dockey = Signer(docsrv_conf.get('dockey', '').decode('hex'))
-    config.registry.auction_module_url = docsrv_conf['auction_url']
-    config.registry.signer = Signer(docsrv_conf.get('auction_public_key', '').decode('hex'))
     config.registry.keyring = keyring = {}
+    _auction(config, docsrv_conf, check_settings)
     dockeys = docsrv_conf['dockeys'] if 'dockeys' in docsrv_conf else dockey.hex_vk()
     for key in dockeys.split('\0'):
         keyring[key[:8]] = Verifier(key)
+    check_settings(config.registry.__dict__, section='_document_service_key')
 
 
 def _create_app_meta(global_config):
@@ -124,7 +139,7 @@ def _create_app_meta(global_config):
     return inner
 
 
-def _config_init(global_config, settings):
+def _config_init(global_config, settings, check_settings):
     app_meta = _create_app_meta(global_config)
     config = Configurator(
         autocommit=True,
@@ -145,6 +160,7 @@ def _config_init(global_config, settings):
     config.add_renderer('prettyjson', JSON(indent=4, serializer=simplejson.dumps))
     config.add_renderer('jsonp', JSONP(param_name='opt_jsonp', serializer=simplejson.dumps))
     config.add_renderer('prettyjsonp', JSONP(indent=4, param_name='opt_jsonp', serializer=simplejson.dumps))
+    check_settings(config.registry.settings, section='_config_init')
     return config
 
 
@@ -180,13 +196,13 @@ def _init_plugins(config):
 
 
 def main(global_config, **settings):
-    config = _config_init(global_config, settings)
-    _couchdb_connection(config)
+    check_settings = create_check_settings()
+    config = _config_init(global_config, settings, check_settings)
+    _couchdb_connection(config, check_settings)
     _init_plugins(config)
-    _document_service_key(config)
+    _document_service_key(config, check_settings)
     conf_main = config.registry.app_meta(('config', 'main'))
     config.registry.server_id = conf_main.get('id', '')
-    config.registry.health_threshold = float(conf_main.get('health_threshold', 512))
-    config.registry.health_threshold_func = conf_main.get('health_threshold_func', 'all')
-    config.registry.update_after = asbool(conf_main.get('update_after', True))
+    _default(config, conf_main, check_settings)
+    check_settings(config.registry.__dict__, section='main')
     return config.make_wsgi_app()
