@@ -791,7 +791,7 @@ def accelerated_calculate_business_date(date, period, context, specific_hour):
             return date + (period / int(re_obj.groupdict()['accelerator']))
 
 
-def calculate_business_date(date_obj, timedelta_obj, context=None, working_days=False, specific_hour=None):
+def calculate_business_date(date_obj, timedelta_obj, context, working_days=False, specific_hour=None):
     """This method calculates end of business period from given start and timedelta
 
     The calculation of end of business period is complex, so this method is used project-wide.
