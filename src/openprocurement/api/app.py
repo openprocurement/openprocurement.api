@@ -26,13 +26,21 @@ from openprocurement.api.utils import (
     route_prefix,
     json_body,
     configure_plugins,
-    read_yaml
+    read_yaml,
+    create_check_settings
 )
 
 LOGGER = getLogger("{}.init".format(__name__))
 
 
-def _couchdb_connection(config, settings):
+def _default(config, settings, check_settings):
+    config.registry.health_threshold = float(settings.get('health_threshold', 512))
+    config.registry.health_threshold_func = settings.get('health_threshold_func', 'all')
+    config.registry.update_after = asbool(settings.get('update_after', True))
+    check_settings(config.registry.__dict__, section='_default')
+
+
+def _couchdb_connection(config, settings, check_settings):
     aserver, server, db = set_api_security(settings)
     config.registry.couchdb_server = server
     if aserver:
@@ -40,23 +48,29 @@ def _couchdb_connection(config, settings):
     config.registry.db = db
     # readjust couchdb json decoder
     couchdb_json_decode()
+    check_settings(config.registry.__dict__, section='_couchdb_connection')
 
 
-def _document_service_key(config, settings):
+def _document_service_key(config, settings, check_settings):
     config.registry.docservice_url = settings.get('docservice_url')
     config.registry.docservice_username = settings.get('docservice_username')
     config.registry.docservice_password = settings.get('docservice_password')
     config.registry.docservice_upload_url = settings.get('docservice_upload_url')
     config.registry.docservice_key = dockey = Signer(settings.get('dockey', '').decode('hex'))
-    config.registry.auction_module_url = settings.get('auction_url')
-    config.registry.signer = Signer(settings.get('auction_public_key', '').decode('hex'))
     config.registry.keyring = keyring = {}
     dockeys = settings.get('dockeys') if 'dockeys' in settings else dockey.hex_vk()
     for key in dockeys.split('\0'):
         keyring[key[:8]] = Verifier(key)
+    check_settings(config.registry.__dict__, section='_document_service_key')
 
 
-def _config_init(settings):
+def _auction(config, settings, check_settings):
+    config.registry.auction_module_url = settings.get('auction_url')
+    config.registry.signer = Signer(settings.get('auction_public_key', '').decode('hex'))
+    check_settings(config.registry.__dict__, section='_auction')
+
+
+def _config_init(settings, check_setings):
     config = Configurator(
         autocommit=True,
         settings=settings,
@@ -75,6 +89,7 @@ def _config_init(settings):
     config.add_renderer('prettyjson', JSON(indent=4, serializer=simplejson.dumps))
     config.add_renderer('jsonp', JSONP(param_name='opt_jsonp', serializer=simplejson.dumps))
     config.add_renderer('prettyjsonp', JSONP(indent=4, param_name='opt_jsonp', serializer=simplejson.dumps))
+    check_setings(config.registry.settings, section='_config_init')
     return config
 
 
@@ -97,16 +112,17 @@ def _init_plugins(config, settings):
 
 
 def main(_, **settings):
-    config = _config_init(settings)
+    check_settings = create_check_settings()
+    config = _config_init(settings, check_settings)
     _init_plugins(config, settings)
-    _couchdb_connection(config, settings)
-    _document_service_key(config, settings)
+    _couchdb_connection(config, settings, check_settings)
+    _document_service_key(config, settings, check_settings)
+    _auction(config, settings, check_settings)
     # Archive keys
     arch_pubkey = settings.get('arch_pubkey', None)
     config.registry.arch_pubkey = PublicKey(arch_pubkey.decode('hex') if arch_pubkey else SecretKey().pk)
     config.registry.server_id = settings.get('id', '')
+    check_settings(config.registry.__dict__, section='main')
+    _default(config, settings, check_settings)
     # _search_subscribers(config, settings, config.plugins)
-    config.registry.health_threshold = float(settings.get('health_threshold', 512))
-    config.registry.health_threshold_func = settings.get('health_threshold_func', 'all')
-    config.registry.update_after = asbool(settings.get('update_after', True))
     return config.make_wsgi_app()
