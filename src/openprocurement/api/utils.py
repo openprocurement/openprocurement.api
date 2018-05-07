@@ -513,7 +513,12 @@ def get_listing_data(
     list_view = view_map.get(mode, view_map[u''])
     if update_after:
         view = partial(
-            list_view, db_params['db'], limit=view_limit, startkey=view_offset, descending=descending, stale='update_after'
+            list_view,
+            db_params['db'],
+            limit=view_limit,
+            startkey=view_offset,
+            descending=descending,
+            stale='update_after'
         )
     else:
         view = partial(list_view, db_params['db'], limit=view_limit, startkey=view_offset, descending=descending)
@@ -610,9 +615,7 @@ class APIResourceListing(APIResource):
             'FEED': self.FEED,
             'VIEW_MAP': self.VIEW_MAP,
             'CHANGES_VIEW_MAP': self.CHANGES_VIEW_MAP,
-            'FIELDS': self.FIELDS,
-            'FEED': self.FEED,
-
+            'FIELDS': self.FIELDS
         }
         view_params = {
             'log_message_id': self.log_message_id,
