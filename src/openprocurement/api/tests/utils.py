@@ -362,7 +362,7 @@ class CalculateBusinessDateTestCase(unittest.TestCase):
         start = datetime(2018, 4, 2, 16)
         specific_hour = start.hour + 2
         period_to_add = timedelta(days=20)
-        result = calculate_business_date(start, period_to_add, context=auction, specific_hour=specific_hour)
+        result = calculate_business_date(start, period_to_add, auction, specific_hour=specific_hour)
         self.assertEqual((result - start).seconds, 20*60+5)
 
     def test_common_calculation_with_working_days(self):
@@ -386,7 +386,7 @@ class CalculateBusinessDateTestCase(unittest.TestCase):
         specific_hour = 18
         business_days_to_add = timedelta(days=10)
         target_end_of_period = datetime(2018, 4, 17)
-        result = calculate_business_date(start, business_days_to_add, working_days=True, specific_hour=specific_hour)
+        result = calculate_business_date(start, business_days_to_add, None, working_days=True, specific_hour=specific_hour)
 
         self.assertEqual(result, target_end_of_period + timedelta(hours=specific_hour))
 
