@@ -464,11 +464,9 @@ class APIResourceListing(APIResource):
         self.server = request.registry.couchdb_server
         self.update_after = request.registry.update_after
 
-    @json_view(permission='view_listing')
-    def get(self):
-        params = {}
-        pparams = {}
+    def _get_from_query_params(self, params, pparams):
         fields = self.request.params.get('opt_fields', '')
+        view_fields = None
         if fields:
             params['opt_fields'] = fields
             pparams['opt_fields'] = fields
@@ -495,7 +493,9 @@ class APIResourceListing(APIResource):
         if mode and mode in view_map:
             params['mode'] = mode
             pparams['mode'] = mode
-        view_limit = limit + 1 if offset else limit
+        return fields, view_fields, limit, offset, feed, descending, view_map, changes, mode
+
+    def _get_view_offset(self, changes, offset, descending):
         if changes:
             if offset:
                 view_offset = decrypt(self.server.uuid, self.db.name, offset)
@@ -512,13 +512,9 @@ class APIResourceListing(APIResource):
                 view_offset = offset
             else:
                 view_offset = '9' if descending else ''
-        list_view = view_map.get(mode, view_map[u''])
-        if self.update_after:
-            view = partial(
-                list_view, self.db, limit=view_limit, startkey=view_offset, descending=descending, stale='update_after'
-            )
-        else:
-            view = partial(list_view, self.db, limit=view_limit, startkey=view_offset, descending=descending)
+        return view_offset
+
+    def _get_results(self, fields, changes, view_fields, view):
         if fields:
             if not changes and set(fields).issubset(set(self.FIELDS)):
                 results = [
@@ -558,20 +554,52 @@ class APIResourceListing(APIResource):
                 )
                 for i in view()
             ]
+        return results
+
+    def _get_params_offset(self, *args):
+        changes, results, view_offset, poffset, ppoffset, offset, limit = args
         if results:
-            params['offset'], pparams['offset'] = results[-1][1], results[0][1]
+            poffset, ppoffset = results[-1][1], results[0][1]
             if offset and view_offset == results[0][1]:
                 results = results[1:]
             elif offset and view_offset != results[0][1]:
                 results = results[:limit]
-                params['offset'], pparams['offset'] = results[-1][1], view_offset
+                poffset, ppoffset = results[-1][1], view_offset
             results = [i[0] for i in results]
             if changes:
-                params['offset'] = encrypt(self.server.uuid, self.db.name, params['offset'])
-                pparams['offset'] = encrypt(self.server.uuid, self.db.name, pparams['offset'])
+                poffset = encrypt(self.server.uuid, self.db.name, poffset)
+                ppoffset = encrypt(self.server.uuid, self.db.name, ppoffset)
         else:
-            params['offset'] = offset
-            pparams['offset'] = offset
+            poffset = offset
+            ppoffset = offset
+        return results, poffset, ppoffset
+
+    @json_view(permission='view_listing')
+    def get(self):
+        params = {}
+        pparams = {}
+        (fields, view_fields, limit, offset,
+         feed, descending, view_map, changes, mode) = self._get_from_query_params(params, pparams)
+        view_limit = limit + 1 if offset else limit
+        view_offset = self._get_view_offset(changes, offset, descending)
+        list_view = view_map.get(mode, view_map[u''])
+        if self.update_after:
+            view = partial(
+                list_view, self.db, limit=view_limit, startkey=view_offset, descending=descending, stale='update_after'
+            )
+        else:
+            view = partial(list_view, self.db, limit=view_limit, startkey=view_offset, descending=descending)
+        results = self._get_results(fields, changes, view_fields, view)
+        args_list = [
+            changes,
+            results,
+            view_offset,
+            params.get('offset'),
+            pparams.get('offset'),
+            offset,
+            limit
+        ]
+        results, params['offset'], pparams['offset'] = self._get_params_offset(*args_list)
         data = {
             'data': results,
             'next_page': {
