@@ -20,7 +20,7 @@ def includeme(config, plugin_map):
     config.scan("openprocurement.api.subscribers")
     config.registry.registerAdapter(ContentConfigurator, (IOPContent, IRequest),
                                     IContentConfigurator)
-    config.registry.registerUtility(Configurator(configuration_info), IContentConfigurator)
+    config.registry.registerUtility(Configurator(configuration_info, {}), IContentConfigurator)
     config.add_request_method(
         get_content_configurator, 'content_configurator', reify=True
     )
