@@ -2,11 +2,11 @@
 from couchdb_schematics.document import SchematicsDocument
 
 from schematics.exceptions import ValidationError
-from schematics.types import StringType, BaseType, FloatType, EmailType, URLType
+from schematics.types import StringType, BaseType, FloatType, EmailType, URLType, IntType
 from schematics.types.compound import DictType, ListType, ModelType
 from schematics.types.serializable import serializable
 
-from openprocurement.api.models.roles import organization_roles
+from openprocurement.api.models.roles import organization_roles, auctionParameters_roles
 from openprocurement.api.models.schematics_extender import Model, IsoDateTimeType
 from openprocurement.api.utils import get_now
 
@@ -155,3 +155,23 @@ class Classification(Model):
     description_en = StringType()
     description_ru = StringType()
     uri = URLType()
+
+
+class UAEDRAndMFOClassification(Classification):
+    scheme = StringType(choices=['UA-EDR', 'UA-MFO', 'accountNumber'], required=True)
+
+
+class BankAccount(Model):
+    description = StringType()
+    bankName = StringType()
+    accountNumber = StringType()
+    accountIdentification = ListType(ModelType(UAEDRAndMFOClassification), default=list())
+
+
+class AuctionParameters(Model):
+    """Configurable auction parameters"""
+    class Options:
+        roles = auctionParameters_roles
+
+    type = StringType(choices=['english', 'insider'])
+    dutchSteps = IntType(min_value=1, max_value=99, default=99)
