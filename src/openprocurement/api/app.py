@@ -32,7 +32,7 @@ from openprocurement.api.utils import (
 from openprocurement.api.database import set_api_security
 from openprocurement.api.auth import AuthenticationPolicy, authenticated_role, check_accreditation
 from openprocurement.api.configurator import Configurator as ProjectConfigurator, configuration_info
-from openprocurement.api.interfaces import IContentConfigurator
+from openprocurement.api.interfaces import IProjectConfigurator
 from openprocurement.api.auth import get_auth
 
 LOGGER = getLogger("{}.init".format(__name__))
@@ -192,6 +192,6 @@ def main(global_config, **settings):
     config.registry.health_threshold_func = conf_main.get('health_threshold_func', 'all')
     config.registry.update_after = asbool(conf_main.get('update_after', True))
     gsm = getGlobalSiteManager()
-    if gsm.queryUtility(IContentConfigurator) is None:
-        gsm.registerUtility(ProjectConfigurator(configuration_info, {}), IContentConfigurator)
+    if gsm.queryUtility(IProjectConfigurator) is None:
+        gsm.registerUtility(ProjectConfigurator(configuration_info, {}), IProjectConfigurator)
     return config.make_wsgi_app()
