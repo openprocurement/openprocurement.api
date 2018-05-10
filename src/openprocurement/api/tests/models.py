@@ -748,7 +748,7 @@ class DummyLokiModelsTest(unittest.TestCase):
             item.validate()
         self.assertEqual(
             ex.exception.messages,
-            {'classification': {'scheme': [u"Value must be one of [u'CAV-PS']."]}}
+            {'classification': {'scheme': [u"Value must be one of [u'CAV-PS', u'CPV']."]}}
         )
 
         loki_item_data = deepcopy(test_loki_item_data)
