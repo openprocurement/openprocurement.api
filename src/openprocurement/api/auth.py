@@ -33,7 +33,7 @@ def _file_auth(app_meta):
                 'group': item
             }
             single_key = value.split(',', 1)[0]
-            user = {single_key:single_value}
+            user = {single_key: single_value}
             users.update(user)
     return users
 
