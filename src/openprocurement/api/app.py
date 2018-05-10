@@ -102,7 +102,7 @@ def _create_app_meta(global_config):
     be None
 
     example:
-        conf_db = app_meta(('config', 'not_exist')]
+        conf_db = app_meta(('config', 'not_exist'))
         conf_db['foo'] == None
         True
 
