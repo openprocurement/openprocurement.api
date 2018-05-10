@@ -9,6 +9,10 @@ from pkg_resources import get_distribution
 from pytz import timezone
 from requests import Session
 
+from zope.component import getGlobalSiteManager
+
+from openprocurement.api.interfaces import IProjectConfigurator
+
 PKG = get_distribution(__package__)
 LOGGER = getLogger(PKG.project_name)
 VERSION = '{}.{}'.format(
@@ -96,3 +100,4 @@ LOKI_DOCUMENT_TYPES = [
 
 
 IDENTIFIER_CODES = ORA_CODES
+global_registry = getGlobalSiteManager()
