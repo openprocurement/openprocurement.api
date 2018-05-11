@@ -177,6 +177,7 @@ def get_evenly_plugins(config, plugin_map, group):
 def _init_plugins(config):
     plugins = config.registry.app_meta(['plugins'])
     LOGGER.info("Start plugins loading", extra={'MESSAGE_ID': 'included_plugin'})
+    get_evenly_plugins(config, plugins, 'openprocurement.api.configurator')
     get_evenly_plugins(config, plugins, 'openprocurement.api.plugins')
     LOGGER.info("End plugins loading", extra={'MESSAGE_ID': 'included_plugin'})
 
