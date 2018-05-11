@@ -34,7 +34,7 @@ def _file_auth(app_meta):
         return users
 
     config.read(file_path)
-    if not len(config.sections()):
+    if config.sections():
         LOGGER.warning("Auth file '%s' was empty, no user will be added",
                        file_path)
     for item in config.sections():
