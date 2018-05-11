@@ -29,10 +29,10 @@ def _file_auth(app_meta):
     file_path = os.path.join(app_meta(['here']), conf_auth.get('src', None))
     users = {}
     if not os.path.isfile(file_path):
-        LOGGER.warning("Auth file '%s' was doesn`t exist, no user will be added",
+        LOGGER.warning("Auth file '%s' was doesn`t exist,"
+                       "no user will be added",
                        file_path)
         return users
-
     config.read(file_path)
     if config.sections():
         LOGGER.warning("Auth file '%s' was empty, no user will be added",
@@ -47,9 +47,11 @@ def _file_auth(app_meta):
             single_key = value.split(',', 1)[0]
             user = {single_key: single_value}
             users.update(user)
-            LOGGER.debug("Authenticate permission for the user %s has been added",
+            LOGGER.debug("Authenticate permission for the user %s"
+                         "has been added",
                          single_key)
-        LOGGER.info("Authentication permissions for users from the section [%s] has been added",
+        LOGGER.info("Authentication permissions for users from the section "
+                    "[%s] has been added",
                     item)
     return users
 
