@@ -5,7 +5,6 @@ from pbkdf2 import PBKDF2
 from ConfigParser import ConfigParser
 from couchdb import Server as CouchdbServer, Session
 from couchdb.http import Unauthorized, extract_credentials
-from openprocurement.api.design import sync_design
 from logging import getLogger
 
 LOGGER = getLogger("{}.init".format(__name__))
