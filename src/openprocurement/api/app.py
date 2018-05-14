@@ -29,6 +29,7 @@ from openprocurement.api.utils import (
     read_yaml
 )
 from openprocurement.api.database import set_api_security
+from openprocurement.api.design import sync_design
 from openprocurement.api.auth import AuthenticationPolicy, authenticated_role, check_accreditation
 
 from openprocurement.api.auth import get_auth
@@ -183,6 +184,8 @@ def main(global_config, **settings):
     config = _config_init(global_config, settings)
     _couchdb_connection(config)
     _init_plugins(config)
+    # sync couchdb views
+    sync_design(config.registry.db)
     _document_service_key(config)
     conf_main = config.registry.app_meta(('config', 'main'))
     config.registry.server_id = conf_main.get('id', '')
