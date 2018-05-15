@@ -15,8 +15,8 @@ class ConfiguratorTest(unittest.TestCase):
         with self.assertRaises(ConfiguratorException) as exc:
             Configurator(test_configs, {})
         self.assertEqual(
+            exc.exception.message,
             'AUCTION_PREFIX should be str type',
-            exc.exception.message
         )
 
         test_configs = {'AUCTION_PREFIX': 'AU-EU'}
@@ -24,16 +24,24 @@ class ConfiguratorTest(unittest.TestCase):
         with self.assertRaises(ConfiguratorException) as exc:
             conf.AUCTION_PREFIX = 'AU-PS'
         self.assertEqual(
-            'You can\'t change configurator after it was instantiated.',
-            exc.exception.message
+            exc.exception.message,
+            'You can\'t change configurator after it was instantiated.'
         )
 
         test_configs = {'AUCTION_PREFIX': 'AU-EU', 'justField': 'field'}
         with self.assertRaises(ConfiguratorException) as exc:
             Configurator(test_configs, {})
         self.assertEqual(
-            Configurator.error_messages['fields'],
-            exc.exception.message
+            exc.exception.message,
+            Configurator.error_messages['fields']
+        )
+
+        test_configs = {'fields': 'just some value'}
+        with self.assertRaises(ConfiguratorException) as exc:
+            Configurator(test_configs, {})
+        self.assertEqual(
+            exc.exception.message,
+            Configurator.error_messages['standard_fields']
         )
 
         def f(self):
@@ -42,27 +50,33 @@ class ConfiguratorTest(unittest.TestCase):
         with self.assertRaises(ConfiguratorException) as exc:
             Configurator({}, functions)
         self.assertEqual(
-            Configurator.error_messages['functions'],
-            exc.exception.message
+            exc.exception.message,
+            Configurator.error_messages['methods']
         )
 
         def test():
             pass
-        Configurator.functions = {'test': {'default': f}}
+        Configurator.methods = {'test': {'default': f}}
 
         with self.assertRaises(ConfiguratorException) as exc:
             Configurator({}, {'test': test})
         self.assertEqual(
-            Configurator.error_messages['function_params'],
-            exc.exception.message
+            exc.exception.message,
+            Configurator.error_messages['method_params']
         )
 
         with self.assertRaises(ConfiguratorException) as exc:
             Configurator({}, {'test': 1})
         self.assertEqual(
-            Configurator.error_messages['type_error'].format('Functions', 'function'),
-            exc.exception.message
+            exc.exception.message,
+            Configurator.error_messages['type_error'].format('Functions', 'function')
         )
+
+        def bar(self):
+            pass
+
+        conf = Configurator({}, {'test': bar})
+        self.assertEqual(conf.test.__name__, bar.__name__)
 
         conf = Configurator({}, {})
         self.assertEqual(conf.test.__name__, f.__name__)
