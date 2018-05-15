@@ -26,6 +26,7 @@ def auth(auth_type=None):
 def _void_auth(app_meta):
     return {}
 
+
 @auth(auth_type="file")
 def _file_auth(app_meta):
     conf_auth = app_meta(('config', 'auth'))
