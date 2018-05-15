@@ -22,6 +22,10 @@ def auth(auth_type=None):
     return decorator
 
 
+@auth(auth_type="void")
+def _void_auth(app_meta):
+    return {}
+
 @auth(auth_type="file")
 def _file_auth(app_meta):
     conf_auth = app_meta(('config', 'auth'))
@@ -29,10 +33,7 @@ def _file_auth(app_meta):
     file_path = os.path.join(app_meta(['here']), conf_auth.get('src', None))
     users = {}
     if not os.path.isfile(file_path):
-        LOGGER.warning("Auth file '%s' was doesn`t exist,"
-                       "no user will be added",
-                       file_path)
-        return users
+        raise IOError("Auth file '{}' was doesn`t exist".format(file_path))
     config.read(file_path)
     if config.sections():
         LOGGER.warning("Auth file '%s' was empty, no user will be added",
