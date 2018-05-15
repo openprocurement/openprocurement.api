@@ -20,7 +20,22 @@ def auth(auth_type=None):
 @auth(auth_type="file")
 def _file_auth(app_meta):
     conf_auth = app_meta(('config', 'auth'))
-    return os.path.join(app_meta(['here']), conf_auth.get('src', None))
+    config = ConfigParser()
+    file_path = os.path.join(app_meta(['here']), conf_auth.get('src', None))
+    config.read(file_path)
+    users = {}
+
+    for item in config.sections():
+        for key, value in config.items(item):
+            single_value = {
+                'name': key,
+                'level': value.split(',', 1)[1] if ',' in value else '1234',
+                'group': item
+            }
+            single_key = value.split(',', 1)[0]
+            user = {single_key: single_value}
+            users.update(user)
+    return users
 
 
 def _auth_factory(auth_type):
@@ -35,24 +50,11 @@ def get_auth(app_meta):
 
 
 class AuthenticationPolicy(BasicAuthAuthenticationPolicy):
-    def __init__(self, auth_file, realm='OpenProcurement', debug=False):
+
+    def __init__(self, users, realm='OpenProcurement', debug=False):
         self.realm = realm
         self.debug = debug
-        config = ConfigParser()
-        config.read(auth_file)
-        self.users = {}
-        for i in config.sections():
-            self.users.update(dict([
-                (
-                    k.split(',', 1)[0],
-                    {
-                        'name': j,
-                        'level': k.split(',', 1)[1] if ',' in k else '1234',
-                        'group': i
-                    }
-                )
-                for j, k in config.items(i)
-            ]))
+        self.users = users
 
     def unauthenticated_userid(self, request):
         """ The userid parsed from the ``Authorization`` request header."""

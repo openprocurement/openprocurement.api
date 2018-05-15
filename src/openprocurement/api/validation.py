@@ -125,7 +125,7 @@ def validate_file_upload(request, **kwargs):
         request.validated['file'] = request.POST['file']
 
 
-def validate_file_update(request):
+def validate_file_update(request, **kwargs):
     if request.registry.docservice_url and request.content_type == "application/json":
         return validate_document_data(request)
     if request.content_type == 'multipart/form-data':

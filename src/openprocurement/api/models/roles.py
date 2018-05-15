@@ -39,3 +39,12 @@ organization_roles = {
    'embedded': schematics_embedded_role,
    'view': schematics_default_role,
 }
+
+english_auctionParameters_edit_role = blacklist('type', 'dutchSteps')
+insider_auctionParameters_edit_role = blacklist('type')
+auctionParameters_roles = {
+    'create': blacklist('type', 'dutchSteps'),
+    'edit_1.sellout.english': english_auctionParameters_edit_role,
+    'edit_2.sellout.english': english_auctionParameters_edit_role,
+    'edit_3.sellout.insider': insider_auctionParameters_edit_role
+}
