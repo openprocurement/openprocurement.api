@@ -26,8 +26,12 @@ from openprocurement.api.utils import (
     couchdb_json_decode,
     route_prefix,
     json_body,
-    read_yaml
+    read_yaml,
+    get_auctions_aliases,
+    format_auction_aliases,
+    make_logger_info,
 )
+
 from openprocurement.api.database import set_api_security
 from openprocurement.api.design import sync_design
 from openprocurement.api.auth import AuthenticationPolicy, authenticated_role, check_accreditation
@@ -175,9 +179,19 @@ def get_evenly_plugins(config, plugin_map, group):
 
 def _init_plugins(config):
     plugins = config.registry.app_meta(['plugins'])
-    LOGGER.info("Start plugins loading", extra={'MESSAGE_ID': 'included_plugin'})
+    auction_aliases = get_auctions_aliases(plugins)
+
+    # Loading plugins info
+    make_logger_info("START PLUGINS LOADING", {'MESSAGE_ID': 'included_plugin'})
     get_evenly_plugins(config, plugins, 'openprocurement.api.plugins')
-    LOGGER.info("End plugins loading", extra={'MESSAGE_ID': 'included_plugin'})
+    make_logger_info("END PLUGINS LOADING", {'MESSAGE_ID': 'included_plugin'})
+
+    # Auction aliases info
+    make_logger_info("START AUCTION'S ALIASES INFO", {'MESSAGE_ID': 'auctions_aliases'})
+    formatted_aliases = format_auction_aliases(auction_aliases)
+    for alias in formatted_aliases:
+        LOGGER.info(alias)
+    make_logger_info("END AUCTIONS'S ALIASES INFO", {'MESSAGE_ID': 'auctions_aliases'})
 
 
 def main(global_config, **settings):
