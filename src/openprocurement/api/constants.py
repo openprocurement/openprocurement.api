@@ -122,4 +122,5 @@ class ProjectConfigurator(object):
             self.configurator = getGlobalSiteManager().queryUtility(IProjectConfigurator)
         return getattr(self.configurator, item)
 
+
 project_configurator = ProjectConfigurator()
