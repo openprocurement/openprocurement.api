@@ -101,4 +101,19 @@ LOKI_DOCUMENT_TYPES = [
 
 
 IDENTIFIER_CODES = ORA_CODES
-global_registry = getGlobalSiteManager()
+
+
+class ProjectConfigurator(object):
+    '''
+        We need that proxy class for real configurator because constants.py is
+        loaded before Configuratore was registered so if we assign Configurator
+        directly to project_configurator
+    '''
+    configurator = None
+
+    def __getattr__(self, item):
+        if self.configurator is None:
+            self.configurator = getGlobalSiteManager().queryUtility(IProjectConfigurator)
+        return getattr(self.configurator, item)
+
+project_configurator = ProjectConfigurator()
