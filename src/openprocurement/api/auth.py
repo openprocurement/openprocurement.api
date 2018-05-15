@@ -49,9 +49,6 @@ def _file_auth(app_meta):
             single_key = value.split(',', 1)[0]
             user = {single_key: single_value}
             users.update(user)
-            LOGGER.debug("Authenticate permission for the user %s"
-                         "has been added",
-                         single_key)
         LOGGER.info("Authentication permissions for users from the section "
                     "[%s] has been added",
                     item)
