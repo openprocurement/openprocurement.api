@@ -175,10 +175,17 @@ def get_evenly_plugins(config, plugin_map, group):
             plugin(config, dd(lambda: None, value))
 
 
+def _set_up_configurator(config, plugins):
+    get_evenly_plugins(config, plugins, 'openprocurement.api.configurator')
+    gsm = getGlobalSiteManager()
+    if gsm.queryUtility(IProjectConfigurator) is None:
+        gsm.registerUtility(ProjectConfigurator(configuration_info, {}), IProjectConfigurator)
+
+
 def _init_plugins(config):
     plugins = config.registry.app_meta(['plugins'])
     LOGGER.info("Start plugins loading", extra={'MESSAGE_ID': 'included_plugin'})
-    get_evenly_plugins(config, plugins, 'openprocurement.api.configurator')
+    _set_up_configurator(config, plugins)
     get_evenly_plugins(config, plugins, 'openprocurement.api.plugins')
     LOGGER.info("End plugins loading", extra={'MESSAGE_ID': 'included_plugin'})
 
@@ -195,7 +202,4 @@ def main(global_config, **settings):
     config.registry.health_threshold = float(conf_main.get('health_threshold', 512))
     config.registry.health_threshold_func = conf_main.get('health_threshold_func', 'all')
     config.registry.update_after = asbool(conf_main.get('update_after', True))
-    gsm = getGlobalSiteManager()
-    if gsm.queryUtility(IProjectConfigurator) is None:
-        gsm.registerUtility(ProjectConfigurator(configuration_info, {}), IProjectConfigurator)
     return config.make_wsgi_app()
