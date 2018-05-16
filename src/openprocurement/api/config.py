@@ -37,14 +37,15 @@ class DB(Model):
     writer = ModelType(User, default=DefaultWriter)
 
     def create_url(self, field='writer'):
-        scheme, _, path, _, _ = urlsplit(self.url)
+        scheme, netloc, path, _, _ = urlsplit(self.url)
         if not scheme:
             scheme = 'http'
+            netloc = path
         if field not in ('admin', 'reader', 'writer'):
             raise ValidationError("Value must be on of ['admin', 'reader', 'writer']")
         if not self[field]:
             raise ValidationError("Field '{}' is not specified".format(field))
-        return "{0}://{name}:{password}@{1}".format(scheme, path, **self[field].to_primitive())
+        return "{0}://{name}:{password}@{1}".format(scheme, netloc, **self[field].to_primitive())
 
     def validate_reader(self, data, value):
         if data['admin'] and not value:

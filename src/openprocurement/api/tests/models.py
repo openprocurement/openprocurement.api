@@ -1016,6 +1016,10 @@ class AppSchemaModelsTest(unittest.TestCase):
         url = db.create_url('writer')
         self.assertEqual(url, 'http://op:op@localhost:5984')
 
+        db.url = "http://localhost:5984"
+        url = db.create_url('writer')
+        self.assertEqual(url, 'http://op:op@localhost:5984')
+
         db_data['admin'] = deepcopy(test_user_data)
         db = DB(db_data)
 
