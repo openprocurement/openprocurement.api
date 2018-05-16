@@ -1,10 +1,10 @@
-from urlparse import urlparse, urlsplit
-
+# -*- coding: utf-8 -*-
 from libnacl.sign import Signer, Verifier
 from schematics.models import Model
 from schematics.types import StringType, BaseType, ValidationError
 from schematics.types.compound import ModelType, ListType
 from schematics.types.serializable import serializable
+from urlparse import urlsplit
 
 
 class Main(Model):
