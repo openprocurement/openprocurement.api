@@ -64,6 +64,8 @@ def _validate_data(request, model, container=False, data=None):
 
     request.validated['data'] = method(role)
     if container:
+        m = model(request.validated['data'])
+        m.__parent__ = request.context
         request.validated[container] = m
     return request.validated['data']
 
