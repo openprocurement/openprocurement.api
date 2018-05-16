@@ -35,8 +35,8 @@ def validate_json_data(request):
     return json['data']
 
 
-def _validation_model(request, model, partial=False, data=None):
-    if partial and isinstance(request.context, model):
+def _validation_model(request, model, container=False, data=None):
+    if not container and isinstance(request.context, model):
         initial_data = request.context.serialize()
         m = model(initial_data)
         new_patch = apply_data_patch(initial_data, data)
@@ -55,26 +55,24 @@ def _validation_model(request, model, partial=False, data=None):
     return m, method, role
 
 
-def _validate_data(request, model, partial=False, data=None):
-    m, method, role = _validation_model(request, model, partial, data)
+def _validate_data(request, model, container=False, data=None):
+    m, method, role = _validation_model(request, model, container, data)
     if hasattr(type(m), '_options') and role not in type(m)._options.roles:
         request.errors.add('url', 'role', 'Forbidden')
         request.errors.status = 403
         raise error_handler(request)
 
     request.validated['data'] = method(role)
-    if not partial:
-        m = model(request.validated['data'])
-        m.__parent__ = request.context
-        request.validated[model.__name__.lower()] = m
+    if container:
+        request.validated[container] = m
     return request.validated['data']
 
 
-def validate_data(request, model, partial=False, data=None):
+def validate_data(request, model, container=False, data=None):
     if data is None:
         data = validate_json_data(request)
     try:
-        return _validate_data(request, model, partial, data)
+        return _validate_data(request, model, container, data)
     except (ModelValidationError, ModelConversionError), e:
         for i in e.message:
             request.errors.add('body', i, e.message[i])
