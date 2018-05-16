@@ -22,6 +22,42 @@ JSON_RENDERER_ERROR = {u'description': u'Expecting value: line 1 column 1 (char 
                         u'location': u'body', u'name': u'data'}
 
 
+test_user_data = {
+    'name': 'test',
+    'password': 'test'
+}
+
+
+test_config_data = {
+    'config': {
+        'main': {
+            'api_version': '2.4'
+        },
+        'auth': {
+            'type': 'file',
+            'src': 'test.ini'
+        },
+        'db': {
+            'type': 'couchdb',
+            'db_name': 'test_db',
+            'url': 'localhost:5984',
+        },
+        'ds': {
+            'user': test_user_data,
+            'download_url': "http://localhost",
+            'dockey': 'c1d4ce58057d33bc324a5e6b4c1cc598da66233e90e5f52e68775a0b262bb32f',
+            'dockeys': ['172d32c81e1f6c95f287656bedd19ec5d0cefc9f130d7c8838263ef9003e4b76']
+        },
+        'auction': {
+            'url': 'http://test-host.com',
+            'public_key': 'b0cf560a77eb367fba1be5204614c49be7bba7685c3633c7d09d37371136c2b0'
+        }
+    },
+    'here': os.getcwd(),
+    'plugins': {}
+}
+
+
 def snitch(func):
     """
         This method is used to add test function to TestCase classes.

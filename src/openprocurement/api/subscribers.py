@@ -8,7 +8,7 @@ from openprocurement.api.utils import get_now, update_logging_context, fix_url
 @subscriber(NewRequest)
 def add_logging_context(event):
     request = event.request
-    conf_main = request.registry.app_meta(('config', 'main'))
+    conf_main = request.registry.app_meta.config.main
     params = {
         'API_VERSION': conf_main.get('api_version', VERSION),
         'TAGS': 'python,api',
@@ -62,5 +62,5 @@ def set_renderer(event):
 @subscriber(BeforeRender)
 def beforerender(event):
     if event.rendering_val and isinstance(event.rendering_val, dict) and 'data' in event.rendering_val:
-        conf_main = event['request'].registry.app_meta(('config', 'main'))
+        conf_main = event['request'].registry.app_meta.config.main
         fix_url(event.rendering_val['data'], event['request'].application_url, conf_main)

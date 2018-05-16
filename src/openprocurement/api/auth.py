@@ -19,9 +19,9 @@ def auth(auth_type=None):
 
 @auth(auth_type="file")
 def _file_auth(app_meta):
-    conf_auth = app_meta(('config', 'auth'))
+    conf_auth = app_meta.config.auth
     config = ConfigParser()
-    file_path = os.path.join(app_meta(['here']), conf_auth.get('src', None))
+    file_path = os.path.join(app_meta.here, conf_auth.src)
     config.read(file_path)
     users = {}
 
@@ -44,7 +44,7 @@ def _auth_factory(auth_type):
 
 
 def get_auth(app_meta):
-    auth_type = app_meta(('config', 'auth', 'type'), None)
+    auth_type = app_meta.config.auth.type
     auth_func = _auth_factory(auth_type)
     return auth_func(app_meta)
 
