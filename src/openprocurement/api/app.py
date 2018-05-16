@@ -187,11 +187,11 @@ def _init_plugins(config):
     make_logger_info("END PLUGINS LOADING", {'MESSAGE_ID': 'included_plugin'})
 
     # Auction aliases info
-    make_logger_info("START AUCTION'S ALIASES INFO", {'MESSAGE_ID': 'auctions_aliases'})
+    make_logger_info("START ALIASES INFO", {'MESSAGE_ID': 'aliases'})
     formatted_aliases = format_auction_aliases(auction_aliases)
     for alias in formatted_aliases:
         LOGGER.info(alias)
-    make_logger_info("END AUCTIONS'S ALIASES INFO", {'MESSAGE_ID': 'auctions_aliases'})
+    make_logger_info("END ALIASES INFO", {'MESSAGE_ID': 'aliases'})
 
 
 def main(global_config, **settings):
