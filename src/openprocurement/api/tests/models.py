@@ -539,7 +539,7 @@ class DummyOCDSModelsTest(unittest.TestCase):
         document.__parent__ = mock.MagicMock(**{
             '__parent__': mock.MagicMock(**{
                 '__parent__': None,
-                'request.registry.docservice_url': None})})
+                'request.registry.use_docservice': False})})
         document.validate()
 
         serialized_by_create = document.serialize('create')
@@ -592,7 +592,7 @@ class DummyAuctionModelsTest(unittest.TestCase):
         document.__parent__ = mock.MagicMock(**{
             '__parent__': mock.MagicMock(**{
                 '__parent__': None,
-                'request.registry.docservice_url': None})})
+                'request.registry.use_docservice': False})})
         document.validate()
 
         serialized_by_create = document.serialize('create')
@@ -668,7 +668,7 @@ class DummyLokiModelsTest(unittest.TestCase):
         document.__parent__ = mock.MagicMock(**{
             '__parent__': mock.MagicMock(**{
                 '__parent__': None,
-                'request.registry.docservice_url': None})})
+                'request.registry.use_docservice': False})})
         document.validate()
 
         serialized_by_create = document.serialize('create')

@@ -115,7 +115,7 @@ def validate_document_data(request, **kwargs):
 
 def validate_file_upload(request, **kwargs):
     update_logging_context(request, {'document_id': '__new__'})
-    if request.registry.docservice_url and request.content_type == "application/json":
+    if request.registry.use_docservice and request.content_type == "application/json":
         return validate_document_data(request)
     if 'file' not in request.POST or not hasattr(request.POST['file'], 'filename'):
         request.errors.add('body', 'file', 'Not Found')
@@ -126,7 +126,7 @@ def validate_file_upload(request, **kwargs):
 
 
 def validate_file_update(request, **kwargs):
-    if request.registry.docservice_url and request.content_type == "application/json":
+    if request.registry.use_docservice and request.content_type == "application/json":
         return validate_document_data(request)
     if request.content_type == 'multipart/form-data':
         validate_file_upload(request)
