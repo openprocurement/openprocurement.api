@@ -946,7 +946,7 @@ def format_auction_aliases(aliases):
     aliases_info = []
     for obj in aliases:
         for package_key in obj.keys():
-            message = "{} has an next aliases: {}".format(package_key, obj[package_key])
+            message = "{} aliases: {}".format(package_key, obj[package_key])
             aliases_info.append(message)
     return aliases_info
 
