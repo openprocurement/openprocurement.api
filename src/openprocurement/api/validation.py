@@ -90,13 +90,13 @@ def validate_data(request, model, container=False, data=None):
 
 def validate_patch_document_data(request, **kwargs):
     model = type(request.context)
-    return validate_data(request, model, True)
+    return validate_data(request, model)
 
 
 def validate_document_data(request, **kwargs):
     context = request.context if 'documents' in request.context else request.context.__parent__
     model = type(context).documents.model_class
-    validate_data(request, model)
+    validate_data(request, model, "document")
 
     first_document = get_first_document(request)
     document = request.validated['document']
