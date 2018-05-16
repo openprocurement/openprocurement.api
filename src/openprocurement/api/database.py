@@ -118,8 +118,6 @@ def set_admin_api_security(server, db_name, config):
         LOGGER.info("Updating api db validate doc",
                     extra={'MESSAGE_ID': 'update_api_validate_doc'})
         db.save(auth_doc)
-    # sync couchdb views
-    sync_design(db)
     db = server[db_name]
     return aserver, server, db
 
@@ -140,8 +138,6 @@ def set_api_security(config):
         if db_name not in server:
             server.create(db_name)
         db = server[db_name]
-        # sync couchdb views
-        sync_design(db)
         aserver = None
     return aserver, server, db
 

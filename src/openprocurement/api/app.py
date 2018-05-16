@@ -14,6 +14,7 @@ from collections import defaultdict as dd
 
 from pyramid.settings import asbool
 from pyramid.config import Configurator
+from libnacl.sign import Signer, Verifier
 from pyramid.renderers import JSON, JSONP
 from pkg_resources import iter_entry_points
 from pyramid.authorization import ACLAuthorizationPolicy as AuthorizationPolicy
@@ -27,6 +28,7 @@ from openprocurement.api.utils import (
     read_yaml
 )
 from openprocurement.api.database import set_api_security
+from openprocurement.api.design import sync_design
 from openprocurement.api.auth import AuthenticationPolicy, authenticated_role, check_accreditation
 
 from openprocurement.api.auth import get_auth
@@ -147,6 +149,8 @@ def main(global_config, **settings):
     _couchdb_connection(config)
     _init_plugins(config)
     _auction_module(config)
+    # sync couchdb views
+    sync_design(config.registry.db)
     _document_service_key(config)
     conf_main = config.registry.app_meta.config.main
     config.registry.server_id = conf_main.server_id

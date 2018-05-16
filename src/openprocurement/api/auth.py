@@ -1,13 +1,17 @@
 # -*- coding: utf-8 -*-
-import os
-import binascii
-from hashlib import sha512
-
-from pyramid.authentication import BasicAuthAuthenticationPolicy, b64decode
 from ConfigParser import ConfigParser
-
+from collections import defaultdict
+from copy import deepcopy
+from hashlib import sha512
+from logging import getLogger
+from pyramid.authentication import BasicAuthAuthenticationPolicy, b64decode
+import binascii
+import os
 
 auth_mapping = {}
+
+
+LOGGER = getLogger("{}.init".format(__name__))
 
 
 def auth(auth_type=None):
@@ -17,14 +21,23 @@ def auth(auth_type=None):
     return decorator
 
 
+@auth(auth_type="void")
+def _void_auth(app_meta):
+    return {}
+
+
 @auth(auth_type="file")
 def _file_auth(app_meta):
     conf_auth = app_meta.config.auth
     config = ConfigParser()
     file_path = os.path.join(app_meta.here, conf_auth.src)
-    config.read(file_path)
     users = {}
-
+    if not os.path.isfile(file_path):
+        raise IOError("Auth file '{}' was doesn`t exist".format(file_path))
+    config.read(file_path)
+    if config.sections():
+        LOGGER.warning("Auth file '%s' was empty, no user will be added",
+                       file_path)
     for item in config.sections():
         for key, value in config.items(item):
             single_value = {
@@ -35,6 +48,9 @@ def _file_auth(app_meta):
             single_key = value.split(',', 1)[0]
             user = {single_key: single_value}
             users.update(user)
+        LOGGER.info("Authentication permissions for users from the section "
+                    "[%s] has been added",
+                    item)
     return users
 
 
@@ -43,10 +59,52 @@ def _auth_factory(auth_type):
     return auth_func
 
 
+def validate_auth_config(users):
+    """
+    Validate configuration what return auth function
+    and return only validated users
+
+    validation check if users have required keys 'group, name, level'
+    and check value of this  keys, expecting that they are not empty
+
+    :param users: result of auth function
+    :type users: abc.Mapping
+
+    :rparam: validated_users
+    :rtype: abc.Mapping
+    """
+
+    validated_users = {}
+    need_keys = ('group', 'name', 'level')
+    for general_key, general_value in users.items():
+        if all((x in general_value.keys() for x in need_keys)) \
+           and all(value for value in general_value.values()):
+            validated_users[general_key] = deepcopy(general_value)
+        else:
+            LOGGER.warning("The user with username '%s' wasn`t added to "
+                           "authentication permission, because invalid config",
+                           general_key)
+    return validated_users
+
+
 def get_auth(app_meta):
+    """
+    Find auth function, get auth users and return only validated users
+
+
+    :param app_meta: function what get app meta configuration
+
+    :rparam: validated_users
+    :rtype: abc.Mapping
+
+    """
     auth_type = app_meta.config.auth.type
     auth_func = _auth_factory(auth_type)
-    return auth_func(app_meta)
+    if hasattr(auth_func, '__call__'):
+        return validate_auth_config(auth_func(app_meta))
+    LOGGER.warning("The authentication configuration has not been added to "
+                   "the app meta settings file")
+    return {}
 
 
 class AuthenticationPolicy(BasicAuthAuthenticationPolicy):
@@ -54,7 +112,7 @@ class AuthenticationPolicy(BasicAuthAuthenticationPolicy):
     def __init__(self, users, realm='OpenProcurement', debug=False):
         self.realm = realm
         self.debug = debug
-        self.users = users
+        self.users = users if users else defaultdict(lambda x: None)
 
     def unauthenticated_userid(self, request):
         """ The userid parsed from the ``Authorization`` request header."""
