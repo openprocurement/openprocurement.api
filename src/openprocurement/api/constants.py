@@ -121,6 +121,3 @@ class ProjectConfigurator(object):
         if self.configurator is None:
             self.configurator = getGlobalSiteManager().queryUtility(IProjectConfigurator)
         return getattr(self.configurator, item)
-
-
-project_configurator = ProjectConfigurator()
