@@ -5,16 +5,19 @@ from openprocurement.api.auth import AuthenticationPolicy
 from pyramid.tests.test_authentication import TestBasicAuthAuthenticationPolicy
 import mock
 
+
+@mock.patch('openprocurement.api.auth.get_auth')
+def get_mock_auth(return_value, mock_get_auth):
+    mock_get_auth.return_value = return_value
+    return mock_get_auth
+
+
 class AuthTest(TestBasicAuthAuthenticationPolicy):
 
-    @mock.patch('openprocurement.api.auth.get_auth')
-    def get_mock_auth(self, return_value, mock_get_auth):
-        mock_get_auth.return_value = return_value
-        return mock_get_auth
-
     def _makeOne(self, check):
-        user = {'chrisr': {'group': 'tests', 'name':'chrisr', 'level': '1234'}}
-        return AuthenticationPolicy(self.get_mock_auth(user)(), 'SomeRealm')
+        user = {'chrisr': {'group': 'tests', 'name': 'chrisr', 'level': '1234'}}
+        get_auth = get_mock_auth(user)
+        return AuthenticationPolicy(get_auth(), 'SomeRealm')
 
     test_authenticated_userid_utf8 = None
     test_authenticated_userid_latin1 = None
