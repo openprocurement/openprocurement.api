@@ -115,9 +115,9 @@ class ProjectConfigurator(object):
         :param configurator
             openprocurement.api.configurator.Configurator instance
     """
-    configurator = None
+    _configurator = None
 
     def __getattr__(self, item):
-        if self.configurator is None:
-            self.configurator = getGlobalSiteManager().queryUtility(IProjectConfigurator)
-        return getattr(self.configurator, item)
+        if self._configurator is None:
+            self._configurator = getGlobalSiteManager().queryUtility(IProjectConfigurator)
+        return getattr(self._configurator, item)
