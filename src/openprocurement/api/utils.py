@@ -911,46 +911,6 @@ def read_yaml(name):
     return safe_load(data)
 
 
-def get_auctions_aliases(plugins):
-    """Make an array with an auction's plugins and their aliases
-
-    Output example::
-        [{'auctions.rubble.other': ['dgfOtherAssets', 'exampleRubbleOther']]
-
-    :param plugins An app_meta.yaml file
-    :return: An array with dictionaries objects
-    """
-    aliases = []
-    key = 'auctions.core'
-    auction_plugins = plugins[key]['plugins']
-
-    if key not in plugins.keys() or auction_plugins is None:
-        aliases.append({'Plugins': 'Not included'})
-        return aliases
-
-    for plugin_key in auction_plugins:
-        alias = {plugin_key: auction_plugins[plugin_key]['aliases']}
-        aliases.append(alias)
-    return aliases
-
-
-def format_auction_aliases(aliases):
-    """Converts an auction's aliases into a readable strings.
-
-    Output example::
-        auctions.rubble.other has an next aliases: ['dgfOtherAssets', 'exampleRubbleOther']
-
-    :param aliases: An array with auction's aliases
-    :return: An array with strings
-    """
-    aliases_info = []
-    for obj in aliases:
-        for package_key in obj.keys():
-            message = "{} aliases: {}".format(package_key, obj[package_key])
-            aliases_info.append(message)
-    return aliases_info
-
-
 def make_logger_info(message, extra):
     """Creates a more readable header of a logger information messages.
     :param message: A message

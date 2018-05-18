@@ -27,8 +27,6 @@ from openprocurement.api.utils import (
     route_prefix,
     json_body,
     read_yaml,
-    get_auctions_aliases,
-    format_auction_aliases,
     make_logger_info,
 )
 
@@ -37,6 +35,7 @@ from openprocurement.api.design import sync_design
 from openprocurement.api.auth import AuthenticationPolicy, authenticated_role, check_accreditation
 
 from openprocurement.api.auth import get_auth
+from openprocurement.auctions.core.utils import get_auctions_aliases, format_auction_aliases
 
 LOGGER = getLogger("{}.init".format(__name__))
 APP_META_FILE = 'app_meta.yaml'
@@ -187,11 +186,11 @@ def _init_plugins(config):
     make_logger_info("END PLUGINS LOADING", {'MESSAGE_ID': 'included_plugin'})
 
     # Auction aliases info
-    make_logger_info("START ALIASES INFO", {'MESSAGE_ID': 'aliases'})
+    LOGGER.info('Aliases info')
     formatted_aliases = format_auction_aliases(auction_aliases)
     for alias in formatted_aliases:
         LOGGER.info(alias)
-    make_logger_info("END ALIASES INFO", {'MESSAGE_ID': 'aliases'})
+    LOGGER.info('End aliases info')
 
 
 def main(global_config, **settings):
