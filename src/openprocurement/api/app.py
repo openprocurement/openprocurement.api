@@ -35,7 +35,7 @@ from openprocurement.api.auth import AuthenticationPolicy, authenticated_role, c
 from openprocurement.api.configurator import Configurator as ProjectConfigurator, configuration_info
 from openprocurement.api.interfaces import IProjectConfigurator
 from openprocurement.api.auth import get_auth
-from .config import AppMetaSchema
+from openprocurement.api.config import AppMetaSchema
 
 LOGGER = getLogger("{}.init".format(__name__))
 APP_META_FILE = 'app_meta.yaml'
