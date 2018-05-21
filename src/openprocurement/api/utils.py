@@ -909,3 +909,16 @@ def read_yaml(name):
     with open(file_path) as _file:
         data = _file.read()
     return safe_load(data)
+
+
+def get_access_token_from_request(request):
+    token = request.params.get('acc_token') or request.headers.get('X-Access-Token')
+    if not token:
+        if request.method in ['POST', 'PUT', 'PATCH'] and request.content_type == 'application/json':
+            try:
+                json = request.json_body
+            except ValueError:
+                json = None
+            else:
+                token = isinstance(json, dict) and json.get('access', {}).get('token')
+    return token

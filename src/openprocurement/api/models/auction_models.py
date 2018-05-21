@@ -55,10 +55,6 @@ from openprocurement.api.validation import validate_uniq
 schematics_default_role = SchematicsDocument.Options.roles['default'] + blacklist("__parent__")
 schematics_embedded_role = SchematicsDocument.Options.roles['embedded'] + blacklist("__parent__")
 
-plain_role = (blacklist('_attachments', 'revisions', 'dateModified') + schematics_embedded_role)
-listing_role = whitelist('dateModified', 'doc_id')
-draft_role = whitelist('status')
-
 
 class Value(BasicValue):
     valueAddedTaxIncluded = BooleanType(required=True, default=True)
