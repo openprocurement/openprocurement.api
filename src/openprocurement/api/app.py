@@ -11,6 +11,7 @@ import simplejson
 from logging import getLogger
 from copy import deepcopy, copy
 from collections import defaultdict as dd
+from zope.component import getGlobalSiteManager
 
 from pyramid.settings import asbool
 from pyramid.config import Configurator
@@ -31,7 +32,8 @@ from openprocurement.api.utils import (
 from openprocurement.api.database import set_api_security
 from openprocurement.api.design import sync_design
 from openprocurement.api.auth import AuthenticationPolicy, authenticated_role, check_accreditation
-
+from openprocurement.api.configurator import Configurator as ProjectConfigurator, configuration_info
+from openprocurement.api.interfaces import IProjectConfigurator
 from openprocurement.api.auth import get_auth
 
 LOGGER = getLogger("{}.init".format(__name__))
@@ -173,9 +175,17 @@ def get_evenly_plugins(config, plugin_map, group):
             plugin(config, dd(lambda: None, value))
 
 
+def _set_up_configurator(config, plugins):
+    get_evenly_plugins(config, plugins, 'openprocurement.api.configurator')
+    gsm = getGlobalSiteManager()
+    if gsm.queryUtility(IProjectConfigurator) is None:
+        gsm.registerUtility(ProjectConfigurator(configuration_info, {}), IProjectConfigurator)
+
+
 def _init_plugins(config):
     plugins = config.registry.app_meta(['plugins'])
     LOGGER.info("Start plugins loading", extra={'MESSAGE_ID': 'included_plugin'})
+    _set_up_configurator(config, plugins)
     get_evenly_plugins(config, plugins, 'openprocurement.api.plugins')
     LOGGER.info("End plugins loading", extra={'MESSAGE_ID': 'included_plugin'})
 

@@ -6,6 +6,7 @@ from openprocurement.api.adapters import ContentConfigurator
 from openprocurement.api.utils import get_content_configurator, request_get_now
 from openprocurement.api.app import get_evenly_plugins
 
+
 LOGGER = logging.getLogger(__name__)
 
 

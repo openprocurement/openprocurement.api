@@ -39,3 +39,8 @@ class IAwardingNextCheck(Interface):
 
     def add_awarding_checks(auction):
         raise NotImplementedError
+
+
+class IProjectConfigurator(Interface):
+    # Interface for project configurator
+    pass
