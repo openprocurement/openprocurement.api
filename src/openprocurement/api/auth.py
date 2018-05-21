@@ -38,7 +38,7 @@ def _file_auth(app_meta):
     if not os.path.isfile(file_path):
         raise IOError("Auth file '{}' was doesn`t exist".format(file_path))
     config.read(file_path)
-    if config.sections():
+    if not config.sections():
         LOGGER.warning("Auth file '%s' was empty, no user will be added",
                        file_path)
     for item in config.sections():
