@@ -1,13 +1,15 @@
 # -*- coding: utf-8 -*-
-
+import binascii
+import os
 from ConfigParser import ConfigParser
 from collections import defaultdict
 from copy import deepcopy
 from hashlib import sha512
 from logging import getLogger
+
 from pyramid.authentication import BasicAuthAuthenticationPolicy, b64decode
-import binascii
-import os
+
+from openprocurement.api.utils import get_access_token_from_request
 
 auth_mapping = {}
 
@@ -128,23 +130,13 @@ class AuthenticationPolicy(BasicAuthAuthenticationPolicy):
                 return user['name']
 
     def check(self, user, request):
-        token = request.params.get('acc_token')
         auth_groups = ['g:{}'.format(user['group'])]
         for i in user['level']:
             auth_groups.append('a:{}'.format(i))
-        if not token:
-            token = request.headers.get('X-Access-Token')
-            if not token:
-                if request.method in ['POST', 'PUT', 'PATCH'] and request.content_type == 'application/json':
-                    try:
-                        json = request.json_body
-                    except ValueError:
-                        json = None
-                    token = isinstance(json, dict) and json.get('access', {}).get('token')
-                if not token:
-                    return auth_groups
-        auth_groups.append('{}_{}'.format(user['name'], token))
-        auth_groups.append('{}_{}'.format(user['name'], sha512(token).hexdigest()))
+        token = get_access_token_from_request(request)
+        if token:
+            auth_groups.append('{}_{}'.format(user['name'], token))
+            auth_groups.append('{}_{}'.format(user['name'], sha512(token).hexdigest()))
         return auth_groups
 
     def callback(self, username, request):
