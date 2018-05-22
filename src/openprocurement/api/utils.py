@@ -920,3 +920,41 @@ def make_logger_info(message, extra):
     LOGGER.info('-' * 40)
     LOGGER.info(message, extra=extra)
     LOGGER.info('-' * 40)
+
+
+def format_aliases(aliases):
+    """Converts an dictionary keys/values in a string representation of an aliases
+
+    >>> plugin = {'auctions.rubble.financial': []}
+    >>> format_aliases(plugin)
+    ['plugin auctions.rubble.financial aliases []']
+
+    :param aliases: An dictionary object
+    :return: An array with strings
+    """
+    aliases_info = []
+    for plugin_name, alias in aliases.items():
+        msg = '{} aliases: {}'.format(plugin_name, alias)
+        aliases_info.append(msg)
+    return aliases_info
+
+
+def get_plugin_aliases(plugin):
+    """Returns an array with plugin aliases information
+
+    >>> plugin = {'plugins': {'auctions.rubble.financial': {'use_default': True, 'aliases': []}}}
+    >>> get_plugin_aliases(plugin)
+    ['plugin auctions.rubble.financial aliases: []']
+
+    :param plugin A plugin his information
+    :return: An array with aliases in string representation
+    """
+    aliases = []
+    if 'plugins' not in plugin:
+        aliases.append({'Aliases': 'Not included'})
+        return aliases
+    plugins = plugin['plugins']
+
+    aliases = {plugin_key: plugin['aliases'] for plugin_key, plugin in plugins.items()}
+    formatted_aliases = format_aliases(aliases)
+    return formatted_aliases

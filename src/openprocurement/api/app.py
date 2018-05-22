@@ -35,7 +35,6 @@ from openprocurement.api.design import sync_design
 from openprocurement.api.auth import AuthenticationPolicy, authenticated_role, check_accreditation
 
 from openprocurement.api.auth import get_auth
-from openprocurement.auctions.core.utils import get_auctions_aliases, format_auction_aliases
 
 LOGGER = getLogger("{}.init".format(__name__))
 APP_META_FILE = 'app_meta.yaml'
@@ -178,19 +177,11 @@ def get_evenly_plugins(config, plugin_map, group):
 
 def _init_plugins(config):
     plugins = config.registry.app_meta(['plugins'])
-    auction_aliases = get_auctions_aliases(plugins)
 
     # Loading plugins info
     make_logger_info("START PLUGINS LOADING", {'MESSAGE_ID': 'included_plugin'})
     get_evenly_plugins(config, plugins, 'openprocurement.api.plugins')
     make_logger_info("END PLUGINS LOADING", {'MESSAGE_ID': 'included_plugin'})
-
-    # Auction aliases info
-    LOGGER.info('Aliases info')
-    formatted_aliases = format_auction_aliases(auction_aliases)
-    for alias in formatted_aliases:
-        LOGGER.info(alias)
-    LOGGER.info('End aliases info')
 
 
 def main(global_config, **settings):
