@@ -154,6 +154,7 @@ def _init_plugins(config):
     _set_up_configurator(config, plugins)
     get_evenly_plugins(config, plugins, 'openprocurement.api.plugins')
 
+
 def main(global_config, **settings):
     config = _config_init(global_config, settings)
     _couchdb_connection(config)

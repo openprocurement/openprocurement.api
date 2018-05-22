@@ -910,16 +910,6 @@ def read_yaml(name):
         data = _file.read()
     return safe_load(data)
 
-def make_logger_info(message, extra):
-    """Creates a more readable header of a logger information messages.
-    :param message: A message
-    :param extra: An extra arguments
-    :return: Logger information message
-    """
-    LOGGER.info('-' * 40)
-    LOGGER.info(message, extra=extra)
-    LOGGER.info('-' * 40)
-
 
 def format_aliases(aliases):
     """Converts an dictionary keys/values in a string representation of an aliases
@@ -957,7 +947,8 @@ def get_plugin_aliases(plugin):
     aliases = {plugin_key: plugin['aliases'] for plugin_key, plugin in plugins.items()}
     formatted_aliases = format_aliases(aliases)
     return formatted_aliases
- 
+
+
 def get_access_token_from_request(request):
     token = request.params.get('acc_token') or request.headers.get('X-Access-Token')
     if not token:
