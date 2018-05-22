@@ -35,8 +35,8 @@ def validate_json_data(request):
     return json['data']
 
 
-def _validation_model(request, model, partial=False, data=None):
-    if partial and isinstance(request.context, model):
+def _validation_model(request, model, container=False, data=None):
+    if not container and isinstance(request.context, model):
         initial_data = request.context.serialize()
         m = model(initial_data)
         new_patch = apply_data_patch(initial_data, data)
@@ -55,26 +55,26 @@ def _validation_model(request, model, partial=False, data=None):
     return m, method, role
 
 
-def _validate_data(request, model, partial=False, data=None):
-    m, method, role = _validation_model(request, model, partial, data)
+def _validate_data(request, model, container=False, data=None):
+    m, method, role = _validation_model(request, model, container, data)
     if hasattr(type(m), '_options') and role not in type(m)._options.roles:
         request.errors.add('url', 'role', 'Forbidden')
         request.errors.status = 403
         raise error_handler(request)
 
     request.validated['data'] = method(role)
-    if not partial:
+    if container:
         m = model(request.validated['data'])
         m.__parent__ = request.context
-        request.validated[model.__name__.lower()] = m
+        request.validated[container] = m
     return request.validated['data']
 
 
-def validate_data(request, model, partial=False, data=None):
+def validate_data(request, model, container=False, data=None):
     if data is None:
         data = validate_json_data(request)
     try:
-        return _validate_data(request, model, partial, data)
+        return _validate_data(request, model, container, data)
     except (ModelValidationError, ModelConversionError), e:
         for i in e.message:
             request.errors.add('body', i, e.message[i])
@@ -92,13 +92,13 @@ def validate_data(request, model, partial=False, data=None):
 
 def validate_patch_document_data(request, **kwargs):
     model = type(request.context)
-    return validate_data(request, model, True)
+    return validate_data(request, model)
 
 
 def validate_document_data(request, **kwargs):
     context = request.context if 'documents' in request.context else request.context.__parent__
     model = type(context).documents.model_class
-    validate_data(request, model)
+    validate_data(request, model, "document")
 
     first_document = get_first_document(request)
     document = request.validated['document']
@@ -115,7 +115,7 @@ def validate_document_data(request, **kwargs):
 
 def validate_file_upload(request, **kwargs):
     update_logging_context(request, {'document_id': '__new__'})
-    if request.registry.docservice_url and request.content_type == "application/json":
+    if request.registry.use_docservice and request.content_type == "application/json":
         return validate_document_data(request)
     if 'file' not in request.POST or not hasattr(request.POST['file'], 'filename'):
         request.errors.add('body', 'file', 'Not Found')
@@ -126,7 +126,7 @@ def validate_file_upload(request, **kwargs):
 
 
 def validate_file_update(request, **kwargs):
-    if request.registry.docservice_url and request.content_type == "application/json":
+    if request.registry.use_docservice and request.content_type == "application/json":
         return validate_document_data(request)
     if request.content_type == 'multipart/form-data':
         validate_file_upload(request)

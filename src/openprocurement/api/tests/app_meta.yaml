@@ -5,6 +5,7 @@ config:
   auth:
     type: file
     src: auth.ini
-  database:
-    couchdb.db_name: test
-    couchdb.url: http://op:op@localhost:5984/
+  db:
+    type: couchdb
+    db_name: test
+    url: localhost:5984

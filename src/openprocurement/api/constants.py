@@ -9,6 +9,10 @@ from pkg_resources import get_distribution
 from pytz import timezone
 from requests import Session
 
+from zope.component import getGlobalSiteManager
+
+from openprocurement.api.interfaces import IProjectConfigurator
+
 PKG = get_distribution(__package__)
 LOGGER = getLogger(PKG.project_name)
 VERSION = '{}.{}'.format(
@@ -97,3 +101,23 @@ LOKI_DOCUMENT_TYPES = [
 
 
 IDENTIFIER_CODES = ORA_CODES
+
+
+class ProjectConfigurator(object):
+    """
+        This class get registered configurator from GSM(Global Site Manager) and save it when
+        you try to get some attribute for the first time.
+        We need that proxy class for real configurator because constants.py is
+        loaded before Configurator was registered so if we assign Configurator
+        directly to project_configurator we will get None in project_configurator variable.
+        Instance of this class will be used in views and functions that called from views, so
+        in such moments we will have registered configurator in GSM.
+        :param configurator
+            openprocurement.api.configurator.Configurator instance
+    """
+    _configurator = None
+
+    def __getattr__(self, item):
+        if self._configurator is None:
+            self._configurator = getGlobalSiteManager().queryUtility(IProjectConfigurator)
+        return getattr(self._configurator, item)

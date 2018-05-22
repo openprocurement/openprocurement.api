@@ -5,49 +5,55 @@ from couchdb_schematics.document import SchematicsDocument
 from schematics.exceptions import ValidationError
 from schematics.transforms import whitelist, blacklist, export_loop
 from schematics.types import (
-    StringType,
+    BaseType,
+    BooleanType,
     FloatType,
     IntType,
-    BooleanType,
-    BaseType,
-    MD5Type
+    MD5Type,
+    StringType,
 )
 from schematics.types.compound import (
+    DictType,
     ModelType,
-    DictType
 )
 from schematics.types.serializable import serializable
 
 from openprocurement.api.constants import (
-    CPV_CODES, ORA_CODES, DK_CODES, CPV_BLOCK_FROM, ATC_CODES, INN_CODES, ATC_INN_CLASSIFICATIONS_FROM, DEFAULT_CURRENCY
+    ATC_CODES,
+    ATC_INN_CLASSIFICATIONS_FROM,
+    CPV_BLOCK_FROM,
+    CPV_CODES,
+    DEFAULT_CURRENCY,
+    DK_CODES,
+    INN_CODES,
+    ORA_CODES,
 )
 from openprocurement.api.models.common import (
-    Period,
-    Classification,
-    BaseUnit,
-    Organization as BaseOrganization,
     Address,
-    Location,
     BaseIdentifier,
-    BasicValue
+    BaseUnit,
+    BasicValue,
+    Classification,
+    Location,
+    Organization as BaseOrganization,
+    Period,
 )
 from openprocurement.api.models.schematics_extender import (
-    Model, ListType, IsoDateTimeType, HashType
+    HashType,
+    IsoDateTimeType,
+    ListType,
+    Model,
 )
 from openprocurement.api.utils import (
+    get_document_creation_date,
     get_now,
     get_schematics_document,
-    get_document_creation_date,
     serialize_document_url,
 )
 from openprocurement.api.validation import validate_uniq
 
 schematics_default_role = SchematicsDocument.Options.roles['default'] + blacklist("__parent__")
 schematics_embedded_role = SchematicsDocument.Options.roles['embedded'] + blacklist("__parent__")
-
-plain_role = (blacklist('_attachments', 'revisions', 'dateModified') + schematics_embedded_role)
-listing_role = whitelist('dateModified', 'doc_id')
-draft_role = whitelist('status')
 
 
 class Value(BasicValue):

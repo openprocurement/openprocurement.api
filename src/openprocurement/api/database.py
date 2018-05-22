@@ -5,6 +5,7 @@ from pbkdf2 import PBKDF2
 from ConfigParser import ConfigParser
 from couchdb import Server as CouchdbServer, Session
 from couchdb.http import Unauthorized, extract_credentials
+from openprocurement.api.config import DB
 from logging import getLogger
 
 LOGGER = getLogger("{}.init".format(__name__))
@@ -56,53 +57,48 @@ class Server(CouchdbServer):
         return self._uuid
 
 
-def _user_doc_update(users_db, username, password):
-    user_doc = users_db.get(
+def _update_user(db, username, password, roles=None):
+    user_doc = db.get(
         'org.couchdb.user:{}'.format(username),
-        {'_id': 'org.couchdb.user:{}'.format(username)})
+        {'_id': 'org.couchdb.user:{}'.format(username)}
+    )
     if (not user_doc.get('derived_key', '') or
-        PBKDF2(password, user_doc.get('salt', ''),
-               user_doc.get('iterations', 10)).hexread(
-            int(len(user_doc.get('derived_key', '')) / 2)) !=
+            PBKDF2(
+                password,
+                user_doc.get('salt', ''),
+                user_doc.get('iterations', 10)
+            ).hexread(int(len(user_doc.get('derived_key', '')) / 2)) !=
             user_doc.get('derived_key', '')):
         user_doc.update({
             "name": username,
-            "roles": [],
+            "roles": [] if roles is None else list(roles),
             "type": "user",
             "password": password
         })
+        db.save(user_doc)
+        return True
+    return False
+
+
+def _user_doc_update(users_db, username, password):
+    if _update_user(users_db, username, password):
         LOGGER.info("Updating api db main user",
                     extra={'MESSAGE_ID': 'update_api_main_user'})
-        users_db.save(user_doc)
 
 
 def _reader_update(users_db, security_users, config):
-    if ('couchdb.reader_username' in config and
-            'couchdb.reader_password' in config):
-        reader_username = config['couchdb.reader_username']
-        reader = users_db.get(
-            'org.couchdb.user:{}'.format(reader_username),
-            {'_id': 'org.couchdb.user:{}'.format(reader_username)})
-        if (not reader.get('derived_key', '') or
-            PBKDF2(config['couchdb.reader_password'],
-            reader.get('salt', ''), reader.get(
-                'iterations', 10)).hexread(int(len(reader.get(
-                    'derived_key', '')) / 2)) !=
-                reader.get('derived_key', '')):
-            reader.update({
-                "name": reader_username,
-                "roles": ['reader'],
-                "type": "user",
-                "password": config['couchdb.reader_password']
-            })
-            LOGGER.info("Updating api db reader user",
-                        extra={'MESSAGE_ID': 'update_api_reader_user'})
-            users_db.save(reader)
+    if not config.reader:
+        return
+    reader_username = config.reader.name
+    reader_password = config.reader.password
+    if _update_user(users_db, reader_username, reader_password, ('reader',)):
+        LOGGER.info("Updating api db reader user",
+                    extra={'MESSAGE_ID': 'update_api_reader_user'})
         security_users.append(reader_username)
 
 
 def set_admin_api_security(server, db_name, config):
-    aserver = Server(config['couchdb.admin_url'], session=Session(retry_delays=range(10)))
+    aserver = Server(config.create_url('admin'), session=Session(retry_delays=range(10)))
     users_db = aserver['_users']
     _update_security(users_db, "Updating users db security",
                      'update_users_security')
@@ -127,17 +123,16 @@ def set_admin_api_security(server, db_name, config):
 
 def set_api_security(config):
     # CouchDB connection
-    database_config = config.registry.app_meta(['config', 'database'])
-    db_name = os.environ.get('DB_NAME', database_config['couchdb.db_name'])
-    server = Server(database_config['couchdb.url'], session=Session(retry_delays=range(10)))
-    if 'couchdb.admin_url' not in database_config and server.resource.credentials:
+    db_name = os.environ.get('DB_NAME', config.db_name)
+    db_full_url = config.create_url('writer')
+    server = Server(db_full_url, session=Session(retry_delays=range(10)))
+    if not config.admin and server.resource.credentials:
         try:
             server.version()
         except Unauthorized:
-            server = Server(extract_credentials(database_config['couchdb.url'])[0])
-
-    if 'couchdb.admin_url' in database_config and server.resource.credentials:
-        aserver, server, db = set_admin_api_security(server, db_name, database_config)
+            server = Server(extract_credentials(db_full_url)[0])
+    if config.admin and server.resource.credentials:
+        aserver, server, db = set_admin_api_security(server, db_name, config)
     else:
         if db_name not in server:
             server.create(db_name)
@@ -154,5 +149,6 @@ def bootstrap_api_security():
     if os.path.isfile(params.config):
         conf = ConfigParser()
         conf.read(params.config)
-        settings = {k: v for k, v in conf.items(params.section)}
+        settings = DB({k: v for k, v in conf.items(params.section)})
+        settings.validate()
         set_api_security(settings)
