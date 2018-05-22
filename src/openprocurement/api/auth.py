@@ -31,9 +31,9 @@ def _void_auth(app_meta):
 
 @auth(auth_type="file")
 def _file_auth(app_meta):
-    conf_auth = app_meta(('config', 'auth'))
+    conf_auth = app_meta.config.auth
     config = ConfigParser()
-    file_path = os.path.join(app_meta(['here']), conf_auth.get('src', None))
+    file_path = os.path.join(app_meta.here, conf_auth.src)
     users = {}
     if not os.path.isfile(file_path):
         raise IOError("Auth file '{}' was doesn`t exist".format(file_path))
@@ -101,7 +101,7 @@ def get_auth(app_meta):
     :rtype: abc.Mapping
 
     """
-    auth_type = app_meta(('config', 'auth', 'type'), None)
+    auth_type = app_meta.config.auth.type
     auth_func = _auth_factory(auth_type)
     if hasattr(auth_func, '__call__'):
         return validate_auth_config(auth_func(app_meta))

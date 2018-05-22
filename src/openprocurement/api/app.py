@@ -9,7 +9,7 @@ if 'test' not in __import__('sys').argv[0]:
 import os
 import simplejson
 from logging import getLogger
-from copy import deepcopy, copy
+from copy import copy
 from collections import defaultdict as dd
 from zope.component import getGlobalSiteManager
 
@@ -18,7 +18,6 @@ from pyramid.config import Configurator
 from libnacl.sign import Signer, Verifier
 from pyramid.renderers import JSON, JSONP
 from pkg_resources import iter_entry_points
-from libnacl.public import SecretKey, PublicKey
 from pyramid.authorization import ACLAuthorizationPolicy as AuthorizationPolicy
 
 from openprocurement.api.utils import (
@@ -35,13 +34,15 @@ from openprocurement.api.auth import AuthenticationPolicy, authenticated_role, c
 from openprocurement.api.configurator import Configurator as ProjectConfigurator, configuration_info
 from openprocurement.api.interfaces import IProjectConfigurator
 from openprocurement.api.auth import get_auth
+from .config import AppMetaSchema
 
 LOGGER = getLogger("{}.init".format(__name__))
 APP_META_FILE = 'app_meta.yaml'
 
 
 def _couchdb_connection(config):
-    aserver, server, db = set_api_security(config)
+    database_config = config.registry.app_meta.config.db
+    aserver, server, db = set_api_security(database_config)
     config.registry.couchdb_server = server
     if aserver:
         config.registry.admin_couchdb_server = aserver
@@ -50,81 +51,44 @@ def _couchdb_connection(config):
     couchdb_json_decode()
 
 
+def _auction_module(config):
+    auction_module_conf = config.registry.app_meta.config.auction
+    if not auction_module_conf:
+        return
+    config.registry.auction_module_url = auction_module_conf.url
+    config.registry.signer = auction_module_conf.signer
+
+
 def _document_service_key(config):
-    docsrv_conf = config.registry.app_meta(('config', 'docservice'))
-    config.registry.docservice_url = docsrv_conf['docservice_url']
-    config.registry.docservice_username = docsrv_conf['docservice_username']
-    config.registry.docservice_password = docsrv_conf['docservice_password']
-    config.registry.docservice_upload_url = docsrv_conf['docservice_upload_url']
-    config.registry.docservice_key = dockey = Signer(docsrv_conf.get('dockey', '').decode('hex'))
-    config.registry.auction_module_url = docsrv_conf['auction_url']
-    config.registry.signer = Signer(docsrv_conf.get('auction_public_key', '').decode('hex'))
-    config.registry.keyring = keyring = {}
-    dockeys = docsrv_conf['dockeys'] if 'dockeys' in docsrv_conf else dockey.hex_vk()
-    for key in dockeys.split('\0'):
-        keyring[key[:8]] = Verifier(key)
+    docsrv_conf = config.registry.app_meta.config.ds
+    if not docsrv_conf:
+        config.registry.use_docservice = False
+        return
+    config.registry.use_docservice = True
+    config.registry.docservice_url = docsrv_conf.download_url
+    config.registry.docservice_username = docsrv_conf.user.name
+    config.registry.docservice_password = docsrv_conf.user.password
+    config.registry.docservice_upload_url = docsrv_conf.upload_url
+    config.registry.docservice_key = dockey = docsrv_conf.signer
+    config.registry.keyring = docsrv_conf.init_keyring(dockey)
 
 
 def _create_app_meta(global_config):
-    """This function returns the function that returns the configuration of the application
-    reading configuration file will be only once
+    """This function returns schematics.models.Model object which contains configuration
+    of the application. Configuration file reading will be performed only once.
 
-    call of creating_app_meta must be only once in app initalization
-    next times must call inner function
-
-    if we have configuration file like this:
-    plugins:
-      api:
-    config:
-      auth:
-        type: file
-        src: auth.ini
-      database:
-        db_name: test
-        couchdb.url: http://db.url
-
-    in order to get the embedded configuration it is necessary to list the nesting level
-    as the first argument, and it argument must be iterable
-    example:
-        app_meta = create_app_meta(global_config)
-        conf_db = app_meta(('config', 'database')]
-
-    If you want the default value, you can pass it to second argument
-    example:
-        conf_db = app_meta(('config', 'not_exist'), False]
+    Current function must be called only once during app initialization.
 
     :param global_config: it is instance of pyramid global config
     :type global_config: dict
-    :rtype: function
-
-    inner return always copy of config it mean what you can change it and
-    origin config will be without changes
-
-    inner return defaultdict and it add flexibility to config
-    you dont need to care about checking return value if it does not exist will
-    be None
-
-    example:
-        conf_db = app_meta(('config', 'not_exist'))
-        conf_db['foo'] == None
-        True
-
+    :rtype: schematics.models.Model
     """
     file_place = os.path.join(global_config['here'], APP_META_FILE)
     config_data = dd(lambda: None, read_yaml(file_place))
     config_data['here'] = copy(global_config['here'])
-
-    def inner(keys=(), alter=dd(lambda: None)):
-        assert  hasattr(keys, '__iter__'), "keys must be iterable"
-        level = config_data if keys else dd(lambda: None, config_data)
-        for key in keys:
-            if not level:
-                break
-            nested = isinstance(level[key], dict)
-            level = dd(lambda: None, level[key]) if nested else deepcopy(level[key])
-        meta = level if level else deepcopy(alter)
-        return meta
-    return inner
+    app_meta = AppMetaSchema(config_data)
+    app_meta.validate()
+    return app_meta
 
 
 def _config_init(global_config, settings):
@@ -134,7 +98,7 @@ def _config_init(global_config, settings):
         settings=settings,
         authentication_policy=AuthenticationPolicy(get_auth(app_meta), __name__),
         authorization_policy=AuthorizationPolicy(),
-        route_prefix=route_prefix(app_meta(('config', 'main'))),
+        route_prefix=route_prefix(app_meta.config.main),
     )
     config.include('pyramid_exclog')
     config.include("cornice")
@@ -183,7 +147,7 @@ def _set_up_configurator(config, plugins):
 
 
 def _init_plugins(config):
-    plugins = config.registry.app_meta(['plugins'])
+    plugins = config.registry.app_meta.plugins
     LOGGER.info("Start plugins loading", extra={'MESSAGE_ID': 'included_plugin'})
     _set_up_configurator(config, plugins)
     get_evenly_plugins(config, plugins, 'openprocurement.api.plugins')
@@ -194,11 +158,12 @@ def main(global_config, **settings):
     config = _config_init(global_config, settings)
     _couchdb_connection(config)
     _init_plugins(config)
+    _auction_module(config)
     # sync couchdb views
     sync_design(config.registry.db)
     _document_service_key(config)
-    conf_main = config.registry.app_meta(('config', 'main'))
-    config.registry.server_id = conf_main.get('id', '')
+    conf_main = config.registry.app_meta.config.main
+    config.registry.server_id = conf_main.server_id
     config.registry.health_threshold = float(conf_main.get('health_threshold', 512))
     config.registry.health_threshold_func = conf_main.get('health_threshold_func', 'all')
     config.registry.update_after = asbool(conf_main.get('update_after', True))

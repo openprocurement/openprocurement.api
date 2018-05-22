@@ -45,7 +45,7 @@ json_view = partial(view, renderer='json')
 
 
 def route_prefix(conf_main):
-    version = conf_main.get('api_version', VERSION)
+    version = conf_main.api_version or VERSION
     return '/api/{}'.format(version)
 
 
@@ -204,7 +204,7 @@ def upload_file(
         for attr_name in type(first_document)._fields:
             if attr_name not in blacklisted_fields:
                 setattr(document, attr_name, getattr(first_document, attr_name))
-    if request.registry.docservice_url:
+    if request.registry.use_docservice:
         parsed_url = urlparse(request.registry.docservice_url)
         url = request.registry.docservice_upload_url or urlunsplit((
             parsed_url.scheme, parsed_url.netloc, '/upload', '', ''
@@ -285,7 +285,7 @@ def get_file(request):
         request.errors.status = 404
         return
     filename = "{}_{}".format(document.id, key)
-    if request.registry.docservice_url and filename not in request.validated['db_doc']['_attachments']:
+    if request.registry.use_docservice and filename not in request.validated['db_doc']['_attachments']:
         document = [i for i in request.validated['documents'] if key in i.url][-1]
         if 'Signature=' in document.url and 'KeyID' in document.url:
             url = document.url
@@ -763,7 +763,7 @@ def serialize_document_url(document):
         parents[0:0] = [root]
         root = root.__parent__
     request = root.request
-    if not request.registry.docservice_url:
+    if not request.registry.use_docservice:
         return url
     if 'status' in parents[0] and parents[0].status in type(parents[0])._options.roles:
         role = parents[0].status

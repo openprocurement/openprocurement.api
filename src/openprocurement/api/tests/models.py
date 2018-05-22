@@ -1,14 +1,27 @@
 # -*- coding: utf-8 -*-
 import unittest
+import os
 from copy import deepcopy
 from datetime import datetime, timedelta
 from decimal import Decimal
 
 import mock
 from isodate.duration import Duration
+from libnacl.sign import Signer, Verifier
 from schematics.exceptions import ConversionError, ValidationError, ModelValidationError
 from schematics.types import BaseType
 
+from openprocurement.api.config import (
+    AppMetaSchema,
+    AuctionModule,
+    DefaultWriter,
+    Config,
+    User,
+    Auth,
+    Main,
+    DB,
+    DS,
+)
 from openprocurement.api.constants import LOKI_ITEM_CLASSIFICATION
 from openprocurement.api.models.auction_models import (
     Document as AuctionDocument
@@ -42,6 +55,7 @@ from openprocurement.api.models.roles import blacklist
 from openprocurement.api.models.schematics_extender import (
     IsoDateTimeType, HashType, IsoDurationType, DecimalType
 )
+from openprocurement.api.tests.base import test_config_data, test_user_data
 from openprocurement.api.tests.blanks.json_data import (
     test_item_data_with_schema,
     test_loki_item_data
@@ -525,7 +539,7 @@ class DummyOCDSModelsTest(unittest.TestCase):
         document.__parent__ = mock.MagicMock(**{
             '__parent__': mock.MagicMock(**{
                 '__parent__': None,
-                'request.registry.docservice_url': None})})
+                'request.registry.use_docservice': False})})
         document.validate()
 
         serialized_by_create = document.serialize('create')
@@ -578,7 +592,7 @@ class DummyAuctionModelsTest(unittest.TestCase):
         document.__parent__ = mock.MagicMock(**{
             '__parent__': mock.MagicMock(**{
                 '__parent__': None,
-                'request.registry.docservice_url': None})})
+                'request.registry.use_docservice': False})})
         document.validate()
 
         serialized_by_create = document.serialize('create')
@@ -654,7 +668,7 @@ class DummyLokiModelsTest(unittest.TestCase):
         document.__parent__ = mock.MagicMock(**{
             '__parent__': mock.MagicMock(**{
                 '__parent__': None,
-                'request.registry.docservice_url': None})})
+                'request.registry.use_docservice': False})})
         document.validate()
 
         serialized_by_create = document.serialize('create')
@@ -890,11 +904,277 @@ class DummyLokiModelsTest(unittest.TestCase):
         asset_holder.validate()
 
 
+class AppSchemaModelsTest(unittest.TestCase):
+    """ Test Case for testing openprocurement.api.config'
+    """
+
+    def test_Main(self):
+        main = Main()
+
+        main.validate()
+        self.assertEqual(main.serialize()['server_id'], '')
+        self.assertNotIn('api_version', main.serialize())
+
+        main_data = deepcopy(test_config_data['config']['main'])
+        main = Main(main_data)
+
+        main.validate()
+        self.assertEqual(main.serialize()['server_id'], '')
+        self.assertEqual(main.serialize()['api_version'], main_data['api_version'])
+
+    def test_Auth(self):
+        auth_data = deepcopy(test_config_data['config']['auth'])
+
+        auth = Auth()
+
+        with self.assertRaises(ModelValidationError) as ex:
+            auth.validate()
+        self.assertEqual(
+            ex.exception.messages,
+            {'type': [u'This field is required.'],
+             'src': [u'This field is required.']}
+        )
+
+        auth = Auth(auth_data)
+        auth.validate()
+        self.assertEqual(auth.serialize()['type'], auth_data['type'])
+        self.assertEqual(auth.serialize()['src'], auth_data['src'])
+
+        auth_data['type'] = 'test'
+
+        auth = Auth(auth_data)
+        with self.assertRaises(ModelValidationError) as ex:
+            auth.validate()
+        self.assertEqual(
+            ex.exception.messages,
+            {"type": [u"Value must be one of ['file']."]}
+        )
+
+    def test_User(self):
+        user = User()
+
+        with self.assertRaises(ModelValidationError) as ex:
+            user.validate()
+        self.assertEqual(
+            ex.exception.messages,
+            {'name': [u'This field is required.'],
+             'password': [u'This field is required.']}
+        )
+
+        user_data = deepcopy(test_user_data)
+        user = User(user_data)
+
+        user.validate()
+        self.assertEqual(user.serialize()['name'], user_data['name'])
+        self.assertEqual(user.serialize()['password'], user_data['password'])
+
+    def test_DefaultWriter(self):
+        user = DefaultWriter()
+
+        user.validate()
+        self.assertEqual(user.serialize()['name'], 'op')
+        self.assertEqual(user.serialize()['password'], 'op')
+
+    def test_DB(self):
+        db = DB()
+
+        with self.assertRaises(ModelValidationError) as ex:
+            db.validate()
+        self.assertEqual(
+            ex.exception.messages,
+            {'type': [u'This field is required.'],
+             'db_name': [u'This field is required.'],
+             'url': [u'This field is required.']}
+        )
+
+        db_data = deepcopy(test_config_data['config']['db'])
+        db = DB(db_data)
+
+        db.validate()
+        self.assertEqual(db.serialize()['type'], db_data['type'])
+        self.assertEqual(db.serialize()['db_name'], db_data['db_name'])
+        self.assertEqual(db.serialize()['url'], db_data['url'])
+        self.assertEqual(db.serialize()['admin'], None)
+        self.assertEqual(db.serialize()['reader'], None)
+        self.assertEqual(db.serialize()['writer']['name'], 'op')
+        self.assertEqual(db.serialize()['writer']['password'], 'op')
+
+        with self.assertRaises(ValidationError) as ex:
+            db.create_url('test')
+        self.assertEqual(
+            ex.exception.messages,
+            ["Value must be on of ['admin', 'reader', 'writer']"]
+        )
+
+        with self.assertRaises(ValidationError) as ex:
+            db.create_url('reader')
+        self.assertEqual(
+            ex.exception.messages,
+            ["Field 'reader' is not specified"]
+        )
+
+        url = db.create_url('writer')
+        self.assertEqual(url, 'http://op:op@localhost:5984')
+
+        db.url = "http://localhost:5984"
+        url = db.create_url('writer')
+        self.assertEqual(url, 'http://op:op@localhost:5984')
+
+        db_data['admin'] = deepcopy(test_user_data)
+        db = DB(db_data)
+
+        with self.assertRaises(ModelValidationError) as ex:
+            db.validate()
+        self.assertEqual(
+            ex.exception.messages,
+            {'reader': [u'This field is required.']}
+        )
+
+        db_data['reader'] = deepcopy(test_user_data)
+        db = DB(db_data)
+
+        db.validate()
+        self.assertEqual(db.serialize()['reader']['name'], db_data['reader']['name'])
+        self.assertEqual(db.serialize()['reader']['password'], db_data['reader']['password'])
+        self.assertEqual(db.serialize()['admin']['name'], db_data['admin']['name'])
+        self.assertEqual(db.serialize()['admin']['password'], db_data['admin']['password'])
+
+        db_data['type'] = 'postgresql'
+        db = DB(db_data)
+
+        with self.assertRaises(ModelValidationError) as ex:
+            db.validate()
+        self.assertEqual(
+            ex.exception.messages,
+            {"type": [u"Value must be one of ['couchdb']."]}
+        )
+
+    def test_DS(self):
+        ds = DS()
+
+        with self.assertRaises(ModelValidationError) as ex:
+            ds.validate()
+        self.assertEqual(
+            ex.exception.messages,
+            {'user': [u'This field is required.'],
+             'download_url': [u'This field is required.'],
+             'dockeys': [u'This field is required.']}
+        )
+
+        ds_data = deepcopy(test_config_data['config']['ds'])
+        ds = DS(ds_data)
+
+        ds.validate()
+        self.assertEqual(ds.serialize()['user']['name'], ds_data['user']['name'])
+        self.assertEqual(ds.serialize()['user']['password'], ds_data['user']['password'])
+        self.assertEqual(ds.serialize()['download_url'], ds_data['download_url'])
+        self.assertEqual(ds.serialize()['upload_url'], None)
+        self.assertEqual(ds.serialize()['dockey'], ds_data['dockey'])
+        self.assertEqual(ds.serialize()['dockeys'], ds_data['dockeys'])
+
+        self.assertEqual(ds.signer.hex_seed(), Signer(ds.dockey.decode('hex')).hex_seed())
+
+        keyring1 = {}
+        for key in ds.dockeys:
+            keyring1[key[:8]] = Verifier(key)
+        keyring2 = ds.init_keyring(ds.signer)
+
+        self.assertEqual(keyring1.viewkeys(), keyring2.viewkeys())
+
+        ds.dockey = 'abc123'
+        ds.dockeys = ['123']
+        with self.assertRaises(ValidationError) as ex:
+            ds.validate()
+        self.assertEqual(
+            ex.exception.messages,
+            {'dockey': ['Invalid seed bytes'],
+             'dockeys': [['Odd-length string']]}
+        )
+
+    def test_AuctionModule(self):
+        auction_module = AuctionModule()
+
+        with self.assertRaises(ModelValidationError) as ex:
+            auction_module.validate()
+        self.assertEqual(
+            ex.exception.messages,
+            {'url': [u'This field is required.'],
+             'public_key': [u'This field is required.']}
+        )
+
+        auction_module_data = deepcopy(test_config_data['config']['auction'])
+        auction_module = AuctionModule(auction_module_data)
+
+        auction_module.validate()
+        self.assertEqual(auction_module.serialize()['url'], auction_module['url'])
+        self.assertEqual(auction_module.serialize()['public_key'], auction_module['public_key'])
+
+        self.assertEqual(auction_module.signer.hex_seed(), Signer(auction_module.public_key.decode('hex')).hex_seed())
+
+        auction_module.public_key = 'abc123'
+        with self.assertRaises(ValidationError) as ex:
+            auction_module.validate()
+        self.assertEqual(
+            ex.exception.messages,
+            {'public_key': ['Invalid seed bytes']}
+        )
+
+        auction_module.public_key = '123'
+        with self.assertRaises(ValidationError) as ex:
+            auction_module.validate()
+        self.assertEqual(
+            ex.exception.messages,
+            {'public_key': ['Odd-length string']}
+        )
+
+    def test_Config(self):
+        config = Config()
+
+        with self.assertRaises(ModelValidationError) as ex:
+            config.validate()
+        self.assertEqual(
+            ex.exception.messages,
+            {'auth': [u'This field is required.'],
+             'db': [u'This field is required.']}
+        )
+
+        config_data = deepcopy(test_config_data['config'])
+        config = Config(config_data)
+
+        config.validate()
+
+        config_data.pop('main')
+        config = Config(config_data)
+
+        config.validate()
+        self.assertEqual(config.serialize()['main'], {'server_id': u''})
+
+    def test_AppMetaSchema(self):
+        app_meta = AppMetaSchema()
+
+        with self.assertRaises(ModelValidationError) as ex:
+            app_meta.validate()
+        self.assertEqual(
+            ex.exception.messages,
+            {'config': [u'This field is required.'],
+             'plugins': [u'This field is required.'],
+             'here': [u'This field is required.']}
+        )
+
+        app_meta_data = deepcopy(test_config_data)
+        app_meta = AppMetaSchema(app_meta_data)
+
+        app_meta.validate()
+        self.assertEqual(app_meta.serialize()['plugins'], {})
+        self.assertEqual(app_meta.serialize()['here'], os.getcwd())
+
+
 def suite():
     tests = unittest.TestSuite()
     tests.addTest(unittest.makeSuite(DummyOCDSModelsTest))
     tests.addTest(unittest.makeSuite(DummyAuctionModelsTest))
     tests.addTest(unittest.makeSuite(SchematicsExtenderTest))
+    tests.addTest(unittest.makeSuite(AppSchemaModelsTest))
     return tests
 
 

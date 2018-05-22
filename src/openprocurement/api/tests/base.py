@@ -14,12 +14,48 @@ from requests.models import Response
 from openprocurement.api.utils import apply_data_patch
 from openprocurement.api.constants import VERSION, SESSION
 from openprocurement.api.design import sync_design
-
+from openprocurement.api.config import DS
 
 now = datetime.now()
 
 JSON_RENDERER_ERROR = {u'description': u'Expecting value: line 1 column 1 (char 0)',
                         u'location': u'body', u'name': u'data'}
+
+
+test_user_data = {
+    'name': 'test',
+    'password': 'test'
+}
+
+
+test_config_data = {
+    'config': {
+        'main': {
+            'api_version': '2.4'
+        },
+        'auth': {
+            'type': 'file',
+            'src': 'test.ini'
+        },
+        'db': {
+            'type': 'couchdb',
+            'db_name': 'test_db',
+            'url': 'localhost:5984',
+        },
+        'ds': {
+            'user': test_user_data,
+            'download_url': "http://localhost",
+            'dockey': 'c1d4ce58057d33bc324a5e6b4c1cc598da66233e90e5f52e68775a0b262bb32f',
+            'dockeys': ['172d32c81e1f6c95f287656bedd19ec5d0cefc9f130d7c8838263ef9003e4b76']
+        },
+        'auction': {
+            'url': 'http://test-host.com',
+            'public_key': 'b0cf560a77eb367fba1be5204614c49be7bba7685c3633c7d09d37371136c2b0'
+        }
+    },
+    'here': os.getcwd(),
+    'plugins': {}
+}
 
 
 def snitch(func):
@@ -152,7 +188,16 @@ class BaseResourceWebTest(BaseWebTest):
 
     # setup of DS and related functionality
     def setUpDS(self):
-        self.app.app.registry.docservice_url = 'http://localhost'
+        self.app.app.registry.use_docservice = True
+        ds_config = deepcopy(test_config_data['config']['ds'])
+        docservice = DS(ds_config)
+        self.app.app.registry.docservice_url = docservice.download_url
+        self.app.app.registry.docservice_upload_url = docservice.upload_url
+        self.app.app.registry.docservice_username = docservice.user.name
+        self.app.app.registry.docservice_password = docservice.user.password
+        self.app.app.registry.docservice_key = dockey = docservice.signer
+        self.app.app.registry.keyring = docservice.init_keyring(dockey)
+
         test = self
         def request(method, url, **kwargs):
             response = Response()
