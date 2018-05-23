@@ -83,7 +83,7 @@ class Decision(Model):
 
 class LokiDocument(BaseDocument):
     documentOf = StringType(choices=['lot', 'item'])
-    documentType = StringType(choices=LOKI_DOCUMENT_TYPES)
+    documentType = StringType(choices=LOKI_DOCUMENT_TYPES, required=True)
     index = IntType(required=False)
     accessDetails = StringType()
     format = StringType(regex='^[-\w]+/[-\.\w\+]+$')
