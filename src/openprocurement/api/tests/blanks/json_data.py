@@ -21,6 +21,20 @@ test_organization = {
     }
 }
 
+test_organization_loki = {
+    "identifier": {
+        "scheme": u"UA-EDR",
+        "id": u"00037256",
+    },
+    "address": {
+        "countryName": u"Україна",
+    },
+    "contactPoint": {
+        "name": u"Державне управління справами",
+        "telephone": u"0440000000"
+    }
+}
+
 test_document_data = {
     # 'url': self.generate_docservice_url(),
     'title': u'укр.doc',
