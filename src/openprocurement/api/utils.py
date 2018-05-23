@@ -932,7 +932,7 @@ def format_aliases(aliases):
 def get_plugin_aliases(plugin):
     """Returns an array with plugin aliases information
 
-    >>> plugin = {{'auctions.rubble.financial': {'use_default': True, 'aliases': []}}
+    >>> plugin = {{'auctions.rubble.financial': {'aliases': []}}
     >>> get_plugin_aliases(plugin)
     ['plugin auctions.rubble.financial aliases: []']
 
