@@ -42,10 +42,11 @@ APP_META_FILE = 'app_meta.yaml'
 
 def _couchdb_connection(config):
     database_config = config.registry.app_meta.config.db
-    aserver, server, db = set_api_security(database_config)
+    aserver, server, adb, db = set_api_security(database_config)
     config.registry.couchdb_server = server
     if aserver:
         config.registry.admin_couchdb_server = aserver
+        config.registry.adb = adb
     config.registry.db = db
     # readjust couchdb json decoder
     couchdb_json_decode()
@@ -160,7 +161,7 @@ def main(global_config, **settings):
     _init_plugins(config)
     _auction_module(config)
     # sync couchdb views
-    sync_design(config.registry.db)
+    sync_design(getattr(config.registry, 'adb', config.registry.db))
     _document_service_key(config)
     conf_main = config.registry.app_meta.config.main
     config.registry.server_id = conf_main.server_id

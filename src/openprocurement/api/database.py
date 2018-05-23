@@ -94,7 +94,7 @@ def _reader_update(users_db, security_users, config):
     if _update_user(users_db, reader_username, reader_password, ('reader',)):
         LOGGER.info("Updating api db reader user",
                     extra={'MESSAGE_ID': 'update_api_reader_user'})
-        security_users.append(reader_username)
+    security_users.append(reader_username)
 
 
 def set_admin_api_security(server, db_name, config):
@@ -108,17 +108,17 @@ def set_admin_api_security(server, db_name, config):
     _reader_update(users_db, security_users, config)
     if db_name not in aserver:
         aserver.create(db_name)
-    db = aserver[db_name]
+    adb = aserver[db_name]
     SECURITY[u'members'][u'names'] = security_users
-    _update_security(db, "Updating api db security", 'update_api_security')
-    auth_doc = db.get(VALIDATE_DOC_ID, {'_id': VALIDATE_DOC_ID})
+    _update_security(adb, "Updating api db security", 'update_api_security')
+    auth_doc = adb.get(VALIDATE_DOC_ID, {'_id': VALIDATE_DOC_ID})
     if auth_doc.get('validate_doc_update') != VALIDATE_DOC_UPDATE % username:
         auth_doc['validate_doc_update'] = VALIDATE_DOC_UPDATE % username
         LOGGER.info("Updating api db validate doc",
                     extra={'MESSAGE_ID': 'update_api_validate_doc'})
-        db.save(auth_doc)
+        adb.save(auth_doc)
     db = server[db_name]
-    return aserver, server, db
+    return aserver, server, adb, db
 
 
 def set_api_security(config):
@@ -132,13 +132,14 @@ def set_api_security(config):
         except Unauthorized:
             server = Server(extract_credentials(db_full_url)[0])
     if config.admin and server.resource.credentials:
-        aserver, server, db = set_admin_api_security(server, db_name, config)
+        aserver, server, adb, db = set_admin_api_security(server, db_name, config)
     else:
         if db_name not in server:
             server.create(db_name)
         db = server[db_name]
         aserver = None
-    return aserver, server, db
+        adb = None
+    return aserver, server, adb, db
 
 
 def bootstrap_api_security():
