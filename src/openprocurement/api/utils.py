@@ -922,16 +922,17 @@ def format_aliases(aliases):
     :return: An array with strings
     """
     aliases_info = []
-    for plugin_name, alias in aliases.items():
-        msg = '{} aliases: {}'.format(plugin_name, alias)
-        aliases_info.append(msg)
+    for alias in aliases:
+        for k, v in alias.items():
+            info = '{} aliases: {}'.format(k, v)
+            aliases_info.append(info)
     return aliases_info
 
 
 def get_plugin_aliases(plugin):
     """Returns an array with plugin aliases information
 
-    >>> plugin = {'plugins': {'auctions.rubble.financial': {'use_default': True, 'aliases': []}}}
+    >>> plugin = {{'auctions.rubble.financial': {'use_default': True, 'aliases': []}}
     >>> get_plugin_aliases(plugin)
     ['plugin auctions.rubble.financial aliases: []']
 
@@ -939,12 +940,11 @@ def get_plugin_aliases(plugin):
     :return: An array with aliases in string representation
     """
     aliases = []
-    if 'plugins' not in plugin:
-        aliases.append({'Aliases': 'Not included'})
-        return aliases
-    plugins = plugin['plugins']
-
-    aliases = {plugin_key: plugin['aliases'] for plugin_key, plugin in plugins.items()}
+    for key, val in plugin.items():
+        if plugin[key] is None:
+            continue
+        alias = {key: val['aliases']}
+        aliases.append(alias)
     formatted_aliases = format_aliases(aliases)
     return formatted_aliases
 

@@ -148,7 +148,6 @@ def _set_up_configurator(config, plugins):
 
 
 def _init_plugins(config):
-    plugins = config.registry.app_meta(['plugins'])
     plugins = config.registry.app_meta.plugins
     LOGGER.info("Start plugins loading", extra={'MESSAGE_ID': 'included_plugin'})
     _set_up_configurator(config, plugins)

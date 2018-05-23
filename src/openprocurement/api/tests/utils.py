@@ -35,18 +35,16 @@ class UtilsTest(unittest.TestCase):
 
     # Mock data for aliases helper functions.
     ALIASES_MOCK_DATA = {
-            'plugins': {
-                'auctions.rubble.financial': {'use_default': True, 'migration': False, 'aliases': ['Alias']},
-            }
-        }
+        'auctions.rubble.financial': {'use_default': True, 'migration': False, 'aliases': ['Alias']}
+    }
 
     def test_get_plugin_aliases(self):
         result = get_plugin_aliases(self.ALIASES_MOCK_DATA)
         self.assertEqual(result, ["auctions.rubble.financial aliases: ['Alias']"])
 
     def test_format_aliases(self):
-        result = format_aliases({'auctions.rubble.financial': []})
-        self.assertEqual(result, ['auctions.rubble.financial aliases: []'])
+        result = format_aliases([{'auctions.rubble.financial': ['Alias']}])
+        self.assertEqual(result, ["auctions.rubble.financial aliases: ['Alias']"])
 
     def test_generate_id(self):
         id = generate_id()
