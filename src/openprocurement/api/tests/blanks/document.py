@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+from copy import deepcopy
 
 
 def not_found(self):
@@ -84,7 +85,6 @@ def not_found(self):
 def create_document_in_forbidden_resource_status(self):
 
     self.set_status(self.forbidden_document_modification_actions_status)
-
     response = self.app.post_json('/{}/documents'.format(self.resource_id),
                                   headers=self.access_header,
                                   params={'data': self.initial_document_data},
@@ -243,13 +243,10 @@ def create_resource_document_error(self):
 
 
 def create_resource_document_json_invalid(self):
+    data = deepcopy(self.initial_document_data)
+    del data['hash']
     response = self.app.post_json('/{}/documents'.format(self.resource_id),
-        headers=self.access_header, params={
-            'data': {
-                'title': u'укр.doc',
-                'url': self.generate_docservice_url(),
-                'format': 'application/msword',
-            }}, status=422)
+        headers=self.access_header, params={'data': data}, status=422)
     self.assertEqual(response.status, '422 Unprocessable Entity')
     self.assertEqual(response.content_type, 'application/json')
     self.assertEqual(response.json['errors'][0]["description"], "This field is required.")
@@ -268,20 +265,18 @@ def create_resource_document_json_invalid(self):
         {u'description': [u'Hash type is not supported.'], u'location': u'body', u'name': u'hash'}
     ])
 
+    data = deepcopy(self.initial_document_data)
+    data['hash'] = 'sha2048:' + '0' * 32
     response = self.app.post_json('/{}/documents'.format(self.resource_id),
         headers=self.access_header, params={
-            'data': {
-                'title': u'укр.doc',
-                'url': self.generate_docservice_url(),
-                'hash': 'sha2048:' + '0' * 32,
-                'format': 'application/msword',
-            }}, status=422)
+            'data': data}, status=422)
     self.assertEqual(response.status, '422 Unprocessable Entity')
     self.assertEqual(response.content_type, 'application/json')
     self.assertEqual(response.json['errors'], [
         {u'description': [u'Hash type is not supported.'], u'location': u'body', u'name': u'hash'}
     ])
 
+    data['hash'] = 'sha512:' + '0' * 32
     response = self.app.post_json('/{}/documents'.format(self.resource_id),
         headers=self.access_header, params={
             'data': {
@@ -296,88 +291,56 @@ def create_resource_document_json_invalid(self):
         {u'description': [u'Hash value is wrong length.'], u'location': u'body', u'name': u'hash'}
     ])
 
+    data['hash'] = 'md5:' + 'O' * 32
     response = self.app.post_json('/{}/documents'.format(self.resource_id),
-        headers=self.access_header, params={
-            'data': {
-                'title': u'укр.doc',
-                'url': self.generate_docservice_url(),
-                'hash': 'md5:' + 'O' * 32,
-                'format': 'application/msword',
-            }}, status=422)
+        headers=self.access_header, params={'data': data}, status=422)
     self.assertEqual(response.status, '422 Unprocessable Entity')
     self.assertEqual(response.content_type, 'application/json')
     self.assertEqual(response.json['errors'], [
         {u'description': [u'Hash value is not hexadecimal.'], u'location': u'body', u'name': u'hash'}
     ])
 
+    data = deepcopy(self.initial_document_data)
+    data['url'] = 'http://invalid.docservice.url/get/uuid'
     response = self.app.post_json('/{}/documents'.format(self.resource_id),
-        headers=self.access_header, params={
-            'data': {
-                'title': u'укр.doc',
-                'url': 'http://invalid.docservice.url/get/uuid',
-                'hash': 'md5:' + '0' * 32,
-                'format': 'application/msword',
-            }}, status=403)
+        headers=self.access_header, params={'data': data}, status=403)
     self.assertEqual(response.status, '403 Forbidden')
     self.assertEqual(response.content_type, 'application/json')
     self.assertEqual(response.json['errors'][0]["description"], "Can add document only from document service.")
 
+    data['url'] = '/'.join(self.generate_docservice_url().split('/')[:4])
     response = self.app.post_json('/{}/documents'.format(self.resource_id),
-        headers=self.access_header, params={
-            'data': {
-                'title': u'укр.doc',
-                'url': '/'.join(self.generate_docservice_url().split('/')[:4]),
-                'hash': 'md5:' + '0' * 32,
-                'format': 'application/msword',
-            }}, status=403)
+        headers=self.access_header, params={'data': data}, status=403)
     self.assertEqual(response.status, '403 Forbidden')
     self.assertEqual(response.content_type, 'application/json')
     self.assertEqual(response.json['errors'][0]["description"], "Can add document only from document service.")
 
+    data['url'] = self.generate_docservice_url().split('?')[0]
     response = self.app.post_json('/{}/documents'.format(self.resource_id),
-        headers=self.access_header, params={
-            'data': {
-                'title': u'укр.doc',
-                'url': self.generate_docservice_url().split('?')[0],
-                'hash': 'md5:' + '0' * 32,
-                'format': 'application/msword',
-            }}, status=403)
+        headers=self.access_header, params={'data': data}, status=403)
     self.assertEqual(response.status, '403 Forbidden')
     self.assertEqual(response.content_type, 'application/json')
     self.assertEqual(response.json['errors'][0]["description"], "Can add document only from document service.")
 
+    data['url'] = self.generate_docservice_url().replace(self.app.app.registry.keyring.keys()[-1], '0' * 8)
     response = self.app.post_json('/{}/documents'.format(self.resource_id),
-        headers=self.access_header, params={
-            'data': {
-                'title': u'укр.doc',
-                'url': self.generate_docservice_url().replace(self.app.app.registry.keyring.keys()[-1], '0' * 8),
-                'hash': 'md5:' + '0' * 32,
-                'format': 'application/msword',
-            }}, status=422)
+        headers=self.access_header, params={'data': data}, status=422)
     self.assertEqual(response.status, '422 Unprocessable Entity')
     self.assertEqual(response.content_type, 'application/json')
     self.assertEqual(response.json['errors'][0]["description"], "Document url expired.")
 
+    data['url'] = self.generate_docservice_url().replace("Signature=", "Signature=ABC")
     response = self.app.post_json('/{}/documents'.format(self.resource_id),
         headers=self.access_header, params={
-            'data': {
-                'title': u'укр.doc',
-                'url': self.generate_docservice_url().replace("Signature=", "Signature=ABC"),
-                'hash': 'md5:' + '0' * 32,
-                'format': 'application/msword',
-            }}, status=422)
+            'data': data}, status=422)
     self.assertEqual(response.status, '422 Unprocessable Entity')
     self.assertEqual(response.content_type, 'application/json')
     self.assertEqual(response.json['errors'][0]["description"], "Document url signature invalid.")
 
+    data['url'] = self.generate_docservice_url().replace("Signature=", "Signature=bw%3D%3D")
     response = self.app.post_json('/{}/documents'.format(self.resource_id),
         headers=self.access_header, params={
-            'data': {
-                'title': u'укр.doc',
-                'url': self.generate_docservice_url().replace("Signature=", "Signature=bw%3D%3D"),
-                'hash': 'md5:' + '0' * 32,
-                'format': 'application/msword',
-            }}, status=422)
+            'data': data}, status=422)
     self.assertEqual(response.status, '422 Unprocessable Entity')
     self.assertEqual(response.content_type, 'application/json')
     self.assertEqual(response.json['errors'][0]["description"], "Document url invalid.")
@@ -456,14 +419,11 @@ def put_resource_document_json(self):
     datePublished = response.json["data"]['datePublished']
     self.assertIn(doc_id, response.headers['Location'])
 
+    data = deepcopy(self.initial_document_data)
+    data['title'] = 'name.doc'
+    data['url'] = self.generate_docservice_url()
     response = self.app.put_json('/{}/documents/{}'.format(self.resource_id, doc_id),
-        headers=self.access_header, params={
-            'data': {
-                'title': u'name.doc',
-                'url': self.generate_docservice_url(),
-                'hash': 'md5:' + '0' * 32,
-                'format': 'application/msword',
-            }})
+        headers=self.access_header, params={'data': data})
     self.assertEqual(response.status, '200 OK')
     self.assertEqual(response.content_type, 'application/json')
     self.assertEqual(doc_id, response.json["data"]["id"])
@@ -502,14 +462,12 @@ def put_resource_document_json(self):
     self.assertEqual(dateModified, response.json["data"][0]['dateModified'])
     self.assertEqual(dateModified2, response.json["data"][1]['dateModified'])
 
+    data = deepcopy(self.initial_document_data)
+    data['title'] = 'name.doc'
+    data['url'] = self.generate_docservice_url()
     response = self.app.post_json('/{}/documents'.format(self.resource_id),
         headers=self.access_header, params={
-            'data': {
-                'title': 'name.doc',
-                'url': self.generate_docservice_url(),
-                'hash': 'md5:' + '0' * 32,
-                'format': 'application/msword',
-            }})
+            'data': data})
     self.assertEqual(response.status, '201 Created')
     self.assertEqual(response.content_type, 'application/json')
     doc_id = response.json["data"]['id']
