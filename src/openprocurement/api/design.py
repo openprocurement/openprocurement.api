@@ -18,12 +18,13 @@ def sync_design(db):
     for doc in updated_docs:
         success, doc_id, rev_or_exc = doc
         if success:
-            LOGGER.info("Design document '{}' was successfully updated. "
-                        "Current revison: {}".format(doc_id, rev_or_exc),
+            LOGGER.info("Design document '%s' was successfully updated. "
+                        "Current revision: %s", doc_id, rev_or_exc,
                         extra={'MESSAGE_ID': 'update_design_document'})
         else:
-            LOGGER.warning("Failed to update design document '{}': '{}'".format(
-                doc_id, rev_or_exc)
+            LOGGER.warning(
+                "Failed to update design document '%s': '%s'", doc_id,
+                ('{}: {}'.format(type(rev_or_exc).__name__, rev_or_exc))
             )
 
 
