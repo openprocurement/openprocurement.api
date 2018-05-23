@@ -637,6 +637,7 @@ class DummyLokiModelsTest(unittest.TestCase):
             'url': 'http://localhost/get',  # self.generate_docservice_url(),
             'hash': 'md5:' + '0' * 32,
             'format': 'application/msword',
+            'documentType': 'notice'
         }
 
         document = LokiDocument()
@@ -654,15 +655,19 @@ class DummyLokiModelsTest(unittest.TestCase):
         self.assertEqual(
             ex.exception.messages,
             {"url": ["This field is required."],
-            "title": ["This field is required."]}
+            "title": ["This field is required."],
+            "documentType": ["This field is required."],
+             }
         )
 
         document.import_data(data)
         document.validate()
         self.assertEqual(document.serialize('create'), data)
         self.assertEqual(document.serialize('edit'),
-                         {'format': u'application/msword',
-                          'title': u'\u0443\u043a\u0440.doc'})
+                         {'format': data['format'],
+                          'title': data['title'],
+                          'documentType': data['documentType']
+                          })
 
         document.url = data['url'] = u'http://localhost/get/docs?download={}'.format(document.id)
         document.__parent__ = mock.MagicMock(**{
@@ -672,8 +677,10 @@ class DummyLokiModelsTest(unittest.TestCase):
         document.validate()
 
         serialized_by_create = document.serialize('create')
-        self.assertEqual(serialized_by_create.keys(),
-                         ['url', 'format', 'hash', '__parent__', 'title'])
+        self.assertEqual(
+            set(serialized_by_create.keys()),
+            set(['url', 'format', 'hash', '__parent__', 'title', 'documentType'])
+        )
         serialized_by_create.pop('__parent__')
         self.assertEqual(serialized_by_create, data)
 
