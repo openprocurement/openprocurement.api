@@ -79,6 +79,8 @@ CPV_BLOCK_FROM = datetime(2017, 6, 2, tzinfo=TZ)
 
 ATC_INN_CLASSIFICATIONS_FROM = datetime(2017, 12, 22, tzinfo=TZ)
 
+DK018_CODES = read_json('json_data/dk018.json')
+
 ITEM_CLASSIFICATIONS = {
     u'CAV': CAV_CODES,
     # u'CAV-PS': []
@@ -91,7 +93,8 @@ LOKI_ITEM_CLASSIFICATION = {
 LOKI_ITEM_ADDITIONAL_CLASSIFICATIONS = {
     u'UA-EDR': [],
     u'CPVS': CPVS_CODES,
-    u'cadastralNumber': []
+    u'cadastralNumber': [],
+    u'dk018': DK018_CODES
 }
 
 LOKI_DOCUMENT_TYPES = [
