@@ -1,5 +1,8 @@
 # -*- coding: utf-8 -*-
 from couchdb.design import ViewDefinition
+from logging import getLogger
+
+LOGGER = getLogger("{}.init".format(__name__))
 
 
 def add_index_options(doc):
@@ -8,7 +11,20 @@ def add_index_options(doc):
 
 def sync_design(db):
     views = [j for i, j in globals().items() if "_view" in i]
-    ViewDefinition.sync_many(db, views, callback=add_index_options)
+    updated_docs = ViewDefinition.sync_many(
+        db, views, callback=add_index_options
+    )
+
+    for doc in updated_docs:
+        success, doc_id, rev_or_exc = doc
+        if success:
+            LOGGER.info("Design document '{}' was successfully updated. "
+                        "Current revison: {}".format(doc_id, rev_or_exc),
+                        extra={'MESSAGE_ID': 'update_design_document'})
+        else:
+            LOGGER.warning("Failed to update design document '{}': '{}'".format(
+                doc_id, rev_or_exc)
+            )
 
 
 conflicts_view = ViewDefinition('conflicts', 'all', '''function(doc) {
