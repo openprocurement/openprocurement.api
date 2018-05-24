@@ -847,8 +847,11 @@ def get_accelerator_attribute(context):
 
 def accelerated_calculate_business_date(date, period, context, specific_hour):
     accelerator_attribute = get_accelerator_attribute(context)
-    if accelerator_attribute:
-        re_obj = ACCELERATOR_RE.search(context[accelerator_attribute])
+    if not accelerator_attribute:
+        return
+    accelerator_value = getattr(context, accelerator_attribute)
+    if accelerator_value:
+        re_obj = ACCELERATOR_RE.search(accelerator_value)
         if re_obj and 'accelerator' in re_obj.groupdict():
             if specific_hour:
                 period = period + (set_specific_hour(date, specific_hour) - date)
