@@ -152,6 +152,7 @@ def _init_plugins(config):
     LOGGER.info("Start plugins loading", extra={'MESSAGE_ID': 'included_plugin'})
     _set_up_configurator(config, plugins)
     get_evenly_plugins(config, plugins, 'openprocurement.api.plugins')
+    LOGGER.info("End plugins loading", extra={'MESSAGE_ID': 'included_plugin'})
 
 
 def main(global_config, **settings):
