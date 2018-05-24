@@ -26,8 +26,9 @@ from openprocurement.api.utils import (
     couchdb_json_decode,
     route_prefix,
     json_body,
-    read_yaml
+    read_yaml,
 )
+
 from openprocurement.api.database import set_api_security
 from openprocurement.api.design import sync_design
 from openprocurement.api.auth import AuthenticationPolicy, authenticated_role, check_accreditation

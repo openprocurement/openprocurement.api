@@ -911,6 +911,39 @@ def read_yaml(name):
     return safe_load(data)
 
 
+def format_aliases(aliases):
+    """Converts an dictionary keys/values in a string representation of an aliases
+    :param aliases: An dictionary object
+    :return: An array with strings
+    """
+    aliases_info = []
+    for alias in aliases:
+        for k, v in alias.items():
+            info = '{} aliases: {}'.format(k, v)
+            aliases_info.append(info)
+    return aliases_info
+
+
+def get_plugin_aliases(plugin):
+    """Returns an array with plugin aliases information
+
+    >>> data = {'auctions.rubble.financial': {'aliases': []}}
+    >>> get_plugin_aliases(data)
+    ['auctions.rubble.financial aliases: []']
+
+    :param plugin A plugin his information
+    :return: An array with aliases in string representation
+    """
+    aliases = []
+    for key, val in plugin.items():
+        if plugin[key] is None:
+            continue
+        alias = {key: val['aliases']}
+        aliases.append(alias)
+    formatted_aliases = format_aliases(aliases)
+    return formatted_aliases
+
+
 def get_access_token_from_request(request):
     token = request.params.get('acc_token') or request.headers.get('X-Access-Token')
     if not token:
