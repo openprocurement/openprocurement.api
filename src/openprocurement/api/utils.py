@@ -929,7 +929,7 @@ def get_plugin_aliases(plugin):
 
     >>> data = {'auctions.rubble.financial': {'aliases': []}}
     >>> get_plugin_aliases(data)
-    ['plugin auctions.rubble.financial aliases: []']
+    ['auctions.rubble.financial aliases: []']
 
     :param plugin A plugin his information
     :return: An array with aliases in string representation
