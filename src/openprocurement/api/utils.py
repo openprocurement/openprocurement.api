@@ -847,15 +847,13 @@ def get_accelerator_attribute(context):
 
 def accelerated_calculate_business_date(date, period, context, specific_hour):
     accelerator_attribute = get_accelerator_attribute(context)
-    if not accelerator_attribute:
+    if (not accelerator_attribute or not isinstance(context[accelerator_attribute], str)):
         return
-    accelerator_value = getattr(context, accelerator_attribute)
-    if accelerator_value:
-        re_obj = ACCELERATOR_RE.search(accelerator_value)
-        if re_obj and 'accelerator' in re_obj.groupdict():
-            if specific_hour:
-                period = period + (set_specific_hour(date, specific_hour) - date)
-            return date + (period / int(re_obj.groupdict()['accelerator']))
+    re_obj = ACCELERATOR_RE.search(context[accelerator_attribute])
+    if re_obj and 'accelerator' in re_obj.groupdict():
+        if specific_hour:
+            period = period + (set_specific_hour(date, specific_hour) - date)
+        return date + (period / int(re_obj.groupdict()['accelerator']))
 
 
 def calculate_business_date(date_obj, timedelta_obj, context, working_days=False, specific_hour=None):
