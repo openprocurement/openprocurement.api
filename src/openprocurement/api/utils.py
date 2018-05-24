@@ -913,11 +913,6 @@ def read_yaml(name):
 
 def format_aliases(aliases):
     """Converts an dictionary keys/values in a string representation of an aliases
-
-    >>> plugin = {'auctions.rubble.financial': []}
-    >>> format_aliases(plugin)
-    ['plugin auctions.rubble.financial aliases []']
-
     :param aliases: An dictionary object
     :return: An array with strings
     """
@@ -932,8 +927,8 @@ def format_aliases(aliases):
 def get_plugin_aliases(plugin):
     """Returns an array with plugin aliases information
 
-    >>> plugin = {{'auctions.rubble.financial': {'aliases': []}}
-    >>> get_plugin_aliases(plugin)
+    >>> data = {'auctions.rubble.financial': {'aliases': []}}
+    >>> get_plugin_aliases(data)
     ['plugin auctions.rubble.financial aliases: []']
 
     :param plugin A plugin his information
