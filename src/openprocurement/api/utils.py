@@ -829,9 +829,26 @@ def is_holiday(date):
     )
 
 
+def get_accelerator_attribute(context):
+    """Checks if some accelerator attribute was set and returns it
+
+    `calculate_business_date` is used not only by auctions as a `context`,
+    but also with other models. This method recognizes accelerator attribute
+    for the `context` model if it present in `possible_attributes` below.
+    """
+    possible_attributes = (
+        'procurementMethodDetails',
+        'sandbox_parameters',
+    )
+    for attr in possible_attributes:
+        if context and attr in context and context[attr]:
+            return attr
+
+
 def accelerated_calculate_business_date(date, period, context, specific_hour):
-    if context and 'procurementMethodDetails' in context and context['procurementMethodDetails']:
-        re_obj = ACCELERATOR_RE.search(context['procurementMethodDetails'])
+    accelerator_attribute = get_accelerator_attribute(context)
+    if accelerator_attribute:
+        re_obj = ACCELERATOR_RE.search(context[accelerator_attribute])
         if re_obj and 'accelerator' in re_obj.groupdict():
             if specific_hour:
                 period = period + (set_specific_hour(date, specific_hour) - date)
