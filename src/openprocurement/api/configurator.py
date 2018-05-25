@@ -8,7 +8,7 @@ class ConfiguratorException(Exception):
 
 
 configuration_info = {
-    'AUCTION_PREFIX': 'AU-EU'
+    'AUCTION_PREFIX': 'UA-EA'
 }
 
 
@@ -54,7 +54,7 @@ class Configurator(object):
     :type error_messages: immutable dict
     """
     fields = {
-        'AUCTION_PREFIX': {'type': str, 'default': 'AU-EU'}
+        'AUCTION_PREFIX': {'type': str, 'default': 'UA-EA'}
     }
     methods = {}
     standard_fields = ['fields', 'methods', 'immutable_fields', 'error_messages', 'created']

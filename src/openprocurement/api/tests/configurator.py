@@ -19,16 +19,16 @@ class ConfiguratorTest(unittest.TestCase):
             'AUCTION_PREFIX should be str type',
         )
 
-        test_configs = {'AUCTION_PREFIX': 'AU-EU'}
+        test_configs = {'AUCTION_PREFIX': 'UA-EA'}
         conf = Configurator(test_configs, {})
         with self.assertRaises(ConfiguratorException) as exc:
-            conf.AUCTION_PREFIX = 'AU-PS'
+            conf.AUCTION_PREFIX = 'UA-PS'
         self.assertEqual(
             exc.exception.message,
             'You can\'t change configurator after it was instantiated.'
         )
 
-        test_configs = {'AUCTION_PREFIX': 'AU-EU', 'justField': 'field'}
+        test_configs = {'AUCTION_PREFIX': 'UA-EA', 'justField': 'field'}
         with self.assertRaises(ConfiguratorException) as exc:
             Configurator(test_configs, {})
         self.assertEqual(
