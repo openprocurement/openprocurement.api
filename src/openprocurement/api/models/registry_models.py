@@ -54,25 +54,6 @@ class UAEDRAndCadastralItemClassification(ItemClassification):
             raise ValidationError(BaseType.MESSAGES['choices'].format(unicode(available_codes)))
 
 
-class LokiItem(BaseItem):
-    class Options:
-        roles = item_roles
-
-    unit = ModelType(BaseUnit, required=True)
-    quantity = DecimalType(precision=-4, required=True)
-    address = ModelType(Address, required=True)
-    classification = ModelType(LokiItemClassification, required=True)
-    additionalClassifications = ListType(ModelType(UAEDRAndCadastralItemClassification), default=list())
-    registrationDetails = ModelType(RegistrationDetails, required=True)
-
-    def validate_schema_properties(self, data, new_schema_properties):
-        if new_schema_properties:
-            raise ValidationError('Opportunity to use schema_properties is disabled')
-
-
-LokiItem.__name__ = 'Item'
-
-
 class Decision(Model):
     title = StringType()
     title_ru = StringType()
@@ -94,6 +75,26 @@ class LokiDocument(BaseDocument):
 
 
 LokiDocument.__name__ = 'Document'
+
+
+class LokiItem(BaseItem):
+    class Options:
+        roles = item_roles
+
+    unit = ModelType(BaseUnit, required=True)
+    quantity = DecimalType(precision=-4, required=True)
+    address = ModelType(Address, required=True)
+    classification = ModelType(LokiItemClassification, required=True)
+    additionalClassifications = ListType(ModelType(UAEDRAndCadastralItemClassification), default=list())
+    registrationDetails = ModelType(RegistrationDetails, required=True)
+    documents = ListType(ModelType(LokiDocument), default=list())
+
+    def validate_schema_properties(self, data, new_schema_properties):
+        if new_schema_properties:
+            raise ValidationError('Opportunity to use schema_properties is disabled')
+
+
+LokiItem.__name__ = 'Item'
 
 
 class AssetCustodian(Organization):
