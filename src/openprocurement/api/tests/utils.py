@@ -377,6 +377,14 @@ class CalculateBusinessDateTestCase(unittest.TestCase):
 
         self.assertEqual(result, target_end_of_period)
 
+    def test_common_calculation_with_working_days_working_end(self):
+        start = datetime(2018, 10, 11)
+        business_days_to_add = timedelta(days=3)
+        target_end_of_period = datetime(2018, 10, 17)
+        result = calculate_business_date(start, business_days_to_add, None, working_days=True)
+
+        self.assertEqual(result, target_end_of_period)
+
     def test_common_calculation_with_working_days_specific_hour(self):
         """This test assumes that <Mon 2018-4-9> is holiday, besides regular holidays
         of that month. It must be fixed in `working_days.json` file, that translates
