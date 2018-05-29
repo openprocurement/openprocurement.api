@@ -393,8 +393,10 @@ class CalculateBusinessDateTestCase(unittest.TestCase):
         start = datetime(2018, 4, 2)
         specific_hour = 18
         business_days_to_add = timedelta(days=10)
-        target_end_of_period = datetime(2018, 4, 17)
-        result = calculate_business_date(start, business_days_to_add, None, working_days=True, specific_hour=specific_hour)
+        target_end_of_period = datetime(2018, 4, 16)
+        result = calculate_business_date(
+            start, business_days_to_add, None, working_days=True, specific_hour=specific_hour
+        )
 
         self.assertEqual(result, target_end_of_period + timedelta(hours=specific_hour))
 
@@ -405,6 +407,42 @@ class CalculateBusinessDateTestCase(unittest.TestCase):
         result = calculate_business_date(start, business_days_to_add, None, working_days=True)
 
         self.assertEqual(result, target_end_of_period)
+
+    def test_start_is_holiday_specific_hour_none(self):
+        start = datetime(2000, 5, 6, 13, 22)  # Saturday
+        days_to_add = timedelta(days=1)
+        target_end = datetime(2000, 5, 9, 0, 0)
+
+        result = calculate_business_date(start, days_to_add, None, working_days=True, specific_hour=None)
+
+        self.assertEqual(result, target_end)
+
+    def test_start_is_holiday_specific_hour_set(self):
+        start = datetime(2000, 5, 6, 20, 22)  # Saturday
+        days_to_add = timedelta(days=1)
+        target_end = datetime(2000, 5, 8, 18, 0)
+
+        result = calculate_business_date(start, days_to_add, None, working_days=True, specific_hour=18)
+
+        self.assertEqual(result, target_end)
+
+    def test_start_is_not_holiday_specific_hour_none(self):
+        start = datetime(2000, 5, 5, 20, 22)  # Friday
+        days_to_add = timedelta(days=1)
+        target_end = datetime(2000, 5, 8, 20, 22)
+
+        result = calculate_business_date(start, days_to_add, None, working_days=True, specific_hour=None)
+
+        self.assertEqual(result, target_end)
+
+    def test_start_is_not_holiday_specific_hour_set(self):
+        start = datetime(2000, 5, 5, 20, 22)  # Friday
+        days_to_add = timedelta(days=1)
+        target_end = datetime(2000, 5, 8, 18, 0)
+
+        result = calculate_business_date(start, days_to_add, None, working_days=True, specific_hour=18)
+
+        self.assertEqual(result, target_end)
 
 
 def suite():
