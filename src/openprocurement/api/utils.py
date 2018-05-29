@@ -62,6 +62,13 @@ def get_now():
     return datetime.now(TZ)
 
 
+def get_type(obj):
+    # This function need to wrap python type function
+    # because this function can`t be mocked so it`s make
+    # testing more difficult
+    return type(obj)
+
+
 def request_get_now(request):
     return get_now()
 
