@@ -38,16 +38,16 @@ class ValidateDocumentDataTest(unittest.TestCase):
         # Testing
         validate_document_data(self.mocked_request)
 
-        assert mocked_validate_data.call_count == 1
+        self.assertEqual(mocked_validate_data.call_count, 1)
         mocked_validate_data.assert_called_with(self.mocked_request, self.model_class, "document")
 
-        assert mocked_get_first.call_count == 1
+        self.assertEqual(mocked_get_first.call_count, 1)
         mocked_get_first.assert_called_with(self.mocked_request)
 
-        assert mocked_check_document.call_count == 1
+        self.assertEqual(mocked_check_document.call_count, 1)
         mocked_check_document.assert_called_with(self.mocked_request, self.document_mock, 'body')
 
-        assert mocked_update_document_url.call_count == 1
+        self.assertEqual(mocked_update_document_url.call_count, 1)
         mocked_update_document_url.assert_called_with(
             self.mocked_request,
             self.document_mock,
@@ -55,14 +55,14 @@ class ValidateDocumentDataTest(unittest.TestCase):
             {}
         )
 
-        assert mocked_get_type.call_count == 1
+        self.assertEqual(mocked_get_type.call_count, 1)
         mocked_get_type.assert_called_with(self.mocked_request.context)
 
-        assert mocked_set_first_document_fields.call_count == 0
+        self.assertEqual(mocked_set_first_document_fields.call_count, 0)
 
-        assert self.document_mock.documentOf == 'resourceName'
+        self.assertEqual(self.document_mock.documentOf, 'resourceName')
 
-        assert self.mocked_request.validated['document'] is self.document_mock_with_updated_url
+        self.assertIs(self.mocked_request.validated['document'], self.document_mock_with_updated_url)
 
     def test_documentOf_not_in_document(self, mocked_get_type, mocked_validate_data, mocked_update_document_url, mocked_get_first, mocked_set_first_document_fields, mocked_check_document):
         # Mocking
@@ -79,16 +79,16 @@ class ValidateDocumentDataTest(unittest.TestCase):
         # Testing
         validate_document_data(self.mocked_request)
 
-        assert mocked_validate_data.call_count == 1
+        self.assertEqual(mocked_validate_data.call_count, 1)
         mocked_validate_data.assert_called_with(self.mocked_request, self.model_class, "document")
 
-        assert mocked_get_first.call_count == 1
+        self.assertEqual(mocked_get_first.call_count, 1)
         mocked_get_first.assert_called_with(self.mocked_request)
 
-        assert mocked_check_document.call_count == 1
+        self.assertEqual(mocked_check_document.call_count, 1)
         mocked_check_document.assert_called_with(self.mocked_request, self.document_mock, 'body')
 
-        assert mocked_update_document_url.call_count == 1
+        self.assertEqual(mocked_update_document_url.call_count, 1)
         mocked_update_document_url.assert_called_with(
             self.mocked_request,
             self.document_mock,
@@ -96,14 +96,14 @@ class ValidateDocumentDataTest(unittest.TestCase):
             {}
         )
 
-        assert mocked_get_type.call_count == 2
+        self.assertEqual(mocked_get_type.call_count, 2)
         mocked_get_type.assert_called_with(self.mocked_request.context)
 
-        assert mocked_set_first_document_fields.call_count == 0
+        self.assertEqual(mocked_set_first_document_fields.call_count, 0)
 
-        assert self.document_mock.documentOf == 'resource_from_context'
+        self.assertEqual(self.document_mock.documentOf, 'resource_from_context')
 
-        assert self.mocked_request.validated['document'] is self.document_mock_with_updated_url
+        self.assertIs(self.mocked_request.validated['document'], self.document_mock_with_updated_url)
 
 
     def test_first_document(self, mocked_get_type, mocked_validate_data, mocked_update_document_url, mocked_get_first, mocked_set_first_document_fields, mocked_check_document):
@@ -120,16 +120,16 @@ class ValidateDocumentDataTest(unittest.TestCase):
         # Testing
         validate_document_data(self.mocked_request)
 
-        assert mocked_validate_data.call_count == 1
+        self.assertEqual(mocked_validate_data.call_count, 1)
         mocked_validate_data.assert_called_with(self.mocked_request, self.model_class, "document")
 
-        assert mocked_get_first.call_count == 1
+        self.assertEqual(mocked_get_first.call_count, 1)
         mocked_get_first.assert_called_with(self.mocked_request)
 
-        assert mocked_check_document.call_count == 1
+        self.assertEqual(mocked_check_document.call_count, 1)
         mocked_check_document.assert_called_with(self.mocked_request, self.document_mock, 'body')
 
-        assert mocked_update_document_url.call_count == 1
+        self.assertEqual(mocked_update_document_url.call_count, 1)
         mocked_update_document_url.assert_called_with(
             self.mocked_request,
             self.document_mock,
@@ -137,19 +137,19 @@ class ValidateDocumentDataTest(unittest.TestCase):
             {}
         )
 
-        assert mocked_get_type.call_count == 1
+        self.assertEqual(mocked_get_type.call_count, 1)
         mocked_get_type.assert_called_with(self.mocked_request.context)
 
-        assert mocked_set_first_document_fields.call_count == 1
+        self.assertEqual(mocked_set_first_document_fields.call_count, 1)
         mocked_set_first_document_fields.assert_called_with(
             self.mocked_request,
             first_document,
             self.document_mock
         )
 
-        assert self.document_mock.documentOf == 'resourceName'
+        self.assertEqual(self.document_mock.documentOf, 'resourceName')
 
-        assert self.mocked_request.validated['document'] is self.document_mock_with_updated_url
+        self.assertIs(self.mocked_request.validated['document'], self.document_mock_with_updated_url)
 
     def test_not_first_document(self, mocked_get_type, mocked_validate_data, mocked_update_document_url, mocked_get_first, mocked_set_first_document_fields, mocked_check_document):
         # Mocking
@@ -164,16 +164,16 @@ class ValidateDocumentDataTest(unittest.TestCase):
         # Testing
         validate_document_data(self.mocked_request)
 
-        assert mocked_validate_data.call_count == 1
+        self.assertEqual(mocked_validate_data.call_count, 1)
         mocked_validate_data.assert_called_with(self.mocked_request, self.model_class, "document")
 
-        assert mocked_get_first.call_count == 1
+        self.assertEqual(mocked_get_first.call_count, 1)
         mocked_get_first.assert_called_with(self.mocked_request)
 
-        assert mocked_check_document.call_count == 1
+        self.assertEqual(mocked_check_document.call_count, 1)
         mocked_check_document.assert_called_with(self.mocked_request, self.document_mock, 'body')
 
-        assert mocked_update_document_url.call_count == 1
+        self.assertEqual(mocked_update_document_url.call_count, 1)
         mocked_update_document_url.assert_called_with(
             self.mocked_request,
             self.document_mock,
@@ -181,14 +181,14 @@ class ValidateDocumentDataTest(unittest.TestCase):
             {}
         )
 
-        assert mocked_get_type.call_count == 1
+        self.assertEqual(mocked_get_type.call_count, 1)
         mocked_get_type.assert_called_with(self.mocked_request.context)
 
-        assert mocked_set_first_document_fields.call_count == 0
+        self.assertEqual(mocked_set_first_document_fields.call_count, 0)
 
-        assert self.document_mock.documentOf == 'resourceName'
+        self.assertEqual(self.document_mock.documentOf, 'resourceName')
 
-        assert self.mocked_request.validated['document'] is self.document_mock_with_updated_url
+        self.assertIs(self.mocked_request.validated['document'], self.document_mock_with_updated_url)
 
 
 def suite():
