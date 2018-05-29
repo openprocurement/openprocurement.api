@@ -107,7 +107,8 @@ def validate_document_data(request, **kwargs):
     if first_document:
         set_first_document_fields(request, first_document, document)
 
-    document.documentOf = type(context).__name__.lower()
+    if not document.documentOf:
+        document.documentOf = type(context).__name__.lower()
     document_route = request.matched_route.name.replace("collection_", "")
     document = update_document_url(request, document, document_route, {})
     request.validated['document'] = document
