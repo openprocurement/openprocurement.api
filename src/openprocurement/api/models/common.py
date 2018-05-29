@@ -9,6 +9,12 @@ from schematics.types.serializable import serializable
 from openprocurement.api.models.roles import organization_roles, auctionParameters_roles
 from openprocurement.api.models.schematics_extender import Model, IsoDateTimeType
 from openprocurement.api.utils import get_now
+from schematics.transforms import blacklist
+
+sensitive_fields = ("__parent__", 'owner_token', 'owner', 'transfer_token')
+
+sensitive_default_role = SchematicsDocument.Options.roles['default'] + blacklist(sensitive_fields)
+sensitive_embedded_role = SchematicsDocument.Options.roles['embedded'] +  blacklist(sensitive_fields)
 
 
 class Revision(Model):
@@ -23,7 +29,7 @@ class BaseResourceItem(SchematicsDocument, Model):
     owner_token = StringType()
     mode = StringType(choices=['test'])
     dateModified = IsoDateTimeType()
-
+    transfer_token = StringType()
     _attachments = DictType(DictType(BaseType), default=dict())  # couchdb attachments
     revisions = ListType(ModelType(Revision), default=list())
 
