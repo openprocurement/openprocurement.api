@@ -1,6 +1,7 @@
 class BaseConfigError(Exception):
     """Base config error class"""
     def __init__(self, msg):
+        super(BaseConfigError, self).__init__(msg)
         self.msg = msg
 
     def __str__(self):
