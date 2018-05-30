@@ -46,6 +46,11 @@ class UtilsTest(unittest.TestCase):
         result = format_aliases([{'auctions.rubble.financial': ['Alias']}])
         self.assertEqual(result, ["auctions.rubble.financial aliases: ['Alias']"])
 
+    def test_get_plugin_error(self):
+        data = {'auctions.rubble.financial': {'aliases': ['One', 'One']}}
+        with self.assertRaises(AttributeError):
+            get_plugin_aliases(data)
+
     def test_generate_id(self):
         id = generate_id()
 

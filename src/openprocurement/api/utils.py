@@ -15,6 +15,7 @@ from string import hexdigits
 from urllib import quote, unquote, urlencode
 from urlparse import urlparse, urlunsplit, parse_qsl, parse_qs
 from uuid import uuid4
+import collections
 
 import couchdb.json
 from cornice.resource import resource, view
@@ -933,6 +934,8 @@ def format_aliases(aliases):
 
 def get_plugin_aliases(plugin):
     """Returns an array with plugin aliases information
+       If an aliases were repeated more than one time
+       we raise AttributeError
 
     >>> data = {'auctions.rubble.financial': {'aliases': []}}
     >>> get_plugin_aliases(data)
@@ -945,6 +948,11 @@ def get_plugin_aliases(plugin):
     for key, val in plugin.items():
         if plugin[key] is None:
             continue
+
+        duplicated = collections.Counter(val['aliases'])
+        if any(val >= 2 for _, val in duplicated.items()):
+            raise AttributeError('An aliases in a plugin must be unique')
+
         alias = {key: val['aliases']}
         aliases.append(alias)
     formatted_aliases = format_aliases(aliases)
