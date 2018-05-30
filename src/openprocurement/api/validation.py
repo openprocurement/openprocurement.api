@@ -9,7 +9,8 @@ from openprocurement.api.utils import (
     error_handler, raise_operation_error, check_document,
     update_document_url,
     set_first_document_fields,
-    get_first_document
+    get_first_document,
+    get_type
 )
 
 OPERATIONS = {"POST": "add", "PATCH": "update", "PUT": "update", "DELETE": "delete"}
@@ -97,7 +98,7 @@ def validate_patch_document_data(request, **kwargs):
 
 def validate_document_data(request, **kwargs):
     context = request.context if 'documents' in request.context else request.context.__parent__
-    model = type(context).documents.model_class
+    model = get_type(context).documents.model_class
     validate_data(request, model, "document")
 
     first_document = get_first_document(request)
@@ -107,7 +108,8 @@ def validate_document_data(request, **kwargs):
     if first_document:
         set_first_document_fields(request, first_document, document)
 
-    document.documentOf = type(context).__name__.lower()
+    if not document.documentOf:
+        document.documentOf = get_type(context).__name__.lower()
     document_route = request.matched_route.name.replace("collection_", "")
     document = update_document_url(request, document, document_route, {})
     request.validated['document'] = document
