@@ -933,7 +933,7 @@ def format_aliases(aliases):
     return aliases_info
 
 
-def check_aliases(alias):
+def check_alias(alias):
     """Checks whether a plugin contains an repeated aliases
 
     Note:
@@ -945,19 +945,13 @@ def check_aliases(alias):
     where key is a name of a package, and value
     of which contains his aliases
     """
-    for key, value in alias.items():
+    for _, value in alias.items():
         duplicated = collections.Counter(value)
         for d_key, d_value in duplicated.items():
             if d_value >= 2:
                 raise ConfigAliasError(
                     'Alias {} repeating {} times'.format(d_key, d_value)
                 )
-
-
-def output_aliases(arr):
-    """Makes output logger.info about an alias"""
-    for alias in arr:
-        LOGGER.info(alias)
 
 
 def make_aliases(plugin):
@@ -993,9 +987,11 @@ def get_plugin_aliases(plugin):
         plugin an configurations dictionary
     """
     aliases = make_aliases(plugin)
-    output_aliases(format_aliases(aliases))
+    for output_alias in format_aliases(aliases):
+        LOGGER.info(output_alias)
+
     for alias in aliases:
-        check_aliases(alias)
+        check_alias(alias)
 
 
 def get_access_token_from_request(request):
