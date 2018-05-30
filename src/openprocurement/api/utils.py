@@ -40,6 +40,7 @@ from openprocurement.api.events import ErrorDesctiptorEvent
 from openprocurement.api.interfaces import IOPContent
 from openprocurement.api.interfaces import IContentConfigurator
 from openprocurement.api.traversal import factory
+from openprocurement.api.exceptions import ConfigAliasError
 
 ACCELERATOR_RE = compile(r'.accelerator=(?P<accelerator>\d+)')
 json_view = partial(view, renderer='json')
@@ -932,31 +933,69 @@ def format_aliases(aliases):
     return aliases_info
 
 
-def get_plugin_aliases(plugin):
-    """Returns an array with plugin aliases information
-       If an aliases were repeated more than one time
-       we raise AttributeError
+def check_aliases(alias):
+    """Checks whether a plugin contains an repeated aliases
 
-    >>> data = {'auctions.rubble.financial': {'aliases': []}}
-    >>> get_plugin_aliases(data)
-    ['auctions.rubble.financial aliases: []']
+    Note:
+        If a plugin contains an repeated aliases
+        we raise ConfigAliasError
 
-    :param plugin A plugin his information
-    :return: An array with aliases in string representation
+    Args:
+        alias a dictionary with alias info,
+    where key is a name of a package, and value
+    of which contains his aliases
+    """
+    for key, value in alias.items():
+        duplicated = collections.Counter(value)
+        for d_key, d_value in duplicated.items():
+            if d_value >= 2:
+                raise ConfigAliasError(
+                    'Alias {} repeating {} times'.format(d_key, d_value)
+                )
+
+
+def output_aliases(arr):
+    """Makes output logger.info about an alias"""
+    for alias in arr:
+        LOGGER.info(alias)
+
+
+def make_aliases(plugin):
+    """Makes a dictionary with aliases information
+
+    Args:
+        plugin A dictionary with an plugins information
+
+    Returns:
+        aliases A list with dictionary objects, where key
+    is a name of a plugin, and value is a list of an aliases
     """
     aliases = []
     for key, val in plugin.items():
         if plugin[key] is None:
             continue
-
-        duplicated = collections.Counter(val['aliases'])
-        if any(val >= 2 for _, val in duplicated.items()):
-            raise AttributeError('An aliases in a plugin must be unique')
-
         alias = {key: val['aliases']}
         aliases.append(alias)
-    formatted_aliases = format_aliases(aliases)
-    return formatted_aliases
+    return aliases
+
+
+def get_plugin_aliases(plugin):
+    """Returns an array with plugin aliases information
+       If an aliases were repeated more than one time
+       we raise AttributeError
+
+    Example:
+        data = {'auctions.rubble.financial': {'aliases': []}}
+        get_plugin_aliases(data)
+    ['auctions.rubble.financial aliases: []']
+
+    Args:
+        plugin an configurations dictionary
+    """
+    aliases = make_aliases(plugin)
+    output_aliases(format_aliases(aliases))
+    for alias in aliases:
+        check_aliases(alias)
 
 
 def get_access_token_from_request(request):
