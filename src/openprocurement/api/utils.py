@@ -920,17 +920,19 @@ def read_yaml(name):
     return safe_load(data)
 
 
-def format_aliases(aliases):
-    """Converts an dictionary keys/values in a string representation of an aliases
-    :param aliases: An dictionary object
-    :return: An array with strings
+def format_aliases(alias):
+    """Converts an dictionary where key is 'plugin name'
+    and value is 'a list with aliases'
+
+    Args:
+        alias An dictionary object
+
+    Returns:
+        A string representation of plugin and object
     """
-    aliases_info = []
-    for alias in aliases:
-        for k, v in alias.items():
-            info = '{} aliases: {}'.format(k, v)
-            aliases_info.append(info)
-    return aliases_info
+    for k, v in alias.items():
+        info = '{} aliases: {}'.format(k, v)
+    return info
 
 
 def check_alias(alias):
@@ -987,8 +989,8 @@ def get_plugin_aliases(plugin):
         plugin an configurations dictionary
     """
     aliases = make_aliases(plugin)
-    for output_alias in format_aliases(aliases):
-        LOGGER.info(output_alias)
+    for alias in aliases:
+        LOGGER.info(format_aliases(alias))
 
     for alias in aliases:
         check_alias(alias)

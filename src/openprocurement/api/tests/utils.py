@@ -41,8 +41,8 @@ class UtilsTest(unittest.TestCase):
     }
 
     def test_format_aliases(self):
-        result = format_aliases([{'auctions.rubble.financial': ['Alias']}])
-        self.assertEqual(result, ["auctions.rubble.financial aliases: ['Alias']"])
+        result = format_aliases({'auctions.rubble.financial': ['Alias']})
+        self.assertEqual(result, "auctions.rubble.financial aliases: ['Alias']")
 
     def test_get_plugin_error(self):
         data = {'auctions.rubble.financial': {'aliases': ['One', 'One']}}
