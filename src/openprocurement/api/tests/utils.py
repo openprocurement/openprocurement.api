@@ -8,6 +8,7 @@ from couchdb.client import Document
 from libnacl.sign import Signer
 from pyramid.config import Configurator
 from uuid import UUID
+from pathlib2 import PosixPath
 
 from openprocurement.api.utils import (
     apply_data_patch,
@@ -27,9 +28,9 @@ from openprocurement.api.utils import (
     calculate_business_date,
     get_now,
     get_plugin_aliases,
+    get_file_path,
     format_aliases
 )
-
 
 class UtilsTest(unittest.TestCase):
 
@@ -412,6 +413,25 @@ class CalculateBusinessDateTestCase(unittest.TestCase):
         result = calculate_business_date(start, business_days_to_add, None, working_days=True)
 
         self.assertEqual(result, target_end_of_period)
+
+    def test_get_file_path(self):
+        here = '/absolute/path/app/'
+        need_file = 'need_file'
+        path = get_file_path(here, need_file)
+        self.assertEqual(path, '/absolute/path/app/need_file')
+
+
+        mock_home = '/home/test'
+        need_file = '~/doc/need_file'
+        expanduser = '/'.join([mock_home, need_file.split('/')[-1]])
+        with mock.patch('openprocurement.api.utils.Path.expanduser',
+                        return_value=PosixPath(expanduser)):
+            path = get_file_path(here, need_file)
+            self.assertEqual(path,  expanduser)
+
+        need_file = '/absolute/path/need_file'
+        path = get_file_path(here, need_file)
+        self.assertEqual(path, '/absolute/path/need_file')
 
 
 def suite():

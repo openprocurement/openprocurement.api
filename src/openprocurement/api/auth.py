@@ -9,7 +9,10 @@ from logging import getLogger
 
 from pyramid.authentication import BasicAuthAuthenticationPolicy, b64decode
 
-from openprocurement.api.utils import get_access_token_from_request
+from openprocurement.api.utils import (
+    get_access_token_from_request,
+    get_file_path
+)
 
 auth_mapping = {}
 
@@ -33,7 +36,8 @@ def _void_auth(app_meta):
 def _file_auth(app_meta):
     conf_auth = app_meta.config.auth
     config = ConfigParser()
-    file_path = os.path.join(app_meta.here, conf_auth.src)
+
+    file_path = get_file_path(app_meta.here, conf_auth.src)
     users = {}
     if not os.path.isfile(file_path):
         raise IOError("Auth file '{}' was doesn`t exist".format(file_path))

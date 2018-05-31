@@ -29,7 +29,7 @@ from schematics.exceptions import ValidationError
 from schematics.types import StringType
 from webob.multidict import NestedMultiDict
 from pyramid.compat import text_
-
+from pathlib2 import Path
 from openprocurement.api.constants import (
     ADDITIONAL_CLASSIFICATIONS_SCHEMES, DOCUMENT_BLACKLISTED_FIELDS,
     DOCUMENT_WHITELISTED_FIELDS, ROUTE_PREFIX, TZ, SESSION, LOGGER,
@@ -47,6 +47,30 @@ json_view = partial(view, renderer='json')
 def route_prefix(conf_main):
     version = conf_main.api_version or VERSION
     return '/api/{}'.format(version)
+
+
+def get_file_path(here, src):
+    """
+    Return correct path to file
+
+    >>> get_file_path('/absolute/path/app/', 'need_file')
+    '/absolute/path/app/need_file'
+
+
+    >>> get_file_path('/absolute/path/app/', '/absolute/path/need_file')
+    '/absolute/path/need_file'
+
+
+    :param here: is path to location where app was initialized
+    :param src: is path to file
+
+    :return: correct path to file
+    """
+
+    path = Path(src)
+    if not path.is_absolute():
+        path = path.expanduser() if src[0] == '~' else path.joinpath(here, path)
+    return str(path)
 
 
 def validate_dkpp(items, *args):
