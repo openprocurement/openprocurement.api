@@ -4,6 +4,7 @@ from schematics.models import Model
 from schematics.types import StringType, BaseType, ValidationError
 from schematics.types.compound import ModelType, ListType
 from schematics.types.serializable import serializable
+from schematics.exceptions import ModelValidationError
 from urlparse import urlsplit
 
 
@@ -13,8 +14,16 @@ class Main(Model):
 
 
 class Auth(Model):
-    type = StringType(required=True, choices=['file'])
+    type = StringType(required=True, choices=['file', 'void'])
     src = StringType(required=True)
+
+    def validate(self):
+        try:
+            super(Auth, self).validate()
+        except ModelValidationError as err:
+            if self.type == 'void' and not self.src:
+                return None
+            raise err
 
 
 class User(Model):
