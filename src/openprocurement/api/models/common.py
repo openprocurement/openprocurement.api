@@ -11,6 +11,11 @@ from openprocurement.api.models.schematics_extender import Model, IsoDateTimeTyp
 from openprocurement.api.utils import get_now
 
 
+sensitive_fields = ('__parent__', 'owner_token', 'transfer_token')
+
+sensitive_embedded_role = SchematicsDocument.Options.roles['embedded'] + sensitive_fields
+
+
 class Revision(Model):
     author = StringType()
     date = IsoDateTimeType(default=get_now)
@@ -19,13 +24,13 @@ class Revision(Model):
 
 
 class BaseResourceItem(SchematicsDocument, Model):
-    owner = StringType()
-    owner_token = StringType()
-    mode = StringType(choices=['test'])
+    owner = StringType()  # the broker
+    owner_token = StringType()  # token for broker access
+    transfer_token = StringType()  # token wich allows you to change the broker
+    mode = StringType(choices=['test'])  # need for switching auction to different states
     dateModified = IsoDateTimeType()
-
     _attachments = DictType(DictType(BaseType), default=dict())  # couchdb attachments
-    revisions = ListType(ModelType(Revision), default=list())
+    revisions = ListType(ModelType(Revision), default=list())  # couchdb rev
 
     __name__ = ''
 
