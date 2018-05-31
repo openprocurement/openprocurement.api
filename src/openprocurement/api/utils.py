@@ -3,27 +3,17 @@ import couchdb.json
 import decimal
 import simplejson
 
-from Crypto.Cipher import AES
 from base64 import b64encode, b64decode
 from binascii import hexlify, unhexlify
 from copy import copy
-from cornice.resource import resource, view
-from cornice.util import json_error
-from couchdb import util
-from couchdb_schematics.document import SchematicsDocument
 from datetime import datetime, timedelta, time
 from email.header import decode_header
 from functools import partial
 from hashlib import sha512
 from json import dumps
-from jsonpatch import make_patch, apply_patch as _apply_patch
-from jsonpointer import resolve_pointer
 from logging import getLogger
 from pyramid.compat import text_
 from re import compile
-from rfc6266 import build_header
-from schematics.exceptions import ValidationError
-from schematics.types import StringType
 from string import hexdigits
 from time import time as ttime
 from urllib import quote, unquote, urlencode
