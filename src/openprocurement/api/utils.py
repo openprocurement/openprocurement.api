@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 import decimal
 import simplejson
+from os.path import expanduser
 
 from base64 import b64encode, b64decode
 from binascii import hexlify, unhexlify
@@ -32,9 +33,9 @@ from jsonpointer import resolve_pointer
 from rfc6266 import build_header
 from schematics.exceptions import ValidationError
 from schematics.types import StringType
+from pathlib import Path
 
 from webob.multidict import NestedMultiDict
-
 from openprocurement.api.constants import (
     ADDITIONAL_CLASSIFICATIONS_SCHEMES,
     DOCUMENT_BLACKLISTED_FIELDS,
@@ -52,6 +53,7 @@ from openprocurement.api.interfaces import IOPContent
 from openprocurement.api.traversal import factory
 from openprocurement.api.exceptions import ConfigAliasError
 
+
 ACCELERATOR_RE = compile(r'.accelerator=(?P<accelerator>\d+)')
 json_view = partial(view, renderer='json')
 
@@ -59,6 +61,30 @@ json_view = partial(view, renderer='json')
 def route_prefix(conf_main):
     version = conf_main.api_version or VERSION
     return '/api/{}'.format(version)
+
+
+def get_file_path(here, src):
+    """
+    Return correct path to file
+
+    >>> get_file_path('/absolute/path/app/', 'need_file')
+    '/absolute/path/app/need_file'
+
+
+    >>> get_file_path('/absolute/path/app/', '/absolute/path/need_file')
+    '/absolute/path/need_file'
+
+
+    :param here: is path to location where app was initialized
+    :param src: is path to file
+
+    :return: correct path to file
+    """
+
+    path = Path(src)
+    if not path.is_absolute():
+        path = expanduser(src) if src[0] == '~' else path.joinpath(here, path)
+    return str(path)
 
 
 def validate_dkpp(items, *args):
