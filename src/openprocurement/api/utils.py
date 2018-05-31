@@ -880,7 +880,7 @@ def get_accelerator_attribute(context):
     """
     possible_attributes = (
         'procurementMethodDetails',
-        'sandbox_parameters',
+        'sandboxParameters',
     )
     for attr in possible_attributes:
         if context and hasattr(context, attr):
