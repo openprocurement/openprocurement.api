@@ -6,6 +6,7 @@ from collections import defaultdict
 from copy import deepcopy
 from hashlib import sha512
 from logging import getLogger
+from pathlib2 import Path
 
 from pyramid.authentication import BasicAuthAuthenticationPolicy, b64decode
 
@@ -29,11 +30,41 @@ def _void_auth(app_meta):
     return {}
 
 
+def get_file_path(here, src):
+    """
+    Return correct path to file
+
+    >>> get_file_path('/absolute/path/app/', 'need_file')
+    '/absolute/path/app/need_file'
+
+    >>> get_file_path('/absolute/path/app/', '~/doc/need_file')
+    '/home/user/doc/need_file'
+
+    >>> get_file_path('/absolute/path/app/', '/absolute/path/need_file')
+    '/absolute/path/need_file'
+
+
+    :param here: is path to location where app was initialized
+    :param src: is path to file
+
+    :return: correct path to file
+    """
+
+    path = Path(src)
+    if not path.is_absolute():
+        if src[0] == '~':
+            path = path.expanduser()
+        else:
+            path = path.joinpath(here, path)
+    return str(path)
+
+
 @auth(auth_type="file")
 def _file_auth(app_meta):
     conf_auth = app_meta.config.auth
     config = ConfigParser()
-    file_path = os.path.join(app_meta.here, conf_auth.src)
+
+    file_path = get_file_path(app_meta.here, conf_auth.src)
     users = {}
     if not os.path.isfile(file_path):
         raise IOError("Auth file '{}' was doesn`t exist".format(file_path))
