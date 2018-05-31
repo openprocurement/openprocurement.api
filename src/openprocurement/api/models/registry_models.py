@@ -79,6 +79,8 @@ class Decision(Model):
     title_en = StringType()
     decisionDate = IsoDateTimeType(required=True)
     decisionID = StringType(required=True)
+    decisionOf = StringType(choices=['lot', 'asset'])
+    relatedItem = StringType()
 
 
 class LokiDocument(BaseDocument):
