@@ -29,6 +29,21 @@ from time import time as ttime
 from urllib import quote, unquote, urlencode
 from urlparse import urlparse, urlunsplit, parse_qsl, parse_qs
 from uuid import uuid4
+
+import collections
+
+import couchdb.json
+from cornice.resource import resource, view
+from cornice.util import json_error
+from couchdb import util
+from couchdb_schematics.document import SchematicsDocument
+from Crypto.Cipher import AES
+from jsonpatch import make_patch, apply_patch as _apply_patch
+from jsonpointer import resolve_pointer
+from rfc6266 import build_header
+from schematics.exceptions import ValidationError
+from schematics.types import StringType
+
 from webob.multidict import NestedMultiDict
 
 from openprocurement.api.constants import (
@@ -46,6 +61,7 @@ from openprocurement.api.events import ErrorDesctiptorEvent
 from openprocurement.api.interfaces import IContentConfigurator
 from openprocurement.api.interfaces import IOPContent
 from openprocurement.api.traversal import factory
+from openprocurement.api.exceptions import ConfigAliasError
 
 ACCELERATOR_RE = compile(r'.accelerator=(?P<accelerator>\d+)')
 json_view = partial(view, renderer='json')
@@ -975,28 +991,51 @@ def read_yaml(name):
     return safe_load(data)
 
 
-def format_aliases(aliases):
-    """Converts an dictionary keys/values in a string representation of an aliases
-    :param aliases: An dictionary object
-    :return: An array with strings
+def format_aliases(alias):
+    """Converts an dictionary where key is 'plugin name'
+    and value is 'a list with aliases'
+
+    Args:
+        alias An dictionary object
+
+    Returns:
+        A string representation of plugin and object
     """
-    aliases_info = []
-    for alias in aliases:
-        for k, v in alias.items():
-            info = '{} aliases: {}'.format(k, v)
-            aliases_info.append(info)
-    return aliases_info
+    for k, v in alias.items():
+        info = '{} aliases: {}'.format(k, v)
+    return info
 
 
-def get_plugin_aliases(plugin):
-    """Returns an array with plugin aliases information
+def check_alias(alias):
+    """Checks whether a plugin contains an repeated aliases
 
-    >>> data = {'auctions.rubble.financial': {'aliases': []}}
-    >>> get_plugin_aliases(data)
-    ['auctions.rubble.financial aliases: []']
+    Note:
+        If a plugin contains an repeated aliases
+        we raise ConfigAliasError
 
-    :param plugin A plugin his information
-    :return: An array with aliases in string representation
+    Args:
+        alias a dictionary with alias info,
+    where key is a name of a package, and value
+    of which contains his aliases
+    """
+    for _, value in alias.items():
+        duplicated = collections.Counter(value)
+        for d_key, d_value in duplicated.items():
+            if d_value >= 2:
+                raise ConfigAliasError(
+                    'Alias {} repeating {} times'.format(d_key, d_value)
+                )
+
+
+def make_aliases(plugin):
+    """Makes a dictionary with aliases information
+
+    Args:
+        plugin A dictionary with an plugins information
+
+    Returns:
+        aliases A list with dictionary objects, where key
+    is a name of a plugin, and value is a list of an aliases
     """
     aliases = []
     for key, val in plugin.items():
@@ -1004,8 +1043,28 @@ def get_plugin_aliases(plugin):
             continue
         alias = {key: val['aliases']}
         aliases.append(alias)
-    formatted_aliases = format_aliases(aliases)
-    return formatted_aliases
+    return aliases
+
+
+def get_plugin_aliases(plugin):
+    """Returns an array with plugin aliases information
+       If an aliases were repeated more than one time
+       we raise AttributeError
+
+    Example:
+        data = {'auctions.rubble.financial': {'aliases': []}}
+        get_plugin_aliases(data)
+    ['auctions.rubble.financial aliases: []']
+
+    Args:
+        plugin an configurations dictionary
+    """
+    aliases = make_aliases(plugin)
+    for alias in aliases:
+        LOGGER.info(format_aliases(alias))
+
+    for alias in aliases:
+        check_alias(alias)
 
 
 def get_access_token_from_request(request):

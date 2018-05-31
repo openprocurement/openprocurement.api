@@ -27,8 +27,10 @@ from openprocurement.api.utils import (
     calculate_business_date,
     get_now,
     get_plugin_aliases,
-    format_aliases
+    format_aliases,
+    make_aliases
 )
+from openprocurement.api.exceptions import ConfigAliasError
 
 
 class UtilsTest(unittest.TestCase):
@@ -38,13 +40,19 @@ class UtilsTest(unittest.TestCase):
         'auctions.rubble.financial': {'use_default': True, 'migration': False, 'aliases': ['Alias']}
     }
 
-    def test_get_plugin_aliases(self):
-        result = get_plugin_aliases(self.ALIASES_MOCK_DATA)
-        self.assertEqual(result, ["auctions.rubble.financial aliases: ['Alias']"])
-
     def test_format_aliases(self):
-        result = format_aliases([{'auctions.rubble.financial': ['Alias']}])
-        self.assertEqual(result, ["auctions.rubble.financial aliases: ['Alias']"])
+        result = format_aliases({'auctions.rubble.financial': ['Alias']})
+        self.assertEqual(result, "auctions.rubble.financial aliases: ['Alias']")
+
+    def test_get_plugin_error(self):
+        data = {'auctions.rubble.financial': {'aliases': ['One', 'One']}}
+        with self.assertRaises(ConfigAliasError):
+            get_plugin_aliases(data)
+
+    def test_make_alias(self):
+        data = {'auctions.rubble.financial': {'aliases': ['One', 'Two']}}
+        result = make_aliases(data)
+        self.assertEqual(result, [{'auctions.rubble.financial': ['One', 'Two']}])
 
     def test_generate_id(self):
         id = generate_id()
