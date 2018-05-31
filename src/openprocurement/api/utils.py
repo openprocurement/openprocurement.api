@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-import couchdb.json
 import decimal
 import simplejson
 
