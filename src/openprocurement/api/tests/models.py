@@ -938,10 +938,8 @@ class AppSchemaModelsTest(unittest.TestCase):
             auth.validate()
         self.assertEqual(
             ex.exception.messages,
-            {'type': [u'This field is required.'],
-             'src': [u'This field is required.']}
+            {'type': [u'This field is required.']}
         )
-
         auth = Auth(auth_data)
         auth.validate()
         self.assertEqual(auth.serialize()['type'], auth_data['type'])
@@ -954,8 +952,20 @@ class AppSchemaModelsTest(unittest.TestCase):
             auth.validate()
         self.assertEqual(
             ex.exception.messages,
-            {"type": [u"Value must be one of ['file']."]}
+            {"type": [u"Value must be one of {}.".format(str(Auth.type.choices))]}
         )
+
+        auth_data['type'] = 'void'
+        auth = Auth(auth_data)
+        auth.validate()
+        self.assertEqual(auth.serialize()['type'], auth_data['type'])
+        self.assertEqual(auth.serialize()['src'], auth_data['src'])
+
+        auth_data.pop('src', None)
+        auth = Auth(auth_data)
+        auth.validate()
+        self.assertEqual(auth.serialize()['type'], auth_data['type'])
+        self.assertEqual(auth.serialize()['src'], None)
 
     def test_User(self):
         user = User()
