@@ -938,8 +938,7 @@ class AppSchemaModelsTest(unittest.TestCase):
             auth.validate()
         self.assertEqual(
             ex.exception.messages,
-            {'type': [u'This field is required.'],
-             'src': [u'This field is required.']}
+            {'type': [u'This field is required.']}
         )
         auth = Auth(auth_data)
         auth.validate()
