@@ -13,8 +13,14 @@ class Main(Model):
 
 
 class Auth(Model):
-    type = StringType(required=True, choices=['file'])
-    src = StringType(required=True)
+    type = StringType(required=True, choices=['file', 'void'])
+    src = StringType()
+
+    def validate_src(self, data, value):
+        if not data['src'] and data['type'] == 'void':
+            return None
+        elif not data['src']:
+            raise ValidationError(u'This field is required.')
 
 
 class User(Model):

@@ -915,78 +915,116 @@ class AppSchemaModelsTest(unittest.TestCase):
     """ Test Case for testing openprocurement.api.config'
     """
 
-    def test_Main(self):
+    def test_Main_defaults(self):
         main = Main()
 
         main.validate()
+
         self.assertEqual(main.serialize()['server_id'], '')
         self.assertNotIn('api_version', main.serialize())
 
+    def test_Main_valid_values(self):
         main_data = deepcopy(test_config_data['config']['main'])
         main = Main(main_data)
 
         main.validate()
+
         self.assertEqual(main.serialize()['server_id'], '')
-        self.assertEqual(main.serialize()['api_version'], main_data['api_version'])
+        self.assertEqual(
+            main.serialize()['api_version'], main_data['api_version']
+        )
 
-    def test_Auth(self):
-        auth_data = deepcopy(test_config_data['config']['auth'])
-
+    def test_Auth_empty(self):
         auth = Auth()
 
         with self.assertRaises(ModelValidationError) as ex:
             auth.validate()
+
         self.assertEqual(
             ex.exception.messages,
-            {'type': [u'This field is required.'],
-             'src': [u'This field is required.']}
+            {'type': [u'This field is required.']}
         )
 
+    def test_Auth_valid_values(self):
+        auth_data = deepcopy(test_config_data['config']['auth'])
         auth = Auth(auth_data)
+
         auth.validate()
+
         self.assertEqual(auth.serialize()['type'], auth_data['type'])
         self.assertEqual(auth.serialize()['src'], auth_data['src'])
 
+    def test_Auth_unsupported_type(self):
+        auth_data = deepcopy(test_config_data['config']['auth'])
         auth_data['type'] = 'test'
-
         auth = Auth(auth_data)
+
         with self.assertRaises(ModelValidationError) as ex:
             auth.validate()
+
         self.assertEqual(
             ex.exception.messages,
-            {"type": [u"Value must be one of ['file']."]}
+            {"type": [u"Value must be one of {}.".format(
+                str(Auth.type.choices)
+            )]}
         )
 
-    def test_User(self):
+    def test_Auth_void_type(self):
+        auth_data = deepcopy(test_config_data['config']['auth'])
+        auth_data['type'] = 'void'
+        auth = Auth(auth_data)
+
+        auth.validate()
+
+        self.assertEqual(auth.serialize()['type'], auth_data['type'])
+        self.assertEqual(auth.serialize()['src'], auth_data['src'])
+
+    def test_Auth_void_type_without_source(self):
+        auth_data = deepcopy(test_config_data['config']['auth'])
+        auth_data['type'] = 'void'
+        auth_data.pop('src', None)
+        auth = Auth(auth_data)
+
+        auth.validate()
+
+        self.assertEqual(auth.serialize()['type'], auth_data['type'])
+        self.assertEqual(auth.serialize()['src'], None)
+
+    def test_User_empty(self):
         user = User()
 
         with self.assertRaises(ModelValidationError) as ex:
             user.validate()
+
         self.assertEqual(
             ex.exception.messages,
             {'name': [u'This field is required.'],
              'password': [u'This field is required.']}
         )
 
+    def test_User_valid_values(self):
         user_data = deepcopy(test_user_data)
         user = User(user_data)
 
         user.validate()
+
         self.assertEqual(user.serialize()['name'], user_data['name'])
         self.assertEqual(user.serialize()['password'], user_data['password'])
 
-    def test_DefaultWriter(self):
+    def test_DefaultWriter_defaults(self):
         user = DefaultWriter()
 
         user.validate()
+
         self.assertEqual(user.serialize()['name'], 'op')
         self.assertEqual(user.serialize()['password'], 'op')
 
-    def test_DB(self):
+    def test_DB_empty(self):
         db = DB()
 
         with self.assertRaises(ModelValidationError) as ex:
             db.validate()
+
         self.assertEqual(
             ex.exception.messages,
             {'type': [u'This field is required.'],
@@ -994,10 +1032,12 @@ class AppSchemaModelsTest(unittest.TestCase):
              'url': [u'This field is required.']}
         )
 
+    def test_DB_valid_values_without_admin(self):
         db_data = deepcopy(test_config_data['config']['db'])
         db = DB(db_data)
 
         db.validate()
+
         self.assertEqual(db.serialize()['type'], db_data['type'])
         self.assertEqual(db.serialize()['db_name'], db_data['db_name'])
         self.assertEqual(db.serialize()['url'], db_data['url'])
@@ -1006,61 +1046,100 @@ class AppSchemaModelsTest(unittest.TestCase):
         self.assertEqual(db.serialize()['writer']['name'], 'op')
         self.assertEqual(db.serialize()['writer']['password'], 'op')
 
+    def test_DB_create_url_method_invalid_arg(self):
+        db_data = deepcopy(test_config_data['config']['db'])
+        db = DB(db_data)
+
         with self.assertRaises(ValidationError) as ex:
             db.create_url('test')
+
         self.assertEqual(
             ex.exception.messages,
             ["Value must be on of ['admin', 'reader', 'writer']"]
         )
 
+    def test_DB_create_url_method_invalid_arg_missing_field(self):
+        db_data = deepcopy(test_config_data['config']['db'])
+        db = DB(db_data)
+
         with self.assertRaises(ValidationError) as ex:
             db.create_url('reader')
+
         self.assertEqual(
             ex.exception.messages,
             ["Field 'reader' is not specified"]
         )
 
+    def test_DB_create_url_method_without_scheme(self):
+        db_data = deepcopy(test_config_data['config']['db'])
+        db = DB(db_data)
+
         url = db.create_url('writer')
+
         self.assertEqual(url, 'http://op:op@localhost:5984')
 
+    def test_DB_create_url_method_with_scheme(self):
+        db_data = deepcopy(test_config_data['config']['db'])
+        db = DB(db_data)
         db.url = "http://localhost:5984"
+
         url = db.create_url('writer')
+
         self.assertEqual(url, 'http://op:op@localhost:5984')
 
+    def test_DB_missing_reader_field(self):
+        db_data = deepcopy(test_config_data['config']['db'])
         db_data['admin'] = deepcopy(test_user_data)
         db = DB(db_data)
 
         with self.assertRaises(ModelValidationError) as ex:
             db.validate()
+
         self.assertEqual(
             ex.exception.messages,
             {'reader': [u'This field is required.']}
         )
 
+    def test_DB_valid_values_with_admin(self):
+        db_data = deepcopy(test_config_data['config']['db'])
+        db_data['admin'] = deepcopy(test_user_data)
         db_data['reader'] = deepcopy(test_user_data)
         db = DB(db_data)
 
         db.validate()
-        self.assertEqual(db.serialize()['reader']['name'], db_data['reader']['name'])
-        self.assertEqual(db.serialize()['reader']['password'], db_data['reader']['password'])
-        self.assertEqual(db.serialize()['admin']['name'], db_data['admin']['name'])
-        self.assertEqual(db.serialize()['admin']['password'], db_data['admin']['password'])
 
+        self.assertEqual(
+            db.serialize()['reader']['name'], db_data['reader']['name']
+        )
+        self.assertEqual(
+            db.serialize()['reader']['password'], db_data['reader']['password']
+        )
+        self.assertEqual(
+            db.serialize()['admin']['name'], db_data['admin']['name']
+        )
+        self.assertEqual(
+            db.serialize()['admin']['password'], db_data['admin']['password']
+        )
+
+    def test_DB_unsupported_type(self):
+        db_data = deepcopy(test_config_data['config']['db'])
         db_data['type'] = 'postgresql'
         db = DB(db_data)
 
         with self.assertRaises(ModelValidationError) as ex:
             db.validate()
+
         self.assertEqual(
             ex.exception.messages,
             {"type": [u"Value must be one of ['couchdb']."]}
         )
 
-    def test_DS(self):
+    def test_DS_empty(self):
         ds = DS()
 
         with self.assertRaises(ModelValidationError) as ex:
             ds.validate()
+
         self.assertEqual(
             ex.exception.messages,
             {'user': [u'This field is required.'],
@@ -1068,99 +1147,147 @@ class AppSchemaModelsTest(unittest.TestCase):
              'dockeys': [u'This field is required.']}
         )
 
+    def test_DS_valid_values(self):
         ds_data = deepcopy(test_config_data['config']['ds'])
         ds = DS(ds_data)
 
         ds.validate()
-        self.assertEqual(ds.serialize()['user']['name'], ds_data['user']['name'])
-        self.assertEqual(ds.serialize()['user']['password'], ds_data['user']['password'])
-        self.assertEqual(ds.serialize()['download_url'], ds_data['download_url'])
+
+        self.assertEqual(
+            ds.serialize()['user']['name'], ds_data['user']['name']
+        )
+        self.assertEqual(
+            ds.serialize()['user']['password'], ds_data['user']['password']
+        )
+        self.assertEqual(
+            ds.serialize()['download_url'], ds_data['download_url']
+        )
+        self.assertEqual(
+            ds.signer.hex_seed(), Signer(ds.dockey.decode('hex')).hex_seed()
+        )
         self.assertEqual(ds.serialize()['upload_url'], None)
         self.assertEqual(ds.serialize()['dockey'], ds_data['dockey'])
         self.assertEqual(ds.serialize()['dockeys'], ds_data['dockeys'])
 
-        self.assertEqual(ds.signer.hex_seed(), Signer(ds.dockey.decode('hex')).hex_seed())
-
+    def test_DS_init_keyring_method(self):
+        ds_data = deepcopy(test_config_data['config']['ds'])
+        ds = DS(ds_data)
         keyring1 = {}
         for key in ds.dockeys:
             keyring1[key[:8]] = Verifier(key)
+
         keyring2 = ds.init_keyring(ds.signer)
 
         self.assertEqual(keyring1.viewkeys(), keyring2.viewkeys())
 
+    def test_DS_invalid_values(self):
+        ds_data = deepcopy(test_config_data['config']['ds'])
+        ds = DS(ds_data)
         ds.dockey = 'abc123'
         ds.dockeys = ['123']
+
         with self.assertRaises(ValidationError) as ex:
             ds.validate()
+
         self.assertEqual(
             ex.exception.messages,
             {'dockey': ['Invalid seed bytes'],
              'dockeys': [['Odd-length string']]}
         )
 
-    def test_AuctionModule(self):
+    def test_AuctionModule_empty(self):
         auction_module = AuctionModule()
 
         with self.assertRaises(ModelValidationError) as ex:
             auction_module.validate()
+
         self.assertEqual(
             ex.exception.messages,
             {'url': [u'This field is required.'],
              'public_key': [u'This field is required.']}
         )
 
+    def test_AuctionModule_valid_values(self):
         auction_module_data = deepcopy(test_config_data['config']['auction'])
         auction_module = AuctionModule(auction_module_data)
 
         auction_module.validate()
-        self.assertEqual(auction_module.serialize()['url'], auction_module['url'])
-        self.assertEqual(auction_module.serialize()['public_key'], auction_module['public_key'])
 
-        self.assertEqual(auction_module.signer.hex_seed(), Signer(auction_module.public_key.decode('hex')).hex_seed())
+        self.assertEqual(
+            auction_module.serialize()['url'], auction_module['url']
+        )
+        self.assertEqual(
+            auction_module.serialize()['public_key'],
+            auction_module['public_key']
+        )
+        self.assertEqual(
+            auction_module.signer.hex_seed(),
+            Signer(auction_module.public_key.decode('hex')).hex_seed()
+        )
 
+    def test_AuctionModule_invalid_public_key_seed_bytes(self):
+        auction_module_data = deepcopy(test_config_data['config']['auction'])
+        auction_module = AuctionModule(auction_module_data)
         auction_module.public_key = 'abc123'
+
         with self.assertRaises(ValidationError) as ex:
             auction_module.validate()
+
         self.assertEqual(
             ex.exception.messages,
             {'public_key': ['Invalid seed bytes']}
         )
 
+    def test_AuctionModule_invalid_public_key_string_length(self):
+        auction_module_data = deepcopy(test_config_data['config']['auction'])
+        auction_module = AuctionModule(auction_module_data)
         auction_module.public_key = '123'
+
         with self.assertRaises(ValidationError) as ex:
             auction_module.validate()
+
         self.assertEqual(
             ex.exception.messages,
             {'public_key': ['Odd-length string']}
         )
 
-    def test_Config(self):
+    def test_Config_empty(self):
         config = Config()
 
         with self.assertRaises(ModelValidationError) as ex:
             config.validate()
+
         self.assertEqual(
             ex.exception.messages,
             {'auth': [u'This field is required.'],
              'db': [u'This field is required.']}
         )
 
+    def test_Config_valid_values(self):
         config_data = deepcopy(test_config_data['config'])
         config = Config(config_data)
 
         config.validate()
 
+        self.assertEqual(
+            config.serialize().keys(), ['auction', 'main', 'db', 'ds', 'auth']
+        )
+
+    def test_Config_valid_values_auto_generated_main(self):
+        config_data = deepcopy(test_config_data['config'])
         config_data.pop('main')
         config = Config(config_data)
 
         config.validate()
+
         self.assertEqual(config.serialize()['main'], {'server_id': u''})
 
-    def test_AppMetaSchema(self):
+    def test_AppMetaSchema_empty(self):
         app_meta = AppMetaSchema()
 
         with self.assertRaises(ModelValidationError) as ex:
             app_meta.validate()
+
         self.assertEqual(
             ex.exception.messages,
             {'config': [u'This field is required.'],
@@ -1168,10 +1295,12 @@ class AppSchemaModelsTest(unittest.TestCase):
              'here': [u'This field is required.']}
         )
 
+    def test_AppMetaSchema_valid_values(self):
         app_meta_data = deepcopy(test_config_data)
         app_meta = AppMetaSchema(app_meta_data)
 
         app_meta.validate()
+
         self.assertEqual(app_meta.serialize()['plugins'], {})
         self.assertEqual(app_meta.serialize()['here'], os.getcwd())
 

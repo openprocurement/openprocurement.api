@@ -1,20 +1,25 @@
 # -*- coding: utf-8 -*-
 import decimal
 import simplejson
+
 from base64 import b64encode, b64decode
 from binascii import hexlify, unhexlify
+from copy import copy
 from datetime import datetime, timedelta, time
 from email.header import decode_header
 from functools import partial
 from hashlib import sha512
 from json import dumps
 from logging import getLogger
+from pyramid.compat import text_
 from re import compile
-from time import time as ttime
 from string import hexdigits
+from time import time as ttime
 from urllib import quote, unquote, urlencode
 from urlparse import urlparse, urlunsplit, parse_qsl, parse_qs
 from uuid import uuid4
+
+import collections
 
 import couchdb.json
 from cornice.resource import resource, view
@@ -27,18 +32,27 @@ from jsonpointer import resolve_pointer
 from rfc6266 import build_header
 from schematics.exceptions import ValidationError
 from schematics.types import StringType
+
 from webob.multidict import NestedMultiDict
 from pyramid.compat import text_
 from pathlib2 import Path
+
 from openprocurement.api.constants import (
-    ADDITIONAL_CLASSIFICATIONS_SCHEMES, DOCUMENT_BLACKLISTED_FIELDS,
-    DOCUMENT_WHITELISTED_FIELDS, ROUTE_PREFIX, TZ, SESSION, LOGGER,
-    WORKING_DAYS, VERSION
+    ADDITIONAL_CLASSIFICATIONS_SCHEMES,
+    DOCUMENT_BLACKLISTED_FIELDS,
+    DOCUMENT_WHITELISTED_FIELDS,
+    LOGGER,
+    ROUTE_PREFIX,
+    SESSION,
+    TZ,
+    VERSION,
+    WORKING_DAYS,
 )
 from openprocurement.api.events import ErrorDesctiptorEvent
-from openprocurement.api.interfaces import IOPContent
 from openprocurement.api.interfaces import IContentConfigurator
+from openprocurement.api.interfaces import IOPContent
 from openprocurement.api.traversal import factory
+from openprocurement.api.exceptions import ConfigAliasError
 
 ACCELERATOR_RE = compile(r'.accelerator=(?P<accelerator>\d+)')
 json_view = partial(view, renderer='json')
@@ -836,6 +850,29 @@ def set_specific_hour(date_time, hour):
     return datetime.combine(date_time.date(), time(hour % 24, tzinfo=date_time.tzinfo))
 
 
+def get_closest_working_day(date_, backward=False):
+    """Search closest working day
+
+    :param date_: date to start counting
+    :param backward: search in the past when set to True
+    :type: date_: datetime.date
+    :type backward: bool
+    :rtype: datetime.data
+    """
+    cursor = copy(date_)
+
+    while True:
+        cursor += timedelta(1) if not backward else -timedelta(1)
+        if not is_holiday(cursor):
+            return cursor
+
+
+def round_out_day(time_cursor, reverse):
+    time_cursor += timedelta(days=1) if not reverse else timedelta()
+    time_cursor = set_specific_hour(time_cursor, 0)
+    return time_cursor
+
+
 def is_holiday(date):
     """Check if date is holiday
     Calculation is based on WORKING_DAYS dictionary, constructed in following format:
@@ -860,16 +897,34 @@ def is_holiday(date):
     )
 
 
+def get_accelerator_attribute(context):
+    """Checks if some accelerator attribute was set and returns it
+
+    `calculate_business_date` is used not only by auctions as a `context`,
+    but also with other models. This method recognizes accelerator attribute
+    for the `context` model if it present in `possible_attributes` below.
+    """
+    possible_attributes = (
+        'procurementMethodDetails',
+        'sandboxParameters',
+    )
+    for attr in possible_attributes:
+        if context and hasattr(context, attr):
+            return attr
+
+
 def accelerated_calculate_business_date(date, period, context, specific_hour):
-    if context and 'procurementMethodDetails' in context and context['procurementMethodDetails']:
-        re_obj = ACCELERATOR_RE.search(context['procurementMethodDetails'])
-        if re_obj and 'accelerator' in re_obj.groupdict():
-            if specific_hour:
-                period = period + (set_specific_hour(date, specific_hour) - date)
-            return date + (period / int(re_obj.groupdict()['accelerator']))
+    accelerator_attribute = get_accelerator_attribute(context)
+    if (not accelerator_attribute or not isinstance(context[accelerator_attribute], str)):
+        return
+    re_obj = ACCELERATOR_RE.search(context[accelerator_attribute])
+    if re_obj and 'accelerator' in re_obj.groupdict():
+        if specific_hour:
+            period = period + (set_specific_hour(date, specific_hour) - date)
+        return date + (period / int(re_obj.groupdict()['accelerator']))
 
 
-def calculate_business_date(date_obj, timedelta_obj, context, working_days=False, specific_hour=None):
+def calculate_business_date(start, delta, context, working_days=False, specific_hour=None):
     """This method calculates end of business period from given start and timedelta
 
     The calculation of end of business period is complex, so this method is used project-wide.
@@ -877,23 +932,23 @@ def calculate_business_date(date_obj, timedelta_obj, context, working_days=False
 
     The end of the period is calculated **exclusively**, for example:
         Let the 1-5 days of month (e.g. September 2008) be working days.
-        So, when the caclulation will be initialized with following params:
+        So, when the calculation will be initialized with following params:
 
-            date_obj = datetime(2008, 9, 1)
-            timedelta_obj = timedelta(days=2)
+            start = datetime(2008, 9, 1)
+            delta = timedelta(days=2)
             working_days = True
 
         The result will be equal to `datetime(2008, 9, 3)`.
 
-    :param date_obj: the start of period
-    :param timedelta_obj: duration of the period
+    :param start: the start of period
+    :param delta: duration of the period
     :param context: object, that holds data related to particular business process,
         usually it's Auction model's instance. Must be present to use acceleration
         mode.
     :param working_days: make calculations taking into account working days
     :param specific_hour: specific hour, to which date of period end should be rounded
-    :type date_obj: datetime.datetime
-    :type timedelta_obj: datetime.timedelta
+    :type start: datetime.datetime
+    :type delta: datetime.timedelta
     :type context: openprocurement.api.models.Tender
     :type working_days: bool
     :return: the end of period
@@ -901,29 +956,38 @@ def calculate_business_date(date_obj, timedelta_obj, context, working_days=False
 
     """
 
-    accelerated_calculation = accelerated_calculate_business_date(date_obj, timedelta_obj, context, specific_hour)
+    accelerated_calculation = accelerated_calculate_business_date(start, delta, context, specific_hour)
     if accelerated_calculation:
         return accelerated_calculation
 
     if not working_days:
-        return date_obj + timedelta_obj
+        return start + delta
 
-    # reset datetime to exclude influence of time data (e.g. hour, minute) on calculations
-    # TODO (after 1-8-2018) switch to date object instead of datetime object
-    date_obj = set_specific_hour(date_obj, 0)
-    added_period_is_positive = timedelta_obj > timedelta()
-    working_days_count = abs(timedelta_obj.days)
+    time_cursor = copy(start)
+    reverse_calculations = delta < timedelta()
+    days_to_collect = abs(delta.days)
 
-    while working_days_count > 0:
-        if is_holiday(date_obj):
-            date_obj += timedelta(1) if added_period_is_positive else -timedelta(1)
+    while days_to_collect > 0:
+        if days_to_collect == 1:  # last day logic is extracted from the loop due to it's complexity
+            break
+        time_cursor = get_closest_working_day(time_cursor, backward=reverse_calculations)
+        days_to_collect -= 1
+
+    if is_holiday(start):
+        time_cursor = get_closest_working_day(time_cursor, backward=reverse_calculations)
+        if specific_hour:
+            time_cursor = set_specific_hour(time_cursor, specific_hour)
         else:
-            date_obj += timedelta(1) if added_period_is_positive else -timedelta(1)
-            working_days_count -= 1
+            time_cursor = round_out_day(time_cursor, reverse_calculations)
+    else:
+        if specific_hour:
+            if abs(delta.days) == 1:  # if loop hadn't worked
+                time_cursor = get_closest_working_day(time_cursor, backward=reverse_calculations)
+            time_cursor = set_specific_hour(time_cursor, specific_hour)
+        else:
+            time_cursor = get_closest_working_day(time_cursor, backward=reverse_calculations)
 
-    if specific_hour:
-        date_obj = set_specific_hour(date_obj, specific_hour)
-    return date_obj
+    return time_cursor
 
 
 def get_document_creation_date(document):
@@ -942,28 +1006,51 @@ def read_yaml(name):
     return safe_load(data)
 
 
-def format_aliases(aliases):
-    """Converts an dictionary keys/values in a string representation of an aliases
-    :param aliases: An dictionary object
-    :return: An array with strings
+def format_aliases(alias):
+    """Converts an dictionary where key is 'plugin name'
+    and value is 'a list with aliases'
+
+    Args:
+        alias An dictionary object
+
+    Returns:
+        A string representation of plugin and object
     """
-    aliases_info = []
-    for alias in aliases:
-        for k, v in alias.items():
-            info = '{} aliases: {}'.format(k, v)
-            aliases_info.append(info)
-    return aliases_info
+    for k, v in alias.items():
+        info = '{} aliases: {}'.format(k, v)
+    return info
 
 
-def get_plugin_aliases(plugin):
-    """Returns an array with plugin aliases information
+def check_alias(alias):
+    """Checks whether a plugin contains an repeated aliases
 
-    >>> data = {'auctions.rubble.financial': {'aliases': []}}
-    >>> get_plugin_aliases(data)
-    ['auctions.rubble.financial aliases: []']
+    Note:
+        If a plugin contains an repeated aliases
+        we raise ConfigAliasError
 
-    :param plugin A plugin his information
-    :return: An array with aliases in string representation
+    Args:
+        alias a dictionary with alias info,
+    where key is a name of a package, and value
+    of which contains his aliases
+    """
+    for _, value in alias.items():
+        duplicated = collections.Counter(value)
+        for d_key, d_value in duplicated.items():
+            if d_value >= 2:
+                raise ConfigAliasError(
+                    'Alias {} repeating {} times'.format(d_key, d_value)
+                )
+
+
+def make_aliases(plugin):
+    """Makes a dictionary with aliases information
+
+    Args:
+        plugin A dictionary with an plugins information
+
+    Returns:
+        aliases A list with dictionary objects, where key
+    is a name of a plugin, and value is a list of an aliases
     """
     aliases = []
     for key, val in plugin.items():
@@ -971,8 +1058,28 @@ def get_plugin_aliases(plugin):
             continue
         alias = {key: val['aliases']}
         aliases.append(alias)
-    formatted_aliases = format_aliases(aliases)
-    return formatted_aliases
+    return aliases
+
+
+def get_plugin_aliases(plugin):
+    """Returns an array with plugin aliases information
+       If an aliases were repeated more than one time
+       we raise AttributeError
+
+    Example:
+        data = {'auctions.rubble.financial': {'aliases': []}}
+        get_plugin_aliases(data)
+    ['auctions.rubble.financial aliases: []']
+
+    Args:
+        plugin an configurations dictionary
+    """
+    aliases = make_aliases(plugin)
+    for alias in aliases:
+        LOGGER.info(format_aliases(alias))
+
+    for alias in aliases:
+        check_alias(alias)
 
 
 def get_access_token_from_request(request):

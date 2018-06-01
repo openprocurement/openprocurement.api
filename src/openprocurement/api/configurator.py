@@ -54,8 +54,10 @@ class Configurator(object):
     :type error_messages: immutable dict
     """
     fields = {
-        'AUCTION_PREFIX': {'type': str, 'default': 'UA-EA'}
+        'AUCTION_PREFIX': {'type': str, 'default': 'UA-EA'},
+        'ASSET_PREFIX': {'type': str, 'default': 'UA-AR-DGF'}
     }
+
     methods = {}
     standard_fields = ['fields', 'methods', 'immutable_fields', 'error_messages', 'created']
     error_messages = {

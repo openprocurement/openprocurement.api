@@ -29,8 +29,10 @@ from openprocurement.api.utils import (
     get_now,
     get_plugin_aliases,
     get_file_path,
-    format_aliases
+    format_aliases,
+    make_aliases
 )
+from openprocurement.api.exceptions import ConfigAliasError
 
 class UtilsTest(unittest.TestCase):
 
@@ -39,13 +41,19 @@ class UtilsTest(unittest.TestCase):
         'auctions.rubble.financial': {'use_default': True, 'migration': False, 'aliases': ['Alias']}
     }
 
-    def test_get_plugin_aliases(self):
-        result = get_plugin_aliases(self.ALIASES_MOCK_DATA)
-        self.assertEqual(result, ["auctions.rubble.financial aliases: ['Alias']"])
-
     def test_format_aliases(self):
-        result = format_aliases([{'auctions.rubble.financial': ['Alias']}])
-        self.assertEqual(result, ["auctions.rubble.financial aliases: ['Alias']"])
+        result = format_aliases({'auctions.rubble.financial': ['Alias']})
+        self.assertEqual(result, "auctions.rubble.financial aliases: ['Alias']")
+
+    def test_get_plugin_error(self):
+        data = {'auctions.rubble.financial': {'aliases': ['One', 'One']}}
+        with self.assertRaises(ConfigAliasError):
+            get_plugin_aliases(data)
+
+    def test_make_alias(self):
+        data = {'auctions.rubble.financial': {'aliases': ['One', 'Two']}}
+        result = make_aliases(data)
+        self.assertEqual(result, [{'auctions.rubble.financial': ['One', 'Two']}])
 
     def test_generate_id(self):
         id = generate_id()
@@ -393,6 +401,14 @@ class CalculateBusinessDateTestCase(unittest.TestCase):
 
         self.assertEqual(result, target_end_of_period)
 
+    def test_common_calculation_with_working_days_working_end(self):
+        start = datetime(2018, 10, 11)
+        business_days_to_add = timedelta(days=3)
+        target_end_of_period = datetime(2018, 10, 17)
+        result = calculate_business_date(start, business_days_to_add, None, working_days=True)
+
+        self.assertEqual(result, target_end_of_period)
+
     def test_common_calculation_with_working_days_specific_hour(self):
         """This test assumes that <Mon 2018-4-9> is holiday, besides regular holidays
         of that month. It must be fixed in `working_days.json` file, that translates
@@ -401,8 +417,10 @@ class CalculateBusinessDateTestCase(unittest.TestCase):
         start = datetime(2018, 4, 2)
         specific_hour = 18
         business_days_to_add = timedelta(days=10)
-        target_end_of_period = datetime(2018, 4, 17)
-        result = calculate_business_date(start, business_days_to_add, None, working_days=True, specific_hour=specific_hour)
+        target_end_of_period = datetime(2018, 4, 16)
+        result = calculate_business_date(
+            start, business_days_to_add, None, working_days=True, specific_hour=specific_hour
+        )
 
         self.assertEqual(result, target_end_of_period + timedelta(hours=specific_hour))
 
@@ -432,6 +450,42 @@ class CalculateBusinessDateTestCase(unittest.TestCase):
         need_file = '/absolute/path/need_file'
         path = get_file_path(here, need_file)
         self.assertEqual(path, '/absolute/path/need_file')
+
+    def test_start_is_holiday_specific_hour_none(self):
+        start = datetime(2000, 5, 6, 13, 22)  # Saturday
+        days_to_add = timedelta(days=1)
+        target_end = datetime(2000, 5, 9, 0, 0)
+
+        result = calculate_business_date(start, days_to_add, None, working_days=True, specific_hour=None)
+
+        self.assertEqual(result, target_end)
+
+    def test_start_is_holiday_specific_hour_set(self):
+        start = datetime(2000, 5, 6, 20, 22)  # Saturday
+        days_to_add = timedelta(days=1)
+        target_end = datetime(2000, 5, 8, 18, 0)
+
+        result = calculate_business_date(start, days_to_add, None, working_days=True, specific_hour=18)
+
+        self.assertEqual(result, target_end)
+
+    def test_start_is_not_holiday_specific_hour_none(self):
+        start = datetime(2000, 5, 5, 20, 22)  # Friday
+        days_to_add = timedelta(days=1)
+        target_end = datetime(2000, 5, 8, 20, 22)
+
+        result = calculate_business_date(start, days_to_add, None, working_days=True, specific_hour=None)
+
+        self.assertEqual(result, target_end)
+
+    def test_start_is_not_holiday_specific_hour_set(self):
+        start = datetime(2000, 5, 5, 20, 22)  # Friday
+        days_to_add = timedelta(days=1)
+        target_end = datetime(2000, 5, 8, 18, 0)
+
+        result = calculate_business_date(start, days_to_add, None, working_days=True, specific_hour=18)
+
+        self.assertEqual(result, target_end)
 
 
 def suite():
