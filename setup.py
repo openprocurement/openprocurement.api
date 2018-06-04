@@ -17,7 +17,7 @@ requires = [
     'libnacl',
     'pbkdf2',
     'pycrypto',
-    'pathlib2',
+    'pathlib',
     'pyramid_exclog',
     'requests',
     'rfc6266',

@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 import decimal
 import simplejson
+from os.path import expanduser
 
 from base64 import b64encode, b64decode
 from binascii import hexlify, unhexlify
@@ -34,8 +35,7 @@ from schematics.exceptions import ValidationError
 from schematics.types import StringType
 
 from webob.multidict import NestedMultiDict
-from pyramid.compat import text_
-from pathlib2 import Path
+from pathlib import Path
 
 from openprocurement.api.constants import (
     ADDITIONAL_CLASSIFICATIONS_SCHEMES,
@@ -83,7 +83,7 @@ def get_file_path(here, src):
 
     path = Path(src)
     if not path.is_absolute():
-        path = path.expanduser() if src[0] == '~' else path.joinpath(here, path)
+        path = expanduser(src) if src[0] == '~' else path.joinpath(here, path)
     return str(path)
 
 
