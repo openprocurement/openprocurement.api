@@ -889,7 +889,7 @@ def get_accelerator_attribute(context):
 
 def accelerated_calculate_business_date(date, period, context, specific_hour):
     accelerator_attribute = get_accelerator_attribute(context)
-    if (not accelerator_attribute or not isinstance(context[accelerator_attribute], str)):
+    if (not accelerator_attribute or not isinstance(context[accelerator_attribute], basestring)):
         return
     re_obj = ACCELERATOR_RE.search(context[accelerator_attribute])
     if re_obj and 'accelerator' in re_obj.groupdict():
