@@ -6,14 +6,11 @@ from schematics.types import StringType, BaseType, FloatType, EmailType, URLType
 from schematics.types.compound import DictType, ListType, ModelType
 from schematics.types.serializable import serializable
 
-from openprocurement.api.models.roles import organization_roles, auctionParameters_roles
+from openprocurement.api.models.roles import organization_roles, auctionParameters_roles, sensitive_embedded_role
 from openprocurement.api.models.schematics_extender import Model, IsoDateTimeType
 from openprocurement.api.utils import get_now
 
 
-sensitive_fields = ('__parent__', 'owner_token', 'transfer_token')
-
-sensitive_embedded_role = SchematicsDocument.Options.roles['embedded'] + sensitive_fields
 
 
 class Revision(Model):

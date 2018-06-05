@@ -51,9 +51,7 @@ from openprocurement.api.utils import (
     serialize_document_url,
 )
 from openprocurement.api.validation import validate_uniq
-
-schematics_default_role = SchematicsDocument.Options.roles['default'] + blacklist("__parent__")
-schematics_embedded_role = SchematicsDocument.Options.roles['embedded'] + blacklist("__parent__")
+from openprocurement.api.models.roles import schematics_default_role, schematics_embedded_role
 
 
 class Value(BasicValue):
