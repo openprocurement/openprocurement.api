@@ -2,12 +2,8 @@
 from schematics.transforms import whitelist, blacklist
 from couchdb_schematics.document import SchematicsDocument
 
-sensitive_fields = ('__parent__', 'owner_token', 'transfer_token')
-
-schematics_default_role = SchematicsDocument.Options.roles['default'] + blacklist("__parent__") + sensitive_fields # TODO: Remove sensitive_fields
-schematics_embedded_role = SchematicsDocument.Options.roles['embedded'] + blacklist("__parent__") + sensitive_fields # TODO: Remove sensitive_fields
-
-sensitive_embedded_role = SchematicsDocument.Options.roles['embedded'] + sensitive_fields
+schematics_default_role = SchematicsDocument.Options.roles['default'] + blacklist("__parent__")
+schematics_embedded_role = SchematicsDocument.Options.roles['embedded'] + blacklist("__parent__")
 
 plain_role = (blacklist('_attachments', 'revisions', 'dateModified') + schematics_embedded_role)
 listing_role = whitelist('dateModified', 'doc_id')
