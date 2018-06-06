@@ -180,3 +180,17 @@ class AuctionParameters(Model):
 
     type = StringType(choices=['english', 'insider'])
     dutchSteps = IntType(min_value=1, max_value=99, default=None)
+
+
+class RegistrationDetails(Model):
+    status = StringType(choices=['unknown', 'registering', 'complete'], default='unknown')
+    registrationID = StringType()
+    registrationDate = IsoDateTimeType()
+
+    def validate_registrationID(self, data, value):
+        if value and data['status'] != 'complete':
+            raise ValidationError(u"You can fill registrationID only when status is complete")
+
+    def validate_registrationDate(self, data, value):
+        if value and data['status'] != 'complete':
+            raise ValidationError(u"You can fill registrationDate only when status is complete")
