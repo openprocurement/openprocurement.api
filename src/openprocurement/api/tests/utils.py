@@ -384,14 +384,16 @@ def auction_mock(procurementMethodDetails):
 class CalculateBusinessDateTestCase(unittest.TestCase):
 
     def test_accelerated_calculation(self):
-        auction = auction_mock(procurementMethodDetails='quick, accelerator=1440')
+        # auction = auction_mock(procurementMethodDetails='quick, accelerator=1440') # TODO: Fix mocked attr
+        auction = {"procurementMethodDetails": 'quick, accelerator=1440'}
         start = get_now()
         period_to_add = timedelta(days=1440)
         result = calculate_business_date(start, period_to_add, auction)
         self.assertEqual((result - start).days, 1)
 
     def test_accelerated_calculation_specific_hour(self):
-        auction = auction_mock(procurementMethodDetails='quick, accelerator=1440')
+        # auction = auction_mock(procurementMethodDetails='quick, accelerator=1440') # TODO: Fix mocked attr
+        auction = {"procurementMethodDetails": 'quick, accelerator=1440'}
         start = datetime(2018, 4, 2, 16)
         specific_hour = start.hour + 2
         period_to_add = timedelta(days=20)
