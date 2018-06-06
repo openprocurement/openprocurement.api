@@ -1,6 +1,8 @@
 ---
 plugins:
   api:
+    plugins:
+      transferring:
 config:
   auth:
     type: file
