@@ -35,7 +35,7 @@ def extract_transfer(request, transfer_id=None):
     return request.transfer_from_data(doc)
 
 
-def transfer_from_data(request, data): #pylint: disable=unused-argument
+def transfer_from_data(request, data):  # pylint: disable=unused-argument
     """ Convert transfer from dict into Transfer instance
     :param request:
     :param data: transfer as dict

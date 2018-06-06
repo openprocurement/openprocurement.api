@@ -11,7 +11,7 @@ from openprocurement.api.plugins.transferring.utils import (
 LOGGER = getLogger(__name__)
 
 
-def includeme(config, plugin_map): #pylint: disable=unused-argument
+def includeme(config, plugin_map):  # pylint: disable=unused-argument
     config.add_request_method(extract_transfer, 'transfer', reify=True)
     config.add_request_method(transfer_from_data)
     config.add_request_method(change_ownership)

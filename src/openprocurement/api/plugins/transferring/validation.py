@@ -4,7 +4,7 @@ from openprocurement.api.validation import validate_json_data, validate_data
 from openprocurement.api.plugins.transferring.models import Transfer
 
 
-def validate_transfer_data(request, **kwargs): #pylint: disable=unused-argument
+def validate_transfer_data(request, **kwargs):  # pylint: disable=unused-argument
 
     update_logging_context(request, {'transfer_id': '__new__'})
     data = validate_json_data(request)
@@ -14,7 +14,7 @@ def validate_transfer_data(request, **kwargs): #pylint: disable=unused-argument
     return validate_data(request, model, 'transfer', data=data)
 
 
-def validate_set_or_change_ownership_data(request, **kwargs): #pylint: disable=unused-argument
+def validate_set_or_change_ownership_data(request, **kwargs):  # pylint: disable=unused-argument
     if request.errors:
         # do not run validation if some errors are already detected
         return
@@ -34,7 +34,7 @@ def validate_set_or_change_ownership_data(request, **kwargs): #pylint: disable=u
     request.validated['ownership_data'] = data
 
 
-def validate_ownership_data(request, **kwargs): #pylint: disable=unused-argument
+def validate_ownership_data(request, **kwargs):  # pylint: disable=unused-argument
     if request.errors:
         # do not run validation if some errors are already detected
         return
@@ -64,7 +64,7 @@ def validate_accreditation_level(request, auction, level_name):
         return
 
 
-def validate_auction_accreditation_level(request, **kwargs): #pylint: disable=unused-argument
+def validate_auction_accreditation_level(request, **kwargs):  # pylint: disable=unused-argument
     if hasattr(request.validated['auction'], 'transfer_accreditation'):
         predicate = 'transfer_accreditation'
     else:

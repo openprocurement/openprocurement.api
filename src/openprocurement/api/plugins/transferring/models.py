@@ -45,11 +45,11 @@ class Transfer(SchematicsDocument, Model):
         return self._id
 
 
-def transfer_from_data(request, data): #pylint: disable=unused-argument
+def transfer_from_data(request, data):  # pylint: disable=unused-argument
     return Transfer(data)
 
 
-def validate_transfer_data(request, **kwargs): #pylint: disable=unused-argument
+def validate_transfer_data(request, **kwargs):  # pylint: disable=unused-argument
     update_logging_context(request, {'transfer_id': '__new__'})
     data = validate_json_data(request)
     if data is None:
