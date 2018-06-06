@@ -6,7 +6,6 @@ from datetime import timedelta, datetime
 from cornice.errors import Errors
 from couchdb.client import Document
 from libnacl.sign import Signer
-from pyramid.config import Configurator
 from uuid import UUID
 
 from openprocurement.api.utils import (
@@ -26,6 +25,7 @@ from openprocurement.api.utils import (
     update_logging_context,
     calculate_business_date,
     get_now,
+    get_file_path,
     get_plugin_aliases,
     format_aliases,
     make_aliases
@@ -59,6 +59,16 @@ class UtilsTest(unittest.TestCase):
 
         self.assertEqual(len(id), 32)
         self.assertEqual(type(UUID(id)), UUID)
+
+    def test_get_file_path(self):
+        here = '/absolute/path/app/'
+        need_file = 'need_file'
+        path = get_file_path(here, need_file)
+        self.assertEqual(path, '/absolute/path/app/need_file')
+
+        need_file = '/absolute/path/need_file'
+        path = get_file_path(here, need_file)
+        self.assertEqual(path, '/absolute/path/need_file')
 
     def test_error_handler(self):
         errors = Errors(403)
@@ -300,7 +310,7 @@ class UtilsTest(unittest.TestCase):
         result = set_ownership(item, request)
         self.assertEqual(result, expected_result)
         self.assertEqual(item.owner_token, expected_result['token'])
-        #self.assertEqual(item.owner_token, '0f20c55ac78f7336576260487b865a89a72b396d761ac69d00902cf5bd021d1c51b17191098dc9626f4582ab125efd9053fff1c8b58782e2fe70f7cb4b7bd7ee')
+        # self.assertEqual(item.owner_token, '0f20c55ac78f7336576260487b865a89a72b396d761ac69d00902cf5bd021d1c51b17191098dc9626f4582ab125efd9053fff1c8b58782e2fe70f7cb4b7bd7ee')
 
         # with mock.patch('__builtin__.getattr') as mock_getattr:
         #     mock_getattr.return_value = True
