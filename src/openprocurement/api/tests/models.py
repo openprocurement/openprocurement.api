@@ -742,8 +742,10 @@ class DummyLokiModelsTest(unittest.TestCase):
 
     def test_Item(self):
         item = LokiItem()
+        id_data = {'id': '1' * 32}
+        item.import_data(id_data)
 
-        self.assertEqual(item.serialize('create'), None)
+        self.assertEqual(item.serialize('create'), id_data)
         self.assertEqual(item.serialize('edit'), None)
 
         with self.assertRaises(ModelValidationError) as ex:
