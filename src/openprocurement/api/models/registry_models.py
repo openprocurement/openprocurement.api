@@ -8,7 +8,9 @@ from openprocurement.api.constants import (
     LOKI_ITEM_ADDITIONAL_CLASSIFICATIONS,
     LOKI_DOCUMENT_TYPES
 )
-from openprocurement.api.models.common import ContactPoint, BaseUnit, Address
+from openprocurement.api.models.common import (
+    ContactPoint, BaseUnit, Address, RegistrationDetails
+)
 from openprocurement.api.models.ocds import (
     ItemClassification, BaseItem, BaseDocument, Organization
 )
@@ -17,20 +19,6 @@ from openprocurement.api.models.schematics_extender import Model, IsoDateTimeTyp
 
 
 # Loki models
-
-class RegistrationDetails(Model):
-    status = StringType(choices=['unknown', 'registering', 'complete'], default='unknown')
-    registrationID = StringType()
-    registrationDate = IsoDateTimeType()
-
-    def validate_registrationID(self, data, value):
-        if value and data['status'] != 'complete':
-            raise ValidationError(u"You can fill registrationID only when status is complete")
-
-    def validate_registrationDate(self, data, value):
-        if value and data['status'] != 'complete':
-            raise ValidationError(u"You can fill registrationDate only when status is complete")
-
 
 class LokiItemClassification(ItemClassification):
     scheme = StringType(
