@@ -1060,9 +1060,8 @@ def make_aliases(plugin):
             alias = {key: val['aliases']}
             aliases.append(alias)
         return aliases
-    else:
-        LOGGER.warning('Aliases not provided, check your app_meta file')
-        return []
+    LOGGER.warning('Aliases not provided, check your app_meta file')
+    return []
 
 
 def get_plugin_aliases(plugin):
