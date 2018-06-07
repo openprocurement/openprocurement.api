@@ -54,6 +54,10 @@ class UtilsTest(unittest.TestCase):
         result = make_aliases(data)
         self.assertEqual(result, [{'auctions.rubble.financial': ['One', 'Two']}])
 
+    def test_make_bad_alias(self):
+        result = make_aliases(None)
+        self.assertEqual(result, [])
+
     def test_generate_id(self):
         id = generate_id()
 
