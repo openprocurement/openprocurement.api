@@ -38,6 +38,15 @@ from openprocurement.api.exceptions import ConfigAliasError
 
 class UtilsTest(unittest.TestCase):
 
+    class OwnershipTestItem(object):
+        transfer_token = StringType()
+
+        def __init__(self, owner=None):
+            self.owner = owner
+
+        def get(self, _):
+            return self.owner
+
     # Mock data for aliases helper functions.
     ALIASES_MOCK_DATA = {
         'auctions.rubble.financial': {'use_default': True, 'migration': False, 'aliases': ['Alias']}
@@ -300,19 +309,7 @@ class UtilsTest(unittest.TestCase):
         mock_generate_id.return_value = '1234567890abcdef1234567890abcdef'
         # '0f20c55ac78f7336576260487b865a89a72b396d761ac69d00902cf5bd021d1c51b17191098dc9626f4582ab125efd9053fff1c8b58782e2fe70f7cb4b7bd7ee'
 
-        class Item(object):
-            transfer_token = StringType()
-
-            def __init__(self, owner=None):
-                self.owner = owner
-
-            def get(self, _):
-                if self.owner:
-                    return self.owner
-                else:
-                    return self.owner
-
-        item = Item()
+        item = self.OwnershipTestItem()
         expected_result = {'token': '1234567890abcdef1234567890abcdef', 'transfer': '1234567890abcdef1234567890abcdef'}
 
         result = set_ownership(item, request)
@@ -327,19 +324,7 @@ class UtilsTest(unittest.TestCase):
         request.authenticated_userid = 'concierge'
         request.headers = {'X-Transfer-Token': 'test_transfer_token'}
 
-        class Item(object):
-            transfer_token = StringType()
-
-            def __init__(self, owner=None):
-                self.owner = owner
-
-            def get(self, _):
-                if self.owner:
-                    return self.owner
-                else:
-                    return self.owner
-
-        item = Item()
+        item = self.OwnershipTestItem()
         expected_result = {'token': '1234567890abcdef1234567890abcdef'}
         result = set_ownership(item, request)
         self.assertEqual(result, expected_result)
