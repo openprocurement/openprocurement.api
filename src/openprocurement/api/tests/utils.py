@@ -6,7 +6,6 @@ from datetime import timedelta, datetime
 from cornice.errors import Errors
 from couchdb.client import Document
 from libnacl.sign import Signer
-from pyramid.config import Configurator
 from uuid import UUID
 
 from openprocurement.api.utils import (
@@ -26,6 +25,7 @@ from openprocurement.api.utils import (
     update_logging_context,
     calculate_business_date,
     get_now,
+    get_file_path,
     get_plugin_aliases,
     format_aliases,
     make_aliases
@@ -54,11 +54,25 @@ class UtilsTest(unittest.TestCase):
         result = make_aliases(data)
         self.assertEqual(result, [{'auctions.rubble.financial': ['One', 'Two']}])
 
+    def test_make_bad_alias(self):
+        result = make_aliases(None)
+        self.assertEqual(result, [])
+
     def test_generate_id(self):
         id = generate_id()
 
         self.assertEqual(len(id), 32)
         self.assertEqual(type(UUID(id)), UUID)
+
+    def test_get_file_path(self):
+        here = '/absolute/path/app/'
+        need_file = 'need_file'
+        path = get_file_path(here, need_file)
+        self.assertEqual(path, '/absolute/path/app/need_file')
+
+        need_file = '/absolute/path/need_file'
+        path = get_file_path(here, need_file)
+        self.assertEqual(path, '/absolute/path/need_file')
 
     def test_error_handler(self):
         errors = Errors(403)
@@ -300,7 +314,7 @@ class UtilsTest(unittest.TestCase):
         result = set_ownership(item, request)
         self.assertEqual(result, expected_result)
         self.assertEqual(item.owner_token, expected_result['token'])
-        #self.assertEqual(item.owner_token, '0f20c55ac78f7336576260487b865a89a72b396d761ac69d00902cf5bd021d1c51b17191098dc9626f4582ab125efd9053fff1c8b58782e2fe70f7cb4b7bd7ee')
+        # self.assertEqual(item.owner_token, '0f20c55ac78f7336576260487b865a89a72b396d761ac69d00902cf5bd021d1c51b17191098dc9626f4582ab125efd9053fff1c8b58782e2fe70f7cb4b7bd7ee')
 
         # with mock.patch('__builtin__.getattr') as mock_getattr:
         #     mock_getattr.return_value = True
@@ -374,14 +388,16 @@ def auction_mock(procurementMethodDetails):
 class CalculateBusinessDateTestCase(unittest.TestCase):
 
     def test_accelerated_calculation(self):
-        auction = auction_mock(procurementMethodDetails='quick, accelerator=1440')
+        # auction = auction_mock(procurementMethodDetails='quick, accelerator=1440') # TODO: Fix mocked attr
+        auction = {"procurementMethodDetails": 'quick, accelerator=1440'}
         start = get_now()
         period_to_add = timedelta(days=1440)
         result = calculate_business_date(start, period_to_add, auction)
         self.assertEqual((result - start).days, 1)
 
     def test_accelerated_calculation_specific_hour(self):
-        auction = auction_mock(procurementMethodDetails='quick, accelerator=1440')
+        # auction = auction_mock(procurementMethodDetails='quick, accelerator=1440') # TODO: Fix mocked attr
+        auction = {"procurementMethodDetails": 'quick, accelerator=1440'}
         start = datetime(2018, 4, 2, 16)
         specific_hour = start.hour + 2
         period_to_add = timedelta(days=20)

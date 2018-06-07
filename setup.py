@@ -17,6 +17,7 @@ requires = [
     'libnacl',
     'pbkdf2',
     'pycrypto',
+    'pathlib',
     'pyramid_exclog',
     'requests',
     'rfc6266',
@@ -41,7 +42,8 @@ entry_points = {
         'main = openprocurement.api.app:main'
     ],
     'openprocurement.api.plugins': [
-        'api = openprocurement.api.includeme:includeme'
+        'api = openprocurement.api.includeme:includeme',
+        'transferring = openprocurement.api.plugins.transferring.includeme:includeme'
     ],
     'console_scripts': [
         'bootstrap_api_security = openprocurement.api.database:bootstrap_api_security'

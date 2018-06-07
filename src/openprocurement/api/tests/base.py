@@ -143,7 +143,10 @@ class BaseWebTest(unittest.TestCase):
         self.app.app.registry.db = db
         self.db = self.app.app.registry.db
         self.db_name = self.db.name
-        self.app.authorization = self.initial_auth
+        if hasattr(self, 'initial_auth') and self.initial_auth is not None:
+            self.app.authorization = self.initial_auth
+        else:
+            self.app.authorization = ('Basic', ('token', ''))
 
     def tearDown(self):
         self.couchdb_server.delete(self.db_name)
@@ -253,7 +256,9 @@ class BaseResourceWebTest(BaseWebTest):
         self.assertEqual(resource['status'], status)
         return resource
 
-    def create_resource(self, extra=None):
+    def create_resource(self, extra=None, auth=None):
+        if auth:
+            self.app.authorization = auth
         data = deepcopy(self.initial_data)
         if extra:
             data.update(extra)
@@ -262,6 +267,7 @@ class BaseResourceWebTest(BaseWebTest):
         resource = response.json['data']
         self.resource_token = response.json['access']['token']
         self.access_header = {'X-Access-Token': str(response.json['access']['token'])}
+        self.resource_transfer = response.json['access']['transfer']
         self.resource_id = resource['id']
         status = resource['status']
         if self.initial_status and self.initial_status != status:
