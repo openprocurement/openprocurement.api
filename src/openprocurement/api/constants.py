@@ -101,7 +101,8 @@ LOKI_DOCUMENT_TYPES = [
     'notice', 'technicalSpecifications', 'illustration', 'x_presentation',
     'informationDetails', 'cancellationDetails', 'x_dgfAssetFamiliarization',
 ]
-
+DOCUMENT_TYPE_OFFLINE = ['x_dgfAssetFamiliarization']
+DOCUMENT_TYPE_URL_ONLY = ['virtualDataRoom', 'x_dgfPublicAssetCertificate', 'x_dgfPlatformLegalDetails']
 
 IDENTIFIER_CODES = ORA_CODES
 
