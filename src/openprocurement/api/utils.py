@@ -695,7 +695,7 @@ def fix_url(item, app_url, conf_main):
             if isinstance(i, dict) or isinstance(i, list)
         ]
     elif isinstance(item, dict):
-        if "format" in item and "url" in item and '?download=' in item['url']:
+        if item.get('format') and item.get('url') and '?download=' in item['url']:
             path = item["url"] if item["url"].startswith('/') else '/' + '/'.join(item['url'].split('/')[5:])
             item["url"] = app_url + route_prefix(conf_main) + path
             return
