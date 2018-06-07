@@ -1059,14 +1059,18 @@ def make_aliases(plugin):
     Returns:
         aliases A list with dictionary objects, where key
     is a name of a plugin, and value is a list of an aliases
+    Otherwise an empty list
     """
-    aliases = []
-    for key, val in plugin.items():
-        if plugin[key] is None:
-            continue
-        alias = {key: val['aliases']}
-        aliases.append(alias)
-    return aliases
+    if plugin:
+        aliases = []
+        for key, val in plugin.items():
+            if plugin[key] is None:
+                continue
+            alias = {key: val['aliases']}
+            aliases.append(alias)
+        return aliases
+    LOGGER.warning('Aliases not provided, check your app_meta file')
+    return []
 
 
 def get_plugin_aliases(plugin):
