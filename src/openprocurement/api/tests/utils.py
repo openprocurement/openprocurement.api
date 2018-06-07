@@ -322,7 +322,7 @@ class UtilsTest(unittest.TestCase):
         request = mock.MagicMock()
         mock_generate_id.return_value = '1234567890abcdef1234567890abcdef'
         request.authenticated_userid = 'concierge'
-        request.headers = {'X-Transfer-Token': 'test_transfer_token'}
+        request.json_body = {'data': {'transfer_token': 'test_transfer_token'}}
 
         item = self.OwnershipTestItem()
         expected_result = {'token': '1234567890abcdef1234567890abcdef'}
