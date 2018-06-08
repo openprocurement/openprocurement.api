@@ -7,7 +7,7 @@ from schematics.types.compound import DictType, ListType, ModelType
 from schematics.types.serializable import serializable
 
 from openprocurement.api.models.roles import organization_roles, auctionParameters_roles
-from openprocurement.api.models.schematics_extender import Model, IsoDateTimeType
+from openprocurement.api.models.schematics_extender import Model, IsoDateTimeType, SHA512Type
 from openprocurement.api.utils import get_now
 
 
@@ -26,7 +26,7 @@ class Revision(Model):
 class BaseResourceItem(SchematicsDocument, Model):
     owner = StringType()  # the broker
     owner_token = StringType()  # token for broker access
-    transfer_token = StringType()  # token wich allows you to change the broker
+    transfer_token = SHA512Type()  # token wich allows you to change the broker
     mode = StringType(choices=['test'])  # need for switching auction to different states
     dateModified = IsoDateTimeType()
     _attachments = DictType(DictType(BaseType), default=dict())  # couchdb attachments

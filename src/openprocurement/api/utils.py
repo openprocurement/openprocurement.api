@@ -396,6 +396,16 @@ def get_revision_changes(dst, src):
     return make_patch(dst, src).patch
 
 
+def set_item_transfer_token(item, request, acc):
+    passed_transfer_token = request.json_body['data'].get('transfer_token')
+    if request.authenticated_userid == 'concierge' and passed_transfer_token:
+        item.transfer_token = passed_transfer_token
+    else:
+        transfer_token = generate_id()
+        item.transfer_token = sha512(transfer_token).hexdigest()
+        acc['transfer'] = transfer_token
+
+
 def set_ownership(item, request):
     if not item.get('owner'):
         item.owner = request.authenticated_userid
@@ -403,9 +413,7 @@ def set_ownership(item, request):
     item.owner_token = owner_token  # sha512(owner_token).hexdigest()
     acc = {'token': owner_token}
     if isinstance(getattr(type(item), 'transfer_token', None), StringType):
-        transfer_token = generate_id()
-        item.transfer_token = sha512(transfer_token).hexdigest()
-        acc['transfer'] = transfer_token
+        set_item_transfer_token(item, request, acc)
     return acc
 
 
