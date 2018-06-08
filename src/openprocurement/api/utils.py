@@ -989,7 +989,7 @@ def calculate_business_date(start, delta, context, working_days=False, specific_
         time_cursor = get_closest_working_day(time_cursor, backward=reverse_calculations)
         days_to_collect -= 1
 
-    if is_holiday(start):
+    if is_holiday(start) or reverse_calculations:
         time_cursor = get_closest_working_day(time_cursor, backward=reverse_calculations)
         if specific_hour:
             time_cursor = set_specific_hour(time_cursor, specific_hour)

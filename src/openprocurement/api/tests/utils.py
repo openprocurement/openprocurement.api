@@ -491,6 +491,33 @@ class CalculateBusinessDateTestCase(unittest.TestCase):
 
         self.assertEqual(result, target_end)
 
+    def test_reverse_start_is_not_holiday_specific_hour_not_set(self):
+        start = datetime(2018, 7, 20)
+        days_to_substract = timedelta(days=-4)
+        target_end = datetime(2018, 7, 16)
+
+        result = calculate_business_date(start, days_to_substract, None, working_days=True, specific_hour=None)
+
+        self.assertEqual(result, target_end)
+
+    def test_reverse_start_is_not_holiday_specific_hour_not_set_one_day(self):
+        start = datetime(2018, 7, 20)
+        days_to_substract = timedelta(days=-1)
+        target_end = datetime(2018, 7, 19)
+
+        result = calculate_business_date(start, days_to_substract, None, working_days=True, specific_hour=None)
+
+        self.assertEqual(result, target_end)
+
+    def test_start_is_not_holiday_specific_hour_not_set_one_day(self):
+        start = datetime(2018, 7, 20)
+        days_to_substract = timedelta(days=1)
+        target_end = datetime(2018, 7, 23)
+
+        result = calculate_business_date(start, days_to_substract, None, working_days=True, specific_hour=None)
+
+        self.assertEqual(result, target_end)
+
 
 def suite():
     suite = unittest.TestSuite()
