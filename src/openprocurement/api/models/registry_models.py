@@ -1,12 +1,15 @@
 from schematics.exceptions import ValidationError
-from schematics.types import StringType, BaseType, IntType
+from schematics.types import StringType, BaseType, IntType, URLType
 from schematics.types.compound import ModelType, ListType
 
 from openprocurement.api.constants import (
     DEFAULT_LOKI_ITEM_CLASSIFICATION,
     LOKI_ITEM_CLASSIFICATION,
     LOKI_ITEM_ADDITIONAL_CLASSIFICATIONS,
-    LOKI_DOCUMENT_TYPES
+    LOKI_DOCUMENT_TYPES,
+    DOCUMENT_TYPE_OFFLINE,
+    DOCUMENT_TYPE_URL_ONLY
+
 )
 from openprocurement.api.models.common import (
     ContactPoint, BaseUnit, Address, RegistrationDetails
@@ -14,6 +17,7 @@ from openprocurement.api.models.common import (
 from openprocurement.api.models.ocds import (
     ItemClassification, BaseItem, BaseDocument, Organization
 )
+
 from openprocurement.api.models.roles import item_roles
 from openprocurement.api.models.schematics_extender import Model, IsoDateTimeType, DecimalType
 
@@ -72,15 +76,39 @@ class Decision(Model):
 
 
 class LokiDocument(BaseDocument):
+    _document_types_offline = DOCUMENT_TYPE_OFFLINE
+    _document_types_url_only = DOCUMENT_TYPE_URL_ONLY
+
     documentOf = StringType(choices=['lot', 'item'])
     documentType = StringType(choices=LOKI_DOCUMENT_TYPES, required=True)
     index = IntType(required=False)
     accessDetails = StringType()
+    url = StringType()
     format = StringType(regex='^[-\w]+/[-\.\w\+]+$')
 
-    def validate_accessDetails(self, data, value):
-        if value is None and data['documentType'] == 'x_dgfAssetFamiliarization':
-            raise ValidationError(u"accessDetails is required, when documentType is x_dgfAssetFamiliarization")
+    def validate_hash(self, data, hash_):
+        doc_type = data.get('documentType')
+        doc_without_hash = self._document_types_url_only + self._document_types_offline
+        if doc_type in doc_without_hash and hash_:
+            raise ValidationError(u'This field is not required.')
+
+    def validate_format(self, data, format_):
+        doc_type = data.get('documentType')
+        if doc_type in self._document_types_url_only and format_:
+            raise ValidationError(u'This field is not required.')
+
+    def validate_url(self, data, url):
+        doc_type = data.get('documentType')
+        if doc_type in self._document_types_offline and url:
+            raise ValidationError(u'This field is not required.')
+        if doc_type not in self._document_types_offline and not url:
+            raise ValidationError(u'This field is required.')
+        if doc_type in self._document_types_url_only:
+            URLType().validate(url)
+
+    def validate_accessDetails(self, data, accessDetails):
+        if data.get('documentType') in self._document_types_offline and not accessDetails:
+            raise ValidationError(u'This field is required.')
 
 
 LokiDocument.__name__ = 'Document'

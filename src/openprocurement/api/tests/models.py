@@ -654,14 +654,29 @@ class DummyLokiModelsTest(unittest.TestCase):
             document.validate()
         self.assertEqual(
             ex.exception.messages,
-            {"url": ["This field is required."],
-            "title": ["This field is required."],
-            "documentType": ["This field is required."],
+            {"title": ["This field is required."],
+            "documentType": ["This field is required."]
              }
         )
 
+        del data['format']
+        del data['url']
+        document.import_data(data)
+        with self.assertRaises(ModelValidationError) as ex:
+            document.validate()
+        self.assertEqual(
+            ex.exception.messages,
+            {
+                "url": ["This field is required."]
+            }
+        )
+
+        data['format'] = 'application/msword'
+        data['url'] = 'http://localhost/get'
         document.import_data(data)
         document.validate()
+
+
         self.assertEqual(document.serialize('create'), data)
         self.assertEqual(document.serialize('edit'),
                          {'format': data['format'],
@@ -690,13 +705,49 @@ class DummyLokiModelsTest(unittest.TestCase):
             document.validate()
         self.assertEqual(
             ex.exception.messages,
-            {"accessDetails": [u"accessDetails is required, when documentType is x_dgfAssetFamiliarization"]}
+            {
+                "accessDetails": [u"This field is required."],
+                "hash": [u"This field is not required."],
+                "url": [u"This field is not required."]
+            }
         )
-
-        data.update({'accessDetails': 'Details'})
-        document.import_data(data)
+        offline_data = deepcopy(data)
+        del offline_data['hash']
+        del offline_data['url']
+        offline_data.update({'accessDetails': 'Details'})
+        document.import_data(offline_data)
         document.validate()
         data['accessDetails'] = None
+
+        del offline_data['format']
+        data.update({'accessDetails': 'Details'})
+        document.import_data(offline_data)
+        document.validate()
+        data['accessDetails'] = None
+
+        url_only_data = deepcopy(data)
+        url_only_data['documentType'] = 'virtualDataRoom'
+        del url_only_data['url']
+
+        LokiDocument.documentType.choices = ['virtualDataRoom']
+        document = LokiDocument()
+        document.import_data(url_only_data)
+        with self.assertRaises(ModelValidationError) as ex:
+            document.validate()
+        self.assertEqual(
+            ex.exception.messages,
+            {
+                "format": [u"This field is not required."],
+                "url": [u"This field is required."],
+                "hash": [u"This field is not required."]
+            }
+        )
+
+        url_only_data['url'] = 'http://localhost/get'
+        del url_only_data['format']
+        del url_only_data['hash']
+        document.import_data(url_only_data)
+        document.validate()
 
     def test_RegistrationDetails(self):
         registration_details = RegistrationDetails()
