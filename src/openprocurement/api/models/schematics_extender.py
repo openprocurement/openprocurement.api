@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+import re
 from datetime import datetime, timedelta
 from iso8601 import parse_date, ParseError
 from isodate.duration import Duration
@@ -223,6 +224,20 @@ class HashType(StringType):
         except ValueError:
             raise ConversionError(self.messages['hash_hex'])
         return value
+
+
+class SHA512Type(StringType):
+
+    def __init__(self, regex=r'^[abcdef0123456789]{128}$', **kwargs):
+        super(SHA512Type, self).__init__(regex, **kwargs)
+
+    MESSAGES = {
+        'regex': 'Value is not SHA-512 hash'
+    }
+
+    def validate(self, value):
+        if self.regex is not None and re.match(self.regex, value.lower()) is None:
+            raise ValidationError(self.messages['regex'])
 
 
 class Model(SchematicsModel):

@@ -55,7 +55,8 @@ class Configurator(object):
     """
     fields = {
         'AUCTION_PREFIX': {'type': str, 'default': 'UA-EA'},
-        'ASSET_PREFIX': {'type': str, 'default': 'UA-AR-DGF'}
+        'ASSET_PREFIX': {'type': str, 'default': 'UA-AR-DGF'},
+        'LOT_PREFIX': {'type': str, 'default': 'UA-LR-DGF'}
     }
 
     methods = {}

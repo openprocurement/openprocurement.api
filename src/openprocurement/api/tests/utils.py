@@ -3,10 +3,13 @@ import mock
 import unittest
 
 from datetime import timedelta, datetime
+from hashlib import sha512
+from uuid import UUID
+
 from cornice.errors import Errors
 from couchdb.client import Document
 from libnacl.sign import Signer
-from uuid import UUID
+from schematics.types import StringType
 
 from openprocurement.api.utils import (
     apply_data_patch,
@@ -34,6 +37,15 @@ from openprocurement.api.exceptions import ConfigAliasError
 
 
 class UtilsTest(unittest.TestCase):
+
+    class OwnershipTestItem(object):
+        transfer_token = StringType()
+
+        def __init__(self, owner=None):
+            self.owner = owner
+
+        def get(self, _):
+            return self.owner
 
     # Mock data for aliases helper functions.
     ALIASES_MOCK_DATA = {
@@ -297,31 +309,27 @@ class UtilsTest(unittest.TestCase):
         mock_generate_id.return_value = '1234567890abcdef1234567890abcdef'
         # '0f20c55ac78f7336576260487b865a89a72b396d761ac69d00902cf5bd021d1c51b17191098dc9626f4582ab125efd9053fff1c8b58782e2fe70f7cb4b7bd7ee'
 
-        class Item(object):
-            transfer_token = None
+        item = self.OwnershipTestItem()
+        expected_result = {'token': '1234567890abcdef1234567890abcdef', 'transfer': '1234567890abcdef1234567890abcdef'}
 
-            def __init__(self, owner=None):
-                self.owner = owner
+        result = set_ownership(item, request)
+        self.assertEqual(result, expected_result)
+        self.assertEqual(item.owner_token, expected_result['token'])
+        self.assertEqual(item.transfer_token, sha512(expected_result['token']).hexdigest())
 
-            def get(self, _):
-                if self.owner:
-                    return self.owner
-                else:
-                    return self.owner
+    @mock.patch('openprocurement.api.utils.generate_id')
+    def test_set_ownership_with_passed_transfer_token(self, mock_generate_id):
+        request = mock.MagicMock()
+        mock_generate_id.return_value = '1234567890abcdef1234567890abcdef'
+        request.authenticated_userid = 'concierge'
+        request.json_body = {'data': {'transfer_token': 'test_transfer_token'}}
 
-        item = Item()
+        item = self.OwnershipTestItem()
         expected_result = {'token': '1234567890abcdef1234567890abcdef'}
         result = set_ownership(item, request)
         self.assertEqual(result, expected_result)
         self.assertEqual(item.owner_token, expected_result['token'])
-        # self.assertEqual(item.owner_token, '0f20c55ac78f7336576260487b865a89a72b396d761ac69d00902cf5bd021d1c51b17191098dc9626f4582ab125efd9053fff1c8b58782e2fe70f7cb4b7bd7ee')
-
-        # with mock.patch('__builtin__.getattr') as mock_getattr:
-        #     mock_getattr.return_value = True
-        #     expected_result = {'token': '1234567890abcdef1234567890abcdef', 'transfer': '1234567890abcdef1234567890abcdef'}
-        #     result = set_ownership(item, request)
-        #     self.assertEqual(result, expected_result)
-        #     self.assertEqual(item.transfer_token, '0f20c55ac78f7336576260487b865a89a72b396d761ac69d00902cf5bd021d1c51b17191098dc9626f4582ab125efd9053fff1c8b58782e2fe70f7cb4b7bd7ee')
+        self.assertEqual(item.transfer_token, 'test_transfer_token')
 
     def test_get_content_configurator(self):
         request = mock.MagicMock()
@@ -480,6 +488,33 @@ class CalculateBusinessDateTestCase(unittest.TestCase):
         target_end = datetime(2000, 5, 8, 18, 0)
 
         result = calculate_business_date(start, days_to_add, None, working_days=True, specific_hour=18)
+
+        self.assertEqual(result, target_end)
+
+    def test_reverse_start_is_not_holiday_specific_hour_not_set(self):
+        start = datetime(2018, 7, 20)
+        days_to_substract = timedelta(days=-4)
+        target_end = datetime(2018, 7, 16)
+
+        result = calculate_business_date(start, days_to_substract, None, working_days=True, specific_hour=None)
+
+        self.assertEqual(result, target_end)
+
+    def test_reverse_start_is_not_holiday_specific_hour_not_set_one_day(self):
+        start = datetime(2018, 7, 20)
+        days_to_substract = timedelta(days=-1)
+        target_end = datetime(2018, 7, 19)
+
+        result = calculate_business_date(start, days_to_substract, None, working_days=True, specific_hour=None)
+
+        self.assertEqual(result, target_end)
+
+    def test_start_is_not_holiday_specific_hour_not_set_one_day(self):
+        start = datetime(2018, 7, 20)
+        days_to_substract = timedelta(days=1)
+        target_end = datetime(2018, 7, 23)
+
+        result = calculate_business_date(start, days_to_substract, None, working_days=True, specific_hour=None)
 
         self.assertEqual(result, target_end)
 
