@@ -1,31 +1,42 @@
 # -*- coding: utf-8 -*-
-import mock
 import unittest
 
-from openprocurement.api.validation import validate_document_data
+from mock import MagicMock, Mock, patch
+from openprocurement.api.validation import (
+    validate_accreditations,
+    validate_document_data,
+)
 
 
-@mock.patch('openprocurement.api.validation.check_document', autospec=True)
-@mock.patch('openprocurement.api.validation.set_first_document_fields', autospec=True)
-@mock.patch('openprocurement.api.validation.get_first_document', autospec=True)
-@mock.patch('openprocurement.api.validation.update_document_url', autospec=True)
-@mock.patch('openprocurement.api.validation.validate_data', autospec=True)
-@mock.patch('openprocurement.api.validation.get_type', autospec=True)
+@patch('openprocurement.api.validation.check_document', autospec=True)
+@patch('openprocurement.api.validation.set_first_document_fields', autospec=True)
+@patch('openprocurement.api.validation.get_first_document', autospec=True)
+@patch('openprocurement.api.validation.update_document_url', autospec=True)
+@patch('openprocurement.api.validation.validate_data', autospec=True)
+@patch('openprocurement.api.validation.get_type', autospec=True)
 class ValidateDocumentDataTest(unittest.TestCase):
 
     def setUp(self):
-        self.mocked_request = mock.MagicMock()
-        self.document_mock = mock.MagicMock()
-        self.document_mock_with_updated_url = mock.MagicMock()
+        self.mocked_request = MagicMock()
+        self.document_mock = MagicMock()
+        self.document_mock_with_updated_url = MagicMock()
         self.mocked_request.validated = {'document': self.document_mock}
-        self.mocked_request.context = mock.MagicMock()
-        self.mocked_request.matched_route.name.replace = mock.MagicMock(return_value='document_route')
+        self.mocked_request.context = MagicMock()
+        self.mocked_request.matched_route.name.replace = MagicMock(return_value='document_route')
 
-        self.type_of_context = mock.MagicMock()
-        self.model_class = mock.MagicMock()
+        self.type_of_context = MagicMock()
+        self.model_class = MagicMock()
         self.type_of_context.documents.model_class = self.model_class
 
-    def test_documentOf_in_document(self, mocked_get_type, mocked_validate_data, mocked_update_document_url, mocked_get_first, mocked_set_first_document_fields, mocked_check_document):
+    def test_documentOf_in_document(
+        self,
+        mocked_get_type,
+        mocked_validate_data,
+        mocked_update_document_url,
+        mocked_get_first,
+        mocked_set_first_document_fields,
+        mocked_check_document
+    ):
         # Mocking
         self.mocked_request.context.__contains__.return_value = True
         self.document_mock.documentOf = 'resourceName'
@@ -64,11 +75,19 @@ class ValidateDocumentDataTest(unittest.TestCase):
 
         self.assertIs(self.mocked_request.validated['document'], self.document_mock_with_updated_url)
 
-    def test_documentOf_not_in_document(self, mocked_get_type, mocked_validate_data, mocked_update_document_url, mocked_get_first, mocked_set_first_document_fields, mocked_check_document):
+    def test_documentOf_not_in_document(
+        self,
+        mocked_get_type,
+        mocked_validate_data,
+        mocked_update_document_url,
+        mocked_get_first,
+        mocked_set_first_document_fields,
+        mocked_check_document
+    ):
         # Mocking
         self.mocked_request.context.__contains__.return_value = True
         self.document_mock.documentOf = None
-        self.type_of_context.__name__ = mock.MagicMock()
+        self.type_of_context.__name__ = MagicMock()
         self.type_of_context.__name__.lower.return_value = 'resource_from_context'
 
         mocked_get_type.return_value = self.type_of_context
@@ -105,12 +124,19 @@ class ValidateDocumentDataTest(unittest.TestCase):
 
         self.assertIs(self.mocked_request.validated['document'], self.document_mock_with_updated_url)
 
-
-    def test_first_document(self, mocked_get_type, mocked_validate_data, mocked_update_document_url, mocked_get_first, mocked_set_first_document_fields, mocked_check_document):
+    def test_first_document(
+        self,
+        mocked_get_type,
+        mocked_validate_data,
+        mocked_update_document_url,
+        mocked_get_first,
+        mocked_set_first_document_fields,
+        mocked_check_document
+    ):
         # Mocking
         self.mocked_request.context.__contains__.return_value = True
         self.document_mock.documentOf = 'resourceName'
-        first_document = mock.MagicMock()
+        first_document = MagicMock()
 
         mocked_get_type.return_value = self.type_of_context
         mocked_get_first.return_value = first_document
@@ -151,7 +177,15 @@ class ValidateDocumentDataTest(unittest.TestCase):
 
         self.assertIs(self.mocked_request.validated['document'], self.document_mock_with_updated_url)
 
-    def test_not_first_document(self, mocked_get_type, mocked_validate_data, mocked_update_document_url, mocked_get_first, mocked_set_first_document_fields, mocked_check_document):
+    def test_not_first_document(
+        self,
+        mocked_get_type,
+        mocked_validate_data,
+        mocked_update_document_url,
+        mocked_get_first,
+        mocked_set_first_document_fields,
+        mocked_check_document
+    ):
         # Mocking
         self.mocked_request.context.__contains__.return_value = True
         self.document_mock.documentOf = 'resourceName'
@@ -191,9 +225,16 @@ class ValidateDocumentDataTest(unittest.TestCase):
         self.assertIs(self.mocked_request.validated['document'], self.document_mock_with_updated_url)
 
 
+class ValidateAccreditationsTest(unittest.TestCase):
+
+    def test_validate_ok(self):
+        pass
+
+
 def suite():
     suite = unittest.TestSuite()
     suite.addTest(unittest.makeSuite(ValidateDocumentDataTest))
+    suite.addTest(unittest.makeSuite(ValidateAccreditationsTest))
     return suite
 
 
