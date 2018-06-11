@@ -228,7 +228,15 @@ class ValidateDocumentDataTest(unittest.TestCase):
 class ValidateAccreditationsTest(unittest.TestCase):
 
     def test_validate_ok(self):
-        pass
+        request = Mock()
+        model = Mock()
+
+        model.create_accreditation = '3'
+        request.check_accreditation.return_value = True
+
+        validate_accreditations(request, model)
+
+        assert request.check_accreditation.call_count == 1
 
 
 def suite():
