@@ -13,7 +13,6 @@ from openprocurement.api.utils import (
     get_access_token_from_request,
     get_file_path
 )
-from openprocurement.api.constants import ALL_ACCREDITATIONS_GRANTED
 
 auth_mapping = {}
 
@@ -50,11 +49,7 @@ def _file_auth(app_meta):
         for key, value in config.items(item):
             single_value = {
                 'name': key,
-                'level': (
-                    value.split(',', 1)[1] if
-                    ',' in value else
-                    ALL_ACCREDITATIONS_GRANTED
-                ),
+                'level': value.split(',', 1)[1] if ',' in value else '1234',
                 'group': item
             }
             single_key = value.split(',', 1)[0]
@@ -220,8 +215,4 @@ def authenticated_role(request):
 
 
 def check_accreditation(request, level):
-    return (
-        "a:{0}".format(level) in request.effective_principals or
-        "a:{0}".format(ALL_ACCREDITATIONS_GRANTED) in
-        request.effective_principals
-    )
+    return "a:{}".format(level) in request.effective_principals
