@@ -324,3 +324,7 @@ class DumpsTestAppwebtest(webtest.TestApp):
                     pass
             self.file_obj.write("\n\n")
         return resp
+
+
+class DummyException(Exception):
+    pass

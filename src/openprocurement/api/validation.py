@@ -5,12 +5,18 @@ from schematics.exceptions import (
 from jsonpatch import JsonPointerException
 
 from openprocurement.api.utils import (
-    apply_data_patch, update_logging_context,
-    error_handler, raise_operation_error, check_document,
-    update_document_url,
-    set_first_document_fields,
+    apply_data_patch,
+    check_document,
+    error_handler,
     get_first_document,
-    get_type
+    get_type,
+    raise_operation_error,
+    set_first_document_fields,
+    update_document_url,
+    update_logging_context,
+)
+from openprocurement.api.constants import (
+    TEST_ACCREDITATION,
 )
 
 OPERATIONS = {"POST": "add", "PATCH": "update", "PUT": "update", "DELETE": "delete"}
@@ -175,3 +181,37 @@ def validate_change_status(request, error_handler, **kwargs):
     if new_status not in statuses or \
             request.authenticated_role not in statuses.get(new_status, {}):
         raise_operation_error(request, error_handler, msg)
+
+
+def validate_accreditations(request, model):
+    if not any([
+        request.check_accreditation(acc) for acc in
+        iter(str(model.create_accreditation))
+    ]):
+        request.errors.add(
+            'body',
+            'accreditation',
+            'Broker Accreditation level does not permit asset creation'
+        )
+        request.errors.status = 403
+        raise error_handler(request)
+
+
+def validate_t_accreditation(request, data):
+    """Users with test accreditation can create assets only in test mode
+
+    't' stands for 'test', but if add 'test' to the function name,
+    nosetests will collect it.
+    """
+    if (
+        data and
+        data.get('mode', None) is None and
+        request.check_accreditation(TEST_ACCREDITATION)
+    ):
+        request.errors.add(
+            'body',
+            'mode',
+            'Broker Accreditation level does not permit asset creation'
+        )
+        request.errors.status = 403
+        raise error_handler(request)
