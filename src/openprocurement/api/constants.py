@@ -106,6 +106,9 @@ DOCUMENT_TYPE_URL_ONLY = ['virtualDataRoom', 'x_dgfPublicAssetCertificate', 'x_d
 
 IDENTIFIER_CODES = ORA_CODES
 
+ALL_ACCREDITATIONS_GRANTED = '0'
+TEST_ACCREDITATION = 't'
+
 
 class ProjectConfigurator(object):
     """
