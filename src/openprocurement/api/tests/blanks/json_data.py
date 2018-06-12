@@ -22,6 +22,7 @@ test_organization = {
 }
 
 test_organization_loki = {
+    "name": u"Державне управління справами",
     "identifier": {
         "scheme": u"UA-EDR",
         "id": u"00037256",
