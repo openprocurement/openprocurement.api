@@ -519,7 +519,7 @@ class DummyOCDSModelsTest(unittest.TestCase):
             document.serialize('test')
 
         self.assertEqual(document.serialize().keys(),
-                         ['url', 'dateModified', 'id', 'datePublished'])
+                         ['dateModified', 'id', 'datePublished'])
 
         with self.assertRaises(ModelValidationError) as ex:
             document.validate()
@@ -648,7 +648,7 @@ class DummyLokiModelsTest(unittest.TestCase):
             document.serialize('test')
 
         self.assertEqual(document.serialize().keys(),
-                         ['url', 'dateModified', 'id', 'datePublished'])
+                         ['dateModified', 'id', 'datePublished'])
 
         with self.assertRaises(ModelValidationError) as ex:
             document.validate()
