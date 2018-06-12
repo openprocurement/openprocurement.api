@@ -95,7 +95,7 @@ class BaseDocument(Model):
     relatedItem = MD5Type()
     author = StringType()
 
-    @serializable(serialized_name="url")
+    @serializable(serialized_name="url", serialize_when_none=False)
     def download_url(self):
         return serialize_document_url(self)
 
