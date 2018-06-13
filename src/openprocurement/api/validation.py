@@ -183,7 +183,7 @@ def validate_change_status(request, error_handler, **kwargs):
         raise_operation_error(request, error_handler, msg)
 
 
-def validate_accreditations(request, model):
+def validate_accreditations(request, model, resource_type='resource'):
     if not any([
         request.check_accreditation(acc) for acc in
         iter(str(model.create_accreditation))
@@ -191,13 +191,14 @@ def validate_accreditations(request, model):
         request.errors.add(
             'body',
             'accreditation',
-            'Broker Accreditation level does not permit asset creation'
+            'Broker Accreditation level does '
+            'not permit {} creation'.format(resource_type)
         )
         request.errors.status = 403
         raise error_handler(request)
 
 
-def validate_t_accreditation(request, data):
+def validate_t_accreditation(request, data, resource_type='resource'):
     """Users with test accreditation can create assets only in test mode
 
     't' stands for 'test', but if add 'test' to the function name,
@@ -211,7 +212,8 @@ def validate_t_accreditation(request, data):
         request.errors.add(
             'body',
             'mode',
-            'Broker Accreditation level does not permit asset creation'
+            'Broker Accreditation level does '
+            'not permit {} creation'.format(resource_type)
         )
         request.errors.status = 403
         raise error_handler(request)
