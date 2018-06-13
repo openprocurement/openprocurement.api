@@ -2,7 +2,6 @@
 import re
 
 from cornice.service import Service, get_services
-from openprocurement.api.constants import VERSION
 
 
 spore = Service(name='spore', path='/spore', renderer='json')
@@ -73,5 +72,5 @@ def get_spore(request):
     return generate_spore_description(
         services, 'Service name',
         request.application_url,
-        request.registry.app_meta.config.main.api_version or VERSION
+        request.registry.app_meta.config.main.api_version
     )

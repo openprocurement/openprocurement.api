@@ -8,34 +8,43 @@ if 'test' not in __import__('sys').argv[0]:
 
 import os
 import simplejson
-from logging import getLogger
-from copy import copy
+
 from collections import defaultdict as dd
+from copy import copy
+from logging import getLogger
 from zope.component import getGlobalSiteManager
 
 from pyramid.settings import asbool
 from pyramid.config import Configurator
-from libnacl.sign import Signer, Verifier
 from pyramid.renderers import JSON, JSONP
 from pkg_resources import iter_entry_points
-from pyramid.authorization import ACLAuthorizationPolicy as AuthorizationPolicy
-
-from openprocurement.api.utils import (
-    forbidden,
-    request_params,
-    couchdb_json_decode,
-    route_prefix,
-    json_body,
-    read_yaml,
+from pyramid.authorization import (
+    ACLAuthorizationPolicy as AuthorizationPolicy,
 )
 
-from openprocurement.api.database import set_api_security
-from openprocurement.api.design import sync_design
-from openprocurement.api.auth import AuthenticationPolicy, authenticated_role, check_accreditation
-from openprocurement.api.configurator import Configurator as ProjectConfigurator, configuration_info
-from openprocurement.api.interfaces import IProjectConfigurator
+from openprocurement.api.utils import (
+    couchdb_json_decode,
+    forbidden,
+    json_body,
+    read_yaml,
+    request_params,
+    route_prefix,
+)
+
+from openprocurement.api.auth import (
+    AuthenticationPolicy,
+    authenticated_role,
+    check_accreditation,
+)
 from openprocurement.api.auth import get_auth
 from openprocurement.api.config import AppMetaSchema
+from openprocurement.api.configurator import (
+    Configurator as ProjectConfigurator,
+    configuration_info,
+)
+from openprocurement.api.database import set_api_security
+from openprocurement.api.design import sync_design
+from openprocurement.api.interfaces import IProjectConfigurator
 
 LOGGER = getLogger("{}.init".format(__name__))
 APP_META_FILE = 'app_meta.yaml'
