@@ -826,6 +826,24 @@ class DummyLokiModelsTest(unittest.TestCase):
         )
 
         loki_item_data = deepcopy(test_loki_item_data)
+        loki_item_data['classification']['id'] = '07200000-1'
+        item = LokiItem(loki_item_data)
+
+        with self.assertRaises(ModelValidationError) as ex:
+            item.validate()
+        self.assertEqual(
+            ex.exception.messages,
+            {'classification':
+                 {
+                     'id': [
+                         u'At least {} classification class (XXXX0000-Y) '
+                         u'should be specified more precisely'.format(loki_item_data['classification']['scheme'])
+                     ]
+                 }
+            }
+        )
+
+        loki_item_data = deepcopy(test_loki_item_data)
         loki_item_data['classification']['id'] = 'wrong-id'
         item = LokiItem(loki_item_data)
 
