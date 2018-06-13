@@ -9,7 +9,6 @@ from openprocurement.api.constants import (
     LOKI_DOCUMENT_TYPES,
     DOCUMENT_TYPE_OFFLINE,
     DOCUMENT_TYPE_URL_ONLY
-
 )
 from openprocurement.api.models.common import (
     ContactPoint, BaseUnit, Address, RegistrationDetails
@@ -33,6 +32,11 @@ class LokiItemClassification(ItemClassification):
         available_codes = LOKI_ITEM_CLASSIFICATION.get(data.get('scheme'), [])
         if code not in available_codes:
             raise ValidationError(BaseType.MESSAGES['choices'].format(unicode(available_codes)))
+        if code.find("00000-") > 0:
+            raise ValidationError(
+                'At least {} classification class (XXXX0000-Y) '
+                'should be specified more precisely'.format(data.get('scheme'))
+            )
 
 
 class UAEDRAndCadastralItemClassification(ItemClassification):
