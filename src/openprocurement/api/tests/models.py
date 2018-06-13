@@ -940,7 +940,10 @@ class DummyLokiModelsTest(unittest.TestCase):
             asset_holder.validate()
         self.assertEqual(
             ex.exception.messages,
-            {'identifier': [u'This field is required.']}
+            {
+                'identifier': [u'This field is required.'],
+                'name': [u'This field is required.']
+            }
         )
 
         asset_holder.import_data(data)
