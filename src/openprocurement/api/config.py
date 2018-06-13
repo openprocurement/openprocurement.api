@@ -8,7 +8,7 @@ from urlparse import urlsplit
 
 
 class Main(Model):
-    api_version = StringType(default=None, serialize_when_none=False)
+    api_version = StringType(required=True, serialize_when_none=False)
     server_id = StringType(default='')
 
 

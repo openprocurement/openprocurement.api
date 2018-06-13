@@ -969,12 +969,12 @@ class AppSchemaModelsTest(unittest.TestCase):
     """
 
     def test_Main_defaults(self):
-        main = Main()
+        main = Main({'api_version': '2.4'})
 
         main.validate()
 
         self.assertEqual(main.serialize()['server_id'], '')
-        self.assertNotIn('api_version', main.serialize())
+        self.assertIn('api_version', main.serialize())
 
     def test_Main_valid_values(self):
         main_data = deepcopy(test_config_data['config']['main'])
@@ -1312,8 +1312,11 @@ class AppSchemaModelsTest(unittest.TestCase):
 
         self.assertEqual(
             ex.exception.messages,
-            {'auth': [u'This field is required.'],
-             'db': [u'This field is required.']}
+            {
+                'auth': [u'This field is required.'],
+                'db': [u'This field is required.'],
+                'main': {'api_version': [u'This field is required.']},
+            }
         )
 
     def test_Config_valid_values(self):
@@ -1328,12 +1331,17 @@ class AppSchemaModelsTest(unittest.TestCase):
 
     def test_Config_valid_values_auto_generated_main(self):
         config_data = deepcopy(test_config_data['config'])
-        config_data.pop('main')
         config = Config(config_data)
 
         config.validate()
 
-        self.assertEqual(config.serialize()['main'], {'server_id': u''})
+        self.assertEqual(
+            config.serialize()['main'],
+            {
+                'server_id': u'',
+                'api_version': '2.4',
+            }
+        )
 
     def test_AppMetaSchema_empty(self):
         app_meta = AppMetaSchema()

@@ -4,6 +4,8 @@ plugins:
     plugins:
       transferring:
 config:
+  main:
+    api_version: '2.4'
   auth:
     type: file
     src: auth.ini
