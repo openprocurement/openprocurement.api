@@ -168,9 +168,8 @@ class UAEDRAndMFOClassification(Classification):
 
 class BankAccount(Model):
     description = StringType()
-    bankName = StringType()
-    accountNumber = StringType()
-    accountIdentification = ListType(ModelType(UAEDRAndMFOClassification), default=list())
+    bankName = StringType(required=True)
+    accountIdentification = ListType(ModelType(UAEDRAndMFOClassification), default=list(), min_size=1)
 
 
 class AuctionParameters(Model):
