@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 from pyramid.events import subscriber
 from pyramid.events import NewRequest, BeforeRender, ContextFound
-from openprocurement.api.constants import VERSION
 from openprocurement.api.utils import get_now, update_logging_context, fix_url
 
 
@@ -10,7 +9,7 @@ def add_logging_context(event):
     request = event.request
     conf_main = request.registry.app_meta.config.main
     params = {
-        'API_VERSION': conf_main.get('api_version', VERSION),
+        'API_VERSION': conf_main.get('api_version'),
         'TAGS': 'python,api',
         'USER': str(request.authenticated_userid or ''),
         'CURRENT_URL': request.url,

@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 import unittest
 
-from openprocurement.api.constants import VERSION
 from openprocurement.api.tests.base import BaseWebTest
 
 
@@ -11,7 +10,6 @@ class SporeTest(BaseWebTest):
         response = self.app.get('/spore')
         self.assertEqual(response.status, '200 OK')
         self.assertEqual(response.content_type, 'application/json')
-        self.assertEqual(response.json["version"], VERSION)
 
 
 def suite():

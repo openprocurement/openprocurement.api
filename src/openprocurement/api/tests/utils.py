@@ -337,6 +337,7 @@ class UtilsTest(unittest.TestCase):
         request.content_type = 'application/json'
         request.registry.queryMultiAdapter = mock.MagicMock()
         request.registry.queryMultiAdapter.return_value = 'configuration_adapter'
+        request.registry.app_meta.config.main.api_version = '0.1'
 
         result = get_content_configurator(request)
         self.assertEqual(result, 'configuration_adapter')

@@ -40,10 +40,8 @@ from openprocurement.api.constants import (
     DOCUMENT_BLACKLISTED_FIELDS,
     DOCUMENT_WHITELISTED_FIELDS,
     LOGGER,
-    ROUTE_PREFIX,
     SESSION,
     TZ,
-    VERSION,
     WORKING_DAYS,
 )
 from openprocurement.api.events import ErrorDesctiptorEvent
@@ -58,7 +56,7 @@ json_view = partial(view, renderer='json')
 
 
 def route_prefix(conf_main):
-    version = conf_main.api_version or VERSION
+    version = conf_main.api_version
     return '/api/{}'.format(version)
 
 
@@ -713,7 +711,8 @@ def context_unpack(request, msg, params=None):
 
 
 def get_content_configurator(request):
-    content_type = request.path[len(ROUTE_PREFIX)+1:].split('/')[0][:-1]
+    route_prefix = request.registry.app_meta.config.main.api_version
+    content_type = request.path[len(route_prefix)+1:].split('/')[0][:-1]
     if hasattr(request, content_type):  # content is constructed
         context = getattr(request, content_type)
         return request.registry.queryMultiAdapter((context, request),
