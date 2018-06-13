@@ -923,6 +923,15 @@ class DummyLokiModelsTest(unittest.TestCase):
         asset_custodian.import_data(data)
         asset_custodian.validate()
 
+        data.update({
+            'additionalContactPoints': [
+                {'name': 'name', 'email': 'some@mail.com'}
+            ]
+        })
+        asset_custodian.import_data(data)
+        asset_custodian.validate()
+
+
     def test_AssetHolder(self):
         data = {
             'name': 'Name',
@@ -960,6 +969,14 @@ class DummyLokiModelsTest(unittest.TestCase):
                 'scheme': 'UA-EDR',
                 'id': 'justID'
             }})
+        asset_holder.import_data(data)
+        asset_holder.validate()
+
+        data.update({
+            'additionalContactPoints': [
+                {'name': 'name', 'email': 'some@mail.com'}
+            ]
+        })
         asset_holder.import_data(data)
         asset_holder.validate()
 
