@@ -121,10 +121,12 @@ LokiDocument.__name__ = 'Document'
 class AssetCustodian(Organization):
     name = StringType(required=True)
     kind = StringType(choices=['general', 'special', 'other'])
+    additionalContactPoints = ListType(ModelType(ContactPoint), default=list())
 
 
 class AssetHolder(Organization):
     name = StringType(required=True)
     address = ModelType(Address)
     contactPoint = ModelType(ContactPoint)
+    additionalContactPoints = ListType(ModelType(ContactPoint), default=list())
     kind = StringType(choices=['general', 'special', 'other'])

@@ -33,7 +33,10 @@ test_organization_loki = {
     "contactPoint": {
         "name": u"Державне управління справами",
         "telephone": u"0440000000"
-    }
+    },
+    'additionalContactPoints': [
+        {'name': 'name', 'email': 'some@mail.com'}
+    ]
 }
 
 test_document_data = {
