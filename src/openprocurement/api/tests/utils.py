@@ -31,7 +31,8 @@ from openprocurement.api.utils import (
     get_file_path,
     get_plugin_aliases,
     format_aliases,
-    make_aliases
+    make_aliases,
+    connection_mock_config
 )
 from openprocurement.api.exceptions import ConfigAliasError
 
@@ -360,6 +361,47 @@ class UtilsTest(unittest.TestCase):
         result = generate_docservice_url(request, '1234567890abcdef1234567890abcdef', True, 'test_prefix')
         for item in expected_result:
             self.assertIn(item, result)
+
+    def test_connection_mock_config(self):
+        def check_nested_key(res, connector):
+            for connect in connector:
+                self.assertIn(connect, res.keys())
+                res = res[connect]
+
+        base = {"one": 1, "two": 2}
+        part = {"three": 3}
+        res = connection_mock_config(part, base=base)
+        self.assertIn(part.keys()[0], res.keys())
+
+
+        base = {"one": 1, "two": 2}
+        part = {"three": 3}
+
+        connector = ('level0', 'level1')
+        res = connection_mock_config(part, connector=connector, base=base)
+        check_nested_key(res, connector)
+
+        connector = ('level0',)
+        res = connection_mock_config(part, connector=connector, base=base)
+        check_nested_key(res, connector)
+
+        base = {
+            "level0":{
+                "level1": 2,
+                "need":"info"
+            },
+            "data": "good"
+        }
+        part = {"three": 3}
+
+        connector = ('level0', 'level1')
+        res = connection_mock_config(part, connector=connector, base=base)
+        check_nested_key(res, connector)
+
+        connector = ('level0',)
+        res = connection_mock_config(part, connector=connector, base=base)
+        check_nested_key(res, connector)
+
 
     def test_prepare_patch(self):
         changes = []

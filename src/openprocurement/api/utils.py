@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 import decimal
 import simplejson
-
+from copy import deepcopy
 from base64 import b64encode, b64decode
 from binascii import hexlify, unhexlify
 from copy import copy
@@ -1100,6 +1100,48 @@ def get_plugin_aliases(plugin):
 
     for alias in aliases:
         check_alias(alias)
+
+
+def connection_mock_config(part, connector=(), base=None):
+    """
+    Combines two mappings in a given connection
+
+    :param part: the part which must be connected
+    :param connector: key or keys that connect two parts
+    :param base: the base to which the part was attached
+
+    :type: part: abc.Mapping
+    :type: connector: abc.Iterable
+    :type: base: abc.Mapping
+    """
+    part = deepcopy(part)
+    base = deepcopy(base)
+    crawler = base
+    prev = []
+    last = len(connector) - 1 if connector else 0
+
+    if not base:
+        return part
+
+    if not part:
+        return None
+
+    if not connector:
+        for key in part.keys():
+            base[key] = part[key]
+
+    for i, connect in enumerate(connector):
+        head = crawler
+        if prev:
+            for key in prev:
+                crawler = crawler[key]
+        if not crawler.get(connect, None) and i < last:
+            crawler[connect] = {}
+        elif i == last:
+            crawler[connect] = part
+        crawler = head
+        prev.append(connect)
+    return base
 
 
 def get_access_token_from_request(request):

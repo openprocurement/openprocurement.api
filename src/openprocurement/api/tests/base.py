@@ -8,13 +8,17 @@ from copy import deepcopy
 from urllib import urlencode
 from base64 import b64encode
 from datetime import datetime
+from contextlib import nested
 from types import FunctionType
+from mock import patch, MagicMock
 from requests.models import Response
 
-from openprocurement.api.utils import apply_data_patch
+from openprocurement.api.utils import apply_data_patch, connection_mock_config
 from openprocurement.api.constants import VERSION, SESSION
 from openprocurement.api.design import sync_design
 from openprocurement.api.config import DS
+from openprocurement.api.tests.fixtures.config import PARTIAL_MOCK_CONFIG
+from openprocurement.api.tests.fixtures.auth import MOCK_AUTH_USERS
 
 now = datetime.now()
 
@@ -102,6 +106,7 @@ class PrefixedRequestClass(webtest.app.TestRequest):
         path = '/api/%s%s' % (VERSION, path)
         return webtest.app.TestRequest.blank(path, *args, **kwargs)
 
+MOCK_CONFIG = connection_mock_config(PARTIAL_MOCK_CONFIG)
 
 class BaseWebTest(unittest.TestCase):
 
@@ -109,24 +114,28 @@ class BaseWebTest(unittest.TestCase):
     It setups the database before each test and delete it after.
     """
 
-    initial_auth = None
     relative_to = os.path.dirname(__file__)
+    mock_config = MOCK_CONFIG
 
     @classmethod
     def setUpClass(cls):
-        for _ in range(10):
-            try:
+        if not getattr(cls, 'app', None) or getattr(cls, 'docservice', True):
+            with nested(patch('openprocurement.api.app.read_yaml',
+                               return_value=deepcopy(cls.mock_config),
+                               autospec=True),
+                         patch('openprocurement.api.auth._auth_factory',
+                               return_value=MagicMock(return_value=MOCK_AUTH_USERS),
+                               autospec=True)
+                        ):
                 cls.app = webtest.TestApp("config:tests.ini", relative_to=cls.relative_to)
-            except:
-                pass
-            else:
-                break
-        else:
-            cls.app = webtest.TestApp("config:tests.ini", relative_to=cls.relative_to)
         cls.app.RequestClass = PrefixedRequestClass
-        cls.couchdb_server = cls.app.app.registry.couchdb_server
+        if getattr(cls.app.app.registry, 'admin_couchdb_server', None):
+            cls.couchdb_server = cls.app.app.registry.admin_couchdb_server
+        else:
+            cls.couchdb_server = cls.app.app.registry.couchdb_server
         cls.db = cls.app.app.registry.db
         cls.db_name = cls.db.name
+
 
     @classmethod
     def tearDownClass(cls):
@@ -153,14 +162,6 @@ class BaseWebTest(unittest.TestCase):
 
 
 class BaseResourceWebTest(BaseWebTest):
-
-    """Base Resource Web Test to test openprocurement.api.
-
-    It takes care of database setup and cleanup,
-    creates testing resource before each test,
-    and adds resource name as prefix to all requests.
-    """
-
     resource_name = ''
     initial_data = None
     initial_status = None
@@ -175,7 +176,10 @@ class BaseResourceWebTest(BaseWebTest):
         if p[0].endswith('/'):
             p[0] = p[0][:-1]
         path = '?'.join(p)
-        path = '/api/%s/%s' % (VERSION, path)
+        if path.startswith('/'):
+            path = '/api/%s%s' % (VERSION, path)
+        else:
+            path = '/api/%s/%s' % (VERSION, path)
         return webtest.app.TestRequest.blank(path, *args, **kwargs)
 
     @classmethod
