@@ -100,6 +100,7 @@ LOKI_ITEM_ADDITIONAL_CLASSIFICATIONS = {
 LOKI_DOCUMENT_TYPES = [
     'notice', 'technicalSpecifications', 'illustration', 'x_presentation',
     'informationDetails', 'cancellationDetails', 'x_dgfAssetFamiliarization',
+    'evaluationCriteria', 'clarifications'
 ]
 DOCUMENT_TYPE_OFFLINE = ['x_dgfAssetFamiliarization']
 DOCUMENT_TYPE_URL_ONLY = ['virtualDataRoom', 'x_dgfPublicAssetCertificate', 'x_dgfPlatformLegalDetails']
