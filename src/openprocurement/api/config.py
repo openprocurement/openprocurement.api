@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from libnacl.sign import Signer, Verifier
 from schematics.models import Model
-from schematics.types import StringType, BaseType, ValidationError
+from schematics.types.base import StringType, BaseType, ValidationError
 from schematics.types.compound import ModelType, ListType
 from schematics.types.serializable import serializable
 from urlparse import urlsplit
@@ -17,9 +17,9 @@ class Auth(Model):
     src = StringType()
 
     def validate_src(self, data, value):
-        if not data['src'] and data['type'] == 'void':
+        if not data.get('src') and data.get('type') == 'void':
             return None
-        elif not data['src']:
+        elif not data.get('src'):
             raise ValidationError(u'This field is required.')
 
 
@@ -96,8 +96,10 @@ class AuctionModule(Model):
 
     @serializable(serialized_name="signer")
     def signer(self):
-        return Signer(self['public_key'].decode('hex'))
-
+        if self.get('public_key'):
+            return Signer(self.get('public_key').decode('hex'))
+        else:
+            raise ValidationError(("public_key", "This field is required."))
 
 class Config(Model):
 

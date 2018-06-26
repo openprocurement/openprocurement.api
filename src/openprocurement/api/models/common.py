@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from couchdb_schematics.document import SchematicsDocument
 
-from schematics.exceptions import ValidationError
+from schematics.exceptions import ValidationError, DataError
 from schematics.types import StringType, BaseType, FloatType, EmailType, URLType, IntType
 from schematics.types.compound import DictType, ListType, ModelType
 from schematics.types.serializable import serializable
@@ -42,21 +42,20 @@ class BaseResourceItem(SchematicsDocument, Model):
         """A property that is serialized by schematics exports."""
         return self._id
 
-    def import_data(self, raw_data, **kw):
+    def _dict(self, mapping):
+        return dict((key, mapping[key]) for key in mapping)
+
+    def import_data(self, raw_data, recursive=False, **kwargs):
         """
-        Converts and imports the raw data into the instance of the model
-        according to the fields in the model.
+        Converts and imports the raw data into an existing model instance.
+
         :param raw_data:
             The data to be imported.
         """
-        data = self.convert(raw_data, **kw)
-        del_keys = [
-            k for k in data.keys() if data[k] == self.__class__.fields[k].default
-            or data[k] == getattr(self, k)
-        ]
-        for k in del_keys:
-            del data[k]
-        self._data.update(data)
+        data = self._convert(raw_data, trusted_data=self._dict(self), recursive=recursive, **kwargs)
+        self._data.converted.update(data)
+        if kwargs.get('validate'):
+            self.validate(convert=False)
         return self
 
 
@@ -102,14 +101,15 @@ class ContactPoint(Model):
     name = StringType(required=True)
     name_en = StringType()
     name_ru = StringType()
-    email = EmailType()
     telephone = StringType()
+    email = EmailType()
     faxNumber = StringType()
     url = URLType()
 
     def validate_email(self, data, value):
         if not value and not data.get('telephone'):
             raise ValidationError(u"telephone or email should be present")
+        return value
 
 
 class BaseIdentifier(Model):

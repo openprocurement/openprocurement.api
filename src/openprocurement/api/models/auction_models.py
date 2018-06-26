@@ -81,7 +81,7 @@ def validate_values_uniq(values, *args):
 
 class Feature(Model):
 
-    code = StringType(required=True, min_length=1, default=lambda: uuid4().hex)
+    code = StringType(min_length=1, default=lambda: uuid4().hex)
     featureOf = StringType(required=True, choices=['tenderer', 'lot', 'item'], default='tenderer')
     relatedItem = StringType(min_length=1)
     title = StringType(required=True, min_length=1)
@@ -191,7 +191,7 @@ class Document(Model):
             'revisions': whitelist('url', 'dateModified'),
         }
 
-    id = MD5Type(required=True, default=lambda: uuid4().hex)
+    id = MD5Type(default=lambda: uuid4().hex)
     hash = HashType()
     documentType = StringType(choices=[
         'tenderNotice', 'awardNotice', 'contractNotice',
@@ -222,19 +222,20 @@ class Document(Model):
     def download_url(self):
         return serialize_document_url(self)
 
-    def import_data(self, raw_data, **kw):
+    def _dict(self, mapping):
+        return dict((key, mapping[key]) for key in mapping)
+
+    def import_data(self, raw_data, recursive=False, **kwargs):
         """
-        Converts and imports the raw data into the instance of the model
-        according to the fields in the model.
+        Converts and imports the raw data into an existing model instance.
+
         :param raw_data:
             The data to be imported.
         """
-        data = self.convert(raw_data, **kw)
-        del_keys = [k for k in data.keys() if data[k] == getattr(self, k)]
-        for k in del_keys:
-            del data[k]
-
-        self._data.update(data)
+        data = self._convert(raw_data, trusted_data=self._dict(self), recursive=recursive, **kwargs)
+        self._data.converted.update(data)
+        if kwargs.get('validate'):
+            self.validate(convert=False)
         return self
 
 
@@ -245,7 +246,7 @@ class Identifier(BaseIdentifier):
 
 class Item(Model):
     """A good, service, or work to be contracted."""
-    id = StringType(required=True, min_length=1, default=lambda: uuid4().hex)
+    id = StringType(min_length=1, default=lambda: uuid4().hex)
     description = StringType(required=True)  # A description of the goods, services to be provided.
     description_en = StringType()
     description_ru = StringType()
@@ -272,7 +273,7 @@ class Revision(Model):
 
 
 class Contract(Model):
-    id = MD5Type(required=True, default=lambda: uuid4().hex)
+    id = MD5Type(default=lambda: uuid4().hex)
     awardID = StringType()
     contractID = StringType()
     contractNumber = StringType()
@@ -301,7 +302,7 @@ class Cancellation(Model):
             'view': schematics_default_role,
         }
 
-    id = MD5Type(required=True, default=lambda: uuid4().hex)
+    id = MD5Type(default=lambda: uuid4().hex)
     reason = StringType(required=True)
     reason_en = StringType()
     reason_ru = StringType()
