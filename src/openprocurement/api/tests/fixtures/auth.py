@@ -34,6 +34,16 @@ MOCK_AUTH_USERS = {
         "name":"broker3t",
         "level":"3t"
     },
+    "broker4t":{
+        "group":"brokers",
+        "name":"broker4t",
+        "level":"4t"
+    },
+    "broker5t":{
+        "group":"brokers",
+        "name":"broker5t",
+        "level":"5t"
+    },
     "broker":{
         "group":"brokers",
         "name":"broker",
