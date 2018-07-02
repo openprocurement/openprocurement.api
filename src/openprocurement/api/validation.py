@@ -248,4 +248,3 @@ def validate_decision_update_in_not_allowed_status(request, error_handler, paren
     if status not in request.content_configurator.decision_editing_allowed_statuses:
         raise_operation_error(request, error_handler,
                               'Can\'t update decisions in current ({}) {} status'.format(status, parent_resource))
-
