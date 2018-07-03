@@ -398,7 +398,7 @@ def get_revision_changes(dst, src):
 
 def set_item_transfer_token(item, request, acc):
     passed_transfer_token = request.json_body['data'].get('transfer_token')
-    if request.authenticated_userid == 'concierge' and passed_transfer_token:
+    if request.authenticated_userid in ['concierge', 'convoy'] and passed_transfer_token:
         item.transfer_token = passed_transfer_token
     else:
         transfer_token = generate_id()
