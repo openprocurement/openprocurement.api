@@ -61,7 +61,10 @@ def validate_data(request, model, partial=False, data=None):
             if not partial:
                 m = model(data)
                 m.__parent__ = request.context
-                request.validated[model.__name__.lower()] = m
+                if model._options.namespace:
+                    request.validated[model._options.namespace.lower()] = m
+                else:
+                    request.validated[model.__name__.lower()] = m
     return data
 
 

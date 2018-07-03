@@ -29,6 +29,14 @@ listing_role = whitelist('dateModified', 'doc_id')
 draft_role = whitelist('status')
 
 
+class OpenprocurementSchematicsDocument(SchematicsDocument):
+
+    def __init__(self, raw_data=None, deserialize_mapping=None):
+        super(OpenprocurementSchematicsDocument, self).__init__(raw_data=raw_data,
+            deserialize_mapping=deserialize_mapping)
+        if hasattr(self, 'Options') and hasattr(self.Options, 'namespace'):
+            self.doc_type = self.Options.namespace
+
 class DecimalType(BaseDecimalType):
 
     def __init__(self, precision=-3, min_value=None, max_value=None, **kwargs):
