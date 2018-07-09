@@ -9,13 +9,14 @@ from hashlib import algorithms, new as hash_new
 from couchdb_schematics.document import SchematicsDocument
 from schematics.exceptions import ConversionError, ValidationError
 from schematics.models import Model as SchematicsModel
+from schematics.models import ModelMeta
 from schematics.transforms import whitelist, blacklist, export_loop, convert
 from schematics.types import (StringType, FloatType, URLType, IntType,
                               BooleanType, BaseType, EmailType, MD5Type, DecimalType as BaseDecimalType)
 from schematics.types.compound import (ModelType, DictType,
                                        ListType as BaseListType)
 from schematics.types.serializable import serializable
-
+from openprocurement.api.interfaces import ISerializable, IValidator
 from openprocurement.api.utils import get_now, set_parent, get_schematics_document
 from openprocurement.api.constants import (
     CPV_CODES, ORA_CODES, TZ, DK_CODES, CPV_BLOCK_FROM, ATC_CODES, INN_CODES, ATC_INN_CLASSIFICATIONS_FROM,
@@ -27,9 +28,79 @@ schematics_embedded_role = SchematicsDocument.Options.roles['embedded'] + blackl
 plain_role = (blacklist('_attachments', 'revisions', 'dateModified') + schematics_embedded_role)
 listing_role = whitelist('dateModified', 'doc_id')
 draft_role = whitelist('status')
+from couchdb_schematics.document import DocumentMeta
+from zope.component import getAdapter, queryAdapter, getAdapters
+
+class AdaptiveDict(dict):
+    def __init__(self, context, interface, data, prefix=''):
+        self.context = context
+        self.interface = interface
+        self.prefix = prefix
+        self.prefix_len = len(prefix)
+        self.adaptive_items = {}
+        super(AdaptiveDict, self).__init__(data)
+
+    def __contains__(self, item):
+        return item in self.keys()
+
+    def __getitem__(self, key):
+        adapter = None
+        if key in self.adaptive_items:
+            return self.adaptive_items[key]
+        if self.prefix and key.startswith(self.prefix):
+            adapter = queryAdapter(self.context, self.interface, key[self.prefix_len:])
+        else:
+            adapter = queryAdapter(self.context, self.interface, key)
+        if adapter:
+            return adapter
+        val = dict.__getitem__(self, key)
+        return val
+
+    def __setitem__(self, key, val):
+        dict.__setitem__(self, key, val)
+
+    def __repr__(self):
+        dictrepr = dict.__repr__(self)
+        return '%s(%s)' % (type(self).__name__, dictrepr)
+
+    def keys(self):
+        return list(self)
+
+    def __iter__(self):
+        for item in self.iteritems():
+            yield item[0]
+
+    def iteritems(self):
+        for i in super(AdaptiveDict, self).iteritems():
+            yield i
+        for k, v in getAdapters((self.context,), self.interface):
+            if self.prefix:
+                k = self.prefix + k
+            self.adaptive_items[k] = v
+        for i in self.adaptive_items.iteritems():
+            yield i
+
+
+
+class OpenprocurementCouchdbDocumentMeta(DocumentMeta):
+
+    def __new__(mcs, name, bases, attrs):
+        klass = DocumentMeta.__new__(mcs, name, bases, attrs)
+        klass._validator_functions = AdaptiveDict(
+            klass,
+            IValidator,
+            klass._validator_functions
+        )
+        klass._serializables = AdaptiveDict(
+                klass, ISerializable,
+                klass._serializables,
+            )
+        return klass
 
 
 class OpenprocurementSchematicsDocument(SchematicsDocument):
+
+    __metaclass__ = OpenprocurementCouchdbDocumentMeta
 
     def __init__(self, raw_data=None, deserialize_mapping=None):
         super(OpenprocurementSchematicsDocument, self).__init__(raw_data=raw_data,
@@ -163,8 +234,9 @@ class SifterListType(ListType):
         elif print_none:
             return data
 
-
 class Model(SchematicsModel):
+    __metaclass__ = OpenprocurementCouchdbDocumentMeta
+
     class Options(object):
         """Export options for Document."""
         serialize_when_none = False
@@ -174,6 +246,15 @@ class Model(SchematicsModel):
         }
 
     __parent__ = BaseType()
+
+    def __getattribute__(self, name):
+        serializables = super(Model, self).__getattribute__('_serializables')
+        if name in serializables.adaptive_items:
+            return serializables[name](self)
+        return super(Model, self).__getattribute__(name)
+
+    def __getitem__(self, name):
+        return getattr(self, name)
 
     def __eq__(self, other):
         if isinstance(other, self.__class__):

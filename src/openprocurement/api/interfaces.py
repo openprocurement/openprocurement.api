@@ -8,3 +8,11 @@ class IOPContent(Interface):
 
 class IContentConfigurator(Interface):
     """ Content configurator """
+
+
+class IValidator(Interface):
+    pass
+
+
+class ISerializable(Interface):
+    pass
