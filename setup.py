@@ -22,6 +22,7 @@ requires = [
     'rfc6266',
     'setuptools',
     'tzlocal',
+    'zope.component',
 ]
 test_requires = requires + [
     'webtest',
