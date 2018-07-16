@@ -18,7 +18,7 @@ from schematics.types.serializable import serializable
 
 from openprocurement.api.utils import get_now, set_parent, get_schematics_document
 from openprocurement.api.constants import (
-    CPV_CODES, ORA_CODES, TZ, DK_CODES, CPV_BLOCK_FROM, ATC_CODES, INN_CODES, ATC_INN_CLASSIFICATIONS_FROM,
+    CPV_CODES, ORA_CODES, TZ, DK_CODES, CPV_BLOCK_FROM,
 )
 
 schematics_default_role = SchematicsDocument.Options.roles['default'] + blacklist("__parent__")
@@ -256,14 +256,7 @@ class CPVClassification(Classification):
 
 
 class AdditionalClassification(Classification):
-
-    def validate_id(self, data, code):
-        schematics_document = get_schematics_document(data['__parent__'])
-        if (schematics_document.get('revisions')[0].date if schematics_document.get('revisions') else get_now()) > ATC_INN_CLASSIFICATIONS_FROM:
-            if data.get('scheme') == u'ATC' and code not in ATC_CODES:
-                raise ValidationError(BaseType.MESSAGES['choices'].format(unicode(ATC_CODES)))
-            elif data.get('scheme') == u'INN' and code not in INN_CODES:
-                raise ValidationError(BaseType.MESSAGES['choices'].format(unicode(INN_CODES)))
+    pass
 
 
 class Unit(Model):
