@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 import os, sys
-
+import csv
 
 def get_fields_name(cls):
     fields_name = set(cls._fields._keys)
@@ -19,12 +19,11 @@ def get_roles_from_object(cls):
 
 
 def create_csv_roles(cls):
-    import csv
     roles = get_roles_from_object(cls)
     fields_name = list(get_fields_name(cls))
     path_role_csv = ''
     for i in os.path.abspath(sys.modules[cls.__module__].__file__).split('/')[:-1]:
-        path_role_csv += i+'/'
+        path_role_csv += (i + '/')
     with open('{0}{1}.csv'.format(path_role_csv, cls.__name__), 'wb') as csvfile:
         fields_name.insert(0, 'rolename')
         writer = csv.DictWriter(csvfile, fieldnames=fields_name)
