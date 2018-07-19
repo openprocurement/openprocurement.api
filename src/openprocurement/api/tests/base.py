@@ -116,18 +116,25 @@ class BaseWebTest(unittest.TestCase):
 
     relative_to = os.path.dirname(__file__)
     mock_config = MOCK_CONFIG
+    record_http = False
 
     @classmethod
     def setUpClass(cls):
         if not getattr(cls, 'app', None) or getattr(cls, 'docservice', True):
-            with nested(patch('openprocurement.api.app.read_yaml',
-                               return_value=deepcopy(cls.mock_config),
-                               autospec=True),
-                         patch('openprocurement.api.auth._auth_factory',
-                               return_value=MagicMock(return_value=MOCK_AUTH_USERS),
-                               autospec=True)
-                        ):
-                cls.app = webtest.TestApp("config:tests.ini", relative_to=cls.relative_to)
+            with nested(
+                patch(
+                    'openprocurement.api.app.read_yaml',
+                    return_value=deepcopy(cls.mock_config),
+                    autospec=True
+                ),
+                patch(
+                    'openprocurement.api.auth._auth_factory',
+                    return_value=MagicMock(return_value=MOCK_AUTH_USERS),
+                    autospec=True
+                )
+            ):
+                app_provider_class = cls.get_app_provider()
+                cls.app = app_provider_class("config:tests.ini", relative_to=cls.relative_to)
         cls.app.RequestClass = PrefixedRequestClass
         if getattr(cls.app.app.registry, 'admin_couchdb_server', None):
             cls.couchdb_server = cls.app.app.registry.admin_couchdb_server
@@ -136,6 +143,16 @@ class BaseWebTest(unittest.TestCase):
         cls.db = cls.app.app.registry.db
         cls.db_name = cls.db.name
 
+    @classmethod
+    def get_app_provider(cls):
+        """Allows to substitute `webtest.TestApp` with some of it's inheritants
+
+        Type of provider is selected with consideration of class attributes,
+        namely: `record_http`
+        """
+        if cls.record_http:
+            return DumpsTestAppwebtest
+        return webtest.TestApp
 
     @classmethod
     def tearDownClass(cls):
