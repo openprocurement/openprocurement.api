@@ -8,7 +8,7 @@ from decimal import Decimal
 import mock
 from isodate.duration import Duration
 from libnacl.sign import Signer, Verifier
-from schematics.exceptions import ConversionError, ValidationError, ModelValidationError
+from schematics.exceptions import ConversionError, ValidationError, ModelValidationError, ErrorMessage, DataError, UndefinedValueError
 from schematics.types import BaseType
 
 from openprocurement.api.config import (
@@ -278,11 +278,11 @@ class DummyOCDSModelsTest(unittest.TestCase):
         unit.value.amount = -1000
         unit.value.valueAddedTaxIncluded = False
         self.assertEqual(unit.serialize(), {'code': u'39513200-3', 'name': u'item',
-                                            'value': {'currency': u'UAH', 'amount': -1000, 'valueAddedTaxIncluded': False}})
+                                            'value': {'currency': u'UAH', 'valueAddedTaxIncluded': False}})
         with self.assertRaises(ModelValidationError) as ex:
             unit.validate()
         self.assertEqual(ex.exception.message,
-                         {'value': {'amount': [u'Float value should be greater than 0.']}})
+                         {'value': {'amount': ValidationError([ErrorMessage(u'Float value should be greater than or equal to 0.', None)])}})
 
     def test_Classification_model(self):
 
@@ -296,16 +296,25 @@ class DummyOCDSModelsTest(unittest.TestCase):
             classification.serialize('test')
 
         classification.scheme = None
-        self.assertNotEqual(classification.serialize(), data)
-        with self.assertRaises(ModelValidationError) as ex:
+        self.assertEqual(classification.serialize(), data)
+
+        with self.assertRaises(DataError) as ex:
             classification.validate()
         self.assertEqual(ex.exception.message,
                          {"scheme": ["This field is required."]})
 
-        scheme = data.pop('scheme')
+        classification.scheme = data["scheme"]
+        classification.validate()
+
+        data['description_en'] = 'test_description'
+        classification = Classification(data)
+        classification.validate()
+
         self.assertEqual(classification.serialize(), data)
-        classification.scheme = scheme
-        data["scheme"] = scheme
+
+        classification.description_en = None
+        self.assertNotEqual(classification.serialize(), data)
+
         classification.validate()
 
     @mock.patch.dict('openprocurement.api.constants.ITEM_CLASSIFICATIONS', {'CAV': ['test']})
@@ -418,7 +427,7 @@ class DummyOCDSModelsTest(unittest.TestCase):
     def test_ContactPoint_model(self):
         contact = ContactPoint()
 
-        self.assertEqual(contact.serialize(), None)
+        self.assertEqual(contact.serialize(), {})
         with self.assertRaisesRegexp(ValueError, 'ContactPoint Model has no role "test"'):
             contact.serialize('test')
 
@@ -566,23 +575,23 @@ class DummyAuctionModelsTest(unittest.TestCase):
 
         document = AuctionDocument()
 
-        self.assertEqual(document.serialize('create'), None)
-        self.assertEqual(document.serialize('edit'), None)
+        self.assertEqual(document.serialize('create'), {})
+        self.assertEqual(document.serialize('edit'), {})
         with self.assertRaisesRegexp(ValueError, 'Document Model has no role "test"'):
             document.serialize('test')
 
+        document.url = 'http://localhost/get'
         self.assertEqual(document.serialize().keys(),
                          ['url', 'dateModified', 'id', 'datePublished'])
 
         with self.assertRaises(ModelValidationError) as ex:
             document.validate()
-        self.assertEqual(ex.exception.messages,
-                         {"url": ["This field is required."],
-                          "format": ["This field is required."],
-                          "title": ["This field is required."]})
+        self.assertEqual(str(ex.exception),
+                         '{"format": ["This field is required."], "title": ["This field is required."]}')
 
         document.import_data(data)
         document.validate()
+
         self.assertEqual(document.serialize('create'), data)
         self.assertEqual(document.serialize('edit'),
                          {'format': u'application/msword',
@@ -616,7 +625,7 @@ class DummyLokiModelsTest(unittest.TestCase):
         }
 
         decision = Decision()
-        self.assertEqual(decision.serialize(), None)
+        self.assertEqual(decision.serialize(), {})
         with self.assertRaisesRegexp(ValueError, 'Decision Model has no role "test"'):
             decision.serialize('test')
 
@@ -642,21 +651,29 @@ class DummyLokiModelsTest(unittest.TestCase):
 
         document = LokiDocument()
 
-        self.assertEqual(document.serialize('create'), None)
-        self.assertEqual(document.serialize('edit'), None)
+        self.assertEqual(document.serialize('create'), {})
+        self.assertEqual(document.serialize('edit'), {})
+
+        document.url = data['url'] = u'http://localhost/get/docs?download={}'.format(document.id)
+        parent = mock.MagicMock(**{
+            '__parent__': mock.MagicMock(**{
+                '__parent__': None,
+                'request.registry.use_docservice': False})})
+
+        document.__parent__ = parent
+
         with self.assertRaisesRegexp(ValueError, 'Document Model has no role "test"'):
             document.serialize('test')
 
         self.assertEqual(document.serialize().keys(),
                          ['dateModified', 'id', 'datePublished'])
 
-        with self.assertRaises(ModelValidationError) as ex:
+        with self.assertRaises(DataError) as ex:
             document.validate()
+
         self.assertEqual(
-            ex.exception.messages,
-            {"title": ["This field is required."],
-            "documentType": ["This field is required."]
-             }
+            str(ex.exception), 
+            '{"documentType": ["This field is required."], "title": ["This field is required."]}'
         )
 
         del data['format']
@@ -676,20 +693,12 @@ class DummyLokiModelsTest(unittest.TestCase):
         document.import_data(data)
         document.validate()
 
-
-        self.assertEqual(document.serialize('create'), data)
         self.assertEqual(document.serialize('edit'),
                          {'format': data['format'],
                           'title': data['title'],
-                          'documentType': data['documentType']
+                          'documentType': data['documentType'],
+                          '__parent__': parent
                           })
-
-        document.url = data['url'] = u'http://localhost/get/docs?download={}'.format(document.id)
-        document.__parent__ = mock.MagicMock(**{
-            '__parent__': mock.MagicMock(**{
-                '__parent__': None,
-                'request.registry.use_docservice': False})})
-        document.validate()
 
         serialized_by_create = document.serialize('create')
         self.assertEqual(
@@ -820,9 +829,10 @@ class DummyLokiModelsTest(unittest.TestCase):
 
         with self.assertRaises(ModelValidationError) as ex:
             item.validate()
+
         self.assertEqual(
-            ex.exception.messages,
-            {'classification': {'scheme': [u"Value must be one of [u'CAV-PS', u'CPV']."]}}
+            str(ex.exception),
+            '{"classification": {"scheme": ["Value must be one of [u\'CAV-PS\', u\'CPV\']."], "id": ["Value must be one of []."]}}'
         )
 
         loki_item_data = deepcopy(test_loki_item_data)
@@ -909,21 +919,19 @@ class DummyLokiModelsTest(unittest.TestCase):
         }
 
         asset_custodian = AssetCustodian()
-        self.assertEqual(asset_custodian.serialize(), None)
+        self.assertEqual(asset_custodian.serialize(), {})
         with self.assertRaisesRegexp(ValueError, 'AssetCustodian Model has no role "test"'):
             asset_custodian.serialize('test')
 
-        asset_custodian.import_data(data)
-        with self.assertRaises(ModelValidationError) as ex:
-            asset_custodian.validate()
+        with self.assertRaises(DataError) as ex:
+            asset_custodian.import_data(data)
+
         self.assertEqual(
-            ex.exception.messages,
-            {'contactPoint': [u'This field is required.'],
-            'identifier': [u'This field is required.'],
-            'address': [u'This field is required.']
-             }
-        )
+            str(ex.exception), '{"contactPoint": ["This field is required."], "identifier": ["This field is required."], "address": ["This field is required."]}')
+
+
         data = {
+            'name': 'Name',
             'contactPoint': {'name': 'name'},
             'identifier': {'scheme': 'UA-EDR', 'id': '22222-2'},
             'address': {'countryName': 'country name'}
@@ -959,7 +967,7 @@ class DummyLokiModelsTest(unittest.TestCase):
         }
 
         asset_holder = AssetHolder()
-        self.assertEqual(asset_holder.serialize(), None)
+        self.assertEqual(asset_holder.serialize(), {})
         with self.assertRaisesRegexp(ValueError, 'AssetHolder Model has no role "test"'):
             asset_holder.serialize('test')
 
@@ -973,18 +981,14 @@ class DummyLokiModelsTest(unittest.TestCase):
             }
         )
 
-        asset_holder.import_data(data)
+        with self.assertRaises(DataError) as es:
+            asset_holder.import_data(data)
+        self.assertEqual(str(ex.exception), '{"identifier": ["This field is required."]}')
+
         with self.assertRaises(ModelValidationError) as ex:
             asset_holder.validate()
         self.assertEqual(
-            ex.exception.messages,
-            {
-                'identifier': {
-                    'scheme': [u'This field is required.'],
-                    'id': [u'This field is required.'],
-                }
-            }
-        )
+            str(ex.exception), '{"identifier": ["This field is required."]}')
         data.update({
             'identifier': {
                 'scheme': 'UA-EDR',
@@ -1032,9 +1036,7 @@ class AppSchemaModelsTest(unittest.TestCase):
             auth.validate()
 
         self.assertEqual(
-            ex.exception.messages,
-            {'type': [u'This field is required.']}
-        )
+            str(ex.exception), '{"src": ["This field is required."], "type": ["This field is required."]}')
 
     def test_Auth_valid_values(self):
         auth_data = deepcopy(test_config_data['config']['auth'])
@@ -1277,26 +1279,19 @@ class AppSchemaModelsTest(unittest.TestCase):
         ds.dockey = 'abc123'
         ds.dockeys = ['123']
 
-        with self.assertRaises(ValidationError) as ex:
+        with self.assertRaises(ValueError) as ex:
             ds.validate()
 
-        self.assertEqual(
-            ex.exception.messages,
-            {'dockey': ['Invalid seed bytes'],
-             'dockeys': [['Odd-length string']]}
-        )
+        self.assertEqual(ex.exception.message, 'Invalid seed bytes')
 
     def test_AuctionModule_empty(self):
         auction_module = AuctionModule()
 
-        with self.assertRaises(ModelValidationError) as ex:
+        with self.assertRaises(ValidationError) as ex:
             auction_module.validate()
 
         self.assertEqual(
-            ex.exception.messages,
-            {'url': [u'This field is required.'],
-             'public_key': [u'This field is required.']}
-        )
+            str(ex.exception), '["public_key: \\"This field is required.\\""]')
 
     def test_AuctionModule_valid_values(self):
         auction_module_data = deepcopy(test_config_data['config']['auction'])
@@ -1321,26 +1316,19 @@ class AppSchemaModelsTest(unittest.TestCase):
         auction_module = AuctionModule(auction_module_data)
         auction_module.public_key = 'abc123'
 
-        with self.assertRaises(ValidationError) as ex:
+        with self.assertRaises(ValueError) as ex:
             auction_module.validate()
-
-        self.assertEqual(
-            ex.exception.messages,
-            {'public_key': ['Invalid seed bytes']}
-        )
+        self.assertEqual(str(ex.exception), 'Invalid seed bytes')
 
     def test_AuctionModule_invalid_public_key_string_length(self):
         auction_module_data = deepcopy(test_config_data['config']['auction'])
         auction_module = AuctionModule(auction_module_data)
         auction_module.public_key = '123'
 
-        with self.assertRaises(ValidationError) as ex:
+        with self.assertRaises(TypeError) as ex:
             auction_module.validate()
 
-        self.assertEqual(
-            ex.exception.messages,
-            {'public_key': ['Odd-length string']}
-        )
+        self.assertEqual(str(ex.exception),'Odd-length string')
 
     def test_Config_empty(self):
         config = Config()

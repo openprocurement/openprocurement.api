@@ -77,7 +77,7 @@ class BaseDocument(Model):
     class Options:
         roles = document_roles
 
-    id = MD5Type(required=True, default=lambda: uuid4().hex)
+    id = MD5Type(default=lambda: uuid4().hex)
     hash = HashType()
     documentOf = StringType(choices=['asset', 'lot'])
     documentType = StringType(choices=DOCUMENT_TYPES)
@@ -99,19 +99,20 @@ class BaseDocument(Model):
     def download_url(self):
         return serialize_document_url(self)
 
-    def import_data(self, raw_data, **kw):
+    def _dict(self, mapping):
+        return dict((key, mapping[key]) for key in mapping)
+
+    def import_data(self, raw_data, recursive=False, **kwargs):
         """
-        Converts and imports the raw data into the instance of the model
-        according to the fields in the model.
+        Converts and imports the raw data into an existing model instance.
+
         :param raw_data:
             The data to be imported.
         """
-        data = self.convert(raw_data, **kw)
-        del_keys = [k for k in data.keys() if data[k] == getattr(self, k)]
-        for k in del_keys:
-            del data[k]
-
-        self._data.update(data)
+        data = self._convert(raw_data, trusted_data=self._dict(self), recursive=recursive, **kwargs)
+        self._data.converted.update(data)
+        if kwargs.get('validate'):
+            self.validate(convert=False)
         return self
 
 
@@ -127,7 +128,7 @@ class Identifier(BaseIdentifier):
 
 class BaseItem(Model):
     """A good, service, or work to be contracted."""
-    id = StringType(required=True, min_length=1, default=lambda: uuid4().hex)
+    id = StringType(min_length=1, default=lambda: uuid4().hex)
     description = StringType(required=True)  # A description of the goods, services to be provided.
     description_en = StringType()
     description_ru = StringType()
