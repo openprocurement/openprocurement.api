@@ -23,6 +23,7 @@ requires = [
     'setuptools',
     'tzlocal',
     'zope.component',
+    'isodate',
 ]
 test_requires = requires + [
     'webtest',

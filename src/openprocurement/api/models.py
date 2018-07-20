@@ -3,6 +3,7 @@ from datetime import datetime
 from decimal import Decimal, InvalidOperation, ROUND_HALF_UP
 from iso8601 import parse_date, ParseError
 from uuid import uuid4
+import isodate
 from urlparse import urlparse, parse_qs
 from string import hexdigits
 from hashlib import algorithms, new as hash_new
@@ -149,6 +150,26 @@ class IsoDateTimeType(BaseType):
 
     def to_primitive(self, value, context=None):
         return value.isoformat()
+
+
+class IsoDurationType(BaseType):
+    MESSAGES = {
+        'parse': u'Could not parse {0}. Should be ISO8601 Durations.',
+    }
+
+    def to_native(self, value, context=None):
+        if isinstance(value, datetime):
+            return value
+        try:
+            date = isodate.parse_duration(value)
+            return date
+        except ParseError:
+            raise ConversionError(self.messages['parse'].format(value))
+        except OverflowError as e:
+            raise ConversionError(e.message)
+
+    def to_primitive(self, value, context=None):
+        return isodate.duration_isoformat(value)
 
 
 class ListType(BaseListType):
