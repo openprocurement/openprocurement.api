@@ -1,0 +1,8 @@
+image: alpine
+before_script:
+  - eval `ssh-agent -s` && ssh-add
+  - ./bootstrap.sh
+  - bin/buildout -N
+tests:
+  script:
+    - bin/py.test openprocurement/frameworkagreement/cfaua/tests --cov=openprocurement.frameworkagreement.cfaua
