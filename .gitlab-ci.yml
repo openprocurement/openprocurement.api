@@ -1,8 +1,18 @@
 image: alpine
 before_script:
   - eval `ssh-agent -s` && ssh-add
-  - ./bootstrap.sh
+  - sh bootstrap.sh
   - bin/buildout -N
-tests:
+stages:
+  - test
+
+test_sanbox_true:
+  stage: test
   script:
-    - bin/py.test openprocurement/frameworkagreement/cfaua/tests --cov=openprocurement.frameworkagreement.cfaua
+    - SANDBOX_MODE=True
+    - bin/py.test ./src/openprocurement/api/tests/ --cov=openprocurement.a
+test_sanbox_not_true:
+  stage: test
+  script:
+    - SANDBOX_MODE=
+    - bin/py.test ./src/openprocurement/api/tests/ --cov=openprocurement.a
