@@ -8,11 +8,18 @@ stages:
 
 test_sanbox_true:
   stage: test
+#  varibles:
+#    SANDBOX_MODE: 'True'
   script:
-    - SANDBOX_MODE=True
-    - bin/py.test ./src/openprocurement/api/tests/ --cov=openprocurement.a
+    - echo $SANDBOX_MODE
+    - bin/py.test ./src/openprocurement/api/tests/ --cov=openprocurement.api
+
+
 test_sanbox_not_true:
   stage: test
+#  varibles:
+#    SANDBOX_MODE: ''
+
   script:
-    - SANDBOX_MODE=
-    - bin/py.test ./src/openprocurement/api/tests/ --cov=openprocurement.a
+    - echo $SANDBOX_MODE
+    - bin/py.test ./src/openprocurement/api/tests/ --cov=openprocurement.api
