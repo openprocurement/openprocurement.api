@@ -616,7 +616,8 @@ class DummyLokiModelsTest(unittest.TestCase):
         }
 
         decision = Decision()
-        self.assertEqual(decision.serialize(), None)
+        self.assertIn('id', decision.serialize())
+        self.assertEqual(len(decision.serialize().keys()), 1)
         with self.assertRaisesRegexp(ValueError, 'Decision Model has no role "test"'):
             decision.serialize('test')
 
