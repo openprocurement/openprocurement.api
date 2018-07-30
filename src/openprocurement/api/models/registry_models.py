@@ -1,3 +1,5 @@
+from uuid import uuid4
+
 from schematics.exceptions import ValidationError
 from schematics.types import StringType, BaseType, IntType, URLType
 from schematics.types.compound import ModelType, ListType
@@ -70,6 +72,7 @@ LokiItem.__name__ = 'Item'
 
 
 class Decision(Model):
+    id = StringType(required=True, min_length=1, default=lambda: uuid4().hex)
     title = StringType()
     title_ru = StringType()
     title_en = StringType()

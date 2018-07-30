@@ -14,6 +14,7 @@ from openprocurement.api.utils import (
     set_first_document_fields,
     update_document_url,
     update_logging_context,
+    get_now
 )
 from openprocurement.api.constants import (
     TEST_ACCREDITATION,
@@ -217,3 +218,33 @@ def validate_t_accreditation(request, data, resource_type='resource'):
         )
         request.errors.status = 403
         raise error_handler(request)
+
+
+# Decision validation
+def validate_decision_post(request, error_handler, **kwargs):
+    update_logging_context(request, {'decision_id': '__new__'})
+    context = request.context if 'decisions' in request.context else request.context.__parent__
+    model = type(context).decisions.model_class
+    validate_data(request, model, "decision")
+
+
+def validate_decision_patch_data(request, error_handler, **kwargs):
+    update_logging_context(request, {'decision_id': '__new__'})
+    context = request.context if 'decisions' in request.context else request.context.__parent__
+    model = type(context).decisions.model_class
+    validate_data(request, model)
+
+
+def validate_decision_after_rectificationPeriod(request, error_handler, parent_resource, **kwargs):
+    if bool(request.validated[parent_resource].rectificationPeriod and
+            request.validated[parent_resource].rectificationPeriod.endDate < get_now()):
+        request.errors.add('body', 'mode', 'You can\'t change or add decisions after rectification period')
+        request.errors.status = 403
+        raise error_handler(request)
+
+
+def validate_decision_update_in_not_allowed_status(request, error_handler, parent_resource, **kwargs):
+    status = request.validated['{}_status'.format(parent_resource)]
+    if status not in request.content_configurator.decision_editing_allowed_statuses:
+        raise_operation_error(request, error_handler,
+                              'Can\'t update decisions in current ({}) {} status'.format(status, parent_resource))
