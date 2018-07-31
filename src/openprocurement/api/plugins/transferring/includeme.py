@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from logging import getLogger
 
-from openprocurement.api.app import get_evenly_plugins
+from openprocurement.api.utils  import get_evenly_plugins
 from openprocurement.api.plugins.transferring.utils import (
     transfer_from_data,
     extract_transfer,

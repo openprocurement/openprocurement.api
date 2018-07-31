@@ -18,6 +18,7 @@ from time import time as ttime
 from urllib import quote, unquote, urlencode
 from urlparse import urlparse, urlunsplit, parse_qsl, parse_qs
 from uuid import uuid4
+from pkg_resources import iter_entry_points
 
 import collections
 
@@ -84,6 +85,42 @@ def get_file_path(here, src):
     if not path.is_absolute():
         path = path.joinpath(here, path)
     return path.as_posix()
+
+
+def get_evenly_plugins(config, plugin_map, group):
+    """
+    Load plugin which fall into the group
+    :param config: app config
+    :param plugin_map: mapping of plugins names
+    :param group: group of entry point
+
+    :type config: Configurator
+    :type plugin_map: abs.Mapping
+    :type group: string
+
+    :rtype: None
+    """
+
+    if not plugin_map:
+        plugin_map = [None]
+
+    for name in plugin_map:
+        for entry_point in iter_entry_points(group, name):
+            plugin = entry_point.load()
+            if name:
+                value = plugin_map.get(name) if plugin_map.get(name) else {}
+                plugin(config, collections.defaultdict(lambda: None, value))
+            else:
+                plugin(config)
+
+
+def get_plugins(plugins_map):
+    plugins = []
+    for item in plugins_map:
+        plugins.append(item)
+        if isinstance(plugins_map[item], collections.Mapping) and plugins_map[item].get('plugins'):
+            plugins.extend(get_plugins(plugins_map[item]['plugins']))
+    return plugins
 
 
 def validate_dkpp(items, *args):

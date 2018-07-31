@@ -17,7 +17,6 @@ from pyramid.settings import asbool
 from pyramid.config import Configurator
 from libnacl.sign import Signer, Verifier
 from pyramid.renderers import JSON, JSONP
-from pkg_resources import iter_entry_points
 from pyramid.authorization import ACLAuthorizationPolicy as AuthorizationPolicy
 
 from openprocurement.api.utils import (
@@ -27,6 +26,8 @@ from openprocurement.api.utils import (
     route_prefix,
     json_body,
     read_yaml,
+    get_evenly_plugins,
+    get_plugins,
 )
 
 from openprocurement.api.database import set_api_security
@@ -115,30 +116,6 @@ def _config_init(global_config, settings):
     config.add_renderer('jsonp', JSONP(param_name='opt_jsonp', serializer=simplejson.dumps))
     config.add_renderer('prettyjsonp', JSONP(indent=4, param_name='opt_jsonp', serializer=simplejson.dumps))
     return config
-
-
-def get_evenly_plugins(config, plugin_map, group):
-    """
-    Load plugin which fall into the group
-
-    :param config: app config
-    :param plugin_map: mapping of plugins names
-    :param group: group of entry point
-
-    :type config: Configurator
-    :type plugin_map: abs.Mapping
-    :type group: string
-
-    :rtype: None
-    """
-
-    if not hasattr(plugin_map, '__iter__'):
-        return
-    for name in plugin_map:
-        for entry_point in iter_entry_points(group, name):
-            plugin = entry_point.load()
-            value = plugin_map.get(name) if plugin_map.get(name) else {}
-            plugin(config, dd(lambda: None, value))
 
 
 def _set_up_configurator(config, plugins):
