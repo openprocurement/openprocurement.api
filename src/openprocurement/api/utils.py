@@ -101,17 +101,13 @@ def get_evenly_plugins(config, plugin_map, group):
     :rtype: None
     """
 
-    if not plugin_map:
-        plugin_map = [None]
-
+    if not hasattr(plugin_map, '__iter__'):
+        return
     for name in plugin_map:
         for entry_point in iter_entry_points(group, name):
             plugin = entry_point.load()
-            if name:
-                value = plugin_map.get(name) if plugin_map.get(name) else {}
-                plugin(config, collections.defaultdict(lambda: None, value))
-            else:
-                plugin(config)
+            value = plugin_map.get(name) if plugin_map.get(name) else {}
+            plugin(config, collections.defaultdict(lambda: None, value))
 
 
 def get_plugins(plugins_map):
