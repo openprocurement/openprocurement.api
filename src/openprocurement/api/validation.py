@@ -152,6 +152,10 @@ def validate_items_uniq(items):
     validate_uniq(items, 'id', u"Item id should be uniq for all items")
 
 
+def validate_decision_uniq(decisions):
+    validate_uniq(decisions, 'id', u"Decision id should be unique for all decisions")
+
+
 def validate_cpv_group(items, *args):
     if items and len(set([i.classification.id[:3] for i in items])) != 1:
         raise ValidationError(u"CPV group of items be identical")
