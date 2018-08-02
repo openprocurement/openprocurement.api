@@ -154,12 +154,16 @@ class BasicValue(Model):
 
 
 class Classification(Model):
+    id_validators = ()
     scheme = StringType(required=True)  # The classification scheme for the goods
     id = StringType(required=True)  # The classification ID from the Scheme used
     description = StringType(required=True)  # A description of the goods, services to be provided.
     description_en = StringType()
     description_ru = StringType()
     uri = URLType()
+
+    def validate_id(self, data, code):
+        return [validator(data, code) for validator in self.id_validators]
 
 
 class UAEDRAndMFOClassification(Classification):

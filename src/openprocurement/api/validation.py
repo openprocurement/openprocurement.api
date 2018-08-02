@@ -252,3 +252,23 @@ def validate_decision_update_in_not_allowed_status(request, error_handler, paren
     if status not in request.content_configurator.decision_editing_allowed_statuses:
         raise_operation_error(request, error_handler,
                               'Can\'t update decisions in current ({}) {} status'.format(status, parent_resource))
+
+
+
+def koatuu_validator(data, code):
+    if data.get('scheme') != 'koatuu':
+        return True
+    len_code = len(code)
+
+    if len_code != 10 and len_code != 9:
+        raise ValidationError('Invalid code')
+
+    if len_code == 9 and code[0] != '0':
+        raise ValidationError('Invalid code')
+
+    first_two_int = ('01', '05', '07', '12', '14', '18', '21', '23', '26', '32',
+                     '35', '44', '46', '48', '51', '53', '56', '59', '61', '63',
+                     '65', '68', '71', '73', '74', '80', '85')
+    if not code[:2] in first_two_int:
+        raise ValidationError('Invalid code')
+    return True
