@@ -229,36 +229,6 @@ class ValidateDocumentDataTest(unittest.TestCase):
         self.assertIs(self.mocked_request.validated['document'], self.document_mock_with_updated_url)
 
 
-class ValidateAccreditationsTest(unittest.TestCase):
-
-    def test_ok(self):
-        request = Mock()
-        model = Mock()
-
-        model.create_accreditation = '3'
-        request.check_accreditation.return_value = True
-
-        validate_accreditations(request, model)
-
-        assert request.check_accreditation.call_count == 1
-
-    @patch('openprocurement.api.validation.error_handler')
-    def test_raises_exception(self, handler):
-        request = Mock()
-        model = Mock()
-        handler.side_effect = DummyException
-
-        model.create_accreditation = '5'
-
-        request.check_accreditation.return_value = False
-
-        with self.assertRaises(DummyException):
-            validate_accreditations(request, model)
-
-        assert request.check_accreditation.call_count == 1
-        assert request.errors.status == 403
-
-
 class ValidateTAccreditationTest(unittest.TestCase):
 
     def test_user_without_t_accreditation(self):
@@ -275,8 +245,8 @@ class ValidateTAccreditationTest(unittest.TestCase):
 
     @patch('openprocurement.api.validation.error_handler')
     def test_user_with_t_tries_create_non_test_item(self, handler):
-        request = Mock()
-        data = Mock()
+        request = MagicMock()
+        data = MagicMock()
         handler.side_effect = DummyException
 
         data.get.return_value = None
@@ -287,7 +257,6 @@ class ValidateTAccreditationTest(unittest.TestCase):
             validate_t_accreditation(request, data)
 
         assert request.check_accreditation.call_count == 1
-        assert request.errors.status == 403
 
 
 from openprocurement.api.models.common import Classification

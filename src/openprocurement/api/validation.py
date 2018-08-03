@@ -1,10 +1,10 @@
 # -*- coding: utf-8 -*-
 from schematics.exceptions import (
-    ModelValidationError, ModelConversionError, ValidationError
+    ModelValidationError,
+    ModelConversionError,
+    ValidationError
 )
 from jsonpatch import JsonPointerException
-
-
 from schematics.types import (
     BaseType,
 )
@@ -20,7 +20,8 @@ from openprocurement.api.utils import (
     set_first_document_fields,
     update_document_url,
     update_logging_context,
-    get_now
+    get_now,
+    get_resource_accreditations
 )
 from openprocurement.api.constants import (
     TEST_ACCREDITATION,
@@ -200,10 +201,8 @@ def validate_change_status(request, error_handler, **kwargs):
 
 
 def validate_accreditations(request, model, resource_type='resource'):
-    if not any([
-        request.check_accreditation(acc) for acc in
-        iter(str(model.create_accreditation))
-    ]):
+    accreditations = get_resource_accreditations(request, resource_type, context=model)
+    if not any([request.check_accreditation(str(acc)) for acc in accreditations['create']]):
         request.errors.add(
             'body',
             'accreditation',
