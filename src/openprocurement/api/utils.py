@@ -1188,3 +1188,10 @@ def get_access_token_from_request(request):
             else:
                 token = isinstance(json, dict) and json.get('access', {}).get('token')
     return token
+
+
+def get_resource_accreditations(request, resource_type, context=None):
+    if context:
+        return request.registry.accreditations[resource_type][context._internal_type]
+    else:
+        return request.registry.accreditations[resource_type][request.context._internal_type]
