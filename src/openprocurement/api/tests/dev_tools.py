@@ -82,10 +82,8 @@ class IsoDurationTypeTest(BaseWebTest):
         res_to_primitive = type_duration.to_primitive(duration_period)
         self.assertEqual(res_to_primitive, period_str)
         # Parse with errors
-        with self.assertRaises(Exception) as context:
-            result = type_duration.to_native(duration_period)
-        self.assertEqual(context.exception.message,
-                         'expected string or buffer')
+        result = type_duration.to_native(duration_period)
+        self.assertEqual(result, duration_period)
         with self.assertRaises(Exception) as context:
             result = type_duration.to_native('Ptest')
         self.assertEqual(context.exception.message,
