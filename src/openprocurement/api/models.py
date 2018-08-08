@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+import re
 from datetime import datetime
 from decimal import Decimal, InvalidOperation, ROUND_HALF_UP
 from iso8601 import parse_date, ParseError
@@ -7,6 +8,7 @@ from urlparse import urlparse, parse_qs
 from string import hexdigits
 from hashlib import algorithms, new as hash_new
 from couchdb_schematics.document import SchematicsDocument
+from openprocurement.api.relativedelta import relativedelta
 from schematics.exceptions import ConversionError, ValidationError
 from schematics.models import Model as SchematicsModel
 from schematics.models import ModelMeta
@@ -149,6 +151,38 @@ class IsoDateTimeType(BaseType):
 
     def to_primitive(self, value, context=None):
         return value.isoformat()
+
+
+class IsoDurationType(BaseType):
+    ''' Iso Duration format
+           P is the duration designator (referred to as "period"), and is always placed at the beginning of the duration.
+           Y is the year designator that follows the value for the number of years.
+           M is the month designator that follows the value for the number of months.
+           W is the week designator that follows the value for the number of weeks.
+           D is the day designator that follows the value for the number of days.
+           T is the time designator that precedes the time components.
+           H is the hour designator that follows the value for the number of hours.
+           M is the minute designator that follows the value for the number of minutes.
+           S is the second designator that follows the value for the number of seconds.
+           examples:  'P5000Y72M8W10DT55H3000M5S'
+    '''
+
+    MESSAGES = {
+        'parse': u'Could not parse {0}. Should be ISO8601 Durations.',
+    }
+
+    def to_native(self, value, context=None):
+        if isinstance(value, datetime):
+            return value
+        try:
+            return relativedelta(raw_data=value)
+        except ParseError:
+            raise ConversionError(self.messages['parse'].format(value))
+        except OverflowError as e:
+            raise ConversionError(e.message)
+
+    def to_primitive(self, value, context=None):
+        return str(value)
 
 
 class ListType(BaseListType):
