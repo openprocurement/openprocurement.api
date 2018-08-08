@@ -172,7 +172,7 @@ class IsoDurationType(BaseType):
     }
 
     def to_native(self, value, context=None):
-        if isinstance(value, datetime):
+        if isinstance(value, relativedelta):
             return value
         try:
             return relativedelta(raw_data=value)
