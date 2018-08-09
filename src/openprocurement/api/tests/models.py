@@ -1411,7 +1411,7 @@ class PeriodModelTest(unittest.TestCase):
     def test_period_contains(self):
         assert self.middle in self.period
 
-    def test_perion_not_contains(self):
+    def test_period_not_contains(self):
         assert self.out_of_period not in self.period
 
 
