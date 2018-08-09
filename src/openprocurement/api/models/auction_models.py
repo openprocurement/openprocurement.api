@@ -181,7 +181,7 @@ class Unit(BaseUnit):
 
 
 class Document(Model):
-    documentType_choices = [
+    documentType_choices = (
         'awardNotice',
         'bidders',
         'biddingDocuments',
@@ -211,7 +211,7 @@ class Document(Model):
         'technicalSpecifications',
         'tenderNotice',
         'winningBid',
-    ]
+    )
 
     class Options:
         roles = {
