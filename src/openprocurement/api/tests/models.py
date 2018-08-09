@@ -1397,6 +1397,24 @@ class AppSchemaModelsTest(unittest.TestCase):
         self.assertEqual(app_meta.serialize()['here'], os.getcwd())
 
 
+class PeriodModelTest(unittest.TestCase):
+
+    def setUp(self):
+        self.period = Period()
+        self.period.startDate = datetime.now()
+        self.period.endDate = self.period.startDate + timedelta(days=2)
+        self.period.validate()
+
+        self.middle = self.period.startDate + timedelta(days=1)
+        self.out_of_period = self.period.endDate + timedelta(days=1)
+
+    def test_period_contains(self):
+        assert self.middle in self.period
+
+    def test_perion_not_contains(self):
+        assert self.out_of_period not in self.period
+
+
 def suite():
     tests = unittest.TestSuite()
     tests.addTest(unittest.makeSuite(DummyOCDSModelsTest))

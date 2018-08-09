@@ -93,6 +93,9 @@ class Period(Model):
         if value and data.get('endDate') and data.get('endDate') < value:
             raise ValidationError(u"period should begin before its end")
 
+    def __contains__(self, date):
+        return (date >= self.startDate) and (date <= self.endDate)
+
 
 class PeriodEndRequired(Period):
     endDate = IsoDateTimeType(required=True)  # The end date for the period.
