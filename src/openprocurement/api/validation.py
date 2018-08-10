@@ -201,7 +201,7 @@ def validate_change_status(request, error_handler, **kwargs):
 
 
 def validate_accreditations(request, model, resource_type='resource'):
-    accreditations = get_resource_accreditations(request, resource_type, context=model)
+    accreditations = get_resource_accreditations(request, resource_type, model)
     if not any([request.check_accreditation(str(acc)) for acc in accreditations['create']]):
         request.errors.add(
             'body',

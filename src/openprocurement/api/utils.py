@@ -298,7 +298,7 @@ def upload_file(
                     auth=(request.registry.docservice_username, request.registry.docservice_password)
                 )
                 json_data = r.json()
-            except Exception, e:
+            except Exceptiona as e:
                 LOGGER.warning(
                     "Raised exception '{}' on uploading document to document service': {}.".format(type(e), e),
                     extra=context_unpack(
@@ -1190,8 +1190,5 @@ def get_access_token_from_request(request):
     return token
 
 
-def get_resource_accreditations(request, resource_type, context=None):
-    if context:
+def get_resource_accreditations(request, resource_type, context):
         return request.registry.accreditations[resource_type][context._internal_type]
-    else:
-        return request.registry.accreditations[resource_type][request.context._internal_type]
