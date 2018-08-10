@@ -4,10 +4,16 @@ from schematics.exceptions import (
 )
 from jsonpatch import JsonPointerException
 
+
+from schematics.types import (
+    BaseType,
+)
 from openprocurement.api.utils import (
     apply_data_patch,
     check_document,
     error_handler,
+    get_schematics_document,
+    get_document_creation_date,
     get_first_document,
     get_type,
     raise_operation_error,
@@ -18,6 +24,11 @@ from openprocurement.api.utils import (
 )
 from openprocurement.api.constants import (
     TEST_ACCREDITATION,
+    ATC_CODES,
+    ATC_INN_CLASSIFICATIONS_FROM,
+    CPV_CODES,
+    DK_CODES,
+    INN_CODES
 )
 
 OPERATIONS = {"POST": "add", "PATCH": "update", "PUT": "update", "DELETE": "delete"}
@@ -26,7 +37,7 @@ OPERATIONS = {"POST": "add", "PATCH": "update", "PUT": "update", "DELETE": "dele
 def _get_json_from_request(request):
     try:
         json = request.json_body
-    except ValueError, e:
+    except ValueError as e:
         request.errors.add('body', 'data', e.message)
         request.errors.status = 422
         raise error_handler(request)
@@ -83,16 +94,16 @@ def validate_data(request, model, container=False, data=None):
         data = validate_json_data(request)
     try:
         return _validate_data(request, model, container, data)
-    except (ModelValidationError, ModelConversionError), e:
+    except (ModelValidationError, ModelConversionError) as e:
         for i in e.message:
             request.errors.add('body', i, e.message[i])
         request.errors.status = 422
         raise error_handler(request)
-    except ValueError, e:
+    except ValueError as e:
         request.errors.add('body', 'data', e.message)
         request.errors.status = 422
         raise error_handler(request)
-    except JsonPointerException, e:
+    except JsonPointerException as e:
         request.errors.add('body', 'data', e.message)
         request.errors.status = 422
         raise error_handler(request)
@@ -259,12 +270,33 @@ def koatuu_validator(data, code):
         return True
     len_code = len(code)
 
-    if (len_code >= 9) and (len_code <= 10):
+    if not (len_code >= 9) and (len_code <= 10):
         raise ValidationError('Wrong length of code')
 
+    if len_code == 9 and code.startswith('0'):
+        raise ValidationError('Invalid code')
+
     code_start = ('01', '05', '07', '12', '14', '18', '21', '23', '26', '32',
-                     '35', '44', '46', '48', '51', '53', '56', '59', '61', '63',
-                     '65', '68', '71', '73', '74', '80', '85')
+                  '35', '44', '46', '48', '51', '53', '56', '59', '61', '63',
+                  '65', '68', '71', '73', '74', '80', '85')
     if not code.startswith(code_start):
         raise ValidationError('Invalid code')
     return True
+
+
+def cpv_validator(data, code):
+    if data.get('scheme') == u'CPV' and code not in CPV_CODES:
+        raise ValidationError(BaseType.MESSAGES['choices'].format(unicode(CPV_CODES)))
+    elif data.get('scheme') == u'ДК021' and code not in DK_CODES:
+        raise ValidationError(BaseType.MESSAGES['choices'].format(unicode(DK_CODES)))
+
+
+def atc_inn_validator(self, data, code):
+    schematics_document = get_schematics_document(data['__parent__'])
+    if (
+        get_document_creation_date(schematics_document) > ATC_INN_CLASSIFICATIONS_FROM
+    ):
+        if data.get('scheme') == u'ATC' and code not in ATC_CODES:
+            raise ValidationError(BaseType.MESSAGES['choices'].format(unicode(ATC_CODES)))
+        elif data.get('scheme') == u'INN' and code not in INN_CODES:
+            raise ValidationError(BaseType.MESSAGES['choices'].format(unicode(INN_CODES)))

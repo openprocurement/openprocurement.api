@@ -50,7 +50,11 @@ from openprocurement.api.utils import (
     get_schematics_document,
     serialize_document_url,
 )
-from openprocurement.api.validation import validate_uniq
+from openprocurement.api.validation import (
+    validate_uniq,
+    cpv_validator,
+    atc_inn_validator
+)
 
 schematics_default_role = SchematicsDocument.Options.roles['default'] + blacklist("__parent__")
 schematics_embedded_role = SchematicsDocument.Options.roles['embedded'] + blacklist("__parent__")
@@ -139,16 +143,9 @@ class ComplaintModelType(ModelType):
         elif print_none:
             return shaped
 
-
 class CPVClassification(Classification):
     scheme = StringType(required=True, default=u'CPV', choices=[u'CPV', u'ДК021'])
-    id = StringType(required=True)
-
-    def validate_id(self, data, code):
-        if data.get('scheme') == u'CPV' and code not in CPV_CODES:
-            raise ValidationError(BaseType.MESSAGES['choices'].format(unicode(CPV_CODES)))
-        elif data.get('scheme') == u'ДК021' and code not in DK_CODES:
-            raise ValidationError(BaseType.MESSAGES['choices'].format(unicode(DK_CODES)))
+    _id_field_validators = Classification._id_field_validators + (cpv_validator,)
 
     def validate_scheme(self, data, scheme):
         schematics_document = get_schematics_document(data['__parent__'])
@@ -161,15 +158,7 @@ class CPVClassification(Classification):
 
 class AdditionalClassification(Classification):
 
-    def validate_id(self, data, code):
-        schematics_document = get_schematics_document(data['__parent__'])
-        if (
-            get_document_creation_date(schematics_document) > ATC_INN_CLASSIFICATIONS_FROM
-        ):
-            if data.get('scheme') == u'ATC' and code not in ATC_CODES:
-                raise ValidationError(BaseType.MESSAGES['choices'].format(unicode(ATC_CODES)))
-            elif data.get('scheme') == u'INN' and code not in INN_CODES:
-                raise ValidationError(BaseType.MESSAGES['choices'].format(unicode(INN_CODES)))
+    _id_field_validators = Classification._id_field_validators + (atc_inn_validator,)
 
 
 class Unit(BaseUnit):

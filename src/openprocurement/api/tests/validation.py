@@ -290,11 +290,44 @@ class ValidateTAccreditationTest(unittest.TestCase):
         assert request.errors.status == 403
 
 
+from openprocurement.api.models.common import Classification
+from copy import deepcopy
+
+
+class TestClassification(Classification):
+    pass
+
+class ValidateClassification(unittest.TestCase):
+
+    def test_add_validators_to_id_field(self):
+        mock_validator_1 = MagicMock()
+        mock_validator_2 = MagicMock()
+        mock_validator_same_as_2 = mock_validator_2
+        TestClassification._id_field_validators = Classification._id_field_validators + (mock_validator_1,
+                                                                                         mock_validator_2,
+                                                                                         mock_validator_same_as_2)
+        simple_classificator = {"id": u"test_id",
+                                "scheme": u"test_scheme",
+                                "description": u"test_description",
+                                "uri": u"http://test-code.com",
+                                "description_ru": u"test",
+                                "description_en": u"test"}
+
+        classificator = TestClassification(simple_classificator)
+        classificator.validate()
+        self.assertEqual(mock_validator_1.call_count, 1)
+        self.assertEqual(mock_validator_2.call_count, 1)
+
+
+
+
+
 def suite():
     suite = unittest.TestSuite()
     suite.addTest(unittest.makeSuite(ValidateDocumentDataTest))
     suite.addTest(unittest.makeSuite(ValidateAccreditationsTest))
     suite.addTest(unittest.makeSuite(ValidateTAccreditationTest))
+    suite.addTest(unittest.makeSuite(ValidateClassification))
     return suite
 
 
