@@ -26,7 +26,7 @@ OPERATIONS = {"POST": "add", "PATCH": "update", "PUT": "update", "DELETE": "dele
 def _get_json_from_request(request):
     try:
         json = request.json_body
-    except ValueError, e:
+    except ValueError as e:
         request.errors.add('body', 'data', e.message)
         request.errors.status = 422
         raise error_handler(request)
@@ -83,16 +83,16 @@ def validate_data(request, model, container=False, data=None):
         data = validate_json_data(request)
     try:
         return _validate_data(request, model, container, data)
-    except (ModelValidationError, ModelConversionError), e:
+    except (ModelValidationError, ModelConversionError) as e:
         for i in e.message:
             request.errors.add('body', i, e.message[i])
         request.errors.status = 422
         raise error_handler(request)
-    except ValueError, e:
+    except ValueError as e:
         request.errors.add('body', 'data', e.message)
         request.errors.status = 422
         raise error_handler(request)
-    except JsonPointerException, e:
+    except JsonPointerException as e:
         request.errors.add('body', 'data', e.message)
         request.errors.status = 422
         raise error_handler(request)
@@ -189,7 +189,7 @@ def validate_change_status(request, error_handler, **kwargs):
 
 
 def validate_accreditations(request, model, resource_type='resource'):
-    accreditations = get_resource_accreditations(request, resource_type, context=model)
+    accreditations = get_resource_accreditations(request, resource_type, model)
     if not any([request.check_accreditation(str(acc)) for acc in accreditations['create']]):
         request.errors.add(
             'body',
