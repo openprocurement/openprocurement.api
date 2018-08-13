@@ -21,7 +21,7 @@ class Root(object):
 
 
 def generate_plural_name(name):
-    if name[-1] == 's':
+    if name.endswith('s'):
         plural_name = '{}es'.format(name)
     else:
         plural_name = '{}s'.format(name)
