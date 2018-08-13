@@ -288,7 +288,10 @@ class Model(SchematicsModel):
         return super(Model, self).__getattribute__(name)
 
     def __getitem__(self, name):
-        return getattr(self, name)
+        try:
+            return getattr(self, name)
+        except AttributeError as e:
+            raise KeyError(e.message)
 
     def __eq__(self, other):
         if isinstance(other, self.__class__):
