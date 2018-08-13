@@ -268,18 +268,11 @@ def validate_decision_update_in_not_allowed_status(request, error_handler, paren
 def koatuu_validator(data, code):
     if data.get('scheme') != 'koatuu':
         return True
-    len_code = len(code)
-
-    if not (len_code >= 9) and (len_code <= 10):
-        raise ValidationError('Wrong length of code')
-
-    if len_code == 9 and code.startswith('0'):
-        raise ValidationError('Invalid code')
 
     code_start = ('01', '05', '07', '12', '14', '18', '21', '23', '26', '32',
                   '35', '44', '46', '48', '51', '53', '56', '59', '61', '63',
                   '65', '68', '71', '73', '74', '80', '85')
-    if not code.startswith(code_start):
+    if len(code) != 10 or not code.startswith(code_start):
         raise ValidationError('Invalid code')
     return True
 
