@@ -157,12 +157,22 @@ class BasicValue(Model):
 
 
 class Classification(Model):
+    _id_field_validators = () # tuple of validators for field 'id'
     scheme = StringType(required=True)  # The classification scheme for the goods
     id = StringType(required=True)  # The classification ID from the Scheme used
     description = StringType(required=True)  # A description of the goods, services to be provided.
     description_en = StringType()
     description_ru = StringType()
     uri = URLType()
+
+    def validate_id(self, data, code):
+        """
+        Calls all validators that have been added to the attribute '_id_field_validators'
+        """
+
+        validators = set(self._id_field_validators)
+        for validator in validators:
+            validator(data, code)
 
 
 class UAEDRAndMFOClassification(Classification):
