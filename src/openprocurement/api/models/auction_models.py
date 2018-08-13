@@ -170,6 +170,38 @@ class Unit(BaseUnit):
 
 
 class Document(Model):
+    documentType_choices = (
+        'awardNotice',
+        'bidders',
+        'biddingDocuments',
+        'billOfQuantity',
+        'clarifications',
+        'commercialProposal',
+        'complaints',
+        'conflictOfInterest',
+        'contractAnnexe',
+        'contractArrangements',
+        'contractGuarantees',
+        'contractNotice',
+        'contractProforma',
+        'contractSchedule',
+        'contractSigned',
+        'debarments',
+        'eligibilityCriteria',
+        'eligibilityDocuments',
+        'evaluationCriteria',
+        'evaluationReports',
+        'notice',
+        'qualificationDocuments',
+        'registerExtract',
+        'riskProvisions',
+        'shortlistedFirms',
+        'subContract',
+        'technicalSpecifications',
+        'tenderNotice',
+        'winningBid',
+    )
+
     class Options:
         roles = {
             'create': blacklist('id', 'datePublished', 'dateModified', 'author', 'download_url'),
@@ -182,17 +214,7 @@ class Document(Model):
 
     id = MD5Type(required=True, default=lambda: uuid4().hex)
     hash = HashType()
-    documentType = StringType(choices=[
-        'tenderNotice', 'awardNotice', 'contractNotice',
-        'notice', 'biddingDocuments', 'technicalSpecifications',
-        'evaluationCriteria', 'clarifications', 'shortlistedFirms',
-        'riskProvisions', 'billOfQuantity', 'bidders', 'conflictOfInterest',
-        'debarments', 'evaluationReports', 'winningBid', 'complaints',
-        'contractSigned', 'contractArrangements', 'contractSchedule',
-        'contractAnnexe', 'contractGuarantees', 'subContract',
-        'eligibilityCriteria', 'contractProforma', 'commercialProposal',
-        'qualificationDocuments', 'eligibilityDocuments', 'registerExtract',
-    ])
+    documentType = StringType(choices=documentType_choices)
     title = StringType(required=True)  # A title of the document.
     title_en = StringType()
     title_ru = StringType()
