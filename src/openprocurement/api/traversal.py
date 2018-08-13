@@ -20,9 +20,18 @@ class Root(object):
         self.db = request.registry.db
 
 
+def generate_plural_name(name):
+    if name.endswith('s'):
+        plural_name = '{}es'.format(name)
+    else:
+        plural_name = '{}s'.format(name)
+    return plural_name
+
+
 def get_item(parent, key, request):
     request.validated['{}_id'.format(key)] = request.matchdict['{}_id'.format(key)]
-    items = [i for i in getattr(parent, '{}s'.format(key), []) if i.id == request.matchdict['{}_id'.format(key)]]
+    field_name = generate_plural_name(key)
+    items = [i for i in getattr(parent, field_name, []) if i.id == request.matchdict['{}_id'.format(key)]]
     if not items:
         from openprocurement.api.utils import error_handler
         request.errors.add('url', '{}_id'.format(key), 'Not Found')
