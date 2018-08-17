@@ -41,7 +41,6 @@ class HealthTestBase(BaseWebTest):
         couchdb_server.tasks = MagicMock(return_value=self.return_value)
         self.app.app.registry.couchdb_server = couchdb_server
         self.db_name = self.db.name
-        self.app.authorization = ('Basic', ('token', ''))
 
     def test_health_view(self):
         response = self.app.get('/health', status=503)

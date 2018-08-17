@@ -172,7 +172,7 @@ class BaseWebTest(unittest.TestCase):
         if hasattr(self, 'initial_auth') and self.initial_auth is not None:
             self.app.authorization = self.initial_auth
         else:
-            self.app.authorization = ('Basic', ('token', ''))
+            self.app.authorization = ('Basic', ('broker', ''))
 
     def tearDown(self):
         self.couchdb_server.delete(self.db_name)
