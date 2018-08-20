@@ -21,7 +21,7 @@ from openprocurement.api.utils import (
     update_document_url,
     update_logging_context,
     get_now,
-    get_resource_accreditations
+    get_resource_accreditation
 )
 from openprocurement.api.constants import (
     TEST_ACCREDITATION,
@@ -201,8 +201,8 @@ def validate_change_status(request, error_handler, **kwargs):
 
 
 def validate_accreditations(request, model, resource_type='resource'):
-    accreditations = get_resource_accreditations(request, resource_type, model)
-    if not any([request.check_accreditation(str(acc)) for acc in accreditations['create']]):
+    accreditation = get_resource_accreditation(request, resource_type, model, 'create')
+    if not any([request.check_accreditation(str(acc)) for acc in accreditation]):
         request.errors.add(
             'body',
             'accreditation',
