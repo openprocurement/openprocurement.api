@@ -298,7 +298,7 @@ def upload_file(
                     auth=(request.registry.docservice_username, request.registry.docservice_password)
                 )
                 json_data = r.json()
-            except Exception, e:
+            except Exception as e:
                 LOGGER.warning(
                     "Raised exception '{}' on uploading document to document service': {}.".format(type(e), e),
                     extra=context_unpack(
@@ -522,7 +522,7 @@ def request_params(request):
         request.errors.add('body', 'data', 'could not decode params')
         request.errors.status = 422
         raise error_handler(request, False)
-    except Exception, e:
+    except Exception as e:
         request.errors.add('body', str(e.__class__.__name__), str(e))
         request.errors.status = 422
         raise error_handler(request, False)
@@ -1188,3 +1188,11 @@ def get_access_token_from_request(request):
             else:
                 token = isinstance(json, dict) and json.get('access', {}).get('token')
     return token
+
+
+def get_resource_accreditation(request, resource_type, context, accreditation_type):
+    try:
+        acc = request.registry.accreditation[resource_type][context._internal_type][accreditation_type]
+    except KeyError:
+        return ''
+    return acc
