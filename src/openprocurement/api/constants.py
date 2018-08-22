@@ -59,6 +59,7 @@ CPV_CODES.append('99999999-9')
 CAV_CODES = read_json('json_data/cav.json')
 
 CPVS_CODES = read_json('json_data/cpvs.json')
+KVTSPZ_CODES = read_json('json_data/kvtspz.json')
 CAV_PS_CODES = read_json('json_data/cav_ps.json')
 
 DK_CODES = read_json('json_data/dk021.json')
@@ -94,7 +95,8 @@ LOKI_ITEM_ADDITIONAL_CLASSIFICATIONS = {
     u'UA-EDR': [],
     u'CPVS': CPVS_CODES,
     u'cadastralNumber': [],
-    u'dk018': DK018_CODES
+    u'dk018': DK018_CODES,
+    u'kvtspz': KVTSPZ_CODES
 }
 
 LOKI_DOCUMENT_TYPES = [
