@@ -47,6 +47,7 @@ from openprocurement.api.constants import (
     VERSION,
     WORKING_DAYS,
 )
+from openprocurement.api.tests.fixtures.auth import MOCK_AUTH_USERS
 from openprocurement.api.events import ErrorDesctiptorEvent
 from openprocurement.api.interfaces import IContentConfigurator
 from openprocurement.api.interfaces import IOPContent
@@ -1196,3 +1197,16 @@ def get_resource_accreditation(request, resource_type, context, accreditation_ty
     except KeyError:
         return ''
     return acc
+
+
+def get_all_users():
+    return MOCK_AUTH_USERS
+
+
+def get_forbidden_users(allowed_levels):
+    users = get_all_users()
+    allowed = ['0']
+
+    allowed.extend(allowed_levels)
+    forbidden_users = [user for user, info in users.items() if info['level'] not in allowed]
+    return forbidden_users
