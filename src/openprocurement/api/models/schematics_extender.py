@@ -45,9 +45,9 @@ class DecimalType(BaseDecimalType):
         except (TypeError, InvalidOperation):
             raise ConversionError(self.messages['number_coerce'].format(value))
         if self.min_value is not None and value < self.min_value:
-            raise ConversionError(self.messages['number_min'].format(value))
+            raise ConversionError(self.messages['number_min'].format(self.min_value))
         if self.max_value is not None and self.max_value < value:
-            raise ConversionError(self.messages['number_max'].format(value))
+            raise ConversionError(self.messages['number_max'].format(self.max_value))
 
         return value
 
