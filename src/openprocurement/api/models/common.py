@@ -7,7 +7,7 @@ from schematics.types.compound import DictType, ListType, ModelType
 from schematics.types.serializable import serializable
 
 from openprocurement.api.models.roles import organization_roles, auctionParameters_roles
-from openprocurement.api.models.schematics_extender import Model, IsoDateTimeType, SHA512Type
+from openprocurement.api.models.schematics_extender import Model, IsoDateTimeType, SHA512Type, DecimalType
 from openprocurement.api.utils import get_now
 
 
@@ -78,7 +78,7 @@ class Location(Model):
 
 
 class Guarantee(Model):
-    amount = FloatType(required=True, min_value=0)  # Amount as a number.
+    amount = DecimalType(required=True, min_value=0, precision=-2)  # Amount as a number.
     # The currency in 3-letter ISO 4217 format.
     currency = StringType(required=True, default=u'UAH', max_length=3, min_length=3)
 
@@ -152,7 +152,7 @@ class BaseUnit(Model):
 
 
 class BasicValue(Model):
-    amount = FloatType(required=True, min_value=0)  # Amount as a number.
+    amount = DecimalType(required=True, min_value=0, precision=-2)  # Amount as a number.
     currency = StringType(required=True, max_length=3, min_length=3)  # The currency in 3-letter ISO 4217 format.
 
 
