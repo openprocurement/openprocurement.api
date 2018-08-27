@@ -87,12 +87,15 @@ class IsoDurationTypeTest(BaseWebTest):
         with self.assertRaises(Exception) as context:
             result = type_duration.to_native('Ptest')
         self.assertEqual(context.exception.message,
-                         ["'NoneType' object has no attribute 'groups'"])
+                         [u'Could not parse Ptest. Should be ISO8601 Durations.'])
         with self.assertRaises(Exception) as context:
             result = type_duration.to_native('P3Y6MW4DT12H30M5S')
         self.assertEqual(context.exception.message,
-                         ["'NoneType' object has no attribute 'groups'"])
-
+                         [u'Could not parse P3Y6MW4DT12H30M5S. Should be ISO8601 Durations.'])
+        with self.assertRaises(Exception) as context:
+            result = type_duration.to_native(123123)
+        self.assertEqual(context.exception.message,
+                         [u'Could not parse 123123. Should be ISO8601 Durations.'])
         res_native1 = type_duration.to_native('P3Y6M4DT12H30M5S')
         res_native2 = type_duration.to_native('P2Y18M4DT12H30M5S')
         self.assertEqual(res_native1, res_native2)
