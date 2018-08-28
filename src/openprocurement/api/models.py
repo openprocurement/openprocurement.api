@@ -176,6 +176,8 @@ class IsoDurationType(BaseType):
             return value
         try:
             return relativedelta(raw_data=value)
+        except TypeError:
+            raise ConversionError(self.messages['parse'].format(value))
         except ParseError:
             raise ConversionError(self.messages['parse'].format(value))
         except OverflowError as e:
