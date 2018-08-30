@@ -111,12 +111,12 @@ class SchematicsExtenderTest(unittest.TestCase):
 
         number = '-1.1'
         dt = DecimalType(min_value=0)
-        with self.assertRaisesRegexp(ConversionError, dt.messages['number_min'].format(number)):
+        with self.assertRaisesRegexp(ConversionError, dt.messages['number_min'].format(0)):
             dt.to_native(dt.to_primitive(number))
 
         number = '11.1'
         dt = DecimalType(max_value=0)
-        with self.assertRaisesRegexp(ConversionError, dt.messages['number_max'].format(number)):
+        with self.assertRaisesRegexp(ConversionError, dt.messages['number_max'].format(0)):
             dt.to_native(dt.to_primitive(number))
 
     def test_HashType_model(self):
@@ -238,7 +238,7 @@ class DummyOCDSModelsTest(unittest.TestCase):
         with self.assertRaises(ModelValidationError) as ex:
             value.validate()
         self.assertEqual(ex.exception.message,
-                         {'amount': [u'Float value should be greater than 0.']})
+                         {'amount': [u'Value should be greater than 0.']})
         self.assertEqual(value.to_patch(), value.serialize())
 
         value.amount = None
@@ -282,7 +282,7 @@ class DummyOCDSModelsTest(unittest.TestCase):
         with self.assertRaises(ModelValidationError) as ex:
             unit.validate()
         self.assertEqual(ex.exception.message,
-                         {'value': {'amount': [u'Float value should be greater than 0.']}})
+                         {'value': {'amount': [u'Value should be greater than 0.']}})
 
     def test_Classification_model(self):
 
