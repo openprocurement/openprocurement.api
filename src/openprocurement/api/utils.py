@@ -1031,7 +1031,7 @@ def calculate_business_date(start, delta, context, working_days=False, specific_
             time_cursor = round_out_day(time_cursor, reverse_calculations)
     else:
         if specific_hour:
-            if abs(delta.days) == 1:  # if loop hadn't worked
+            if abs(delta.days) == 1:  # if loop hasn't worked
                 time_cursor = get_closest_working_day(time_cursor, backward=reverse_calculations)
             time_cursor = set_specific_hour(time_cursor, specific_hour)
         else:
