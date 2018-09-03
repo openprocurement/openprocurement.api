@@ -482,7 +482,7 @@ class CalculateBusinessDateTestCase(unittest.TestCase):
         start = datetime(2018, 4, 2)
         specific_hour = 18
         business_days_to_add = timedelta(days=10)
-        target_end_of_period = datetime(2018, 4, 16)
+        target_end_of_period = datetime(2018, 4, 17)
         result = calculate_business_date(
             start, business_days_to_add, None, working_days=True, specific_hour=specific_hour
         )
