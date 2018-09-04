@@ -7,7 +7,7 @@ from binascii import hexlify, unhexlify
 from copy import copy
 from datetime import datetime, timedelta, time
 from email.header import decode_header
-from functools import partial
+from functools import partial, wraps
 from hashlib import sha512
 from json import dumps
 from logging import getLogger
@@ -1209,3 +1209,15 @@ def get_forbidden_users(allowed_levels):
     allowed.extend(allowed_levels)
     forbidden_users = [user for user, info in users.items() if info['level'] not in allowed]
     return forbidden_users
+
+
+def validate_with(validators):
+    def actual_validator(func):
+        @wraps(func)
+        def wrapper(*args, **kwargs):
+            request = args[1]
+            for validator in validators:
+                validator(request)
+            return func(*args, **kwargs)
+        return wrapper
+    return actual_validator
