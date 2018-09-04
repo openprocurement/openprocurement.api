@@ -19,13 +19,8 @@ from schematics.types.compound import (
 from schematics.types.serializable import serializable
 
 from openprocurement.api.constants import (
-    ATC_CODES,
-    ATC_INN_CLASSIFICATIONS_FROM,
     CPV_BLOCK_FROM,
-    CPV_CODES,
     DEFAULT_CURRENCY,
-    DK_CODES,
-    INN_CODES,
     ORA_CODES,
 )
 from openprocurement.api.models.common import (
@@ -142,6 +137,7 @@ class ComplaintModelType(ModelType):
             return shaped
         elif print_none:
             return shaped
+
 
 class CPVClassification(Classification):
     scheme = StringType(required=True, default=u'CPV', choices=[u'CPV', u'ДК021'])
