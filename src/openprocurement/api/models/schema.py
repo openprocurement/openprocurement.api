@@ -296,6 +296,11 @@ class Organization(BaseOrganization):
     additionalIdentifiers = ListType(ModelType(Identifier))
 
 
+class dgfOrganization(Organization):
+    identifier = ModelType(IdentifierAuctions, required=True)
+    additionalIdentifiers = ListType(ModelType(IdentifierAuctions))
+
+
 class Revision(Model):
     author = StringType()
     date = IsoDateTimeType(default=get_now)
