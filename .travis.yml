@@ -19,14 +19,12 @@ cache:
   directories:
     - eggs
 before_install:
-  - pip install setuptools==7.0
-  - python2 bootstrap.py
+  - sh bootstrap.sh
 install:
   - bin/buildout -N
 script:
-  - bin/nosetests
-after_success:
-  - bin/coveralls
+  - bin/py.test ./src/openprocurement/api/tests/ --cov=openprocurement.api
+
 notifications:
   webhooks:
     urls:
