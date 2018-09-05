@@ -30,6 +30,7 @@ from openprocurement.api.constants import (
     LOKI_ITEM_ADDITIONAL_CLASSIFICATIONS,
     LOKI_ITEM_CLASSIFICATION,
     ORA_CODES,
+    ORA_CODES_AUCTIONS,
 )
 from openprocurement.api.models.common import (
     Address,
@@ -267,6 +268,11 @@ class Document(Model):
 class Identifier(BaseIdentifier):
     # The scheme that holds the unique identifiers used to identify the item being identified.
     scheme = StringType(required=True, choices=ORA_CODES)
+
+
+class IdentifierAuctions(Identifier):
+    """It uses shorter list of ORA Codes"""
+    scheme = StringType(required=True, choices=ORA_CODES_AUCTIONS)
 
 
 class Item(Model):
