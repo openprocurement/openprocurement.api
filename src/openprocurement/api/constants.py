@@ -67,7 +67,7 @@ FUNDERS = [(i['scheme'], i['id']) for i in read_json('json_data/funders.json')['
 # DKPP_CODES = read_json('json_data/dkpp.json')
 ORA_CODES = [i['code'] for i in read_json('json_data/OrganisationRegistrationAgency.json')['data']]
 
-ORA_CODES_AUCTIONS = [i['code'] for i in read_json('OrganisationRegistrationAgency_auctions.json')['data']]
+ORA_CODES_AUCTIONS = [i['code'] for i in read_json('json_data/OrganisationRegistrationAgency_auctions.json')['data']]
 ORA_CODES_AUCTIONS[0:0] = ["UA-IPN", "UA-FIN"]
 
 WORKING_DAYS = read_json('json_data/working_days.json')
