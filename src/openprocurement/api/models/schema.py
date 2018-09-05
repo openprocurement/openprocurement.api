@@ -301,6 +301,23 @@ class dgfOrganization(Organization):
     additionalIdentifiers = ListType(ModelType(IdentifierAuctions))
 
 
+class ProcuringEntity(dgfOrganization):
+    """An organization."""
+    class Options:
+        roles = {
+            'embedded': schematics_embedded_role,
+            'view': schematics_default_role,
+            'edit_active.enquiries': schematics_default_role + blacklist("kind"),
+            'edit_active.tendering': schematics_default_role + blacklist("kind"),
+        }
+
+    kind = StringType(choices=['general', 'special', 'defense', 'other'])
+
+
+class SwiftsureProcuringEntity(ProcuringEntity):
+    additionalContactPoints = ListType(ModelType(ContactPoint), default=list())
+
+
 class Revision(Model):
     author = StringType()
     date = IsoDateTimeType(default=get_now)
