@@ -24,6 +24,8 @@ install:
   - bin/buildout -N
 script:
   - bin/py.test ./src/openprocurement/api/tests/ --cov=openprocurement.api
+after_success:
+  - bin/coveralls
 
 notifications:
   webhooks:
