@@ -21,7 +21,6 @@ from schematics.types.serializable import serializable
 
 from openprocurement.api.constants import (
     CPV_BLOCK_FROM,
-    CPV_CODES,
     DEFAULT_CURRENCY,
     DEFAULT_LOKI_ITEM_CLASSIFICATION,
     DOCUMENT_TYPE_OFFLINE,
