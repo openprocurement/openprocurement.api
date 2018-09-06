@@ -275,6 +275,9 @@ class IdentifierAuctions(Identifier):
     scheme = StringType(required=True, choices=ORA_CODES_AUCTIONS)
 
 
+IdentifierAuctions.__name__ = 'Identifier'
+
+
 class Item(Model):
     """A good, service, or work to be contracted."""
     id = StringType(required=True, min_length=1, default=lambda: uuid4().hex)
