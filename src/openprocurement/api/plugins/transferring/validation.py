@@ -47,17 +47,3 @@ def validate_ownership_data(request, **kwargs):  # pylint: disable=unused-argume
         request.errors.status = 422
         return
     request.validated['ownership_data'] = data
-
-
-def validate_accreditation_level(request, auction, levels):
-    if not any([request.check_accreditation(level) for level in levels]):
-        err = 'Broker Accreditation level does not permit ownership change'
-        request.errors.add('body', 'data', err)
-        request.errors.status = 403
-        return
-
-    if auction.get('mode', None) is None and request.check_accreditation('t'):
-        err = 'Broker Accreditation level does not permit ownership change'
-        request.errors.add('body', 'data', err)
-        request.errors.status = 403
-        return

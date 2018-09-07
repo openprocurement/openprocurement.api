@@ -295,6 +295,19 @@ def atc_inn_validator(self, data, code):
             raise ValidationError(BaseType.MESSAGES['choices'].format(unicode(INN_CODES)))
 
 
+def validate_accreditation_level(request, resource, levels, err_msg):
+    if not any([request.check_accreditation(level) for level in levels]):
+        request.errors.add('body', 'data', err_msg)
+        request.errors.status = 403
+        return False
+
+    if resource.get('mode', None) is None and request.check_accreditation('t'):
+        request.errors.add('body', 'data', err_msg)
+        request.errors.status = 403
+        return False
+    return True
+
+
 def validate_dkpp(items, *args):
     if items and not any(
             [i.scheme in ADDITIONAL_CLASSIFICATIONS_SCHEMES for i in items]):
