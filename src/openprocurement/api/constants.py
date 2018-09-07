@@ -113,6 +113,8 @@ LOKI_DOCUMENT_TYPES = [
 DOCUMENT_TYPE_OFFLINE = ['x_dgfAssetFamiliarization']
 DOCUMENT_TYPE_URL_ONLY = ['virtualDataRoom', 'x_dgfPublicAssetCertificate', 'x_dgfPlatformLegalDetails']
 
+ADDITIONAL_CLASSIFICATIONS_SCHEMES = [u'ДКПП', u'NONE', u'ДК003', u'ДК015', u'ДК018']
+
 IDENTIFIER_CODES = ORA_CODES
 
 ALL_ACCREDITATIONS_GRANTED = '0'
