@@ -48,3 +48,12 @@ auctionParameters_roles = {
     'edit_2.sellout.english': english_auctionParameters_edit_role,
     'edit_3.sellout.insider': insider_auctionParameters_edit_role
 }
+
+Administrator_role = whitelist(
+    'auctionPeriod',
+    'lots',
+    'mode',
+    'procuringEntity',
+    'status',
+    'suspended',
+)

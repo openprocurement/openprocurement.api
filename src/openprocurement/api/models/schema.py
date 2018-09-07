@@ -348,6 +348,52 @@ class Contract(Model):
     date = IsoDateTimeType()
 
 
+class ContractAuctions(Contract):
+    class Options:
+        roles = {
+            'create': blacklist(
+                'id',
+                'status',
+                'date',
+                'documents',
+                'dateSigned'),
+            'edit': blacklist(
+                'id',
+                'documents',
+                'date',
+                'awardID',
+                'suppliers',
+                'items',
+                'contractID'),
+            'embedded': schematics_embedded_role,
+            'view': schematics_default_role,
+        }
+    awardID = StringType(required=True)
+
+    def validate_awardID(self, data, awardID):
+        if (
+            awardID and
+            isinstance(data['__parent__'], Model) and
+            awardID not in [i.id for i in data['__parent__'].awards]
+        ):
+            raise ValidationError(u"awardID should be one of awards")
+
+    def validate_dateSigned(self, data, value):
+        if value and isinstance(data['__parent__'], Model):
+            award = [
+                i for i in data['__parent__'].awards if i.id == data['awardID']][0]
+            if award.complaintPeriod.endDate >= value:
+                raise ValidationError(
+                    u"Contract signature date should be after award complaint period end date ({})".format(
+                        award.complaintPeriod.endDate.isoformat()))
+            if value > get_now():
+                raise ValidationError(
+                    u"Contract signature date can't be in the future")
+
+
+ContractAuctions.__name__ = 'Contract'
+
+
 class Cancellation(Model):
     class Options:
         roles = {
