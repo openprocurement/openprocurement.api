@@ -29,7 +29,8 @@ from openprocurement.api.constants import (
     ATC_INN_CLASSIFICATIONS_FROM,
     CPV_CODES,
     DK_CODES,
-    INN_CODES
+    INN_CODES,
+    ADDITIONAL_CLASSIFICATIONS_SCHEMES,
 )
 
 OPERATIONS = {"POST": "add", "PATCH": "update", "PUT": "update", "DELETE": "delete"}
@@ -305,3 +306,11 @@ def validate_accreditation_level(request, resource, levels, err_msg):
         request.errors.status = 403
         return False
     return True
+
+
+def validate_dkpp(items, *args):
+    if items and not any(
+            [i.scheme in ADDITIONAL_CLASSIFICATIONS_SCHEMES for i in items]):
+        raise ValidationError(
+            u"One of additional classifications should be one of [{0}].".format(
+                ', '.join(ADDITIONAL_CLASSIFICATIONS_SCHEMES)))
