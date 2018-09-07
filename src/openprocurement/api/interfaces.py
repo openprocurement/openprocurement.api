@@ -44,3 +44,7 @@ class IAwardingNextCheck(Interface):
 class IProjectConfigurator(Interface):
     # Interface for project configurator
     pass
+
+
+class IAuction(Interface):
+    """ Base auction marker interface """
