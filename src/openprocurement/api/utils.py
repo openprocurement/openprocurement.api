@@ -49,8 +49,11 @@ from openprocurement.api.constants import (
 )
 from openprocurement.api.tests.fixtures.auth import MOCK_AUTH_USERS
 from openprocurement.api.events import ErrorDesctiptorEvent
-from openprocurement.api.interfaces import IContentConfigurator
-from openprocurement.api.interfaces import IOPContent
+from openprocurement.api.interfaces import (
+    IContentConfigurator,
+    IAuction,
+    IOPContent,
+)
 from openprocurement.api.traversal import factory
 from openprocurement.api.exceptions import ConfigAliasError
 
@@ -1221,3 +1224,11 @@ def validate_with(validators):
             return func(*args, **kwargs)
         return wrapper
     return actual_validator
+
+
+def get_auction(model):
+    while not IAuction.providedBy(model):
+        model = getattr(model, '__parent__', None)
+        if model is None:
+            return None
+    return model
