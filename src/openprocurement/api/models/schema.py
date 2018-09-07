@@ -20,6 +20,7 @@ from schematics.types.compound import (
 from schematics.types.serializable import serializable
 
 from openprocurement.api.constants import (
+    CAV_CODES_FLASH,
     CPV_BLOCK_FROM,
     DEFAULT_CURRENCY,
     DEFAULT_LOKI_ITEM_CLASSIFICATION,
@@ -544,3 +545,8 @@ class AssetHolder(ocds_organization):
     contactPoint = ModelType(ContactPoint)
     additionalContactPoints = ListType(ModelType(ContactPoint), default=list())
     kind = StringType(choices=['general', 'special', 'other'])
+
+
+class flashCAVClassification(Classification):
+    id = StringType(required=True, choices=CAV_CODES_FLASH)
+    scheme = StringType(required=True, default=u'CAV', choices=[u'CAV'])
