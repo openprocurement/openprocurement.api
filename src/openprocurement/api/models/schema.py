@@ -58,6 +58,7 @@ from openprocurement.api.models.schematics_extender import (
     DecimalType,
 )
 from openprocurement.api.utils import (
+    get_auction,
     get_document_creation_date,
     get_now,
     get_schematics_document,
@@ -67,6 +68,7 @@ from openprocurement.api.validation import (
     atc_inn_validator,
     cpv_validator,
     validate_uniq,
+    validate_dkpp,
 )
 from openprocurement.api.models.roles import item_roles
 
@@ -550,3 +552,18 @@ class AssetHolder(ocds_organization):
 class flashCAVClassification(Classification):
     id = StringType(required=True, choices=CAV_CODES_FLASH)
     scheme = StringType(required=True, default=u'CAV', choices=[u'CAV'])
+
+
+class flashItem(Item):
+    """A good, service, or work to be contracted."""
+    classification = ModelType(flashCAVClassification, required=True)
+    additionalClassifications = ListType(
+        ModelType(Classification),
+        default=list(),
+        validators=[validate_dkpp])  # required=True, min_size=1,
+    quantity = DecimalType()  # The number of units required
+
+    def validate_relatedLot(self, data, relatedLot):
+        if relatedLot and isinstance(data['__parent__'], Model) and relatedLot not in [
+                i.id for i in get_auction(data['__parent__']).lots]:
+            raise ValidationError(u"relatedLot should be one of lots")
