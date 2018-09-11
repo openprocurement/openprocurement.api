@@ -66,6 +66,10 @@ DK_CODES = read_json('json_data/dk021.json')
 FUNDERS = [(i['scheme'], i['id']) for i in read_json('json_data/funders.json')['data']]
 # DKPP_CODES = read_json('json_data/dkpp.json')
 ORA_CODES = [i['code'] for i in read_json('json_data/OrganisationRegistrationAgency.json')['data']]
+
+ORA_CODES_AUCTIONS = [i['code'] for i in read_json('json_data/OrganisationRegistrationAgency_auctions.json')['data']]
+ORA_CODES_AUCTIONS[0:0] = ["UA-IPN", "UA-FIN"]
+
 WORKING_DAYS = read_json('json_data/working_days.json')
 
 ATC_CODES = read_json('json_data/atc.json')
@@ -74,6 +78,8 @@ INN_CODES = read_json('json_data/inn.json')
 ADDITIONAL_CLASSIFICATIONS_SCHEMES = [u'ДКПП', u'NONE', u'ДК003', u'ДК015', u'ДК018', u'CPVS']
 ADDITIONAL_CLASSIFICATIONS_SCHEMES_2017 = [u'ДК003', u'ДК015', u'ДК018', u'specialNorms']
 COORDINATES_REG_EXP = re.compile(r'-?\d{1,3}\.\d+|-?\d{1,3}')
+
+CAV_CODES_FLASH = read_json('json_data/cav_flash.json')
 
 CPV_ITEMS_CLASS_FROM = datetime(2017, 1, 1, tzinfo=TZ)
 CPV_BLOCK_FROM = datetime(2017, 6, 2, tzinfo=TZ)
@@ -106,6 +112,8 @@ LOKI_DOCUMENT_TYPES = [
 ]
 DOCUMENT_TYPE_OFFLINE = ['x_dgfAssetFamiliarization']
 DOCUMENT_TYPE_URL_ONLY = ['virtualDataRoom', 'x_dgfPublicAssetCertificate', 'x_dgfPlatformLegalDetails']
+
+ADDITIONAL_CLASSIFICATIONS_SCHEMES = [u'ДКПП', u'NONE', u'ДК003', u'ДК015', u'ДК018']
 
 IDENTIFIER_CODES = ORA_CODES
 

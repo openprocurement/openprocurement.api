@@ -7,7 +7,7 @@ from binascii import hexlify, unhexlify
 from copy import copy
 from datetime import datetime, timedelta, time
 from email.header import decode_header
-from functools import partial
+from functools import partial, wraps
 from hashlib import sha512
 from json import dumps
 from logging import getLogger
@@ -49,8 +49,11 @@ from openprocurement.api.constants import (
 )
 from openprocurement.api.tests.fixtures.auth import MOCK_AUTH_USERS
 from openprocurement.api.events import ErrorDesctiptorEvent
-from openprocurement.api.interfaces import IContentConfigurator
-from openprocurement.api.interfaces import IOPContent
+from openprocurement.api.interfaces import (
+    IContentConfigurator,
+    IAuction,
+    IOPContent,
+)
 from openprocurement.api.traversal import factory
 from openprocurement.api.exceptions import ConfigAliasError
 
@@ -1209,3 +1212,23 @@ def get_forbidden_users(allowed_levels):
     allowed.extend(allowed_levels)
     forbidden_users = [user for user, info in users.items() if info['level'] not in allowed]
     return forbidden_users
+
+
+def validate_with(validators):
+    def actual_validator(func):
+        @wraps(func)
+        def wrapper(*args, **kwargs):
+            request = args[1]
+            for validator in validators:
+                validator(request)
+            return func(*args, **kwargs)
+        return wrapper
+    return actual_validator
+
+
+def get_auction(model):
+    while not IAuction.providedBy(model):
+        model = getattr(model, '__parent__', None)
+        if model is None:
+            return None
+    return model
