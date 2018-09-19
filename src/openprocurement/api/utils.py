@@ -1,4 +1,6 @@
 # -*- coding: utf-8 -*-
+import os
+import iso8601
 import decimal
 import simplejson
 from copy import deepcopy
@@ -133,7 +135,8 @@ def validate_dkpp(items, *args):
 
 
 def get_now():
-    return datetime.now(TZ)
+    destination = os.environ.get('FAKE_NOW')
+    return iso8601.parse_date(destination) if destination else datetime.now(TZ)
 
 
 def get_type(obj):
