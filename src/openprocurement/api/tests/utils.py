@@ -560,6 +560,34 @@ class CalculateBusinessDateTestCase(unittest.TestCase):
 
         self.assertEqual(result, target_end)
 
+    def test_result_is_working_day(self):
+        start = datetime(2000, 5, 3)  # Wednesday
+        days_to_add = timedelta(days=3)
+        target_end = datetime(2000, 5, 8)
+
+        result = calculate_business_date(start, days_to_add, None, result_is_working_day=True)
+
+        self.assertEqual(result, target_end)
+
+    def test_result_is_working_day_no_need_to_add_wd(self):
+        """There isn't a need to add a working day if result is already working day"""
+        start = datetime(2000, 5, 3)  # Wednesday
+        days_to_add = timedelta(days=2)
+        target_end = datetime(2000, 5, 5)
+
+        result = calculate_business_date(start, days_to_add, None, result_is_working_day=True)
+
+        self.assertEqual(result, target_end)
+
+    def test_result_is_working_day_with_specific_hour(self):
+        start = datetime(2000, 5, 3, 15, 0)  # Wednesday
+        days_to_add = timedelta(days=3)
+        target_end = datetime(2000, 5, 8, 18, 0)
+
+        result = calculate_business_date(start, days_to_add, None, result_is_working_day=True, specific_hour=18)
+
+        self.assertEqual(result, target_end)
+
 
 def suite():
     suite = unittest.TestSuite()

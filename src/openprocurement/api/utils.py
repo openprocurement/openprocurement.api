@@ -977,7 +977,16 @@ def accelerated_calculate_business_date(date, period, context, specific_hour):
         return date + (period / int(re_obj.groupdict()['accelerator']))
 
 
-def calculate_business_date(start, delta, context, working_days=False, specific_hour=None):
+def calendar_days_calculation(start, delta, specific_hour=None, result_is_working_day=None):
+    time_cursor = start + delta
+    if result_is_working_day and is_holiday(time_cursor):
+        time_cursor = get_closest_working_day(time_cursor)
+    if specific_hour:
+        time_cursor = set_specific_hour(time_cursor, specific_hour)
+    return time_cursor
+
+
+def calculate_business_date(start, delta, context, working_days=False, specific_hour=None, **kwargs):
     """This method calculates end of business period from given start and timedelta
 
     The calculation of end of business period is complex, so this method is used project-wide.
@@ -1000,6 +1009,9 @@ def calculate_business_date(start, delta, context, working_days=False, specific_
         mode.
     :param working_days: make calculations taking into account working days
     :param specific_hour: specific hour, to which date of period end should be rounded
+    :kw param result_is_working_day: if specified, result of calculations always be working day,
+        even if working_days = False. In this case result may differ from needed calendar days
+        because of working day adjustment.
     :type start: datetime.datetime
     :type delta: datetime.timedelta
     :type context: openprocurement.api.models.Tender
@@ -1013,8 +1025,9 @@ def calculate_business_date(start, delta, context, working_days=False, specific_
     if accelerated_calculation:
         return accelerated_calculation
 
+    result_is_working_day = kwargs.get('result_is_working_day')
     if not working_days:
-        return start + delta
+        return calendar_days_calculation(start, delta, specific_hour, result_is_working_day)
 
     time_cursor = copy(start)
     reverse_calculations = delta < timedelta()
