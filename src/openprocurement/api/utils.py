@@ -979,7 +979,7 @@ def accelerated_calculate_business_date(date, period, context, specific_hour):
 
 def calendar_days_calculation(start, delta, specific_hour=None, result_is_working_day=None):
     time_cursor = start + delta
-    if result_is_working_day:
+    if result_is_working_day and is_holiday(time_cursor):
         time_cursor = get_closest_working_day(time_cursor)
     if specific_hour:
         time_cursor = set_specific_hour(time_cursor, specific_hour)
