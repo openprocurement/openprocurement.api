@@ -10,7 +10,6 @@ from urlparse import urlparse, parse_qs
 from string import hexdigits
 from hashlib import algorithms, new as hash_new
 from couchdb_schematics.document import SchematicsDocument
-from openprocurement.api.relativedelta import relativedelta
 from schematics.exceptions import ConversionError, ValidationError
 from schematics.models import Model as SchematicsModel
 from schematics.models import ModelMeta
