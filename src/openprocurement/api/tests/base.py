@@ -117,6 +117,7 @@ class BaseWebTest(unittest.TestCase):
     relative_to = os.path.dirname(__file__)
     mock_config = MOCK_CONFIG
     record_http = False
+    docservice = False
 
     @classmethod
     def setUpClass(cls):
@@ -177,39 +178,6 @@ class BaseWebTest(unittest.TestCase):
     def tearDown(self):
         self.couchdb_server.delete(self.db_name)
 
-
-class BaseResourceWebTest(BaseWebTest):
-    resource_name = ''
-    initial_data = None
-    initial_status = None
-    init = False
-    docservice = False
-
-    # setup of Test Case that adds prefix
-    @classmethod
-    def blank(cls, path, *args, **kwargs):
-        path = cls.resource_name + path
-        p = path.split('?', 1)
-        if p[0].endswith('/'):
-            p[0] = p[0][:-1]
-        path = '?'.join(p)
-        if path.startswith('/'):
-            path = '/api/%s%s' % (VERSION, path)
-        else:
-            path = '/api/%s/%s' % (VERSION, path)
-        return webtest.app.TestRequest.blank(path, *args, **kwargs)
-
-    @classmethod
-    def setUpClass(cls):
-        super(BaseResourceWebTest, cls).setUpClass()
-        cls._blank = cls.app.RequestClass.blank
-        cls.app.RequestClass.blank = cls.blank
-
-    @classmethod
-    def tearDownClass(cls):
-        super(BaseResourceWebTest, cls).tearDownClass()
-        cls.app.RequestClass.blank = cls._blank
-
     # setup of DS and related functionality
     def setUpDS(self):
         self.app.app.registry.use_docservice = True
@@ -259,6 +227,40 @@ class BaseResourceWebTest(BaseWebTest):
 
     def tearDownDS(self):
         SESSION.request = self._srequest
+
+
+class BaseResourceWebTest(BaseWebTest):
+    resource_name = ''
+    initial_data = None
+    initial_status = None
+    init = False
+    docservice = False
+
+    # setup of Test Case that adds prefix
+    @classmethod
+    def blank(cls, path, *args, **kwargs):
+        path = cls.resource_name + path
+        p = path.split('?', 1)
+        if p[0].endswith('/'):
+            p[0] = p[0][:-1]
+        path = '?'.join(p)
+        if path.startswith('/'):
+            path = '/api/%s%s' % (VERSION, path)
+        else:
+            path = '/api/%s/%s' % (VERSION, path)
+        return webtest.app.TestRequest.blank(path, *args, **kwargs)
+
+    @classmethod
+    def setUpClass(cls):
+        super(BaseResourceWebTest, cls).setUpClass()
+        cls._blank = cls.app.RequestClass.blank
+        cls.app.RequestClass.blank = cls.blank
+
+    @classmethod
+    def tearDownClass(cls):
+        super(BaseResourceWebTest, cls).tearDownClass()
+        cls.app.RequestClass.blank = cls._blank
+
 
     # methods for creating and switching statuses of resource under test
     def set_status(self, status, extra=None):
