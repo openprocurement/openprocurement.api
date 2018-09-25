@@ -1044,36 +1044,6 @@ def calculate_business_date(start, delta, context, working_days=False, specific_
     return time_cursor
 
 
-def calculate_certainly_business_date(start, delta, working_days=False, specific_hour=None):
-
-    if not working_days:
-        return start + delta
-
-    time_cursor = copy(start)
-    reverse_calculations = delta < timedelta()
-    days_to_collect = abs(delta.days)
-
-    while days_to_collect > 0:
-        if days_to_collect == 1:  # last day logic is extracted from the loop due to it's complexity
-            break
-        time_cursor = get_closest_working_day(time_cursor, backward=reverse_calculations)
-        days_to_collect -= 1
-
-    if is_holiday(start) or reverse_calculations:
-        time_cursor = get_closest_working_day(time_cursor, backward=reverse_calculations)
-        if specific_hour:
-            time_cursor = set_specific_hour(time_cursor, specific_hour)
-        else:
-            time_cursor = round_out_day(time_cursor, reverse_calculations)
-    else:
-        if specific_hour:
-            time_cursor = get_closest_working_day(time_cursor, backward=reverse_calculations)
-            time_cursor = set_specific_hour(time_cursor, specific_hour)
-        else:
-            time_cursor = get_closest_working_day(time_cursor, backward=reverse_calculations)
-
-    return time_cursor
-
 def get_document_creation_date(document):
     return (document.get('revisions')[0].date if document.get('revisions') else get_now())
 
