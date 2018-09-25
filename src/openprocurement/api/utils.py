@@ -981,8 +981,10 @@ def accelerated_calculate_business_date(date, period, context, specific_hour):
 
 def calendar_days_calculation(start, delta, specific_hour=None, result_is_working_day=None):
     time_cursor = start + delta
+    reverse_calculations = delta < timedelta()
+
     if result_is_working_day and is_holiday(time_cursor):
-        time_cursor = get_closest_working_day(time_cursor)
+        time_cursor = get_closest_working_day(time_cursor, backward=reverse_calculations)
     if specific_hour:
         time_cursor = set_specific_hour(time_cursor, specific_hour)
     return time_cursor

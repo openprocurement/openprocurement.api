@@ -588,6 +588,15 @@ class CalculateBusinessDateTestCase(unittest.TestCase):
 
         self.assertEqual(result, target_end)
 
+    def test_result_is_working_day_reverse(self):
+        start = datetime(2000, 5, 3)  # Wednesday
+        days_to_add = timedelta(days=-3)
+        target_end = datetime(2000, 4, 28)
+
+        result = calculate_business_date(start, days_to_add, None, result_is_working_day=True)
+
+        self.assertEqual(result, target_end)
+
 
 def suite():
     suite = unittest.TestSuite()
