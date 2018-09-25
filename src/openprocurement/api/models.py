@@ -3,7 +3,7 @@ import re
 from datetime import datetime
 from decimal import Decimal, InvalidOperation, ROUND_HALF_UP
 from iso8601 import parse_date, ParseError
-from isodate import ISO8601Error, parse_duration, strftime
+from isodate import ISO8601Error, parse_duration, duration_isoformat
 from isodate.duration import Duration
 from uuid import uuid4
 from urlparse import urlparse, parse_qs
@@ -182,7 +182,7 @@ class IsoDurationType(BaseType):
             raise ConversionError(e.message)
 
     def to_primitive(self, value, context=None):
-        return strftime(value, 'P%P')
+        return duration_isoformat(value)
 
 
 class ListType(BaseListType):

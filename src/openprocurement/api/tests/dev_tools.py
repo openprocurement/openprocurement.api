@@ -3,7 +3,7 @@ import os
 import sys
 import unittest
 
-from isodate import strftime
+from isodate import duration_isoformat
 from isodate.duration import Duration
 from schematics.transforms import whitelist
 from schematics.types import BooleanType, StringType
@@ -77,7 +77,7 @@ class IsoDurationTypeTest(BaseWebTest):
         self.assertEqual(res_to_native.days, 4)
         self.assertEqual(res_to_native.seconds, 45005)
         self.assertEqual(res_to_native, duration_period)
-        self.assertEqual(strftime(res_to_native, "P%P"), period_str)
+        self.assertEqual(duration_isoformat(res_to_native), period_str)
 
         res_to_primitive = type_duration.to_primitive(duration_period)
         self.assertEqual(res_to_primitive, period_str)
