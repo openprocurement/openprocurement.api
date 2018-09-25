@@ -3,12 +3,13 @@ import re
 from datetime import datetime
 from decimal import Decimal, InvalidOperation, ROUND_HALF_UP
 from iso8601 import parse_date, ParseError
+from isodate import ISO8601Error, parse_duration, duration_isoformat
+from isodate.duration import Duration
 from uuid import uuid4
 from urlparse import urlparse, parse_qs
 from string import hexdigits
 from hashlib import algorithms, new as hash_new
 from couchdb_schematics.document import SchematicsDocument
-from openprocurement.api.relativedelta import relativedelta
 from schematics.exceptions import ConversionError, ValidationError
 from schematics.models import Model as SchematicsModel
 from schematics.models import ModelMeta
@@ -81,7 +82,6 @@ class AdaptiveDict(dict):
             self.adaptive_items[k] = v
         for i in self.adaptive_items.iteritems():
             yield i
-
 
 
 class OpenprocurementCouchdbDocumentMeta(DocumentMeta):
@@ -172,19 +172,17 @@ class IsoDurationType(BaseType):
     }
 
     def to_native(self, value, context=None):
-        if isinstance(value, relativedelta):
+        if isinstance(value, Duration):
             return value
         try:
-            return relativedelta(raw_data=value)
+            return parse_duration(value)
         except TypeError:
             raise ConversionError(self.messages['parse'].format(value))
-        except ParseError:
-            raise ConversionError(self.messages['parse'].format(value))
-        except OverflowError as e:
+        except ISO8601Error as e:
             raise ConversionError(e.message)
 
     def to_primitive(self, value, context=None):
-        return str(value)
+        return duration_isoformat(value)
 
 
 class ListType(BaseListType):

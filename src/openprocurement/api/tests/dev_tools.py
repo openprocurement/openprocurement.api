@@ -3,7 +3,8 @@ import os
 import sys
 import unittest
 
-from openprocurement.api.relativedelta import relativedelta
+from isodate import duration_isoformat
+from isodate.duration import Duration
 from schematics.transforms import whitelist
 from schematics.types import BooleanType, StringType
 from schematics.types.serializable import serializable
@@ -68,16 +69,15 @@ class IsoDurationTypeTest(BaseWebTest):
     def test_iso_duration_type(self):
         type_duration = IsoDurationType()
         period_str = 'P3Y6M4DT12H30M5S'
-        duration_period = relativedelta(years=+3, months=+6, days=+4, hours=+12, minutes=+30, seconds=+5)
+        duration_period = Duration(years=3, months=6, days=4, hours=12, minutes=30, seconds=5)
         res_to_native = type_duration.to_native(period_str)
 
         self.assertEqual(res_to_native.years, 3)
         self.assertEqual(res_to_native.months, 6)
         self.assertEqual(res_to_native.days, 4)
-        self.assertEqual(res_to_native.seconds, 5)
-        self.assertEqual(res_to_native.minutes, 30)
+        self.assertEqual(res_to_native.seconds, 45005)
         self.assertEqual(res_to_native, duration_period)
-        self.assertEqual(res_to_native.raw_data, period_str)
+        self.assertEqual(duration_isoformat(res_to_native), period_str)
 
         res_to_primitive = type_duration.to_primitive(duration_period)
         self.assertEqual(res_to_primitive, period_str)
@@ -87,11 +87,10 @@ class IsoDurationTypeTest(BaseWebTest):
         with self.assertRaises(Exception) as context:
             result = type_duration.to_native('Ptest')
         self.assertEqual(context.exception.message,
-                         [u'Could not parse Ptest. Should be ISO8601 Durations.'])
+                         ["ISO 8601 time designator 'T' missing. Unable to parse datetime string 'test'"])
         with self.assertRaises(Exception) as context:
             result = type_duration.to_native('P3Y6MW4DT12H30M5S')
-        self.assertEqual(context.exception.message,
-                         [u'Could not parse P3Y6MW4DT12H30M5S. Should be ISO8601 Durations.'])
+        self.assertEqual(context.exception.message, ["Unrecognised ISO 8601 date format: '3Y6MW4D'"])
         with self.assertRaises(Exception) as context:
             result = type_duration.to_native(123123)
         self.assertEqual(context.exception.message,
