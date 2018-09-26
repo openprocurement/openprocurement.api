@@ -57,3 +57,18 @@ Administrator_role = whitelist(
     'status',
     'suspended',
 )
+
+related_process_roles = {
+    'view': (schematics_default_role + blacklist()),
+    'create': whitelist(
+        'type',
+        'relatedProcessID',
+        'childID',
+    ),
+    'edit': whitelist(
+        'type',
+        'relatedProcessID',
+        'childID',
+    ),
+    'concierge': whitelist('identifier')
+}

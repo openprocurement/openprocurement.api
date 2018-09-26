@@ -314,3 +314,17 @@ def validate_dkpp(items, *args):
         raise ValidationError(
             u"One of additional classifications should be one of [{0}].".format(
                 ', '.join(ADDITIONAL_CLASSIFICATIONS_SCHEMES)))
+
+
+def validate_related_process_data(request, error_handler, **kwargs):
+    update_logging_context(request, {'relatedProcess_id': '__new__'})
+    context = request.context if 'relatedProcesses' in request.context else request.context.__parent__
+    model = type(context).relatedProcesses.model_class
+    validate_data(request, model, "relatedProcess")
+
+
+def validate_patch_related_process_data(request, error_handler, **kwargs):
+    update_logging_context(request, {'relatedProcess_id': '__new__'})
+    context = request.context if 'relatedProcess' in request.context else request.context.__parent__
+    model = type(context).relatedProcesses.model_class
+    validate_data(request, model)

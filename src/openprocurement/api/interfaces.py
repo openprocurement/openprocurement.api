@@ -48,3 +48,7 @@ class IProjectConfigurator(Interface):
 
 class IAuction(Interface):
     """ Base auction marker interface """
+
+
+class IResourceManager(Interface):
+    """Base interface for resource's interfaces"""

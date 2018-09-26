@@ -1250,3 +1250,14 @@ def get_auction(model):
         if model is None:
             return None
     return model
+
+
+def call_before(method):
+    """Calls some method before actual call of decorated method"""
+    def caller(func):
+        @wraps(func)
+        def wrapper(*args, **kwargs):
+            method(*args, **kwargs)  # call mehod passed in the param
+            return func(*args, **kwargs)  # call decorated method
+        return wrapper
+    return caller
