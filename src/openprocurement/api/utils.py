@@ -1236,8 +1236,9 @@ def validate_with(validators):
         @wraps(func)
         def wrapper(*args, **kwargs):
             request = args[1]
+            kw = {'request': request, 'error_handler': error_handler}
             for validator in validators:
-                validator(request)
+                validator(**kw)
             return func(*args, **kwargs)
         return wrapper
     return actual_validator
