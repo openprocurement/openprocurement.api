@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+import os
 import unittest
 from pyramid import testing
 from openprocurement.api.auth import AuthenticationPolicy
@@ -7,7 +8,8 @@ from pyramid.tests.test_authentication import TestBasicAuthAuthenticationPolicy
 
 class AuthTest(TestBasicAuthAuthenticationPolicy):
     def _makeOne(self, check):
-        return AuthenticationPolicy('src/openprocurement/api/tests/auth.ini', 'SomeRealm')
+        auth_file_path = "{}/auth.ini".format(os.path.dirname(os.path.abspath(__file__)))
+        return AuthenticationPolicy(auth_file_path, 'SomeRealm')
 
     test_authenticated_userid_utf8 = None
     test_authenticated_userid_latin1 = None

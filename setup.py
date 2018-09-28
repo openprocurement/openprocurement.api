@@ -13,6 +13,7 @@ requires = [
     'couchdb-schematics',
     'gevent',
     'iso8601',
+    'isodate',
     'jsonpatch',
     'libnacl',
     'pbkdf2',
@@ -22,6 +23,7 @@ requires = [
     'rfc6266',
     'setuptools',
     'tzlocal',
+    'zope.component',
 ]
 test_requires = requires + [
     'webtest',
