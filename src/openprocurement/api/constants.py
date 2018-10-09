@@ -1,6 +1,10 @@
 # -*- coding: utf-8 -*-
 import os
 import re
+import sys
+from ConfigParser import ConfigParser, DEFAULTSECT
+
+from iso8601 import parse_date
 from pytz import timezone
 from datetime import datetime
 from pkg_resources import get_distribution
@@ -49,3 +53,25 @@ CPV_ITEMS_CLASS_FROM = datetime(2017, 1, 1, tzinfo=TZ)
 CPV_BLOCK_FROM = datetime(2017, 6, 2, tzinfo=TZ)
 
 ATC_INN_CLASSIFICATIONS_FROM = datetime(2017, 12, 22, tzinfo=TZ)
+
+def get_default_constants_file_path():
+    return os.path.join(os.path.dirname(os.path.realpath(__file__)), 'constants.ini')
+
+def load_constants(file_path):
+    config = ConfigParser()
+    try:
+        with open(file_path) as fp:
+            config.readfp(fp)
+    except Exception as e:
+        raise type(e), type(e)(
+            'Can\'t read file \'{0}\': use current path or override using '
+            'CONSTANTS_FILE_PATH env variable'.format(file_path)), sys.exc_info()[2]
+    return config
+
+def get_constant(config, constant, section=DEFAULTSECT, parse_func=parse_date):
+    return parse_func(config.get(section, constant))
+
+CONSTANTS_FILE_PATH = os.environ.get('CONSTANTS_FILE_PATH', get_default_constants_file_path())
+CONSTANTS_CONFIG = load_constants(CONSTANTS_FILE_PATH)
+
+BUDGET_PERIOD_FROM = get_constant(CONSTANTS_CONFIG, 'BUDGET_PERIOD_FROM')
