@@ -68,7 +68,10 @@ def load_constants(file_path):
             'CONSTANTS_FILE_PATH env variable'.format(file_path)), sys.exc_info()[2]
     return config
 
-def get_constant(config, constant, section=DEFAULTSECT, parse_func=parse_date):
+def parse_date_tz(datestring):
+    return parse_date(datestring, TZ)
+
+def get_constant(config, constant, section=DEFAULTSECT, parse_func=parse_date_tz):
     return parse_func(config.get(section, constant))
 
 CONSTANTS_FILE_PATH = os.environ.get('CONSTANTS_FILE_PATH', get_default_constants_file_path())
