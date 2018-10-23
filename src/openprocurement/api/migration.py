@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 import logging
 from openprocurement.api.constants import SCHEMA_VERSION, SCHEMA_DOC
+from openprocurement.api.utils import get_plugins
 
 LOGGER = logging.getLogger(__name__)
 
@@ -31,3 +32,158 @@ def migrate_data(registry, destination=None):
         if migration_func:
             migration_func(registry)
         set_db_schema_version(registry.db, step + 1)
+
+
+class BaseMigrationsRunner(object):
+    """Runs migration functions iteratively"""
+
+    # must be overridden; defines max migration executed by default
+    SCHEMA_VERSION = None
+    # quantity of documents read per single db request
+    DB_READ_LIMIT = 1024
+    # approx max quantity of documents written per single db request
+    DB_BULK_WRITE_THRESHOLD = 127
+    # id of document in the db to store actual schema version
+    SCHEMA_DOC = None
+
+    def __init__(self, registry, root_class):
+        """
+        Params:
+            :param registry: app registry
+            :param root_class: Root class from the traversal of some core module.
+                e.g. If migration located in the lots module, provide Root class
+                from the openregistry.lots.core.traversal module.
+        """
+        self._db = registry.db
+        self._registry = registry
+
+        # to provide correct __parent__ connections
+        request = self.Request(self._registry)
+        self._root = root_class(request)
+
+    def migrate(self, steps, schema_version_max=None, schema_doc=None, check_plugins=True):
+        """Run migrations
+
+            :param steps: iterable with MigrationStep-s
+            :param schema_version: maximal schema version to migrate to. For example:
+                if there's migrations like <from0to1, from1to2, from2to3>, and
+                schema_version_max is equal to 2, then only first two migrations
+                will be executed. If it is 0, then no migrations will proceed.
+                It also has priority over the SCHEMA_VERSION
+            :param schema_doc: id of the document, that holds schema version
+            :param check_plugins: allows to turn off plugin check on migration.
+                Useful for testing.
+        """
+        self._target_schema_version = schema_version_max if schema_version_max is not None else self.SCHEMA_VERSION
+        self._schema_doc = schema_doc if schema_doc is not None else self.SCHEMA_DOC
+        # check version of db schema
+        current_version = self._get_db_schema_version()
+        if current_version == SCHEMA_VERSION:
+            return current_version
+
+        # skip migration if it is not included in plugins or without them
+        if check_plugins and not self._check_plugins_connected():
+            LOGGER.info("Migration is skipped, because plugins weren't connected")
+            return
+
+        steps_available = len(steps)
+        if self._target_schema_version > steps_available:
+            raise RuntimeError('Target migration version is not defined')
+        elif current_version > steps_available:
+            raise RuntimeError('Version of the DB schema is greater than our newest migration')
+
+        target_steps = steps[current_version:self._target_schema_version]
+        curr_step = current_version
+
+        for step in target_steps:
+            self._run_step(step)
+            curr_step += 1
+            self._set_db_schema_version(curr_step)
+
+    def _run_step(self, step):
+        st = step(self._registry, self._root)  # init MigrationStep
+        st.setUp()
+        input_generator = self._db.iterview(st.view, self.DB_READ_LIMIT, include_docs=True)
+        migrated_documents = []  # output buffer
+
+        for doc_row in input_generator:
+            # migrate single document
+            migrated_doc = st.migrate_document(doc_row.doc)
+            migrated_documents.append(migrated_doc)
+
+            # bulk write on threshold overgrow
+            if len(migrated_documents) >= self.DB_BULK_WRITE_THRESHOLD:
+                self._db.update(migrated_documents)
+                # clean output buffer
+                migrated_documents = []
+
+        # flush buffer to the DB, because threshold could be not reached
+        self._db.update(migrated_documents)
+
+        st.tearDown()
+
+    def _get_db_schema_version(self):
+        # if there isn't such document, create it
+        schema_doc = self._db.get(self._schema_doc, {"_id": self._schema_doc})
+        # if `version` is not found - assume that db needs only the most fresh migration
+        return schema_doc.get("version", self._target_schema_version - 1)
+
+    def _set_db_schema_version(self, version):
+        schema_doc = self._db.get(self._schema_doc, {"_id": self._schema_doc})
+        schema_doc["version"] = version
+        self._db.save(schema_doc)
+
+    def _check_plugins_connected(self):
+        plugins_config = self._registry.app_meta.plugins
+        existing_plugins = get_plugins(plugins_config)
+        if self._registry.app_meta.plugins and not any(existing_plugins):
+            return False
+
+    class Request(object):
+        """For migration purpose only"""
+        def __init__(self, registry):
+            self.registry = registry
+
+
+class BaseMigrationStep(object):
+    """Container for the migration step logic
+
+    It will be executed by MigrationRunner.
+    Execution scheme:
+
+        setUp               # setups at least `view` attribute of this class. Executed once.
+        <
+            runner fetches documents from the DB
+            based on `view` attribute of this class
+        >
+        migrate_document    # executed on each document in the DB, returned by `view` view
+        tearDown            # executed once after the completion of all `migrate_document` calls
+
+    """
+
+    def __init__(self, registry, root):
+        self._registry = registry
+        self._root = root
+
+    def setUp(self):
+        """Preparation before migration steps.
+
+        After this method call this class must have `view` attribute,
+        e.g. `migration_a4_interesting_objects`, without db name.
+        """
+        pass
+
+    def migrate_document(self, document):
+        """Migrates single document
+
+        Must return migrated document.
+        """
+        pass
+
+    def tearDown(self):
+        """Post-migration stuff
+
+        If migration-specific view was created on the setUp, here it can be
+        deleted to free db resources for next migration's view indexing.
+        """
+        pass

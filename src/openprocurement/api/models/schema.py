@@ -31,6 +31,7 @@ from openprocurement.api.constants import (
     LOKI_ITEM_CLASSIFICATION,
     ORA_CODES,
     ORA_CODES_AUCTIONS,
+    RELATED_PROCESS_TYPE_CHOICES,
 )
 from openprocurement.api.models.common import (
     Address,
@@ -70,7 +71,10 @@ from openprocurement.api.validation import (
     validate_uniq,
     validate_dkpp,
 )
-from openprocurement.api.models.roles import item_roles
+from openprocurement.api.models.roles import (
+    item_roles,
+    related_process_roles,
+)
 
 
 schematics_default_role = SchematicsDocument.Options.roles['default'] + blacklist("__parent__")
@@ -567,3 +571,29 @@ class flashItem(Item):
         if relatedLot and isinstance(data['__parent__'], Model) and relatedLot not in [
                 i.id for i in get_auction(data['__parent__']).lots]:
             raise ValidationError(u"relatedLot should be one of lots")
+
+
+class RelatedProcess(Model):
+    """Describes some object, related to current process
+
+    All the attributes are quite a self-explanatory, except of childID.
+    childID points on the object, that was created based on object, that stands with
+    relatedProcessID identifier.
+    """
+    id = StringType(required=True, min_length=1, default=lambda: uuid4().hex)
+    type = StringType(choices=RELATED_PROCESS_TYPE_CHOICES)
+    relatedProcessID = MD5Type(required=True)  # id of the real object, that this model poins on
+    identifier = StringType()  # external identifier, i.e. paper-documental ID
+    childID = StringType()
+
+    class Options:
+        roles = related_process_roles
+
+    def get_role(self):
+        root = self.__parent__.__parent__
+        request = root.request
+        if request.authenticated_role == 'concierge':
+            role = 'concierge'
+        else:
+            role = 'edit'
+        return role

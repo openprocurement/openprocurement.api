@@ -1,7 +1,4 @@
 # -*- coding: utf-8 -*-
-from openprocurement.api.utils import error_handler
-
-
 class Manager(object):
     parent_name = ''
     parent = None
@@ -26,11 +23,3 @@ class Manager(object):
 
     def delete(self, request):
         raise NotImplementedError
-
-
-class ValidateMixin(object):
-
-    def _validate(self, request, validators):
-        kwargs = {'request': request, 'error_handler': error_handler}
-        for validator in validators:
-            validator(**kwargs)

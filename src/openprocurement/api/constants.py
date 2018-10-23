@@ -120,6 +120,12 @@ IDENTIFIER_CODES = ORA_CODES
 ALL_ACCREDITATIONS_GRANTED = '0'
 TEST_ACCREDITATION = 't'
 
+RELATED_PROCESS_TYPE_CHOICES = (
+    'asset',
+    'auction',
+    'lot',
+)
+
 
 class ProjectConfigurator(object):
     """
