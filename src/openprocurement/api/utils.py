@@ -1,13 +1,11 @@
 # -*- coding: utf-8 -*-
-import os
-import iso8601
 import decimal
 import simplejson
-from copy import deepcopy
+from copy import copy, deepcopy
 from base64 import b64encode, b64decode
 from binascii import hexlify, unhexlify
 from copy import copy
-from datetime import datetime, timedelta, time
+from datetime import datetime, timedelta, time, date as date_type
 from email.header import decode_header
 from functools import partial, wraps
 from hashlib import sha512
@@ -21,6 +19,7 @@ from urllib import quote, unquote, urlencode
 from urlparse import urlparse, urlunsplit, parse_qsl, parse_qs
 from uuid import uuid4
 from pkg_resources import iter_entry_points
+from pytz import utc
 
 import collections
 
@@ -935,7 +934,7 @@ def is_holiday(date):
     :rtype: bool
     """
 
-    date_iso = date.date().isoformat()
+    date_iso = date.isoformat() if type(date) == date_type else date.date().isoformat()
     return (
         date.weekday() in [5, 6] and  # date's weekday is Saturday or Sunday
         WORKING_DAYS.get(date_iso, True) or  # but it's not a holiday
@@ -990,6 +989,51 @@ def calendar_days_calculation(start, delta, specific_hour=None, result_is_workin
     return time_cursor
 
 
+def operate_in_utc(cbd):
+    """Make `calculate_business_date` function operate datetimes only in UTC timezone"""
+
+    START_ARG_POSITION = 0
+    START_ARG_KWARG_NAME = 'start'
+
+    def _get_start_arg(params):
+        kw_used = START_ARG_KWARG_NAME in params[1].keys()
+        start_arg = params[1][START_ARG_KWARG_NAME] if kw_used else params[0][0]
+        return start_arg, kw_used
+
+    def _pack_args(arg, params, kw_used):
+        if kw_used:
+            kw_args = copy(params[1])
+            kw_args.update({START_ARG_KWARG_NAME: arg})
+            return params[0], kw_args
+        else:
+            modifyable_args = list(params[0])  # make args list to modify it
+            # substitute start arg with its UTC representation if it is not naive
+            modifyable_args[START_ARG_POSITION] = arg
+            return tuple(modifyable_args), params[1]  # make args immutable
+
+    @wraps(cbd)
+    def wrapper(*args, **kwargs):
+        params = (args, kwargs)
+        start_arg, kw_used = _get_start_arg(params)
+
+        tz = getattr(start_arg, 'tzinfo', None)
+        naive_calculations = tz is None
+        date_calculations = type(start_arg) == date_type
+        # don't touch the start arg in this conditions
+        skip_tz_converting = naive_calculations or date_calculations
+
+        start_arg_to_cbd = start_arg if skip_tz_converting else start_arg.astimezone(utc)
+        params_to_cbd = _pack_args(start_arg_to_cbd, params, kw_used)
+
+        result = cbd(*params_to_cbd[0], **params_to_cbd[1])  # call calculate_business_date
+
+        # convert result timezone into start's one
+        return result if skip_tz_converting else result.astimezone(tz)
+
+    return wrapper
+
+
+@operate_in_utc
 def calculate_business_date(start, delta, context, working_days=False, specific_hour=None, **kwargs):
     """This method calculates end of business period from given start and timedelta
 

@@ -2,8 +2,9 @@
 import mock
 import unittest
 
-from datetime import timedelta, datetime
+from datetime import timedelta, datetime, date
 from hashlib import sha512
+from pytz import timezone
 from uuid import UUID
 
 from cornice.errors import Errors
@@ -597,6 +598,57 @@ class CalculateBusinessDateTestCase(unittest.TestCase):
         result = calculate_business_date(start, days_to_add, None, result_is_working_day=True)
 
         self.assertEqual(result, target_end)
+
+    def test_result_timezone_aware(self):
+        tzone = timezone('Europe/Kiev')
+        start = tzone.localize(datetime(2018, 10, 20))
+        # 28.10 `Europe/Kiev` timezome moves to DST
+        days_to_add = timedelta(days=20)
+        target_end = datetime(2018, 11, 9, 0, 0)
+
+        result = calculate_business_date(start, days_to_add, None, result_is_working_day=True)
+
+        self.assertEqual(str(start.utcoffset()), '3:00:00')
+        self.assertEqual(str(result.utcoffset()), '2:00:00')
+
+
+    def test_result_timezone_naive(self):
+        start = datetime(2018, 10, 20)
+        # 28.10 `Europe/Kiev` timezome moves to DST
+        days_to_add = timedelta(days=20)
+        target_end = datetime(2018, 11, 9, 0, 0)
+
+        result = calculate_business_date(start, days_to_add, None, result_is_working_day=True)
+
+        self.assertIsNone(start.utcoffset())
+        self.assertIsNone(result.utcoffset())
+
+    def test_date_add_days(self):
+        start = datetime(2018, 10, 20).date()
+        # 28.10 `Europe/Kiev` timezome moves to DST
+        days_to_add = timedelta(days=20)
+        target_end = date(2018, 11, 9)
+
+        result = calculate_business_date(start, days_to_add, None, result_is_working_day=True)
+
+        self.assertEqual(result, target_end)
+        self.assertEqual(type(result), type(target_end))
+
+    def test_kwargs(self):
+        start = datetime(2018, 10, 20).date()
+        # 28.10 `Europe/Kiev` timezome moves to DST
+        days_to_add = timedelta(days=20)
+        target_end = date(2018, 11, 9)
+
+        result = calculate_business_date(
+            start=start,
+            delta=days_to_add,
+            context=None,
+            result_is_working_day=True
+        )
+
+        self.assertEqual(result, target_end)
+        self.assertEqual(type(result), type(target_end))
 
 
 class CallBeforeTestCase(unittest.TestCase):
