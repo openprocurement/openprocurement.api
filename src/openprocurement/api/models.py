@@ -172,9 +172,7 @@ class IsoDurationType(BaseType):
     }
 
     def to_native(self, value, context=None):
-        if isinstance(value, Duration):
-            return value
-        elif isinstance(value, timedelta):
+        if isinstance(value, Duration) or isinstance(value, timedelta):
             return value
         try:
             return parse_duration(value)
