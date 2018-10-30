@@ -4,7 +4,6 @@ import simplejson
 from copy import copy, deepcopy
 from base64 import b64encode, b64decode
 from binascii import hexlify, unhexlify
-from copy import copy
 from datetime import datetime, timedelta, time, date as date_type
 from email.header import decode_header
 from functools import partial, wraps
