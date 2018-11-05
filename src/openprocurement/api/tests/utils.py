@@ -2,9 +2,10 @@
 import mock
 import unittest
 
-from datetime import timedelta, datetime
+from datetime import timedelta, datetime, date
 from hashlib import sha512
 from uuid import UUID
+from pytz import timezone
 
 from cornice.errors import Errors
 from couchdb.client import Document
@@ -516,6 +517,17 @@ class CalculateBusinessDateTestCase(unittest.TestCase):
 
         self.assertEqual(result, target_end)
 
+    def test_start_is_holiday_specific_hour_set_with_tz(self):
+        TARGET_HOUR = 18
+
+        tzone = timezone('Europe/Kiev')
+        start = datetime(2018, 5, 6, 20, 22, tzinfo=tzone)  # Saturday
+        days_to_add = timedelta(days=1)
+
+        result = calculate_business_date(start, days_to_add, None, working_days=True, specific_hour=TARGET_HOUR)
+
+        self.assertEqual(result.hour, TARGET_HOUR)
+
     def test_start_is_not_holiday_specific_hour_none(self):
         start = datetime(2000, 5, 5, 20, 22)  # Friday
         days_to_add = timedelta(days=1)
@@ -597,6 +609,64 @@ class CalculateBusinessDateTestCase(unittest.TestCase):
         result = calculate_business_date(start, days_to_add, None, result_is_working_day=True)
 
         self.assertEqual(result, target_end)
+
+    def test_result_timezone_aware(self):
+        tzone = timezone('Europe/Kiev')
+        start = tzone.localize(datetime(2018, 10, 20))
+        # 28.10 `Europe/Kiev` timezone moves to DST
+        days_to_add = timedelta(days=20)
+        target_end = datetime(2018, 11, 9, 0, 0)
+
+        result = calculate_business_date(start, days_to_add, None, result_is_working_day=True)
+
+        self.assertEqual(str(start.utcoffset()), '3:00:00')
+        self.assertEqual(str(result.utcoffset()), '2:00:00')
+
+
+    def test_result_timezone_naive(self):
+        start = datetime(2018, 10, 20)
+        # 28.10 `Europe/Kiev` timezone moves to DST
+        days_to_add = timedelta(days=20)
+        target_end = datetime(2018, 11, 9, 0, 0)
+
+        result = calculate_business_date(start, days_to_add, None, result_is_working_day=True)
+
+        self.assertIsNone(start.utcoffset())
+        self.assertIsNone(result.utcoffset())
+
+    def test_date_add_days(self):
+        start = datetime(2018, 10, 20).date()
+        # 28.10 `Europe/Kiev` timezone moves to DST
+        days_to_add = timedelta(days=20)
+        target_end = date(2018, 11, 9)
+
+        result = calculate_business_date(start, days_to_add, None, result_is_working_day=True)
+
+        self.assertEqual(result, target_end)
+        self.assertEqual(type(result), type(target_end))
+
+    def test_kwargs(self):
+        start = datetime(2018, 10, 20).date()
+        # 28.10 `Europe/Kiev` timezone moves to DST
+        days_to_add = timedelta(days=20)
+        target_end = date(2018, 11, 9)
+
+        result = calculate_business_date(
+            start=start,
+            delta=days_to_add,
+            context=None,
+            result_is_working_day=True
+        )
+
+        self.assertEqual(result, target_end)
+        self.assertEqual(type(result), type(target_end))
+
+    def test_zero_length_delta_working_days(self):
+        start = datetime(2000, 5, 3)  # Wednesday
+        days_to_add = timedelta(days=0)
+
+        with self.assertRaises(ValueError) as exc:
+            calculate_business_date(start, days_to_add, None, working_days=True, result_is_working_day=True)
 
 
 class CallBeforeTestCase(unittest.TestCase):
