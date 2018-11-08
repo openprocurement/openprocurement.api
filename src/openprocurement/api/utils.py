@@ -1073,11 +1073,11 @@ def calculate_business_date(start, delta, context, working_days=False, specific_
 
     if accelerator:
         result = accelerated_calculate_business_date(time_cursor, delta, accelerator, specific_hour)
-    elif not working_days:
+    if not working_days and result is None:
         result = calendar_days_calculation(
             time_cursor, delta, reverse_calculations, kwargs.get('result_is_working_day')
         )
-    else:
+    if working_days and result is None:
         result = working_days_calculation(
             time_cursor, days_to_jump, specific_hour, start_is_holiday, reverse_calculations
         )
