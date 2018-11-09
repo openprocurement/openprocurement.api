@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 import re
-from datetime import datetime
+from datetime import datetime, timedelta
 from decimal import Decimal, InvalidOperation, ROUND_HALF_UP
 from iso8601 import parse_date, ParseError
 from isodate import ISO8601Error, parse_duration, duration_isoformat
@@ -172,7 +172,7 @@ class IsoDurationType(BaseType):
     }
 
     def to_native(self, value, context=None):
-        if isinstance(value, Duration):
+        if isinstance(value, Duration) or isinstance(value, timedelta):
             return value
         try:
             return parse_duration(value)

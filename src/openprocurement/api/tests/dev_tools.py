@@ -2,7 +2,7 @@
 import os
 import sys
 import unittest
-
+from datetime import timedelta
 from isodate import duration_isoformat
 from isodate.duration import Duration
 from schematics.transforms import whitelist
@@ -104,6 +104,15 @@ class IsoDurationTypeTest(BaseWebTest):
         self.assertEqual('P3Y6M4DT12H30M5S', res_dur1)
         self.assertEqual('P2Y18M4DT12H30M5S', res_dur2)
 
+    def test_iso_duration_type_from_timedelta(self):
+        duration_instance = IsoDurationType()
+        duration = timedelta(days=1)
+        self.assertEqual(duration_instance(duration), duration)
+
+    def test_iso_duration_type_from_Duration(self):
+        duration_instance = IsoDurationType()
+        duration = Duration(months=1, days=1)
+        self.assertEqual(duration_instance(duration), duration)
 
 def suite():
     suite = unittest.TestSuite()
