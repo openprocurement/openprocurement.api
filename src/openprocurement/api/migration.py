@@ -109,6 +109,9 @@ class BaseMigrationsRunner(object):
         for doc_row in input_generator:
             # migrate single document
             migrated_doc = st.migrate_document(doc_row.doc)
+            if migrated_doc is None:
+                LOGGER.info("Skipping document")
+                continue
             migrated_documents.append(migrated_doc)
 
             # bulk write on threshold overgrow
