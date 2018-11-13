@@ -1,6 +1,8 @@
 import os
 from setuptools import setup, find_packages
 
+version = '2.4.22dp'
+
 here = os.path.abspath(os.path.dirname(__file__))
 
 with open(os.path.join(here, 'README.rst')) as f:
@@ -50,7 +52,7 @@ entry_points = {
 }
 
 setup(name='openprocurement.api',
-      version='2.4.21dp',
+      version=version,
       description='openprocurement.api',
       long_description=README,
       classifiers=[
