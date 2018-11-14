@@ -31,7 +31,8 @@ test_requires = requires + [
     'webtest',
     'python-coveralls',
     'mock',
-    'munch'
+    'munch',
+    'freezegun'
 ]
 docs_requires = requires + [
     'sphinxcontrib-httpdomain',
