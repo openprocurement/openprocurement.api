@@ -83,7 +83,7 @@ class RelatedProcessesTestMixinBase(object):
         self.assertEqual(response.status, '201 Created')
         self.assertIn('id', response.json['data'])
         self.assertNotEqual(response.json['data']['id'], data['id'])
-        self.assertNotIn('identifier', response.json['data'])
+        self.assertIn('identifier', response.json['data'])
         self.assertEqual(
             response.json['data']['relatedProcessID'],
             self.initial_related_process_data['relatedProcessID'])
@@ -232,7 +232,7 @@ class RelatedProcessesTestMixinBase(object):
             related_process_1['relatedProcessID']
         )
         self.assertNotEqual(response.json['data']['relatedProcesses'][0]['id'], related_process_1['id'])
-        self.assertNotIn('identifier', response.json['data']['relatedProcesses'][0])
+        self.assertIn('identifier', response.json['data']['relatedProcesses'][0])
 
         related_process_id = response.json['data']['relatedProcesses'][0]['id']
 
@@ -251,4 +251,4 @@ class RelatedProcessesTestMixinBase(object):
         self.assertEqual(response.json['data']['type'], related_process_1['type'])
         self.assertEqual(response.json['data']['relatedProcessID'], related_process_1['relatedProcessID'])
         self.assertNotEqual(response.json['data']['id'], related_process_1['id'])
-        self.assertNotIn('identifier', response.json['data'])
+        self.assertIn('identifier', response.json['data'])

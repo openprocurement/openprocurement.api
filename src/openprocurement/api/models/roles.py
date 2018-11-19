@@ -64,6 +64,7 @@ related_process_roles = {
         'type',
         'relatedProcessID',
         'childID',
+        'identifier',
     ),
     'edit': whitelist(
         'type',
