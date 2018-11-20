@@ -31,6 +31,7 @@ test_requires = requires + [
     'webtest',
     'python-coveralls',
     'mock',
+    'freezegun',
     'munch'
 ]
 docs_requires = requires + [
