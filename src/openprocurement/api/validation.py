@@ -108,3 +108,20 @@ def validate_items_uniq(items, *args):
 def validate_cpv_group(items, *args):
     if items and len(set([i.classification.id[:3] for i in items])) != 1:
         raise ValidationError(u"CPV group of items be identical")
+
+
+def validate_classification_id(items, *args):
+    allowed_schemes = ['INN', 'ATC']
+    for item in items:
+        if item.classification.id.startswith('336'):
+            schemes = [x.scheme for x in item.additionalClassifications]
+            if not set(schemes).issubset(set(allowed_schemes)):
+                raise ValidationError(u'additionalClassification of items wich classification.id starts with 336 \
+have to be one of {}'.format(allowed_schemes))
+            if item.classification.id == '33600000-6':
+                if schemes.count('INN') != 1:
+                    raise ValidationError(u"Item with classification.id=33600000-6 have to contain exactly one \
+additionalClassifications with scheme=INN")
+            if schemes.count('INN') > 1:
+                raise ValidationError(u"Item wich classification.id starts with 336 and contains \
+additionalClassification objects have to contain exactly one additionalClassifications with scheme=INN")
