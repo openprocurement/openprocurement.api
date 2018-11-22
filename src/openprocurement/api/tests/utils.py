@@ -35,6 +35,7 @@ from openprocurement.api.utils import (
     make_aliases,
     connection_mock_config,
     call_before,
+    search_list_with_dicts,
 )
 from openprocurement.api.exceptions import ConfigAliasError
 
@@ -690,11 +691,36 @@ class CallBeforeTestCase(unittest.TestCase):
         self.assertTrue(self.scarecrow.run_first)
 
 
+class TestSearchListWithDicts(unittest.TestCase):
+
+    def setUp(self):
+        self.container = (
+            {
+                'login': 'user1',
+                'password': 'qwerty123',
+            },
+            {
+                'login': 'user2',
+                'password': 'abcd321',
+                'other': 'I am User',
+            }
+        )
+
+    def test_successful_search(self):
+        result = search_list_with_dicts(self.container, 'login', 'user2')
+        assert result['other'] == 'I am User'
+
+    def test_unsuccessful_search(self):
+        result = search_list_with_dicts(self.container, 'login', 'user3')
+        assert result is None
+
+
 def suite():
     suite = unittest.TestSuite()
     suite.addTest(unittest.makeSuite(UtilsTest))
     suite.addTest(unittest.makeSuite(CalculateBusinessDateTestCase))
     suite.addTest(unittest.makeSuite(CallBeforeTestCase))
+    suite.addTest(unittest.makeSuite(TestSearchListWithDicts))
     return suite
 
 
