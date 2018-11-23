@@ -120,10 +120,10 @@ class RelatedProcessesTestMixinBase(object):
         )
         self.assertEqual(response.json['data']['type'], self.initial_related_process_data['type'])
 
-        childID = 'ch' * 16
+        parentID = 'ch' * 16
         new_data = {
             'relatedProcessID': '2' * 32,
-            'childID': childID,
+            'parentID': parentID,
         }
 
         # Patch relatedProcess
@@ -138,7 +138,7 @@ class RelatedProcessesTestMixinBase(object):
         self.assertEqual(response.json['data']['id'], related_process_id)
         self.assertEqual(response.json['data']['relatedProcessID'], new_data['relatedProcessID'])
         self.assertEqual(response.json['data']['type'], self.initial_related_process_data['type'])
-        self.assertEqual(response.json['data']['childID'], childID)
+        self.assertEqual(response.json['data']['parentID'], parentID)
 
         response = self.app.get(
             self.base_resource_url + self.RESOURCE_ID_POSTFIX.format(related_process_id),
