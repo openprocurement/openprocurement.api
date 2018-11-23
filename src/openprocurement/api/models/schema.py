@@ -584,7 +584,7 @@ class RelatedProcess(Model):
     type = StringType(choices=RELATED_PROCESS_TYPE_CHOICES)
     relatedProcessID = MD5Type(required=True)  # id of the real object, that this model poins on
     identifier = StringType()  # external identifier, i.e. paper-documental ID
-    childID = StringType()
+    parentID = StringType()
 
     class Options:
         roles = related_process_roles

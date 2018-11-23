@@ -63,13 +63,13 @@ related_process_roles = {
     'create': whitelist(
         'type',
         'relatedProcessID',
-        'childID',
+        'parentID',
         'identifier',
     ),
     'edit': whitelist(
         'type',
         'relatedProcessID',
-        'childID',
+        'parentID',
     ),
     'concierge': whitelist('identifier')
 }
