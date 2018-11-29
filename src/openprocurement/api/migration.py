@@ -45,8 +45,10 @@ class BaseMigrationsRunner(object):
     DB_BULK_WRITE_THRESHOLD = 127
     # id of document in the db to store actual schema version
     SCHEMA_DOC = None
+    # root class from the traversal of some core module
+    ROOT_CLASS = None
 
-    def __init__(self, registry, root_class):
+    def __init__(self, registry):
         """
         Params:
             :param registry: app registry
@@ -59,7 +61,7 @@ class BaseMigrationsRunner(object):
 
         # to provide correct __parent__ connections
         request = self.Request(self._registry)
-        self._root = root_class(request)
+        self._root = self.ROOT_CLASS(request)
 
     def migrate(self, steps, schema_version_max=None, schema_doc=None, check_plugins=True):
         """Run migrations
