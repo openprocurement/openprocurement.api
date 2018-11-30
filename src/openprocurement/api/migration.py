@@ -39,16 +39,14 @@ class BaseMigrationsRunner(object):
 
     # must be overridden; defines max migration executed by default
     SCHEMA_VERSION = None
+    # must be overridden; id of document in the db to store actual schema version
+    SCHEMA_DOC = None
     # quantity of documents read per single db request
     DB_READ_LIMIT = 1024
     # approx max quantity of documents written per single db request
     DB_BULK_WRITE_THRESHOLD = 127
-    # id of document in the db to store actual schema version
-    SCHEMA_DOC = None
-    # root class from the traversal of some core module
-    ROOT_CLASS = None
 
-    def __init__(self, registry):
+    def __init__(self, db):
         """
         Params:
             :param registry: app registry
@@ -56,12 +54,7 @@ class BaseMigrationsRunner(object):
                 e.g. If migration located in the lots module, provide Root class
                 from the openregistry.lots.core.traversal module.
         """
-        self._db = registry.db
-        self._registry = registry
-
-        # to provide correct __parent__ connections
-        request = self.Request(self._registry)
-        self._root = self.ROOT_CLASS(request)
+        self.db = db
 
     def migrate(self, steps, schema_version_max=None, schema_doc=None, check_plugins=True):
         """Run migrations
@@ -103,7 +96,7 @@ class BaseMigrationsRunner(object):
             self._set_db_schema_version(curr_step)
 
     def _run_step(self, step):
-        st = step(self._registry, self._root)  # init MigrationStep
+        st = step(self.db)  # init MigrationStep
         st.setUp()
         input_generator = self._db.iterview(st.view, self.DB_READ_LIMIT, include_docs=True)
         migrated_documents = []  # output buffer
@@ -144,11 +137,6 @@ class BaseMigrationsRunner(object):
         if self._registry.app_meta.plugins and not any(existing_plugins):
             return False
 
-    class Request(object):
-        """For migration purpose only"""
-        def __init__(self, registry):
-            self.registry = registry
-
 
 class BaseMigrationStep(object):
     """Container for the migration step logic
@@ -166,9 +154,8 @@ class BaseMigrationStep(object):
 
     """
 
-    def __init__(self, registry, root):
-        self._registry = registry
-        self._root = root
+    def __init__(self, db):
+        self.db = db
 
     def setUp(self):
         """Preparation before migration steps.
