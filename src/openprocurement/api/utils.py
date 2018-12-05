@@ -109,10 +109,15 @@ def get_evenly_plugins(config, plugin_map, group):
     if not hasattr(plugin_map, '__iter__'):
         return
     for name in plugin_map:
+        found = False
         for entry_point in iter_entry_points(group, name):
+            found = True
             plugin = entry_point.load()
             value = plugin_map.get(name) if plugin_map.get(name) else {}
             plugin(config, collections.defaultdict(lambda: None, value))
+        if not found:
+            LOGGER.warning("Could not find plugin for "
+                           "entry_point '{}' in '{}' group".format(name, group))
 
 
 def get_plugins(plugins_map):
