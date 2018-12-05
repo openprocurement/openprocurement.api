@@ -113,6 +113,10 @@ def get_evenly_plugins(config, plugin_map, group):
             plugin = entry_point.load()
             value = plugin_map.get(name) if plugin_map.get(name) else {}
             plugin(config, collections.defaultdict(lambda: None, value))
+            break
+        else:
+            LOGGER.warning("Could not find plugin for "
+                           "entry_point '{}' in '{}' group".format(name, group))
 
 
 def get_plugins(plugins_map):
