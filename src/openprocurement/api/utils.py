@@ -1307,3 +1307,20 @@ def search_list_with_dicts(container, key, value):
         found_value = item.get(key, False)
         if found_value and found_value == value:
             return item
+
+
+def log_auction_status_change(request, auction, status):
+    """
+        Log auction status change
+
+        :param request: the request object, for context unpack
+        :param auction: the auction object, in which you want to change the status
+        :param status: the status to which you want to switch
+
+        :returns: True
+    """
+
+    msg = 'Switched auction {} to {}'.format(auction.id, status)
+    context_msg = {'MESSAGE_ID': 'switched_auction_{}'.format(status)}
+    LOGGER.info(msg, extra=context_unpack(request, context_msg))
+    return True
