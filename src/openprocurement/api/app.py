@@ -28,6 +28,7 @@ from openprocurement.api.utils import (
     read_yaml,
     get_evenly_plugins,
     get_plugins,
+    create_app_meta,
 )
 
 from openprocurement.api.database import set_api_security
@@ -36,11 +37,9 @@ from openprocurement.api.auth import AuthenticationPolicy, authenticated_role, c
 from openprocurement.api.configurator import Configurator as ProjectConfigurator, configuration_info
 from openprocurement.api.interfaces import IProjectConfigurator
 from openprocurement.api.auth import get_auth
-from openprocurement.api.config import AppMetaSchema
+from openprocurement.api.constants import APP_META_FILE
 
 LOGGER = getLogger("{}.init".format(__name__))
-APP_META_FILE = 'app_meta.yaml'
-
 
 def _couchdb_connection(config):
     database_config = config.registry.app_meta.config.db
@@ -76,26 +75,9 @@ def _document_service_key(config):
     config.registry.keyring = docsrv_conf.init_keyring(dockey)
 
 
-def _create_app_meta(global_config):
-    """This function returns schematics.models.Model object which contains configuration
-    of the application. Configuration file reading will be performed only once.
-
-    Current function must be called only once during app initialization.
-
-    :param global_config: it is instance of pyramid global config
-    :type global_config: dict
-    :rtype: schematics.models.Model
-    """
-    file_place = os.path.join(global_config['here'], APP_META_FILE)
-    config_data = dd(lambda: None, read_yaml(file_place))
-    config_data['here'] = copy(global_config['here'])
-    app_meta = AppMetaSchema(config_data)
-    app_meta.validate()
-    return app_meta
-
-
 def _config_init(global_config, settings):
-    app_meta = _create_app_meta(global_config)
+    app_meta_filepath = os.path.join(global_config['here'], APP_META_FILE)
+    app_meta = create_app_meta(app_meta_filepath)
     config = Configurator(
         autocommit=True,
         settings=settings,

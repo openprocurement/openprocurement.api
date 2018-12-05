@@ -24,6 +24,8 @@ SESSION = Session()
 SCHEMA_VERSION = 24
 SCHEMA_DOC = 'openprocurement_schema'
 
+APP_META_FILE = 'app_meta.yaml'
+
 TZ = timezone(os.environ['TZ'] if 'TZ' in os.environ else 'Europe/Kiev')
 SANDBOX_MODE = os.environ.get('SANDBOX_MODE', False)
 AUCTIONS_COMPLAINT_STAND_STILL_TIME = timedelta(days=3)
