@@ -56,7 +56,7 @@ class BaseMigrationsRunner(object):
         """
         self.db = db
 
-    def migrate(self, steps, schema_version_max=None, schema_doc=None, check_plugins=True):
+    def migrate(self, steps, schema_version_max=None, schema_doc=None):
         """Run migrations
 
             :param steps: iterable with MigrationStep-s
@@ -76,11 +76,6 @@ class BaseMigrationsRunner(object):
         if current_version == SCHEMA_VERSION:
             return current_version
 
-        # skip migration if it is not included in plugins or without them
-        if check_plugins and not self._check_plugins_connected():
-            LOGGER.info("Migration is skipped, because plugins weren't connected")
-            return
-
         steps_available = len(steps)
         if self._target_schema_version > steps_available:
             raise RuntimeError('Target migration version is not defined')
@@ -98,7 +93,7 @@ class BaseMigrationsRunner(object):
     def _run_step(self, step):
         st = step(self.db)  # init MigrationStep
         st.setUp()
-        input_generator = self._db.iterview(st.view, self.DB_READ_LIMIT, include_docs=True)
+        input_generator = self.db.iterview(st.view, self.DB_READ_LIMIT, include_docs=True)
         migrated_documents = []  # output buffer
 
         for doc_row in input_generator:
@@ -111,31 +106,25 @@ class BaseMigrationsRunner(object):
 
             # bulk write on threshold overgrow
             if len(migrated_documents) >= self.DB_BULK_WRITE_THRESHOLD:
-                self._db.update(migrated_documents)
+                self.db.update(migrated_documents)
                 # clean output buffer
                 migrated_documents = []
 
         # flush buffer to the DB, because threshold could be not reached
-        self._db.update(migrated_documents)
+        self.db.update(migrated_documents)
 
         st.tearDown()
 
     def _get_db_schema_version(self):
         # if there isn't such document, create it
-        schema_doc = self._db.get(self._schema_doc, {"_id": self._schema_doc})
+        schema_doc = self.db.get(self._schema_doc, {"_id": self._schema_doc})
         # if `version` is not found - assume that db needs only the most fresh migration
         return schema_doc.get("version", self._target_schema_version - 1)
 
     def _set_db_schema_version(self, version):
-        schema_doc = self._db.get(self._schema_doc, {"_id": self._schema_doc})
+        schema_doc = self.db.get(self._schema_doc, {"_id": self._schema_doc})
         schema_doc["version"] = version
         self._db.save(schema_doc)
-
-    def _check_plugins_connected(self):
-        plugins_config = self._registry.app_meta.plugins
-        existing_plugins = get_plugins(plugins_config)
-        if self._registry.app_meta.plugins and not any(existing_plugins):
-            return False
 
 
 class BaseMigrationStep(object):
