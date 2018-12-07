@@ -993,18 +993,8 @@ def validate_jump_length(days_to_jump):
 
 
 def operate_on_last_working_day(time_cursor, start_is_holiday, specific_hour, reverse_calculations):
-    if start_is_holiday or reverse_calculations:
-        time_cursor = jump_closest_working_day(time_cursor, backward=reverse_calculations)
-        if specific_hour:
-            time_cursor = set_specific_hour(time_cursor, specific_hour)
-        else:
-            time_cursor = round_out_day(time_cursor, reverse_calculations)
-    else:
-        if specific_hour:
-            time_cursor = jump_closest_working_day(time_cursor, backward=reverse_calculations)
-            time_cursor = set_specific_hour(time_cursor, specific_hour)
-        else:
-            time_cursor = jump_closest_working_day(time_cursor, backward=reverse_calculations)
+    if (start_is_holiday or reverse_calculations) and not specific_hour:
+        time_cursor = round_out_day(time_cursor, reverse_calculations)
     return time_cursor
 
 
@@ -1019,9 +1009,7 @@ def calendar_days_calculation(start, delta, reverse_calculations, result_is_work
 def working_days_calculation(time_cursor, days_to_jump, specific_hour, start_is_holiday, reverse_calculations):
     validate_jump_length(days_to_jump)
 
-    if days_to_jump > 1:
-        days_to_jump -= 1  # jump to the penultimate day
-        time_cursor = jump_working_days(time_cursor, days_to_jump, reverse_calculations)
+    time_cursor = jump_working_days(time_cursor, days_to_jump, reverse_calculations)
 
     return operate_on_last_working_day(time_cursor, start_is_holiday, specific_hour, reverse_calculations)
 
@@ -1066,7 +1054,6 @@ def calculate_business_date(start, delta, context, working_days=False, specific_
     accelerator = get_accelerator(context)
     reverse_calculations = delta < timedelta()
     days_to_jump = abs(delta.days)
-    do_specific_hour_setting = specific_hour is not None and accelerator is None
     result = None
 
     tz = getattr(start, 'tzinfo', None)
@@ -1089,6 +1076,7 @@ def calculate_business_date(start, delta, context, working_days=False, specific_
 
     time_cursor = result if skip_tz_converting else result.astimezone(tz)
 
+    do_specific_hour_setting = specific_hour is not None and accelerator is None
     if do_specific_hour_setting:
         time_cursor = set_specific_hour(time_cursor, specific_hour)
 
