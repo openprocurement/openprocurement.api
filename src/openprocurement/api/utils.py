@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+import os
 import decimal
 import simplejson
 from copy import deepcopy
@@ -9,7 +10,7 @@ from datetime import datetime, timedelta, time, date as date_type
 from email.header import decode_header
 from functools import partial, wraps
 from hashlib import sha512
-from json import dumps
+from json import dumps, loads
 from logging import getLogger
 from pyramid.compat import text_
 from re import compile
@@ -1100,7 +1101,6 @@ def get_document_creation_date(document):
 
 def read_yaml(name):
     import inspect
-    import os.path
     from yaml import safe_load
     caller_file = inspect.stack()[1][1]
     caller_dir = os.path.dirname(os.path.realpath(caller_file))
@@ -1311,3 +1311,11 @@ def search_list_with_dicts(container, key, value):
         found_value = item.get(key, False)
         if found_value and found_value == value:
             return item
+
+
+def read_json(filename, file_dir):
+    """Read file & deserialize it as JSON"""
+    full_filename = os.path.join(file_dir, filename)
+    with open(full_filename, 'r') as f:
+        data = f.read()
+    return loads(data)
