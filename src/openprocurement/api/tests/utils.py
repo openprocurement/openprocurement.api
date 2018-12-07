@@ -2,7 +2,7 @@
 import mock
 import unittest
 
-from datetime import timedelta, datetime, date
+from datetime import timedelta, datetime, date, time
 from hashlib import sha512
 from uuid import UUID
 from pytz import timezone
@@ -668,6 +668,29 @@ class CalculateBusinessDateTestCase(unittest.TestCase):
 
         with self.assertRaises(ValueError) as exc:
             calculate_business_date(start, days_to_add, None, working_days=True, result_is_working_day=True)
+
+    def test_common_calculation_with_working_days_specific_time(self):
+        start = datetime(2018, 4, 2)
+        specific_time = time(18, 4)
+        business_days_to_add = timedelta(days=10)
+        target_end_of_period = datetime(2018, 4, 17, 18, 4)
+        result = calculate_business_date(
+            start, business_days_to_add, None, working_days=True, specific_time=specific_time
+        )
+
+        self.assertEqual(result, target_end_of_period)
+
+    def test_common_calculation_with_working_days_specific_time_priority(self):
+        """Test `specific_time` kwarg priority over `specific_hour` one"""
+        start = datetime(2018, 4, 2)
+        specific_time = time(18, 4)
+        business_days_to_add = timedelta(days=10)
+        target_end_of_period = datetime(2018, 4, 17, 18, 4)
+        result = calculate_business_date(
+            start, business_days_to_add, None, working_days=True, specific_time=specific_time, specific_hour=18
+        )
+
+        self.assertEqual(result, target_end_of_period)
 
 
 class CallBeforeTestCase(unittest.TestCase):

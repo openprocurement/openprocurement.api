@@ -900,6 +900,12 @@ def set_specific_hour(date_time, hour):
     return datetime.combine(date_time.date(), time(hour % 24, tzinfo=date_time.tzinfo))
 
 
+def set_specific_time(date_time, time_obj):
+    """Replace datetime time with some other time object"""
+
+    return datetime.combine(date_time.date(), time_obj)
+
+
 def jump_closest_working_day(date_, backward=False):
     """Search closest working day
 
@@ -1014,6 +1020,15 @@ def working_days_calculation(time_cursor, days_to_jump, specific_hour, start_is_
     return operate_on_last_working_day(time_cursor, start_is_holiday, specific_hour, reverse_calculations)
 
 
+def specific_time_setting(time_cursor, specific_time=None, specific_hour=None):
+    if specific_time:
+        return set_specific_time(time_cursor, specific_time)
+    elif specific_hour:
+        return set_specific_hour(time_cursor, specific_hour)
+
+    return time_cursor
+
+
 def calculate_business_date(start, delta, context, working_days=False, specific_hour=None, **kwargs):
     """This method calculates end of business period from given start and timedelta
 
@@ -1054,6 +1069,7 @@ def calculate_business_date(start, delta, context, working_days=False, specific_
     accelerator = get_accelerator(context)
     reverse_calculations = delta < timedelta()
     days_to_jump = abs(delta.days)
+    specific_time = kwargs.get('specific_time')
     result = None
 
     tz = getattr(start, 'tzinfo', None)
@@ -1076,9 +1092,8 @@ def calculate_business_date(start, delta, context, working_days=False, specific_
 
     time_cursor = result if skip_tz_converting else result.astimezone(tz)
 
-    do_specific_hour_setting = specific_hour is not None and accelerator is None
-    if do_specific_hour_setting:
-        time_cursor = set_specific_hour(time_cursor, specific_hour)
+    if not accelerator:
+        time_cursor = specific_time_setting(time_cursor, specific_time, specific_hour)
 
     return time_cursor
 
