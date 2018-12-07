@@ -39,14 +39,14 @@ class BaseMigrationsRunner(object):
 
     # must be overridden; defines max migration executed by default
     SCHEMA_VERSION = None
+    # must be overridden; id of document in the db to store actual schema version
+    SCHEMA_DOC = None
     # quantity of documents read per single db request
     DB_READ_LIMIT = 1024
     # approx max quantity of documents written per single db request
     DB_BULK_WRITE_THRESHOLD = 127
-    # id of document in the db to store actual schema version
-    SCHEMA_DOC = None
 
-    def __init__(self, registry, root_class):
+    def __init__(self, db):
         """
         Params:
             :param registry: app registry
@@ -54,14 +54,9 @@ class BaseMigrationsRunner(object):
                 e.g. If migration located in the lots module, provide Root class
                 from the openregistry.lots.core.traversal module.
         """
-        self._db = registry.db
-        self._registry = registry
+        self.db = db
 
-        # to provide correct __parent__ connections
-        request = self.Request(self._registry)
-        self._root = root_class(request)
-
-    def migrate(self, steps, schema_version_max=None, schema_doc=None, check_plugins=True):
+    def migrate(self, steps, schema_version_max=None, schema_doc=None):
         """Run migrations
 
             :param steps: iterable with MigrationStep-s
@@ -81,11 +76,6 @@ class BaseMigrationsRunner(object):
         if current_version == SCHEMA_VERSION:
             return current_version
 
-        # skip migration if it is not included in plugins or without them
-        if check_plugins and not self._check_plugins_connected():
-            LOGGER.info("Migration is skipped, because plugins weren't connected")
-            return
-
         steps_available = len(steps)
         if self._target_schema_version > steps_available:
             raise RuntimeError('Target migration version is not defined')
@@ -101,9 +91,9 @@ class BaseMigrationsRunner(object):
             self._set_db_schema_version(curr_step)
 
     def _run_step(self, step):
-        st = step(self._registry, self._root)  # init MigrationStep
+        st = step(self.db)  # init MigrationStep
         st.setUp()
-        input_generator = self._db.iterview(st.view, self.DB_READ_LIMIT, include_docs=True)
+        input_generator = self.db.iterview(st.view, self.DB_READ_LIMIT, include_docs=True)
         migrated_documents = []  # output buffer
 
         for doc_row in input_generator:
@@ -116,36 +106,25 @@ class BaseMigrationsRunner(object):
 
             # bulk write on threshold overgrow
             if len(migrated_documents) >= self.DB_BULK_WRITE_THRESHOLD:
-                self._db.update(migrated_documents)
+                self.db.update(migrated_documents)
                 # clean output buffer
                 migrated_documents = []
 
         # flush buffer to the DB, because threshold could be not reached
-        self._db.update(migrated_documents)
+        self.db.update(migrated_documents)
 
         st.tearDown()
 
     def _get_db_schema_version(self):
         # if there isn't such document, create it
-        schema_doc = self._db.get(self._schema_doc, {"_id": self._schema_doc})
+        schema_doc = self.db.get(self._schema_doc, {"_id": self._schema_doc})
         # if `version` is not found - assume that db needs only the most fresh migration
         return schema_doc.get("version", self._target_schema_version - 1)
 
     def _set_db_schema_version(self, version):
-        schema_doc = self._db.get(self._schema_doc, {"_id": self._schema_doc})
+        schema_doc = self.db.get(self._schema_doc, {"_id": self._schema_doc})
         schema_doc["version"] = version
-        self._db.save(schema_doc)
-
-    def _check_plugins_connected(self):
-        plugins_config = self._registry.app_meta.plugins
-        existing_plugins = get_plugins(plugins_config)
-        if self._registry.app_meta.plugins and not any(existing_plugins):
-            return False
-
-    class Request(object):
-        """For migration purpose only"""
-        def __init__(self, registry):
-            self.registry = registry
+        self.db.save(schema_doc)
 
 
 class BaseMigrationStep(object):
@@ -164,9 +143,8 @@ class BaseMigrationStep(object):
 
     """
 
-    def __init__(self, registry, root):
-        self._registry = registry
-        self._root = root
+    def __init__(self, db):
+        self.db = db
 
     def setUp(self):
         """Preparation before migration steps.
