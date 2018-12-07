@@ -124,7 +124,7 @@ class BaseMigrationsRunner(object):
     def _set_db_schema_version(self, version):
         schema_doc = self.db.get(self._schema_doc, {"_id": self._schema_doc})
         schema_doc["version"] = version
-        self._db.save(schema_doc)
+        self.db.save(schema_doc)
 
 
 class BaseMigrationStep(object):
