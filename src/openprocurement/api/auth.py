@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 import binascii
 import os
+import yaml
+import json
 from ConfigParser import ConfigParser
 from collections import defaultdict
 from copy import deepcopy
@@ -31,41 +33,110 @@ def auth(auth_type=None):
     return decorator
 
 
+def get_path_to_auth(app_meta):
+    conf_auth = app_meta.config.auth
+
+    file_path = get_file_path(app_meta.here, conf_auth.src)
+    if not os.path.isfile(file_path):
+        raise IOError("Auth file '{}' was doesn`t exist".format(file_path))
+
+    return file_path
+
+
+def create_users_from_group(group, users_info):
+    """
+
+    :param group: name of the group of users
+    :type group: str
+
+    :param: users_info: list of tuples that consist of two elements ('user_key', 'user_token')
+    :type users_info: list
+
+    :rparam: generated dictionary with token as a key and user dictionary as a value
+    :rtype: dict
+    """
+
+    users = {}
+
+    for key, value in users_info:
+        single_value = {
+            'name': key,
+            'level': (
+                value.split(',', 1)[1] if
+                ',' in value else
+                ALL_ACCREDITATIONS_GRANTED
+            ),
+            'group': group
+        }
+        single_key = value.split(',', 1)[0]
+        user = {single_key: single_value}
+        users.update(user)
+    LOGGER.info("Authentication permissions for users from the section "
+                "[%s] has been added",
+                group)
+    return users
+
+
 @auth(auth_type="void")
 def _void_auth(app_meta):
     return {}
 
 
-@auth(auth_type="file")
-def _file_auth(app_meta):
-    conf_auth = app_meta.config.auth
-    config = ConfigParser()
+@auth(auth_type="ini")
+def _ini_auth(app_meta):
+    file_path = get_path_to_auth(app_meta)
 
-    file_path = get_file_path(app_meta.here, conf_auth.src)
+    config = ConfigParser()
     users = {}
-    if not os.path.isfile(file_path):
-        raise IOError("Auth file '{}' was doesn`t exist".format(file_path))
     config.read(file_path)
+
     if not config.sections():
         LOGGER.warning("Auth file '%s' was empty, no user will be added",
                        file_path)
+
     for item in config.sections():
-        for key, value in config.items(item):
-            single_value = {
-                'name': key,
-                'level': (
-                    value.split(',', 1)[1] if
-                    ',' in value else
-                    ALL_ACCREDITATIONS_GRANTED
-                ),
-                'group': item
-            }
-            single_key = value.split(',', 1)[0]
-            user = {single_key: single_value}
-            users.update(user)
-        LOGGER.info("Authentication permissions for users from the section "
-                    "[%s] has been added",
-                    item)
+        users.update(create_users_from_group(item, config.items(item)))
+
+    return users
+
+
+# Backward compatibility for `file` type
+auth_mapping['file'] = _ini_auth
+
+
+@auth(auth_type="yaml")
+def _yaml_auth(app_meta):
+    file_path = get_path_to_auth(app_meta)
+
+    users = {}
+
+    with open(file_path) as auth_file:
+        config = yaml.safe_load(auth_file)
+
+    if not config:
+        LOGGER.warning("Auth file '%s' was empty, no user will be added",
+                       file_path)
+    for item in config:
+        users.update(create_users_from_group(item, config[item].items()))
+
+    return users
+
+
+@auth(auth_type="json")
+def _json_auth(app_meta):
+    file_path = get_path_to_auth(app_meta)
+
+    users = {}
+
+    with open(file_path) as auth_file:
+        config = json.load(auth_file)
+
+    if not config:
+        LOGGER.warning("Auth file '%s' was empty, no user will be added",
+                       file_path)
+    for item in config:
+        users.update(create_users_from_group(item, config[item].items()))
+
     return users
 
 

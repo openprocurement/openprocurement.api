@@ -13,7 +13,7 @@ class Main(Model):
 
 
 class Auth(Model):
-    type = StringType(required=True, choices=['file', 'void'])
+    type = StringType(required=True, choices=['file', 'void', 'ini', 'yaml', 'json'])
     src = StringType()
 
     def validate_src(self, data, value):
