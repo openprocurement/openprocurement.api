@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+import os
 import decimal
 import simplejson
 from copy import deepcopy
@@ -9,7 +10,7 @@ from datetime import datetime, timedelta, time, date as date_type
 from email.header import decode_header
 from functools import partial, wraps
 from hashlib import sha512
-from json import dumps
+from json import dumps, loads
 from logging import getLogger
 from pyramid.compat import text_
 from re import compile
@@ -113,6 +114,10 @@ def get_evenly_plugins(config, plugin_map, group):
             plugin = entry_point.load()
             value = plugin_map.get(name) if plugin_map.get(name) else {}
             plugin(config, collections.defaultdict(lambda: None, value))
+            break
+        else:
+            LOGGER.warning("Could not find plugin for "
+                           "entry_point '{}' in '{}' group".format(name, group))
 
 
 def get_plugins(plugins_map):
@@ -988,18 +993,8 @@ def validate_jump_length(days_to_jump):
 
 
 def operate_on_last_working_day(time_cursor, start_is_holiday, specific_hour, reverse_calculations):
-    if start_is_holiday or reverse_calculations:
-        time_cursor = jump_closest_working_day(time_cursor, backward=reverse_calculations)
-        if specific_hour:
-            time_cursor = set_specific_hour(time_cursor, specific_hour)
-        else:
-            time_cursor = round_out_day(time_cursor, reverse_calculations)
-    else:
-        if specific_hour:
-            time_cursor = jump_closest_working_day(time_cursor, backward=reverse_calculations)
-            time_cursor = set_specific_hour(time_cursor, specific_hour)
-        else:
-            time_cursor = jump_closest_working_day(time_cursor, backward=reverse_calculations)
+    if (start_is_holiday or reverse_calculations) and not specific_hour:
+        time_cursor = round_out_day(time_cursor, reverse_calculations)
     return time_cursor
 
 
@@ -1014,9 +1009,7 @@ def calendar_days_calculation(start, delta, reverse_calculations, result_is_work
 def working_days_calculation(time_cursor, days_to_jump, specific_hour, start_is_holiday, reverse_calculations):
     validate_jump_length(days_to_jump)
 
-    if days_to_jump > 1:
-        days_to_jump -= 1  # jump to the penultimate day
-        time_cursor = jump_working_days(time_cursor, days_to_jump, reverse_calculations)
+    time_cursor = jump_working_days(time_cursor, days_to_jump, reverse_calculations)
 
     return operate_on_last_working_day(time_cursor, start_is_holiday, specific_hour, reverse_calculations)
 
@@ -1061,7 +1054,6 @@ def calculate_business_date(start, delta, context, working_days=False, specific_
     accelerator = get_accelerator(context)
     reverse_calculations = delta < timedelta()
     days_to_jump = abs(delta.days)
-    do_specific_hour_setting = specific_hour is not None and accelerator is None
     result = None
 
     tz = getattr(start, 'tzinfo', None)
@@ -1084,6 +1076,7 @@ def calculate_business_date(start, delta, context, working_days=False, specific_
 
     time_cursor = result if skip_tz_converting else result.astimezone(tz)
 
+    do_specific_hour_setting = specific_hour is not None and accelerator is None
     if do_specific_hour_setting:
         time_cursor = set_specific_hour(time_cursor, specific_hour)
 
@@ -1096,7 +1089,6 @@ def get_document_creation_date(document):
 
 def read_yaml(name):
     import inspect
-    import os.path
     from yaml import safe_load
     caller_file = inspect.stack()[1][1]
     caller_dir = os.path.dirname(os.path.realpath(caller_file))
@@ -1324,3 +1316,11 @@ def log_auction_status_change(request, auction, status):
     context_msg = {'MESSAGE_ID': 'switched_auction_{}'.format(status)}
     LOGGER.info(msg, extra=context_unpack(request, context_msg))
     return True
+
+  
+def read_json(filename, file_dir):
+    """Read file & deserialize it as JSON"""
+    full_filename = os.path.join(file_dir, filename)
+    with open(full_filename, 'r') as f:
+        data = f.read()
+    return loads(data)

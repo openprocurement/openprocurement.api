@@ -70,6 +70,12 @@ related_process_roles = {
         'type',
         'relatedProcessID',
         'parentID',
+        'identifier',
     ),
-    'concierge': whitelist('identifier')
+    'concierge': whitelist(
+        'type',
+        'relatedProcessID',
+        'parentID',
+        'identifier',
+    )
 }

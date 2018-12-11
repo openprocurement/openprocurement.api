@@ -36,6 +36,9 @@ class RelatedProcessesTestMixinBase(object):
             Setup initial data
                 self.base_resource_initial_data ~~ dict with initial data of base resource
                 self.initial_related_process_data ~~ dict with initial data of related process model
+
+            Setup auth for parent resource creation in batch mode
+                self.parent_resource_create_authorization ~~ ('Basic', ('convoy', ''))
         """
         raise NotImplementedError
 
@@ -222,7 +225,17 @@ class RelatedProcessesTestMixinBase(object):
         data['relatedProcesses'] = [
            related_process_1
         ]
+
+        # save outer auth
+        outer_auth = self.app.authorization
+
+        self.app.authorization = getattr(self, 'parent_resource_create_authorization', outer_auth)
+
         response = self.app.post_json(self.base_resource_collection_url, params={'data': data})
+
+        # restore outer auth
+        self.app.authorization = outer_auth
+
         parent_id = response.json['data']['id']
         self.assertEqual(response.status, '201 Created')
         self.assertEqual(len(response.json['data']['relatedProcesses']), 1)
