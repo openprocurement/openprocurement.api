@@ -2,7 +2,7 @@
 import mock
 import unittest
 
-from datetime import timedelta, datetime, date
+from datetime import timedelta, datetime, date, time
 from hashlib import sha512
 from uuid import UUID
 from pytz import timezone
@@ -455,7 +455,17 @@ class CalculateBusinessDateTestCase(unittest.TestCase):
         specific_hour = start.hour + 2
         period_to_add = timedelta(days=20)
         result = calculate_business_date(start, period_to_add, auction, specific_hour=specific_hour)
-        self.assertEqual((result - start).seconds, 20*60+5)
+        target_seconds = 20*60+5
+        self.assertEqual((result - start).seconds, target_seconds)
+
+    def test_accelerated_calculation_specific_time(self):
+        auction = {"procurementMethodDetails": 'quick, accelerator=1440'}
+        start = datetime(2018, 4, 2, 16)
+        specific_time = time(18, 30)
+        period_to_add = timedelta(days=20)
+        result = calculate_business_date(start, period_to_add, auction, specific_time=specific_time)
+        target_seconds = 20*60+6
+        self.assertEqual((result - start).seconds, target_seconds)
 
     def test_common_calculation_with_working_days(self):
         """This test assumes that <Mon 2018-4-9> is holiday, besides regular holidays
@@ -668,6 +678,29 @@ class CalculateBusinessDateTestCase(unittest.TestCase):
 
         with self.assertRaises(ValueError) as exc:
             calculate_business_date(start, days_to_add, None, working_days=True, result_is_working_day=True)
+
+    def test_common_calculation_with_working_days_specific_time(self):
+        start = datetime(2018, 4, 2)
+        specific_time = time(18, 4)
+        business_days_to_add = timedelta(days=10)
+        target_end_of_period = datetime(2018, 4, 17, 18, 4)
+        result = calculate_business_date(
+            start, business_days_to_add, None, working_days=True, specific_time=specific_time
+        )
+
+        self.assertEqual(result, target_end_of_period)
+
+    def test_common_calculation_with_working_days_specific_time_priority(self):
+        """Test `specific_time` kwarg priority over `specific_hour` one"""
+        start = datetime(2018, 4, 2)
+        specific_time = time(18, 4)
+        business_days_to_add = timedelta(days=10)
+        target_end_of_period = datetime(2018, 4, 17, 18, 4)
+        result = calculate_business_date(
+            start, business_days_to_add, None, working_days=True, specific_time=specific_time, specific_hour=18
+        )
+
+        self.assertEqual(result, target_end_of_period)
 
 
 class CallBeforeTestCase(unittest.TestCase):
