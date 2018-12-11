@@ -906,6 +906,15 @@ def set_specific_time(date_time, time_obj):
     return datetime.combine(date_time.date(), time_obj)
 
 
+def specific_time_setting(time_cursor, specific_time=None, specific_hour=None):
+    if specific_time:
+        return set_specific_time(time_cursor, specific_time)
+    elif specific_hour:
+        return set_specific_hour(time_cursor, specific_hour)
+
+    return time_cursor
+
+
 def jump_closest_working_day(date_, backward=False):
     """Search closest working day
 
@@ -978,11 +987,11 @@ def get_accelerator(context):
         return accelerator
 
 
-def accelerated_calculate_business_date(date, period, accelerator, specific_hour):
+def accelerated_calculate_business_date(date, period, accelerator, specific_time=None, specific_hour=None):
     re_obj = ACCELERATOR_RE.search(accelerator)
     if re_obj and 'accelerator' in re_obj.groupdict():
         if specific_hour:
-            period = period + (set_specific_hour(date, specific_hour) - date)
+            period = period + (specific_time_setting(date, specific_time, specific_hour) - date)
         return date + (period / int(re_obj.groupdict()['accelerator']))
 
 
@@ -1018,15 +1027,6 @@ def working_days_calculation(time_cursor, days_to_jump, specific_hour, start_is_
     time_cursor = jump_working_days(time_cursor, days_to_jump, reverse_calculations)
 
     return operate_on_last_working_day(time_cursor, start_is_holiday, specific_hour, reverse_calculations)
-
-
-def specific_time_setting(time_cursor, specific_time=None, specific_hour=None):
-    if specific_time:
-        return set_specific_time(time_cursor, specific_time)
-    elif specific_hour:
-        return set_specific_hour(time_cursor, specific_hour)
-
-    return time_cursor
 
 
 def calculate_business_date(start, delta, context, working_days=False, specific_hour=None, **kwargs):
@@ -1080,7 +1080,7 @@ def calculate_business_date(start, delta, context, working_days=False, specific_
     time_cursor = time_cursor if skip_tz_converting else time_cursor.astimezone(utc)
 
     if accelerator:
-        result = accelerated_calculate_business_date(time_cursor, delta, accelerator, specific_hour)
+        result = accelerated_calculate_business_date(time_cursor, delta, accelerator, specific_time, specific_hour)
     if not working_days and result is None:
         result = calendar_days_calculation(
             time_cursor, delta, reverse_calculations, kwargs.get('result_is_working_day')
