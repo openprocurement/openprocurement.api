@@ -9,7 +9,7 @@ if 'test' not in __import__('sys').argv[0]:
 import os
 import simplejson
 from logging import getLogger
-from copy import copy
+from copy import copy, deepcopy
 from collections import defaultdict as dd
 from zope.component import getGlobalSiteManager
 
@@ -119,14 +119,22 @@ def _config_init(global_config, settings):
 
 
 def _set_up_configurator(config, plugins):
-    get_evenly_plugins(config, plugins, 'openprocurement.api.configurator')
+    configurator_plugin_map = {
+        key: value for key, value in plugins.items() if 'configurator' in key
+    }
+
+    # To prevent search of entry points for configurator plugins in 'openprocurement.api.plugins' group
+    for key in configurator_plugin_map:
+        plugins.pop(key)
+
+    get_evenly_plugins(config, configurator_plugin_map, 'openprocurement.api.configurator')
     gsm = getGlobalSiteManager()
     if gsm.queryUtility(IProjectConfigurator) is None:
         gsm.registerUtility(ProjectConfigurator(configuration_info, {}), IProjectConfigurator)
 
 
 def _init_plugins(config):
-    plugins = config.registry.app_meta.plugins
+    plugins = deepcopy(config.registry.app_meta.plugins)
     LOGGER.info("Start plugins loading", extra={'MESSAGE_ID': 'included_plugin'})
     _set_up_configurator(config, plugins)
     config.registry.accreditation = {}
