@@ -900,6 +900,21 @@ def set_specific_hour(date_time, hour):
     return datetime.combine(date_time.date(), time(hour % 24, tzinfo=date_time.tzinfo))
 
 
+def set_specific_time(date_time, time_obj):
+    """Replace datetime time with some other time object"""
+
+    return datetime.combine(date_time.date(), time_obj)
+
+
+def specific_time_setting(time_cursor, specific_time=None, specific_hour=None):
+    if specific_time:
+        return set_specific_time(time_cursor, specific_time)
+    elif specific_hour:
+        return set_specific_hour(time_cursor, specific_hour)
+
+    return time_cursor
+
+
 def jump_closest_working_day(date_, backward=False):
     """Search closest working day
 
@@ -972,11 +987,11 @@ def get_accelerator(context):
         return accelerator
 
 
-def accelerated_calculate_business_date(date, period, accelerator, specific_hour):
+def accelerated_calculate_business_date(date, period, accelerator, specific_time=None, specific_hour=None):
     re_obj = ACCELERATOR_RE.search(accelerator)
     if re_obj and 'accelerator' in re_obj.groupdict():
-        if specific_hour:
-            period = period + (set_specific_hour(date, specific_hour) - date)
+        if specific_hour or specific_time:
+            period = period + (specific_time_setting(date, specific_time, specific_hour) - date)
         return date + (period / int(re_obj.groupdict()['accelerator']))
 
 
@@ -1054,6 +1069,7 @@ def calculate_business_date(start, delta, context, working_days=False, specific_
     accelerator = get_accelerator(context)
     reverse_calculations = delta < timedelta()
     days_to_jump = abs(delta.days)
+    specific_time = kwargs.get('specific_time')
     result = None
 
     tz = getattr(start, 'tzinfo', None)
@@ -1064,7 +1080,7 @@ def calculate_business_date(start, delta, context, working_days=False, specific_
     time_cursor = time_cursor if skip_tz_converting else time_cursor.astimezone(utc)
 
     if accelerator:
-        result = accelerated_calculate_business_date(time_cursor, delta, accelerator, specific_hour)
+        result = accelerated_calculate_business_date(time_cursor, delta, accelerator, specific_time, specific_hour)
     if not working_days and result is None:
         result = calendar_days_calculation(
             time_cursor, delta, reverse_calculations, kwargs.get('result_is_working_day')
@@ -1076,9 +1092,8 @@ def calculate_business_date(start, delta, context, working_days=False, specific_
 
     time_cursor = result if skip_tz_converting else result.astimezone(tz)
 
-    do_specific_hour_setting = specific_hour is not None and accelerator is None
-    if do_specific_hour_setting:
-        time_cursor = set_specific_hour(time_cursor, specific_hour)
+    if not accelerator:
+        time_cursor = specific_time_setting(time_cursor, specific_time, specific_hour)
 
     return time_cursor
 
@@ -1301,6 +1316,23 @@ def search_list_with_dicts(container, key, value):
             return item
 
 
+def log_auction_status_change(request, auction, status):
+    """
+        Log auction status change
+
+        :param request: the request object, for context unpack
+        :param auction: the auction object, in which you want to change the status
+        :param status: the status to which you want to switch
+
+        :returns: True
+    """
+
+    msg = 'Switched auction {} to {}'.format(auction.id, status)
+    context_msg = {'MESSAGE_ID': 'switched_auction_{}'.format(status)}
+    LOGGER.info(msg, extra=context_unpack(request, context_msg))
+    return True
+
+  
 def read_json(filename, file_dir):
     """Read file & deserialize it as JSON"""
     full_filename = os.path.join(file_dir, filename)
