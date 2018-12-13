@@ -1265,7 +1265,12 @@ def get_forbidden_users(allowed_levels):
     allowed = ['0']
 
     allowed.extend(allowed_levels)
-    forbidden_users = [user for user, info in users.items() if info['level'] not in allowed]
+    forbidden_users = []
+
+    for user, info in users.items():
+        if any([level not in allowed for level in info['level']]):
+            forbidden_users.append(user)
+
     return forbidden_users
 
 
