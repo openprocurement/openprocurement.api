@@ -43,34 +43,95 @@ def get_path_to_auth(app_meta):
     return file_path
 
 
+def create_user_structure(group, name, info):
+    """
+    Create dictionary that contains information about user permissions and accreditaion level.
+
+    :param group:
+    :type group: str
+
+    :param name: name of user
+    :type name: str
+
+    :param info: information about user is such structure:
+        {
+            'token': 'token',
+            'levels': ['0', '1']
+        }
+    :type info: dict
+
+    :return: user auth info dictionary with structure below
+    {
+        'token': {
+            'name': 'broker1',
+            'level': ['1', '2'],
+            'group': 'brokers'
+        }
+    }
+    :rtype: dict
+    """
+    single_value = {
+        'name': name,
+        'level': info.get('levels', [ALL_ACCREDITATIONS_GRANTED]),
+        'group': group
+    }
+    single_key = info['token']
+    user = {single_key: single_value}
+    return user
+
+
 def create_users_from_group(group, users_info):
     """
+    Create dictionary that contains information about users permissions and accreditaion level
+    that was defined in configuration file
 
     :param group: name of the group of users
     :type group: str
 
-    :param: users_info: list of tuples that consist of two elements ('user_key', 'user_token')
+    :param: users_info: list of tuples that consist of two elements ('user_name', user_info)
+        user_info have to look like:
+
     :type users_info: list
 
-    :rparam: generated dictionary with token as a key and user dictionary as a value
+    :return: dictionary with users auth information
     :rtype: dict
     """
 
     users = {}
 
     for key, value in users_info:
-        single_value = {
-            'name': key,
-            'level': (
-                value.split(',', 1)[1] if
-                ',' in value else
-                ALL_ACCREDITATIONS_GRANTED
-            ),
-            'group': group
-        }
-        single_key = value.split(',', 1)[0]
-        user = {single_key: single_value}
-        users.update(user)
+        users.update(create_user_structure(group, key, value))
+    LOGGER.info("Authentication permissions for users from the section "
+                "[%s] has been added",
+                group)
+    return users
+
+
+def create_users_from_group_ini(group, users_info):
+    """
+    Create dictionary that contains information about users permissions and accreditaion level
+    that was defined in configuration ini file
+
+    :param group: name of the group of users
+    :type group: str
+
+    :param: users_info: list of tuples that consist of two elements ('user_name', 'user_token')
+        user_token: contain token itself and accreditaion levels that separated from token by comma
+        it looks in such way 'token,1234'
+    :type users_info: list
+
+    :return: dictionary with users auth information
+    :rtype: dict
+    """
+
+    users = {}
+
+    for key, value in users_info:
+        levels = [l for l in value.split(',', 1)[1]] if ',' in value else [ALL_ACCREDITATIONS_GRANTED]
+        info = {'levels': levels, 'token': value.split(',', 1)[0]}
+
+        users.update(create_user_structure(group, key, info))
+
     LOGGER.info("Authentication permissions for users from the section "
                 "[%s] has been added",
                 group)
@@ -95,7 +156,7 @@ def _ini_auth(app_meta):
                        file_path)
 
     for item in config.sections():
-        users.update(create_users_from_group(item, config.items(item)))
+        users.update(create_users_from_group_ini(item, config.items(item)))
 
     return users
 
