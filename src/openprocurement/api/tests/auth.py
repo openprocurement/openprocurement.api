@@ -9,6 +9,8 @@ from openprocurement.api.auth import (
     AuthenticationPolicy,
     check_accreditation,
     create_users_from_group,
+    create_users_from_group_ini,
+    create_user_structure,
     _ini_auth,
     _yaml_auth,
     _json_auth
@@ -28,7 +30,7 @@ def get_mock_auth(return_value, mock_get_auth):
 class AuthTest(TestBasicAuthAuthenticationPolicy):
 
     def _makeOne(self, check):
-        user = {'chrisr': {'group': 'tests', 'name': 'chrisr', 'level': '1234'}}
+        user = {'chrisr': {'group': 'tests', 'name': 'chrisr', 'level': ['1', '2', '3', '4']}}
         get_auth = get_mock_auth(user)
         return AuthenticationPolicy(get_auth(), 'SomeRealm')
 
@@ -77,9 +79,80 @@ class CheckAccreditationTest(unittest.TestCase):
         assert result
 
 
+class TestCreateUserStructure(unittest.TestCase):
+
+    def test_create_user_structure(self):
+        group = 'group_name'
+        name = 'user_name'
+        info = {
+            'token': 'acc_token',
+            'levels': ['1', '3']
+        }
+        expected_result = {
+            info['token']: {
+                'group': group,
+                'name': name,
+                'level': info['levels']
+            }
+        }
+
+        result = create_user_structure(group, name, info)
+        self.assertEqual(expected_result, result)
+
+    def test_create_user_structure_without_levels(self):
+        group = 'group_name'
+        name = 'user_name'
+        info = {
+            'token': 'acc_token',
+        }
+        expected_result = {
+            info['token']: {
+                'group': group,
+                'name': name,
+                'level': ['0']
+            }
+        }
+
+        result = create_user_structure(group, name, info)
+        self.assertEqual(expected_result, result)
+
+
 class TestCreateUsersFromGroup(unittest.TestCase):
 
     def test_create_users(self):
+
+        group = 'some_group'
+        user_1 = {
+            'token': 'token1'
+        }
+        user_2 = {
+            'token': 'token2',
+            'levels': ['3']
+        }
+        users_info = [('name1', user_1), ('name2', user_2)]
+
+        expected_result = {
+            'token1': {
+                'name': 'name1',
+                'level': ['0'],
+                'group': group
+
+            },
+            'token2': {
+                'name': 'name2',
+                'level': ['3'],
+                'group': group
+            }
+        }
+
+        users = create_users_from_group(group, users_info)
+
+        self.assertEqual(users, expected_result)
+
+
+class TestCreateUsersFromGroupIni(unittest.TestCase):
+
+    def test_create_users_from_ini(self):
 
         group = 'some_group'
         users_info = [('name1', 'token1'), ('name2', 'token2,3')]
@@ -87,18 +160,18 @@ class TestCreateUsersFromGroup(unittest.TestCase):
         expected_result = {
             'token1': {
                 'name': 'name1',
-                'level': '0',
+                'level': ['0'],
                 'group': group
 
             },
             'token2': {
                 'name': 'name2',
-                'level': '3',
+                'level': ['3'],
                 'group': group
             }
         }
 
-        users = create_users_from_group(group, users_info)
+        users = create_users_from_group_ini(group, users_info)
 
         self.assertEqual(users, expected_result)
 
@@ -120,8 +193,8 @@ class TestIniTypeLoader(unittest.TestCase):
 
         self.mock_config_parser_class.return_value = self.mock_parser
 
-        self.patch_create_users = patch('openprocurement.api.auth.create_users_from_group')
-        self.mock_create_users = self.patch_create_users.start()
+        self.patch_create_users_ini = patch('openprocurement.api.auth.create_users_from_group_ini')
+        self.mock_create_users_ini = self.patch_create_users_ini.start()
 
         self.patch_logger = patch('openprocurement.api.auth.LOGGER')
         self.mock_logger = self.patch_logger.start()
@@ -129,7 +202,7 @@ class TestIniTypeLoader(unittest.TestCase):
     def tearDown(self):
         self.patch_get_path.stop()
         self.patch_parser.stop()
-        self.patch_create_users.stop()
+        self.patch_create_users_ini.stop()
         self.patch_logger.stop()
 
     def test_empty_config(self):
@@ -152,7 +225,7 @@ class TestIniTypeLoader(unittest.TestCase):
             "Auth file '%s' was empty, no user will be added", self.path
         )
 
-        self.assertEqual(self.mock_create_users.call_count, 0)
+        self.assertEqual(self.mock_create_users_ini.call_count, 0)
 
     def test_ini_type(self):
         config_sections = ['some', 'sections']
@@ -165,7 +238,7 @@ class TestIniTypeLoader(unittest.TestCase):
             {'first': 'users'},
             {'second': 'users'}
         ]
-        self.mock_create_users.side_effect = iter(users_info)
+        self.mock_create_users_ini.side_effect = iter(users_info)
 
         expected_result = {}
 
@@ -187,8 +260,8 @@ class TestIniTypeLoader(unittest.TestCase):
 
         self.assertEqual(self.mock_logger.warning.call_count, 0)
 
-        self.assertEqual(self.mock_create_users.call_count, 2)
-        self.mock_create_users.assert_called_with(config_sections[-1], config_items)
+        self.assertEqual(self.mock_create_users_ini.call_count, 2)
+        self.mock_create_users_ini.assert_called_with(config_sections[-1], config_items)
 
 
 class TestYamlTypeLoader(unittest.TestCase):
@@ -394,6 +467,8 @@ def suite():
     suite.addTest(unittest.makeSuite(AuthTest))
     suite.addTest(unittest.makeSuite(CheckAccreditationTest))
     suite.addTest(unittest.makeSuite(TestCreateUsersFromGroup))
+    suite.addTest(unittest.makeSuite(TestCreateUsersFromGroupIni))
+    suite.addTest(unittest.makeSuite(TestCreateUserStructure))
     suite.addTest(unittest.makeSuite(TestIniTypeLoader))
     suite.addTest(unittest.makeSuite(TestYamlTypeLoader))
     suite.addTest(unittest.makeSuite(TestJsonTypeLoader))
