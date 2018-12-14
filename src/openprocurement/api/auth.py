@@ -139,12 +139,12 @@ def create_users_from_group_ini(group, users_info):
 
 
 @auth(auth_type="void")
-def _void_auth(app_meta):
+def void_auth(app_meta):
     return {}
 
 
 @auth(auth_type="ini")
-def _ini_auth(app_meta):
+def ini_auth(app_meta):
     file_path = get_path_to_auth(app_meta)
 
     config = ConfigParser()
@@ -162,11 +162,11 @@ def _ini_auth(app_meta):
 
 
 # Backward compatibility for `file` type
-auth_mapping['file'] = _ini_auth
+auth_mapping['file'] = ini_auth
 
 
 @auth(auth_type="yaml")
-def _yaml_auth(app_meta):
+def yaml_auth(app_meta):
     file_path = get_path_to_auth(app_meta)
 
     users = {}
@@ -184,7 +184,7 @@ def _yaml_auth(app_meta):
 
 
 @auth(auth_type="json")
-def _json_auth(app_meta):
+def json_auth(app_meta):
     file_path = get_path_to_auth(app_meta)
 
     users = {}
