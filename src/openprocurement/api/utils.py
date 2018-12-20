@@ -1394,7 +1394,7 @@ def path_to_kv(kv, d):
 
     search(d, current_path)
 
-    if len(found_paths) > 0:
+    if found_paths:
         return tuple(found_paths)
 
     return None
@@ -1412,7 +1412,7 @@ def collect_packages_for_migration(plugins):
         package_name = path[-2]
         results_buffer.append(package_name)
 
-    if len(results_buffer) > 0:
+    if results_buffer:
         return tuple(results_buffer)
 
     return None

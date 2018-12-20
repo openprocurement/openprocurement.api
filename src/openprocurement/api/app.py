@@ -41,6 +41,7 @@ from openprocurement.api.constants import APP_META_FILE
 
 LOGGER = getLogger("{}.init".format(__name__))
 
+
 def _couchdb_connection(config):
     database_config = config.registry.app_meta.config.db
     aserver, server, adb, db = set_api_security(database_config)
