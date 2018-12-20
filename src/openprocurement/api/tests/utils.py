@@ -7,7 +7,7 @@ import iso8601
 from datetime import timedelta, datetime, date, time
 from hashlib import sha512
 from uuid import UUID
-from pytz import timezone
+from pytz import timezone, utc
 from copy import deepcopy
 
 from cornice.errors import Errors
@@ -39,13 +39,18 @@ from openprocurement.api.utils import (
     make_aliases,
     path_to_kv,
     prepare_patch,
+    round_seconds_to_hours,
     run_migrations_console_entrypoint,
     search_list_with_dicts,
     set_modetest_titles,
     set_ownership,
     set_parent,
+    set_timezone,
     update_logging_context,
+    utcoffset_difference,
+    utcoffset_is_aliquot_to_hours,
 )
+from openprocurement.api.constants import TZ
 from openprocurement.api.exceptions import ConfigAliasError
 from openprocurement.api.tests.base import MOCK_CONFIG
 from openprocurement.api.tests.fixtures.config import RANDOM_PLUGINS
@@ -870,6 +875,87 @@ class CollectPackagesForMigrationTestCase(unittest.TestCase):
         self.assertEqual(result, target_result)
 
 
+class RoundSecondsToHoursTestCase(unittest.TestCase):
+
+    def test_round_down(self):
+        seconds = 18010.0  # 5 hours 10 seconds
+        hours = 5
+        res = round_seconds_to_hours(seconds)
+
+        self.assertEqual(hours, res)
+
+    def test_round_up(self):
+        seconds = 17099  # 4 hours 59 seconds
+        hours = 5
+        res = round_seconds_to_hours(seconds)
+
+        self.assertEqual(hours, res)
+
+    def test_seconds_are_aliquot_to_hours(self):
+        seconds = 18000  # 4 hours 59 seconds
+        hours = 5
+        res = round_seconds_to_hours(seconds)
+
+        self.assertEqual(hours, res)
+
+
+class SetTimezoneTestCase(unittest.TestCase):
+
+    def test_only_timezone_has_changed(self):
+        kyiv_tz = timezone('Europe/Kiev')
+        d_in = datetime.now(kyiv_tz)
+        res = set_timezone(d_in, utc)
+        self.assertEqual(d_in.hour, res.hour)
+        self.assertNotEqual(res.tzinfo, None, 'tzinfo must be present')
+
+
+class UtcoffsetIsAliquotToHoursTestCase(unittest.TestCase):
+
+    def test_is_not_aliquot(self):
+        dt = iso8601.parse_date('2018-12-21T13:11:36+05:03')
+
+        res = utcoffset_is_aliquot_to_hours(dt)
+
+        self.assertEqual(res, False, 'offset is not aliquot to hours')
+
+    def test_is_aliquot(self):
+        dt = iso8601.parse_date('2018-12-21T13:11:36+05:00')
+
+        res = utcoffset_is_aliquot_to_hours(dt)
+
+        self.assertTrue(res, 'offset is aliquot to hours')
+
+
+class UtcoffsetDifferenceTestCase(unittest.TestCase):
+
+    def test_difference_is_present(self):
+        tstamp = '2018-12-22T15:49:17.787628+03:00'
+        dt = iso8601.parse_date(tstamp)
+        target_res = (1, 2)
+
+        res = utcoffset_difference(dt)
+
+        self.assertEqual(res, target_res)
+
+    def test_difference_is_none(self):
+        tstamp = '2018-12-22T15:49:17.787628+02:00'
+        dt = iso8601.parse_date(tstamp)
+        target_res = (0, 2)
+
+        res = utcoffset_difference(dt)
+
+        self.assertEqual(res, target_res)
+
+    def test_difference_is_present_and_negative(self):
+        tstamp = '2018-12-22T15:49:17.787628+01:00'
+        dt = iso8601.parse_date(tstamp)
+        target_res = (-1, 2)
+
+        res = utcoffset_difference(dt)
+
+        self.assertEqual(res, target_res)
+
+
 def suite():
     suite = unittest.TestSuite()
     suite.addTest(unittest.makeSuite(UtilsTest))
@@ -880,6 +966,10 @@ def suite():
     suite.addTest(unittest.makeSuite(RunMigrationsConsoleEntrypointTestCase))
     suite.addTest(unittest.makeSuite(PathToKvTestCase))
     suite.addTest(unittest.makeSuite(CollectPackagesForMigrationTestCase))
+    suite.addTest(unittest.makeSuite(RoundSecondsToHoursTestCase))
+    suite.addTest(unittest.makeSuite(SetTimezoneTestCase))
+    suite.addTest(unittest.makeSuite(UtcoffsetIsAliquotToHoursTestCase))
+    suite.addTest(unittest.makeSuite(UtcoffsetDifferenceTestCase))
     return suite
 
 

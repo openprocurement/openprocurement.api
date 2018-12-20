@@ -4,6 +4,8 @@ import sys
 import decimal
 import simplejson
 import tempfile
+import collections
+import couchdb.json
 
 from copy import deepcopy
 from base64 import b64encode, b64decode
@@ -27,9 +29,6 @@ from pkg_resources import iter_entry_points
 from pytz import utc
 from yaml import safe_load
 
-import collections
-
-import couchdb.json
 from cornice.resource import resource, view
 from cornice.util import json_error
 from couchdb import util
@@ -69,6 +68,7 @@ from openprocurement.api.database import set_api_security
 
 ACCELERATOR_RE = compile(r'.accelerator=(?P<accelerator>\d+)')
 json_view = partial(view, renderer='json')
+SECONDS_IN_HOUR = 3600
 
 
 def route_prefix(conf_main):
@@ -896,6 +896,29 @@ def get_request_from_root(model):
         return model.request if hasattr(model, 'request') else None
 
 
+def round_seconds_to_hours(s):
+    """Converts seconds to closest hour
+
+    The cause of creation of this function is to convert some amount
+    of seconds to closest amount of hours. This neccesity is caused
+    by nondistinct value of UTC offset in different timezones.
+    """
+    hours = float(s) / SECONDS_IN_HOUR
+    reminder = hours % 1
+    hours_floor = int(hours)
+    if reminder > 0.5:
+        return hours_floor + 1
+    return hours_floor
+
+
+def set_timezone(dt, tz=TZ):
+    """Set timezone of datetime without actual changing of date and time values
+
+    By default, server's timezone will be set.
+    """
+    return dt.replace(tzinfo=tz)
+
+
 def set_specific_hour(date_time, hour):
     """Reset datetime's time to {hour}:00:00, while saving timezone data
 
@@ -1454,3 +1477,35 @@ def run_migrations_console_entrypoint():
     am_filepath = sys.argv[1]
     app_meta = create_app_meta(am_filepath)
     run_migrations(app_meta)
+
+
+def utcoffset_is_aliquot_to_hours(dt):
+    offset_seconds = dt.utcoffset().total_seconds()
+    seconds_overlap = offset_seconds % SECONDS_IN_HOUR
+    if seconds_overlap == 0:
+        return True
+    return False
+
+
+def utcoffset_difference(dt, tz=TZ):
+    """
+    Compute difference between datetime in it's own UTC offset
+    and it's offset in another timezone with equal date and time values
+
+    This tool is suited for checking if some datetime corresponds
+    to some timezone in future or past.
+
+    Returns tuple, where:
+        0: difference between dt with it's own utcoffset and dt in another timezone
+        1: target timezone's utcoffset in dt's time
+    """
+    utcoffset_dt = dt.utcoffset().total_seconds()
+    utcoffset_dt_hours = utcoffset_dt / SECONDS_IN_HOUR
+
+    dt_in_server_tz = set_timezone(dt, tz)
+    utcoffset_in_server_tz = dt_in_server_tz.utcoffset().total_seconds()
+    utcoffset_in_server_tz_hours = round_seconds_to_hours(utcoffset_in_server_tz)
+
+    difference = utcoffset_dt_hours - utcoffset_in_server_tz_hours
+
+    return (difference, utcoffset_in_server_tz_hours)
