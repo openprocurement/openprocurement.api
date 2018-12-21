@@ -1008,7 +1008,7 @@ def validate_jump_length(days_to_jump):
 
 
 def operate_on_last_working_day(time_cursor, start_is_holiday, specific_hour, reverse_calculations):
-    if (start_is_holiday or reverse_calculations) and not specific_hour:
+    if start_is_holiday and not specific_hour:
         time_cursor = round_out_day(time_cursor, reverse_calculations)
     return time_cursor
 
