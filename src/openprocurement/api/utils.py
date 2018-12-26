@@ -1082,11 +1082,11 @@ def calculate_business_date(start, delta, context, working_days=False, specific_
 
     time_cursor = result if skip_tz_converting else result.astimezone(tz)
 
-    if not accelerator:
-        time_cursor = specific_time_setting(time_cursor, specific_time, specific_hour)
-
     if kwargs.get('result_is_working_day') and is_holiday(time_cursor):
         time_cursor = jump_closest_working_day(time_cursor, backward=reverse_calculations)
+
+    if not accelerator:
+        time_cursor = specific_time_setting(time_cursor, specific_time, specific_hour)
 
     return time_cursor
 

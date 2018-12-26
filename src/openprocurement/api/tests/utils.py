@@ -612,9 +612,9 @@ class CalculateBusinessDateTestCase(unittest.TestCase):
         """
         start = iso8601.parse_date('2018-12-19T00:00:00+02:00')
         days_to_add = timedelta(days=60)
-        target_end = iso8601.parse_date('2019-02-18T00:00:00+02:00')
+        target_end = iso8601.parse_date('2019-02-18T18:00:00+02:00')
 
-        result = calculate_business_date(start, days_to_add, None, result_is_working_day=True)
+        result = calculate_business_date(start, days_to_add, None, specific_hour=18, result_is_working_day=True)
 
         self.assertEqual(result, target_end)
 
