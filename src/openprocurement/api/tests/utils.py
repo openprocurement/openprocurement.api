@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 import mock
 import unittest
+import iso8601
 
 from datetime import timedelta, datetime, date, time
 from hashlib import sha512
@@ -598,6 +599,20 @@ class CalculateBusinessDateTestCase(unittest.TestCase):
         start = datetime(2000, 5, 3)  # Wednesday
         days_to_add = timedelta(days=2)
         target_end = datetime(2000, 5, 5)
+
+        result = calculate_business_date(start, days_to_add, None, result_is_working_day=True)
+
+        self.assertEqual(result, target_end)
+
+    def test_result_is_working_day(self):
+        """Unintended holiday jump bug
+
+        If timezone converting changes date, jumps when `result_is_working_day`==True`
+        can overlap and cause error by adding wrong amount of days.
+        """
+        start = iso8601.parse_date('2018-12-19T00:00:00+02:00')
+        days_to_add = timedelta(days=60)
+        target_end = iso8601.parse_date('2019-02-18T00:00:00+02:00')
 
         result = calculate_business_date(start, days_to_add, None, result_is_working_day=True)
 
