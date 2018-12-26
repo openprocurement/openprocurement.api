@@ -604,7 +604,7 @@ class CalculateBusinessDateTestCase(unittest.TestCase):
 
         self.assertEqual(result, target_end)
 
-    def test_result_is_working_day(self):
+    def test_result_is_working_day_unintended_jump(self):
         """Unintended holiday jump bug
 
         If timezone converting changes date, jumps when `result_is_working_day`==True`
