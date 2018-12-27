@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 import binascii
 import os
+import yaml
+import json
 from ConfigParser import ConfigParser
 from collections import defaultdict
 from copy import deepcopy
@@ -31,41 +33,174 @@ def auth(auth_type=None):
     return decorator
 
 
+def get_path_to_auth(app_meta):
+    conf_auth = app_meta.config.auth
+
+    file_path = get_file_path(app_meta.here, conf_auth.src)
+    if not os.path.isfile(file_path):
+        raise IOError("Auth file '{}' was doesn`t exist".format(file_path))
+
+    return file_path
+
+
+def create_user_structure(group, name, info):
+    """
+    Create dictionary that contains information about user permissions and accreditaion level.
+
+    :param group:
+    :type group: str
+
+    :param name: name of user
+    :type name: str
+
+    :param info: information about user is such structure:
+        {
+            'token': 'token',
+            'levels': ['0', '1']
+        }
+    :type info: dict
+
+    :return: user auth info dictionary with structure below
+    {
+        'token': {
+            'name': 'broker1',
+            'level': ['1', '2'],
+            'group': 'brokers'
+        }
+    }
+    :rtype: dict
+    """
+    single_value = {
+        'name': name,
+        'level': info.get('levels', [ALL_ACCREDITATIONS_GRANTED]),
+        'group': group
+    }
+    single_key = info['token']
+    user = {single_key: single_value}
+    return user
+
+
+def create_users_from_group(group, users_info):
+    """
+    Create dictionary that contains information about users permissions and accreditaion level
+    that was defined in configuration file
+
+    :param group: name of the group of users
+    :type group: str
+
+    :param: users_info: list of tuples that consist of two elements ('user_name', user_info)
+        user_info have to look like:
+
+    :type users_info: list
+
+    :return: dictionary with users auth information
+    :rtype: dict
+    """
+
+    users = {}
+
+    for key, value in users_info:
+        users.update(create_user_structure(group, key, value))
+    LOGGER.info("Authentication permissions for users from the section "
+                "[%s] has been added",
+                group)
+    return users
+
+
+def create_users_from_group_ini(group, users_info):
+    """
+    Create dictionary that contains information about users permissions and accreditaion level
+    that was defined in configuration ini file
+
+    :param group: name of the group of users
+    :type group: str
+
+    :param: users_info: list of tuples that consist of two elements ('user_name', 'user_token')
+        user_token: contain token itself and accreditaion levels that separated from token by comma
+        it looks in such way 'token,1234'
+    :type users_info: list
+
+    :return: dictionary with users auth information
+    :rtype: dict
+    """
+
+    users = {}
+
+    for key, value in users_info:
+        levels = [l for l in value.split(',', 1)[1]] if ',' in value else [ALL_ACCREDITATIONS_GRANTED]
+        info = {'levels': levels, 'token': value.split(',', 1)[0]}
+
+        users.update(create_user_structure(group, key, info))
+
+    LOGGER.info("Authentication permissions for users from the section "
+                "[%s] has been added",
+                group)
+    return users
+
+
 @auth(auth_type="void")
-def _void_auth(app_meta):
+def void_auth(app_meta):
     return {}
 
 
 @auth(auth_type="file")
-def _file_auth(app_meta):
-    conf_auth = app_meta.config.auth
-    config = ConfigParser()
+@auth(auth_type="ini")
+def ini_auth(app_meta):
+    file_path = get_path_to_auth(app_meta)
 
-    file_path = get_file_path(app_meta.here, conf_auth.src)
+    config = ConfigParser()
     users = {}
-    if not os.path.isfile(file_path):
-        raise IOError("Auth file '{}' was doesn`t exist".format(file_path))
     config.read(file_path)
+
     if not config.sections():
         LOGGER.warning("Auth file '%s' was empty, no user will be added",
                        file_path)
-    for item in config.sections():
-        for key, value in config.items(item):
-            single_value = {
-                'name': key,
-                'level': (
-                    value.split(',', 1)[1] if
-                    ',' in value else
-                    ALL_ACCREDITATIONS_GRANTED
-                ),
-                'group': item
-            }
-            single_key = value.split(',', 1)[0]
-            user = {single_key: single_value}
-            users.update(user)
-        LOGGER.info("Authentication permissions for users from the section "
-                    "[%s] has been added",
-                    item)
+
+    for group in config.sections():
+        users_info = config.items(group)
+        new_users = create_users_from_group_ini(group, users_info)
+        users.update(new_users)
+
+    return users
+
+
+@auth(auth_type="yaml")
+def yaml_auth(app_meta):
+    file_path = get_path_to_auth(app_meta)
+
+    users = {}
+
+    with open(file_path) as auth_file:
+        config = yaml.safe_load(auth_file)
+
+    if not config:
+        LOGGER.warning("Auth file '%s' was empty, no user will be added",
+                       file_path)
+    for group in config:
+        users_info = config[group].items()
+        new_users = create_users_from_group(group, users_info)
+        users.update(new_users)
+
+    return users
+
+
+@auth(auth_type="json")
+def json_auth(app_meta):
+    file_path = get_path_to_auth(app_meta)
+
+    users = {}
+
+    with open(file_path) as auth_file:
+        config = json.load(auth_file)
+
+    if not config:
+        LOGGER.warning("Auth file '%s' was empty, no user will be added",
+                       file_path)
+    for group in config:
+        users_info = config[group].items()
+        new_users = create_users_from_group(group, users_info)
+        users.update(new_users)
+
     return users
 
 
