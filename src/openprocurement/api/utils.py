@@ -1013,14 +1013,6 @@ def operate_on_last_working_day(time_cursor, start_is_holiday, specific_hour, re
     return time_cursor
 
 
-def calendar_days_calculation(start, delta, reverse_calculations, result_is_working_day=None):
-    time_cursor = start + delta
-
-    if result_is_working_day and is_holiday(time_cursor):
-        time_cursor = jump_closest_working_day(time_cursor, backward=reverse_calculations)
-    return time_cursor
-
-
 def working_days_calculation(time_cursor, days_to_jump, specific_hour, start_is_holiday, reverse_calculations):
     validate_jump_length(days_to_jump)
 
@@ -1082,15 +1074,16 @@ def calculate_business_date(start, delta, context, working_days=False, specific_
     if accelerator:
         result = accelerated_calculate_business_date(time_cursor, delta, accelerator, specific_time, specific_hour)
     if not working_days and result is None:
-        result = calendar_days_calculation(
-            time_cursor, delta, reverse_calculations, kwargs.get('result_is_working_day')
-        )
+        result = time_cursor + delta
     if working_days and result is None:
         result = working_days_calculation(
             time_cursor, days_to_jump, specific_hour, start_is_holiday, reverse_calculations
         )
 
     time_cursor = result if skip_tz_converting else result.astimezone(tz)
+
+    if kwargs.get('result_is_working_day') and is_holiday(time_cursor):
+        time_cursor = jump_closest_working_day(time_cursor, backward=reverse_calculations)
 
     if not accelerator:
         time_cursor = specific_time_setting(time_cursor, specific_time, specific_hour)
