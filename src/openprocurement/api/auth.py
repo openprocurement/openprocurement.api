@@ -143,6 +143,7 @@ def void_auth(app_meta):
     return {}
 
 
+@auth(auth_type="file")
 @auth(auth_type="ini")
 def ini_auth(app_meta):
     file_path = get_path_to_auth(app_meta)
@@ -155,14 +156,12 @@ def ini_auth(app_meta):
         LOGGER.warning("Auth file '%s' was empty, no user will be added",
                        file_path)
 
-    for item in config.sections():
-        users.update(create_users_from_group_ini(item, config.items(item)))
+    for group in config.sections():
+        users_info = config.items(group)
+        new_users = create_users_from_group_ini(group, users_info)
+        users.update(new_users)
 
     return users
-
-
-# Backward compatibility for `file` type
-auth_mapping['file'] = ini_auth
 
 
 @auth(auth_type="yaml")
@@ -177,8 +176,10 @@ def yaml_auth(app_meta):
     if not config:
         LOGGER.warning("Auth file '%s' was empty, no user will be added",
                        file_path)
-    for item in config:
-        users.update(create_users_from_group(item, config[item].items()))
+    for group in config:
+        users_info = config[group].items()
+        new_users = create_users_from_group(group, users_info)
+        users.update(new_users)
 
     return users
 
@@ -195,8 +196,10 @@ def json_auth(app_meta):
     if not config:
         LOGGER.warning("Auth file '%s' was empty, no user will be added",
                        file_path)
-    for item in config:
-        users.update(create_users_from_group(item, config[item].items()))
+    for group in config:
+        users_info = config[group].items()
+        new_users = create_users_from_group(group, users_info)
+        users.update(new_users)
 
     return users
 
