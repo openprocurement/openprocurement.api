@@ -1,11 +1,15 @@
 # -*- coding: utf-8 -*-
 import os
+import sys
 import decimal
 import simplejson
+import tempfile
+
 from copy import deepcopy
 from base64 import b64encode, b64decode
 from binascii import hexlify, unhexlify
 from copy import copy
+from collections import defaultdict
 from datetime import datetime, timedelta, time, date as date_type
 from email.header import decode_header
 from functools import partial, wraps
@@ -21,6 +25,7 @@ from urlparse import urlparse, urlunsplit, parse_qsl, parse_qs
 from uuid import uuid4
 from pkg_resources import iter_entry_points
 from pytz import utc
+from yaml import safe_load
 
 import collections
 
@@ -58,6 +63,8 @@ from openprocurement.api.interfaces import (
 )
 from openprocurement.api.traversal import factory
 from openprocurement.api.exceptions import ConfigAliasError
+from openprocurement.api.config import AppMetaSchema
+from openprocurement.api.database import set_api_security
 
 
 ACCELERATOR_RE = compile(r'.accelerator=(?P<accelerator>\d+)')
@@ -1095,12 +1102,7 @@ def get_document_creation_date(document):
     return (document.get('revisions')[0].date if document.get('revisions') else get_now())
 
 
-def read_yaml(name):
-    import inspect
-    from yaml import safe_load
-    caller_file = inspect.stack()[1][1]
-    caller_dir = os.path.dirname(os.path.realpath(caller_file))
-    file_path = os.path.join(caller_dir, name)
+def read_yaml(file_path):
     with open(file_path) as _file:
         data = _file.read()
     return safe_load(data)
@@ -1330,10 +1332,125 @@ def log_auction_status_change(request, auction, status):
     LOGGER.info(msg, extra=context_unpack(request, context_msg))
     return True
 
-  
+
 def read_json(filename, file_dir):
     """Read file & deserialize it as JSON"""
     full_filename = os.path.join(file_dir, filename)
     with open(full_filename, 'r') as f:
         data = f.read()
     return loads(data)
+
+
+def create_app_meta(filepath):
+    """This function returns schematics.models.Model object which contains configuration
+    of the application. Configuration file reading will be performed only once.
+
+    Current function must be called only once during app initialization.
+    """
+    config_data = defaultdict(lambda: None, read_yaml(filepath))
+    # set app_meta.here as it's parent directory
+    config_data['here'] = os.path.dirname(filepath)
+    # load & validate app_meta
+    app_meta = AppMetaSchema(config_data)
+    app_meta.validate()
+    return app_meta
+
+
+def dump_dict_to_tempfile(dict_to_dump, fmt='json'):
+    """Writes dict to a temporary file and returns it's path"""
+
+    if fmt == 'json':
+        s = dumps(dict_to_dump)
+
+    tf = tempfile.NamedTemporaryFile('w', delete=False)
+    tf.write(s)
+    tf.close()
+
+    return tf.name
+
+
+def path_to_kv(kv, d):
+    """Traverse nested dict recursively & search for a given k/v
+
+    :param kv: key/value to seek, tuple
+    :param d: dict to search in
+
+    :returns: path(s) to a target k/v
+    """
+    found_paths = []  # buffer for the results
+    current_path = []
+
+    def search(curr_dict, curr_path):
+        for key, value in curr_dict.iteritems():
+            if key == kv[0] and value == kv[1]:
+                curr_path.append(key)
+                found_paths.append(tuple(curr_path))
+            elif isinstance(value, dict):
+                new_path = copy(curr_path)
+                new_path.append(key)
+                search(value, new_path)
+
+    search(d, current_path)
+
+    if found_paths:
+        return tuple(found_paths)
+
+    return None
+
+
+def collect_packages_for_migration(plugins):
+    migration_kv = ('migration', True)
+    results_buffer = []
+
+    paths = path_to_kv(migration_kv, plugins)
+    if not paths:
+        return None
+
+    for path in paths:
+        package_name = path[-2]
+        results_buffer.append(package_name)
+
+    if results_buffer:
+        return tuple(results_buffer)
+
+    return None
+
+
+def collect_migration_entrypoints(package_names, name='main'):
+    """Collect migration functions from specified entrypoint groups"""
+    # form entrypoint groups names
+    ep_group_names = []
+    for g in package_names:
+        ep_group_name = '{0}.migration'.format(g)
+        ep_group_names.append(ep_group_name)
+
+    ep_funcs = []
+    for group in ep_group_names:
+        for ep in iter_entry_points(group, name):
+            ep_func = ep.load()
+            ep_funcs.append(ep_func)
+
+    return ep_funcs
+
+
+def run_migrations(app_meta):
+    packages_for_migrations_names = collect_packages_for_migration(app_meta.plugins)
+    ep_funcs = collect_migration_entrypoints(packages_for_migrations_names)
+    _, _, _, db = set_api_security(app_meta.config.db)
+
+    for migration_func in ep_funcs:
+        migration_func(db)
+
+
+def run_migrations_console_entrypoint():
+    """Search for migrations in the app_meta and run them if enabled
+
+    This is an entrypoint for console script.
+    """
+    # due to indirect calling of this function, namely through the script,
+    # generated from the package's entrypionts, argparse lib usage is troublesome
+    if len(sys.argv) < 2:
+        sys.exit('Provide app_meta location as first argument')
+    am_filepath = sys.argv[1]
+    app_meta = create_app_meta(am_filepath)
+    run_migrations(app_meta)

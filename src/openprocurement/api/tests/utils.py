@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+import os
 import mock
 import unittest
 import iso8601
@@ -7,6 +8,7 @@ from datetime import timedelta, datetime, date, time
 from hashlib import sha512
 from uuid import UUID
 from pytz import timezone
+from copy import deepcopy
 
 from cornice.errors import Errors
 from couchdb.client import Document
@@ -15,30 +17,38 @@ from schematics.types import StringType
 
 from openprocurement.api.utils import (
     apply_data_patch,
+    calculate_business_date,
+    call_before,
+    collect_packages_for_migration,
+    connection_mock_config,
     context_unpack,
+    create_app_meta,
+    decrypt,
+    dump_dict_to_tempfile,
+    encrypt,
     error_handler,
-    decrypt, encrypt,
     forbidden,
+    format_aliases,
     generate_docservice_url,
     generate_id,
     get_content_configurator,
+    get_file_path,
+    get_now,
+    get_plugin_aliases,
     get_revision_changes,
+    make_aliases,
+    path_to_kv,
     prepare_patch,
+    run_migrations_console_entrypoint,
+    search_list_with_dicts,
     set_modetest_titles,
     set_ownership,
     set_parent,
     update_logging_context,
-    calculate_business_date,
-    get_now,
-    get_file_path,
-    get_plugin_aliases,
-    format_aliases,
-    make_aliases,
-    connection_mock_config,
-    call_before,
-    search_list_with_dicts,
 )
 from openprocurement.api.exceptions import ConfigAliasError
+from openprocurement.api.tests.base import MOCK_CONFIG
+from openprocurement.api.tests.fixtures.config import RANDOM_PLUGINS
 
 
 class UtilsTest(unittest.TestCase):
@@ -763,12 +773,113 @@ class TestSearchListWithDicts(unittest.TestCase):
         assert result is None
 
 
+class CreateAppMetaTestCase(unittest.TestCase):
+
+    def setUp(self):
+        self.temp_app_meta_path = dump_dict_to_tempfile(MOCK_CONFIG)
+
+    def tearDown(self):
+        os.unlink(self.temp_app_meta_path)
+
+    def test_ok(self):
+        app_meta = create_app_meta(self.temp_app_meta_path)
+        root_keys = ('config', 'plugins', 'here')
+        for k in root_keys:
+            self.assertIn(k, app_meta.keys(), 'AppMeta was created without required base keys')
+
+
+class RunMigrationsConsoleEntrypointTestCase(unittest.TestCase):
+
+    @mock.patch('openprocurement.api.utils.run_migrations')
+    @mock.patch('openprocurement.api.utils.create_app_meta')
+    @mock.patch('openprocurement.api.utils.sys')
+    def test_ok(self, argv_mock, create_app_meta, run_migrations):
+        argv_mock.configure_mock(**{'argv': ('1', '2')})
+        create_app_meta.return_value = 'test_app_meta'
+
+        run_migrations_console_entrypoint()
+        self.assertEqual(
+            run_migrations.call_args[0][0], 'test_app_meta', 'run_migrations did not received proper argument'
+        )
+
+
+class PathToKvTestCase(unittest.TestCase):
+
+    def setUp(self):
+        self.testdict = {
+            'forest': {
+                'tree1': {
+                    'leaf1': 'green',
+                    'leaf2': 'brown'
+                },
+                'tree2': {
+                    'leaf1': 'green',
+                    'leaf2': 'brown',
+                    'leaf3': 'green-brown'
+                }
+            }
+        }
+
+    def test_search_single_result(self):
+        kv = ('leaf3', 'green-brown')
+        target_r = (
+            ('forest', 'tree2', 'leaf3'),
+        )
+
+        r = path_to_kv(kv, self.testdict)
+
+        self.assertEqual(r, target_r)
+
+    def test_search_multiple_results(self):
+        kv = ('leaf1', 'green')
+        target_r = (
+            ('forest', 'tree1', 'leaf1'),
+            ('forest', 'tree2', 'leaf1'),
+        )
+
+        r = path_to_kv(kv, self.testdict)
+
+        self.assertEqual(r, target_r)
+
+    def test_no_results(self):
+        kv = ('root', 'no')
+        target_r = None
+
+        r = path_to_kv(kv, self.testdict)
+
+        self.assertEqual(r, target_r)
+
+
+class CollectPackagesForMigrationTestCase(unittest.TestCase):
+
+    def setUp(self):
+        self.plugins = deepcopy(RANDOM_PLUGINS)
+
+    def test_ok(self):
+        result = collect_packages_for_migration(self.plugins)
+
+        target_result = ('auctions.rubble.other',)
+        self.assertEqual(result, target_result)
+
+    def test_none_find(self):
+        self.plugins['api']['plugins']['auctions.core']['plugins']['auctions.rubble.other']['migration'] = False
+
+        result = collect_packages_for_migration(self.plugins)
+
+        target_result = None
+        self.assertEqual(result, target_result)
+
+
 def suite():
     suite = unittest.TestSuite()
     suite.addTest(unittest.makeSuite(UtilsTest))
     suite.addTest(unittest.makeSuite(CalculateBusinessDateTestCase))
     suite.addTest(unittest.makeSuite(CallBeforeTestCase))
     suite.addTest(unittest.makeSuite(TestSearchListWithDicts))
+    suite.addTest(unittest.makeSuite(CreateAppMetaTestCase))
+    suite.addTest(unittest.makeSuite(RunMigrationsConsoleEntrypointTestCase))
+    suite.addTest(unittest.makeSuite(PathToKvTestCase))
+    suite.addTest(unittest.makeSuite(CollectPackagesForMigrationTestCase))
     return suite
 
 

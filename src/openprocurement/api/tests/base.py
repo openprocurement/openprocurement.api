@@ -124,7 +124,7 @@ class BaseWebTest(unittest.TestCase):
         if not getattr(cls, 'app', None) or getattr(cls, 'docservice', True):
             with nested(
                 patch(
-                    'openprocurement.api.app.read_yaml',
+                    'openprocurement.api.utils.read_yaml',
                     return_value=deepcopy(cls.mock_config),
                     autospec=True
                 ),

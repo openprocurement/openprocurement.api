@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+import sys
 import logging
 from openprocurement.api.constants import SCHEMA_VERSION, SCHEMA_DOC
 from openprocurement.api.utils import get_plugins
