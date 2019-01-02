@@ -115,7 +115,7 @@ class TestAPIResourceListing(BaseAPIUnitTest):
         class OffsetExpired(Exception):
             """ Test exception for error_handler mocking"""
 
-        with patch('openprocurement.api.utils.error_handler',
+        with patch('openprocurement.api.utils.common.error_handler',
                    return_value=OffsetExpired):
             with self.assertRaises(OffsetExpired):
                 response = view.get()

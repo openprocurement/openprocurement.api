@@ -13,7 +13,7 @@ from types import FunctionType
 from mock import patch, MagicMock
 from requests.models import Response
 
-from openprocurement.api.utils import apply_data_patch, connection_mock_config
+from openprocurement.api.utils.common import apply_data_patch, connection_mock_config
 from openprocurement.api.constants import VERSION, SESSION
 from openprocurement.api.design import sync_design
 from openprocurement.api.config import DS
@@ -124,7 +124,7 @@ class BaseWebTest(unittest.TestCase):
         if not getattr(cls, 'app', None) or getattr(cls, 'docservice', True):
             with nested(
                 patch(
-                    'openprocurement.api.utils.read_yaml',
+                    'openprocurement.api.utils.common.read_yaml',
                     return_value=deepcopy(cls.mock_config),
                     autospec=True
                 ),

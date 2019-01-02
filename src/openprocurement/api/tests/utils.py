@@ -15,7 +15,7 @@ from couchdb.client import Document
 from libnacl.sign import Signer
 from schematics.types import StringType
 
-from openprocurement.api.utils import (
+from openprocurement.api.utils.common import (
     apply_data_patch,
     calculate_business_date,
     call_before,
@@ -323,7 +323,7 @@ class UtilsTest(unittest.TestCase):
         result = context_unpack(request, msg, {'c': 'd'})
         self.assertAlmostEqual(result, expected_result)
 
-    @mock.patch('openprocurement.api.utils.generate_id')
+    @mock.patch('openprocurement.api.utils.common.generate_id')
     def test_set_ownership(self, mock_generate_id):
         request = mock.MagicMock()
         mock_generate_id.return_value = '1234567890abcdef1234567890abcdef'
@@ -337,7 +337,7 @@ class UtilsTest(unittest.TestCase):
         self.assertEqual(item.owner_token, expected_result['token'])
         self.assertEqual(item.transfer_token, sha512(expected_result['token']).hexdigest())
 
-    @mock.patch('openprocurement.api.utils.generate_id')
+    @mock.patch('openprocurement.api.utils.common.generate_id')
     def test_set_ownership_with_passed_transfer_token(self, mock_generate_id):
         request = mock.MagicMock()
         mock_generate_id.return_value = '1234567890abcdef1234567890abcdef'
@@ -795,9 +795,9 @@ class CreateAppMetaTestCase(unittest.TestCase):
 
 class RunMigrationsConsoleEntrypointTestCase(unittest.TestCase):
 
-    @mock.patch('openprocurement.api.utils.run_migrations')
-    @mock.patch('openprocurement.api.utils.create_app_meta')
-    @mock.patch('openprocurement.api.utils.sys')
+    @mock.patch('openprocurement.api.utils.common.run_migrations')
+    @mock.patch('openprocurement.api.utils.common.create_app_meta')
+    @mock.patch('openprocurement.api.utils.common.sys')
     def test_ok(self, argv_mock, create_app_meta, run_migrations):
         argv_mock.configure_mock(**{'argv': ('1', '2')})
         create_app_meta.return_value = 'test_app_meta'
