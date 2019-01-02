@@ -18,7 +18,6 @@ from schematics.types import StringType
 from openprocurement.api.utils.common import (
     apply_data_patch,
     call_before,
-    collect_packages_for_migration,
     connection_mock_config,
     context_unpack,
     create_app_meta,
@@ -38,7 +37,6 @@ from openprocurement.api.utils.common import (
     make_aliases,
     path_to_kv,
     prepare_patch,
-    run_migrations_console_entrypoint,
     search_list_with_dicts,
     set_modetest_titles,
     set_ownership,
@@ -51,6 +49,10 @@ from openprocurement.api.utils.timestuff import (
     set_timezone,
     utcoffset_difference,
     utcoffset_is_aliquot_to_hours,
+)
+from openprocurement.api.utils.migration import (
+    collect_packages_for_migration,
+    run_migrations_console_entrypoint,
 )
 from openprocurement.api.exceptions import ConfigAliasError
 from openprocurement.api.tests.base import MOCK_CONFIG
@@ -796,9 +798,9 @@ class CreateAppMetaTestCase(unittest.TestCase):
 
 class RunMigrationsConsoleEntrypointTestCase(unittest.TestCase):
 
-    @mock.patch('openprocurement.api.utils.common.run_migrations')
-    @mock.patch('openprocurement.api.utils.common.create_app_meta')
-    @mock.patch('openprocurement.api.utils.common.sys')
+    @mock.patch('openprocurement.api.utils.migration.run_migrations')
+    @mock.patch('openprocurement.api.utils.migration.create_app_meta')
+    @mock.patch('openprocurement.api.utils.migration.sys')
     def test_ok(self, argv_mock, create_app_meta, run_migrations):
         argv_mock.configure_mock(**{'argv': ('1', '2')})
         create_app_meta.return_value = 'test_app_meta'
