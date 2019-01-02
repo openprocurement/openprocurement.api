@@ -17,7 +17,6 @@ from schematics.types import StringType
 
 from openprocurement.api.utils.common import (
     apply_data_patch,
-    calculate_business_date,
     call_before,
     collect_packages_for_migration,
     connection_mock_config,
@@ -39,18 +38,20 @@ from openprocurement.api.utils.common import (
     make_aliases,
     path_to_kv,
     prepare_patch,
-    round_seconds_to_hours,
     run_migrations_console_entrypoint,
     search_list_with_dicts,
     set_modetest_titles,
     set_ownership,
     set_parent,
-    set_timezone,
     update_logging_context,
+)
+from openprocurement.api.utils.timestuff import (
+    calculate_business_date,
+    round_seconds_to_hours,
+    set_timezone,
     utcoffset_difference,
     utcoffset_is_aliquot_to_hours,
 )
-from openprocurement.api.constants import TZ
 from openprocurement.api.exceptions import ConfigAliasError
 from openprocurement.api.tests.base import MOCK_CONFIG
 from openprocurement.api.tests.fixtures.config import RANDOM_PLUGINS
