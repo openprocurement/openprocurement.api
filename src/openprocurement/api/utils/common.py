@@ -15,7 +15,6 @@ from functools import partial
 from hashlib import sha512
 from json import dumps, loads
 from pyramid.compat import text_
-from re import compile
 from string import hexdigits
 from time import time as ttime
 from urllib import quote, unquote, urlencode
@@ -55,10 +54,6 @@ from openprocurement.api.interfaces import (
 )
 from openprocurement.api.traversal import factory
 from openprocurement.api.config import AppMetaSchema
-
-
-ACCELERATOR_RE = compile(r'.accelerator=(?P<accelerator>\d+)')
-SECONDS_IN_HOUR = 3600
 
 
 def route_prefix(conf_main):
