@@ -5,7 +5,7 @@ from openprocurement.api.plugins.transferring.validation import (
 from openprocurement.api.plugins.transferring.utils import (
     transferresource, save_transfer, set_ownership
 )
-from openprocurement.api.utils import json_view, context_unpack, APIResource
+from openprocurement.api.utils.api_resource import json_view, context_unpack, APIResource
 
 
 @transferresource(name='Transfers',

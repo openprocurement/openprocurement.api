@@ -8,7 +8,11 @@ from schematics.exceptions import ModelValidationError
 
 from openprocurement.api.plugins.transferring.traversal import factory
 from openprocurement.api.plugins.transferring.models import Transfer
-from openprocurement.api.utils import error_handler, context_unpack, get_now
+from openprocurement.api.utils.common import (
+    context_unpack,
+    error_handler,
+    get_now,
+)
 
 
 transferresource = partial(resource, error_handler=error_handler,

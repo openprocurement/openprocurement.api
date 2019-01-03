@@ -1,35 +1,28 @@
 # -*- coding: utf-8 -*-
 import os
-import sys
 import decimal
 import simplejson
 import tempfile
-import collections
 import couchdb.json
 
 from copy import deepcopy
 from base64 import b64encode, b64decode
 from binascii import hexlify, unhexlify
-from copy import copy
 from collections import defaultdict
-from datetime import datetime, timedelta, time, date as date_type
+from datetime import datetime
 from email.header import decode_header
-from functools import partial, wraps
+from functools import partial
 from hashlib import sha512
 from json import dumps, loads
-from logging import getLogger
 from pyramid.compat import text_
-from re import compile
 from string import hexdigits
 from time import time as ttime
 from urllib import quote, unquote, urlencode
 from urlparse import urlparse, urlunsplit, parse_qsl, parse_qs
 from uuid import uuid4
-from pkg_resources import iter_entry_points
-from pytz import utc
 from yaml import safe_load
 
-from cornice.resource import resource, view
+from cornice.resource import resource
 from cornice.util import json_error
 from couchdb import util
 from couchdb_schematics.document import SchematicsDocument
@@ -51,7 +44,6 @@ from openprocurement.api.constants import (
     SESSION,
     TZ,
     VERSION,
-    WORKING_DAYS,
 )
 from openprocurement.api.tests.fixtures.auth import MOCK_AUTH_USERS
 from openprocurement.api.events import ErrorDesctiptorEvent
@@ -61,14 +53,7 @@ from openprocurement.api.interfaces import (
     IOPContent,
 )
 from openprocurement.api.traversal import factory
-from openprocurement.api.exceptions import ConfigAliasError
 from openprocurement.api.config import AppMetaSchema
-from openprocurement.api.database import set_api_security
-
-
-ACCELERATOR_RE = compile(r'.accelerator=(?P<accelerator>\d+)')
-json_view = partial(view, renderer='json')
-SECONDS_IN_HOUR = 3600
 
 
 def route_prefix(conf_main):
@@ -98,42 +83,6 @@ def get_file_path(here, src):
     if not path.is_absolute():
         path = path.joinpath(here, path)
     return path.as_posix()
-
-
-def get_evenly_plugins(config, plugin_map, group):
-    """
-    Load plugin which fall into the group
-    :param config: app config
-    :param plugin_map: mapping of plugins names
-    :param group: group of entry point
-
-    :type config: Configurator
-    :type plugin_map: abs.Mapping
-    :type group: string
-
-    :rtype: None
-    """
-
-    if not hasattr(plugin_map, '__iter__'):
-        return
-    for name in plugin_map:
-        for entry_point in iter_entry_points(group, name):
-            plugin = entry_point.load()
-            value = plugin_map.get(name) if plugin_map.get(name) else {}
-            plugin(config, collections.defaultdict(lambda: None, value))
-            break
-        else:
-            LOGGER.warning("Could not find plugin for "
-                           "entry_point '{}' in '{}' group".format(name, group))
-
-
-def get_plugins(plugins_map):
-    plugins = []
-    for item in plugins_map:
-        plugins.append(item)
-        if isinstance(plugins_map[item], collections.Mapping) and plugins_map[item].get('plugins'):
-            plugins.extend(get_plugins(plugins_map[item]['plugins']))
-    return plugins
 
 
 def validate_dkpp(items, *args):
@@ -549,195 +498,6 @@ def request_params(request):
 opresource = partial(resource, error_handler=error_handler, factory=factory)
 
 
-def get_listing_data(
-        view_params, db_params, collections, model_serializer,
-        resource_name, update_after):
-    """ Util function for retrieving data from couchdb
-
-    :param view_params:
-        request: self.request
-        log_message_id: self.log_message_id
-    :param db_params:
-        server: couchdb server (request.registry.couchdb_server)
-        db: couchdb database
-    :param collections: FIELDS, FEED, VIEW_MAP, CHANGES_VIEW_MAP
-    :param model_serializer: callable for serialization of object 'model'
-    :param resource_name: name of resource that retrieved
-    :return: json object data
-    """
-
-    params = {}
-    pparams = {}
-    fields = view_params['request'].params.get('opt_fields', '')
-    if fields:
-        params['opt_fields'] = fields
-        pparams['opt_fields'] = fields
-        fields = fields.split(',')
-        view_fields = fields + ['dateModified', 'id']
-    limit = view_params['request'].params.get('limit', '')
-    if limit:
-        params['limit'] = limit
-        pparams['limit'] = limit
-    limit = int(limit) if limit.isdigit() and (100 if fields else 1000) >= int(limit) > 0 else 100
-    descending = bool(view_params['request'].params.get('descending'))
-    offset = view_params['request'].params.get('offset', '')
-    if descending:
-        params['descending'] = 1
-    else:
-        pparams['descending'] = 1
-    feed = view_params['request'].params.get('feed', '')
-    view_map = collections['FEED'].get(feed, collections['VIEW_MAP'])
-    changes = view_map is collections['CHANGES_VIEW_MAP']
-    if feed and feed in collections['FEED']:
-        params['feed'] = feed
-        pparams['feed'] = feed
-    mode = view_params['request'].params.get('mode', '')
-    if mode and mode in view_map:
-        params['mode'] = mode
-        pparams['mode'] = mode
-    view_limit = limit + 1 if offset else limit
-    if changes:
-        if offset:
-            view_offset = decrypt(db_params['server'].uuid, db_params['db'].name, offset)
-            if view_offset and view_offset.isdigit():
-                view_offset = int(view_offset)
-            else:
-                view_params['request'].errors.add('querystring', 'offset', 'Offset expired/invalid')
-                view_params['request'].errors.status = 404
-                raise error_handler(view_params['request'])
-        if not offset:
-            view_offset = 'now' if descending else 0
-    else:
-        if offset:
-            view_offset = offset
-        else:
-            view_offset = '9' if descending else ''
-    list_view = view_map.get(mode, view_map[u''])
-    if update_after:
-        view = partial(
-            list_view,
-            db_params['db'],
-            limit=view_limit,
-            startkey=view_offset,
-            descending=descending,
-            stale='update_after'
-        )
-    else:
-        view = partial(list_view, db_params['db'], limit=view_limit, startkey=view_offset, descending=descending)
-    if fields:
-        if not changes and set(fields).issubset(set(collections['FIELDS'])):
-            results = [
-                (
-                    dict([(i, j) for i, j in x.value.items() + [
-                        ('id', x.id),
-                        ('dateModified', x.key)
-                    ] if i in view_fields
-                          ]),
-                    x.key
-                )
-                for x in view()
-            ]
-        elif changes and set(fields).issubset(set(collections['FIELDS'])):
-            results = [
-                (dict([(i, j) for i, j in x.value.items() + [('id', x.id)] if i in view_fields]), x.key)
-                for x in view()
-            ]
-        elif fields:
-            LOGGER.info(
-                'Used custom fields for {} list: {}'.format(
-                    resource_name,
-                    ','.join(sorted(fields))
-                ),
-                extra=context_unpack(view_params['request'], {'MESSAGE_ID': view_params['log_message_id']})
-            )
-
-            results = [
-                (model_serializer(view_params['request'], i[u'doc'], view_fields), i.key)
-                for i in view(include_docs=True)
-            ]
-    else:
-        results = [
-            (
-                {'id': i.id, 'dateModified': i.value['dateModified']} if changes else
-                {'id': i.id, 'dateModified': i.key}, i.key
-            )
-            for i in view()
-        ]
-    if results:
-        params['offset'], pparams['offset'] = results[-1][1], results[0][1]
-        if offset and view_offset == results[0][1]:
-            results = results[1:]
-        elif offset and view_offset != results[0][1]:
-            results = results[:limit]
-            params['offset'], pparams['offset'] = results[-1][1], view_offset
-        results = [i[0] for i in results]
-        if changes:
-            params['offset'] = encrypt(db_params['server'].uuid, db_params['db'].name, params['offset'])
-            pparams['offset'] = encrypt(db_params['server'].uuid, db_params['db'].name, pparams['offset'])
-    else:
-        params['offset'] = offset
-        pparams['offset'] = offset
-    data = {
-        'data': results,
-        'next_page': {
-            "offset": params['offset'],
-            "path": view_params['request'].route_path(resource_name, _query=params),
-            "uri": view_params['request'].route_url(resource_name, _query=params)
-        }
-    }
-    if descending or offset:
-        data['prev_page'] = {
-            "offset": pparams['offset'],
-            "path": view_params['request'].route_path(resource_name, _query=pparams),
-            "uri": view_params['request'].route_url(resource_name, _query=pparams)
-        }
-    return data
-
-
-class APIResource(object):
-
-    def __init__(self, request, context):
-        self.context = context
-        self.request = request
-        self.db = request.registry.db
-        self.server_id = request.registry.server_id
-        self.LOGGER = getLogger(type(self).__module__)
-
-
-class APIResourceListing(APIResource):
-
-    def __init__(self, request, context):
-        super(APIResourceListing, self).__init__(request, context)
-        self.server = request.registry.couchdb_server
-        self.update_after = request.registry.update_after
-
-    @json_view(permission='view_listing')
-    def get(self):
-        collections = {
-            'FEED': self.FEED,
-            'VIEW_MAP': self.VIEW_MAP,
-            'CHANGES_VIEW_MAP': self.CHANGES_VIEW_MAP,
-            'FIELDS': self.FIELDS
-        }
-        view_params = {
-            'log_message_id': self.log_message_id,
-            'request': self.request
-        }
-        db_params = {
-            'server': self.server,
-            'db': self.db
-        }
-        data = get_listing_data(
-            view_params,
-            db_params,
-            collections,
-            self.serialize_func,
-            self.object_name_for_listing,
-            self.update_after,
-        )
-        return data
-
-
 def forbidden(request):
     request.errors.add('url', 'permission', 'Forbidden')
     request.errors.status = 403
@@ -896,231 +656,6 @@ def get_request_from_root(model):
         return model.request if hasattr(model, 'request') else None
 
 
-def round_seconds_to_hours(s):
-    """Converts seconds to closest hour
-
-    The cause of creation of this function is to convert some amount
-    of seconds to closest amount of hours. This neccesity is caused
-    by nondistinct value of UTC offset in different timezones.
-    """
-    hours = float(s) / SECONDS_IN_HOUR
-    reminder = hours % 1
-    hours_floor = int(hours)
-    if reminder > 0.5:
-        return hours_floor + 1
-    return hours_floor
-
-
-def set_timezone(dt, tz=TZ):
-    """Set timezone of datetime without actual changing of date and time values
-
-    By default, server's timezone will be set.
-    """
-    return dt.replace(tzinfo=tz)
-
-
-def set_specific_hour(date_time, hour):
-    """Reset datetime's time to {hour}:00:00, while saving timezone data
-
-    Example:
-        2018-1-1T14:12:55+02:00 -> 2018-1-1T02:00:00+02:00, for hour=2
-        2018-1-1T14:12:55+02:00 -> 2018-1-1T18:00:00+02:00, for hour=18
-    """
-
-    return datetime.combine(date_time.date(), time(hour % 24, tzinfo=date_time.tzinfo))
-
-
-def set_specific_time(date_time, time_obj):
-    """Replace datetime time with some other time object"""
-
-    return datetime.combine(date_time.date(), time_obj)
-
-
-def specific_time_setting(time_cursor, specific_time=None, specific_hour=None):
-    if specific_time:
-        return set_specific_time(time_cursor, specific_time)
-    elif specific_hour:
-        return set_specific_hour(time_cursor, specific_hour)
-
-    return time_cursor
-
-
-def jump_closest_working_day(date_, backward=False):
-    """Search closest working day
-
-    :param date_: date to start counting
-    :param backward: search in the past when set to True
-    :type: date_: datetime.date
-    :type backward: bool
-    :rtype: datetime.data
-    """
-    cursor = copy(date_)
-
-    while True:
-        cursor += timedelta(1) if not backward else -timedelta(1)
-        if not is_holiday(cursor):
-            return cursor
-
-
-def round_out_day(time_cursor, reverse):
-    time_cursor += timedelta(days=1) if not reverse else timedelta()
-    time_cursor = set_specific_hour(time_cursor, 0)
-    return time_cursor
-
-
-def is_holiday(date):
-    """Check if date is holiday
-    Calculation is based on WORKING_DAYS dictionary, constructed in following format:
-        <date_string>: <bool>
-
-    where:
-        - `date_string` - string representing the date in ISO 8601 format, `YYYY-MM-DD`.
-        - `bool` - boolean representing work status of the day:
-            - `True` **IF IT'S A HOLIDAY** but the day is not at weekend
-            - `False` if day is at weekend, but it's a working day
-    :param date: date to check
-    :type date: datetime.timedelta
-    :return: True if date is work day, False if it isn't
-    :rtype: bool
-    """
-
-    date_iso = date.isoformat() if type(date) == date_type else date.date().isoformat()
-    return (
-        date.weekday() in [5, 6] and  # date's weekday is Saturday or Sunday
-        WORKING_DAYS.get(date_iso, True) or  # but it's not a holiday
-        WORKING_DAYS.get(date_iso, False)  # or date in't at weekend, but it's holiday
-    )
-
-
-def get_accelerator(context):
-    """Checks if some accelerator attribute was set and returns it
-
-    `calculate_business_date` is used not only by auctions as a `context`,
-    but also with other models. This method recognizes accelerator attribute
-    for the `context` model if it present in `possible_attributes` below.
-    """
-    if not context:
-        return
-    possible_attributes = (
-        'procurementMethodDetails',
-        'sandboxParameters',
-    )
-    accelerator = None
-    for attr in possible_attributes:
-        if isinstance(context, dict) and context.get(attr):
-            accelerator = context[attr]
-            break
-        elif hasattr(context, attr):
-            accelerator = getattr(context, attr)
-            break
-    if accelerator and isinstance(accelerator, basestring):
-        return accelerator
-
-
-def accelerated_calculate_business_date(date, period, accelerator, specific_time=None, specific_hour=None):
-    re_obj = ACCELERATOR_RE.search(accelerator)
-    if re_obj and 'accelerator' in re_obj.groupdict():
-        if specific_hour or specific_time:
-            period = period + (specific_time_setting(date, specific_time, specific_hour) - date)
-        return date + (period / int(re_obj.groupdict()['accelerator']))
-
-
-def jump_working_days(time_cursor, days_to_jump, reverse_calculations):
-    while days_to_jump > 0:
-        time_cursor = jump_closest_working_day(time_cursor, backward=reverse_calculations)
-        days_to_jump -= 1
-    return time_cursor
-
-
-def validate_jump_length(days_to_jump):
-    if days_to_jump == 0:
-        raise ValueError("delta.days must be not equal to zero")
-
-
-def operate_on_last_working_day(time_cursor, start_is_holiday, specific_hour, reverse_calculations):
-    if start_is_holiday and not specific_hour:
-        time_cursor = round_out_day(time_cursor, reverse_calculations)
-    return time_cursor
-
-
-def working_days_calculation(time_cursor, days_to_jump, specific_hour, start_is_holiday, reverse_calculations):
-    validate_jump_length(days_to_jump)
-
-    time_cursor = jump_working_days(time_cursor, days_to_jump, reverse_calculations)
-
-    return operate_on_last_working_day(time_cursor, start_is_holiday, specific_hour, reverse_calculations)
-
-
-def calculate_business_date(start, delta, context, working_days=False, specific_hour=None, **kwargs):
-    """This method calculates end of business period from given start and timedelta
-
-    The calculation of end of business period is complex, so this method is used project-wide.
-    Also this method provides support of accelerated calculation, useful while testing.
-
-    The end of the period is calculated **exclusively**, for example:
-        Let the 1-5 days of month (e.g. September 2008) be working days.
-        So, when the calculation will be initialized with following params:
-
-            start = datetime(2008, 9, 1)
-            delta = timedelta(days=2)
-            working_days = True
-
-        The result will be equal to `datetime(2008, 9, 3)`.
-
-    :param start: the start of period
-    :param delta: duration of the period
-    :param context: object, that holds data related to particular business process,
-        usually it's Auction model's instance. Must be present to use acceleration
-        mode.
-    :param working_days: make calculations taking into account working days
-    :param specific_hour: specific hour, to which date of period end should be rounded
-    :kw param result_is_working_day: if specified, result of calculations always be working day,
-        even if working_days = False. In this case result may differ from needed calendar days
-        because of working day adjustment.
-    :type start: datetime.datetime
-    :type delta: datetime.timedelta
-    :type context: openprocurement.api.models.Tender
-    :type working_days: bool
-    :return: the end of period
-    :rtype: datetime.datetime
-
-    """
-
-    time_cursor = copy(start)
-    start_is_holiday = is_holiday(start)
-    accelerator = get_accelerator(context)
-    reverse_calculations = delta < timedelta()
-    days_to_jump = abs(delta.days)
-    specific_time = kwargs.get('specific_time')
-    result = None
-
-    tz = getattr(start, 'tzinfo', None)
-    naive_calculations = tz is None
-    date_calculations = type(start) == date_type
-    skip_tz_converting = naive_calculations or date_calculations
-
-    time_cursor = time_cursor if skip_tz_converting else time_cursor.astimezone(utc)
-
-    if accelerator:
-        result = accelerated_calculate_business_date(time_cursor, delta, accelerator, specific_time, specific_hour)
-    if not working_days and result is None:
-        result = time_cursor + delta
-    if working_days and result is None:
-        result = working_days_calculation(
-            time_cursor, days_to_jump, specific_hour, start_is_holiday, reverse_calculations
-        )
-
-    time_cursor = result if skip_tz_converting else result.astimezone(tz)
-
-    if kwargs.get('result_is_working_day') and is_holiday(time_cursor):
-        time_cursor = jump_closest_working_day(time_cursor, backward=reverse_calculations)
-
-    if not accelerator:
-        time_cursor = specific_time_setting(time_cursor, specific_time, specific_hour)
-
-    return time_cursor
-
-
 def get_document_creation_date(document):
     return (document.get('revisions')[0].date if document.get('revisions') else get_now())
 
@@ -1129,86 +664,6 @@ def read_yaml(file_path):
     with open(file_path) as _file:
         data = _file.read()
     return safe_load(data)
-
-
-def format_aliases(alias):
-    """Converts an dictionary where key is 'plugin name'
-    and value is 'a list with aliases'
-
-    Args:
-        alias An dictionary object
-
-    Returns:
-        A string representation of plugin and object
-    """
-    for k, v in alias.items():
-        info = '{} aliases: {}'.format(k, v)
-    return info
-
-
-def check_alias(alias):
-    """Checks whether a plugin contains an repeated aliases
-
-    Note:
-        If a plugin contains an repeated aliases
-        we raise ConfigAliasError
-
-    Args:
-        alias a dictionary with alias info,
-    where key is a name of a package, and value
-    of which contains his aliases
-    """
-    for _, value in alias.items():
-        duplicated = collections.Counter(value)
-        for d_key, d_value in duplicated.items():
-            if d_value >= 2:
-                raise ConfigAliasError(
-                    'Alias {} repeating {} times'.format(d_key, d_value)
-                )
-
-
-def make_aliases(plugin):
-    """Makes a dictionary with aliases information
-
-    Args:
-        plugin A dictionary with an plugins information
-
-    Returns:
-        aliases A list with dictionary objects, where key
-    is a name of a plugin, and value is a list of an aliases
-    Otherwise an empty list
-    """
-    if plugin:
-        aliases = []
-        for key, val in plugin.items():
-            if plugin[key] is None:
-                continue
-            alias = {key: val['aliases']}
-            aliases.append(alias)
-        return aliases
-    LOGGER.warning('Aliases not provided, check your app_meta file')
-    return []
-
-
-def get_plugin_aliases(plugin):
-    """Returns an array with plugin aliases information
-       If an aliases were repeated more than one time
-       we raise AttributeError
-
-    Example:
-        data = {'auctions.rubble.financial': {'aliases': []}}
-        get_plugin_aliases(data)
-    ['auctions.rubble.financial aliases: []']
-
-    Args:
-        plugin an configurations dictionary
-    """
-    aliases = make_aliases(plugin)
-    for alias in aliases:
-        LOGGER.info(format_aliases(alias))
-
-    for alias in aliases:
-        check_alias(alias)
 
 
 def connection_mock_config(part, connector=(), base=None):
@@ -1292,51 +747,12 @@ def get_forbidden_users(allowed_levels):
     return forbidden_users
 
 
-def validate_with(validators):
-    def actual_validator(func):
-        @wraps(func)
-        def wrapper(*args, **kwargs):
-            request = args[1]
-            kw = {'request': request, 'error_handler': error_handler}
-            for validator in validators:
-                validator(**kw)
-            return func(*args, **kwargs)
-        return wrapper
-    return actual_validator
-
-
 def get_auction(model):
     while not IAuction.providedBy(model):
         model = getattr(model, '__parent__', None)
         if model is None:
             return None
     return model
-
-
-def call_before(method):
-    """Calls some method before actual call of decorated method"""
-    def caller(func):
-        @wraps(func)
-        def wrapper(*args, **kwargs):
-            method(*args, **kwargs)  # call mehod passed in the param
-            return func(*args, **kwargs)  # call decorated method
-        return wrapper
-    return caller
-
-
-def search_list_with_dicts(container, key, value):
-    """Search for dict in list with dicts
-
-    :param container: an iterable to search in
-    :param key: key of dict to check
-    :param value: value of key to search
-
-    :returns: first acceptable dict
-    """
-    for item in container:
-        found_value = item.get(key, False)
-        if found_value and found_value == value:
-            return item
 
 
 def log_auction_status_change(request, auction, status):
@@ -1390,122 +806,3 @@ def dump_dict_to_tempfile(dict_to_dump, fmt='json'):
     tf.close()
 
     return tf.name
-
-
-def path_to_kv(kv, d):
-    """Traverse nested dict recursively & search for a given k/v
-
-    :param kv: key/value to seek, tuple
-    :param d: dict to search in
-
-    :returns: path(s) to a target k/v
-    """
-    found_paths = []  # buffer for the results
-    current_path = []
-
-    def search(curr_dict, curr_path):
-        for key, value in curr_dict.iteritems():
-            if key == kv[0] and value == kv[1]:
-                curr_path.append(key)
-                found_paths.append(tuple(curr_path))
-            elif isinstance(value, dict):
-                new_path = copy(curr_path)
-                new_path.append(key)
-                search(value, new_path)
-
-    search(d, current_path)
-
-    if found_paths:
-        return tuple(found_paths)
-
-    return None
-
-
-def collect_packages_for_migration(plugins):
-    migration_kv = ('migration', True)
-    results_buffer = []
-
-    paths = path_to_kv(migration_kv, plugins)
-    if not paths:
-        return None
-
-    for path in paths:
-        package_name = path[-2]
-        results_buffer.append(package_name)
-
-    if results_buffer:
-        return tuple(results_buffer)
-
-    return None
-
-
-def collect_migration_entrypoints(package_names, name='main'):
-    """Collect migration functions from specified entrypoint groups"""
-    # form entrypoint groups names
-    ep_group_names = []
-    for g in package_names:
-        ep_group_name = '{0}.migration'.format(g)
-        ep_group_names.append(ep_group_name)
-
-    ep_funcs = []
-    for group in ep_group_names:
-        for ep in iter_entry_points(group, name):
-            ep_func = ep.load()
-            ep_funcs.append(ep_func)
-
-    return ep_funcs
-
-
-def run_migrations(app_meta):
-    packages_for_migrations_names = collect_packages_for_migration(app_meta.plugins)
-    ep_funcs = collect_migration_entrypoints(packages_for_migrations_names)
-    _, _, _, db = set_api_security(app_meta.config.db)
-
-    for migration_func in ep_funcs:
-        migration_func(db)
-
-
-def run_migrations_console_entrypoint():
-    """Search for migrations in the app_meta and run them if enabled
-
-    This is an entrypoint for console script.
-    """
-    # due to indirect calling of this function, namely through the script,
-    # generated from the package's entrypionts, argparse lib usage is troublesome
-    if len(sys.argv) < 2:
-        sys.exit('Provide app_meta location as first argument')
-    am_filepath = sys.argv[1]
-    app_meta = create_app_meta(am_filepath)
-    run_migrations(app_meta)
-
-
-def utcoffset_is_aliquot_to_hours(dt):
-    offset_seconds = dt.utcoffset().total_seconds()
-    seconds_overlap = offset_seconds % SECONDS_IN_HOUR
-    if seconds_overlap == 0:
-        return True
-    return False
-
-
-def utcoffset_difference(dt, tz=TZ):
-    """
-    Compute difference between datetime in it's own UTC offset
-    and it's offset in another timezone with equal date and time values
-
-    This tool is suited for checking if some datetime corresponds
-    to some timezone in future or past.
-
-    Returns tuple, where:
-        0: difference between dt with it's own utcoffset and dt in another timezone
-        1: target timezone's utcoffset in dt's time
-    """
-    utcoffset_dt = dt.utcoffset().total_seconds()
-    utcoffset_dt_hours = utcoffset_dt / SECONDS_IN_HOUR
-
-    dt_in_server_tz = set_timezone(dt, tz)
-    utcoffset_in_server_tz = dt_in_server_tz.utcoffset().total_seconds()
-    utcoffset_in_server_tz_hours = round_seconds_to_hours(utcoffset_in_server_tz)
-
-    difference = utcoffset_dt_hours - utcoffset_in_server_tz_hours
-
-    return (difference, utcoffset_in_server_tz_hours)

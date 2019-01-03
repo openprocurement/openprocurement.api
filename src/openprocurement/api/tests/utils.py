@@ -15,11 +15,8 @@ from couchdb.client import Document
 from libnacl.sign import Signer
 from schematics.types import StringType
 
-from openprocurement.api.utils import (
+from openprocurement.api.utils.common import (
     apply_data_patch,
-    calculate_business_date,
-    call_before,
-    collect_packages_for_migration,
     connection_mock_config,
     context_unpack,
     create_app_meta,
@@ -28,29 +25,41 @@ from openprocurement.api.utils import (
     encrypt,
     error_handler,
     forbidden,
-    format_aliases,
     generate_docservice_url,
     generate_id,
     get_content_configurator,
     get_file_path,
     get_now,
-    get_plugin_aliases,
     get_revision_changes,
-    make_aliases,
-    path_to_kv,
     prepare_patch,
-    round_seconds_to_hours,
-    run_migrations_console_entrypoint,
-    search_list_with_dicts,
     set_modetest_titles,
     set_ownership,
     set_parent,
-    set_timezone,
     update_logging_context,
+)
+from openprocurement.api.utils.timestuff import (
+    calculate_business_date,
+    round_seconds_to_hours,
+    set_timezone,
     utcoffset_difference,
     utcoffset_is_aliquot_to_hours,
 )
-from openprocurement.api.constants import TZ
+from openprocurement.api.utils.migration import (
+    collect_packages_for_migration,
+    run_migrations_console_entrypoint,
+)
+from openprocurement.api.utils.plugins import (
+    format_aliases,
+    get_plugin_aliases,
+    make_aliases,
+)
+from openprocurement.api.utils.searchers import (
+    path_to_kv,
+    search_list_with_dicts,
+)
+from openprocurement.api.utils.decorators import (
+    call_before,
+)
 from openprocurement.api.exceptions import ConfigAliasError
 from openprocurement.api.tests.base import MOCK_CONFIG
 from openprocurement.api.tests.fixtures.config import RANDOM_PLUGINS
@@ -115,7 +124,11 @@ class UtilsTest(unittest.TestCase):
         request.errors = errors
         response = error_handler(request)
 
-        self.assertEqual(response.body, '{"status": "error", "errors": [{"location": "body", "name": "data", "description": "Can\'t update resource in current (draft) status"}]}')
+        self.assertEqual(
+            response.body,
+            '{"status": "error", "errors": [{"location": "body", '
+            '"name": "data", "description": "Can\'t update resource in current (draft) status"}]}'
+        )
         self.assertEqual(response.content_type, 'application/json')
         self.assertEqual(response.status, '403 Forbidden')
 
@@ -124,32 +137,35 @@ class UtilsTest(unittest.TestCase):
         request.errors = Errors()
         response = forbidden(request)
 
-        self.assertEqual(response.body, '{"status": "error", "errors": [{"location": "url", "name": "permission", "description": "Forbidden"}]}')
+        self.assertEqual(
+            response.body,
+            '{"status": "error", "errors": [{"location": "url", "name": '
+            '"permission", "description": "Forbidden"}]}'
+        )
         self.assertEqual(response.content_type, 'application/json')
         self.assertEqual(response.status, '403 Forbidden')
-
-    # def test_raise_operation_error(self):
-    #     request = mock.MagicMock()
-    #     request.errors = Errors()
-    #     response = raise_operation_error(request, error_handler, message="Can't update resource in current (draft) status")
-    #
-    #     self.assertEqual(response.body, '{"status": "error", "errors": [{"location": "body", "name": "data", "description": "Can\'t update resource in current (draft) status"}]}')
-    #     self.assertEqual(response.content_type, 'application/json')
-    #     self.assertEqual(response.status, '403 Forbidden')
 
     def test_get_revision_changes(self):
         dst = {
             'status': u'draft',
             'assetType': u'basic',
-            'classification': {'scheme': u'CAV',
-                               'description': u'\u0417\u0435\u043c\u0435\u043b\u044c\u043d\u0456 \u0434\u0456\u043b\u044f\u043d\u043a\u0438',
-                               'id': u'39513200-3'},
-            'title': u'\u0417\u0435\u043c\u043b\u044f \u0434\u043b\u044f \u043a\u043e\u0441\u043c\u043e\u0434\u0440\u043e\u043c\u0443',
+            'classification': {
+                'scheme': u'CAV',
+                'description': u'\u0417\u0435\u043c\u0435\u043b\u044c\u043d\u0456 '
+                '\u0434\u0456\u043b\u044f\u043d\u043a\u0438',
+                'id': u'39513200-3'
+            },
+            'title': u'\u0417\u0435\u043c\u043b\u044f \u0434\u043b\u044f '
+            '\u043a\u043e\u0441\u043c\u043e\u0434\u0440\u043e\u043c\u0443',
             'assetID': 'UA-2017-08-16-000001',
-            'value': {'currency': u'UAH', 'amount': 100.0,
-                      'valueAddedTaxIncluded': True},
+            'value': {
+                'currency': u'UAH',
+                'amount': 100.0,
+                'valueAddedTaxIncluded': True
+            },
             'date': '2017-08-16T12:30:17.615196+03:00',
-            'owner_token': '4bc0ddbd9df1261da3f9c30fc920e9aa0f8e22f52567e7f8c42d8962b89b629acea680a4d53206eb7627f155995d4295ca0970769afed83fb398db0cc1432ea0',
+            'owner_token': '4bc0ddbd9df1261da3f9c30fc920e9aa0f8e22f52567e7f8c4'
+            '2d8962b89b629acea680a4d53206eb7627f155995d4295ca0970769afed83fb398db0cc1432ea0',
             'unit': {'code': u'39513200-3', 'name': u'item'},
             'address': {
                 'postalCode': u'79000',
@@ -162,15 +178,20 @@ class UtilsTest(unittest.TestCase):
             'id': '625699bf9d5b4f098772d5cafee283fe',
             'assetCustodian': {
                 'contactPoint': {
-                    'name': u'\u0414\u0435\u0440\u0436\u0430\u0432\u043d\u0435 \u0443\u043f\u0440\u0430\u0432\u043b\u0456\u043d\u043d\u044f \u0441\u043f\u0440\u0430\u0432\u0430\u043c\u0438',
+                    'name': u'\u0414\u0435\u0440\u0436\u0430\u0432\u043d\u0435 '
+                    '\u0443\u043f\u0440\u0430\u0432\u043b\u0456\u043d\u043d\u044f '
+                    '\u0441\u043f\u0440\u0430\u0432\u0430\u043c\u0438',
                     'telephone': u'0440000000'},
                 'identifier': {'scheme': u'UA-EDR', 'id': u'00037256',
                                'uri': u'http://www.dus.gov.ua/'},
-                'name': u'\u0414\u0435\u0440\u0436\u0430\u0432\u043d\u0435 \u0443\u043f\u0440\u0430\u0432\u043b\u0456\u043d\u043d\u044f \u0441\u043f\u0440\u0430\u0432\u0430\u043c\u0438',
+                'name': u'\u0414\u0435\u0440\u0436\u0430\u0432\u043d\u0435 '
+                '\u0443\u043f\u0440\u0430\u0432\u043b\u0456\u043d\u043d\u044f '
+                '\u0441\u043f\u0440\u0430\u0432\u0430\u043c\u0438',
                 'address': {
                     'postalCode': u'01220',
                     'countryName': u'\u0423\u043a\u0440\u0430\u0457\u043d\u0430',
-                    'streetAddress': u'\u0432\u0443\u043b. \u0411\u0430\u043d\u043a\u043e\u0432\u0430, 11, \u043a\u043e\u0440\u043f\u0443\u0441 1',
+                    'streetAddress': u'\u0432\u0443\u043b. \u0411\u0430\u043d\u043a\u043e\u0432\u0430,'
+                    ' 11, \u043a\u043e\u0440\u043f\u0443\u0441 1',
                     'region': u'\u043c. \u041a\u0438\u0457\u0432',
                     'locality': u'\u043c. \u041a\u0438\u0457\u0432',
                 },
@@ -298,7 +319,9 @@ class UtilsTest(unittest.TestCase):
 
         self.assertEqual(item.title, u'[\u0422\u0415\u0421\u0422\u0423\u0412\u0410\u041d\u041d\u042f] test')
         self.assertEqual(item.title_en, u'[TESTING] test')
-        self.assertEqual(item.title_ru, u'[\u0422\u0415\u0421\u0422\u0418\u0420\u041e\u0412\u0410\u041d\u0418\u0415] test')
+        self.assertEqual(
+            item.title_ru, u'[\u0422\u0415\u0421\u0422\u0418\u0420\u041e\u0412\u0410\u041d\u0418\u0415] test'
+        )
 
     def test_update_logging_context(self):
         request = mock.MagicMock()
@@ -323,7 +346,7 @@ class UtilsTest(unittest.TestCase):
         result = context_unpack(request, msg, {'c': 'd'})
         self.assertAlmostEqual(result, expected_result)
 
-    @mock.patch('openprocurement.api.utils.generate_id')
+    @mock.patch('openprocurement.api.utils.common.generate_id')
     def test_set_ownership(self, mock_generate_id):
         request = mock.MagicMock()
         mock_generate_id.return_value = '1234567890abcdef1234567890abcdef'
@@ -337,7 +360,7 @@ class UtilsTest(unittest.TestCase):
         self.assertEqual(item.owner_token, expected_result['token'])
         self.assertEqual(item.transfer_token, sha512(expected_result['token']).hexdigest())
 
-    @mock.patch('openprocurement.api.utils.generate_id')
+    @mock.patch('openprocurement.api.utils.common.generate_id')
     def test_set_ownership_with_passed_transfer_token(self, mock_generate_id):
         request = mock.MagicMock()
         mock_generate_id.return_value = '1234567890abcdef1234567890abcdef'
@@ -368,7 +391,12 @@ class UtilsTest(unittest.TestCase):
         request.registry.docservice_key = Signer('1234567890abcdef1234567890abcdef')
         request.registry.docservice_url = 'url'
 
-        expected_result = '/get/1234567890abcdef1234567890abcdef?KeyID=c6c4f29c&Signature=t8L5VW%252BK5vvDwMsxHBhzs%252BcBXFsYAZ%2FM9WJmzgYLVpc8HC9mPbQhsshgGK94XaCtvKFTb9IiTLlW59TM9mV7Bg%253D%253D'
+        expected_result = (
+                '/get/1234567890abcdef1234567890abcdef?KeyID='
+                'c6c4f29c&Signature=t8L5VW%252BK5vvDwMsxHBhzs%'
+                '252BcBXFsYAZ%2FM9WJmzgYLVpc8HC9mPbQhsshgGK94Xa'
+                'CtvKFTb9IiTLlW59TM9mV7Bg%253D%253D'
+        )
         result = generate_docservice_url(request, '1234567890abcdef1234567890abcdef', False)
         self.assertEqual(result, expected_result)
 
@@ -392,7 +420,6 @@ class UtilsTest(unittest.TestCase):
         res = connection_mock_config(part, base=base)
         self.assertIn(part.keys()[0], res.keys())
 
-
         base = {"one": 1, "two": 2}
         part = {"three": 3}
 
@@ -405,9 +432,9 @@ class UtilsTest(unittest.TestCase):
         check_nested_key(res, connector)
 
         base = {
-            "level0":{
+            "level0": {
                 "level1": 2,
-                "need":"info"
+                "need": "info"
             },
             "data": "good"
         }
@@ -420,7 +447,6 @@ class UtilsTest(unittest.TestCase):
         connector = ('level0',)
         res = connection_mock_config(part, connector=connector, base=base)
         check_nested_key(res, connector)
-
 
     def test_prepare_patch(self):
         changes = []
@@ -656,19 +682,16 @@ class CalculateBusinessDateTestCase(unittest.TestCase):
         start = tzone.localize(datetime(2018, 10, 20))
         # 28.10 `Europe/Kiev` timezone moves to DST
         days_to_add = timedelta(days=20)
-        target_end = datetime(2018, 11, 9, 0, 0)
 
         result = calculate_business_date(start, days_to_add, None, result_is_working_day=True)
 
         self.assertEqual(str(start.utcoffset()), '3:00:00')
         self.assertEqual(str(result.utcoffset()), '2:00:00')
 
-
     def test_result_timezone_naive(self):
         start = datetime(2018, 10, 20)
         # 28.10 `Europe/Kiev` timezone moves to DST
         days_to_add = timedelta(days=20)
-        target_end = datetime(2018, 11, 9, 0, 0)
 
         result = calculate_business_date(start, days_to_add, None, result_is_working_day=True)
 
@@ -706,7 +729,7 @@ class CalculateBusinessDateTestCase(unittest.TestCase):
         start = datetime(2000, 5, 3)  # Wednesday
         days_to_add = timedelta(days=0)
 
-        with self.assertRaises(ValueError) as exc:
+        with self.assertRaises(ValueError):
             calculate_business_date(start, days_to_add, None, working_days=True, result_is_working_day=True)
 
     def test_common_calculation_with_working_days_specific_time(self):
@@ -795,9 +818,9 @@ class CreateAppMetaTestCase(unittest.TestCase):
 
 class RunMigrationsConsoleEntrypointTestCase(unittest.TestCase):
 
-    @mock.patch('openprocurement.api.utils.run_migrations')
-    @mock.patch('openprocurement.api.utils.create_app_meta')
-    @mock.patch('openprocurement.api.utils.sys')
+    @mock.patch('openprocurement.api.utils.migration.run_migrations')
+    @mock.patch('openprocurement.api.utils.migration.create_app_meta')
+    @mock.patch('openprocurement.api.utils.migration.sys')
     def test_ok(self, argv_mock, create_app_meta, run_migrations):
         argv_mock.configure_mock(**{'argv': ('1', '2')})
         create_app_meta.return_value = 'test_app_meta'

@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
 from openprocurement.api.interfaces import IResourceManager
-from openprocurement.api.utils import (
+from openprocurement.api.utils.common import context_unpack
+from openprocurement.api.utils.api_resource import (
     APIResource,
     json_view,
-    context_unpack,
 )
 from openprocurement.api.validation import (
     validate_related_process_data,

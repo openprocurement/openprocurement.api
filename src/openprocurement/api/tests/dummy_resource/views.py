@@ -3,10 +3,11 @@ from mock import MagicMock, Mock
 from functools import partial
 from cornice.resource import resource
 
-from openprocurement.api.utils import (
-	error_handler, get_now, generate_id,
-	json_view, set_ownership,
-    context_unpack, APIResourceListing
+from openprocurement.api.utils.common import (
+    error_handler,
+)
+from openprocurement.api.utils.api_resource import (
+    APIResourceListing,
 )
 
 VIEW_MAP = {
@@ -26,6 +27,7 @@ dummy_resource_serialize = Mock()
 
 opdummyresource = partial(resource,
                            error_handler=error_handler)
+
 
 @opdummyresource(name='DummyResources',
                   path='/dummy_resources',
