@@ -17,7 +17,6 @@ from schematics.types import StringType
 
 from openprocurement.api.utils.common import (
     apply_data_patch,
-    call_before,
     connection_mock_config,
     context_unpack,
     create_app_meta,
@@ -57,6 +56,9 @@ from openprocurement.api.utils.plugins import (
 from openprocurement.api.utils.searchers import (
     path_to_kv,
     search_list_with_dicts,
+)
+from openprocurement.api.utils.decorators import (
+    call_before,
 )
 from openprocurement.api.exceptions import ConfigAliasError
 from openprocurement.api.tests.base import MOCK_CONFIG

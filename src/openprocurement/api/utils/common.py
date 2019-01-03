@@ -943,36 +943,12 @@ def get_forbidden_users(allowed_levels):
     return forbidden_users
 
 
-def validate_with(validators):
-    def actual_validator(func):
-        @wraps(func)
-        def wrapper(*args, **kwargs):
-            request = args[1]
-            kw = {'request': request, 'error_handler': error_handler}
-            for validator in validators:
-                validator(**kw)
-            return func(*args, **kwargs)
-        return wrapper
-    return actual_validator
-
-
 def get_auction(model):
     while not IAuction.providedBy(model):
         model = getattr(model, '__parent__', None)
         if model is None:
             return None
     return model
-
-
-def call_before(method):
-    """Calls some method before actual call of decorated method"""
-    def caller(func):
-        @wraps(func)
-        def wrapper(*args, **kwargs):
-            method(*args, **kwargs)  # call mehod passed in the param
-            return func(*args, **kwargs)  # call decorated method
-        return wrapper
-    return caller
 
 
 def log_auction_status_change(request, auction, status):
