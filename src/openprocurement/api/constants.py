@@ -30,6 +30,8 @@ TZ = timezone(os.environ['TZ'] if 'TZ' in os.environ else 'Europe/Kiev')
 SANDBOX_MODE = os.environ.get('SANDBOX_MODE', False)
 AUCTIONS_COMPLAINT_STAND_STILL_TIME = timedelta(days=3)
 
+DB_STATE_DOC_DEFAULT_NAME = 'db_state'
+
 DOCUMENT_BLACKLISTED_FIELDS = ('title', 'format', 'url', 'dateModified', 'hash')
 DOCUMENT_WHITELISTED_FIELDS = ('id', 'datePublished', 'author', '__parent__')
 
