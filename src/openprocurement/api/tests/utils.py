@@ -32,9 +32,7 @@ from openprocurement.api.utils.common import (
     get_file_path,
     get_now,
     get_revision_changes,
-    path_to_kv,
     prepare_patch,
-    search_list_with_dicts,
     set_modetest_titles,
     set_ownership,
     set_parent,
@@ -55,6 +53,10 @@ from openprocurement.api.utils.plugins import (
     format_aliases,
     get_plugin_aliases,
     make_aliases,
+)
+from openprocurement.api.utils.searchers import (
+    path_to_kv,
+    search_list_with_dicts,
 )
 from openprocurement.api.exceptions import ConfigAliasError
 from openprocurement.api.tests.base import MOCK_CONFIG

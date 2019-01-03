@@ -4,8 +4,10 @@ import sys
 from pkg_resources import iter_entry_points
 from openprocurement.api.database import set_api_security
 from openprocurement.api.utils.common import (
-    path_to_kv,
     create_app_meta,
+)
+from openprocurement.api.utils.searchers import (
+    path_to_kv,
 )
 
 
