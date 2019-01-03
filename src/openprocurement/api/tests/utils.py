@@ -26,15 +26,12 @@ from openprocurement.api.utils.common import (
     encrypt,
     error_handler,
     forbidden,
-    format_aliases,
     generate_docservice_url,
     generate_id,
     get_content_configurator,
     get_file_path,
     get_now,
-    get_plugin_aliases,
     get_revision_changes,
-    make_aliases,
     path_to_kv,
     prepare_patch,
     search_list_with_dicts,
@@ -53,6 +50,11 @@ from openprocurement.api.utils.timestuff import (
 from openprocurement.api.utils.migration import (
     collect_packages_for_migration,
     run_migrations_console_entrypoint,
+)
+from openprocurement.api.utils.plugins import (
+    format_aliases,
+    get_plugin_aliases,
+    make_aliases,
 )
 from openprocurement.api.exceptions import ConfigAliasError
 from openprocurement.api.tests.base import MOCK_CONFIG

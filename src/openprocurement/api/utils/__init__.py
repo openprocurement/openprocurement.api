@@ -8,3 +8,4 @@ message = "openprocurement.api.utils now contains submodules. "
 moved('openprocurement.api.utils.common', message)
 moved('openprocurement.api.utils.timestuff', message)
 moved('openprocurement.api.utils.migration', message)
+moved('openprocurement.api.utils.plugins', message)
