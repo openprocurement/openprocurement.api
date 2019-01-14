@@ -988,8 +988,9 @@ class TimeDependentValueTestCase(unittest.TestCase):
         before = 'before'
         after = 'after'
 
+        # Should appear `after` value because current date is after border_date
         value = time_dependent_value(border_date, before, after)
-        self.assertEqual(value, before)
+        self.assertEqual(value, after)
 
     def test_when_get_now_after(self):
         now = get_now()
@@ -997,8 +998,9 @@ class TimeDependentValueTestCase(unittest.TestCase):
         before = 'before'
         after = 'after'
 
+        # Should appear `before` value because current date is before border_date
         value = time_dependent_value(border_date, before, after)
-        self.assertEqual(value, after)
+        self.assertEqual(value, before)
 
 
 def suite():
