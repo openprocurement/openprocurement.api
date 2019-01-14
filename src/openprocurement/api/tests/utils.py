@@ -36,6 +36,7 @@ from openprocurement.api.utils.common import (
     set_ownership,
     set_parent,
     update_logging_context,
+    time_dependent_value
 )
 from openprocurement.api.utils.timestuff import (
     calculate_business_date,
@@ -979,6 +980,27 @@ class UtcoffsetDifferenceTestCase(unittest.TestCase):
         self.assertEqual(res, target_res)
 
 
+class TimeDependentValueTestCase(unittest.TestCase):
+
+    def test_when_get_now_before(self):
+        now = get_now()
+        border_date = now - timedelta(days=10)
+        before = 'before'
+        after = 'after'
+
+        value = time_dependent_value(border_date, before, after)
+        self.assertEqual(value, before)
+
+    def test_when_get_now_after(self):
+        now = get_now()
+        border_date = now + timedelta(days=10)
+        before = 'before'
+        after = 'after'
+
+        value = time_dependent_value(border_date, before, after)
+        self.assertEqual(value, after)
+
+
 def suite():
     suite = unittest.TestSuite()
     suite.addTest(unittest.makeSuite(UtilsTest))
@@ -993,6 +1015,7 @@ def suite():
     suite.addTest(unittest.makeSuite(SetTimezoneTestCase))
     suite.addTest(unittest.makeSuite(UtcoffsetIsAliquotToHoursTestCase))
     suite.addTest(unittest.makeSuite(UtcoffsetDifferenceTestCase))
+    suite.addTest(unittest.makeSuite(TimeDependentValueTestCase))
     return suite
 
 
