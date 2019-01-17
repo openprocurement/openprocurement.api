@@ -8,6 +8,7 @@ from openprocurement.api.constants import (
     TZ,
     WORKING_DAYS,
 )
+from openprocurement.api.utils.common import get_now
 
 
 ACCELERATOR_RE = compile(r'.accelerator=(?P<accelerator>\d+)')
@@ -269,3 +270,9 @@ def utcoffset_difference(dt, tz=TZ):
     difference = utcoffset_dt_hours - utcoffset_in_server_tz_hours
 
     return (difference, utcoffset_in_server_tz_hours)
+
+
+def time_dependent_value(border_date, before, after):
+    if get_now() >= border_date:
+        return after
+    return before

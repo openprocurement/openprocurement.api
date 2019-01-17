@@ -35,8 +35,7 @@ from openprocurement.api.utils.common import (
     set_modetest_titles,
     set_ownership,
     set_parent,
-    update_logging_context,
-    time_dependent_value
+    update_logging_context
 )
 from openprocurement.api.utils.timestuff import (
     calculate_business_date,
@@ -44,6 +43,7 @@ from openprocurement.api.utils.timestuff import (
     set_timezone,
     utcoffset_difference,
     utcoffset_is_aliquot_to_hours,
+    time_dependent_value
 )
 from openprocurement.api.utils.migration import (
     collect_packages_for_migration,

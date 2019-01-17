@@ -806,9 +806,3 @@ def dump_dict_to_tempfile(dict_to_dump, fmt='json'):
     tf.close()
 
     return tf.name
-
-
-def time_dependent_value(border_date, before, after):
-    if get_now() >= border_date:
-        return after
-    return before
