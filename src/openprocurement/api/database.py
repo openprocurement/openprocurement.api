@@ -98,6 +98,8 @@ def _reader_update(users_db, security_users, config):
 
 
 def set_admin_api_security(server, db_name, config):
+    from openprocurement.api.utils.db_state_doc import DBStateDocManager
+
     aserver = Server(config.create_url('admin'), session=Session(retry_delays=range(10)))
     users_db = aserver['_users']
     _update_security(users_db, "Updating users db security",
@@ -118,11 +120,13 @@ def set_admin_api_security(server, db_name, config):
                     extra={'MESSAGE_ID': 'update_api_validate_doc'})
         adb.save(auth_doc)
     db = server[db_name]
+    DBStateDocManager(db).assure_doc()
     return aserver, server, adb, db
 
 
 def set_api_security(config):
-    # CouchDB connection
+    from openprocurement.api.utils.db_state_doc import DBStateDocManager
+
     db_name = os.environ.get('DB_NAME', config.db_name)
     db_full_url = config.create_url('writer')
     server = Server(db_full_url, session=Session(retry_delays=range(10)))
@@ -139,6 +143,7 @@ def set_api_security(config):
         db = server[db_name]
         aserver = None
         adb = None
+        DBStateDocManager(db).assure_doc()
     return aserver, server, adb, db
 
 

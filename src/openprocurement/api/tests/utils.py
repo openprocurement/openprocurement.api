@@ -63,6 +63,7 @@ from openprocurement.api.utils.decorators import (
 from openprocurement.api.utils.documents import (
     generate_docservice_url,
 )
+from openprocurement.api.models.common import DBState
 from openprocurement.api.exceptions import ConfigAliasError
 from openprocurement.api.tests.base import MOCK_CONFIG
 from openprocurement.api.tests.fixtures.config import RANDOM_PLUGINS
@@ -1005,21 +1006,44 @@ class TimeDependentValueTestCase(unittest.TestCase):
         self.assertEqual(value, before)
 
 
+class DBStateTestCase(unittest.TestCase):
+
+    def test_serialize(self):
+        data = {
+            "db_created": "2019-01-01T10:11:01Z",
+            "migrations": [
+                {
+                    "name": "loki_add_related_processes",
+                    "description": "Adds relatedProcess",
+                    "applied": "2019-02-15T17:13:01Z"
+                },
+                {
+                    "name": "rubble_add_smth",
+                    "description": "Adds smth",
+                    "applied": "2019-02-15T17:25:31Z"
+                }
+            ]
+        }
+        m = DBState(data)
+        m.validate()
+
+
 def suite():
     suite = unittest.TestSuite()
-    suite.addTest(unittest.makeSuite(UtilsTest))
     suite.addTest(unittest.makeSuite(CalculateBusinessDateTestCase))
     suite.addTest(unittest.makeSuite(CallBeforeTestCase))
-    suite.addTest(unittest.makeSuite(TestSearchListWithDicts))
-    suite.addTest(unittest.makeSuite(CreateAppMetaTestCase))
-    suite.addTest(unittest.makeSuite(RunMigrationsConsoleEntrypointTestCase))
-    suite.addTest(unittest.makeSuite(PathToKvTestCase))
     suite.addTest(unittest.makeSuite(CollectPackagesForMigrationTestCase))
+    suite.addTest(unittest.makeSuite(CreateAppMetaTestCase))
+    suite.addTest(unittest.makeSuite(DBStateTestCase))
+    suite.addTest(unittest.makeSuite(PathToKvTestCase))
     suite.addTest(unittest.makeSuite(RoundSecondsToHoursTestCase))
+    suite.addTest(unittest.makeSuite(RunMigrationsConsoleEntrypointTestCase))
     suite.addTest(unittest.makeSuite(SetTimezoneTestCase))
-    suite.addTest(unittest.makeSuite(UtcoffsetIsAliquotToHoursTestCase))
-    suite.addTest(unittest.makeSuite(UtcoffsetDifferenceTestCase))
+    suite.addTest(unittest.makeSuite(TestSearchListWithDicts))
     suite.addTest(unittest.makeSuite(TimeDependentValueTestCase))
+    suite.addTest(unittest.makeSuite(UtcoffsetDifferenceTestCase))
+    suite.addTest(unittest.makeSuite(UtcoffsetIsAliquotToHoursTestCase))
+    suite.addTest(unittest.makeSuite(UtilsTest))
     return suite
 
 

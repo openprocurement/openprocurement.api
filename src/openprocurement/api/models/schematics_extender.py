@@ -18,7 +18,7 @@ from schematics.types import (
 )
 from schematics.transforms import blacklist, export_loop, convert
 from openprocurement.api.constants import TZ
-from openprocurement.api.utils import set_parent
+from openprocurement.api.utils.common import set_parent
 
 
 class DecimalType(BaseDecimalType):

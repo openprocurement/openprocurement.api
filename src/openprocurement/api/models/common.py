@@ -2,7 +2,7 @@
 from couchdb_schematics.document import SchematicsDocument
 
 from schematics.exceptions import ValidationError
-from schematics.types import StringType, BaseType, FloatType, EmailType, URLType, IntType
+from schematics.types import StringType, BaseType, EmailType, URLType, IntType
 from schematics.types.compound import DictType, ListType, ModelType
 from schematics.types.serializable import serializable
 
@@ -157,7 +157,7 @@ class BasicValue(Model):
 
 
 class Classification(Model):
-    _id_field_validators = () # tuple of validators for field 'id'
+    _id_field_validators = ()  # tuple of validators for field 'id'
     scheme = StringType(required=True)  # The classification scheme for the goods
     id = StringType(required=True)  # The classification ID from the Scheme used
     description = StringType(required=True)  # A description of the goods, services to be provided.
@@ -206,3 +206,14 @@ class RegistrationDetails(Model):
     def validate_registrationDate(self, data, value):
         if value and data['status'] != 'complete':
             raise ValidationError(u"You can fill registrationDate only when status is complete")
+
+
+class MigrationInfo(SchematicsDocument):
+    name = StringType(required=True)
+    description = StringType()
+    applied = IsoDateTimeType(required=True)
+
+
+class DBState(SchematicsDocument):
+    db_created = IsoDateTimeType(required=True)
+    migrations = ListType(ModelType(MigrationInfo), default=list())
