@@ -8,10 +8,12 @@ from urllib import unquote, quote, urlencode
 from urlparse import urlparse, urlunsplit, parse_qsl, parse_qs
 
 from openprocurement.api.constants import (
+    DOCSERVICE_KEY_ID_LENGTH,
     DOCUMENT_BLACKLISTED_FIELDS,
     DOCUMENT_WHITELISTED_FIELDS,
     LOGGER,
     SESSION,
+    TEMPORARY_DOCUMENT_EXPIRATION_SECONDS,
 )
 from openprocurement.api.utils.common import (
     context_unpack,
@@ -40,7 +42,7 @@ def generate_docservice_url(request, doc_id, temporary=True, prefix=None):
     parsed_url = urlparse(request.registry.docservice_url)
     query = {}
     if temporary:
-        expires = int(time()) + 300  # EXPIRES
+        expires = int(time()) + TEMPORARY_DOCUMENT_EXPIRATION_SECONDS
         mess = "{}\0{}".format(doc_id, expires)
         query['Expires'] = expires
     else:
@@ -49,7 +51,7 @@ def generate_docservice_url(request, doc_id, temporary=True, prefix=None):
         mess = '{}/{}'.format(prefix, mess)
         query['Prefix'] = prefix
     query['Signature'] = quote(b64encode(docservice_key.signature(mess.encode("utf-8"))))
-    query['KeyID'] = docservice_key.hex_vk()[:8]
+    query['KeyID'] = docservice_key.hex_vk()[:DOCSERVICE_KEY_ID_LENGTH]
     return urlunsplit((parsed_url.scheme, parsed_url.netloc, '/get/{}'.format(doc_id), urlencode(query), ''))
 
 

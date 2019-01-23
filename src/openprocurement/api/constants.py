@@ -128,6 +128,9 @@ RELATED_PROCESS_TYPE_CHOICES = (
     'lot',
 )
 
+TEMPORARY_DOCUMENT_EXPIRATION_SECONDS = 300
+DOCSERVICE_KEY_ID_LENGTH = 8
+
 
 class ProjectConfigurator(object):
     """
