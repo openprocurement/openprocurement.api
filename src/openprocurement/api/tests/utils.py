@@ -25,7 +25,6 @@ from openprocurement.api.utils.common import (
     encrypt,
     error_handler,
     forbidden,
-    generate_docservice_url,
     generate_id,
     get_content_configurator,
     get_file_path,
@@ -60,6 +59,9 @@ from openprocurement.api.utils.searchers import (
 )
 from openprocurement.api.utils.decorators import (
     call_before,
+)
+from openprocurement.api.utils.documents import (
+    generate_docservice_url,
 )
 from openprocurement.api.exceptions import ConfigAliasError
 from openprocurement.api.tests.base import MOCK_CONFIG
