@@ -71,8 +71,8 @@ class SearchListWithDictsTestCase(unittest.TestCase):
 
     def test_successful_search(self):
         result = search_list_with_dicts(self.container, 'login', 'user2')
-        assert result['other'] == 'I am User'
+        self.assertEqual(result['other'], 'I am User')
 
     def test_unsuccessful_search(self):
         result = search_list_with_dicts(self.container, 'login', 'user3')
-        assert result is None
+        self.assertIsNone(result)
