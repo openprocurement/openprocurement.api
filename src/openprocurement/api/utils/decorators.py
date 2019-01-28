@@ -14,14 +14,3 @@ def validate_with(validators):
             return func(*args, **kwargs)
         return wrapper
     return actual_validator
-
-
-def call_before(method):
-    """Calls some method before actual call of decorated method"""
-    def caller(func):
-        @wraps(func)
-        def wrapper(*args, **kwargs):
-            method(*args, **kwargs)  # call mehod passed in the param
-            return func(*args, **kwargs)  # call decorated method
-        return wrapper
-    return caller
