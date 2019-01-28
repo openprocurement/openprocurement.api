@@ -50,10 +50,10 @@ class UtilsTest(unittest.TestCase):
     }
 
     def test_generate_id(self):
-        id = generate_id()
+        id_ = generate_id()
 
-        self.assertEqual(len(id), 32)
-        self.assertEqual(type(UUID(id)), UUID)
+        self.assertEqual(len(id_), 32)
+        self.assertEqual(type(UUID(id_)), UUID)
 
     def test_get_file_path(self):
         here = '/absolute/path/app/'
