@@ -9,6 +9,7 @@ from urlparse import urlparse, urlunsplit, parse_qsl, parse_qs
 
 from openprocurement.api.constants import (
     DOCSERVICE_KEY_ID_LENGTH,
+    DOCSERVICE_UPLOAD_RETRY_COUNT,
     DOCUMENT_BLACKLISTED_FIELDS,
     DOCUMENT_WHITELISTED_FIELDS,
     LOGGER,
@@ -56,9 +57,17 @@ def generate_docservice_url(request, doc_id, temporary=True, prefix=None):
 
 
 def check_document(request, document, document_container):
+    """Make validations on a document from the Document Service
+
+    Notice: this function doesn't work with documents been loaded directly into webapp.
+        But the `upload_file` does.
+    """
+
     url = document.url
     parsed_url = urlparse(url)
     parsed_query = dict(parse_qsl(parsed_url.query))
+
+    # check all the necessary URL attributes
     if not url.startswith(request.registry.docservice_url) or \
             len(parsed_url.path.split('/')) != 3 or \
             set(['Signature', 'KeyID']) != set(parsed_query):
@@ -74,15 +83,21 @@ def check_document(request, document, document_container):
         request.errors.add(document_container, 'url', "Document url expired.")
         request.errors.status = 422
         raise error_handler(request)
+
+    # prepare to the signature approval
     dockey = request.registry.keyring[keyid]
     signature = parsed_query['Signature']
     key = urlparse(url).path.split('/')[-1]
+
+    # decode the very signature
     try:
         signature = b64decode(unquote(signature))
     except TypeError:
         request.errors.add(document_container, 'url', "Document url signature invalid.")
         request.errors.status = 422
         raise error_handler(request)
+
+    # prove the signature was made right
     mess = "{}\0{}".format(key, document.hash.split(':', 1)[-1])
     try:
         if mess != dockey.verify(signature + mess.encode("utf-8")):
@@ -94,6 +109,8 @@ def check_document(request, document, document_container):
 
 
 def update_document_url(request, document, document_route, route_kwargs):
+    """Switch document.url from the Document Service's format to this webapp's one"""
+
     key = urlparse(document.url).path.split('/')[-1]
     route_kwargs.update({'_route_name': document_route,
                          'document_id': document.id,
@@ -119,7 +136,10 @@ def set_first_document_fields(request, first_document, document):
 def upload_file(
     request, blacklisted_fields=DOCUMENT_BLACKLISTED_FIELDS, whitelisted_fields=DOCUMENT_WHITELISTED_FIELDS
 ):
+    """Process any uploaded document to the webapp no matter the way"""
     first_document = get_first_document(request)
+
+    # operate on a document from the Document Service
     if 'data' in request.validated and request.validated['data']:
         document = request.validated['document']
         check_document(request, document, 'body')
@@ -130,38 +150,49 @@ def upload_file(
         document_route = request.matched_route.name.replace("collection_", "")
         document = update_document_url(request, document, document_route, {})
         return document
+
+    # process the files been directly loaded into the webapp
     if request.content_type == 'multipart/form-data':
         data = request.validated['file']
         filename = get_filename(data)
         content_type = data.type
         in_file = data.file
-    else:
+    else:  # behaviour for the unusual content-type
         filename = first_document.title
         content_type = request.content_type
         in_file = request.body_file
 
+    # define the model class for further data validation
     if hasattr(request.context, "documents"):
-        # upload new document
         model = type(request.context).documents.model_class
     else:
         # update document
         model = type(request.context)
+
+    # create appropriate model for the document
     document = model({'title': filename, 'format': content_type})
     document.__parent__ = request.context
     if 'document_id' in request.validated:
         document.id = request.validated['document_id']
+
+    # fill the model with the data from the previous version of the document, if there is one
     if first_document:
         for attr_name in type(first_document)._fields:
             if attr_name not in blacklisted_fields:
                 setattr(document, attr_name, getattr(first_document, attr_name))
+
+    # if we have file uploaded, then webapp uploads it to the Document Service
+    # that's called "Compatibility Mode"
     if request.registry.use_docservice:
         parsed_url = urlparse(request.registry.docservice_url)
+        # read or generate the docservice upload URL
         url = request.registry.docservice_upload_url or urlunsplit((
             parsed_url.scheme, parsed_url.netloc, '/upload', '', ''
         ))
+        # uload file to the Document Service
         files = {'file': (filename, in_file, content_type)}
         doc_url = None
-        index = 10
+        index = DOCSERVICE_UPLOAD_RETRY_COUNT
         while index:
             try:
                 r = SESSION.post(
@@ -171,6 +202,7 @@ def upload_file(
                     auth=(request.registry.docservice_username, request.registry.docservice_password)
                 )
                 json_data = r.json()
+            # warn on particular upload fail
             except Exception as e:
                 LOGGER.warning(
                     "Raised exception '{}' on uploading document to document service': {}.".format(type(e), e),
@@ -180,6 +212,7 @@ def upload_file(
                         {'file_size': in_file.tell()}
                     )
                 )
+            # if upload is sucessful - store some interesting stuff & stop uploading
             else:
                 if r.status_code == 200 and json_data.get('data', {}).get('url'):
                     doc_url = json_data['data']['url']
@@ -198,12 +231,14 @@ def upload_file(
                     )
             in_file.seek(0)
             index -= 1
+        # if all retries have failed - raise an error
         else:
             request.errors.add('body', 'data', "Can't upload document to document service.")
             request.errors.status = 422
             raise error_handler(request)
         document.hash = doc_hash
         key = urlparse(doc_url).path.split('/')[-1]
+    # if we have a file uploaded, but there's no need to use the Document Service
     else:
         key = generate_id()
         filename = "{}_{}".format(document.id, key)
@@ -240,18 +275,24 @@ def check_document_batch(request, document, document_container, route_kwargs):
 
 
 def get_file(request):
+    """Return an URL with which target document could be downloaded"""
+
     db_doc_id = request.validated['db_doc'].id
     document = request.validated['document']
     key = request.params.get('download')
-    if not any([key in i.url for i in request.validated['documents']]):
+    if not any([key in doc.url for doc in request.validated['documents']]):
         request.errors.add('url', 'download', 'Not Found')
         request.errors.status = 404
         return
     filename = "{}_{}".format(document.id, key)
+
+    # in case file is stored in the Document Service
     if request.registry.use_docservice and filename not in request.validated['db_doc']['_attachments']:
-        document = [i for i in request.validated['documents'] if key in i.url][-1]
+        document = [doc for doc in request.validated['documents'] if key in doc.url][-1]
+        # in case the document's URL points to the Document Service
         if 'Signature=' in document.url and 'KeyID' in document.url:
             url = document.url
+        # if the URL not contains the download key
         else:
             if 'download=' not in document.url:
                 key = urlparse(document.url).path.replace('/get/', '')
@@ -259,6 +300,7 @@ def get_file(request):
                 url = generate_docservice_url(request, key, prefix='{}/{}'.format(db_doc_id, document.id))
             else:
                 url = generate_docservice_url(request, key)
+        # redirect preparation
         request.response.content_type = document.format.encode('utf-8')
         request.response.content_disposition = build_header(
             document.title,
@@ -267,9 +309,14 @@ def get_file(request):
         request.response.status = '302 Moved Temporarily'
         request.response.location = url
         return url
+    # file also could be stored by a database of the webapp
+    # but that behaviour is deprecated
+    # this code plays for compatibility sake
     else:
+        # read the file from the database
         data = request.registry.db.get_attachment(db_doc_id, filename)
         if data:
+            # encode for the transmission
             request.response.content_type = document.format.encode('utf-8')
             request.response.content_disposition = build_header(
                 document.title,
@@ -277,6 +324,7 @@ def get_file(request):
             )
             request.response.body_file = data
             return request.response
+        # if the database had found nothing - return a response with 404 status
         request.errors.add('url', 'download', 'Not Found')
         request.errors.status = 404
 
