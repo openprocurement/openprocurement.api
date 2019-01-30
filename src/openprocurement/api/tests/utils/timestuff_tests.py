@@ -396,3 +396,14 @@ class TimeDependentValueTestCase(unittest.TestCase):
         # Should appear `before` value because current date is before border_date
         value = time_dependent_value(border_date, before, after)
         self.assertEqual(value, before)
+
+    def test_when_compared_date_passed(self):
+        now = get_now()
+        border_date = now - timedelta(days=2)
+        compared_date = now - timedelta(days=10)
+        before = 'before'
+        after = 'after'
+
+        # Should appear `before` value because compared date is before border_date
+        value = time_dependent_value(border_date, before, after, compared_date=compared_date)
+        self.assertEqual(value, before)
