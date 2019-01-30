@@ -272,7 +272,8 @@ def utcoffset_difference(dt, tz=TZ):
     return (difference, utcoffset_in_server_tz_hours)
 
 
-def time_dependent_value(border_date, before, after):
-    if get_now() >= border_date:
+def time_dependent_value(border_date, before, after, **kwargs):
+    compared_date = kwargs.get('compared_date', get_now())
+    if compared_date >= border_date:
         return after
     return before
