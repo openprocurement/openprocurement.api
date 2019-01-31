@@ -15,9 +15,10 @@ from openprocurement.api.interfaces import IProjectConfigurator
 
 PKG = get_distribution(__package__)
 LOGGER = getLogger(PKG.project_name)
+_ver_nums = PKG.version.split('.')  # version numbers tuple
 VERSION = '{}.{}'.format(
-    int(PKG.parsed_version[0]),
-    int(PKG.parsed_version[1]) if PKG.parsed_version[1].isdigit() else 0
+    int(_ver_nums[0]),
+    int(_ver_nums[1]) if _ver_nums[1].isdigit() else 0
 )
 ROUTE_PREFIX = '/api/{}'.format(VERSION)
 SESSION = Session()
