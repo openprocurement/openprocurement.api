@@ -273,6 +273,15 @@ def utcoffset_difference(dt, tz=TZ):
 
 
 def time_dependent_value(border_date, before, after, **kwargs):
+    """
+    :param border_date: actually time border between two values and define which to return
+    :param before: value that should be returned if compared_date before border_date
+    :param after: value that should be returned if compared_date after border_date
+    :param kwargs:
+        compared_date: date that used to compare with border_date
+        default: get_now
+    :return: after or before
+    """
     compared_date = kwargs.get('compared_date', get_now())
     if compared_date >= border_date:
         return after
