@@ -131,7 +131,6 @@ def validate_document_data(request, **kwargs):
     if not document.documentOf:
         document.documentOf = get_type(context).__name__.lower()
     document_route = request.matched_route.name.replace("collection_", "")
-    document = update_document_url(request, document, document_route, {})
     request.validated['document'] = document
 
 
