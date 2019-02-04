@@ -62,14 +62,6 @@ class ValidateDocumentDataTest(unittest.TestCase):
         self.assertEqual(mocked_check_document.call_count, 1)
         mocked_check_document.assert_called_with(self.mocked_request, self.document_mock, 'body')
 
-        self.assertEqual(mocked_update_document_url.call_count, 1)
-        mocked_update_document_url.assert_called_with(
-            self.mocked_request,
-            self.document_mock,
-            'document_route',
-            {}
-        )
-
         self.assertEqual(mocked_get_type.call_count, 1)
         mocked_get_type.assert_called_with(self.mocked_request.context)
 
@@ -77,7 +69,6 @@ class ValidateDocumentDataTest(unittest.TestCase):
 
         self.assertEqual(self.document_mock.documentOf, 'resourceName')
 
-        self.assertIs(self.mocked_request.validated['document'], self.document_mock_with_updated_url)
 
     def test_documentOf_not_in_document(
         self,
@@ -111,14 +102,6 @@ class ValidateDocumentDataTest(unittest.TestCase):
         self.assertEqual(mocked_check_document.call_count, 1)
         mocked_check_document.assert_called_with(self.mocked_request, self.document_mock, 'body')
 
-        self.assertEqual(mocked_update_document_url.call_count, 1)
-        mocked_update_document_url.assert_called_with(
-            self.mocked_request,
-            self.document_mock,
-            'document_route',
-            {}
-        )
-
         self.assertEqual(mocked_get_type.call_count, 2)
         mocked_get_type.assert_called_with(self.mocked_request.context)
 
@@ -126,7 +109,6 @@ class ValidateDocumentDataTest(unittest.TestCase):
 
         self.assertEqual(self.document_mock.documentOf, 'resource_from_context')
 
-        self.assertIs(self.mocked_request.validated['document'], self.document_mock_with_updated_url)
 
     def test_first_document(
         self,
@@ -159,14 +141,6 @@ class ValidateDocumentDataTest(unittest.TestCase):
         self.assertEqual(mocked_check_document.call_count, 1)
         mocked_check_document.assert_called_with(self.mocked_request, self.document_mock, 'body')
 
-        self.assertEqual(mocked_update_document_url.call_count, 1)
-        mocked_update_document_url.assert_called_with(
-            self.mocked_request,
-            self.document_mock,
-            'document_route',
-            {}
-        )
-
         self.assertEqual(mocked_get_type.call_count, 1)
         mocked_get_type.assert_called_with(self.mocked_request.context)
 
@@ -179,7 +153,6 @@ class ValidateDocumentDataTest(unittest.TestCase):
 
         self.assertEqual(self.document_mock.documentOf, 'resourceName')
 
-        self.assertIs(self.mocked_request.validated['document'], self.document_mock_with_updated_url)
 
     def test_not_first_document(
         self,
@@ -211,14 +184,6 @@ class ValidateDocumentDataTest(unittest.TestCase):
         self.assertEqual(mocked_check_document.call_count, 1)
         mocked_check_document.assert_called_with(self.mocked_request, self.document_mock, 'body')
 
-        self.assertEqual(mocked_update_document_url.call_count, 1)
-        mocked_update_document_url.assert_called_with(
-            self.mocked_request,
-            self.document_mock,
-            'document_route',
-            {}
-        )
-
         self.assertEqual(mocked_get_type.call_count, 1)
         mocked_get_type.assert_called_with(self.mocked_request.context)
 
@@ -226,7 +191,6 @@ class ValidateDocumentDataTest(unittest.TestCase):
 
         self.assertEqual(self.document_mock.documentOf, 'resourceName')
 
-        self.assertIs(self.mocked_request.validated['document'], self.document_mock_with_updated_url)
 
 
 class ValidateTAccreditationTest(unittest.TestCase):
