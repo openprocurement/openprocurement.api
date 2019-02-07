@@ -19,7 +19,7 @@ patch_validators = (
 )
 
 
-class RelatedProcessesResource(APIResource):
+class BaseRelatedProcessesResource(APIResource):
 
     @json_view(content_type="application/json", permission='create_related_process', validators=post_validators)
     def collection_post(self):
