@@ -6,6 +6,8 @@ here = os.path.abspath(os.path.dirname(__file__))
 with open(os.path.join(here, 'README.rst')) as f:
     README = f.read()
 
+VERSION = "2.5.11+eacore"
+
 requires = [
     'barbecue',
     'chaussette',
@@ -53,7 +55,7 @@ entry_points = {
 }
 
 setup(name='openprocurement.api',
-      version='2.5.10+eacore',
+      version=VERSION,
       description='openprocurement.api',
       long_description=README,
       classifiers=[
