@@ -22,6 +22,11 @@ class MigrateTest(BaseWebTest):
         self.assertEqual(get_db_schema_version(self.db), SCHEMA_VERSION)
 
 
+class BaseMigrationRunnerTestCase(unittest.TestCase):
+
+    def test_run_single_migration_step(self):
+        pass
+
 def suite():
     suite = unittest.TestSuite()
     suite.addTest(unittest.makeSuite(MigrateTest))
