@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 from openprocurement.api.interfaces import IResourceManager
-from openprocurement.api.utils.common import context_unpack
+from openprocurement.api.utils.common import context_unpack, error_handler
 from openprocurement.api.utils.api_resource import (
     APIResource,
     json_view,
@@ -19,7 +19,16 @@ patch_validators = (
 )
 
 
-class RelatedProcessesResource(APIResource):
+class BaseRelatedProcessesResource(APIResource):
+
+    def try_get_related_processes_manager(self, manager):
+        try:
+            related_processes_manager = manager.related_processes_manager
+        except AttributeError:
+            self.request.errors.status = 404
+            raise error_handler(self.request)
+
+        return related_processes_manager
 
     @json_view(content_type="application/json", permission='create_related_process', validators=post_validators)
     def collection_post(self):
@@ -27,10 +36,13 @@ class RelatedProcessesResource(APIResource):
         related_process = self.request.validated['relatedProcess']
         parent = related_process.__parent__
 
-        saved = self.request.registry.getAdapter(
+        parent_manager = self.request.registry.getAdapter(
             parent,
             IResourceManager,
-        ).related_processes_manager.create(self.request)
+        )
+
+        manager = self.try_get_related_processes_manager(parent_manager)
+        saved = manager.create(self.request)
 
         if saved:
             self.LOGGER.info(
@@ -64,10 +76,14 @@ class RelatedProcessesResource(APIResource):
         related_process = self.request.context
         parent = related_process.__parent__
 
-        applied = self.request.registry.getAdapter(
+        parent_manager = self.request.registry.getAdapter(
             parent,
-            IResourceManager
-        ).related_processes_manager.update(self.request)
+            IResourceManager,
+        )
+
+        manager = self.try_get_related_processes_manager(parent_manager)
+        applied = manager.update(self.request)
+
         if applied:
             self.LOGGER.info(
                 'Updated relatedProcess {}'.format(related_process.id),
@@ -81,10 +97,14 @@ class RelatedProcessesResource(APIResource):
         related_process = self.request.context
         parent = related_process.__parent__
 
-        deleted = self.request.registry.getAdapter(
+        parent_manager = self.request.registry.getAdapter(
             parent,
-            IResourceManager
-        ).related_processes_manager.delete(self.request)
+            IResourceManager,
+        )
+
+        manager = self.try_get_related_processes_manager(parent_manager)
+        deleted = manager.delete(self.request)
+
         if deleted:
             self.LOGGER.info(
                 'Delete relatedProcess {}'.format(related_process.id),
