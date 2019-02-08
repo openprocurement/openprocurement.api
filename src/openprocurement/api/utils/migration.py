@@ -6,8 +6,15 @@ from openprocurement.api.database import set_api_security
 from openprocurement.api.utils.common import (
     create_app_meta,
 )
+from openprocurement.api.utils.plugins import search_entrypoints
 from openprocurement.api.utils.searchers import (
     path_to_kv,
+    paths_to_key,
+    traverse_nested_dicts,
+)
+from openprocurement.api.migration import (
+    AliasesInfoDTO,
+    MigrationResourcesDTO,
 )
 
 
@@ -39,20 +46,32 @@ def collect_migration_entrypoints(package_names, name='main'):
 
     ep_funcs = []
     for group in ep_group_names:
-        for ep in iter_entry_points(group, name):
-            ep_func = ep.load()
-            ep_funcs.append(ep_func)
+        ep_funcs.append(search_entrypoints(group, name))
 
     return ep_funcs
 
 
-def run_migrations(app_meta):
-    packages_for_migrations_names = collect_packages_for_migration(app_meta.plugins)
-    ep_funcs = collect_migration_entrypoints(packages_for_migrations_names)
+def run_migrations(app_meta, package_name):
+    # provide package name in format like this: lots.loki
+    package_name_parts = package_name.split('.')
+    if len(package_name_parts) != 3:
+        raise RuntimeError('Provide fill package name. ex: openprocurement.auctions.tessel')
+    last_parts = (package_name_parts[-2], package_name_parts[-1])
+    package_name_in_app_meta_format = '.'.join(last_parts)
+
+    paths_to_package = paths_to_key(package_name_in_app_meta_format, app_meta.plugins)
+    package_info = traverse_nested_dicts(app_meta.plugins, paths_to_package[0])
+    aliases = package_info['aliases']
+
+    aliases_info = AliasesInfoDTO({package_name: aliases})
     _, _, _, db = set_api_security(app_meta.config.db)
+    migration_resources = MigrationResourcesDTO(db, aliases_info)
+
+    group_name = '{0}.migration'.format(package_name_in_app_meta_format)
+    ep_funcs = search_entrypoints(group_name, None)
 
     for migration_func in ep_funcs:
-        migration_func(db)
+        migration_func(migration_resources)
 
 
 def run_migrations_console_entrypoint():
@@ -65,5 +84,6 @@ def run_migrations_console_entrypoint():
     if len(sys.argv) < 2:
         sys.exit('Provide app_meta location as first argument')
     am_filepath = sys.argv[1]
+    package_name = sys.argv[2]
     app_meta = create_app_meta(am_filepath)
-    run_migrations(app_meta)
+    run_migrations(app_meta, package_name)
