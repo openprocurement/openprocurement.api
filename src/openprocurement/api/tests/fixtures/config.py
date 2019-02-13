@@ -61,7 +61,7 @@ RANDOM_PLUGINS = {
                                 1
                             ]
                         },
-                        "aliases": []
+                        "aliases": ["dgfFinancialAssets"]
                     },
                     "auctions.rubble.other": {
                         "use_default": True,
@@ -77,7 +77,7 @@ RANDOM_PLUGINS = {
                                 1
                             ]
                         },
-                        "aliases": []
+                        "aliases": ["dgfOtherAssets"]
                     }
                 }
             }
