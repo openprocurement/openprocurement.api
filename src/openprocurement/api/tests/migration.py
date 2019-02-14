@@ -5,7 +5,9 @@ from copy import copy
 from mock import Mock
 
 from openprocurement.api.migration import (
+    AliasesInfoDTO,
     BaseMigrationsRunner,
+    MigrationResourcesDTO,
     get_db_schema_version,
     migrate_data,
 )
@@ -86,9 +88,23 @@ class BaseMigrationRunnerTestCase(unittest.TestCase):
 
         return (s_class, s_instance)
 
-    def setUp(self):
+    def aliases_info_dto_mock(self, aliases_info=None):
+        aliases_info_default = {'pack': ['al1', 'al2']}
+        ai = AliasesInfoDTO(aliases_info if aliases_info else aliases_info_default)
+
+        return ai
+
+    def migration_resources_dto_mock(self):
+        ai = self.aliases_info_dto_mock()
         db = self.db_mock(self.iterview_results_generator(self.DB_DOCS_COUNT))
-        self.runner = self.TestMigrationRunner(db)
+
+        mr = MigrationResourcesDTO(db, ai)
+
+        return mr
+
+    def setUp(self):
+        migration_resources = self.migration_resources_dto_mock()
+        self.runner = self.TestMigrationRunner(migration_resources)
         self.runner._get_db_schema_version = self.get_db_schema_version_mock()
         self.runner._set_db_schema_version = self.set_db_schema_version_mock()
 
