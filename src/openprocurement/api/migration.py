@@ -143,6 +143,7 @@ class BaseMigrationsRunner(object):
     def _run_step(self, step):
         st = step(self.db)  # init MigrationStep
         st.setUp()
+        self._check_step_has_defined_view(st)
         input_generator = self.db.iterview(st.view, self.DB_READ_LIMIT, include_docs=True)
         migrated_documents = []  # output buffer
 
@@ -175,6 +176,12 @@ class BaseMigrationsRunner(object):
         schema_doc = self.db.get(self._schema_doc, {"_id": self._schema_doc})
         schema_doc["version"] = version
         self.db.save(schema_doc)
+
+    def _check_step_has_defined_view(self, step):
+        if not hasattr(step, 'view'):
+            error_template = "Migration step {0} has not defined a view for the migration"
+            error_text = error_template.format(step.__name__)
+            raise MigrationConfigurationException(error_text)
 
 
 class BaseMigrationStep(object):
