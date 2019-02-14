@@ -141,10 +141,10 @@ class BaseMigrationsRunner(object):
             self._set_db_schema_version(curr_step)
 
     def _run_step(self, step):
-        st = step(self.db)  # init MigrationStep
+        st = step(self.resources)  # init MigrationStep
         st.setUp()
         self._check_step_has_defined_view(st)
-        input_generator = self.db.iterview(st.view, self.DB_READ_LIMIT, include_docs=True)
+        input_generator = self.resources.db.iterview(st.view, self.DB_READ_LIMIT, include_docs=True)
         migrated_documents = []  # output buffer
 
         for doc_row in input_generator:
@@ -157,25 +157,25 @@ class BaseMigrationsRunner(object):
 
             # bulk write on threshold overgrow
             if len(migrated_documents) >= self.DB_BULK_WRITE_THRESHOLD:
-                self.db.update(migrated_documents)
+                self.resources.db.update(migrated_documents)
                 # clean output buffer
                 migrated_documents = []
 
         # flush buffer to the DB, because threshold could be not reached
-        self.db.update(migrated_documents)
+        self.resources.db.update(migrated_documents)
 
         st.tearDown()
 
     def _get_db_schema_version(self):
         # if there isn't such document, create it
-        schema_doc = self.db.get(self._schema_doc, {"_id": self._schema_doc})
+        schema_doc = self.resources.db.get(self._schema_doc, {"_id": self._schema_doc})
         # if `version` is not found - assume that db needs only the most fresh migration
         return schema_doc.get("version", self._target_schema_version - 1)
 
     def _set_db_schema_version(self, version):
-        schema_doc = self.db.get(self._schema_doc, {"_id": self._schema_doc})
+        schema_doc = self.resources.db.get(self._schema_doc, {"_id": self._schema_doc})
         schema_doc["version"] = version
-        self.db.save(schema_doc)
+        self.resources.db.save(schema_doc)
 
     def _check_step_has_defined_view(self, step):
         if not hasattr(step, 'view'):
@@ -201,10 +201,6 @@ class BaseMigrationStep(object):
     """
 
     def __init__(self, migration_resources):
-        if not isinstance(migration_resources, MigrationResourcesDTO):
-            raise MigrationConfigurationException(
-                "Use MigrationResourcesDTO class to initialize migration step"
-            )
         self.resources = migration_resources
 
     def setUp(self):
