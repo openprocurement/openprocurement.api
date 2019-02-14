@@ -1,8 +1,6 @@
 # -*- coding: utf-8 -*-
-import logging
+from openprocurement.api.constants import LOGGER
 from openprocurement.api.constants import SCHEMA_VERSION, SCHEMA_DOC
-
-LOGGER = logging.getLogger(__name__)
 
 
 def get_db_schema_version(db):
@@ -119,14 +117,24 @@ class BaseMigrationsRunner(object):
             :param check_plugins: allows to turn off plugin check on migration.
                 Useful for testing.
         """
+        LOGGER.info('{0} has started to run'.format(self.__class__.__name__))
+
         self._target_schema_version = schema_version_max if schema_version_max is not None else self.SCHEMA_VERSION
         self._schema_doc = schema_doc if schema_doc is not None else self.SCHEMA_DOC
         # check version of db schema
         current_version = self._get_db_schema_version()
+
+        LOGGER.info('DB schema version: {0}'.format(current_version))
+        LOGGER.info('Target DB shema version: {0}'.format(self._target_schema_version))
+        LOGGER.info('Schema doc name: {0}'.format(self._schema_doc))
+
         if current_version == SCHEMA_VERSION:
             return current_version
 
         steps_available = len(steps)
+
+        LOGGER.info('Steps available to execute: {0}'.format(steps_available))
+
         if self._target_schema_version > steps_available:
             raise MigrationExecutionException('There is no available migration steps to complete migration')
         elif current_version > steps_available:
@@ -135,20 +143,28 @@ class BaseMigrationsRunner(object):
         target_steps = steps[current_version:self._target_schema_version]
         curr_step = current_version
 
+        steps_to_migrate = ', '.join(self._collect_steps_names(target_steps))
+        LOGGER.info('Steps to apply: {0}'.format(steps_to_migrate))
+
         for step in target_steps:
+            LOGGER.info('Running step: {0}'.format(step.__name__))
             self._run_step(step)
             curr_step += 1
+            LOGGER.info('Increasing DB version to: {0}'.format(curr_step))
             self._set_db_schema_version(curr_step)
 
     def _run_step(self, step):
         st = step(self.resources)  # init MigrationStep
+        LOGGER.info('Running setUp of the step')
         st.setUp()
         self._check_step_has_defined_view(st)
+        LOGGER.info('Acquiring view-based generator')
         input_generator = self.resources.db.iterview(st.view, self.DB_READ_LIMIT, include_docs=True)
         migrated_documents = []  # output buffer
 
         for doc_row in input_generator:
             # migrate single document
+            LOGGER.info('Run migration on {0}'.format(doc_row.doc['_id']))
             migrated_doc = st.migrate_document(doc_row.doc)
             if migrated_doc is None:
                 LOGGER.info("Skipping document")
@@ -157,13 +173,16 @@ class BaseMigrationsRunner(object):
 
             # bulk write on threshold overgrow
             if len(migrated_documents) >= self.DB_BULK_WRITE_THRESHOLD:
+                LOGGER.info('DB_BULK_WRITE_THRESHOLD is hit - writing to the DB')
                 self.resources.db.update(migrated_documents)
                 # clean output buffer
                 migrated_documents = []
 
         # flush buffer to the DB, because threshold could be not reached
+        LOGGER.info('Saving the rest of migrated documents to the DB')
         self.resources.db.update(migrated_documents)
 
+        LOGGER.info('Running tearDown of the step')
         st.tearDown()
 
     def _get_db_schema_version(self):
@@ -180,8 +199,15 @@ class BaseMigrationsRunner(object):
     def _check_step_has_defined_view(self, step):
         if not hasattr(step, 'view'):
             error_template = "Migration step {0} has not defined a view for the migration"
-            error_text = error_template.format(step.__name__)
+            error_text = error_template.format(step.__class__.__name__)
             raise MigrationConfigurationException(error_text)
+
+    def _collect_steps_names(self, steps):
+        names = []
+        for s in steps:
+            names.append(s.__name__)
+
+        return tuple(names)
 
 
 class BaseMigrationStep(object):
