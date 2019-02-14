@@ -36,6 +36,16 @@ def migrate_data(registry, destination=None):
         set_db_schema_version(registry.db, step + 1)
 
 
+class MigrationConfigurationException(Exception):
+    """This exception is intended to indicate some configuration flaws"""
+    pass
+
+
+class MigrationExecutionException(Exception):
+    """This exception is intended to indicate some migration problems"""
+    pass
+
+
 class AliasesInfo(object):
     """Holds a mapping between package name and it's aliases"""
 
@@ -59,23 +69,14 @@ class AliasesInfo(object):
         return self._aliases_dict.get(package_name)
 
 
-class BaseMigrationResourcesDTO(object):
-    """Provides essential resources, that migration needs to start
-
-    Feel free to inherit this class to modify the set of resources for some MigrationRunner.
-    """
-
-    def __init__(self, db):
-        self.db = db
-
-
-class MigrationResourcesWithAliasesInfoDTO(BaseMigrationResourcesDTO):
+class MigrationResourcesDTO(object):
 
     def __init__(self, db, aliases_info):
-        super(MigrationResourcesWithAliasesInfoDTO, self).__init__(self)
+
+        self.db = db
 
         if not isinstance(aliases_info, AliasesInfo):
-            raise RuntimeError("Use AliasesInfo class")
+            raise MigrationConfigurationException("Use AliasesInfo class")
         self.aliases_info = aliases_info
 
 
@@ -91,7 +92,7 @@ class BaseMigrationsRunner(object):
     # approx max quantity of documents written per single db request
     DB_BULK_WRITE_THRESHOLD = 127
 
-    def __init__(self, db):
+    def __init__(self, migration_resources):
         """
         Params:
             :param registry: app registry
@@ -99,7 +100,9 @@ class BaseMigrationsRunner(object):
                 e.g. If migration located in the lots module, provide Root class
                 from the openregistry.lots.core.traversal module.
         """
-        self.db = db
+        if not isinstance(migration_resources, MigrationResourcesDTO):
+            raise MigrationConfigurationException("Use MigrationResourcesDTO to start the migration")
+        self.resources = migration_resources
 
     def migrate(self, steps, schema_version_max=None, schema_doc=None):
         """Run migrations
@@ -123,9 +126,9 @@ class BaseMigrationsRunner(object):
 
         steps_available = len(steps)
         if self._target_schema_version > steps_available:
-            raise RuntimeError('Target migration version is not defined')
+            raise MigrationExecutionException('There is no available migration steps to complete migration')
         elif current_version > steps_available:
-            raise RuntimeError('Version of the DB schema is greater than our newest migration')
+            raise MigrationExecutionException('Version of the DB schema is greater than our newest migration')
 
         target_steps = steps[current_version:self._target_schema_version]
         curr_step = current_version
@@ -188,8 +191,12 @@ class BaseMigrationStep(object):
 
     """
 
-    def __init__(self, db):
-        self.db = db
+    def __init__(self, migration_resources):
+        if not isinstance(migration_resources, MigrationResourcesDTO):
+            raise MigrationConfigurationException(
+                "Use MigrationResourcesDTO class to initialize migration step"
+            )
+        self.resources = migration_resources
 
     def setUp(self):
         """Preparation before migration steps.
