@@ -46,11 +46,11 @@ class MigrationExecutionException(Exception):
     pass
 
 
-class AliasesInfo(object):
+class AliasesInfoDTO(object):
     """Holds a mapping between package name and it's aliases"""
 
     def __init__(self, aliases_dict):
-        """Creates the AliasesInfo class
+        """Creates the AliasesInfoDTO class
 
         :param aliases_dict: a dictionary with following format:
 
@@ -77,8 +77,8 @@ class MigrationResourcesDTO(object):
 
         self.db = db
 
-        if not isinstance(aliases_info, AliasesInfo):
-            raise MigrationConfigurationException("Use AliasesInfo class")
+        if not isinstance(aliases_info, AliasesInfoDTO):
+            raise MigrationConfigurationException("Use AliasesInfoDTO class")
         self.aliases_info = aliases_info
 
 
