@@ -63,6 +63,8 @@ class AliasesInfo(object):
 
             the list with aliases could be empty.
         """
+        if not isinstance(aliases_dict, dict):
+            raise MigrationConfigurationException("Wrong type of aliases_dict")
         self._aliases_dict = aliases_dict
 
     def get_package_aliases(self, package_name):
