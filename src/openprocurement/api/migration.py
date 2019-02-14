@@ -36,6 +36,49 @@ def migrate_data(registry, destination=None):
         set_db_schema_version(registry.db, step + 1)
 
 
+class AliasesInfo(object):
+    """Holds a mapping between package name and it's aliases"""
+
+    def __init__(self, aliases_dict):
+        """Creates the AliasesInfo class
+
+        :param aliases_dict: a dictionary with following format:
+
+            {
+                "package_name_1": ["alias1", "alias2", .. "aliasN"],
+                "package_name_2": ["alias1", "alias2", .. "aliasN"],
+                ...
+                "package_name_N": ["alias1", "alias2", .. "aliasN"],
+            }
+
+            the list with aliases could be empty.
+        """
+        self._aliases_dict = aliases_dict
+
+    def get_package_aliases(self, package_name):
+        return self._aliases_dict.get(package_name)
+
+
+class BaseMigrationResourcesDTO(object):
+    """Provides essential resources, that migration needs to start
+
+    Feel free to inherit this class to modify the set of resources for some MigrationRunner.
+    """
+
+    def __init__(self, db):
+        self.db = db
+
+
+class MigrationResourcesWithAliasesInfoDTO(BaseMigrationResourcesDTO):
+
+    def __init__(self, db, aliases_info):
+        super(MigrationResourcesWithAliasesInfoDTO, self).__init__(self)
+
+        if not isinstance(aliases_info, AliasesInfo):
+            raise RuntimeError("Use AliasesInfo class")
+        self.aliases_info = aliases_info
+
+
 class BaseMigrationsRunner(object):
     """Runs migration functions iteratively"""
 
