@@ -6,17 +6,20 @@ LOGGER = logging.getLogger(__name__)
 
 
 def get_db_schema_version(db):
+    """This method is deprecated. Don't depend on it"""
     schema_doc = db.get(SCHEMA_DOC, {"_id": SCHEMA_DOC})
     return schema_doc.get("version", SCHEMA_VERSION - 1)
 
 
 def set_db_schema_version(db, version):
+    """This method is deprecated. Don't depend on it"""
     schema_doc = db.get(SCHEMA_DOC, {"_id": SCHEMA_DOC})
     schema_doc["version"] = version
     db.save(schema_doc)
 
 
 def migrate_data(registry, destination=None):
+    """This method is deprecated. Don't depend on it"""
     cur_version = get_db_schema_version(registry.db)
     if cur_version == SCHEMA_VERSION:
         return cur_version
