@@ -62,11 +62,13 @@ class BaseMigrationRunnerTestCase(unittest.TestCase):
             produced = 0
 
             doc_data = {
+                '_id': 'test_id_{0}',
                 'name': 'Harry',
                 'surname': 'Na Ferrarri'
             }
             while produced < count_to_procuce:
                 data = copy(doc_data)
+                data['_id'] = data['_id'].format(str(produced))
                 db_row = Mock(doc=data)
                 yield db_row
                 produced += 1
