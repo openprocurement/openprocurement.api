@@ -1,6 +1,10 @@
 # -*- coding: utf-8 -*-
 from openprocurement.api.constants import LOGGER
 from openprocurement.api.constants import SCHEMA_VERSION, SCHEMA_DOC
+from openprocurement.api.utils.print_helpers import delimited_printer
+
+
+LOG_INFO_PRINTER = delimited_printer(LOGGER.info, '|')
 
 
 def get_db_schema_version(db):
@@ -103,6 +107,7 @@ class BaseMigrationsRunner(object):
         if not isinstance(migration_resources, MigrationResourcesDTO):
             raise MigrationConfigurationException("Use MigrationResourcesDTO to start the migration")
         self.resources = migration_resources
+        self.name = self.__class__.__name__
 
     def migrate(self, steps, schema_version_max=None, schema_doc=None):
         """Run migrations
@@ -117,23 +122,23 @@ class BaseMigrationsRunner(object):
             :param check_plugins: allows to turn off plugin check on migration.
                 Useful for testing.
         """
-        LOGGER.info('{0} has started to run'.format(self.__class__.__name__))
+        LOG_INFO_PRINTER(self.name, 'STARTED')
 
         self._target_schema_version = schema_version_max if schema_version_max is not None else self.SCHEMA_VERSION
         self._schema_doc = schema_doc if schema_doc is not None else self.SCHEMA_DOC
         # check version of db schema
         current_version = self._get_db_schema_version()
 
-        LOGGER.info('DB schema version: {0}'.format(current_version))
-        LOGGER.info('Target DB shema version: {0}'.format(self._target_schema_version))
-        LOGGER.info('Schema doc name: {0}'.format(self._schema_doc))
+        LOG_INFO_PRINTER(self.name, 'DB schema version: {0}'.format(current_version))
+        LOG_INFO_PRINTER(self.name, 'Target DB shema version: {0}'.format(self._target_schema_version))
+        LOG_INFO_PRINTER(self.name, 'Schema doc name: {0}'.format(self._schema_doc))
 
         if current_version == SCHEMA_VERSION:
             return current_version
 
         steps_available = len(steps)
 
-        LOGGER.info('Steps available to execute: {0}'.format(steps_available))
+        LOG_INFO_PRINTER(self.name, 'Steps available to execute: {0}'.format(steps_available))
 
         if self._target_schema_version > steps_available:
             raise MigrationExecutionException('There is no available migration steps to complete migration')
@@ -144,45 +149,50 @@ class BaseMigrationsRunner(object):
         curr_step = current_version
 
         steps_to_migrate = ', '.join(self._collect_steps_names(target_steps))
-        LOGGER.info('Steps to apply: {0}'.format(steps_to_migrate))
+        LOG_INFO_PRINTER(self.name, 'Steps to apply: {0}'.format(steps_to_migrate))
 
         for step in target_steps:
-            LOGGER.info('Running step: {0}'.format(step.__name__))
+            LOG_INFO_PRINTER(self.name, step.__name__, 'STARTED')
             self._run_step(step)
             curr_step += 1
-            LOGGER.info('Increasing DB version to: {0}'.format(curr_step))
+            LOG_INFO_PRINTER(self.name, 'Increasing DB version to: {0}'.format(curr_step))
             self._set_db_schema_version(curr_step)
+
+        LOG_INFO_PRINTER(self.__class__.__name__, 'FINISHED')
 
     def _run_step(self, step):
         st = step(self.resources)  # init MigrationStep
-        LOGGER.info('Running setUp of the step')
+
+        step_name = st.__class__.__name__
+        LOG_INFO_PRINTER(self.name, step_name, 'SETUP')
+
         st.setUp()
         self._check_step_has_defined_view(st)
-        LOGGER.info('Acquiring view-based generator')
+        LOG_INFO_PRINTER(self.name, step_name, 'Acquiring view-based generator')
         input_generator = self.resources.db.iterview(st.view, self.DB_READ_LIMIT, include_docs=True)
         migrated_documents = []  # output buffer
 
         for doc_row in input_generator:
             # migrate single document
-            LOGGER.info('Run migration on {0}'.format(doc_row.doc['_id']))
+            LOG_INFO_PRINTER(self.name, step_name, 'Migrating {0}'.format(doc_row.doc['_id']))
             migrated_doc = st.migrate_document(doc_row.doc)
             if migrated_doc is None:
-                LOGGER.info("Skipping document")
+                LOG_INFO_PRINTER(self.name, step_name, "Skipping document")
                 continue
             migrated_documents.append(migrated_doc)
 
             # bulk write on threshold overgrow
             if len(migrated_documents) >= self.DB_BULK_WRITE_THRESHOLD:
-                LOGGER.info('DB_BULK_WRITE_THRESHOLD is hit - writing to the DB')
+                LOG_INFO_PRINTER(self.name, step_name, 'DB_BULK_WRITE_THRESHOLD is hit - writing to the DB')
                 self.resources.db.update(migrated_documents)
                 # clean output buffer
                 migrated_documents = []
 
         # flush buffer to the DB, because threshold could be not reached
-        LOGGER.info('Saving the rest of migrated documents to the DB')
+        LOG_INFO_PRINTER(self.name, step_name, 'Saving the rest of migrated documents to the DB')
         self.resources.db.update(migrated_documents)
 
-        LOGGER.info('Running tearDown of the step')
+        LOG_INFO_PRINTER(self.name, step_name, 'TEARDOWN')
         st.tearDown()
 
     def _get_db_schema_version(self):
