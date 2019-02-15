@@ -79,7 +79,7 @@ class BaseMigrationRunnerTestCase(unittest.TestCase):
         # A quite sophisticated mock, bcs there's a need
         # to access class and it's inctance as well
 
-        s_class = Mock()
+        s_class = Mock(__name__='test_step_class_name')
 
         s_instance = Mock()
         s_instance.setUp = Mock()
