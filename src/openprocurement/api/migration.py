@@ -123,6 +123,7 @@ class BaseMigrationsRunner(object):
                 Useful for testing.
         """
         LOG_INFO_PRINTER(self.name, 'STARTED')
+        LOG_INFO_PRINTER(self.name, 'PRE-MIGRATION STATUS-----------------')
 
         self._target_schema_version = schema_version_max if schema_version_max is not None else self.SCHEMA_VERSION
         self._schema_doc = schema_doc if schema_doc is not None else self.SCHEMA_DOC
@@ -150,6 +151,7 @@ class BaseMigrationsRunner(object):
 
         steps_to_migrate = ', '.join(self._collect_steps_names(target_steps))
         LOG_INFO_PRINTER(self.name, 'Steps to apply: {0}'.format(steps_to_migrate))
+        LOG_INFO_PRINTER(self.name, 'APPLYING MIGRATION-------------------')
 
         for step in target_steps:
             LOG_INFO_PRINTER(self.name, step.__name__, 'STARTED')
