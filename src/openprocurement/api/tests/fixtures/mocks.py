@@ -8,7 +8,7 @@ from openprocurement.api.migration import (
 
 
 def MigrationResourcesDTO_mock(db, aliases_info=None):
-    ai = AliasesInfoDTO({'some_package': []})
+    ai = AliasesInfoDTO({'some_package': []} if not aliases_info else aliases_info)
     mr = MigrationResourcesDTO(db, ai)
 
     return mr
