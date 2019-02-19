@@ -4,6 +4,7 @@ import unittest
 from openprocurement.api.utils.searchers import (
     path_to_kv,
     search_list_with_dicts,
+    traverse_nested_dicts,
 )
 
 
@@ -76,3 +77,28 @@ class SearchListWithDictsTestCase(unittest.TestCase):
     def test_unsuccessful_search(self):
         result = search_list_with_dicts(self.container, 'login', 'user3')
         self.assertIsNone(result)
+
+
+class TraverseNestedDictsTestCase(unittest.TestCase):
+
+    def setUp(self):
+        self.testdict = {
+            'forest': {
+                'tree1': {
+                    'leaf1': 'green',
+                    'leaf2': 'brown'
+                },
+                'tree2': {
+                    'leaf1': 'green',
+                    'leaf2': 'brown',
+                    'leaf3': {
+                        'bug1': 'wing1'
+                    }
+                }
+            }
+        }
+
+    def test_ok(self):
+        path = ('forest', 'tree2', 'leaf3', 'bug1')
+        res = traverse_nested_dicts(self.testdict, path)
+        self.assertEqual(res, 'wing1')

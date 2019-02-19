@@ -44,3 +44,16 @@ def path_to_kv(kv, d):
         return tuple(found_paths)
 
     return None
+
+
+def traverse_nested_dicts(d, path):
+    """Traverses nested dicts using path of keys"""
+    position = None
+
+    for index, step in enumerate(path):
+        if index == 0:
+            position = d[step]
+            continue
+        position = position[step]
+
+    return position
