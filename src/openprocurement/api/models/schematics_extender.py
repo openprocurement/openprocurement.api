@@ -67,6 +67,7 @@ class IsoDateTimeType(BaseType):
             date = parse_date(value, None)
             if not date.tzinfo:
                 date = TZ.localize(date)
+            date = date.astimezone(TZ)
             return date
         except ParseError:
             raise ConversionError(self.messages['parse'].format(value))
