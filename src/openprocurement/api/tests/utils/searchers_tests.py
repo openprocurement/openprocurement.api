@@ -3,6 +3,7 @@ import unittest
 
 from openprocurement.api.utils.searchers import (
     path_to_kv,
+    paths_to_key,
     search_list_with_dicts,
     traverse_nested_dicts,
 )
@@ -102,3 +103,50 @@ class TraverseNestedDictsTestCase(unittest.TestCase):
         path = ('forest', 'tree2', 'leaf3', 'bug1')
         res = traverse_nested_dicts(self.testdict, path)
         self.assertEqual(res, 'wing1')
+
+
+class PathsToKeyTestCase(unittest.TestCase):
+
+    def setUp(self):
+        self.testdict = {
+            'forest': {
+                'tree1': {
+                    'leaf1': 'green',
+                    'leaf2': 'brown'
+                },
+                'tree2': {
+                    'leaf1': 'green',
+                    'leaf2': 'brown',
+                    'leaf3': 'green-brown'
+                }
+            }
+        }
+
+    def test_search_single_result(self):
+        target_key = 'leaf3'
+        target_r = (
+            ('forest', 'tree2', 'leaf3'),
+        )
+
+        r = paths_to_key(target_key, self.testdict)
+
+        self.assertEqual(r, target_r)
+
+    def test_search_multiple_results(self):
+        key = 'leaf2'
+        target_r = (
+            ('forest', 'tree1', 'leaf2'),
+            ('forest', 'tree2', 'leaf2'),
+        )
+
+        r = paths_to_key(key, self.testdict)
+
+        self.assertEqual(r, target_r)
+
+    def test_no_results(self):
+        key = 'neverland'
+        target_r = None
+
+        r = paths_to_key(key, self.testdict)
+
+        self.assertEqual(r, target_r)
