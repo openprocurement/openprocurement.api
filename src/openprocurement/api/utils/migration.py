@@ -6,6 +6,7 @@ from openprocurement.api.database import set_api_security
 from openprocurement.api.utils.common import (
     create_app_meta,
 )
+from openprocurement.api.utils.plugins import search_entrypoints
 from openprocurement.api.utils.searchers import (
     path_to_kv,
 )
