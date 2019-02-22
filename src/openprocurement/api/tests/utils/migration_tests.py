@@ -37,7 +37,7 @@ class RunMigrationsConsoleEntrypointTestCase(unittest.TestCase):
     @mock.patch('openprocurement.api.utils.migration.create_app_meta')
     @mock.patch('openprocurement.api.utils.migration.sys')
     def test_ok(self, argv_mock, create_app_meta, run_migrations):
-        argv_mock.configure_mock(**{'argv': ('1', '2')})
+        argv_mock.configure_mock(**{'argv': ('1', '2', '3')})
         create_app_meta.return_value = 'test_app_meta'
 
         run_migrations_console_entrypoint()

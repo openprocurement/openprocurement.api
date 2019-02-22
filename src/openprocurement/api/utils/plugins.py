@@ -122,3 +122,12 @@ def get_plugin_aliases(plugin):
 
     for alias in aliases:
         check_alias(alias)
+
+
+def search_entrypoints(group, name):
+    ep_funcs = []
+    for ep in iter_entry_points(group, name):
+        ep_func = ep.load()
+        ep_funcs.append(ep_func)
+
+    return ep_funcs
