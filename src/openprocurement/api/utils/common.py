@@ -180,12 +180,12 @@ def prepare_patch(changes, orig, patch, basepath=''):
             changes.append(x)
 
 
-def apply_data_patch(item, changes):
+def apply_data_patch(data, changes):
     patch_changes = []
-    prepare_patch(patch_changes, item, changes)
+    prepare_patch(patch_changes, data, changes)
     if not patch_changes:
         return {}
-    return _apply_patch(item, patch_changes)
+    return _apply_patch(data, patch_changes)
 
 
 def get_revision_changes(dst, src):
