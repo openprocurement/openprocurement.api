@@ -197,11 +197,11 @@ class UtilsTest(unittest.TestCase):
             u'assetType': u'basic',
             u'doc_type': u'Asset'
         })
-        result = apply_data_patch(item=item, changes=changes)
+        result = apply_data_patch(data=item, changes=changes)
         self.assertEqual(result, expected_result)
 
         changes = {}
-        result = apply_data_patch(item=item, changes=changes)
+        result = apply_data_patch(data=item, changes=changes)
         self.assertEqual(result, {})
 
     def test_set_parent(self):
