@@ -4,6 +4,7 @@ from schematics.exceptions import (
     ModelConversionError,
     ValidationError
 )
+from collections import namedtuple
 from jsonpatch import JsonPointerException
 from schematics.types import (
     BaseType,
@@ -46,13 +47,14 @@ def _get_json_from_request(request):
     return json
 
 
-def validate_json_data(request):
+def validate_json_data(request, leave_json_data_into_request=True):
     json = _get_json_from_request(request)
     if not isinstance(json, dict) or 'data' not in json or not isinstance(json.get('data'), dict):
         request.errors.add('body', 'data', "Data not available")
         request.errors.status = 422
         raise error_handler(request)
-    request.validated['json_data'] = json['data']
+    if leave_json_data_into_request:
+        request.validated['json_data'] = json['data']
     return json['data']
 
 
@@ -328,3 +330,23 @@ def validate_patch_related_process_data(request, error_handler, **kwargs):
     context = request.context if 'relatedProcess' in request.context else request.context.__parent__
     model = type(context).relatedProcesses.model_class
     validate_data(request, model)
+
+
+Auth = namedtuple('Auth', ['role', 'user_id'])
+
+
+Event = namedtuple(
+    'Event',
+    [
+        'context',      # the data from the DB
+        'auth',         # authentication role
+        'data',         # data that request brings
+    ]
+)
+
+
+def validate_request_data(request):
+    """Checks request data general validity"""
+    data = validate_json_data(request, leave_json_data_into_request=False)
+    auth = Auth(role=request.authenticated_role, user_id=request.authenticated_userid)
+    request.event = Event(request.context, auth, data)
