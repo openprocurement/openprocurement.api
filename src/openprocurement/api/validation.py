@@ -4,7 +4,6 @@ from schematics.exceptions import (
     ModelConversionError,
     ValidationError
 )
-from collections import namedtuple
 from jsonpatch import JsonPointerException
 from schematics.types import (
     BaseType,
@@ -330,28 +329,3 @@ def validate_patch_related_process_data(request, error_handler, **kwargs):
     context = request.context if 'relatedProcess' in request.context else request.context.__parent__
     model = type(context).relatedProcesses.model_class
     validate_data(request, model)
-
-
-Auth = namedtuple('Auth', ['role', 'user_id'])
-
-
-Event = namedtuple(
-    'Event',
-    [
-        'context',      # the data from the DB
-        'auth',         # Auth
-        'data',         # data that request brings
-    ]
-)
-
-
-def build_event(request, data):
-    """Exctract fields from request that will be need for further work and build Event"""
-    auth = Auth(role=request.authenticated_role, user_id=request.authenticated_userid)
-    request.event = Event(request.context, auth, data)
-
-
-def validate_data_to_event(request, *args, **kwargs):
-    """Checks request data general validity"""
-    data = validate_json_data(request, leave_json_data_into_request=False)
-    build_event(request, data)
