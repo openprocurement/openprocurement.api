@@ -351,7 +351,7 @@ def build_event(request, data):
     request.event = Event(request.context, auth, data)
 
 
-def validate_request_data(request):
+def validate_data_to_event(request):
     """Checks request data general validity"""
     data = validate_json_data(request, leave_json_data_into_request=False)
     build_event(request, data)
