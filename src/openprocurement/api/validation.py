@@ -339,7 +339,7 @@ Event = namedtuple(
     'Event',
     [
         'context',      # the data from the DB
-        'auth',         # authentication role
+        'auth',         # Auth
         'data',         # data that request brings
     ]
 )
