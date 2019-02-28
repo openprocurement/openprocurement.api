@@ -11,6 +11,9 @@ from openprocurement.api.tests.base import (
     DummyException,
 )
 
+from openprocurement.api.models.common import Classification
+from copy import deepcopy
+
 
 @patch('openprocurement.api.validation.check_document', autospec=True)
 @patch('openprocurement.api.validation.set_first_document_fields', autospec=True)
@@ -221,10 +224,6 @@ class ValidateTAccreditationTest(unittest.TestCase):
             validate_t_accreditation(request, data)
 
         assert request.check_accreditation.call_count == 1
-
-
-from openprocurement.api.models.common import Classification
-from copy import deepcopy
 
 
 class TestClassification(Classification):
