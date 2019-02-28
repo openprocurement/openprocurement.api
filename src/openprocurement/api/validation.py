@@ -345,8 +345,13 @@ Event = namedtuple(
 )
 
 
+def build_event(request, data):
+    """Exctract fields from request that will be need for further work and build Event"""
+    auth = Auth(role=request.authenticated_role, user_id=request.authenticated_userid)
+    request.event = Event(request.context, auth, data)
+
+
 def validate_request_data(request):
     """Checks request data general validity"""
     data = validate_json_data(request, leave_json_data_into_request=False)
-    auth = Auth(role=request.authenticated_role, user_id=request.authenticated_userid)
-    request.event = Event(request.context, auth, data)
+    build_event(request, data)
