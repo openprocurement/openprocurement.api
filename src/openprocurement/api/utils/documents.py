@@ -16,6 +16,7 @@ from openprocurement.api.constants import (
     SESSION,
     TEMPORARY_DOCUMENT_EXPIRATION_SECONDS,
 )
+from openprocurement.api.exceptions import CorniceErrors
 from openprocurement.api.utils.common import (
     context_unpack,
     error_handler,
@@ -62,30 +63,36 @@ def check_document(request, document, document_container):
     Notice: this function doesn't work with documents been loaded directly into webapp.
         But the `upload_file` does.
     """
+    try:
+        check_ds_document(
+            document, request.registry.docservice_url, request.registry.keyring, document_container
+        )
+    except CorniceErrors as exc:
+        request.errors += exc.errors
+        request.errors.status = exc.errors.status
+        raise error_handler(request)
 
+
+def check_ds_document(document, ds_url, keyring, document_container='body'):
     url = document.url
     parsed_url = urlparse(url)
     parsed_query = dict(parse_qsl(parsed_url.query))
 
     # check all the necessary URL attributes
-    if not url.startswith(request.registry.docservice_url) or \
+    if not url.startswith(ds_url) or \
             len(parsed_url.path.split('/')) != 3 or \
             set(['Signature', 'KeyID']) != set(parsed_query):
-        request.errors.add(document_container, 'url', "Can add document only from document service.")
-        request.errors.status = 403
-        raise error_handler(request)
+        raise CorniceErrors(403, (document_container, 'url', "Can add document only from document service."))
+
     if not document.hash:
-        request.errors.add(document_container, 'hash', "This field is required.")
-        request.errors.status = 422
-        raise error_handler(request)
+        raise CorniceErrors(422, (document_container, 'hash', "This field is required."))
+
     keyid = parsed_query['KeyID']
-    if keyid not in request.registry.keyring:
-        request.errors.add(document_container, 'url', "Document url expired.")
-        request.errors.status = 422
-        raise error_handler(request)
+    if keyid not in keyring:
+        raise CorniceErrors(422, (document_container, 'url', "Document url expired."))
 
     # prepare to the signature approval
-    dockey = request.registry.keyring[keyid]
+    dockey = keyring[keyid]
     signature = parsed_query['Signature']
     key = urlparse(url).path.split('/')[-1]
 
@@ -93,9 +100,7 @@ def check_document(request, document, document_container):
     try:
         signature = b64decode(unquote(signature))
     except TypeError:
-        request.errors.add(document_container, 'url', "Document url signature invalid.")
-        request.errors.status = 422
-        raise error_handler(request)
+        raise CorniceErrors(422, (document_container, 'url', "Document url signature invalid."))
 
     # prove the signature was made right
     mess = "{}\0{}".format(key, document.hash.split(':', 1)[-1])
@@ -103,9 +108,7 @@ def check_document(request, document, document_container):
         if mess != dockey.verify(signature + mess.encode("utf-8")):
             raise ValueError
     except ValueError:
-        request.errors.add(document_container, 'url', "Document url invalid.")
-        request.errors.status = 422
-        raise error_handler(request)
+        raise CorniceErrors(422, (document_container, 'url', "Document url invalid."))
 
 
 def update_document_url(request, document, document_route, route_kwargs):
