@@ -3,8 +3,8 @@
 
 class DataEngine(object):
     
-    def apply_data_on_model(data, changes):
+    def apply_data_on_model(data, model):
         pass
 
-    def create_model(data, model):
+    def create_model(data, model_cls):
         pass
