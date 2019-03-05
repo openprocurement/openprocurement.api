@@ -49,4 +49,9 @@ class DataEngine(object):
         """
         m_cls = m.__class__
         data = m.serialize()
-        return m_cls(data)
+        m_copy = m_cls(data)
+
+        if hasattr(m, '__parent__'):
+            m_copy.__parent__ = m.__parent__
+
+        return m_copy
