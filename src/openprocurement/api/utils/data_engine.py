@@ -13,7 +13,7 @@ class DataEngine(object):
         model_cls = self._event.context.__class__
 
         initial_data = self._event.context.serialize()
-        updated_model = model_cls(initial_data)  # create new model with same data
+        updated_model = model_cls(initial_data)
 
         new_patch = apply_data_patch(initial_data, self._event.data)
         if new_patch:
@@ -39,3 +39,9 @@ class DataEngine(object):
         method = updated_model.serialize
 
         return method(role)
+
+    @staticmethod
+    def copy_model(m):
+        m_cls = m.__class__
+        data = m.serialize()
+        return m_cls(data)
