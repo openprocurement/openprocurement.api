@@ -42,6 +42,11 @@ class DataEngine(object):
 
     @staticmethod
     def copy_model(m):
+        """
+        Copies schematics model
+
+        copy.deepcopy won't work here, bacause the model object's internals cannot be copied.
+        """
         m_cls = m.__class__
         data = m.serialize()
         return m_cls(data)
