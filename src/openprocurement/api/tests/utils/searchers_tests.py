@@ -166,11 +166,13 @@ class SearchRootChildModelTestCase(unittest.TestCase):
 
     def setUp(self):
         self.root = self.Node('root', None)
-        auction = self.Node('auction', self.root)
-        award = self.Node('award', auction)
-
-        self.start_node = award
+        self.auction = self.Node('auction', self.root)
+        self.award = self.Node('award', self.auction)
 
     def test_ok(self):
-        res = search_root_child_model(self.start_node)
-        self.assertEqual(res, self.root)
+        res = search_root_child_model(self.award)
+        self.assertEqual(res, self.auction)
+
+    def test_search_starts_on_roots_child(self):
+        res = search_root_child_model(self.auction)
+        self.assertEqual(res, self.auction)
