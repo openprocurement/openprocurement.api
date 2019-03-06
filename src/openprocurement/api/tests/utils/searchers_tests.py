@@ -5,7 +5,7 @@ from openprocurement.api.utils.searchers import (
     path_to_kv,
     paths_to_key,
     search_list_with_dicts,
-    search_root_child_model,
+    search_root_model,
     traverse_nested_dicts,
 )
 
@@ -153,7 +153,7 @@ class PathsToKeyTestCase(unittest.TestCase):
         self.assertEqual(r, target_r)
 
 
-class SearchRootChildModelTestCase(unittest.TestCase):
+class SearchRootModelTestCase(unittest.TestCase):
 
     class Node(object):
 
@@ -170,9 +170,9 @@ class SearchRootChildModelTestCase(unittest.TestCase):
         self.award = self.Node('award', self.auction)
 
     def test_ok(self):
-        res = search_root_child_model(self.award)
+        res = search_root_model(self.award)
         self.assertEqual(res, self.auction)
 
     def test_search_starts_on_roots_child(self):
-        res = search_root_child_model(self.auction)
+        res = search_root_model(self.auction)
         self.assertEqual(res, self.auction)

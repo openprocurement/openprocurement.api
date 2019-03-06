@@ -82,7 +82,7 @@ def paths_to_key(key, d):
     return dict_traverser(d, trigger)
 
 
-def search_root_child_model(m):
+def search_root_model(m):
     """Searches model, that has `Root` as `__parent__`
 
     Example:
