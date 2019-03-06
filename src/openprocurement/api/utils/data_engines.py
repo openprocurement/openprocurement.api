@@ -1,7 +1,13 @@
 # -*- coding: utf-8 -*-
+from schematics.exceptions import ModelValidationError
+
 from openprocurement.api.utils.base_data_engine import DataEngine
+from openprocurement.api.utils.searchers import search_root_child_model
 from openprocurement.api.utils.common import (
     apply_data_patch,
+    get_db,
+    get_now,
+    get_revision_changes,
     set_modetest_titles,
 )
 from openprocurement.api.models.auction_models import Revision
@@ -45,37 +51,45 @@ class DataValidationEngine(DataEngine):
 
 class DataPersistenceEngine(DataEngine):
 
-    def save_context(self):
+    def save(self):
         """Save model to the database & perform all the neccessary checks
 
         :param m: fork of the context, that contains the changes
         """
 
-        if contract.mode == u'test':
-            set_modetest_titles(self._event.context)
-        patch = get_revision_changes(contract.serialize("plain"),
-                                     request.validated['contract_src'])
+        ctx = search_root_child_model(self._event.context)
+        db = get_db()
+
+        if ctx.mode == u'test':
+            set_modetest_titles(ctx)
+
+        patch = get_revision_changes(
+            ctx.serialize("plain"),
+            self._event._root_model_data
+        )
+
         if patch:
-            contract.revisions.append(
-                Revision({'author': request.authenticated_userid,
-                          'changes': patch, 'rev': contract.rev}))
-            old_date_modified = contract.dateModified
-            contract.dateModified = get_now()
+            ctx.revisions.append(
+                Revision({'author': self._event.auth.user_id,
+                          'changes': patch, 'rev': ctx.rev}))
+            # old_date_modified = ctx.dateModified
+            ctx.dateModified = get_now()
             try:
-                contract.store(request.registry.db)
+                ctx.store(db)
             except ModelValidationError, e:  # pragma: no cover
                 for i in e.message:
-                    request.errors.add('body', i, e.message[i])
-                request.errors.status = 422
-            except Exception, e:  # pragma: no cover
-                request.errors.add('body', 'data', str(e))
-            else:
-                LOGGER.info('Saved contract {}: dateModified {} -> {}'.format(
-                    contract.id, old_date_modified and old_date_modified.isoformat(),
-                    contract.dateModified.isoformat()),
-                    extra=context_unpack(request, {'MESSAGE_ID': 'save_contract'},
-                                         {'CONTRACT_REV': contract.rev}))
-                return True
+                    raise RuntimeError("Save error")  # TODO this is temporary stub of exception
+                    # request.errors.add('body', i, e.message[i])
+                # request.errors.status = 422
+            # except Exception, e:  # pragma: no cover
+            #     request.errors.add('body', 'data', str(e))
+            # else:
+            #     LOGGER.info('Saved {}: dateModified {} -> {}'.format(
+            #         ctx.id, old_date_modified and old_date_modified.isoformat(),
+            #         ctx.dateModified.isoformat()),
+            #         extra=context_unpack(request, {'MESSAGE_ID': 'save'},
+            #                              {'REV': ctx.rev}))
+            return True
 
     def update_model(self, m):
         pass

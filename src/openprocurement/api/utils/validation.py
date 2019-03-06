@@ -1,7 +1,7 @@
 from collections import namedtuple
 
+from openprocurement.api.utils.searchers import search_root_model
 from openprocurement.api.validation import validate_json_data
-from openprocurement.api.utils.base_data_engine import DataEngine
 
 
 Auth = namedtuple('Auth', ['role', 'user_id'])
@@ -26,18 +26,18 @@ class AuthData(object):
 
 class Event(object):
 
-    def __init__(self, context, auth_data, data):
+    def __init__(self, context, auth_data, data, root_model_data):
         self.context = context
         self.auth = auth_data
         self._data = data
-        # read-only context; needed for save process
-        self._ro_context = DataEngine.copy_model(context)
+        # needed for save process to support building patch revision
+        self._root_model_data = search_root_model(context).serialize('plain')
 
 
 def build_event(request, data):
     """Exctract fields from request that will be need for further work and build Event"""
     auth = AuthData(request.authenticated_userid, request.authenticated_role)
-    request.event = Event(request.context, auth, data)
+    request.event = Event(request.context, auth, data, request.validated[)
 
 
 def validate_data_to_event(request, *args, **kwargs):
