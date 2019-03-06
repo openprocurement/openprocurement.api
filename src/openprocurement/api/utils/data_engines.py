@@ -1,31 +1,10 @@
 # -*- coding: utf-8 -*-
+from openprocurement.api.utils.base_data_engine import DataEngine
 from openprocurement.api.utils.common import (
     apply_data_patch,
     set_modetest_titles,
 )
 from openprocurement.api.models.auction_models import Revision
-
-
-class DataEngine(object):
-
-    def __init__(self, event):
-        self._event = event
-
-    @staticmethod
-    def copy_model(m):
-        """
-        Copies schematics model
-
-        copy.deepcopy won't work here, bacause the model object's internals cannot be copied.
-        """
-        m_cls = m.__class__
-        data = m.serialize()
-        m_copy = m_cls(data)
-
-        if hasattr(m, '__parent__'):
-            m_copy.__parent__ = m.__parent__
-
-        return m_copy
 
 
 class DataValidationEngine(DataEngine):
@@ -66,23 +45,21 @@ class DataValidationEngine(DataEngine):
 
 class DataPersistenceEngine(DataEngine):
 
-    def save_model(self, m):
+    def save_context(self):
         """Save model to the database & perform all the neccessary checks
 
         :param m: fork of the context, that contains the changes
         """
 
-        if getattr(m, 'mode') == u'test':
-            set_modetest_titles(m)
-        patch = get_revision_changes(
-            m.serialize("plain"),
-            self._event.context.serialize("plain")
-        )
+        if contract.mode == u'test':
+            set_modetest_titles(self._event.context)
+        patch = get_revision_changes(contract.serialize("plain"),
+                                     request.validated['contract_src'])
         if patch:
             contract.revisions.append(
-                Revision({'author': self._event.auth.user_id,
-                          'changes': patch, 'rev': self._event.context.rev}))
-            old_date_modified = self._event.context.dateModified
+                Revision({'author': request.authenticated_userid,
+                          'changes': patch, 'rev': contract.rev}))
+            old_date_modified = contract.dateModified
             contract.dateModified = get_now()
             try:
                 contract.store(request.registry.db)
