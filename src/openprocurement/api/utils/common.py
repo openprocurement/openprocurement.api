@@ -13,6 +13,7 @@ from functools import partial
 from hashlib import sha512
 from json import dumps, loads
 from pyramid.compat import text_
+from pyramid.threadlocal import get_current_registry
 from uuid import uuid4
 from yaml import safe_load
 
@@ -504,3 +505,12 @@ def dump_dict_to_tempfile(dict_to_dump, fmt='json'):
     tf.close()
 
     return tf.name
+
+
+def get_db():
+    """Return db connection within current registry
+
+    Note: this function works only inside some request thread.
+    """
+    r = get_current_registry()
+    return r.db
