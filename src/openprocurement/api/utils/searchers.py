@@ -80,3 +80,27 @@ def paths_to_key(key, d):
             return True
 
     return dict_traverser(d, trigger)
+
+
+def search_root_child_model(m):
+    """Searches model, that has `Root` as `__parent__`
+
+    Example:
+        root <-- auction <-- award
+
+        then
+
+            search_root_child_model(award)
+
+        will return auction model
+    """
+
+    parent = child = m
+
+    while True:
+        possible_parent = getattr(parent, '__parent__')
+        if possible_parent:
+            child = parent
+            parent = possible_parent
+        else:
+            return child
