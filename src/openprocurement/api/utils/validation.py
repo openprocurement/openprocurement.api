@@ -32,6 +32,9 @@ class Event(object):
         self._data = data
         # needed for save process to support building patch revision
         self._root_model_data = search_root_model(context).serialize('plain')
+        # dict with applied request data on the context & filtered with roles
+        # initialized only on PATCH
+        self._filtered_applied_patch = None
 
 
 def build_event(request, data):
