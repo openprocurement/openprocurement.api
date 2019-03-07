@@ -115,5 +115,10 @@ class DataPersistenceEngine(DataEngine):
             #                              {'REV': ctx.rev}))
             return True
 
-    def update_model(self, m):
-        pass
+    def update_model(self):
+        data = request.validated['data'] if data is None else data
+        patch = data and apply_data_patch(src or request.context.serialize(), data)
+        if patch:
+            request.context.import_data(patch)
+            if save:
+                return save_contract(request)
