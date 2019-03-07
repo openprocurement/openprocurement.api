@@ -15,7 +15,11 @@ from openprocurement.api.models.auction_models import Revision
 
 class DataValidationEngine(DataEngine):
 
-    def apply_data_on_model(self):
+    updated_context = property(_get_updated_context)
+    updated_context_data = property(_get_updated_context_data)
+    created_model = property(_get_created_model)
+
+    def _apply_data_on_context(self):
         """Applies event.data on event.context and returns applied data wrapped into invalid model
         """
         model_cls = self._event.context.__class__
@@ -32,21 +36,41 @@ class DataValidationEngine(DataEngine):
         role = self._event.context.get_role(self._event.auth.role)
         method = updated_model.to_patch
 
-        updated_filtered_model_data = method(role)
-        updated_filtered_model = model_cls(updated_filtered_model_data)
+        self._updated_context_data = method(role)
+        self._updated_context = model_cls(updated_filtered_model_data)
 
-        return updated_filtered_model
+    def _get_updated_context(self):
+        uc = getattr(self, '_updated_context')
+        if not uc:
+            self._apply_data_on_context()
+            uc = self._updated_context
+        return uc
 
-    def create_model(self, data, model):
+    def _get_updated_context_data(self):
+        ucd = getattr(self, '_updated_context_data')
+        if not ucd:
+            self._apply_data_on_context()
+            ucd = self._updated_context_data
+        return ucd
+
+    def _create_model(self):
         role = 'create'
         model_cls = self._event.context.__class__
 
-        updated_model = model_cls(self._event.data)
-        updated_model.__parent__ = self._event.context.__parent__
-        updated_model.validate()
-        method = updated_model.serialize
+        created_model = model_cls(self._event.data)
+        created_model.__parent__ = self._event.context.__parent__
+        created_model.validate()
 
-        return method(role)
+        self._created_model = created_model.serialize(role)
+
+    def _get_created_model(self):
+        m = getattr(self, '_created_model')
+        if not m:
+            self._create_model()
+            m = self._created_model
+        return m
+
+
 
 
 class DataPersistenceEngine(DataEngine):
