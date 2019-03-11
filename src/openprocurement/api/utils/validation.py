@@ -4,19 +4,6 @@ from openprocurement.api.utils.searchers import search_root_model
 from openprocurement.api.validation import validate_json_data
 
 
-Auth = namedtuple('Auth', ['role', 'user_id'])
-
-
-Event = namedtuple(
-    'Event',
-    [
-        'context',      # the data from the DB
-        'auth',         # Auth
-        'data',         # data that request brings
-    ]
-)
-
-
 class AuthData(object):
 
     def __init__(self, user_id, role):
@@ -30,11 +17,6 @@ class Event(object):
         self.context = context
         self.auth = auth_data
         self._data = data
-        # needed for save process to support building patch revision
-        self._root_model_data = search_root_model(context).serialize('plain')
-        # dict with applied request data on the context & filtered with roles
-        # initialized only on PATCH
-        self._filtered_applied_patch = None
 
 
 def build_event(request, data):
