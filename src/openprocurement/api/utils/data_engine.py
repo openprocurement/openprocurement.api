@@ -1,23 +1,42 @@
 # -*- coding: utf-8 -*-
-from schematics.exceptions import ModelValidationError
+class DataEngine(object):
 
-from openprocurement.api.utils.base_data_engine import DataEngine
-from openprocurement.api.utils.searchers import search_root_child_model
-from openprocurement.api.utils.common import (
-    apply_data_patch,
-    get_db,
-    get_now,
-    get_revision_changes,
-    set_modetest_titles,
-)
-from openprocurement.api.models.auction_models import Revision
+    def __init__(self, event):
+        self._event = event
 
+    @property
+    def updated_context(self):
+        uc = getattr(self, '_updated_context')
+        if not uc:
+            self._apply_data_on_context()
+            uc = self._updated_context
+        return uc
 
-class DataValidationEngine(DataEngine):
+    @property
+    def updated_context_data(self):
+        ucd = getattr(self, '_updated_context_data')
+        if not ucd:
+            self._apply_data_on_context()
+            ucd = self._updated_context_data
+        return ucd
 
-    updated_context = property(_get_updated_context)
-    updated_context_data = property(_get_updated_context_data)
-    created_model = property(_get_created_model)
+    @property
+    def created_model(self):
+        m = getattr(self, '_created_model')
+        if not m:
+            self._create_model()
+            m = self._created_model
+        return m
+
+    def _create_model(self):
+        role = 'create'
+        model_cls = self._event.context.__class__
+
+        created_model = model_cls(self._event.data)
+        created_model.__parent__ = self._event.context.__parent__
+        created_model.validate()
+
+        self._created_model = created_model.serialize(role)
 
     def _apply_data_on_context(self):
         """Applies event.data on event.context and returns applied data wrapped into invalid model
@@ -38,42 +57,6 @@ class DataValidationEngine(DataEngine):
 
         self._updated_context_data = method(role)
         self._updated_context = model_cls(updated_filtered_model_data)
-
-    def _get_updated_context(self):
-        uc = getattr(self, '_updated_context')
-        if not uc:
-            self._apply_data_on_context()
-            uc = self._updated_context
-        return uc
-
-    def _get_updated_context_data(self):
-        ucd = getattr(self, '_updated_context_data')
-        if not ucd:
-            self._apply_data_on_context()
-            ucd = self._updated_context_data
-        return ucd
-
-    def _create_model(self):
-        role = 'create'
-        model_cls = self._event.context.__class__
-
-        created_model = model_cls(self._event.data)
-        created_model.__parent__ = self._event.context.__parent__
-        created_model.validate()
-
-        self._created_model = created_model.serialize(role)
-
-    def _get_created_model(self):
-        m = getattr(self, '_created_model')
-        if not m:
-            self._create_model()
-            m = self._created_model
-        return m
-
-
-
-
-class DataPersistenceEngine(DataEngine):
 
     def save(self):
         """Save model to the database & perform all the neccessary checks
@@ -122,3 +105,19 @@ class DataPersistenceEngine(DataEngine):
             request.context.import_data(patch)
             if save:
                 return save_contract(request)
+
+    @staticmethod
+    def copy_model(m):
+        """
+        Copies schematics model
+
+        copy.deepcopy won't work here, bacause the model object's internals cannot be copied.
+        """
+        m_cls = m.__class__
+        data = m.serialize()
+        m_copy = m_cls(data)
+
+        if hasattr(m, '__parent__'):
+            m_copy.__parent__ = m.__parent__
+
+        return m_copy
