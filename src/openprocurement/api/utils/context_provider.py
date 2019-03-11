@@ -14,7 +14,7 @@ class ContextProviderCached(ContextProvider):
     """Contains different contexts & provides cache for different serializations"""
 
     def __init__(self, *args, **kwargs):
-        super(ContextProviderCached, self).__init__(self, *args, **kwargs)
+        super(ContextProviderCached, self).__init__(*args, **kwargs)
         self.cache = dict()
 
 
@@ -55,6 +55,6 @@ class ContextBuilderFromRequest(object):
         global_ctx_container = ContextContainer(global_ctx)
 
         cp = ContextProviderCached(local_ctx_container, global_ctx_container)
-        cp.cache['global_ctx_plain'] = global_ctx_plain
+        cp.cache['global_ctx_plain'] = global_plain_ctx
 
         return cp
