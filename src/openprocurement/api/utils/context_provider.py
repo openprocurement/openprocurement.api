@@ -30,7 +30,7 @@ class ContextContainer(object):
 
     @property
     def ctx(self):
-        ctx = getattr(self, '_ctx')
+        ctx = getattr(self, '_ctx', None)
         if not ctx:
             self._ctx = copy_model(self._ctx_ro)
         return self._ctx
