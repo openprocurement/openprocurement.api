@@ -3,10 +3,19 @@ from openprocurement.api.utils.common import copy_model
 
 
 class ContextProvider(object):
+    """Holds both containers for local & global contexts"""
     
     def __init__(self, local_ctx, global_ctx):
         self.l_ctx = local_ctx
         self.g_ctx = global_ctx
+
+
+class ContextProviderCached(ContextProvider):
+    """Contains different contexts & provides cache for different serializations"""
+
+    def __init__(self, *args, **kwargs):
+        super(ContextProviderCached, self).__init__(self, *args, **kwargs)
+        self.cache = dict()
 
 
 class ContextContainer(object):
@@ -29,3 +38,10 @@ class ContextContainer(object):
     @property
     def ctx_ro(self):
         return self._ctx_ro
+
+
+class ContextBuilderFromRequest(object):
+    """Builds ContextProvider from objects found in the request"""
+
+    def __init__(self, local_ctx, global_ctx, global_plain_ctx):
+        pass
