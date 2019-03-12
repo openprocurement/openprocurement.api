@@ -21,18 +21,16 @@ class ContextProviderCached(ContextProvider):
 class ContextContainer(object):
     """Holds the context in two entities
     
-    _ctx_ro - original unmodified context (read-only)
-    _ctx - lazy copy of the original context
+    _ctx - original context
+    _ctx_ro - read-only copy of the context
     """
 
     def __init__(self, ctx):
-        self._ctx_ro = ctx
+        self._ctx = ctx
+        self._ctx_ro = copy_model(ctx)
 
     @property
     def ctx(self):
-        ctx = getattr(self, '_ctx', None)
-        if not ctx:
-            self._ctx = copy_model(self._ctx_ro)
         return self._ctx
 
     @property
