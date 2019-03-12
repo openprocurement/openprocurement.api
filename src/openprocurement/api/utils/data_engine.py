@@ -1,62 +1,49 @@
 # -*- coding: utf-8 -*-
+from openprocurement.api.utils.common import (
+    apply_data_patch,
+    get_db,
+    get_now,
+    set_modetest_titles,
+    get_revision_changes,
+)
+from openprocurement.api.models.auction_models import Revision
+from schematics.exceptions import ModelValidationError
+
+
 class DataEngine(object):
 
     def __init__(self, event):
         self._event = event
 
-    @property
-    def updated_context(self):
-        uc = getattr(self, '_updated_context')
-        if not uc:
-            self._apply_data_on_context()
-            uc = self._updated_context
-        return uc
-
-    @property
-    def updated_context_data(self):
-        ucd = getattr(self, '_updated_context_data')
-        if not ucd:
-            self._apply_data_on_context()
-            ucd = self._updated_context_data
-        return ucd
-
-    @property
-    def created_model(self):
-        m = getattr(self, '_created_model')
-        if not m:
-            self._create_model()
-            m = self._created_model
-        return m
-
-    def _create_model(self):
+    def create_model(self):
         role = 'create'
-        model_cls = self._event.context.__class__
+        model_cls = self._event.ctx.l_ctx.ctx_ro.__class__
 
         created_model = model_cls(self._event.data)
-        created_model.__parent__ = self._event.context.__parent__
+        created_model.__parent__ = self._event.ctx.l_ctx.ctx_ro.__parent__
         created_model.validate()
 
         self._created_model = created_model.serialize(role)
 
-    def _apply_data_on_context(self):
+    def apply_data_on_context(self):
         """Applies event.data on event.context and returns applied data wrapped into invalid model
         """
-        model_cls = self._event.context.__class__
+        model_cls = self._event.ctx.l_ctx.ctx_ro.__class__
 
-        initial_data = self._event.context.serialize()
+        initial_data = self._event.ctx.l_ctx.ctx_ro.serialize()
         updated_model = model_cls(initial_data)
 
         new_patch = apply_data_patch(initial_data, self._event.data)
         if new_patch:
             updated_model.import_data(new_patch, partial=True, strict=True)
-        updated_model.__parent__ = self._event.context.__parent__
+        updated_model.__parent__ = self._event.ctx.l_ctx.ctx_ro.__parent__
         updated_model.validate()
 
-        role = self._event.context.get_role(self._event.auth.role)
+        role = self._event.ctx.l_ctx.ctx_ro.get_role(self._event.auth.role)
         method = updated_model.to_patch
 
-        self._updated_context_data = method(role)
-        self._updated_context = model_cls(updated_filtered_model_data)
+        self._event.ctx.cache['l_ctx_updated_data'] = method(role)
+        self._event.ctx.cache['l_ctx_updated_model'] = model_cls(self._event.ctx.cache['l_ctx_updated_data'])
 
     def save(self):
         """Save model to the database & perform all the neccessary checks
@@ -64,25 +51,26 @@ class DataEngine(object):
         :param m: fork of the context, that contains the changes
         """
 
-        ctx = search_root_child_model(self._event.context)
+        g_ctx = self._event.ctx.g_ctx.ctx  # global edited context
+        g_ctx_plain = self._event.ctx.cache['global_ctx_plain']
         db = get_db()
 
-        if ctx.mode == u'test':
-            set_modetest_titles(ctx)
+        if g_ctx.mode == u'test':
+            set_modetest_titles(g_ctx)
 
         patch = get_revision_changes(
-            ctx.serialize("plain"),
-            self._event._root_model_data
+            g_ctx.serialize('plain'),
+            g_ctx_plain
         )
 
         if patch:
-            ctx.revisions.append(
+            g_ctx.revisions.append(
                 Revision({'author': self._event.auth.user_id,
-                          'changes': patch, 'rev': ctx.rev}))
-            # old_date_modified = ctx.dateModified
-            ctx.dateModified = get_now()
+                          'changes': patch, 'rev': g_ctx.rev}))
+            old_date_modified = g_ctx.dateModified
+            g_ctx.dateModified = get_now()
             try:
-                ctx.store(db)
+                g_ctx.store(db)
             except ModelValidationError, e:  # pragma: no cover
                 for i in e.message:
                     raise RuntimeError("Save error")  # TODO this is temporary stub of exception
@@ -98,10 +86,10 @@ class DataEngine(object):
             #                              {'REV': ctx.rev}))
             return True
 
-    def update_model(self):
-        data = request.validated['data'] if data is None else data
-        patch = data and apply_data_patch(src or request.context.serialize(), data)
+    def update(self, save=True):
+        data = self._event.ctx.cache['l_ctx_updated_data']
+        patch = apply_data_patch(self._event.ctx.l_ctx.ctx.serialize(), data)
         if patch:
-            request.context.import_data(patch)
+            self._event.ctx.l_ctx.ctx.import_data(patch)
             if save:
-                return save_contract(request)
+                return self.save()
