@@ -42,7 +42,7 @@ class ContextBuilderFromRequest(object):
     """Builds ContextProvider from objects found in the request"""
 
     @staticmethod
-    def build(local_ctx, global_ctx, global_plain_ctx):
+    def build(local_ctx, global_ctx, global_ctx_plain):
         """Build ContextProviderCached
 
         :param local_ctx: ContextContainer with local context
@@ -53,6 +53,6 @@ class ContextBuilderFromRequest(object):
         global_ctx_container = ContextContainer(global_ctx)
 
         cp = ContextProviderCached(local_ctx_container, global_ctx_container)
-        cp.cache['global_ctx_plain'] = global_plain_ctx
+        cp.cache['global_ctx_plain'] = global_ctx_plain
 
         return cp
