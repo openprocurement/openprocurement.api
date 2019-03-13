@@ -6,7 +6,7 @@ here = os.path.abspath(os.path.dirname(__file__))
 with open(os.path.join(here, 'README.rst')) as f:
     README = f.read()
 
-VERSION = "2.5.11+eacore"
+VERSION = "2.5.12+eacore"
 
 requires = [
     'barbecue',
