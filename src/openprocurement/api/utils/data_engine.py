@@ -15,15 +15,14 @@ class DataEngine(object):
     def __init__(self, event):
         self._event = event
 
-    def create_model(self):
+    def create_model(self, model_cls):
         role = 'create'
-        model_cls = self._event.ctx.l_ctx.ctx_ro.__class__
 
         created_model = model_cls(self._event.data)
-        created_model.__parent__ = self._event.ctx.l_ctx.ctx_ro.__parent__
+        created_model.__parent__ = self._event.ctx.g_ctx.ctx
         created_model.validate()
 
-        self._created_model = created_model.serialize(role)
+        return created_model.serialize(role)
 
     def apply_data_on_context(self):
         """Applies event.data on event.context and returns applied data wrapped into invalid model
