@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-class ModelDiscoverer(object):
+class ModelDiscovery(object):
 
     def discover(self, data):
         raise NotImplementedError
