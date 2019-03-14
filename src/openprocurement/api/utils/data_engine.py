@@ -19,7 +19,7 @@ class DataEngine(object):
         role = 'create'
 
         created_model = model_cls(self._event.data)
-        created_model.__parent__ = self._event.ctx.g_ctx.ctx
+        created_model.__parent__ = self._event.ctx  # here ctx is Root
         created_model.validate()
 
         return created_model.serialize(role)

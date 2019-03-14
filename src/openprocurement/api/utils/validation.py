@@ -25,8 +25,8 @@ def build_event(request, data):
     auth = AuthData(request.authenticated_userid, request.authenticated_role)
     local_ctx = request.context
 
-    if not hasattr(local_ctx, '__parent__'):  # in case of resource creation
-        request.event = Event(None, auth, data)
+    if not getattr(local_ctx, '__parent__'):  # in case of resource creation
+        request.event = Event(local_ctx, auth, data)
         return
 
     global_ctx = search_root_model(local_ctx)
