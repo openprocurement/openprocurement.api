@@ -22,7 +22,9 @@ class DataEngine(object):
         created_model.__parent__ = self._event.ctx  # here ctx is Root
         created_model.validate()
 
-        return created_model.serialize(role)
+        filtered = created_model.serialize(role)
+
+        return filtered, created_model
 
     def apply_data_on_context(self):
         """Applies event.data on event.context and returns applied data wrapped into invalid model
