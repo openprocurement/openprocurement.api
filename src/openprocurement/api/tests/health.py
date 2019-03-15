@@ -27,7 +27,10 @@ REPLICATION = {
 }
 
 REPLICATION_OK = copy(REPLICATION)
+REPLICATION_OK['replication_id'] = "54c8d937582043c3ae0ed58f254ac875+continuous+create_target"
 REPLICATION_OK['checkpointed_source_seq'] = REPLICATION_OK['source_seq']
+REPLICATION_OK_2 = copy(REPLICATION_OK)
+REPLICATION_OK_2['replication_id'] = "1e5df0b70431430499147a72cff7fed6+continuous+create_target"
 
 
 class HealthTestBase(BaseWebTest):
@@ -76,7 +79,7 @@ class HealthTest200(HealthTestBase):
 
 
 class HealthTest_all(HealthTestBase):
-    return_value = [REPLICATION_OK, REPLICATION_OK]
+    return_value = [REPLICATION_OK, REPLICATION_OK_2]
 
     def test_health_view(self):
         response = self.app.get('/health', status=200)
