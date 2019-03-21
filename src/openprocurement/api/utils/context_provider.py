@@ -5,54 +5,21 @@ from openprocurement.api.utils.common import copy_model
 class ContextProvider(object):
     """Holds both containers for local & global contexts"""
     
-    def __init__(self, local_ctx, global_ctx):
-        self.l_ctx = local_ctx
-        self.g_ctx = global_ctx
+    def __init__(self, high, low):
+        self.high = high  # main context
+        self.low = low  # subcontext
+        self.cache = ContextCache()
 
 
-class ContextProviderCached(ContextProvider):
-    """Contains different contexts & provides cache for different serializations"""
+class ContextCache(object):
+    """Contains atrifacts needed during context lifecycle"""
 
-    def __init__(self, *args, **kwargs):
-        super(ContextProviderCached, self).__init__(*args, **kwargs)
-        self.cache = dict()
+    _allowed_fields = (
+        'high_data_plain',        # unchanged data of the high context
+        'low_data',         # unchanged data of the low context
+        'low_data_model',   # data of low context load into model (not neccesarily valid)
+    )
 
-
-class ContextContainer(object):
-    """Holds the context in two entities
-    
-    _ctx - original context
-    _ctx_ro - read-only copy of the context
-    """
-
-    def __init__(self, ctx):
-        self._ctx = ctx
-        self._ctx_ro = copy_model(ctx)
-
-    @property
-    def ctx(self):
-        return self._ctx
-
-    @property
-    def ctx_ro(self):
-        return self._ctx_ro
-
-
-class ContextBuilderFromRequest(object):
-    """Builds ContextProvider from objects found in the request"""
-
-    @staticmethod
-    def build(local_ctx, global_ctx, global_ctx_plain):
-        """Build ContextProviderCached
-
-        :param local_ctx: ContextContainer with local context
-        :param global_ctx: ContextContainer with global context
-        :param global_plain_ctx: global context serialized with `plain` role
-        """
-        local_ctx_container = ContextContainer(local_ctx)
-        global_ctx_container = ContextContainer(global_ctx)
-
-        cp = ContextProviderCached(local_ctx_container, global_ctx_container)
-        cp.cache['global_ctx_plain'] = global_ctx_plain
-
-        return cp
+    def __setattr__(self, name, value):
+        if name in self._allowed_fields:
+            super(ContextCache, self).__setattr__(name, value)

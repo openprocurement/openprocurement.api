@@ -1,7 +1,7 @@
 from collections import namedtuple
 
 from openprocurement.api.utils.searchers import search_root_model
-from openprocurement.api.utils.context_provider import ContextBuilderFromRequest
+from openprocurement.api.utils.context_provider import ContextProvider
 from openprocurement.api.validation import validate_json_data
 
 
@@ -23,17 +23,13 @@ class Event(object):
 def build_event(request, data):
     """Exctract fields from request that will be need for further work and build Event"""
     auth = AuthData(request.authenticated_userid, request.authenticated_role)
-    local_ctx = request.context
+    low_ctx = request.context
+    high_ctx = search_root_model(low_ctx)
 
-    if not getattr(local_ctx, '__parent__'):  # in case of resource creation
-        request.event = Event(local_ctx, auth, data)
-        return
-
-    global_ctx = search_root_model(local_ctx)
-    ctx_provider = ContextBuilderFromRequest.build(
-        local_ctx, global_ctx, request.validated['global_ctx_plain']
-    )
-    request.event = Event(ctx_provider, auth, data)
+    ctx = ContextProvider(high_ctx, low_ctx)
+    if request.validated.get('global_ctx_plain'):
+        ctx.cache.high_data_plain = request.validated['global_ctx_plain']
+    request.event = Event(ctx, auth, data)
 
 
 def validate_data_to_event(request, *args, **kwargs):

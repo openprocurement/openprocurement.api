@@ -30,6 +30,7 @@ from openprocurement.api.utils import (
     get_plugins,
     create_app_meta,
 )
+from openprocurement.api.utils.manager_registry import init_manager_registry
 
 from openprocurement.api.database import set_api_security
 from openprocurement.api.design import sync_design
@@ -128,6 +129,8 @@ def _init_plugins(config):
 def main(global_config, **settings):
     config = _config_init(global_config, settings)
     _couchdb_connection(config)
+    init_manager_registry(config.registry)
+    config.registry.m = 'lalalal'
     _init_plugins(config)
     _auction_module(config)
     # sync couchdb views
