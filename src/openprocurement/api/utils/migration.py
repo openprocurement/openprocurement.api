@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 import sys
+import logging
 
 from pkg_resources import iter_entry_points
 from openprocurement.api.database import set_api_security
@@ -16,6 +17,8 @@ from openprocurement.api.migration import (
     AliasesInfoDTO,
     MigrationResourcesDTO,
 )
+
+MIGRATION_LOG_FORMAT = '%(asctime)s %(levelname)-5.5s [%(name)s][%(threadName)s] %(message)s'
 
 
 def collect_packages_for_migration(plugins):
@@ -83,7 +86,10 @@ def run_migrations_console_entrypoint():
     # generated from the package's entrypionts, argparse lib usage is troublesome
     if len(sys.argv) < 2:
         sys.exit('Provide app_meta location as first argument')
+    elif len(sys.argv) < 3:
+        sys.exit('Provide package name as second argument')
     am_filepath = sys.argv[1]
     package_name = sys.argv[2]
     app_meta = create_app_meta(am_filepath)
+    logging.basicConfig(level=logging.DEBUG, format=MIGRATION_LOG_FORMAT)
     run_migrations(app_meta, package_name)
