@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 from schematics.types import StringType
+from hashlib import sha512
 
 from openprocurement.api.utils.common import generate_id
 
@@ -7,7 +8,7 @@ from openprocurement.api.utils.common import generate_id
 class OwnershipOperator(object):
 
     DIRECT_SET_TRANSFER_TOKEN_ROLES = ('concierge', 'convoy')
-    
+
     def __init__(self, m):
         """
         Create OwnershipOperator
@@ -28,12 +29,12 @@ class OwnershipOperator(object):
 
     def set_ownership(self, user_id, transfer_token):
         if not self.m.get('owner'):
-            m.owner = user_id
+            self.m.owner = user_id
         owner_token = generate_id()
-        m.owner_token = owner_token
+        self.m.owner_token = owner_token
         acc = {'token': owner_token}
 
-        if isinstance(getattr(type(m), 'transfer_token', None), StringType):
+        if isinstance(getattr(type(self.m), 'transfer_token', None), StringType):
             if transfer_token and self._userid_could_set_transfer_token(user_id):
                 self.m.transfer_token = transfer_token
             else:
