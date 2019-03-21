@@ -2,7 +2,7 @@
 from openprocurement.api.constants import LOGGER
 from openprocurement.api.constants import SCHEMA_VERSION, SCHEMA_DOC
 from openprocurement.api.utils.print_helpers import delimited_printer
-
+from openprocurement.api.utils.common import get_now
 
 LOG_INFO_PRINTER = delimited_printer(LOGGER.info, '|')
 
@@ -181,6 +181,7 @@ class BaseMigrationsRunner(object):
             if migrated_doc is None:
                 LOG_INFO_PRINTER(self.name, step_name, "Skipping document")
                 continue
+            migrated_doc['dateModified'] = get_now() # TODO: Can be extracted to separete method later
             migrated_documents.append(migrated_doc)
 
             # bulk write on threshold overgrow
