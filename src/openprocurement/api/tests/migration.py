@@ -2,7 +2,7 @@
 import unittest
 
 from copy import copy
-from mock import Mock
+from mock import Mock, MagicMock
 
 from openprocurement.api.migration import (
     AliasesInfoDTO,
@@ -83,7 +83,7 @@ class BaseMigrationRunnerTestCase(unittest.TestCase):
 
         s_instance = Mock()
         s_instance.setUp = Mock()
-        s_instance.migrate_document = Mock()
+        s_instance.migrate_document = MagicMock()
         s_instance.tearDown = Mock()
 
         s_class.return_value = s_instance

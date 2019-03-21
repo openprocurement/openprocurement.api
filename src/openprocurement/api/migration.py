@@ -181,7 +181,7 @@ class BaseMigrationsRunner(object):
             if migrated_doc is None:
                 LOG_INFO_PRINTER(self.name, step_name, "Skipping document")
                 continue
-            migrated_doc['dateModified'] = get_now() # TODO: Can be extracted to separete method later
+            migrated_doc['dateModified'] = get_now().isoformat() # TODO: Can be extracted to separete method later
             migrated_documents.append(migrated_doc)
 
             # bulk write on threshold overgrow
