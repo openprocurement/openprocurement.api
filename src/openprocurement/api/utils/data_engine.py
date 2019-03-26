@@ -12,49 +12,48 @@ from schematics.exceptions import ModelValidationError
 
 class DataEngine(object):
 
-    def __init__(self, event):
-        self._event = event
-
-    def create_model(self, model_cls):
+    def create_model(self, event, model_cls):
         role = 'create'
 
-        untrusted_model = model_cls(self._event.data)
-        untrusted_model.__parent__ = self._event.ctx  # here ctx is Root
+        untrusted_model = model_cls(event.data)
         untrusted_model.validate()
 
         filtered = untrusted_model.serialize(role)
         model = model_cls(filtered)
+        model.__parent__ = event.ctx  # here ctx is Root
 
         return model
 
-    def apply_data_on_context(self):
+    def apply_data_on_context(self, event):
         """Applies event.data on event.context and returns applied data wrapped into invalid model
         """
-        model_cls = self._event.ctx.l_ctx.ctx_ro.__class__
+        model_cls = event.ctx.low.__class__
 
-        initial_data = self._event.ctx.l_ctx.ctx_ro.serialize()
+        initial_data = event.ctx.low.serialize()
         updated_model = model_cls(initial_data)
 
-        new_patch = apply_data_patch(initial_data, self._event.data)
+        new_patch = apply_data_patch(initial_data, event.data)
         if new_patch:
             updated_model.import_data(new_patch, partial=True, strict=True)
-        updated_model.__parent__ = self._event.ctx.l_ctx.ctx_ro.__parent__
+        updated_model.__parent__ = event.ctx.low.__parent__
         updated_model.validate()
 
-        role = self._event.ctx.l_ctx.ctx_ro.get_role(self._event.auth.role)
+        role = event.ctx.low.get_role(event.auth.role)
         method = updated_model.to_patch
 
-        self._event.ctx.cache.low_data = method(role)
-        self._event.ctx.cache.low_data_model = model_cls(self._event.ctx.cache.low_data)
+        event.ctx.cache.low_data = method(role)
+        rough_model = event.ctx.cache.low_data_model = model_cls(event.ctx.cache.low_data)
 
-    def save(self):
+        return rough_model
+
+    def save(self, event, m=None):
         """Save model to the database & perform all the neccessary checks
 
         :param m: fork of the context, that contains the changes
         """
 
-        high_ctx = self._event.ctx.high  # global edited context
-        unchanged_data = self._unchanged_data()
+        high_ctx = m if m else event.ctx.high  # use given model if passed
+        unchanged_data = self._data_before_changes(event)
         db = get_db()
 
         if high_ctx.mode == u'test':
@@ -67,7 +66,7 @@ class DataEngine(object):
 
         if patch:
             high_ctx.revisions.append(
-                Revision({'author': self._event.auth.user_id,
+                Revision({'author': event.auth.user_id,
                           'changes': patch, 'rev': high_ctx.rev}))
             old_date_modified = high_ctx.dateModified
             high_ctx.dateModified = get_now()
@@ -88,42 +87,16 @@ class DataEngine(object):
             #                              {'REV': ctx.rev}))
             return True
 
-    def update(self, save=True):
-        data = self._event.ctx.cache.low_data
-        patch = apply_data_patch(self._event.ctx.low.serialize(), data)
+    def update(self, event, save=True):
+        data = event.ctx.cache.low_data
+        patch = apply_data_patch(event.ctx.low.serialize(), data)
         if patch:
-            self._event.ctx.low.import_data(patch)
+            event.ctx.low.import_data(patch)
             if save:
-                return self.save()
+                return self.save(event)
 
-    def _unchanged_data(self):
-        cache = getattr(self._event.ctx.high, 'cache', None)
+    def _data_before_changes(self, event):
+        cache = getattr(event.ctx.high, 'cache', None)
         if not cache:  # in case of POST
             return {}
-        return self._event.ctx.cache.high_data_plain
-
-
-class RevisionBuilderFacade(object):
-    pass
-
-
-class BaseRevisionBuilder(object):
-
-    def __init__(self, event):
-        self._event = event
-
-    def build(self):
-        raise NotImplementedError
-
-class InitialRevisionBuilder(BaseRevisionBuilder):
-    """Build Revision object for a freshly created object"""
-
-    def build(self):
-        pass
-
-
-class CommonRevisionBuilder(BaseRevisionBuilder):
-    """Build Revision object for common change of some object"""
-
-    def build(self):
-        pass
+        return event.ctx.cache.high_data_plain
