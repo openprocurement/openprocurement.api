@@ -3,6 +3,7 @@ from collections import namedtuple
 from openprocurement.api.utils.searchers import search_root_model
 from openprocurement.api.utils.context_provider import ContextProvider
 from openprocurement.api.validation import validate_json_data
+from openprocurement.api.models.schematics_extender import Model
 
 
 class AuthData(object):
@@ -27,8 +28,7 @@ def build_event(request, data):
     high_ctx = search_root_model(low_ctx)
 
     ctx = ContextProvider(high_ctx, low_ctx)
-    if request.validated.get('global_ctx_plain'):
-        ctx.cache.high_data_plain = request.validated['global_ctx_plain']
+    ctx.cache.high_data_plain = high_ctx.serialize('plain') if isinstance(high_ctx, Model) else {}
     request.event = Event(ctx, auth, data)
 
 

@@ -20,7 +20,7 @@ class DataEngine(object):
 
         filtered = untrusted_model.serialize(role)
         model = model_cls(filtered)
-        model.__parent__ = event.ctx  # here ctx is Root
+        model.__parent__ = event.ctx.high  # here ctx is Root
 
         return model
 
@@ -96,7 +96,7 @@ class DataEngine(object):
                 return self.save(event)
 
     def _data_before_changes(self, event):
-        cache = getattr(event.ctx.high, 'cache', None)
+        cache = getattr(event.ctx, 'cache', None)
         if not cache:  # in case of POST
             return {}
         return event.ctx.cache.high_data_plain
