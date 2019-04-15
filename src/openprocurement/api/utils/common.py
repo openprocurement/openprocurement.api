@@ -13,6 +13,7 @@ from functools import partial
 from hashlib import sha512
 from json import dumps, loads
 from pyramid.compat import text_
+from pyramid.threadlocal import get_current_registry
 from uuid import uuid4
 from yaml import safe_load
 
@@ -180,12 +181,12 @@ def prepare_patch(changes, orig, patch, basepath=''):
             changes.append(x)
 
 
-def apply_data_patch(item, changes):
+def apply_data_patch(data, changes):
     patch_changes = []
-    prepare_patch(patch_changes, item, changes)
+    prepare_patch(patch_changes, data, changes)
     if not patch_changes:
         return {}
-    return _apply_patch(item, patch_changes)
+    return _apply_patch(data, patch_changes)
 
 
 def get_revision_changes(dst, src):
@@ -504,3 +505,12 @@ def dump_dict_to_tempfile(dict_to_dump, fmt='json'):
     tf.close()
 
     return tf.name
+
+
+def get_db():
+    """Return db connection within current registry
+
+    Note: this function works only inside some request thread.
+    """
+    r = get_current_registry()
+    return r.db
