@@ -85,7 +85,7 @@ class DataEngine(object):
             high_ctx.dateModified = get_now()
             try:
                 high_ctx.store(db)
-            except ModelValidationError, e:  # pragma: no cover
+            except ModelValidationError as e:  # pragma: no cover
                 raise model_errors_to_cornice_errors(e)
             except Exception, e:  # pragma: no cover
                 raise CorniceErrors(
