@@ -38,7 +38,7 @@ def extract_accreditation_levels_from_request(request):
     principals = request.effective_principals
     accreditations = []
     # accreditation is stored in a string, not in some pyramid's auth subclass
-    principals_as_str = (p for p in principals if type(p) is str)
+    principals_as_str = (p for p in principals if isinstance(p, str))
 
     for p in principals_as_str:
         regex_result = ACCREDITATION_REGEX_IN_EFFECTIVE_PRINCIPALS.match(p)
