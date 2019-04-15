@@ -367,3 +367,15 @@ def check_accreditation(request, level):
         "a:{0}".format(ALL_ACCREDITATIONS_GRANTED) in
         request.effective_principals
     )
+
+
+def is_accreditated(present, needed):
+    """Check present accreditations againist needed ones"""
+    all_accreditations = int(ALL_ACCREDITATIONS_GRANTED)
+
+    if all_accreditations in present:
+        return True
+    for n in needed:
+        if n in present:
+            return True
+    return False
