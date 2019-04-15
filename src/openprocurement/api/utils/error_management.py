@@ -19,3 +19,16 @@ def handle_errors_on_view(func):
             raise error_handler(rq)
 
     return wrapper
+
+
+def model_errors_to_cornice_errors(model_exc):
+    errors_gen = (i for i in model_exc.message)
+
+    # use first error occurence to init the exception
+    first_error = next(errors_gen)
+    ce = CorniceErrors(422, ('body', first_error, model_exc.message[first_error]))
+
+    # add latter errors to the exceptions if any
+    for i in errors_gen:
+        ce.errors.add('body', i, model_exc.message[i])
+    return ce

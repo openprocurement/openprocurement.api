@@ -1,4 +1,10 @@
 # -*- coding: utf-8 -*-
+from schematics.exceptions import (
+    ModelValidationError,
+    ModelConversionError,
+    ValidationError
+)
+
 from openprocurement.api.utils.common import (
     apply_data_patch,
     get_db,
@@ -7,7 +13,7 @@ from openprocurement.api.utils.common import (
     get_revision_changes,
 )
 from openprocurement.api.models.auction_models import Revision
-from schematics.exceptions import ModelValidationError
+from openprocurement.api.utils.error_management import model_errors_to_cornice_errors
 
 
 class DataEngine(object):
@@ -15,8 +21,12 @@ class DataEngine(object):
     def create_model(self, event, model_cls):
         role = 'create'
 
-        untrusted_model = model_cls(event.data)
-        untrusted_model.validate()
+        try:
+            untrusted_model = model_cls(event.data)
+            untrusted_model.validate()
+        except (ModelValidationError, ModelConversionError) as e:
+            raise model_errors_to_cornice_errors(e)
+
 
         filtered = untrusted_model.serialize(role)
         model = model_cls(filtered)
@@ -33,10 +43,13 @@ class DataEngine(object):
         updated_model = model_cls(initial_data)
 
         new_patch = apply_data_patch(initial_data, event.data)
-        if new_patch:
-            updated_model.import_data(new_patch, partial=True, strict=True)
-        updated_model.__parent__ = event.ctx.low.__parent__
-        updated_model.validate()
+        try:
+            if new_patch:
+                updated_model.import_data(new_patch, partial=True, strict=True)
+            updated_model.__parent__ = event.ctx.low.__parent__
+            updated_model.validate()
+        except (ModelValidationError, ModelConversionError) as e:
+            raise model_errors_to_cornice_errors(e)
 
         role = event.ctx.low.get_role(event.auth.role)
         method = updated_model.to_patch
