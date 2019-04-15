@@ -46,13 +46,14 @@ def _get_json_from_request(request):
     return json
 
 
-def validate_json_data(request):
+def validate_json_data(request, leave_json_data_into_request=True):
     json = _get_json_from_request(request)
     if not isinstance(json, dict) or 'data' not in json or not isinstance(json.get('data'), dict):
         request.errors.add('body', 'data', "Data not available")
         request.errors.status = 422
         raise error_handler(request)
-    request.validated['json_data'] = json['data']
+    if leave_json_data_into_request:
+        request.validated['json_data'] = json['data']
     return json['data']
 
 
