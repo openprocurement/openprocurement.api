@@ -19,7 +19,14 @@ class ConfigAliasError(BaseConfigError):
         self.msg = msg
 
 
-class CorniceErrors(Exception):
+class BaseOpenProcurementException(Exception):
+    """Base custom OpenProcurement exception
+
+    It's main purpose is to serve as a marker of belonging to this project's exceptions"""
+    pass
+
+
+class CorniceErrors(BaseOpenProcurementException):
     """This exception serves as container for further translation into `error_handler` call"""
 
     def __init__(self, error_code, error_entry):
