@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 from openprocurement.api.utils.searchers import search_root_model
 from openprocurement.api.utils.context_provider import ContextProvider
-from openprocurement.api.validation import validate_json_data
 from openprocurement.api.models.schematics_extender import Model
 from openprocurement.api.constants import ACCREDITATION_REGEX_IN_EFFECTIVE_PRINCIPALS
 
@@ -49,9 +48,3 @@ def extract_accreditation_levels_from_request(request):
         accreditations.append(found_accreditation_level)
 
     return accreditations
-
-
-def validate_data_to_event(request, *args, **kwargs):
-    """Checks request data general validity"""
-    data = validate_json_data(request, leave_json_data_into_request=False)
-    build_event(request, data)
