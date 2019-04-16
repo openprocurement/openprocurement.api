@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 class LoggingContext(object):
+    """Container for the logging data, that must evolve during the request lifecycle"""
 
     _JOURNAL_CONTEXT_KEY_PREFIX = 'JOURNAL_'
 
