@@ -246,6 +246,8 @@ def update_logging_context(request, params):
 
 
 def context_unpack(request, msg, params=None):
+    # Note: this function is deprecated.
+    # Use openprocurement.api.utils.logging_context.LoggingContext
     if params:
         update_logging_context(request, params)
     logging_context = request.logging_context
