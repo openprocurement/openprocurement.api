@@ -93,13 +93,15 @@ class DataEngine(object):
                     ('body', 'data', str(e))
                 )
             else:
+                event.logging_ctx.set_item('REV', high_ctx.rev)
+                journal_logging_ctx = event.logging_ctx.to_journal_logging_context()
+                journal_logging_ctx.set_item('MESSAGE_ID', 'save', add_prefix=False)
+
                 LOGGER.info('Saved {}: dateModified {} -> {}'.format(
                     high_ctx.id,
                     old_date_modified and old_date_modified.isoformat(),
                     high_ctx.dateModified.isoformat()),
-                    # comment out bacause of request use
-                    # extra=context_unpack(request, {'MESSAGE_ID': 'save'},
-                    #                      {'REV': high_ctx.rev}))
+                    extra=journal_logging_ctx.get_context()
                 )
             return True
 
