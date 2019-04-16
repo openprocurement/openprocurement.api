@@ -2,17 +2,8 @@
 class LoggingContext(object):
     """Container for the logging data, that must evolve during the request lifecycle"""
 
-    _JOURNAL_CONTEXT_KEY_PREFIX = 'JOURNAL_'
-
     def __init__(self, context=None):
         self._context = context if context else {}
-
-    def __iter__(self):
-        return self
-
-    def next(self):
-        for k in self._context:
-            yield (k, self._context[k])
 
     def get_context(self):
         return self._context
@@ -28,13 +19,26 @@ class LoggingContext(object):
         for k, v in items.items():
             self.set_context_item(k, v)
 
-    def to_journal_context(self, message):
-        journal_context = {}
+    def to_journal_context(self, message=None):
+        """Convert to JournalLoggingContext object"""
 
-        for k, v in self:
-            journal_key = self._JOURNAL_CONTEXT_KEY_PREFIX + k
-            journal_context[journal_key] = v
+        journal_context = JournalLoggingContext()
+        message = message if message else {}
 
-        journal_context.update(message)  # message must be added with key unprefixed
+        for k, v in self._context.items():
+            journal_context.set_context_item(k, v)
+
+        for k, v in message.items():
+            journal_context.set_context_item(k, v, add_prefix=False)  # message must be added with key unprefixed
 
         return journal_context
+
+
+class JournalLoggingContext(LoggingContext):
+
+    _JOURNAL_CONTEXT_KEY_PREFIX = 'JOURNAL_'
+
+    def set_context_item(self, key, value, add_prefix=True):
+        if not key.startswith(self._JOURNAL_CONTEXT_KEY_PREFIX):
+            j_key = self._JOURNAL_CONTEXT_KEY_PREFIX + key.upper()
+            self._context[j_key] = value
