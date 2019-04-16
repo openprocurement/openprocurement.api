@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 from openprocurement.api.utils.searchers import search_root_model
+from openprocurement.api.utils.logging_context import LoggingContext
 from openprocurement.api.utils.context_provider import ContextProvider
 from openprocurement.api.models.schematics_extender import Model
 from openprocurement.api.constants import ACCREDITATION_REGEX_IN_EFFECTIVE_PRINCIPALS
@@ -15,10 +16,12 @@ class AuthData(object):
 
 class Event(object):
 
-    def __init__(self, context, auth_data, data):
+    def __init__(self, context, auth_data, data, logging_ctx=None):
         self.ctx = context
         self.auth = auth_data
         self.data = data
+
+        self.logging_ctx = LoggingContext(logging_ctx)
 
 
 def build_event(request, data):
@@ -30,7 +33,9 @@ def build_event(request, data):
 
     ctx = ContextProvider(high_ctx, low_ctx)
     ctx.cache.high_data_plain = high_ctx.serialize('plain') if isinstance(high_ctx, Model) else {}
-    request.event = Event(ctx, auth, data)
+
+    logging_ctx = getattr(request, 'logging_context', None)
+    request.event = Event(ctx, auth, data, logging_ctx)
 
 
 def extract_accreditation_levels_from_request(request):
