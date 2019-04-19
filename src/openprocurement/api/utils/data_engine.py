@@ -52,9 +52,8 @@ class DataEngine(object):
             raise model_errors_to_cornice_errors(e)
 
         role = event.ctx.low.get_role(event.auth.role)
-        method = updated_model.to_patch
 
-        event.ctx.cache.low_data = method(role)
+        event.ctx.cache.low_data = updated_model.to_patch(role)
         rough_model = event.ctx.cache.low_data_model = model_cls(event.ctx.cache.low_data)
 
         return rough_model
