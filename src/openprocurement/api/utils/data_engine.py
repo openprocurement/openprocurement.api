@@ -35,7 +35,16 @@ class DataEngine(object):
         return model
 
     def apply_data_on_context(self, event):
-        """Applies event.data on event.context and returns applied data wrapped into invalid model
+        """
+        Applies event.data on event.context and returns applied data wrapped into invalid model
+
+        You ask: why this method returns invalid model?
+        Because we need to filter the applied data with schematics role to provide protection
+        to read-only fields, such as `id`, `rev`, `owner_token`, etc.
+        After this filtering only editable fields remain.
+
+        This issue could be solved by applying filtered data on the data on the untouched data
+        from the DB, but it's unneccesary.
         """
         model_cls = event.ctx.low.__class__
 
