@@ -50,7 +50,7 @@ entry_points = {
     ],
     'console_scripts': [
         'bootstrap_api_security = openprocurement.api.database:bootstrap_api_security',
-        'migrate = openprocurement.api.utils.migration:run_migrations_console_entrypoint',
+        'migrate = openprocurement.api.utils.migration:launch_migration',
     ]
 }
 
