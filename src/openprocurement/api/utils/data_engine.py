@@ -43,8 +43,8 @@ class DataEngine(object):
         to read-only fields, such as `id`, `rev`, `owner_token`, etc.
         After this filtering only editable fields remain.
 
-        This issue could be solved by applying filtered data on the data on the untouched data
-        from the DB, but it's unneccesary.
+        This issue could be solved by applying filtered data on the untouched data from the DB,
+        but it's unneccesary.
         """
         model_cls = event.ctx.low.__class__
 
