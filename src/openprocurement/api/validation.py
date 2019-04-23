@@ -47,13 +47,13 @@ def _get_json_from_request(request):
     return json
 
 
-def validate_json_data(request, leave_json_data_into_request=True):
+def validate_json_data(request, keep_json_data_in_request=True):
     json = _get_json_from_request(request)
     if not isinstance(json, dict) or 'data' not in json or not isinstance(json.get('data'), dict):
         request.errors.add('body', 'data', "Data not available")
         request.errors.status = 422
         raise error_handler(request)
-    if leave_json_data_into_request:
+    if keep_json_data_in_request:
         request.validated['json_data'] = json['data']
     return json['data']
 
@@ -334,5 +334,5 @@ def validate_patch_related_process_data(request, error_handler, **kwargs):
 
 def validate_data_to_event(request, *args, **kwargs):
     """Checks request data general validity and builds an event"""
-    data = validate_json_data(request, leave_json_data_into_request=False)
+    data = validate_json_data(request, keep_json_data_in_request=False)
     build_event(request, data)
