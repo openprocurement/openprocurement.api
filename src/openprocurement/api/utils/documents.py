@@ -132,8 +132,33 @@ def set_first_document_fields(request, first_document, document):
     for attr_name in type(first_document)._fields:
         if attr_name in DOCUMENT_WHITELISTED_FIELDS:
             setattr(document, attr_name, getattr(first_document, attr_name))
-        elif attr_name not in DOCUMENT_BLACKLISTED_FIELDS and attr_name not in request.validated['json_data']:
+        elif attr_name not in DOCUMENT_BLACKLISTED_FIELDS and attr_name not in get_unfiltered_request_data(request):
             setattr(document, attr_name, getattr(first_document, attr_name))
+
+
+def get_unfiltered_request_data(request):
+    data_from_request = request.validated.get('json_data')
+    if data_from_request:
+        return data_from_request
+
+    event = getattr(request, 'event', None)
+    if event:
+        return event.data
+
+
+def upload_file_with_document_service(request, document):
+    first_document = get_first_document(request)
+
+    check_ds_document(
+        document, request.registry.docservice_url, request.registry.keyring, 'body'
+    )
+
+    if first_document:
+        set_first_document_fields(request, first_document, document)
+
+    document_route = request.matched_route.name.replace("collection_", "")
+    document = update_document_url(request, document, document_route, {})
+    return document
 
 
 def upload_file(
@@ -364,3 +389,28 @@ def serialize_document_url(document):
         ]
         return generate_docservice_url(request, doc_id, False, '{}/{}'.format(path[0], path[-1]))
     return generate_docservice_url(request, doc_id, False)
+
+
+class DocumentUploadReader(object):
+    """Facilitates document upload process with absence of `validate_data`"""
+
+    def __init__(self):
+        self.init_data_engine()
+
+    def read(self, request):
+        event = request.event
+
+        model_cls = self.get_document_model_class(event)
+        untrusted_doc = self.de.create_model(event, model_cls)
+        trusted_doc = upload_file_with_document_service(request, untrusted_doc)
+
+        return trusted_doc
+
+    def get_document_model_class(self, event):
+        ctx = event.ctx.high
+        ctx_type = type(ctx)
+        return ctx_type.documents.model_class
+
+    def init_data_engine(self):
+        from openprocurement.api.utils.data_engine import DataEngine  # circular import avoidance
+        self.de = DataEngine()

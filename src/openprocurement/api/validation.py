@@ -23,6 +23,7 @@ from openprocurement.api.utils import (
     get_now,
     get_resource_accreditation
 )
+from openprocurement.api.utils.event import build_event
 from openprocurement.api.constants import (
     TEST_ACCREDITATION,
     ATC_CODES,
@@ -46,13 +47,14 @@ def _get_json_from_request(request):
     return json
 
 
-def validate_json_data(request):
+def validate_json_data(request, keep_json_data_in_request=True):
     json = _get_json_from_request(request)
     if not isinstance(json, dict) or 'data' not in json or not isinstance(json.get('data'), dict):
         request.errors.add('body', 'data', "Data not available")
         request.errors.status = 422
         raise error_handler(request)
-    request.validated['json_data'] = json['data']
+    if keep_json_data_in_request:
+        request.validated['json_data'] = json['data']
     return json['data']
 
 
@@ -328,3 +330,9 @@ def validate_patch_related_process_data(request, error_handler, **kwargs):
     context = request.context if 'relatedProcess' in request.context else request.context.__parent__
     model = type(context).relatedProcesses.model_class
     validate_data(request, model)
+
+
+def validate_data_to_event(request, *args, **kwargs):
+    """Checks request data general validity and builds an event"""
+    data = validate_json_data(request, keep_json_data_in_request=False)
+    build_event(request, data)

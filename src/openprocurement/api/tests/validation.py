@@ -3,13 +3,14 @@ import unittest
 
 from mock import MagicMock, Mock, patch
 from openprocurement.api.validation import (
-    validate_accreditations,
     validate_document_data,
     validate_t_accreditation,
 )
 from openprocurement.api.tests.base import (
     DummyException,
 )
+
+from openprocurement.api.models.common import Classification
 
 
 @patch('openprocurement.api.validation.check_document', autospec=True)
@@ -69,7 +70,6 @@ class ValidateDocumentDataTest(unittest.TestCase):
 
         self.assertEqual(self.document_mock.documentOf, 'resourceName')
 
-
     def test_documentOf_not_in_document(
         self,
         mocked_get_type,
@@ -108,7 +108,6 @@ class ValidateDocumentDataTest(unittest.TestCase):
         self.assertEqual(mocked_set_first_document_fields.call_count, 0)
 
         self.assertEqual(self.document_mock.documentOf, 'resource_from_context')
-
 
     def test_first_document(
         self,
@@ -153,7 +152,6 @@ class ValidateDocumentDataTest(unittest.TestCase):
 
         self.assertEqual(self.document_mock.documentOf, 'resourceName')
 
-
     def test_not_first_document(
         self,
         mocked_get_type,
@@ -192,7 +190,6 @@ class ValidateDocumentDataTest(unittest.TestCase):
         self.assertEqual(self.document_mock.documentOf, 'resourceName')
 
 
-
 class ValidateTAccreditationTest(unittest.TestCase):
 
     def test_user_without_t_accreditation(self):
@@ -223,12 +220,9 @@ class ValidateTAccreditationTest(unittest.TestCase):
         assert request.check_accreditation.call_count == 1
 
 
-from openprocurement.api.models.common import Classification
-from copy import deepcopy
-
-
 class TestClassification(Classification):
     pass
+
 
 class ValidateClassification(unittest.TestCase):
 
@@ -252,13 +246,9 @@ class ValidateClassification(unittest.TestCase):
         self.assertEqual(mock_validator_2.call_count, 1)
 
 
-
-
-
 def suite():
     suite = unittest.TestSuite()
     suite.addTest(unittest.makeSuite(ValidateDocumentDataTest))
-    suite.addTest(unittest.makeSuite(ValidateAccreditationsTest))
     suite.addTest(unittest.makeSuite(ValidateTAccreditationTest))
     suite.addTest(unittest.makeSuite(ValidateClassification))
     return suite
