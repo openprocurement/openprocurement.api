@@ -40,5 +40,8 @@ class JournalLoggingContext(LoggingContext):
 
     def set_item(self, key, value, add_prefix=True):
         if not key.startswith(self._JOURNAL_CONTEXT_KEY_PREFIX):
-            j_key = self._JOURNAL_CONTEXT_KEY_PREFIX + key.upper()
+            if add_prefix:
+                j_key = self._JOURNAL_CONTEXT_KEY_PREFIX + key.upper()
+            else:
+                j_key = key.upper()
             self._context[j_key] = value
