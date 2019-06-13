@@ -139,8 +139,11 @@ def get_accelerator(context):
 def accelerated_calculate_business_date(date, period, accelerator, specific_time=None, specific_hour=None):
     re_obj = ACCELERATOR_RE.search(accelerator)
     if re_obj and 'accelerator' in re_obj.groupdict():
+        accelerator_value = int(re_obj.groupdict()['accelerator'])
         if specific_hour or specific_time:
             period = period + (specific_time_setting(date, specific_time, specific_hour) - date)
+        if accelerator_value == 0:
+            return date + period
         return date + (period / int(re_obj.groupdict()['accelerator']))
 
 
