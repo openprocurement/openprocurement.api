@@ -19,25 +19,19 @@ def listing(self):
         resource = self.create_resource()
         resource_list.append(resource)
 
-    ids = ','.join([i['id'] for i in resource_list])
-
-    for _ in range(10):
+    # wait for index update on _design views
+    resources_found = 0
+    while resources_found != 3:
         response = self.app.get('/')
-        self.assertTrue(ids.startswith(','.join([i['id'] for i in response.json['data']])))
-        if len(response.json['data']) == 3:
-            break
+        resources_found = len(response.json['data'])
 
     self.assertEqual(len(response.json['data']), 3)
-    self.assertEqual(set(response.json['data'][0]), set([u'id', u'dateModified']))
+    self.assertEqual(set(response.json['data'][0]), {u'id', u'dateModified'})
     self.assertEqual(set([i['id'] for i in response.json['data']]), set([i['id'] for i in resource_list]))
     self.assertEqual(set([i['dateModified'] for i in response.json['data']]), set([i['dateModified'] for i in resource_list]))
     self.assertEqual([i['dateModified'] for i in response.json['data']], sorted([i['dateModified'] for i in resource_list]))
 
-    for _ in range(10):
-        response = self.app.get('/', params={'offset': offset})
-        self.assertEqual(response.status, '200 OK')
-        if len(response.json['data']) == 1:
-            break
+    response = self.app.get('/', params={'offset': offset})
     self.assertEqual(len(response.json['data']), 1)
 
     response = self.app.get('/', params={'limit': 2})
@@ -58,14 +52,14 @@ def listing(self):
     response = self.app.get('/', params=[('opt_fields', 'status')])
     self.assertEqual(response.status, '200 OK')
     self.assertEqual(len(response.json['data']), 3)
-    self.assertEqual(set(response.json['data'][0]), set([u'id', u'dateModified', u'status']))
+    self.assertEqual(set(response.json['data'][0]), {u'id', u'dateModified', u'status'})
     self.assertIn('opt_fields=status', response.json['next_page']['uri'])
 
     response = self.app.get('/', params={'descending': 1})
     self.assertEqual(response.status, '200 OK')
     self.assertEqual(response.content_type, 'application/json')
     self.assertEqual(len(response.json['data']), 3)
-    self.assertEqual(set(response.json['data'][0]), set([u'id', u'dateModified']))
+    self.assertEqual(set(response.json['data'][0]), {u'id', u'dateModified'})
     self.assertEqual(set([i['id'] for i in response.json['data']]), set([i['id'] for i in resource_list]))
     self.assertEqual([i['dateModified'] for i in response.json['data']],
                      sorted([i['dateModified'] for i in resource_list], reverse=True))
@@ -87,11 +81,11 @@ def listing(self):
 
     self.create_resource(extra={"mode": "test"})
 
-    for _ in range(10):
+    # wait for index update on _design views
+    resources_found = 0
+    while resources_found != 1:
         response = self.app.get('/', params={'mode': 'test'})
-        self.assertEqual(response.status, '200 OK')
-        if len(response.json['data']) == 1:
-            break
+        resources_found = len(response.json['data'])
     self.assertEqual(len(response.json['data']), 1)
 
     response = self.app.get('/', params={'mode': '_all_'})
@@ -110,11 +104,11 @@ def listing_changes(self):
 
     ids = ','.join([i['id'] for i in resource_list])
 
-    for _ in range(10):
+    # wait for index update on _design views
+    resources_found = 0
+    while resources_found != 3:
         response = self.app.get('/', params={'feed': 'changes'})
-        self.assertTrue(ids.startswith(','.join([i['id'] for i in response.json['data']])))
-        if len(response.json['data']) == 3:
-            break
+        resources_found = len(response.json['data'])
 
     self.assertEqual(','.join([i['id'] for i in response.json['data']]), ids)
     self.assertEqual(response.status, '200 OK')
@@ -170,11 +164,11 @@ def listing_changes(self):
 
     self.create_resource(extra={"mode": "test"})
 
-    for _ in range(10):
+    # wait for index update on _design views
+    resources_found = 0
+    while resources_found != 1:
         response = self.app.get('/', params={'feed': 'changes', 'mode': 'test'})
-        self.assertEqual(response.status, '200 OK')
-        if len(response.json['data']) == 1:
-            break
+        resources_found = len(response.json['data'])
     self.assertEqual(len(response.json['data']), 1)
 
     response = self.app.get('/', params={'feed': 'changes', 'mode': '_all_'})
@@ -191,11 +185,11 @@ def listing_draft(self):
 
     ids = ','.join([i['id'] for i in resource_list])
 
-    for _ in range(10):
+    # wait for index update on _design views
+    resources_found = 0
+    while resources_found != 3:
         response = self.app.get('/')
-        self.assertTrue(ids.startswith(','.join([i['id'] for i in response.json['data']])))
-        if len(response.json['data']) == 3:
-            break
+        resources_found = len(response.json['data'])
 
     self.assertEqual(len(response.json['data']), 3)
     self.assertEqual(set(response.json['data'][0]), set([u'id', u'dateModified']))
