@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+from time import sleep
 from uuid import uuid4
 
 from openprocurement.api.utils import get_now
@@ -20,10 +21,12 @@ def listing(self):
         resource_list.append(resource)
 
     # wait for index update on _design views
-    resources_found = 0
-    while resources_found != 3:
+    for i in range(10):
         response = self.app.get('/')
-        resources_found = len(response.json['data'])
+        self.assertEqual(response.status, '200 OK')
+        if len(response.json['data']) == 3:
+            break
+        sleep(i)
 
     self.assertEqual(len(response.json['data']), 3)
     self.assertEqual(set(response.json['data'][0]), {u'id', u'dateModified'})
@@ -82,10 +85,12 @@ def listing(self):
     self.create_resource(extra={"mode": "test"})
 
     # wait for index update on _design views
-    resources_found = 0
-    while resources_found != 1:
+    for i in range(10):
         response = self.app.get('/', params={'mode': 'test'})
-        resources_found = len(response.json['data'])
+        self.assertEqual(response.status, '200 OK')
+        if len(response.json['data']) == 1:
+            break
+        sleep(i)
     self.assertEqual(len(response.json['data']), 1)
 
     response = self.app.get('/', params={'mode': '_all_'})
@@ -105,10 +110,12 @@ def listing_changes(self):
     ids = ','.join([i['id'] for i in resource_list])
 
     # wait for index update on _design views
-    resources_found = 0
-    while resources_found != 3:
+    for i in range(10):
         response = self.app.get('/', params={'feed': 'changes'})
-        resources_found = len(response.json['data'])
+        self.assertEqual(response.status, '200 OK')
+        if len(response.json['data']) == 3:
+            break
+        sleep(i)
 
     self.assertEqual(','.join([i['id'] for i in response.json['data']]), ids)
     self.assertEqual(response.status, '200 OK')
@@ -165,10 +172,12 @@ def listing_changes(self):
     self.create_resource(extra={"mode": "test"})
 
     # wait for index update on _design views
-    resources_found = 0
-    while resources_found != 1:
+    for i in range(10):
         response = self.app.get('/', params={'feed': 'changes', 'mode': 'test'})
-        resources_found = len(response.json['data'])
+        self.assertEqual(response.status, '200 OK')
+        if len(response.json['data']) == 1:
+            break
+        sleep(i)
     self.assertEqual(len(response.json['data']), 1)
 
     response = self.app.get('/', params={'feed': 'changes', 'mode': '_all_'})
@@ -183,13 +192,13 @@ def listing_draft(self):
 
     resource_list = [self.create_resource() for _ in range(3)]
 
-    ids = ','.join([i['id'] for i in resource_list])
-
     # wait for index update on _design views
-    resources_found = 0
-    while resources_found != 3:
+    for i in range(10):
         response = self.app.get('/')
-        resources_found = len(response.json['data'])
+        self.assertEqual(response.status, '200 OK')
+        if len(response.json['data']) == 3:
+            break
+        sleep(i)
 
     self.assertEqual(len(response.json['data']), 3)
     self.assertEqual(set(response.json['data'][0]), set([u'id', u'dateModified']))
