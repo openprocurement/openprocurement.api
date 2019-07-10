@@ -10,6 +10,8 @@ from base64 import b64encode
 from datetime import datetime
 from contextlib import nested
 from types import FunctionType
+
+from couchdb import ResourceNotFound
 from mock import patch, MagicMock
 from requests.models import Response
 
@@ -163,10 +165,12 @@ class BaseWebTest(unittest.TestCase):
             pass
 
     def setUp(self):
-        self.db_name += uuid4().hex
-        self.couchdb_server.create(self.db_name)
-        db = self.couchdb_server[self.db_name]
-        sync_design(db)
+        try:
+            db = self.couchdb_server[self.db_name]
+        except ResourceNotFound:
+            self.couchdb_server.create(self.db_name)
+            db = self.couchdb_server[self.db_name]
+            sync_design(db)
         self.app.app.registry.db = db
         self.db = self.app.app.registry.db
         self.db_name = self.db.name
@@ -308,8 +312,6 @@ class BaseResourceWebTest(BaseWebTest):
     def tearDown(self):
         if self.docservice:
             self.tearDownDS()
-        if hasattr(self, 'resource_id'):
-            del self.db[self.resource_id]
         super(BaseResourceWebTest, self).tearDown()
 
 
