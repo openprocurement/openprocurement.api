@@ -40,7 +40,7 @@ sphinxcontrib-httpdomain==1.4.0
 translationstring==1.3
 tzlocal==1.1.2
 venusian==1.0
-waitress==0.8.9
+waitress==2.1.1
 zope.deprecation==4.1.1
 zope.interface==4.1.1
 git+https://github.com/openprocurement/barbecue.git
